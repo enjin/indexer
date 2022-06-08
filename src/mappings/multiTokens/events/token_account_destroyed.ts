@@ -1,8 +1,6 @@
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MultiTokensTokenAccountDestroyedEvent,
-} from '../../../types/generated/events'
+import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/helpers'
 
@@ -16,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensTokenAccountDestroyedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, accountId } = event.asV2
+    if (event.isV4) {
+        const { collectionId, tokenId, accountId } = event.asV4
         return { collectionId, tokenId, accountId }
     } else {
         throw new UnknownVersionError(event.constructor.name)
@@ -30,7 +28,10 @@ export async function handleTokenAccountDestroyed(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, `${address}-${data.collectionId}-${data.tokenId}`)
+    const tokenAccount = await ctx.store.findOne<TokenAccount>(
+        TokenAccount,
+        `${address}-${data.collectionId}-${data.tokenId}`
+    )
 
     if (tokenAccount) {
         await ctx.store.delete(TokenAccount, { id: tokenAccount.id })

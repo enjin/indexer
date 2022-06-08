@@ -1,8 +1,6 @@
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MultiTokensTokenAccountCreatedEvent,
-} from '../../../types/generated/events'
+import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/helpers'
 
@@ -17,8 +15,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensTokenAccountCreatedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, accountId, balance } = event.asV2
+    if (event.isV4) {
+        const { collectionId, tokenId, accountId, balance } = event.asV4
         return { collectionId, tokenId, accountId, balance }
     } else {
         throw new UnknownVersionError(event.constructor.name)

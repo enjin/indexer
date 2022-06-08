@@ -3,7 +3,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensFrozenEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/helpers'
-import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v2'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v4'
 
 interface EventData {
     collectionId: bigint
@@ -17,8 +17,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensFrozenEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, freezeType } = event.asV2
+    if (event.isV4) {
+        const { collectionId, freezeType } = event.asV4
 
         if (freezeType.__kind == 'Collection') {
             return {

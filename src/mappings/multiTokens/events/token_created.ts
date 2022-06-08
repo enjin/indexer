@@ -3,7 +3,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import { CapType, Collection, Token } from '../../../model'
 import { MultiTokensMintCall } from '../../../types/generated/calls'
-import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v2'
+import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v4'
 
 interface CallData {
     recipient: Uint8Array
@@ -24,10 +24,10 @@ interface EventData {
 
 function getCallData(ctx: ExtrinsicHandlerContext): CallData {
     const call = new MultiTokensMintCall(ctx)
-    if (call.isV2) {
-        const collectionId = call.asV2.collectionId
-        const recipient = call.asV2.recipient.value as Uint8Array
-        const params = call.asV2.params as DefaultMintParams_CreateToken
+    if (call.isV4) {
+        const collectionId = call.asV4.collectionId
+        const recipient = call.asV4.recipient.value as Uint8Array
+        const params = call.asV4.params as DefaultMintParams_CreateToken
         const capType = params.cap?.__kind as CapType
 
         return {
@@ -48,8 +48,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensTokenCreatedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, issuer, initialSupply } = event.asV2
+    if (event.isV4) {
+        const { collectionId, tokenId, issuer, initialSupply } = event.asV4
         return { collectionId, tokenId, issuer, initialSupply }
     } else {
         throw new UnknownVersionError(event.constructor.name)

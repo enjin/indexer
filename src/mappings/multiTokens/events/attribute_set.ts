@@ -1,8 +1,6 @@
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MultiTokensAttributeSetEvent,
-} from '../../../types/generated/events'
+import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Token } from '../../../model'
 
 interface EventData {
@@ -16,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensAttributeSetEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, key, value } = event.asV2
+    if (event.isV4) {
+        const { collectionId, tokenId, key, value } = event.asV4
         return { collectionId, tokenId, key, value }
     } else {
         throw new UnknownVersionError(event.constructor.name)

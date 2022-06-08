@@ -88,12 +88,17 @@ type Collection @entity {
   createdAt: DateTime!
 }
 
+type CollectionApproval {
+  account: String!
+  expiration: Int
+}
+
 type CollectionAccount @entity {
   id: ID!
 
   # Storage defaults
   isFrozen: Boolean!
-  approvals: String # Change to type
+  approvals: [CollectionApproval!]
   accountCount: Int!
 
   # Relations
@@ -127,6 +132,12 @@ type Token @entity {
   createdAt: DateTime!
 }
 
+type TokenApproval {
+  account: String!
+  amount: BigInt!
+  expiration: Int
+}
+
 type TokenAccount @entity {
   id: ID!
 
@@ -136,7 +147,7 @@ type TokenAccount @entity {
   lockedBalance: BigInt!
   namedReserves: String # Change to type
   locks: String # Change to type
-  approvals: String # Change to type
+  approvals: [TokenApproval!]
   isFrozen: Boolean!
 
   # Relations

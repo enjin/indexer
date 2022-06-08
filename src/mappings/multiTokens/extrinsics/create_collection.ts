@@ -13,8 +13,8 @@ interface EventData {
 function getEventData(ctx: ExtrinsicHandlerContext): bigint {
     const event = new MultiTokensCollectionCreatedEvent(ctx)
 
-    if (event.isV2) {
-        return event.asV2.collectionId
+    if (event.isV4) {
+        return event.asV4.collectionId
     } else {
         throw new UnknownVersionError(event.constructor.name)
     }
@@ -22,8 +22,8 @@ function getEventData(ctx: ExtrinsicHandlerContext): bigint {
 
 function getCallData(ctx: ExtrinsicHandlerContext): EventData | undefined {
     const call = new MultiTokensCreateCollectionCall(ctx)
-    if (call.isV2) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV2.descriptor.policy.mint
+    if (call.isV4) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV4.descriptor.policy.mint
         return {
             maxTokenCount,
             maxTokenSupply,

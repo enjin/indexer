@@ -1,7 +1,6 @@
 import assert from 'assert'
 import {CallContext, Result, deprecateLatest} from './support'
-import * as v1 from './v1'
-import * as v2 from './v2'
+import * as v4 from './v4'
 
 export class BalancesForceTransferCall {
   constructor(private ctx: CallContext) {
@@ -16,7 +15,7 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get isV1(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
   }
 
@@ -28,19 +27,19 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get asV1(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
+  get asV4(): {source: v4.MultiAddress, dest: v4.MultiAddress, value: bigint} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV1
+    return this.isV4
   }
 
-  get asLatest(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
+  get asLatest(): {source: v4.MultiAddress, dest: v4.MultiAddress, value: bigint} {
     deprecateLatest()
-    return this.asV1
+    return this.asV4
   }
 }
 
@@ -53,7 +52,6 @@ export class BalancesTransferCall {
    * Transfer some liquid free balance to another account.
    * 
    * `transfer` will set the `FreeBalance` of the sender and receiver.
-   * It will decrease the total issuance of the system by the `TransferFee`.
    * If the sender's account is below the existential deposit as a result
    * of the transfer, the account will be reaped.
    * 
@@ -74,12 +72,10 @@ export class BalancesTransferCall {
    *   - `transfer_keep_alive` works the same way as `transfer`, but has an additional check
    *     that the transfer will not kill the origin account.
    * ---------------------------------
-   * - Base Weight: 73.64 µs, worst case scenario (account created, account removed)
-   * - DB Weight: 1 Read and 1 Write to destination account
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get isV1(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -87,7 +83,6 @@ export class BalancesTransferCall {
    * Transfer some liquid free balance to another account.
    * 
    * `transfer` will set the `FreeBalance` of the sender and receiver.
-   * It will decrease the total issuance of the system by the `TransferFee`.
    * If the sender's account is below the existential deposit as a result
    * of the transfer, the account will be reaped.
    * 
@@ -108,24 +103,22 @@ export class BalancesTransferCall {
    *   - `transfer_keep_alive` works the same way as `transfer`, but has an additional check
    *     that the transfer will not kill the origin account.
    * ---------------------------------
-   * - Base Weight: 73.64 µs, worst case scenario (account created, account removed)
-   * - DB Weight: 1 Read and 1 Write to destination account
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get asV1(): {dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
+  get asV4(): {dest: v4.MultiAddress, value: bigint} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV1
+    return this.isV4
   }
 
-  get asLatest(): {dest: v1.MultiAddress, value: bigint} {
+  get asLatest(): {dest: v4.MultiAddress, value: bigint} {
     deprecateLatest()
-    return this.asV1
+    return this.asV4
   }
 }
 
@@ -153,7 +146,7 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get isV1(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
   }
 
@@ -176,19 +169,19 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get asV1(): {dest: v1.MultiAddress, keepAlive: boolean} {
-    assert(this.isV1)
+  get asV4(): {dest: v4.MultiAddress, keepAlive: boolean} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV1
+    return this.isV4
   }
 
-  get asLatest(): {dest: v1.MultiAddress, keepAlive: boolean} {
+  get asLatest(): {dest: v4.MultiAddress, keepAlive: boolean} {
     deprecateLatest()
-    return this.asV1
+    return this.asV4
   }
 }
 
@@ -204,13 +197,8 @@ export class BalancesTransferKeepAliveCall {
    * 99% of the time you want [`transfer`] instead.
    * 
    * [`transfer`]: struct.Pallet.html#method.transfer
-   * # <weight>
-   * - Cheaper than transfer because account cannot be killed.
-   * - Base Weight: 51.4 µs
-   * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
-   * #</weight>
    */
-  get isV1(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -221,25 +209,20 @@ export class BalancesTransferKeepAliveCall {
    * 99% of the time you want [`transfer`] instead.
    * 
    * [`transfer`]: struct.Pallet.html#method.transfer
-   * # <weight>
-   * - Cheaper than transfer because account cannot be killed.
-   * - Base Weight: 51.4 µs
-   * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
-   * #</weight>
    */
-  get asV1(): {dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
+  get asV4(): {dest: v4.MultiAddress, value: bigint} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV1
+    return this.isV4
   }
 
-  get asLatest(): {dest: v1.MultiAddress, value: bigint} {
+  get asLatest(): {dest: v4.MultiAddress, value: bigint} {
     deprecateLatest()
-    return this.asV1
+    return this.asV4
   }
 }
 
@@ -251,26 +234,26 @@ export class MultiTokensApproveCollectionCall {
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.approve_collection') === '488accbd8a7ccff93c1ce6b5609ef67874c52cc8fc80b3b48a2cad226450c092'
   }
 
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV2(): {collectionId: bigint, operator: v2.AccountId32, expiration: (number | undefined)} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, operator: v4.AccountId32, expiration: (number | undefined)} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {collectionId: bigint, operator: v2.AccountId32, expiration: (number | undefined)} {
+  get asLatest(): {collectionId: bigint, operator: v4.AccountId32, expiration: (number | undefined)} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -282,26 +265,26 @@ export class MultiTokensApproveTokenCall {
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.approve_token') === '7266369f860222731cfac3b4dc9f7b3eb8550de09ee165a184b933efc53cd27a'
   }
 
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get asV2(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, tokenId: bigint, operator: v4.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
+  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v4.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -324,7 +307,7 @@ export class MultiTokensBurnCall {
    * overflow.
    * - `DepositUnreserveFailed` if caller does not have enough reserved balance to unreserve
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.burn') === '5e518fd41f2e62474b4a1bae295d7c2b0bec3f70f20ccbfeb4517ee9e7984bc3'
   }
 
@@ -342,19 +325,19 @@ export class MultiTokensBurnCall {
    * overflow.
    * - `DepositUnreserveFailed` if caller does not have enough reserved balance to unreserve
    */
-  get asV2(): {collectionId: bigint, params: v2.DefaultBurnParams} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, params: v4.DefaultBurnParams} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {collectionId: bigint, params: v2.DefaultBurnParams} {
+  get asLatest(): {collectionId: bigint, params: v4.DefaultBurnParams} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -369,7 +352,7 @@ export class MultiTokensCreateCollectionCall {
    * # Errors
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.create_collection') === 'c93ec84acdd32c46f33bfe2493efe0a285c1491f6e3d72c98d705a6ac5165146'
   }
 
@@ -379,19 +362,19 @@ export class MultiTokensCreateCollectionCall {
    * # Errors
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
-  get asV2(): {descriptor: v2.DefaultCollectionDescriptor} {
-    assert(this.isV2)
+  get asV4(): {descriptor: v4.DefaultCollectionDescriptor} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {descriptor: v2.DefaultCollectionDescriptor} {
+  get asLatest(): {descriptor: v4.DefaultCollectionDescriptor} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -414,7 +397,7 @@ export class MultiTokensDestroyCollectionCall {
    * - `DestroyForbiddenByAttributeCount` if collection still has attributes when destroying
    * current number of collection attributes.
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.destroy_collection') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
   }
 
@@ -432,19 +415,19 @@ export class MultiTokensDestroyCollectionCall {
    * - `DestroyForbiddenByAttributeCount` if collection still has attributes when destroying
    * current number of collection attributes.
    */
-  get asV2(): {collectionId: bigint} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
   get asLatest(): {collectionId: bigint} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -456,26 +439,26 @@ export class MultiTokensFreezeCall {
   /**
    * Freeze collection, token or account
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.freeze') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
    * Freeze collection, token or account
    */
-  get asV2(): {info: v2.Freeze} {
-    assert(this.isV2)
+  get asV4(): {info: v4.Freeze} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {info: v2.Freeze} {
+  get asLatest(): {info: v4.Freeze} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -499,7 +482,7 @@ export class MultiTokensMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.mint') === 'eaebb17dc952303dfd16624a15d2cde22e3b66a7f91ca95f2f92cd3104cb2499'
   }
 
@@ -518,19 +501,19 @@ export class MultiTokensMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultMintParams} {
-    assert(this.isV2)
+  get asV4(): {recipient: v4.MultiAddress, collectionId: bigint, params: v4.DefaultMintParams} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultMintParams} {
+  get asLatest(): {recipient: v4.MultiAddress, collectionId: bigint, params: v4.DefaultMintParams} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -550,7 +533,7 @@ export class MultiTokensRemoveAttributeCall {
    * - `AttributeStorageOverflow` if the attribute key and value total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.remove_attribute') === '5e8dda41d19b04f7e051283b9b20aed0a83222ef4bc596239942a512d10e143c'
   }
 
@@ -565,19 +548,19 @@ export class MultiTokensRemoveAttributeCall {
    * - `AttributeStorageOverflow` if the attribute key and value total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
   get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -599,7 +582,7 @@ export class MultiTokensSetAttributeCall {
    * total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.set_attribute') === '1442e960b51ef446ff50fc6d27284693378495f9905ed8fbc35811b81dcf7c7b'
   }
 
@@ -616,19 +599,19 @@ export class MultiTokensSetAttributeCall {
    * total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
   get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -640,26 +623,26 @@ export class MultiTokensThawCall {
   /**
    * Thaw collection, token or account
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.thaw') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
    * Thaw collection, token or account
    */
-  get asV2(): {info: v2.Freeze} {
-    assert(this.isV2)
+  get asV4(): {info: v4.Freeze} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {info: v2.Freeze} {
+  get asLatest(): {info: v4.Freeze} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -677,7 +660,7 @@ export class MultiTokensTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `Overflow` if `target` balance of `collection` overflows.
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.transfer') === '3a904597294b52262716ac476178f413a640c58c5df5fdee9d6a42b369dab12a'
   }
 
@@ -690,19 +673,19 @@ export class MultiTokensTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `Overflow` if `target` balance of `collection` overflows.
    */
-  get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
-    assert(this.isV2)
+  get asV4(): {recipient: v4.MultiAddress, collectionId: bigint, params: v4.DefaultTransferParams} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
+  get asLatest(): {recipient: v4.MultiAddress, collectionId: bigint, params: v4.DefaultTransferParams} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -714,26 +697,26 @@ export class MultiTokensUnapproveCollectionCall {
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.unapprove_collection') === 'e5170bfdb3c4351aa216ff597896abe5ecc75ec89c47b522a97790870cc3b5ef'
   }
 
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV2(): {collectionId: bigint, operator: v2.AccountId32} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, operator: v4.AccountId32} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {collectionId: bigint, operator: v2.AccountId32} {
+  get asLatest(): {collectionId: bigint, operator: v4.AccountId32} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }
 
@@ -745,25 +728,25 @@ export class MultiTokensUnapproveTokenCall {
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get isV2(): boolean {
+  get isV4(): boolean {
     return this.ctx._chain.getCallHash('multiTokens.unapprove_token') === 'bf808826dcdafcc9b31e08b287969eda26c2a350dbd9b501129943a436ab8854'
   }
 
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get asV2(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32} {
-    assert(this.isV2)
+  get asV4(): {collectionId: bigint, tokenId: bigint, operator: v4.AccountId32} {
+    assert(this.isV4)
     return this.ctx._chain.decodeCall(this.ctx.extrinsic)
   }
 
   get isLatest(): boolean {
     deprecateLatest()
-    return this.isV2
+    return this.isV4
   }
 
-  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32} {
+  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v4.AccountId32} {
     deprecateLatest()
-    return this.asV2
+    return this.asV4
   }
 }

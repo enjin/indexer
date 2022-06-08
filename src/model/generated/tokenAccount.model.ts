@@ -1,5 +1,6 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
+import {TokenApproval} from "./_tokenApproval"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
@@ -27,8 +28,8 @@ export class TokenAccount {
   @Column_("text", {nullable: true})
   locks!: string | undefined | null
 
-  @Column_("text", {nullable: true})
-  approvals!: string | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenApproval(undefined, marshal.nonNull(val)))}, nullable: true})
+  approvals!: (TokenApproval)[] | undefined | null
 
   @Column_("bool", {nullable: false})
   isFrozen!: boolean

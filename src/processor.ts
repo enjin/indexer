@@ -30,5 +30,8 @@ processor.addEventHandler('multiTokens.AttributeSet', modules.multiTokens.events
 processor.addEventHandler('multiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
 processor.addEventHandler('multiTokens.Frozen', modules.multiTokens.events.handleFrozen)
 processor.addEventHandler('multiTokens.Thawed', modules.multiTokens.events.handleThawed)
+processor.addEventHandler('multiTokens.Approved', modules.multiTokens.events.handleApproved)
+processor.addEventHandler('multiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
+processor.addEventHandler('multiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
 processor.run()
