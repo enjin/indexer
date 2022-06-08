@@ -10,13 +10,16 @@ export class CollectionAccount {
   @PrimaryColumn_()
   id!: string
 
-  @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
-  collection!: Collection
-
   @Column_("bool", {nullable: false})
   isFrozen!: boolean
 
+  @Column_("text", {nullable: true})
+  approvals!: string | undefined | null
+
   @Column_("int4", {nullable: false})
   accountCount!: number
+
+  @Index_()
+  @ManyToOne_(() => Collection, {nullable: false})
+  collection!: Collection
 }

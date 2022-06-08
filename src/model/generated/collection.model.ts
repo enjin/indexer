@@ -14,32 +14,35 @@ export class Collection {
   @PrimaryColumn_()
   id!: string
 
+  @Column_("text", {nullable: true})
+  owner!: string | undefined | null
+
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
   mintPolicy!: MintPolicy
+
+  @Column_("text", {nullable: true})
+  burnPolicy!: string | undefined | null
 
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferPolicy(undefined, obj)}, nullable: true})
   transferPolicy!: TransferPolicy | undefined | null
 
   @Column_("text", {nullable: true})
-  burnPolicy!: string | undefined | null
-
-  @Column_("text", {nullable: true})
   attributePolicy!: string | undefined | null
-
-  @OneToMany_(() => Token, e => e.collection)
-  tokens!: Token[]
 
   @Column_("int4", {nullable: false})
   tokenCount!: number
-
-  @OneToMany_(() => CollectionAccount, e => e.collection)
-  accounts!: CollectionAccount[]
 
   @Column_("int4", {nullable: false})
   attributeCount!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   totalDeposit!: bigint
+
+  @OneToMany_(() => Token, e => e.collection)
+  tokens!: Token[]
+
+  @OneToMany_(() => CollectionAccount, e => e.collection)
+  accounts!: CollectionAccount[]
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date

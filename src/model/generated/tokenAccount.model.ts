@@ -12,14 +12,6 @@ export class TokenAccount {
   @PrimaryColumn_()
   id!: string
 
-  @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
-  collection!: Collection
-
-  @Index_()
-  @ManyToOne_(() => Token, {nullable: false})
-  token!: Token
-
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   balance!: bigint
 
@@ -29,6 +21,23 @@ export class TokenAccount {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   lockedBalance!: bigint
 
+  @Column_("text", {nullable: true})
+  namedReserves!: string | undefined | null
+
+  @Column_("text", {nullable: true})
+  locks!: string | undefined | null
+
+  @Column_("text", {nullable: true})
+  approvals!: string | undefined | null
+
   @Column_("bool", {nullable: false})
   isFrozen!: boolean
+
+  @Index_()
+  @ManyToOne_(() => Collection, {nullable: false})
+  collection!: Collection
+
+  @Index_()
+  @ManyToOne_(() => Token, {nullable: false})
+  token!: Token
 }

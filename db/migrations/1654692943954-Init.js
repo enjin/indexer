@@ -1,5 +1,5 @@
-module.exports = class Init1654644247106 {
-  name = 'Init1654644247106'
+module.exports = class Init1654692943954 {
+  name = 'Init1654692943954'
 
   async up(db) {
     await db.query(`CREATE TABLE "transfer" ("id" character varying NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE, "block_number" integer, "extrinsic_hash" text, "to_id" character varying, "from_id" character varying NOT NULL, "amount" numeric, "success" boolean, CONSTRAINT "PK_fd9ddbdd49a17afcbe014401295" PRIMARY KEY ("id"))`)
@@ -11,16 +11,16 @@ module.exports = class Init1654644247106 {
     await db.query(`CREATE TABLE "account_transfer" ("id" character varying NOT NULL, "direction" character varying(4), "transfer_id" character varying, "account_id" character varying NOT NULL, CONSTRAINT "PK_3b959a286b97fc83be6cec239a9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_2c2313461bd6c19983900ef539" ON "account_transfer" ("transfer_id") `)
     await db.query(`CREATE INDEX "IDX_d5240d17696e229585da974641" ON "account_transfer" ("account_id") `)
-    await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "active_bond" numeric NOT NULL, "total_reward" numeric NOT NULL, "total_slash" numeric NOT NULL, "last_update_block" integer NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE TABLE "token_account" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "reserved_balance" numeric NOT NULL, "locked_balance" numeric NOT NULL, "is_frozen" boolean NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying NOT NULL, CONSTRAINT "PK_6121d7a5eafbe71fba146a98fd3" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "balances" jsonb NOT NULL, "last_update_block" integer NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "token_account" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "reserved_balance" numeric NOT NULL, "locked_balance" numeric NOT NULL, "named_reserves" text, "locks" text, "approvals" text, "is_frozen" boolean NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying NOT NULL, CONSTRAINT "PK_6121d7a5eafbe71fba146a98fd3" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_85663600e62c10034824e4caea" ON "token_account" ("collection_id") `)
     await db.query(`CREATE INDEX "IDX_02862fa18dececb99dd81a6a6a" ON "token_account" ("token_id") `)
     await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "supply" numeric NOT NULL, "cap_type" character varying(10), "cap_supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "minimum_balance" numeric NOT NULL, "unit_price" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
-    await db.query(`CREATE TABLE "collection_account" ("id" character varying NOT NULL, "is_frozen" boolean NOT NULL, "account_count" integer NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_149cc78cfb0b9c3da0f8a2ff5e9" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "collection_account" ("id" character varying NOT NULL, "is_frozen" boolean NOT NULL, "approvals" text, "account_count" integer NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_149cc78cfb0b9c3da0f8a2ff5e9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_a0ca7fffb7ae953536712abef2" ON "collection_account" ("collection_id") `)
-    await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "mint_policy" jsonb NOT NULL, "transfer_policy" jsonb, "burn_policy" text, "attribute_policy" text, "token_count" integer NOT NULL, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE TABLE "attribute" ("id" character varying NOT NULL, "key" text, "value" text, "collection_id" character varying NOT NULL, "token_id" character varying, CONSTRAINT "PK_b13fb7c5c9e9dff62b60e0de729" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "owner" text, "mint_policy" jsonb NOT NULL, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "token_count" integer NOT NULL, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "attribute" ("id" character varying NOT NULL, "key" text NOT NULL, "value" text NOT NULL, "deposit" numeric NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying, CONSTRAINT "PK_b13fb7c5c9e9dff62b60e0de729" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_adaba2bde1f917be8521c42ebc" ON "attribute" ("collection_id") `)
     await db.query(`CREATE INDEX "IDX_8c947bde2aea695c9257d1eea8" ON "attribute" ("token_id") `)
     await db.query(`ALTER TABLE "transfer" ADD CONSTRAINT "FK_0751309c66e97eac9ef11493623" FOREIGN KEY ("to_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)

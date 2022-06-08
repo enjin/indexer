@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import * as marshal from "./marshal"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
@@ -11,6 +12,15 @@ export class Attribute {
   @PrimaryColumn_()
   id!: string
 
+  @Column_("text", {nullable: false})
+  key!: string
+
+  @Column_("text", {nullable: false})
+  value!: string
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  deposit!: bigint
+
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection
@@ -18,10 +28,4 @@ export class Attribute {
   @Index_()
   @ManyToOne_(() => Token, {nullable: true})
   token!: Token | undefined | null
-
-  @Column_("text", {nullable: true})
-  key!: string | undefined | null
-
-  @Column_("text", {nullable: true})
-  value!: string | undefined | null
 }

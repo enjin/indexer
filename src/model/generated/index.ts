@@ -1,4 +1,5 @@
 export * from "./account.model"
+export * from "./_balancesAccount"
 export * from "./transfer.model"
 export * from "./accountTransfer.model"
 export * from "./_transferDirection"
