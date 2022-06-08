@@ -12,8 +12,14 @@ processor.setBlockRange(config.blockRange || { from: 0 })
 
 processor.addEventHandler('multiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('multiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
-processor.addEventHandler('multiTokens.CollectionAccountCreated', modules.multiTokens.events.handleCollectionAccountCreated)
-processor.addEventHandler('multiTokens.CollectionAccountDestroyed', modules.multiTokens.events.handleCollectionAccountDestroyed)
+processor.addEventHandler(
+    'multiTokens.CollectionAccountCreated',
+    modules.multiTokens.events.handleCollectionAccountCreated
+)
+processor.addEventHandler(
+    'multiTokens.CollectionAccountDestroyed',
+    modules.multiTokens.events.handleCollectionAccountDestroyed
+)
 processor.addEventHandler('multiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
 processor.addEventHandler('multiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
 processor.addEventHandler('multiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
@@ -22,5 +28,7 @@ processor.addEventHandler('multiTokens.TokenAccountDestroyed', modules.multiToke
 // processor.addEventHandler('multiTokens.Burned', modules.multiTokens.events.handleBurned)
 processor.addEventHandler('multiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
 processor.addEventHandler('multiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
+processor.addEventHandler('multiTokens.Frozen', modules.multiTokens.events.handleFrozen)
+processor.addEventHandler('multiTokens.Thawed', modules.multiTokens.events.handleThawed)
 
 processor.run()

@@ -6,13 +6,13 @@ import { MultiTokensMintCall } from '../../../types/generated/calls'
 import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v2'
 
 interface CallData {
-    recipient: Uint8Array,
-    collectionId: bigint,
-    tokenId: bigint,
-    initialSupply: bigint,
-    unitPrice: bigint,
-    capType: CapType | undefined,
-    capSupply: bigint | undefined,
+    recipient: Uint8Array
+    collectionId: bigint
+    tokenId: bigint
+    initialSupply: bigint
+    unitPrice: bigint
+    capType: CapType | undefined
+    capSupply: bigint | undefined
 }
 
 interface EventData {
@@ -37,7 +37,7 @@ function getCallData(ctx: ExtrinsicHandlerContext): CallData {
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             capType: capType,
-            capSupply: (params.cap as TokenCap_Supply)?.value
+            capSupply: (params.cap as TokenCap_Supply)?.value,
         }
     } else {
         throw new UnknownVersionError(call.constructor.name)
