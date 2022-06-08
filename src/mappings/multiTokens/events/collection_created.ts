@@ -4,13 +4,13 @@ import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/even
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import { Collection, MintPolicy, TransferPolicy } from '../../../model'
 
-interface EventData {
+interface CallData {
     maxTokenCount: bigint | undefined
     maxTokenSupply: bigint | undefined
     forceSingleMint: boolean
 }
 
-function getCallData(ctx: ExtrinsicHandlerContext): EventData | undefined {
+function getCallData(ctx: ExtrinsicHandlerContext): CallData | undefined {
     const call = new MultiTokensCreateCollectionCall(ctx)
     if (call.isV2) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV2.descriptor.policy.mint
@@ -38,14 +38,13 @@ function getEventData(ctx: EventHandlerContext): bigint {
 
 export async function handleCollectionCreated(ctx: EventHandlerContext) {
     const collectionId = getEventData(ctx)
-    const ctxData = ctx as ExtrinsicHandlerContext
-    const callData = getCallData(ctxData)
+    const callData = getCallData(ctx as ExtrinsicHandlerContext)
 
     if (!collectionId || !callData) return
 
     const collection = new Collection({
         id: collectionId.toString(),
-        // owner: null,
+        // owner: null, // TODO
         mintPolicy: new MintPolicy({
             maxTokenCount: callData.maxTokenCount,
             maxTokenSupply: callData.maxTokenSupply,
@@ -58,7 +57,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
         attributePolicy: null,
         tokenCount: 0,
         attributeCount: 0,
-        totalDeposit: 0n,
+        totalDeposit: 0n, // TODO
         createdAt: new Date(ctx.block.timestamp),
     })
 

@@ -10,7 +10,15 @@ processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(3001)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
-//events handlers
 processor.addEventHandler('multiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
+processor.addEventHandler('multiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
+processor.addEventHandler('multiTokens.CollectionAccountCreated', modules.multiTokens.events.handleCollectionAccountCreated)
+processor.addEventHandler('multiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
+processor.addEventHandler('multiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
+processor.addEventHandler('multiTokens.CollectionAccountDestroyed', modules.multiTokens.events.handleCollectionAccountDestroyed)
+processor.addEventHandler('multiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
+processor.addEventHandler('multiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
+// processor.addEventHandler('multiTokens.Minted', modules.multiTokens.events.handleMinted)
+// processor.addEventHandler('multiTokens.Burned', modules.multiTokens.events.handleBurned)
 
 processor.run()

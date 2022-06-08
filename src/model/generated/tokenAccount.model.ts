@@ -33,6 +33,9 @@ export class TokenAccount {
   @Column_("bool", {nullable: false})
   isFrozen!: boolean
 
+  @Column_("text", {nullable: true})
+  account!: string | undefined | null
+
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection

@@ -19,6 +19,9 @@ export class CollectionAccount {
   @Column_("int4", {nullable: false})
   accountCount!: number
 
+  @Column_("text", {nullable: true})
+  account!: string | undefined | null
+
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection

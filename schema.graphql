@@ -82,7 +82,7 @@ type Collection @entity {
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
-  accounts: [CollectionAccount] @derivedFrom(field: "collection")
+  #accounts: [CollectionAccount] @derivedFrom(field: "collection")
 
   # Extras
   createdAt: DateTime!
@@ -97,6 +97,7 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
+  account: String # Add account relation
   collection: Collection!
 }
 
@@ -111,7 +112,7 @@ type Token @entity {
   # Storage defaults
   supply: BigInt!
   capType: CapType
-  capSupply: BigInt!
+  capSupply: BigInt
   isFrozen: Boolean!
   minimumBalance: BigInt!
   unitPrice: BigInt!
@@ -120,7 +121,7 @@ type Token @entity {
 
   # Relations
   collection: Collection!
-  accounts: [TokenAccount] @derivedFrom(field: "token")
+  #accounts: [TokenAccount] @derivedFrom(field: "token")
 
   # Extras
   createdAt: DateTime!
@@ -139,6 +140,7 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
+  account: String # Add account relation
   collection: Collection!
   token: Token!
 }
