@@ -1,0 +1,158 @@
+# account entity can be used to get info about current account state and absorb account actions
+type BalancesAccount {
+  free: BigInt!
+  reserved: BigInt!
+  miscFrozen: BigInt!
+  feeFrozen: BigInt!
+}
+
+type Account @entity {
+  id: ID!
+  balances: BalancesAccount!
+  transfers: [AccountTransfer!] @derivedFrom(field: "account")
+  lastUpdateBlock: Int!
+}
+
+enum TransferDirection {
+  FROM
+  TO
+}
+
+interface Action {
+  timestamp: DateTime
+  blockNumber: Int
+  extrinsicHash: String
+  amount: BigInt
+}
+
+interface HasTotal {
+  total: BigInt
+}
+
+interface HasEra {
+  era: Int
+}
+
+interface CanFail {
+  success: Boolean
+}
+
+type Transfer implements Action & CanFail @entity {
+  id: ID!
+  timestamp: DateTime
+  blockNumber: Int @index
+  extrinsicHash: String @index
+  toId: ID
+  to: Account
+  fromId: ID!
+  from: Account!
+  amount: BigInt
+  success: Boolean @index
+}
+
+# entity for linking account and transfer
+type AccountTransfer @entity {
+  id: ID!
+  transfer: Transfer
+  account: Account!
+  direction: TransferDirection
+}
+
+type MintPolicy {
+  maxTokenCount: BigInt
+  maxTokenSupply: BigInt
+  forceSingleMint: Boolean!
+}
+
+type TransferPolicy {
+  isFrozen: Boolean
+}
+
+type Collection @entity {
+  id: ID!
+
+  # Storage defaults
+  owner: String # Change to type
+  mintPolicy: MintPolicy!
+  burnPolicy: String
+  transferPolicy: TransferPolicy
+  attributePolicy: String
+  tokenCount: Int!
+  attributeCount: Int!
+  totalDeposit: BigInt!
+
+  # Relations
+  tokens: [Token] @derivedFrom(field: "collection")
+  accounts: [CollectionAccount] @derivedFrom(field: "collection")
+
+  # Extras
+  createdAt: DateTime!
+}
+
+type CollectionAccount @entity {
+  id: ID!
+
+  # Storage defaults
+  isFrozen: Boolean!
+  approvals: String # Change to type
+  accountCount: Int!
+
+  # Relations
+  collection: Collection!
+}
+
+enum CapType {
+  SingleMint
+  Supply
+}
+
+type Token @entity {
+  id: ID!
+
+  # Storage defaults
+  supply: BigInt!
+  capType: CapType
+  capSupply: BigInt!
+  isFrozen: Boolean!
+  minimumBalance: BigInt!
+  unitPrice: BigInt!
+  mintDeposit: BigInt!
+  attributeCount: Int!
+
+  # Relations
+  collection: Collection!
+  accounts: [TokenAccount] @derivedFrom(field: "token")
+
+  # Extras
+  createdAt: DateTime!
+}
+
+type TokenAccount @entity {
+  id: ID!
+
+  # Storage defaults
+  balance: BigInt!
+  reservedBalance: BigInt!
+  lockedBalance: BigInt!
+  namedReserves: String # Change to type
+  locks: String # Change to type
+  approvals: String # Change to type
+  isFrozen: Boolean!
+
+  # Relations
+  collection: Collection!
+  token: Token!
+}
+
+type Attribute @entity {
+  id: ID!
+
+  # Storage defaults
+  key: String!
+  value: String!
+  deposit: BigInt!
+
+  # Relations
+  collection: Collection!
+  token: Token
+}

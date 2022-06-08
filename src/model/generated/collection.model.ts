@@ -1,0 +1,46 @@
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
+import * as marshal from "./marshal"
+import {MintPolicy} from "./_mintPolicy"
+import {TransferPolicy} from "./_transferPolicy"
+import {Token} from "./token.model"
+import {CollectionAccount} from "./collectionAccount.model"
+
+@Entity_()
+export class Collection {
+  constructor(props?: Partial<Collection>) {
+    Object.assign(this, props)
+  }
+
+  @PrimaryColumn_()
+  id!: string
+
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
+  mintPolicy!: MintPolicy
+
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferPolicy(undefined, obj)}, nullable: true})
+  transferPolicy!: TransferPolicy | undefined | null
+
+  @Column_("text", {nullable: true})
+  burnPolicy!: string | undefined | null
+
+  @Column_("text", {nullable: true})
+  attributePolicy!: string | undefined | null
+
+  @OneToMany_(() => Token, e => e.collection)
+  tokens!: Token[]
+
+  @Column_("int4", {nullable: false})
+  tokenCount!: number
+
+  @OneToMany_(() => CollectionAccount, e => e.collection)
+  accounts!: CollectionAccount[]
+
+  @Column_("int4", {nullable: false})
+  attributeCount!: number
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  totalDeposit!: bigint
+
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
+}
