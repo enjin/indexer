@@ -1,5 +1,5 @@
+export * from "./chainInfo.model"
 export * from "./account.model"
-export * from "./_accountBalance"
 export * from "./collection.model"
 export * from "./_mintPolicy"
 export * from "./_transferPolicy"

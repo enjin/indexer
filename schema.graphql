@@ -1,14 +1,16 @@
-type AccountBalance {
-  free: BigInt!
-  reserved: BigInt!
-  miscFrozen: BigInt!
-  feeFrozen: BigInt!
+type ChainInfo @entity {
+  id: ID!
+  specVersion: Int!
+  transactionVersion: Int!
+  genesisHash: String!
+  blockHash: String!
+  blockNumber: Int!
+  existentialDeposit: BigInt!
+  timestamp: DateTime! @index
 }
 
 type Account @entity {
   id: ID!
-  balance: AccountBalance!
-  nonce: Int!
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   lastUpdateBlock: Int!
