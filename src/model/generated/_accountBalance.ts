@@ -1,13 +1,13 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 
-export class BalancesAccount {
+export class AccountBalance {
   private _free!: bigint
   private _reserved!: bigint
   private _miscFrozen!: bigint
   private _feeFrozen!: bigint
 
-  constructor(props?: Partial<Omit<BalancesAccount, 'toJSON'>>, json?: any) {
+  constructor(props?: Partial<Omit<AccountBalance, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
       this._free = marshal.bigint.fromJSON(json.free)

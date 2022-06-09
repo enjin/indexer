@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {TokenApproval} from "./_tokenApproval"
+import {Account} from "./account.model"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
@@ -34,8 +35,9 @@ export class TokenAccount {
   @Column_("bool", {nullable: false})
   isFrozen!: boolean
 
-  @Column_("text", {nullable: true})
-  account!: string | undefined | null
+  @Index_()
+  @ManyToOne_(() => Account, {nullable: false})
+  account!: Account
 
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})

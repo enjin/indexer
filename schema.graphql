@@ -1,4 +1,4 @@
-type BalancesAccount {
+type AccountBalance {
   free: BigInt!
   reserved: BigInt!
   miscFrozen: BigInt!
@@ -7,54 +7,11 @@ type BalancesAccount {
 
 type Account @entity {
   id: ID!
-  balances: BalancesAccount!
-  transfers: [AccountTransfer!] @derivedFrom(field: "account")
+  balance: AccountBalance!
+  nonce: Int!
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   lastUpdateBlock: Int!
-}
-
-enum TransferDirection {
-  FROM
-  TO
-}
-
-interface Action {
-  timestamp: DateTime
-  blockNumber: Int
-  extrinsicHash: String
-  amount: BigInt
-}
-
-interface HasTotal {
-  total: BigInt
-}
-
-interface HasEra {
-  era: Int
-}
-
-interface CanFail {
-  success: Boolean
-}
-
-type Transfer implements Action & CanFail @entity {
-  id: ID!
-  timestamp: DateTime
-  blockNumber: Int @index
-  extrinsicHash: String @index
-  toId: ID
-  to: Account
-  fromId: ID!
-  from: Account!
-  amount: BigInt
-  success: Boolean @index
-}
-
-# entity for linking account and transfer
-type AccountTransfer @entity {
-  id: ID!
-  transfer: Transfer
-  account: Account!
-  direction: TransferDirection
 }
 
 type MintPolicy {
@@ -102,7 +59,7 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
-  account: String # Add account relation
+  account: Account!
   collection: Collection!
 }
 
@@ -151,7 +108,7 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
-  account: String # Add account relation
+  account: Account!
   collection: Collection!
   token: Token!
 }

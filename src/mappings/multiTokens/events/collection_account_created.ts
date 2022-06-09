@@ -3,6 +3,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount } from '../../../model'
 import { encodeId } from '../../../common/helpers'
+import { accountManager } from '../../../managers/AccountManager'
 
 interface EventData {
     collectionId: bigint
@@ -28,12 +29,14 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
     const address = encodeId(data.accountId)
+    const account = await accountManager.get(ctx, address)
 
     const collectionAccount = new CollectionAccount({
         id: `${data.collectionId}-${address}`,
         isFrozen: false,
         approvals: null,
         accountCount: 0, // TODO: Change fixed for now
+        account: account,
         collection: collection,
     })
 
