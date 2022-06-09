@@ -49,6 +49,9 @@ services:
       - DB_PASS=password
       - DB_PORT=5432
       - HYDRA_INDEXER_STATUS_SERVICE=http://indexer-status-service:8081/status
+      - LETSENCRYPT_HOST=index.rocfinity.inovatso.com.br
+      - VIRTUAL_HOST=index.rocfinity.inovatso.com.br
+      - VIRTUAL_PORT=4040
   indexer-status-service:
     image: subsquid/hydra-indexer-status-service:5
     restart: unless-stopped
@@ -62,3 +65,8 @@ services:
     restart: always
     ports:
       - "6379"
+
+networks:
+  default:
+    external:
+      name: experio
