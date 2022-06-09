@@ -1,11 +1,40 @@
-version: "3"
+version: "3.4"
 
 services:
   db:
     image: postgres:12
     environment:
       POSTGRES_DB: efinity
+      POSTGRES_USER: efinity
       POSTGRES_PASSWORD: password
     ports:
       - "${DB_PORT}:5432"
-      # command: ["postgres", "-c", "log_statement=all"]
+
+  processor:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: processor
+    depends_on:
+      - db
+
+  query-node:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: query-node
+    ports:
+      - "4350:4350"
+    environment:
+      - CONTAINER_ROLE=query-noce
+      - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
+      - VIRTUAL_HOST=rocfinity.inovatso.com.br
+      - VIRTUAL_PORT=4350
+    depends_on:
+      - db
+      - processor
+
+networks:
+  default:
+    external:
+      name: experio

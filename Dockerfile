@@ -26,6 +26,7 @@ COPY --from=deps /squid/node_modules node_modules
 COPY --from=builder /squid/lib lib
 ADD db db
 ADD schema.graphql .
+ADD .env .
 EXPOSE 3000
 EXPOSE 3001
 EXPOSE 4000
