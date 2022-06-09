@@ -16,6 +16,7 @@ FROM node-with-gyp AS deps
 WORKDIR /squid
 ADD package.json .
 ADD package-lock.json .
+RUN npm install
 RUN npm ci --production
 
 FROM node AS squid
