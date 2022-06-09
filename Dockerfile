@@ -7,6 +7,7 @@ FROM node-with-gyp AS builder
 WORKDIR /squid
 ADD package.json .
 ADD package-lock.json .
+RUN npm install
 RUN npm ci
 ADD tsconfig.json .
 ADD src src
