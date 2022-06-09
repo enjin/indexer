@@ -12,7 +12,7 @@ EXPOSE 3001
 EXPOSE 4000
 
 FROM squid AS processor
-CMD ["yarn", "processor:start"]
+CMD ["yarn", "processor:debug"]
 
 FROM squid AS query-node
 CMD ["yarn", "query-node:start"]
