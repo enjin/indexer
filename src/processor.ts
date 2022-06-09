@@ -8,7 +8,7 @@ const processor = new SubstrateProcessor(`${config.chainName}-processor`)
 
 processor.setBatchSize(config.batchSize || DEFAULT_BATCH_SIZE)
 processor.setDataSource(config.dataSource)
-processor.setPrometheusPort(3001)
+processor.setPrometheusPort(3000)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
 processor.addEventHandler('multiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)

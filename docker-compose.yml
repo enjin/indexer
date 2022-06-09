@@ -2,31 +2,36 @@ version: "3.4"
 
 services:
   db:
+    container_name: rocfinity_squid_db_1
     image: postgres:12
+    restart: unless-stopped
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: efinity
       POSTGRES_USER: efinity
       POSTGRES_PASSWORD: password
     ports:
-      - "${DB_PORT}:5432"
+      - "23798:5432"
 
   processor:
+    container_name: rocfinity_processor_1
     build:
-      context: ./
-      dockerfile: Dockerfile
+      context: .
       target: processor
+    restart: unless-stopped
     depends_on:
       - db
 
   query-node:
+    container_name: rocfinity_query-node_1
     build:
-      context: ./
-      dockerfile: Dockerfile
+      context: .
       target: query-node
+    restart: unless-stopped
     ports:
       - "4350:4350"
     environment:
-      - CONTAINER_ROLE=query-noce
       - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
       - VIRTUAL_HOST=rocfinity.inovatso.com.br
       - VIRTUAL_PORT=4350
