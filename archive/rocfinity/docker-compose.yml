@@ -6,33 +6,31 @@ services:
     volumes:
       - /var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    network_mode: "host"
-    #ports:
-    #  - "5432:5432"
+      POSTGRES_USER: efinity
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
   indexer:
     image: subsquid/hydra-indexer:5
     restart: unless-stopped
     environment:
       - WORKERS_NUMBER=50
       - DB_NAME=indexer
-      - DB_HOST=localhost
-      - DB_USER=postgres
-      - DB_PASS=postgres
+      - DB_HOST=db
+      - DB_USER=efinity
+      - DB_PASS=password
       - DB_PORT=5432
-      - REDIS_URI=redis://localhost:6379/0
-      - FORCE_HEIGHT=true
+      - REDIS_URI=redis://redis:6379/0
+      - FORCE_HEIGHT=false
       - BLOCK_HEIGHT=1 # starting block height
-      - WS_PROVIDER_ENDPOINT_URI=ws://localhost:10010
+      - WS_PROVIDER_ENDPOINT_URI=ws://3.137.24.102:9946
     depends_on:
       - db
       - redis
     command: >
       sh -c "yarn db:bootstrap && yarn start:prod"
-    network_mode: "host"
-    #ports:
-    #  - 9090:9090
+    ports:
+      - "9090:9090"
   indexer-gateway:
     image: subsquid/hydra-indexer-gateway:5
     restart: unless-stopped
@@ -41,29 +39,26 @@ services:
       - db
       - indexer-status-service
       - indexer
-    network_mode: "host"
-    #ports:
-    #  - "4010:8080"
+    ports:
+      - "4010:8080"
     environment:
       - DEV_MODE=true
       - DB_NAME=indexer
-      - DB_HOST=localhost
-      - DB_USER=postgres
-      - DB_PASS=postgres
+      - DB_HOST=db
+      - DB_USER=efinity
+      - DB_PASS=password
       - DB_PORT=5432
-      - HYDRA_INDEXER_STATUS_SERVICE=http://localhost:8081/status
+      - HYDRA_INDEXER_STATUS_SERVICE=http://indexer-status-service:8081/status
   indexer-status-service:
     image: subsquid/hydra-indexer-status-service:5
     restart: unless-stopped
     depends_on:
       - redis
     environment:
-      REDIS_URI: redis://localhost:6379/0
+      REDIS_URI: redis://redis:6379/0
       PORT: 8081
-    network_mode: "host"
   redis:
     image: redis:6.0-alpine
     restart: always
-    network_mode: "host"
-    #ports:
-    #  - "6379"
+    ports:
+      - "6379"

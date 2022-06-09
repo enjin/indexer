@@ -4,8 +4,8 @@ services:
   db:
     image: postgres:12
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: efinity
+      POSTGRES_PASSWORD: password
     ports:
       - "${DB_PORT}:5432"
       # command: ["postgres", "-c", "log_statement=all"]
