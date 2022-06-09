@@ -65,3 +65,8 @@ services:
     restart: always
     ports:
       - "6379"
+
+networks:
+  default:
+    external:
+      name: experio
