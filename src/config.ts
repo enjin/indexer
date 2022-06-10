@@ -9,7 +9,7 @@ const config: ProcessorConfig = {
         archive: 'http://rocfinity_indexer-gateway_1:8080/v1/graphql',
         chain: 'ws://3.137.24.102:9946',
     },
-    batchSize: 500,
+    batchSize: 10,
     blockRange: {
         from: 1,
     },

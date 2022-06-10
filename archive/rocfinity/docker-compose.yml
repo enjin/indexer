@@ -15,7 +15,7 @@ services:
     image: subsquid/hydra-indexer:5
     restart: unless-stopped
     environment:
-      - WORKERS_NUMBER=50
+      - WORKERS_NUMBER=20
       - DB_NAME=indexer
       - DB_HOST=db
       - DB_USER=efinity

@@ -26,9 +26,11 @@ function getCallData(ctx: ExtrinsicHandlerContext): CallData | undefined {
 
 function getEventData(ctx: EventHandlerContext): bigint {
     const event = new MultiTokensCollectionCreatedEvent(ctx)
+    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
+
     if (event.isV2) {
         const { collectionId } = event.asV2
-        console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}, collectionId: ${collectionId}`)
+        console.log(`collectionId: ${collectionId}`)
         return collectionId
     } else {
         throw new UnknownVersionError(event.constructor.name)

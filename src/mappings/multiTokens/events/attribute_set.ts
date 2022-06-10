@@ -36,15 +36,28 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     const key = Buffer.from(data.key).toString()
     const value = Buffer.from(data.value).toString()
+    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
 
-    const attribute = new Attribute({
-        id: data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString(),
-        key: key,
-        value: value,
-        deposit: 0n, // TODO: Change fixed for now
-        collection: collection,
-        token: token,
-    })
+    const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
+    if (attribute) {
+        await ctx.store.update(
+            Attribute,
+            { id: attributeId },
+            {
+                value: value,
+            }
+        )
+    } else {
+        const attribute = new Attribute({
+            id: attributeId,
+            key: key,
+            value: value,
+            deposit: 0n, // TODO: Change fixed for now
+            collection: collection,
+            token: token,
+        })
 
-    await ctx.store.insert(Attribute, attribute)
+        await ctx.store.insert(Attribute, attribute)
+    }
 }

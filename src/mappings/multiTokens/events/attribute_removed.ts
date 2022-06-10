@@ -26,7 +26,8 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const attributeId = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
     const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
 
     if (attribute) {
