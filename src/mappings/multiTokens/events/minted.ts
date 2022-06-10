@@ -46,10 +46,6 @@ async function getStorageData(
     const storage = new MultiTokensTokenAccountsStorage(ctx)
     if (!storage.isExists) return undefined
 
-    // aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862np
-    console.log(storage)
-    console.log(storage.getAsV4(account, collectionId, tokenId))
-
     if (storage.isV2) {
         const data = await storage.getAsV2(account, collectionId, tokenId)
 
