@@ -29,8 +29,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensMintedEvent(ctx)
 
-    if (event.isV4) {
-        const { collectionId, tokenId, issuer, recipient, amount } = event.asV4
+    if (event.isV2) {
+        const { collectionId, tokenId, issuer, recipient, amount } = event.asV2
         return { collectionId, tokenId, issuer, recipient, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)
@@ -46,7 +46,25 @@ async function getStorageData(
     const storage = new MultiTokensTokenAccountsStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isV4) {
+    // aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862np
+    console.log(storage)
+    console.log(storage.getAsV4(account, collectionId, tokenId))
+
+    if (storage.isV2) {
+        const data = await storage.getAsV2(account, collectionId, tokenId)
+
+        if (!data) return undefined
+
+        return {
+            balance: data.balance,
+            reservedBalance: data.reserved,
+            namedReserves: data.namedReserves,
+            approvals: data.approvals,
+            isFrozen: data.isFrozen,
+            lockedBalance: 0n,
+            locks: [],
+        }
+    } else if (storage.isV4) {
         const data = await storage.getAsV4(account, collectionId, tokenId)
 
         if (!data) return undefined

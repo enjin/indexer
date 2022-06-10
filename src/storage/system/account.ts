@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../common/errors'
 import { decodeId, encodeId } from '../../common/helpers'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { StorageContext } from '../../types/generated/support'
-import { AccountInfo } from '../../types/generated/v4'
+import { AccountInfo } from '../../types/generated/v1'
 
 async function getStorageData(
     ctx: StorageContext,
@@ -11,8 +11,8 @@ async function getStorageData(
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isV4) {
-        return await storage.getManyAsV4(accounts)
+    if (storage.isV1) {
+        return await storage.getManyAsV1(accounts)
     } else {
         throw new UnknownVersionError(storage.constructor.name)
     }

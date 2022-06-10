@@ -17,8 +17,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensThawedEvent(ctx)
 
-    if (event.isV4) {
-        const { collectionId, freezeType } = event.asV4
+    if (event.isV2) {
+        const { collectionId, freezeType } = event.asV2
 
         if (freezeType.__kind == 'Collection') {
             return {
