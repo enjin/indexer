@@ -45,11 +45,13 @@ function getCallData(ctx: ExtrinsicHandlerContext): CallData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensTokenCreatedEvent(ctx)
 
     if (event.isV2) {
         const { collectionId, tokenId, issuer, initialSupply } = event.asV2
+        console.log(
+            `Block: ${ctx.block.height}, event: ${ctx.event.name}, collectionId: ${collectionId}, tokenId: ${tokenId}`
+        )
         return { collectionId, tokenId, issuer, initialSupply }
     } else {
         throw new UnknownVersionError(event.constructor.name)
