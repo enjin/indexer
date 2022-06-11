@@ -49,6 +49,7 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
             { id: tokenAccount.id },
             {
                 approvals: approvals,
+                updatedAt: new Date(ctx.block.timestamp),
             }
         )
     } else {
@@ -66,6 +67,7 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
             { id: collectionAccount.id },
             {
                 approvals: approvals,
+                updatedAt: new Date(ctx.block.timestamp),
             }
         )
     }

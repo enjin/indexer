@@ -1,7 +1,8 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {CapType} from "./_capType"
 import {Collection} from "./collection.model"
+import {Attribute} from "./attribute.model"
 
 @Entity_()
 export class Token {
@@ -11,6 +12,9 @@ export class Token {
 
   @PrimaryColumn_()
   id!: string
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  tokenId!: bigint
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   supply!: bigint
@@ -39,6 +43,9 @@ export class Token {
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection
+
+  @OneToMany_(() => Attribute, e => e.token)
+  attributes!: Attribute[]
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date

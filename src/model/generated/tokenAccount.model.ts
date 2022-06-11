@@ -46,4 +46,10 @@ export class TokenAccount {
   @Index_()
   @ManyToOne_(() => Token, {nullable: false})
   token!: Token
+
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
+
+  @Column_("timestamp with time zone", {nullable: false})
+  updatedAt!: Date
 }

@@ -38,6 +38,8 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
         accountCount: 0, // TODO: Change fixed for now
         account: account,
         collection: collection,
+        createdAt: new Date(ctx.block.timestamp),
+        updatedAt: new Date(ctx.block.timestamp),
     })
 
     await ctx.store.insert(CollectionAccount, collectionAccount)

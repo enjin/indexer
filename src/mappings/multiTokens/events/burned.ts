@@ -89,6 +89,7 @@ export async function handleBurned(ctx: EventHandlerContext) {
                     balance: storage.balance,
                     reservedBalance: storage.reservedBalance,
                     lockedBalance: storage.lockedBalance,
+                    updatedAt: new Date(ctx.block.timestamp),
                 }
             )
         }

@@ -28,4 +28,10 @@ export class Attribute {
   @Index_()
   @ManyToOne_(() => Token, {nullable: true})
   token!: Token | undefined | null
+
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
+
+  @Column_("timestamp with time zone", {nullable: false})
+  updatedAt!: Date
 }

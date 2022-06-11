@@ -29,4 +29,10 @@ export class CollectionAccount {
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection
+
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
+
+  @Column_("timestamp with time zone", {nullable: false})
+  updatedAt!: Date
 }

@@ -68,6 +68,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
 
     const token = new Token({
         id: `${eventData.collectionId}-${eventData.tokenId}`,
+        tokenId: eventData.tokenId,
         supply: eventData.initialSupply,
         capType: callData.capType,
         capSupply: callData.capSupply,

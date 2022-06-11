@@ -91,6 +91,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
                     balance: storage.balance,
                     reservedBalance: storage.reservedBalance,
                     lockedBalance: storage.lockedBalance,
+                    updatedAt: new Date(ctx.block.timestamp),
                 }
             )
         }
@@ -111,6 +112,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
                     balance: storage.balance,
                     reservedBalance: storage.reservedBalance,
                     lockedBalance: storage.lockedBalance,
+                    updatedAt: new Date(ctx.block.timestamp),
                 }
             )
         }

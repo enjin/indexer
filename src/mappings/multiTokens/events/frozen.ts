@@ -75,7 +75,14 @@ export async function handleFrozen(ctx: EventHandlerContext) {
         )
 
         if (!tokenAccount) return
-        await ctx.store.update(TokenAccount, { id: tokenAccount.id }, { isFrozen: true })
+        await ctx.store.update(
+            TokenAccount,
+            { id: tokenAccount.id },
+            {
+                isFrozen: true,
+                updatedAt: new Date(ctx.block.timestamp),
+            }
+        )
     } else if (data.collectionAccount) {
         const address = encodeId(data.collectionAccount)
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(
@@ -84,7 +91,14 @@ export async function handleFrozen(ctx: EventHandlerContext) {
         )
 
         if (!collectionAccount) return
-        await ctx.store.update(CollectionAccount, { id: collectionAccount.id }, { isFrozen: true })
+        await ctx.store.update(
+            CollectionAccount,
+            { id: collectionAccount.id },
+            {
+                isFrozen: true,
+                updatedAt: new Date(ctx.block.timestamp),
+            }
+        )
     } else if (data.tokenId) {
         const token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
 

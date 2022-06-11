@@ -46,6 +46,7 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             { id: attributeId },
             {
                 value: value,
+                updatedAt: new Date(ctx.block.timestamp),
             }
         )
     } else {
@@ -56,6 +57,8 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             deposit: 0n, // TODO: Change fixed for now
             collection: collection,
             token: token,
+            createdAt: new Date(ctx.block.timestamp),
+            updatedAt: new Date(ctx.block.timestamp),
         })
 
         await ctx.store.insert(Attribute, attribute)

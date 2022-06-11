@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {MintPolicy} from "./_mintPolicy"
 import {TransferPolicy} from "./_transferPolicy"
 import {Token} from "./token.model"
+import {Attribute} from "./attribute.model"
 
 @Entity_()
 export class Collection {
@@ -39,6 +40,9 @@ export class Collection {
 
   @OneToMany_(() => Token, e => e.collection)
   tokens!: Token[]
+
+  @OneToMany_(() => Attribute, e => e.collection)
+  attributes!: Attribute[]
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date

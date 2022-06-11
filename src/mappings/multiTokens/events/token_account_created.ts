@@ -46,6 +46,8 @@ export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
         account: account,
         collection: collection,
         token: token,
+        createdAt: new Date(ctx.block.timestamp),
+        updatedAt: new Date(ctx.block.timestamp),
     })
 
     await ctx.store.insert(TokenAccount, tokenAccount)

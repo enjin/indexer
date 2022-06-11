@@ -22,13 +22,13 @@ export class ChainInfo {
   @Column_("text", {nullable: false})
   blockHash!: string
 
+  @Index_()
   @Column_("int4", {nullable: false})
   blockNumber!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   existentialDeposit!: bigint
 
-  @Index_()
   @Column_("timestamp with time zone", {nullable: false})
   timestamp!: Date
 }

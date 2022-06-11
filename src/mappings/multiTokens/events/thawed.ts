@@ -75,7 +75,14 @@ export async function handleThawed(ctx: EventHandlerContext) {
         )
 
         if (!tokenAccount) return
-        await ctx.store.update(TokenAccount, { id: tokenAccount.id }, { isFrozen: false })
+        await ctx.store.update(
+            TokenAccount,
+            { id: tokenAccount.id },
+            {
+                isFrozen: false,
+                updatedAt: new Date(ctx.block.timestamp),
+            }
+        )
     } else if (data.collectionAccount) {
         const address = encodeId(data.collectionAccount)
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(
@@ -84,7 +91,14 @@ export async function handleThawed(ctx: EventHandlerContext) {
         )
 
         if (!collectionAccount) return
-        await ctx.store.update(CollectionAccount, { id: collectionAccount.id }, { isFrozen: false })
+        await ctx.store.update(
+            CollectionAccount,
+            { id: collectionAccount.id },
+            {
+                isFrozen: false,
+                updatedAt: new Date(ctx.block.timestamp),
+            }
+        )
     } else if (data.tokenId) {
         const token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
 

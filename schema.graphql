@@ -4,9 +4,9 @@ type ChainInfo @entity {
   transactionVersion: Int!
   genesisHash: String!
   blockHash: String!
-  blockNumber: Int!
+  blockNumber: Int! @index
   existentialDeposit: BigInt!
-  timestamp: DateTime! @index
+  timestamp: DateTime!
 }
 
 type Account @entity {
@@ -42,6 +42,7 @@ type Collection @entity {
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
   #accounts: [CollectionAccount] @derivedFrom(field: "collection")
+  attributes: [Attribute] @derivedFrom(field: "collection")
 
   # Extras
   createdAt: DateTime!
@@ -63,6 +64,10 @@ type CollectionAccount @entity {
   # Relations
   account: Account!
   collection: Collection!
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 enum CapType {
@@ -74,6 +79,7 @@ type Token @entity {
   id: ID!
 
   # Storage defaults
+  tokenId: BigInt!
   supply: BigInt!
   capType: CapType
   capSupply: BigInt
@@ -86,6 +92,7 @@ type Token @entity {
   # Relations
   collection: Collection!
   #accounts: [TokenAccount] @derivedFrom(field: "token")
+  attributes: [Attribute] @derivedFrom(field: "token")
 
   # Extras
   createdAt: DateTime!
@@ -113,6 +120,10 @@ type TokenAccount @entity {
   account: Account!
   collection: Collection!
   token: Token!
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Attribute @entity {
@@ -126,4 +137,8 @@ type Attribute @entity {
   # Relations
   collection: Collection!
   token: Token
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
