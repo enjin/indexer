@@ -6,6 +6,7 @@ import { ResilientRpcClient } from '@subsquid/rpc-client/lib/resilient'
 import config from './config'
 
 let lastStateTimestamp = 0
+const startBlockHeight = 292980
 
 export async function handleChainState(ctx: BlockHandlerContext) {
     if (!lastStateTimestamp) {
@@ -13,7 +14,7 @@ export async function handleChainState(ctx: BlockHandlerContext) {
         if (lastChainState) lastStateTimestamp = lastChainState.timestamp?.getTime() || 0
     }
 
-    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
+    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD && ctx.block.height > startBlockHeight) {
         await saveChainState(ctx)
         lastStateTimestamp = ctx.block.timestamp
         console.log(`Chain state updated at block ${ctx.block.height}`)
