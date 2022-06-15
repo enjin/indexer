@@ -2,6 +2,7 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import * as marshal from "./marshal"
 import {CapType} from "./_capType"
 import {Collection} from "./collection.model"
+import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 
 @Entity_()
@@ -43,6 +44,9 @@ export class Token {
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection
+
+  @OneToMany_(() => TokenAccount, e => e.token)
+  tokenAccounts!: TokenAccount[]
 
   @OneToMany_(() => Attribute, e => e.token)
   attributes!: Attribute[]
