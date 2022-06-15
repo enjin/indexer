@@ -11,7 +11,7 @@ const config: ProcessorConfig = {
     },
     batchSize: 10,
     blockRange: {
-        from: 1,
+        from: 0,
     },
 }
 

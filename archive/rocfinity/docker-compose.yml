@@ -4,7 +4,7 @@ services:
     image: postgres:12
     restart: always
     volumes:
-      - ./db-data:/var/lib/postgresql/data
+      - ./db/data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: efinity
       POSTGRES_PASSWORD: password
@@ -15,7 +15,7 @@ services:
     image: subsquid/hydra-indexer:5
     restart: unless-stopped
     environment:
-      - WORKERS_NUMBER=20
+      - WORKERS_NUMBER=10
       - DB_NAME=indexer
       - DB_HOST=db
       - DB_USER=efinity
@@ -24,7 +24,7 @@ services:
       - REDIS_URI=redis://redis:6379/0
       - FORCE_HEIGHT=false
       - BLOCK_HEIGHT=0 # starting block height
-      - WS_PROVIDER_ENDPOINT_URI=ws://54.151.181.83:9946
+      - WS_PROVIDER_ENDPOINT_URI=ws://3.137.24.102:9946
     depends_on:
       - db
       - redis
