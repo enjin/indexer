@@ -41,7 +41,8 @@ type Collection @entity {
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
-  #accounts: [CollectionAccount] @derivedFrom(field: "collection")
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "collection")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "collection")
   attributes: [Attribute] @derivedFrom(field: "collection")
 
   # Extras
@@ -91,7 +92,7 @@ type Token @entity {
 
   # Relations
   collection: Collection!
-  #accounts: [TokenAccount] @derivedFrom(field: "token")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "token")
   attributes: [Attribute] @derivedFrom(field: "token")
 
   # Extras
