@@ -46,6 +46,7 @@ type Collection @entity {
   attributes: [Attribute] @derivedFrom(field: "collection")
 
   # Extras
+  name: String
   createdAt: DateTime!
 }
 
@@ -96,6 +97,7 @@ type Token @entity {
   attributes: [Attribute] @derivedFrom(field: "token")
 
   # Extras
+  name: String
   createdAt: DateTime!
 }
 

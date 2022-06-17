@@ -52,6 +52,9 @@ export class Collection {
   @OneToMany_(() => Attribute, e => e.collection)
   attributes!: Attribute[]
 
+  @Column_("text", {nullable: true})
+  name!: string | undefined | null
+
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
 }

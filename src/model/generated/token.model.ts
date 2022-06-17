@@ -51,6 +51,9 @@ export class Token {
   @OneToMany_(() => Attribute, e => e.token)
   attributes!: Attribute[]
 
+  @Column_("text", {nullable: true})
+  name!: string | undefined | null
+
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
 }

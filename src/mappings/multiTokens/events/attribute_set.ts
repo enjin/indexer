@@ -63,4 +63,12 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
         await ctx.store.insert(Attribute, attribute)
     }
+
+    if (key === 'name') {
+        if (token) {
+            await ctx.store.update(Token, { id: token.id }, { name: value })
+        } else if (collection) {
+            await ctx.store.update(Collection, { id: collection.id }, { name: value })
+        }
+    }
 }

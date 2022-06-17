@@ -1,5 +1,5 @@
-module.exports = class Init1655314882707 {
-  name = 'Init1655314882707'
+module.exports = class Init1655495955999 {
+  name = 'Init1655495955999'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -11,9 +11,9 @@ module.exports = class Init1655314882707 {
     await db.query(`CREATE TABLE "attribute" ("id" character varying NOT NULL, "key" text NOT NULL, "value" text NOT NULL, "deposit" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying, CONSTRAINT "PK_b13fb7c5c9e9dff62b60e0de729" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_adaba2bde1f917be8521c42ebc" ON "attribute" ("collection_id") `)
     await db.query(`CREATE INDEX "IDX_8c947bde2aea695c9257d1eea8" ON "attribute" ("token_id") `)
-    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "cap_type" character varying(10), "cap_supply" numeric, "is_frozen" boolean NOT NULL, "minimum_balance" numeric NOT NULL, "unit_price" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "cap_type" character varying(10), "cap_supply" numeric, "is_frozen" boolean NOT NULL, "minimum_balance" numeric NOT NULL, "unit_price" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "name" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
-    await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "owner" text, "mint_policy" jsonb NOT NULL, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "token_count" integer NOT NULL, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "owner" text, "mint_policy" jsonb NOT NULL, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "token_count" integer NOT NULL, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "name" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "collection_account" ("id" character varying NOT NULL, "is_frozen" boolean NOT NULL, "approvals" jsonb, "account_count" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying NOT NULL, "collection_id" character varying NOT NULL, CONSTRAINT "PK_149cc78cfb0b9c3da0f8a2ff5e9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_2b2b641fd385385ba996c66098" ON "collection_account" ("account_id") `)
     await db.query(`CREATE INDEX "IDX_a0ca7fffb7ae953536712abef2" ON "collection_account" ("collection_id") `)

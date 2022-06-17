@@ -1,7 +1,7 @@
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import { Attribute } from '../../../model'
+import { Attribute, Collection, Token } from '../../../model'
 
 interface EventData {
     collectionId: bigint
@@ -31,6 +31,14 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
     const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
 
     if (attribute) {
+        if (attribute.key === 'name') {
+            if (attribute.token) {
+                await ctx.store.update(Token, { id: attribute.token.id }, { name: null })
+            } else if (attribute.collection) {
+                await ctx.store.update(Collection, { id: attribute.collection.id }, { name: null })
+            }
+        }
+
         await ctx.store.delete(Attribute, { id: attribute.id })
     }
 }
