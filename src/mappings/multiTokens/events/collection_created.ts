@@ -3,11 +3,18 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import { Collection, MintPolicy, TransferPolicy } from '../../../model'
+import { accountManager } from '../../../managers/AccountManager'
+import { encodeId } from '../../../common/helpers'
 
 interface CallData {
     maxTokenCount: bigint | undefined
     maxTokenSupply: bigint | undefined
     forceSingleMint: boolean
+}
+
+interface EventData {
+    collectionId: bigint
+    owner: Uint8Array
 }
 
 function getCallData(ctx: ExtrinsicHandlerContext): CallData | undefined {
@@ -24,28 +31,29 @@ function getCallData(ctx: ExtrinsicHandlerContext): CallData | undefined {
     }
 }
 
-function getEventData(ctx: EventHandlerContext): bigint {
+function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensCollectionCreatedEvent(ctx)
     console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isV2) {
-        const { collectionId } = event.asV2
+        const { collectionId, owner } = event.asV2
         console.log(`collectionId: ${collectionId}`)
-        return collectionId
+        return { collectionId, owner }
     } else {
         throw new UnknownVersionError(event.constructor.name)
     }
 }
 
 export async function handleCollectionCreated(ctx: EventHandlerContext) {
-    const collectionId = getEventData(ctx)
+    const eventData = getEventData(ctx)
     const callData = getCallData(ctx as ExtrinsicHandlerContext)
 
-    if (!collectionId || !callData) return
+    if (!eventData || !callData) return
 
+    const account = await accountManager.get(ctx, encodeId(eventData.owner))
     const collection = new Collection({
-        id: collectionId.toString(),
-        // owner: null, // TODO
+        id: eventData.collectionId.toString(),
+        owner: account,
         mintPolicy: new MintPolicy({
             maxTokenCount: callData.maxTokenCount,
             maxTokenSupply: callData.maxTokenSupply,

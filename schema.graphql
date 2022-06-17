@@ -11,8 +11,11 @@ type ChainInfo @entity {
 
 type Account @entity {
   id: ID!
+
+  collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
+
   lastUpdateBlock: Int!
 }
 
@@ -30,7 +33,7 @@ type Collection @entity {
   id: ID!
 
   # Storage defaults
-  owner: String # Change to type
+  owner: Account! # Change to type
   mintPolicy: MintPolicy!
   burnPolicy: String
   transferPolicy: TransferPolicy

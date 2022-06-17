@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
+import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 
@@ -10,6 +11,9 @@ export class Account {
 
   @PrimaryColumn_()
   id!: string
+
+  @OneToMany_(() => Collection, e => e.owner)
+  collectionsOwned!: Collection[]
 
   @OneToMany_(() => CollectionAccount, e => e.account)
   collectionAccounts!: CollectionAccount[]

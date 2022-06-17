@@ -1,5 +1,6 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
+import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
 import {TransferPolicy} from "./_transferPolicy"
 import {Token} from "./token.model"
@@ -16,8 +17,9 @@ export class Collection {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("text", {nullable: true})
-  owner!: string | undefined | null
+  @Index_()
+  @ManyToOne_(() => Account, {nullable: false})
+  owner!: Account
 
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
   mintPolicy!: MintPolicy
