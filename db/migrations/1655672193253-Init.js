@@ -1,10 +1,10 @@
-module.exports = class Init1655499166555 {
-  name = 'Init1655499166555'
+module.exports = class Init1655672193253 {
+  name = 'Init1655672193253'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_22cb998efc624a5d40f74361d9" ON "chain_info" ("block_number") `)
-    await db.query(`CREATE TABLE "token_account" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "reserved_balance" numeric NOT NULL, "locked_balance" numeric NOT NULL, "named_reserves" text, "locks" text, "approvals" jsonb, "is_frozen" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying NOT NULL, CONSTRAINT "PK_6121d7a5eafbe71fba146a98fd3" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "token_account" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "reserved_balance" numeric NOT NULL, "locked_balance" numeric NOT NULL, "named_reserves" jsonb, "locks" jsonb, "approvals" jsonb, "is_frozen" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying NOT NULL, CONSTRAINT "PK_6121d7a5eafbe71fba146a98fd3" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_7921fb23203316a5371f2be477" ON "token_account" ("account_id") `)
     await db.query(`CREATE INDEX "IDX_85663600e62c10034824e4caea" ON "token_account" ("collection_id") `)
     await db.query(`CREATE INDEX "IDX_02862fa18dececb99dd81a6a6a" ON "token_account" ("token_id") `)

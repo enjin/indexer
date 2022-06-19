@@ -1,7 +1,7 @@
 import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
+import { Collection, Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/helpers'
 import { accountManager } from '../../../managers/AccountManager'
 

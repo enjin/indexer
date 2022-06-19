@@ -1,5 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
+import {TokenNamedReserve} from "./_tokenNamedReserve"
+import {TokenLock} from "./_tokenLock"
 import {TokenApproval} from "./_tokenApproval"
 import {Account} from "./account.model"
 import {Collection} from "./collection.model"
@@ -23,11 +25,11 @@ export class TokenAccount {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   lockedBalance!: bigint
 
-  @Column_("text", {nullable: true})
-  namedReserves!: string | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenNamedReserve(undefined, marshal.nonNull(val)))}, nullable: true})
+  namedReserves!: (TokenNamedReserve)[] | undefined | null
 
-  @Column_("text", {nullable: true})
-  locks!: string | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenLock(undefined, marshal.nonNull(val)))}, nullable: true})
+  locks!: (TokenLock)[] | undefined | null
 
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenApproval(undefined, marshal.nonNull(val)))}, nullable: true})
   approvals!: (TokenApproval)[] | undefined | null
