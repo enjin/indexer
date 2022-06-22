@@ -1,9 +1,9 @@
-import { EventHandlerContext, ExtrinsicHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import { CapType, Collection, Token } from '../../../model'
 import { MultiTokensMintCall } from '../../../types/generated/calls'
 import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v2'
+import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 
 interface CallData {
     recipient: Uint8Array
@@ -22,7 +22,7 @@ interface EventData {
     initialSupply: bigint
 }
 
-function getCallData(ctx: ExtrinsicHandlerContext): CallData {
+function getCallData(ctx: CallHandlerContext): CallData {
     const call = new MultiTokensMintCall(ctx)
     if (call.isV2) {
         const collectionId = call.asV2.collectionId
@@ -58,9 +58,9 @@ function getEventData(ctx: EventHandlerContext): EventData {
     }
 }
 
-export async function handleTokenCreated(ctx: EventHandlerContext) {
-    const eventData = getEventData(ctx)
-    const callData = getCallData(ctx as ExtrinsicHandlerContext)
+export async function handleTokenCreated(ctx: CommonHandlerContext) {
+    const eventData = getEventData(ctx as EventHandlerContext)
+    const callData = getCallData(ctx as CallHandlerContext)
 
     if (!eventData || !callData) return
 
@@ -82,5 +82,5 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
         createdAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(Token, token)
+    await ctx.store.insert(token)
 }

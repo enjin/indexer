@@ -3226,9 +3226,7 @@ export interface FreezeType_TokenAccount {
 
 export interface DefaultCollectionPolicy {
   mint: DefaultMintPolicy
-  burn: DefaultBurnPolicy
   transfer: DefaultTransferPolicy
-  attribute: DefaultAttributePolicy
 }
 
 export type TokenCap = TokenCap_SingleMint | TokenCap_Supply
@@ -3428,13 +3426,9 @@ export interface DefaultMintPolicy {
   forceSingleMint: boolean
 }
 
-export type DefaultBurnPolicy = null
-
 export interface DefaultTransferPolicy {
   isFrozen: boolean
 }
-
-export type DefaultAttributePolicy = null
 
 export type Permill = number
 

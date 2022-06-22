@@ -1,7 +1,7 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Token } from '../../../model'
+import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -41,14 +41,9 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
     if (attribute) {
-        await ctx.store.update(
-            Attribute,
-            { id: attributeId },
-            {
-                value: value,
-                updatedAt: new Date(ctx.block.timestamp),
-            }
-        )
+        attribute.value = value
+        attribute.updatedAt = new Date(ctx.block.timestamp)
+        await ctx.store.save(attribute)
     } else {
         const attribute = new Attribute({
             id: attributeId,
@@ -61,14 +56,16 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             updatedAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert(Attribute, attribute)
+        await ctx.store.insert(attribute)
     }
 
     if (key === 'name') {
         if (token) {
-            await ctx.store.update(Token, { id: token.id }, { name: value })
+            token.name = value
+            await ctx.store.save(token)
         } else if (collection) {
-            await ctx.store.update(Collection, { id: collection.id }, { name: value })
+            collection.name = value
+            await ctx.store.save(collection)
         }
     }
 }

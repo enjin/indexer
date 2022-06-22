@@ -1,9 +1,9 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v4'
+import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -75,14 +75,9 @@ export async function handleThawed(ctx: EventHandlerContext) {
         )
 
         if (!tokenAccount) return
-        await ctx.store.update(
-            TokenAccount,
-            { id: tokenAccount.id },
-            {
-                isFrozen: false,
-                updatedAt: new Date(ctx.block.timestamp),
-            }
-        )
+        tokenAccount.isFrozen = false
+        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+        await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = encodeId(data.collectionAccount)
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(
@@ -91,27 +86,21 @@ export async function handleThawed(ctx: EventHandlerContext) {
         )
 
         if (!collectionAccount) return
-        await ctx.store.update(
-            CollectionAccount,
-            { id: collectionAccount.id },
-            {
-                isFrozen: false,
-                updatedAt: new Date(ctx.block.timestamp),
-            }
-        )
+        collectionAccount.isFrozen = false
+        collectionAccount.updatedAt = new Date(ctx.block.timestamp)
+
+        await ctx.store.save(collectionAccount)
     } else if (data.tokenId) {
         const token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
 
         if (!token) return
-        await ctx.store.update(Token, { id: token.id }, { isFrozen: false })
+        token.isFrozen = false
+        await ctx.store.save(token)
     } else {
         const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
 
         if (!collection) return
-        await ctx.store.update(
-            Collection,
-            { id: collection.id },
-            { transferPolicy: new TransferPolicy({ isFrozen: false }) }
-        )
+        collection.transferPolicy = new TransferPolicy({ isFrozen: false })
+        await ctx.store.save(collection)
     }
 }

@@ -1,8 +1,8 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
+import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -34,6 +34,6 @@ export async function handleTokenAccountDestroyed(ctx: EventHandlerContext) {
     )
 
     if (tokenAccount) {
-        await ctx.store.delete(TokenAccount, { id: tokenAccount.id })
+        await ctx.store.remove(tokenAccount)
     }
 }

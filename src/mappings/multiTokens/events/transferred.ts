@@ -1,11 +1,10 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { StorageContext } from '../../../types/generated/support'
 import { AccountId32, Approval } from '../../../types/generated/v4'
+import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -39,7 +38,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
 }
 
 async function getStorageData(
-    ctx: StorageContext,
+    ctx: CommonHandlerContext,
     account: Uint8Array,
     collectionId: bigint,
     tokenId: bigint
@@ -84,16 +83,12 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     if (fromTokenAccount) {
         const storage = await getStorageData(ctx, data.from, data.collectionId, data.tokenId)
         if (storage) {
-            await ctx.store.update(
-                TokenAccount,
-                { id: fromTokenAccount.id },
-                {
-                    balance: storage.balance,
-                    reservedBalance: storage.reservedBalance,
-                    lockedBalance: storage.lockedBalance,
-                    updatedAt: new Date(ctx.block.timestamp),
-                }
-            )
+            fromTokenAccount.balance = storage.balance
+            fromTokenAccount.reservedBalance = storage.reservedBalance
+            fromTokenAccount.lockedBalance = storage.lockedBalance
+            fromTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+
+            await ctx.store.save(fromTokenAccount)
         }
     }
 
@@ -105,16 +100,12 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     if (toTokenAccount) {
         const storage = await getStorageData(ctx, data.to, data.collectionId, data.tokenId)
         if (storage) {
-            await ctx.store.update(
-                TokenAccount,
-                { id: toTokenAccount.id },
-                {
-                    balance: storage.balance,
-                    reservedBalance: storage.reservedBalance,
-                    lockedBalance: storage.lockedBalance,
-                    updatedAt: new Date(ctx.block.timestamp),
-                }
-            )
+            toTokenAccount.balance = storage.balance
+            toTokenAccount.reservedBalance = storage.reservedBalance
+            toTokenAccount.lockedBalance = storage.lockedBalance
+            toTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+
+            await ctx.store.save(toTokenAccount)
         }
     }
 }

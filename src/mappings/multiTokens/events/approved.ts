@@ -1,8 +1,8 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensApprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, TokenAccount, TokenApproval, CollectionApproval } from '../../../model'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
+import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -56,14 +56,9 @@ export async function handleApproved(ctx: EventHandlerContext) {
             })
         )
 
-        await ctx.store.update(
-            TokenAccount,
-            { id: tokenAccount.id },
-            {
-                approvals: approvals,
-                updatedAt: new Date(ctx.block.timestamp),
-            }
-        )
+        tokenAccount.approvals = approvals
+        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+        await ctx.store.save(tokenAccount)
     } else {
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(
             CollectionAccount,
@@ -80,13 +75,8 @@ export async function handleApproved(ctx: EventHandlerContext) {
             })
         )
 
-        await ctx.store.update(
-            CollectionAccount,
-            { id: collectionAccount.id },
-            {
-                approvals: approvals,
-                updatedAt: new Date(ctx.block.timestamp),
-            }
-        )
+        collectionAccount.approvals = approvals
+        collectionAccount.updatedAt = new Date(ctx.block.timestamp)
+        await ctx.store.save(collectionAccount)
     }
 }

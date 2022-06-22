@@ -1,43 +1,92 @@
-version: "3.4"
+version: "3.7"
 
 services:
-  db:
-    container_name: rocfinity_squid_db_1
+  archive_cockroach:
+    container_name: archive_cockroach
+    image: cockroachdb/cockroach:v21.2.9
+    ports:
+      - "${ARCHIVE_DB_PORT}:26257"
+    command: [
+      "start-single-node",
+      "--insecure"
+    ]
+
+  archive_gateway:
+    container_name: archive_gateway
+    image: tmcgroul/archive-gateway:27
+    depends_on:
+      - archive_cockroach
+    command: [
+      "--database-url", "postgres://root@archive_cockroach:26257/defaultdb",
+      "--database-max-connections", "5"
+    ]
+    environment:
+      RUST_LOG: actix_web=info,actix_server=info
+    ports:
+      - "${ARCHIVE_PORT}:8000"
+
+#  archive_worker:
+#    container_name: rocfinity_archive_worker
+#    build:
+#      context: ./squid
+#      target: substrate-ingest
+#    restart: unless-stopped
+#    ports:
+#      - "21523:9090"
+#    depends_on:
+#      - archive_db
+#
+#  archive_status:
+#    container_name: rocfinity_archive_status
+#    build:
+#      context: ./squid
+#      target: chain-status-service
+#    restart: unless-stopped
+#    ports:
+#      - "21533:3000"
+#    depends_on:
+#      - archive_db
+#
+  indexer_db:
+    container_name: indexer_db
     image: postgres:12
     restart: unless-stopped
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - indexerdb:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: efinity
-      POSTGRES_USER: efinity
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "23798:5432"
+      - "${DB_PORT}:5432"
+#
+#  processor:
+#    container_name: rocfinity_processor_1
+#    build:
+#      context: .
+#      target: processor
+#    restart: unless-stopped
+#    depends_on:
+#      - db
+#
+#  query-node:
+#    container_name: rocfinity_query-node_1
+#    build:
+#      context: .
+#      target: query-node
+#    restart: unless-stopped
+#    ports:
+#      - "4000:4350"
+#    environment:
+#      - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
+#      - VIRTUAL_HOST=rocfinity.inovatso.com.br
+#      - VIRTUAL_PORT=4000
+#    depends_on:
+#      - db
+#      - processor
 
-  processor:
-    container_name: rocfinity_processor_1
-    build:
-      context: .
-      target: processor
-    restart: unless-stopped
-    depends_on:
-      - db
-
-  query-node:
-    container_name: rocfinity_query-node_1
-    build:
-      context: .
-      target: query-node
-    restart: unless-stopped
-    ports:
-      - "4000:4350"
-    environment:
-      - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
-      - VIRTUAL_HOST=rocfinity.inovatso.com.br
-      - VIRTUAL_PORT=4000
-    depends_on:
-      - db
-      - processor
+volumes:
+  archivedb:
+  indexerdb:
 
 networks:
   default:

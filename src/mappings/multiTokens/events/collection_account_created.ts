@@ -1,9 +1,9 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount } from '../../../model'
-import { encodeId } from '../../../common/helpers'
-import { accountManager } from '../../../managers/AccountManager'
+import { encodeId } from '../../../common/tools'
+import { EventHandlerContext } from '../../types/contexts'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
@@ -29,7 +29,7 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
     const address = encodeId(data.accountId)
-    const account = await accountManager.get(ctx, address)
+    const account = await getOrCreateAccount(ctx, address)
 
     const collectionAccount = new CollectionAccount({
         id: `${data.collectionId}-${address}`,
@@ -42,5 +42,5 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
         updatedAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(CollectionAccount, collectionAccount)
+    await ctx.store.insert(collectionAccount)
 }

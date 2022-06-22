@@ -1,11 +1,10 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { StorageContext } from '../../../types/generated/support'
 import { AccountId32, Approval } from '../../../types/generated/v4'
+import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -38,7 +37,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
 }
 
 async function getStorageData(
-    ctx: StorageContext,
+    ctx: CommonHandlerContext,
     account: Uint8Array,
     collectionId: bigint,
     tokenId: bigint
@@ -83,16 +82,12 @@ export async function handleMinted(ctx: EventHandlerContext) {
     if (tokenAccount) {
         const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
         if (storage) {
-            await ctx.store.update(
-                TokenAccount,
-                { id: tokenAccount.id },
-                {
-                    balance: storage.balance,
-                    reservedBalance: storage.reservedBalance,
-                    lockedBalance: storage.lockedBalance,
-                    updatedAt: new Date(ctx.block.timestamp),
-                }
-            )
+            tokenAccount.balance = storage.balance
+            tokenAccount.reservedBalance = storage.reservedBalance
+            tokenAccount.lockedBalance = storage.lockedBalance
+            tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+
+            await ctx.store.save(tokenAccount)
         }
     }
 }

@@ -1,40 +1,42 @@
 import config from './config'
-import { handleChainState } from './chainState'
+// import { handleChainState } from './chainState'
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
-import { DEFAULT_BATCH_SIZE } from './common/consts'
+import { DEFAULT_BATCH_SIZE, DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
 
-const processor = new SubstrateProcessor(`${config.chainName}-processor`)
+const database = new TypeormDatabase()
+const processor = new SubstrateProcessor(database)
 
 processor.setBatchSize(config.batchSize || DEFAULT_BATCH_SIZE)
 processor.setDataSource(config.dataSource)
-processor.setPrometheusPort(3000)
+processor.setPrometheusPort(config.port || DEFAULT_PORT)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
-processor.addEventHandler('multiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
-processor.addEventHandler('multiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
+processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
+processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler(
-    'multiTokens.CollectionAccountCreated',
+    'MultiTokens.CollectionAccountCreated',
     modules.multiTokens.events.handleCollectionAccountCreated
 )
 processor.addEventHandler(
-    'multiTokens.CollectionAccountDestroyed',
+    'MultiTokens.CollectionAccountDestroyed',
     modules.multiTokens.events.handleCollectionAccountDestroyed
 )
-processor.addEventHandler('multiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
-processor.addEventHandler('multiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
-processor.addEventHandler('multiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
-processor.addEventHandler('multiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
-processor.addEventHandler('multiTokens.Minted', modules.multiTokens.events.handleMinted)
-processor.addEventHandler('multiTokens.Burned', modules.multiTokens.events.handleBurned)
-processor.addEventHandler('multiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
-processor.addEventHandler('multiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
-processor.addEventHandler('multiTokens.Frozen', modules.multiTokens.events.handleFrozen)
-processor.addEventHandler('multiTokens.Thawed', modules.multiTokens.events.handleThawed)
-processor.addEventHandler('multiTokens.Approved', modules.multiTokens.events.handleApproved)
-processor.addEventHandler('multiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
-processor.addEventHandler('multiTokens.Transferred', modules.multiTokens.events.handleTransferred)
+processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
+processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
+processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
+processor.addEventHandler('MultiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
+processor.addEventHandler('MultiTokens.Minted', modules.multiTokens.events.handleMinted)
+processor.addEventHandler('MultiTokens.Burned', modules.multiTokens.events.handleBurned)
+processor.addEventHandler('MultiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
+processor.addEventHandler('MultiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
+processor.addEventHandler('MultiTokens.Frozen', modules.multiTokens.events.handleFrozen)
+processor.addEventHandler('MultiTokens.Thawed', modules.multiTokens.events.handleThawed)
+processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.handleApproved)
+processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
+processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-processor.addPostHook(handleChainState)
+// processor.addPostHook(handleChainState)
 
 processor.run()

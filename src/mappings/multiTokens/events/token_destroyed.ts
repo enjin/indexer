@@ -1,7 +1,7 @@
-import { EventHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import { Token } from '../../../model'
+import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -28,6 +28,6 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
 
     const token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
     if (token) {
-        await ctx.store.delete(Token, { id: token.id })
+        await ctx.store.remove(token)
     }
 }

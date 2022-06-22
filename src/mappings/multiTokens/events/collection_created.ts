@@ -1,10 +1,15 @@
-import { EventHandlerContext, ExtrinsicHandlerContext } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import { Collection, MintPolicy, TransferPolicy } from '../../../model'
-import { accountManager } from '../../../managers/AccountManager'
-import { encodeId } from '../../../common/helpers'
+import { encodeId } from '../../../common/tools'
+import {
+    BlockHandlerContext,
+    CallHandlerContext,
+    CommonHandlerContext,
+    EventHandlerContext,
+} from '../../types/contexts'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface CallData {
     maxTokenCount: bigint | undefined
@@ -17,7 +22,7 @@ interface EventData {
     owner: Uint8Array
 }
 
-function getCallData(ctx: ExtrinsicHandlerContext): CallData | undefined {
+function getCallData(ctx: CallHandlerContext): CallData | undefined {
     const call = new MultiTokensCreateCollectionCall(ctx)
     if (call.isV2) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV2.descriptor.policy.mint
@@ -44,13 +49,13 @@ function getEventData(ctx: EventHandlerContext): EventData {
     }
 }
 
-export async function handleCollectionCreated(ctx: EventHandlerContext) {
-    const eventData = getEventData(ctx)
-    const callData = getCallData(ctx as ExtrinsicHandlerContext)
+export async function handleCollectionCreated(ctx: BlockHandlerContext) {
+    const eventData = getEventData(ctx as EventHandlerContext)
+    const callData = getCallData(ctx as CallHandlerContext)
 
     if (!eventData || !callData) return
 
-    const account = await accountManager.get(ctx, encodeId(eventData.owner))
+    const account = await getOrCreateAccount(ctx, encodeId(eventData.owner))
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         owner: account,
@@ -70,5 +75,5 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
         createdAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(Collection, collection)
+    await ctx.store.insert(collection)
 }

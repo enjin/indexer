@@ -1,17 +1,11 @@
+SHELL := /bin/bash
+
 process: migrate
-	@node -r dotenv/config lib/processor.js
+	@node -r dotenv/config lib/process.js
 
 
 serve:
 	@npx squid-graphql-server
-
-
-migrate:
-	@npx sqd db:migrate
-
-
-migration:
-	@npx sqd db:create-migration
 
 
 build:
@@ -23,19 +17,37 @@ codegen:
 
 
 typegen:
-	@make explore
-	@npx squid-substrate-typegen ./typegen/typegen.json
+	@npx squid-substrate-typegen typegen.json
+
+
+migration:
+	@npx sqd db:create-migration Data
+
+
+migrate:
+	@npx sqd db:migrate
+
+
+ingest:
+	@source .env && npx squid-substrate-ingest -e "$${CHAIN_ENDPOINT}" --out "$${ARCHIVE_DB_URL}"
+
 
 explore:
-	@npx squid-substrate-metadata-explorer --chain wss://kusama-rpc.polkadot.io --archive https://kusama.indexer.gc.subsquid.io/v4/graphql --out ./typegen/versions.json
+	@source .env && npx squid-substrate-metadata-explorer \
+		--chain "$${CHAIN_ENDPOINT}" \
+		--out chainSpecVersions.jsonl
 
 
 up:
-	@docker-compose up -d
+	@docker compose up -d
+
+
+logs:
+	@docker compose logs --tail all -f
 
 
 down:
-	@docker-compose down
+	@docker compose down
 
 
 .PHONY: process serve start codegen migration migrate up down typegen
