@@ -19,7 +19,7 @@ FROM node AS substrate-ingest
 COPY --from=substrate-ingest-builder /squid/common/deploy /squid
 WORKDIR /squid/substrate-ingest
 EXPOSE 9090
-ENTRYPOINT ["node", "/squid/substrate-ingest/bin/run.js", "--out", "postgres://efinity:password@archive_db:5432/rocfinity_archive", "-e", "ws://3.137.24.102:9946", "-c", "40", "-e", "ws://54.151.181.83:9946", "-c", "40", "--prom-port", "9090", "--write-batch-size", "80", "--start-block", "0"]
+ENTRYPOINT ["node", "/squid/substrate-ingest/bin/run.js", "--out", "postgres://efinity:password@archive_db:5432/rocfinity_archive", "-e", "wss://archive.rpc.rococo.efinity.io", "-c", "80", "--prom-port", "9090", "--write-batch-size", "80", "--start-block", "0"]
 
 FROM builder AS chain-status-service-builder
 RUN node common/scripts/install-run-rush.js deploy --project chain-status-service

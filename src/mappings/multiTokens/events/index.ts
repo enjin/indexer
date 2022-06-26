@@ -1,4 +1,4 @@
-export * from './collection_created'
+// export * from './collection_created'
 export * from './collection_destroyed'
 export * from './token_created'
 export * from './collection_account_created'

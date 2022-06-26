@@ -13,23 +13,23 @@ build:
 
 
 codegen:
-	@npx sqd codegen
+	@npx squid-typeorm-codegen
 
 
 typegen:
 	@npx squid-substrate-typegen typegen.json
 
 
-migration:
-	@npx sqd db:create-migration Data
-
-
 migrate:
-	@npx sqd db:migrate
+	@npx squid-typeorm-migration apply
+
+
+migration:
+	@npx squid-typeorm-migration generate
 
 
 ingest:
-	@source .env && npx squid-substrate-ingest -e "$${CHAIN_ENDPOINT}" --out "$${ARCHIVE_DB_URL}"
+	npx squid-substrate-ingest -e wss://archive.rpc.rococo.efinity.io --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
 
 
 explore:

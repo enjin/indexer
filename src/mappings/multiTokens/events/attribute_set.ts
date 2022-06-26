@@ -27,11 +27,11 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
+    const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
     let token = null
 
     if (data.tokenId) {
-        token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
+        token = await ctx.store.get<Token>(Token, `${data.collectionId}-${data.tokenId}`)
     }
 
     const key = Buffer.from(data.key).toString()
@@ -39,7 +39,7 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
 
-    const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
+    const attribute = await ctx.store.get<Attribute>(Attribute, attributeId)
     if (attribute) {
         attribute.value = value
         attribute.updatedAt = new Date(ctx.block.timestamp)

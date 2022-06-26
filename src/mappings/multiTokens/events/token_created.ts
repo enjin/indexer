@@ -64,7 +64,7 @@ export async function handleTokenCreated(ctx: CommonHandlerContext) {
 
     if (!eventData || !callData) return
 
-    const collection = await ctx.store.findOne<Collection>(Collection, eventData.collectionId.toString())
+    const collection = await ctx.store.get<Collection>(Collection, eventData.collectionId.toString())
 
     const token = new Token({
         id: `${eventData.collectionId}-${eventData.tokenId}`,

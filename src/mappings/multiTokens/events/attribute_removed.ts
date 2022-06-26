@@ -28,21 +28,25 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
-    const attribute = await ctx.store.findOne<Attribute>(Attribute, attributeId)
+    const attribute = await ctx.store.get<Attribute>(Attribute, attributeId)
 
     if (attribute) {
         if (attribute.key === 'name') {
             if (attribute.token) {
-                const token = await ctx.store.findOneOrFail<Token>(Token, attribute.token.id)
-                token.name = null
-                await ctx.store.save(token)
+                const token = await ctx.store.get<Token>(Token, attribute.token.id)
+                if (token) {
+                    token.name = null
+                    await ctx.store.save(token)
+                }
             } else if (attribute.collection) {
-                const collection = await ctx.store.findOneOrFail<Collection>(Collection, attribute.collection.id)
-                collection.name = null
-                await ctx.store.save(collection)
+                const collection = await ctx.store.get<Collection>(Collection, attribute.collection.id)
+                if (collection) {
+                    collection.name = null
+                    await ctx.store.save(collection)
+                }
             }
         }
 
-        await ctx.store.remove(Attribute)
+        await ctx.store.remove(attribute)
     }
 }

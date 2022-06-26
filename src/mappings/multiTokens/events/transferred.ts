@@ -76,7 +76,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     if (!data) return
 
     const fromAddress = encodeId(data.from)
-    const fromTokenAccount = await ctx.store.findOne<TokenAccount>(
+    const fromTokenAccount = await ctx.store.get<TokenAccount>(
         TokenAccount,
         `${fromAddress}-${data.collectionId}-${data.tokenId}`
     )
@@ -93,7 +93,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     }
 
     const toAddress = encodeId(data.to)
-    const toTokenAccount = await ctx.store.findOne<TokenAccount>(
+    const toTokenAccount = await ctx.store.get<TokenAccount>(
         TokenAccount,
         `${toAddress}-${data.collectionId}-${data.tokenId}`
     )

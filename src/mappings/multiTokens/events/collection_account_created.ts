@@ -27,7 +27,7 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
+    const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
     const address = encodeId(data.accountId)
     const account = await getOrCreateAccount(ctx, address)
 

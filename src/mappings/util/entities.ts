@@ -1,5 +1,6 @@
 import { Account } from '../../model'
 import { CommonHandlerContext } from '../types/contexts'
+import { ArrayContains } from 'typeorm'
 
 export async function getOrCreateAccount(ctx: CommonHandlerContext, id: string): Promise<Account> {
     let account = await ctx.store.get(Account, id)
@@ -15,7 +16,7 @@ export async function getOrCreateAccount(ctx: CommonHandlerContext, id: string):
 }
 
 export async function getOrCreateAccounts(ctx: CommonHandlerContext, ids: string[]): Promise<Account[]> {
-    const query = await ctx.store.findByIds(Account, ids)
+    const query = await ctx.store.findBy(Account, { id: ArrayContains(ids) })
 
     const accountsMap: Map<string, Account> = new Map()
     for (const q of query) accountsMap.set(q.id, q)
@@ -31,7 +32,7 @@ export async function getOrCreateAccounts(ctx: CommonHandlerContext, ids: string
         newAccounts.add(account)
     }
 
-    if (newAccounts.size > 0) await ctx.store.save(newAccounts)
+    if (newAccounts.size > 0) await ctx.store.save([...newAccounts])
 
     return [...accountsMap.values(), ...newAccounts]
 }

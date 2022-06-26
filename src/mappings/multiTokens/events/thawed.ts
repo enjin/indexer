@@ -69,7 +69,7 @@ export async function handleThawed(ctx: EventHandlerContext) {
 
     if (data.tokenAccount) {
         const address = encodeId(data.tokenAccount)
-        const tokenAccount = await ctx.store.findOne<TokenAccount>(
+        const tokenAccount = await ctx.store.get<TokenAccount>(
             TokenAccount,
             `${address}-${data.collectionId}-${data.tokenId}`
         )
@@ -80,7 +80,7 @@ export async function handleThawed(ctx: EventHandlerContext) {
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = encodeId(data.collectionAccount)
-        const collectionAccount = await ctx.store.findOne<CollectionAccount>(
+        const collectionAccount = await ctx.store.get<CollectionAccount>(
             CollectionAccount,
             `${data.collectionId}-${address}`
         )
@@ -91,13 +91,13 @@ export async function handleThawed(ctx: EventHandlerContext) {
 
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId) {
-        const token = await ctx.store.findOne<Token>(Token, `${data.collectionId}-${data.tokenId}`)
+        const token = await ctx.store.get<Token>(Token, `${data.collectionId}-${data.tokenId}`)
 
         if (!token) return
         token.isFrozen = false
         await ctx.store.save(token)
     } else {
-        const collection = await ctx.store.findOne<Collection>(Collection, data.collectionId.toString())
+        const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
 
         if (!collection) return
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })

@@ -40,7 +40,7 @@ export async function handleApproved(ctx: EventHandlerContext) {
     const address = encodeId(data.owner)
 
     if (data.tokenId) {
-        const tokenAccount = await ctx.store.findOne<TokenAccount>(
+        const tokenAccount = await ctx.store.get<TokenAccount>(
             TokenAccount,
             `${address}-${data.collectionId}-${data.tokenId}`
         )
@@ -60,7 +60,7 @@ export async function handleApproved(ctx: EventHandlerContext) {
         tokenAccount.updatedAt = new Date(ctx.block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
-        const collectionAccount = await ctx.store.findOne<CollectionAccount>(
+        const collectionAccount = await ctx.store.get<CollectionAccount>(
             CollectionAccount,
             `${data.collectionId}-${address}`
         )

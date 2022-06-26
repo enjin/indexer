@@ -27,7 +27,7 @@ export async function handleCollectionAccountDestroyed(ctx: EventHandlerContext)
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const collectionAccount = await ctx.store.findOne<CollectionAccount>(
+    const collectionAccount = await ctx.store.get<CollectionAccount>(
         CollectionAccount,
         `${data.collectionId}-${address}`
     )
