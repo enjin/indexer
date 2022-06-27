@@ -1,6 +1,6 @@
 {
   "outDir": "../src/types/generated",
-  "specVersions": "./versions.jsonl",
+  "specVersions": "./chainSpecVersions.jsonl",
   "events": [
     "Balances.Transfer",
     "MultiTokens.CollectionCreated",

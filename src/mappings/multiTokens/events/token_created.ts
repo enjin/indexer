@@ -4,6 +4,8 @@ import { CapType, Collection, Token } from '../../../model'
 import { MultiTokensMintCall } from '../../../types/generated/calls'
 import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v2'
 import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { ChainContext } from '../../../types/generated/support'
+import { SubstrateCall } from '@subsquid/substrate-processor'
 
 interface CallData {
     recipient: Uint8Array
@@ -22,8 +24,9 @@ interface EventData {
     initialSupply: bigint
 }
 
-function getCallData(ctx: CallHandlerContext): CallData {
-    const call = new MultiTokensMintCall(ctx)
+function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData {
+    const call = new MultiTokensMintCall(ctx, subcall)
+
     if (call.isV2) {
         const collectionId = call.asV2.collectionId
         const recipient = call.asV2.recipient.value as Uint8Array
@@ -58,29 +61,35 @@ function getEventData(ctx: EventHandlerContext): EventData {
     }
 }
 
-export async function handleTokenCreated(ctx: CommonHandlerContext) {
+export async function handleTokenCreated(ctx: EventHandlerContext) {
     const eventData = getEventData(ctx as EventHandlerContext)
-    const callData = getCallData(ctx as CallHandlerContext)
 
-    if (!eventData || !callData) return
+    if (ctx.event.call) {
+        const callData = getCallData(ctx, ctx.event.call)
 
-    const collection = await ctx.store.get<Collection>(Collection, eventData.collectionId.toString())
+        if (!eventData || !callData) return
 
-    const token = new Token({
-        id: `${eventData.collectionId}-${eventData.tokenId}`,
-        tokenId: eventData.tokenId,
-        supply: eventData.initialSupply,
-        capType: callData.capType,
-        capSupply: callData.capSupply,
-        isFrozen: false,
-        minimumBalance: 0n, // TODO: Fixed for now
-        unitPrice: callData.unitPrice,
-        mintDeposit: 0n, // TODO: Fixed for now
-        attributeCount: 0,
-        collection: collection,
-        // accounts: [],
-        createdAt: new Date(ctx.block.timestamp),
-    })
+        const collection = await ctx.store.get<Collection>(Collection, eventData.collectionId.toString())
 
-    await ctx.store.insert(token)
+        const token = new Token({
+            id: `${eventData.collectionId}-${eventData.tokenId}`,
+            tokenId: eventData.tokenId,
+            supply: eventData.initialSupply,
+            capType: callData.capType,
+            capSupply: callData.capSupply,
+            isFrozen: false,
+            minimumBalance: 0n, // TODO: Fixed for now
+            unitPrice: callData.unitPrice,
+            mintDeposit: 0n, // TODO: Fixed for now
+            attributeCount: 0,
+            collection: collection,
+            // accounts: [],
+            createdAt: new Date(ctx.block.timestamp),
+        })
+
+        console.log(token)
+
+        const inserted = await ctx.store.insert<Token>(token)
+        console.log(inserted)
+    }
 }

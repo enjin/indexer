@@ -1,6 +1,7 @@
 import * as ss58 from '@subsquid/ss58'
 import config from '../config'
 import { decodeHex } from '@subsquid/util-internal-hex'
+import { CommonHandlerContext } from '@subsquid/substrate-processor'
 
 export function encodeId(id: Uint8Array) {
     return ss58.codec(config.prefix).encode(id)
@@ -33,7 +34,7 @@ export function isAdressSS58(address: Uint8Array) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getOriginAccountId(origin: any) {
-    // eslint-disable-next-line sonarjs/no-small-switch
+    if (!origin) return undefined
     switch (origin.__kind) {
         case 'system':
             // eslint-disable-next-line sonarjs/no-nested-switch, sonarjs/no-small-switch
@@ -41,10 +42,10 @@ export function getOriginAccountId(origin: any) {
                 case 'Signed':
                     return encodeId(decodeHex(origin.value.value))
                 default:
-                    throw new Error(`Unknown origin type ${origin.__kind}.${origin.value.__kind}`)
+                    return undefined
             }
         default:
-            throw new Error(`Unknown origin type ${origin.__kind}`)
+            return undefined
     }
 }
 
@@ -61,4 +62,8 @@ export function saturatingSumBigInt(
     } else {
         return sum
     }
+}
+
+export function isStorageCorrupted(ctx: CommonHandlerContext<unknown>) {
+    if (ctx.block.height >= 1375087 && ctx.block.height <= 1500000) return undefined
 }

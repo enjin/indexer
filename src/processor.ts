@@ -13,7 +13,7 @@ processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(config.port || DEFAULT_PORT)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
-// processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
+processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler(
     'MultiTokens.CollectionAccountCreated',
