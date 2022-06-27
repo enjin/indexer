@@ -1,6 +1,5 @@
 {
   "rocfinity": [
-    "ws://3.137.24.102:9946",
-    "ws://54.151.181.83:9946"
+    "wss://archive.rpc.rococo.efinity.io"
   ]
 }
