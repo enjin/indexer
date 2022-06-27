@@ -13,7 +13,7 @@ services:
 
   archive_gateway:
     container_name: archive_gateway
-    image: tmcgroul/archive-gateway:27
+    image: subsquid/substrate-gateway:1.0.0
     depends_on:
       - archive_cockroach
     command: [

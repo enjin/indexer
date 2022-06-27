@@ -62,6 +62,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
 }
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
+    console.log("MultiTokens.TokenCreated")
     const eventData = getEventData(ctx as EventHandlerContext)
 
     if (ctx.event.call) {
@@ -87,9 +88,6 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             createdAt: new Date(ctx.block.timestamp),
         })
 
-        console.log(token)
-
-        const inserted = await ctx.store.insert<Token>(token)
-        console.log(inserted)
+        await ctx.store.insert<Token>(token)
     }
 }

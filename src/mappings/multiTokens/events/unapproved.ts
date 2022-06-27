@@ -36,10 +36,14 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
     const address = encodeId(data.owner)
 
     if (data.tokenId) {
-        const tokenAccount = await ctx.store.get<TokenAccount>(
-            TokenAccount,
-            `${address}-${data.collectionId}-${data.tokenId}`
-        )
+        const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+            relations: {
+                account: true,
+                collection: true,
+                token: true,
+            },
+        })
 
         if (!tokenAccount) return
 
@@ -50,10 +54,13 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
 
         await ctx.store.save(tokenAccount)
     } else {
-        const collectionAccount = await ctx.store.get<CollectionAccount>(
-            CollectionAccount,
-            `${data.collectionId}-${address}`
-        )
+        const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+            where: { id: `${data.collectionId}-${address}` },
+            relations: {
+                account: true,
+                collection: true,
+            },
+        })
 
         if (!collectionAccount) return
 

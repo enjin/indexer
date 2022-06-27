@@ -79,8 +79,10 @@ export async function handleMinted(ctx: EventHandlerContext) {
         TokenAccount,
         `${address}-${data.collectionId}-${data.tokenId}`
     )
+
     if (tokenAccount) {
         const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
+
         if (storage) {
             tokenAccount.balance = storage.balance
             tokenAccount.reservedBalance = storage.reservedBalance
