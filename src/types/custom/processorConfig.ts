@@ -1,6 +1,4 @@
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
-import chains from '../../chains'
-import { ChainName } from './chainInfo'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
@@ -11,45 +9,12 @@ enum HandlerParams {
     FUNC,
 }
 
-// type Handlers<T> = Record<
-//     string,
-//     Record<
-//         string,
-//         {
-//             handler: Parameters<T>[HandlerParams.FUNC]
-//             options?: Parameters<T>[HandlerParams.OPTIONS]
-//         }
-//     >
-// >
-
 export interface ProcessorConfig {
-    chainName: ChainName
+    chainName: string
     prefix: number | string
-    dataSource: Parameters<SubstrateProcessor['setDataSource']>[HandlerParams.NAME]
-    // typesBundle: Parameters<SubstrateProcessor['setTypesBundle']>[HandlerParams.NAME]
-    batchSize?: Parameters<SubstrateProcessor['setBatchSize']>[HandlerParams.NAME]
-    // eventHandlers?: Handlers<SubstrateProcessor['addEventHandler']>
-    // extrinsicsHandlers?: Handlers<SubstrateProcessor['addExtrinsicHandler']>
-    port?: Parameters<SubstrateProcessor['setPrometheusPort']>[HandlerParams.NAME]
-    blockRange?: Parameters<SubstrateProcessor['setBlockRange']>[HandlerParams.NAME]
+    dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[HandlerParams.NAME]
+    // typesBundle: Parameters<SubstrateProcessor<any>['setTypesBundle']>[HandlerParams.NAME]
+    batchSize?: Parameters<SubstrateProcessor<any>['setBatchSize']>[HandlerParams.NAME]
+    port?: Parameters<SubstrateProcessor<any>['setPrometheusPort']>[HandlerParams.NAME]
+    blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[HandlerParams.NAME]
 }
-
-// export function setupNewProcessor(config: ProcessorConfig): SubstrateProcessor {
-//     // for (const sectionName in config.eventHandlers) {
-//     //     const section = config.eventHandlers[sectionName]
-//     //     for (const methodName in section) {
-//     //         const method = section[methodName]
-//     //         processor.addEventHandler(`${sectionName}.${methodName}`, method.options || {}, method.handler)
-//     //     }
-//     // }
-
-//     // for (const sectionName in config.extrinsicsHandlers) {
-//     //     const section = config.extrinsicsHandlers[sectionName]
-//     //     for (const methodName in section) {
-//     //         const method = section[methodName]
-//     //         processor.addExtrinsicHandler(`${sectionName}.${methodName}`, method.options || {}, method.handler)
-//     //     }
-//     // }
-
-//     return processor
-// }

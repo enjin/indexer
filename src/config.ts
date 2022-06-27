@@ -1,16 +1,16 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import { ProcessorConfig } from './types/custom/processorConfig'
 
 const config: ProcessorConfig = {
     chainName: 'rocfinity',
     prefix: 195,
+    // genesisHash: '0x1cb2120b3afd6da2dca23d8b95e30fd7eabe4357c3d470bc02487a7d6fd00d1d',
     dataSource: {
-        archive: 'http://localhost:8080/v1/graphql',
-        chain: 'ws://localhost:10010',
+        archive: 'http://archive_gateway:8000/graphql',
+        chain: 'wss://archive.rpc.rococo.efinity.io',
     },
-    batchSize: 500,
+    batchSize: 1,
     blockRange: {
-        from: 1,
+        from: 0,
     },
 }
 

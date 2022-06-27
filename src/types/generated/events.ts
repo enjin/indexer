@@ -1,33 +1,41 @@
 import assert from 'assert'
-import {EventContext, Result, deprecateLatest} from './support'
-import * as v1 from './v1'
+import {Chain, ChainContext, EventContext, Event, Result} from './support'
+import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
 
 export class BalancesTransferEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'balances.Transfer')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'Balances.Transfer')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Transfer succeeded. \[from, to, value\]
    */
-  get isV1(): boolean {
-    return this.ctx._chain.getEventHash('balances.Transfer') === 'dad2bcdca357505fa3c7832085d0db53ce6f902bd9f5b52823ee8791d351872c'
+  get isEfinityV1(): boolean {
+    return this._chain.getEventHash('Balances.Transfer') === 'dad2bcdca357505fa3c7832085d0db53ce6f902bd9f5b52823ee8791d351872c'
   }
 
   /**
    * Transfer succeeded. \[from, to, value\]
    */
-  get asV1(): [v1.AccountId32, v1.AccountId32, bigint] {
-    assert(this.isV1)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
+  get asEfinityV1(): [efinityV1.AccountId32, efinityV1.AccountId32, bigint] {
+    assert(this.isEfinityV1)
+    return this._chain.decodeEvent(this.event)
   }
 
   /**
    * Transfer succeeded.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
+    return this._chain.getEventHash('Balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
   }
 
   /**
@@ -35,30 +43,28 @@ export class BalancesTransferEvent {
    */
   get asV2(): {from: v2.AccountId32, to: v2.AccountId32, amount: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {from: v2.AccountId32, to: v2.AccountId32, amount: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensApprovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Approved')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Approved')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * An approval took place. If `token_id` is `None`, it applies to the whole collection.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Approved') === 'be2c3db8582ba3e20a4c47b559208645f08eaef7453ba9dcf4fe7d6a8987b514'
+    return this._chain.getEventHash('MultiTokens.Approved') === 'be2c3db8582ba3e20a4c47b559208645f08eaef7453ba9dcf4fe7d6a8987b514'
   }
 
   /**
@@ -66,30 +72,28 @@ export class MultiTokensApprovedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v2.AccountId32, operator: v2.AccountId32, amount: (bigint | undefined), expiration: (number | undefined)} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v2.AccountId32, operator: v2.AccountId32, amount: (bigint | undefined), expiration: (number | undefined)} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensAttributeRemovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.AttributeRemoved')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.AttributeRemoved')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * An attribute has been removed
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.AttributeRemoved') === '4168a0c4eaad91f81c843978c2860e3e03730b7533206af99d8dc2200efdbec8'
+    return this._chain.getEventHash('MultiTokens.AttributeRemoved') === '4168a0c4eaad91f81c843978c2860e3e03730b7533206af99d8dc2200efdbec8'
   }
 
   /**
@@ -97,30 +101,28 @@ export class MultiTokensAttributeRemovedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensAttributeSetEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.AttributeSet')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.AttributeSet')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * New attribute has been set
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.AttributeSet') === 'd90964f28bdfc61e8bf4173cbde05cc375064aff638f0a40640ab04549efc4c2'
+    return this._chain.getEventHash('MultiTokens.AttributeSet') === 'd90964f28bdfc61e8bf4173cbde05cc375064aff638f0a40640ab04549efc4c2'
   }
 
   /**
@@ -128,30 +130,28 @@ export class MultiTokensAttributeSetEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensBurnedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Burned')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Burned')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Units of a `Token` were burned
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Burned') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
+    return this._chain.getEventHash('MultiTokens.Burned') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
   }
 
   /**
@@ -159,30 +159,28 @@ export class MultiTokensBurnedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32, amount: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32, amount: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensCollectionAccountCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.CollectionAccountCreated')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.CollectionAccountCreated')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A new `CollectionAccount` was created
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.CollectionAccountCreated') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
+    return this._chain.getEventHash('MultiTokens.CollectionAccountCreated') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
   }
 
   /**
@@ -190,30 +188,28 @@ export class MultiTokensCollectionAccountCreatedEvent {
    */
   get asV2(): {collectionId: bigint, accountId: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, accountId: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensCollectionAccountDestroyedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.CollectionAccountDestroyed')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.CollectionAccountDestroyed')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A `CollectionAccount` was destroyed
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.CollectionAccountDestroyed') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
+    return this._chain.getEventHash('MultiTokens.CollectionAccountDestroyed') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
   }
 
   /**
@@ -221,30 +217,28 @@ export class MultiTokensCollectionAccountDestroyedEvent {
    */
   get asV2(): {collectionId: bigint, accountId: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, accountId: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensCollectionCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.CollectionCreated')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.CollectionCreated')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A new `Collection` was created
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.CollectionCreated') === '9f2f2f3af227369fdf6d6bca903e9d24ff2c10dbe8e2e81cc062779b6581c722'
+    return this._chain.getEventHash('MultiTokens.CollectionCreated') === '9f2f2f3af227369fdf6d6bca903e9d24ff2c10dbe8e2e81cc062779b6581c722'
   }
 
   /**
@@ -252,30 +246,28 @@ export class MultiTokensCollectionCreatedEvent {
    */
   get asV2(): {collectionId: bigint, owner: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, owner: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensCollectionDestroyedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.CollectionDestroyed')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.CollectionDestroyed')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A `Collection` was destroyed.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.CollectionDestroyed') === '6b20939f2a6c4c23adcb69631c659bbf68a4e266bd90733cacfec7f21ecfc491'
+    return this._chain.getEventHash('MultiTokens.CollectionDestroyed') === '6b20939f2a6c4c23adcb69631c659bbf68a4e266bd90733cacfec7f21ecfc491'
   }
 
   /**
@@ -283,30 +275,28 @@ export class MultiTokensCollectionDestroyedEvent {
    */
   get asV2(): {collectionId: bigint, caller: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, caller: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensFrozenEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Frozen')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Frozen')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Collection, token or account was frozen
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Frozen') === 'a014bbbee6c873377a5589792e1499a486dbe8684a671e199e6811cb3f48fdff'
+    return this._chain.getEventHash('MultiTokens.Frozen') === 'a014bbbee6c873377a5589792e1499a486dbe8684a671e199e6811cb3f48fdff'
   }
 
   /**
@@ -314,30 +304,28 @@ export class MultiTokensFrozenEvent {
    */
   get asV2(): v2.Freeze {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): v2.Freeze {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensMintedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Minted')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Minted')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Units of a `Token` were minted
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Minted') === '02090af421cf73146a30e88cdca92a9ee992857db2e335edc43f0b9be6d7ed9c'
+    return this._chain.getEventHash('MultiTokens.Minted') === '02090af421cf73146a30e88cdca92a9ee992857db2e335edc43f0b9be6d7ed9c'
   }
 
   /**
@@ -345,30 +333,28 @@ export class MultiTokensMintedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, issuer: v2.AccountId32, recipient: v2.AccountId32, amount: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, issuer: v2.AccountId32, recipient: v2.AccountId32, amount: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensThawedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Thawed')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Thawed')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Collection, token or account was unfrozen
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Thawed') === 'a014bbbee6c873377a5589792e1499a486dbe8684a671e199e6811cb3f48fdff'
+    return this._chain.getEventHash('MultiTokens.Thawed') === 'a014bbbee6c873377a5589792e1499a486dbe8684a671e199e6811cb3f48fdff'
   }
 
   /**
@@ -376,30 +362,28 @@ export class MultiTokensThawedEvent {
    */
   get asV2(): v2.Freeze {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): v2.Freeze {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensTokenAccountCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.TokenAccountCreated')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.TokenAccountCreated')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A new `TokenAccount` was created
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.TokenAccountCreated') === '0cca0a7615506a78b65129d3424c22086426999e458decb2fb277f2a1aa1cb65'
+    return this._chain.getEventHash('MultiTokens.TokenAccountCreated') === '0cca0a7615506a78b65129d3424c22086426999e458decb2fb277f2a1aa1cb65'
   }
 
   /**
@@ -407,30 +391,28 @@ export class MultiTokensTokenAccountCreatedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32, balance: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32, balance: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensTokenAccountDestroyedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.TokenAccountDestroyed')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.TokenAccountDestroyed')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A `TokenAccount` was destroyed
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.TokenAccountDestroyed') === 'd3d24a0607b48c4ee8924ed762cb532aa6cf3a0d0410df546c31f4a14154c387'
+    return this._chain.getEventHash('MultiTokens.TokenAccountDestroyed') === 'd3d24a0607b48c4ee8924ed762cb532aa6cf3a0d0410df546c31f4a14154c387'
   }
 
   /**
@@ -438,30 +420,28 @@ export class MultiTokensTokenAccountDestroyedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, accountId: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensTokenCreatedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.TokenCreated')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.TokenCreated')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A `Token` was created
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.TokenCreated') === '51fc1f1f4af97488d09187016da49d0820f9bf5a5f0662f551e14d3bf6c2f26f'
+    return this._chain.getEventHash('MultiTokens.TokenCreated') === '51fc1f1f4af97488d09187016da49d0820f9bf5a5f0662f551e14d3bf6c2f26f'
   }
 
   /**
@@ -469,30 +449,28 @@ export class MultiTokensTokenCreatedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, issuer: v2.AccountId32, initialSupply: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, issuer: v2.AccountId32, initialSupply: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensTokenDestroyedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.TokenDestroyed')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.TokenDestroyed')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * A `Token` was destroyed
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.TokenDestroyed') === 'cf1d93ed1d0b9ceef6268da8c9921584304700425bfb5edd986b2b7a7b02a021'
+    return this._chain.getEventHash('MultiTokens.TokenDestroyed') === 'cf1d93ed1d0b9ceef6268da8c9921584304700425bfb5edd986b2b7a7b02a021'
   }
 
   /**
@@ -500,30 +478,28 @@ export class MultiTokensTokenDestroyedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, caller: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, caller: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensTransferredEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Transferred')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Transferred')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * Units of a `Token` were transferred
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Transferred') === 'c845e6a95391a8fa441a8156f9f87ac0df95affb6d9fce2cad53cb422fe1942a'
+    return this._chain.getEventHash('MultiTokens.Transferred') === 'c845e6a95391a8fa441a8156f9f87ac0df95affb6d9fce2cad53cb422fe1942a'
   }
 
   /**
@@ -531,30 +507,28 @@ export class MultiTokensTransferredEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, from: v2.AccountId32, to: v2.AccountId32, amount: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, from: v2.AccountId32, to: v2.AccountId32, amount: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }
 
 export class MultiTokensUnapprovedEvent {
-  constructor(private ctx: EventContext) {
-    assert(this.ctx.event.name === 'multiTokens.Unapproved')
+  private readonly _chain: Chain
+  private readonly event: Event
+
+  constructor(ctx: EventContext)
+  constructor(ctx: ChainContext, event: Event)
+  constructor(ctx: EventContext, event?: Event) {
+    event = event || ctx.event
+    assert(event.name === 'MultiTokens.Unapproved')
+    this._chain = ctx._chain
+    this.event = event
   }
 
   /**
    * An unapproval took place. If `token_id` is `None`, it applies to the collection.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getEventHash('multiTokens.Unapproved') === '668c5b2be0f408488a0422b461e10a6786cfe678bc278d2579b4a1d3a8635d49'
+    return this._chain.getEventHash('MultiTokens.Unapproved') === '668c5b2be0f408488a0422b461e10a6786cfe678bc278d2579b4a1d3a8635d49'
   }
 
   /**
@@ -562,16 +536,6 @@ export class MultiTokensUnapprovedEvent {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v2.AccountId32, operator: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeEvent(this.ctx.event)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v2.AccountId32, operator: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeEvent(this.event)
   }
 }

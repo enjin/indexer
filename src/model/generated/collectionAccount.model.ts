@@ -1,4 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import * as marshal from "./marshal"
+import {CollectionApproval} from "./_collectionApproval"
+import {Account} from "./account.model"
 import {Collection} from "./collection.model"
 
 @Entity_()
@@ -10,13 +13,26 @@ export class CollectionAccount {
   @PrimaryColumn_()
   id!: string
 
+  @Column_("bool", {nullable: false})
+  isFrozen!: boolean
+
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new CollectionApproval(undefined, marshal.nonNull(val)))}, nullable: true})
+  approvals!: (CollectionApproval)[] | undefined | null
+
+  @Column_("int4", {nullable: false})
+  accountCount!: number
+
+  @Index_()
+  @ManyToOne_(() => Account, {nullable: false})
+  account!: Account
+
   @Index_()
   @ManyToOne_(() => Collection, {nullable: false})
   collection!: Collection
 
-  @Column_("bool", {nullable: false})
-  isFrozen!: boolean
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
 
-  @Column_("int4", {nullable: false})
-  accountCount!: number
+  @Column_("timestamp with time zone", {nullable: false})
+  updatedAt!: Date
 }

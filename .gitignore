@@ -1,11 +1,11 @@
 /node_modules
 /lib
 
-/*Versions.json
-
 # IDE files
 /.idea
 
 /**/!*
 *.dev*
 .env
+
+package-lock.json

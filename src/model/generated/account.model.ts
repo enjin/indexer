@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
-import * as marshal from "./marshal"
-import {AccountTransfer} from "./accountTransfer.model"
+import {Collection} from "./collection.model"
+import {CollectionAccount} from "./collectionAccount.model"
+import {TokenAccount} from "./tokenAccount.model"
 
 @Entity_()
 export class Account {
@@ -11,17 +12,14 @@ export class Account {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  activeBond!: bigint
+  @OneToMany_(() => Collection, e => e.owner)
+  collectionsOwned!: Collection[]
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  totalReward!: bigint
+  @OneToMany_(() => CollectionAccount, e => e.account)
+  collectionAccounts!: CollectionAccount[]
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  totalSlash!: bigint
-
-  @OneToMany_(() => AccountTransfer, e => e.account)
-  transfers!: AccountTransfer[]
+  @OneToMany_(() => TokenAccount, e => e.account)
+  tokenAccounts!: TokenAccount[]
 
   @Column_("int4", {nullable: false})
   lastUpdateBlock!: number

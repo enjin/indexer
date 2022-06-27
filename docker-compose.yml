@@ -1,11 +1,94 @@
-version: "3"
+version: "3.7"
 
 services:
-  db:
+  archive_cockroach:
+    container_name: archive_cockroach
+    image: cockroachdb/cockroach:v21.2.9
+    ports:
+      - "${ARCHIVE_DB_PORT}:26257"
+    command: [
+      "start-single-node",
+      "--insecure"
+    ]
+
+  archive_worker:
+    container_name: archive_worker
+    build:
+      context: ./squid
+      target: substrate-ingest
+    restart: unless-stopped
+    ports:
+      - "21523:9090"
+    depends_on:
+      - archive_cockroach
+
+  archive_gateway:
+    container_name: archive_gateway
+    image: subsquid/substrate-gateway:1.0.0
+    depends_on:
+      - archive_cockroach
+    command: [
+      "--database-url", "postgres://root@archive_cockroach:26257/defaultdb",
+      "--database-max-connections", "5"
+    ]
+    environment:
+      RUST_LOG: actix_web=info,actix_server=info
+    ports:
+      - "${ARCHIVE_PORT}:8000"
+
+  archive_status:
+    container_name: archive_status
+    build:
+      context: ./squid
+      target: chain-status-service
+    restart: unless-stopped
+    ports:
+      - "21533:3000"
+    depends_on:
+      - archive_cockroach
+
+  indexer_db:
+    container_name: indexer_db
     image: postgres:12
+    restart: unless-stopped
+    volumes:
+      - indexerdb:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "${DB_PORT}:5432"
-      # command: ["postgres", "-c", "log_statement=all"]
+
+  indexer_processor:
+    container_name: indexer_processor
+    build:
+      context: .
+      target: processor
+    restart: unless-stopped
+    depends_on:
+      - indexer_db
+
+  indexer_graphql:
+    container_name: indexer_graphql
+    build:
+      context: .
+      target: query-node
+    restart: unless-stopped
+    ports:
+      - "4000:4350"
+    environment:
+      - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
+      - VIRTUAL_HOST=rocfinity.inovatso.com.br
+      - VIRTUAL_PORT=4000
+    depends_on:
+      - indexer_db
+      - indexer_processor
+
+volumes:
+  archivedb:
+  indexerdb:
+
+networks:
+  default:
+    external:
+      name: experio

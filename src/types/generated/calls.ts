@@ -1,11 +1,19 @@
 import assert from 'assert'
-import {CallContext, Result, deprecateLatest} from './support'
-import * as v1 from './v1'
+import {Chain, ChainContext, CallContext, Call, Result} from './support'
+import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
 
 export class BalancesForceTransferCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'balances.forceTransfer' || this.ctx.extrinsic.name === 'balances.force_transfer')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'Balances.force_transfer')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -16,8 +24,8 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get isV1(): boolean {
-    return this.ctx._chain.getCallHash('balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
+  get isEfinityV1(): boolean {
+    return this._chain.getCallHash('Balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
   }
 
   /**
@@ -28,25 +36,23 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get asV1(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV1
-  }
-
-  get asLatest(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
-    deprecateLatest()
-    return this.asV1
+  get asEfinityV1(): {source: efinityV1.MultiAddress, dest: efinityV1.MultiAddress, value: bigint} {
+    assert(this.isEfinityV1)
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class BalancesTransferCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'balances.transfer')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'Balances.transfer')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -79,8 +85,8 @@ export class BalancesTransferCall {
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get isV1(): boolean {
-    return this.ctx._chain.getCallHash('balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
+  get isEfinityV1(): boolean {
+    return this._chain.getCallHash('Balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
   /**
@@ -113,25 +119,23 @@ export class BalancesTransferCall {
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get asV1(): {dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV1
-  }
-
-  get asLatest(): {dest: v1.MultiAddress, value: bigint} {
-    deprecateLatest()
-    return this.asV1
+  get asEfinityV1(): {dest: efinityV1.MultiAddress, value: bigint} {
+    assert(this.isEfinityV1)
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class BalancesTransferAllCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'balances.transferAll' || this.ctx.extrinsic.name === 'balances.transfer_all')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'Balances.transfer_all')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -153,8 +157,8 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get isV1(): boolean {
-    return this.ctx._chain.getCallHash('balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
+  get isEfinityV1(): boolean {
+    return this._chain.getCallHash('Balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
   }
 
   /**
@@ -176,25 +180,23 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get asV1(): {dest: v1.MultiAddress, keepAlive: boolean} {
-    assert(this.isV1)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV1
-  }
-
-  get asLatest(): {dest: v1.MultiAddress, keepAlive: boolean} {
-    deprecateLatest()
-    return this.asV1
+  get asEfinityV1(): {dest: efinityV1.MultiAddress, keepAlive: boolean} {
+    assert(this.isEfinityV1)
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class BalancesTransferKeepAliveCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'balances.transferKeepAlive' || this.ctx.extrinsic.name === 'balances.transfer_keep_alive')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'Balances.transfer_keep_alive')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -210,8 +212,8 @@ export class BalancesTransferKeepAliveCall {
    * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
    * #</weight>
    */
-  get isV1(): boolean {
-    return this.ctx._chain.getCallHash('balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
+  get isEfinityV1(): boolean {
+    return this._chain.getCallHash('Balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
   /**
@@ -227,32 +229,30 @@ export class BalancesTransferKeepAliveCall {
    * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
    * #</weight>
    */
-  get asV1(): {dest: v1.MultiAddress, value: bigint} {
-    assert(this.isV1)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV1
-  }
-
-  get asLatest(): {dest: v1.MultiAddress, value: bigint} {
-    deprecateLatest()
-    return this.asV1
+  get asEfinityV1(): {dest: efinityV1.MultiAddress, value: bigint} {
+    assert(this.isEfinityV1)
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensApproveCollectionCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.approveCollection' || this.ctx.extrinsic.name === 'multiTokens.approve_collection')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.approve_collection')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.approve_collection') === '488accbd8a7ccff93c1ce6b5609ef67874c52cc8fc80b3b48a2cad226450c092'
+    return this._chain.getCallHash('MultiTokens.approve_collection') === '488accbd8a7ccff93c1ce6b5609ef67874c52cc8fc80b3b48a2cad226450c092'
   }
 
   /**
@@ -260,30 +260,28 @@ export class MultiTokensApproveCollectionCall {
    */
   get asV2(): {collectionId: bigint, operator: v2.AccountId32, expiration: (number | undefined)} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, operator: v2.AccountId32, expiration: (number | undefined)} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensApproveTokenCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.approveToken' || this.ctx.extrinsic.name === 'multiTokens.approve_token')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.approve_token')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.approve_token') === '7266369f860222731cfac3b4dc9f7b3eb8550de09ee165a184b933efc53cd27a'
+    return this._chain.getCallHash('MultiTokens.approve_token') === '7266369f860222731cfac3b4dc9f7b3eb8550de09ee165a184b933efc53cd27a'
   }
 
   /**
@@ -291,23 +289,21 @@ export class MultiTokensApproveTokenCall {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensBurnCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.burn')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.burn')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -325,7 +321,7 @@ export class MultiTokensBurnCall {
    * - `DepositUnreserveFailed` if caller does not have enough reserved balance to unreserve
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.burn') === '5e518fd41f2e62474b4a1bae295d7c2b0bec3f70f20ccbfeb4517ee9e7984bc3'
+    return this._chain.getCallHash('MultiTokens.burn') === '5e518fd41f2e62474b4a1bae295d7c2b0bec3f70f20ccbfeb4517ee9e7984bc3'
   }
 
   /**
@@ -344,23 +340,21 @@ export class MultiTokensBurnCall {
    */
   get asV2(): {collectionId: bigint, params: v2.DefaultBurnParams} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, params: v2.DefaultBurnParams} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensCreateCollectionCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.createCollection' || this.ctx.extrinsic.name === 'multiTokens.create_collection')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.create_collection')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -370,7 +364,7 @@ export class MultiTokensCreateCollectionCall {
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.create_collection') === 'c93ec84acdd32c46f33bfe2493efe0a285c1491f6e3d72c98d705a6ac5165146'
+    return this._chain.getCallHash('MultiTokens.create_collection') === '7cf4fe3885361ce6eb79e4db2f2b1f99352c2e5697d2c8b7df956148e7c0f2c6'
   }
 
   /**
@@ -381,23 +375,21 @@ export class MultiTokensCreateCollectionCall {
    */
   get asV2(): {descriptor: v2.DefaultCollectionDescriptor} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {descriptor: v2.DefaultCollectionDescriptor} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensDestroyCollectionCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.destroyCollection' || this.ctx.extrinsic.name === 'multiTokens.destroy_collection')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.destroy_collection')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -415,7 +407,7 @@ export class MultiTokensDestroyCollectionCall {
    * current number of collection attributes.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.destroy_collection') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
+    return this._chain.getCallHash('MultiTokens.destroy_collection') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
   }
 
   /**
@@ -434,30 +426,28 @@ export class MultiTokensDestroyCollectionCall {
    */
   get asV2(): {collectionId: bigint} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensFreezeCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.freeze')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.freeze')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Freeze collection, token or account
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.freeze') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
+    return this._chain.getCallHash('MultiTokens.freeze') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
@@ -465,23 +455,21 @@ export class MultiTokensFreezeCall {
    */
   get asV2(): {info: v2.Freeze} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {info: v2.Freeze} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensMintCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.mint')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.mint')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -500,7 +488,7 @@ export class MultiTokensMintCall {
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.mint') === 'eaebb17dc952303dfd16624a15d2cde22e3b66a7f91ca95f2f92cd3104cb2499'
+    return this._chain.getCallHash('MultiTokens.mint') === 'eaebb17dc952303dfd16624a15d2cde22e3b66a7f91ca95f2f92cd3104cb2499'
   }
 
   /**
@@ -520,23 +508,21 @@ export class MultiTokensMintCall {
    */
   get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultMintParams} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultMintParams} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensRemoveAttributeCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.removeAttribute' || this.ctx.extrinsic.name === 'multiTokens.remove_attribute')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.remove_attribute')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -551,7 +537,7 @@ export class MultiTokensRemoveAttributeCall {
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.remove_attribute') === '5e8dda41d19b04f7e051283b9b20aed0a83222ef4bc596239942a512d10e143c'
+    return this._chain.getCallHash('MultiTokens.remove_attribute') === '5e8dda41d19b04f7e051283b9b20aed0a83222ef4bc596239942a512d10e143c'
   }
 
   /**
@@ -567,23 +553,21 @@ export class MultiTokensRemoveAttributeCall {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensSetAttributeCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.setAttribute' || this.ctx.extrinsic.name === 'multiTokens.set_attribute')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.set_attribute')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -600,7 +584,7 @@ export class MultiTokensSetAttributeCall {
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.set_attribute') === '1442e960b51ef446ff50fc6d27284693378495f9905ed8fbc35811b81dcf7c7b'
+    return this._chain.getCallHash('MultiTokens.set_attribute') === '1442e960b51ef446ff50fc6d27284693378495f9905ed8fbc35811b81dcf7c7b'
   }
 
   /**
@@ -618,30 +602,28 @@ export class MultiTokensSetAttributeCall {
    */
   get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensThawCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.thaw')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.thaw')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Thaw collection, token or account
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.thaw') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
+    return this._chain.getCallHash('MultiTokens.thaw') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
@@ -649,23 +631,21 @@ export class MultiTokensThawCall {
    */
   get asV2(): {info: v2.Freeze} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {info: v2.Freeze} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensTransferCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.transfer')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.transfer')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
@@ -678,7 +658,7 @@ export class MultiTokensTransferCall {
    * - `Overflow` if `target` balance of `collection` overflows.
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.transfer') === '3a904597294b52262716ac476178f413a640c58c5df5fdee9d6a42b369dab12a'
+    return this._chain.getCallHash('MultiTokens.transfer') === '3a904597294b52262716ac476178f413a640c58c5df5fdee9d6a42b369dab12a'
   }
 
   /**
@@ -692,30 +672,28 @@ export class MultiTokensTransferCall {
    */
   get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensUnapproveCollectionCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.unapproveCollection' || this.ctx.extrinsic.name === 'multiTokens.unapprove_collection')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.unapprove_collection')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.unapprove_collection') === 'e5170bfdb3c4351aa216ff597896abe5ecc75ec89c47b522a97790870cc3b5ef'
+    return this._chain.getCallHash('MultiTokens.unapprove_collection') === 'e5170bfdb3c4351aa216ff597896abe5ecc75ec89c47b522a97790870cc3b5ef'
   }
 
   /**
@@ -723,30 +701,28 @@ export class MultiTokensUnapproveCollectionCall {
    */
   get asV2(): {collectionId: bigint, operator: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, operator: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }
 
 export class MultiTokensUnapproveTokenCall {
-  constructor(private ctx: CallContext) {
-    assert(this.ctx.extrinsic.name === 'multiTokens.unapproveToken' || this.ctx.extrinsic.name === 'multiTokens.unapprove_token')
+  private readonly _chain: Chain
+  private readonly call: Call
+
+  constructor(ctx: CallContext)
+  constructor(ctx: ChainContext, call: Call)
+  constructor(ctx: CallContext, call?: Call) {
+    call = call || ctx.call
+    assert(call.name === 'MultiTokens.unapprove_token')
+    this._chain = ctx._chain
+    this.call = call
   }
 
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
   get isV2(): boolean {
-    return this.ctx._chain.getCallHash('multiTokens.unapprove_token') === 'bf808826dcdafcc9b31e08b287969eda26c2a350dbd9b501129943a436ab8854'
+    return this._chain.getCallHash('MultiTokens.unapprove_token') === 'bf808826dcdafcc9b31e08b287969eda26c2a350dbd9b501129943a436ab8854'
   }
 
   /**
@@ -754,16 +730,6 @@ export class MultiTokensUnapproveTokenCall {
    */
   get asV2(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32} {
     assert(this.isV2)
-    return this.ctx._chain.decodeCall(this.ctx.extrinsic)
-  }
-
-  get isLatest(): boolean {
-    deprecateLatest()
-    return this.isV2
-  }
-
-  get asLatest(): {collectionId: bigint, tokenId: bigint, operator: v2.AccountId32} {
-    deprecateLatest()
-    return this.asV2
+    return this._chain.decodeCall(this.call)
   }
 }

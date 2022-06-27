@@ -1,61 +1,22 @@
-# account entity can be used to get info about current account state and absorb account actions
-type BalancesAccount {
-  free: BigInt!
-  reserved: BigInt!
-  miscFrozen: BigInt!
-  feeFrozen: BigInt!
+type ChainInfo @entity {
+  id: ID!
+  specVersion: Int!
+  transactionVersion: Int!
+  genesisHash: String!
+  blockHash: String!
+  blockNumber: Int! @index
+  existentialDeposit: BigInt!
+  timestamp: DateTime!
 }
 
 type Account @entity {
   id: ID!
-  balances: BalancesAccount!
-  transfers: [AccountTransfer!] @derivedFrom(field: "account")
+
+  collectionsOwned: [Collection] @derivedFrom(field: "owner")
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
+
   lastUpdateBlock: Int!
-}
-
-enum TransferDirection {
-  FROM
-  TO
-}
-
-interface Action {
-  timestamp: DateTime
-  blockNumber: Int
-  extrinsicHash: String
-  amount: BigInt
-}
-
-interface HasTotal {
-  total: BigInt
-}
-
-interface HasEra {
-  era: Int
-}
-
-interface CanFail {
-  success: Boolean
-}
-
-type Transfer implements Action & CanFail @entity {
-  id: ID!
-  timestamp: DateTime
-  blockNumber: Int @index
-  extrinsicHash: String @index
-  toId: ID
-  to: Account
-  fromId: ID!
-  from: Account!
-  amount: BigInt
-  success: Boolean @index
-}
-
-# entity for linking account and transfer
-type AccountTransfer @entity {
-  id: ID!
-  transfer: Transfer
-  account: Account!
-  direction: TransferDirection
 }
 
 type MintPolicy {
@@ -72,7 +33,7 @@ type Collection @entity {
   id: ID!
 
   # Storage defaults
-  owner: String # Change to type
+  owner: Account!
   mintPolicy: MintPolicy!
   burnPolicy: String
   transferPolicy: TransferPolicy
@@ -83,10 +44,18 @@ type Collection @entity {
 
   # Relations
   tokens: [Token] @derivedFrom(field: "collection")
-  accounts: [CollectionAccount] @derivedFrom(field: "collection")
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "collection")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "collection")
+  attributes: [Attribute] @derivedFrom(field: "collection")
 
   # Extras
+  name: String
   createdAt: DateTime!
+}
+
+type CollectionApproval {
+  account: String!
+  expiration: Int
 }
 
 type CollectionAccount @entity {
@@ -94,11 +63,16 @@ type CollectionAccount @entity {
 
   # Storage defaults
   isFrozen: Boolean!
-  approvals: String # Change to type
+  approvals: [CollectionApproval!]
   accountCount: Int!
 
   # Relations
+  account: Account!
   collection: Collection!
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 enum CapType {
@@ -110,9 +84,10 @@ type Token @entity {
   id: ID!
 
   # Storage defaults
+  tokenId: BigInt!
   supply: BigInt!
   capType: CapType
-  capSupply: BigInt!
+  capSupply: BigInt
   isFrozen: Boolean!
   minimumBalance: BigInt!
   unitPrice: BigInt!
@@ -121,10 +96,28 @@ type Token @entity {
 
   # Relations
   collection: Collection!
-  accounts: [TokenAccount] @derivedFrom(field: "token")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "token")
+  attributes: [Attribute] @derivedFrom(field: "token")
 
   # Extras
+  name: String
   createdAt: DateTime!
+}
+
+type TokenApproval {
+  account: String!
+  amount: BigInt!
+  expiration: Int
+}
+
+type TokenNamedReserve {
+  pallet: String!
+  amount: BigInt!
+}
+
+type TokenLock {
+  pallet: String!
+  amount: BigInt!
 }
 
 type TokenAccount @entity {
@@ -134,14 +127,19 @@ type TokenAccount @entity {
   balance: BigInt!
   reservedBalance: BigInt!
   lockedBalance: BigInt!
-  namedReserves: String # Change to type
-  locks: String # Change to type
-  approvals: String # Change to type
+  namedReserves: [TokenNamedReserve!]
+  locks: [TokenLock!]
+  approvals: [TokenApproval!]
   isFrozen: Boolean!
 
   # Relations
+  account: Account!
   collection: Collection!
   token: Token!
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Attribute @entity {
@@ -155,4 +153,8 @@ type Attribute @entity {
   # Relations
   collection: Collection!
   token: Token
+
+  # Extras
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }

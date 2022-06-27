@@ -146,9 +146,6 @@ export interface FreezeType_TokenAccount {
 
 export interface DefaultCollectionPolicyDescriptor {
   mint: DefaultMintPolicyDescriptor
-  burn: DefaultBurnPolicyDescriptor
-  transfer: DefaultTransferPolicyDescriptor
-  attribute: DefaultAttributePolicyDescriptor
 }
 
 export type TokenCap = TokenCap_SingleMint | TokenCap_Supply
@@ -164,9 +161,7 @@ export interface TokenCap_Supply {
 
 export interface DefaultCollectionPolicy {
   mint: DefaultMintPolicy
-  burn: DefaultBurnPolicy
   transfer: DefaultTransferPolicy
-  attribute: DefaultAttributePolicy
 }
 
 export interface Approval {
@@ -314,25 +309,15 @@ export interface DefaultMintPolicyDescriptor {
   forceSingleMint: boolean
 }
 
-export type DefaultBurnPolicyDescriptor = null
-
-export type DefaultTransferPolicyDescriptor = null
-
-export type DefaultAttributePolicyDescriptor = null
-
 export interface DefaultMintPolicy {
   maxTokenCount: (bigint | undefined)
   maxTokenSupply: (bigint | undefined)
   forceSingleMint: boolean
 }
 
-export type DefaultBurnPolicy = null
-
 export interface DefaultTransferPolicy {
   isFrozen: boolean
 }
-
-export type DefaultAttributePolicy = null
 
 /**
  * Event for the System pallet.
