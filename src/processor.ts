@@ -1,5 +1,5 @@
 import config from './config'
-// import { handleChainState } from './chainState'
+import { handleChainState } from './chainState'
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { DEFAULT_BATCH_SIZE, DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
@@ -37,6 +37,6 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-// processor.addPostHook(handleChainState)
+processor.addPostHook(handleChainState)
 
 processor.run()

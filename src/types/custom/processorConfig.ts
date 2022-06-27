@@ -12,6 +12,7 @@ enum HandlerParams {
 export interface ProcessorConfig {
     chainName: string
     prefix: number | string
+    genesisHash: string
     dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[HandlerParams.NAME]
     // typesBundle: Parameters<SubstrateProcessor<any>['setTypesBundle']>[HandlerParams.NAME]
     batchSize?: Parameters<SubstrateProcessor<any>['setBatchSize']>[HandlerParams.NAME]
