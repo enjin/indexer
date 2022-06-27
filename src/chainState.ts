@@ -11,7 +11,7 @@ const startBlockHeight = 336500
 export async function handleChainState(ctx: BlockHandlerContext) {
     if (!lastStateTimestamp) {
         const lastChainState = await getLastChainState(ctx)
-        if (lastChainState) lastStateTimestamp = lastChainState.timestamp?.getTime() || 0
+        if (lastChainState[0]) lastStateTimestamp = lastChainState[0].timestamp.getTime() || 0
     }
 
     if (ctx.block.timestamp - lastStateTimestamp >= PERIOD && ctx.block.height > startBlockHeight) {
@@ -40,7 +40,8 @@ async function saveChainState(ctx: BlockHandlerContext) {
 }
 
 async function getLastChainState(ctx: CommonHandlerContext) {
-    return await ctx.store.findOne(ChainInfo, {
+    return await ctx.store.find(ChainInfo, {
+        take: 1,
         order: {
             timestamp: 'DESC',
         },
