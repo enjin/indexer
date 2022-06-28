@@ -62,7 +62,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
 }
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
-    console.log("MultiTokens.TokenCreated")
+    console.log('MultiTokens.TokenCreated')
     const eventData = getEventData(ctx as EventHandlerContext)
 
     if (ctx.event.call) {
@@ -70,7 +70,9 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
 
         if (!eventData || !callData) return
 
-        const collection = await ctx.store.get<Collection>(Collection, eventData.collectionId.toString())
+        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+            where: { id: eventData.collectionId.toString() },
+        })
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,

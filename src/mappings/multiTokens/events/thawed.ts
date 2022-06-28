@@ -69,37 +69,49 @@ export async function handleThawed(ctx: EventHandlerContext) {
 
     if (data.tokenAccount) {
         const address = encodeId(data.tokenAccount)
-        const tokenAccount = await ctx.store.get<TokenAccount>(
-            TokenAccount,
-            `${address}-${data.collectionId}-${data.tokenId}`
-        )
+        const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+            relations: {
+                account: true,
+                collection: true,
+                token: true,
+            },
+        })
 
-        if (!tokenAccount) return
         tokenAccount.isFrozen = false
         tokenAccount.updatedAt = new Date(ctx.block.timestamp)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = encodeId(data.collectionAccount)
-        const collectionAccount = await ctx.store.get<CollectionAccount>(
-            CollectionAccount,
-            `${data.collectionId}-${address}`
-        )
+        const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+            where: { id: `${data.collectionId}-${address}` },
+            relations: {
+                account: true,
+                collection: true,
+            },
+        })
 
-        if (!collectionAccount) return
         collectionAccount.isFrozen = false
         collectionAccount.updatedAt = new Date(ctx.block.timestamp)
-
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId) {
-        const token = await ctx.store.get<Token>(Token, `${data.collectionId}-${data.tokenId}`)
+        const token = await ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${data.collectionId}-${data.tokenId}` },
+            relations: {
+                collection: true,
+            },
+        })
 
-        if (!token) return
         token.isFrozen = false
         await ctx.store.save(token)
     } else {
-        const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
+        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+            where: { id: data.collectionId.toString() },
+            relations: {
+                owner: true,
+            },
+        })
 
-        if (!collection) return
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
         await ctx.store.save(collection)
     }

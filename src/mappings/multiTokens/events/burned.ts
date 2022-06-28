@@ -74,19 +74,22 @@ export async function handleBurned(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const tokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${address}-${data.collectionId}-${data.tokenId}`
-    )
-    if (tokenAccount) {
-        const storage = await getStorageData(ctx, data.accountId, data.collectionId, data.tokenId)
-        if (storage) {
-            tokenAccount.balance = storage.balance
-            tokenAccount.reservedBalance = storage.reservedBalance
-            tokenAccount.lockedBalance = storage.lockedBalance
-            tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+            token: true,
+            account: true,
+        },
+    })
 
-            await ctx.store.save(tokenAccount)
-        }
+    const storage = await getStorageData(ctx, data.accountId, data.collectionId, data.tokenId)
+    if (storage) {
+        tokenAccount.balance = storage.balance
+        tokenAccount.reservedBalance = storage.reservedBalance
+        tokenAccount.lockedBalance = storage.lockedBalance
+        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+
+        await ctx.store.save(tokenAccount)
     }
 }

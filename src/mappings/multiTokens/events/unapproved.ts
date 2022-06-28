@@ -45,8 +45,6 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
             },
         })
 
-        if (!tokenAccount) return
-
         tokenAccount.approvals = tokenAccount.approvals?.filter(
             (approval) => approval.account != encodeId(data.operator)
         )
@@ -61,8 +59,6 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
                 collection: true,
             },
         })
-
-        if (!collectionAccount) return
 
         collectionAccount.approvals = collectionAccount.approvals?.filter(
             (approval) => approval.account != encodeId(data.operator)

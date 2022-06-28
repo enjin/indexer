@@ -77,7 +77,6 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     if (key === 'name') {
         if (token) {
-            console.log(token)
             token.name = value
             await ctx.store.save(token)
         } else if (collection) {

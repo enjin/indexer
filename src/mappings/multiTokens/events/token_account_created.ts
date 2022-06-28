@@ -29,8 +29,12 @@ export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
-    const token = await ctx.store.get<Token>(Token, `${data.collectionId}-${data.tokenId}`)
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: data.collectionId.toString() },
+    })
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
     const address = encodeId(data.accountId)
     const account = await getOrCreateAccount(ctx, address)
 

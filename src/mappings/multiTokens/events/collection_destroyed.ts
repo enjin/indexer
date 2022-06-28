@@ -25,8 +25,9 @@ export async function handleCollectionDestroyed(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const collection = await ctx.store.get<Collection>(Collection, data.collectionId.toString())
-    if (collection) {
-        await ctx.store.remove(collection)
-    }
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: data.collectionId.toString() },
+    })
+
+    await ctx.store.remove(collection)
 }
