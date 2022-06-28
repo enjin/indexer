@@ -28,12 +28,9 @@ export async function handleTokenAccountDestroyed(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const tokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${address}-${data.collectionId}-${data.tokenId}`
-    )
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+    })
 
-    if (tokenAccount) {
-        await ctx.store.remove(tokenAccount)
-    }
+    await ctx.store.remove(tokenAccount)
 }

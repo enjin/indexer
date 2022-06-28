@@ -26,8 +26,8 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const token = await ctx.store.get<Token>(Token, `${data.collectionId}-${data.tokenId}`)
-    if (token) {
-        await ctx.store.remove(token)
-    }
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+    await ctx.store.remove(token)
 }

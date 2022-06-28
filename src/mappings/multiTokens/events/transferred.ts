@@ -76,36 +76,41 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     if (!data) return
 
     const fromAddress = encodeId(data.from)
-    const fromTokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${fromAddress}-${data.collectionId}-${data.tokenId}`
-    )
-    if (fromTokenAccount) {
-        const storage = await getStorageData(ctx, data.from, data.collectionId, data.tokenId)
-        if (storage) {
-            fromTokenAccount.balance = storage.balance
-            fromTokenAccount.reservedBalance = storage.reservedBalance
-            fromTokenAccount.lockedBalance = storage.lockedBalance
-            fromTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+    const fromTokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
+        relations: {
+            account: true,
+            collection: true,
+            token: true,
+        },
+    })
 
-            await ctx.store.save(fromTokenAccount)
-        }
+    const fromStorage = await getStorageData(ctx, data.from, data.collectionId, data.tokenId)
+    if (fromStorage) {
+        fromTokenAccount.balance = fromStorage.balance
+        fromTokenAccount.reservedBalance = fromStorage.reservedBalance
+        fromTokenAccount.lockedBalance = fromStorage.lockedBalance
+        fromTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+
+        await ctx.store.save(fromTokenAccount)
     }
 
     const toAddress = encodeId(data.to)
-    const toTokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${toAddress}-${data.collectionId}-${data.tokenId}`
-    )
-    if (toTokenAccount) {
-        const storage = await getStorageData(ctx, data.to, data.collectionId, data.tokenId)
-        if (storage) {
-            toTokenAccount.balance = storage.balance
-            toTokenAccount.reservedBalance = storage.reservedBalance
-            toTokenAccount.lockedBalance = storage.lockedBalance
-            toTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+    const toTokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
+        relations: {
+            account: true,
+            collection: true,
+            token: true,
+        },
+    })
+    const toStorage = await getStorageData(ctx, data.to, data.collectionId, data.tokenId)
+    if (toStorage) {
+        toTokenAccount.balance = toStorage.balance
+        toTokenAccount.reservedBalance = toStorage.reservedBalance
+        toTokenAccount.lockedBalance = toStorage.lockedBalance
+        toTokenAccount.updatedAt = new Date(ctx.block.timestamp)
 
-            await ctx.store.save(toTokenAccount)
-        }
+        await ctx.store.save(toTokenAccount)
     }
 }
