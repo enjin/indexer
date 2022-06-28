@@ -28,31 +28,33 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
-    const attribute = await ctx.store.findOneOrFail<Attribute>(Attribute, {
+    const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
     })
 
-    if (attribute.key === 'name') {
-        if (attribute.token) {
-            const token = await ctx.store.findOneOrFail<Token>(Token, {
-                where: { id: `${data.collectionId}-${data.tokenId}` },
-                relations: {
-                    collection: true,
-                },
-            })
-            token.name = null
-            await ctx.store.save(token)
-        } else if (attribute.collection) {
-            const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-                where: { id: data.collectionId.toString() },
-                relations: {
-                    owner: true,
-                },
-            })
-            collection.name = null
-            await ctx.store.save(collection)
+    if (attribute) {
+        if (attribute.key === 'name') {
+            if (attribute.token) {
+                const token = await ctx.store.findOneOrFail<Token>(Token, {
+                    where: { id: `${data.collectionId}-${data.tokenId}` },
+                    relations: {
+                        collection: true,
+                    },
+                })
+                token.name = null
+                await ctx.store.save(token)
+            } else if (attribute.collection) {
+                const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+                    where: { id: data.collectionId.toString() },
+                    relations: {
+                        owner: true,
+                    },
+                })
+                collection.name = null
+                await ctx.store.save(collection)
+            }
         }
-    }
 
-    await ctx.store.remove(attribute)
+        await ctx.store.remove(attribute)
+    }
 }
