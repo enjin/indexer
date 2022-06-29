@@ -13,6 +13,27 @@ processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(config.port || DEFAULT_PORT)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
+processor.addCallHandler(
+    'Balances.transfer',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransfer
+)
+processor.addCallHandler(
+    'Balances.transfer_keep_alive',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransferKeepAlive
+)
+processor.addCallHandler(
+    'Balances.force_transfer',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleForceTransfer
+)
+processor.addCallHandler(
+    'Balances.transfer_all',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransferAll
+)
+
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler(
