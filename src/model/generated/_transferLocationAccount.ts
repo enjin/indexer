@@ -2,7 +2,6 @@ import assert from "assert"
 import * as marshal from "./marshal"
 
 export class TransferLocationAccount {
-  public readonly isTypeOf = 'TransferLocationAccount'
   private _id!: string
 
   constructor(props?: Partial<Omit<TransferLocationAccount, 'toJSON'>>, json?: any) {
@@ -23,7 +22,6 @@ export class TransferLocationAccount {
 
   toJSON(): object {
     return {
-      isTypeOf: this.isTypeOf,
       id: this.id,
     }
   }

@@ -29,29 +29,21 @@ type Transfer implements Action & CanFail @entity {
   timestamp: DateTime!
   blockNumber: Int! @index
   extrinsicHash: String! @index
-  to: TransferLocation
-  from: TransferLocation!
+  to: TransferLocationAccount
+  from: TransferLocationAccount!
   asset: TransferAsset!
   success: Boolean! @index
   type: TransferType!
 }
 
-union TransferLocation = TransferLocationAccount | TransferLocationEvm | TransferLocationXcm
-
 type TransferLocationAccount {
   id: String!
-}
-
-type TransferLocationEvm {
-  address: String!
 }
 
 union TransferAsset = TransferAssetToken | TransferAssetMultiToken
 
 enum TransferType {
   Native
-  Contribution
-  Xcm
 }
 
 type TransferAssetToken {
@@ -61,11 +53,6 @@ type TransferAssetToken {
 
 type TransferAssetMultiToken {
   tokens: [TransferAssetToken]
-}
-
-type TransferLocationXcm {
-  id: String
-  paraId: Int
 }
 
 # entity for linking account and transfer

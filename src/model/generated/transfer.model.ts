@@ -1,6 +1,6 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
-import {TransferLocation, fromJsonTransferLocation} from "./_transferLocation"
+import {TransferLocationAccount} from "./_transferLocationAccount"
 import {TransferAsset, fromJsonTransferAsset} from "./_transferAsset"
 import {TransferType} from "./_transferType"
 
@@ -24,11 +24,11 @@ export class Transfer {
   @Column_("text", {nullable: false})
   extrinsicHash!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTransferLocation(obj)}, nullable: true})
-  to!: TransferLocation | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferLocationAccount(undefined, obj)}, nullable: true})
+  to!: TransferLocationAccount | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonTransferLocation(obj)}, nullable: false})
-  from!: TransferLocation
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new TransferLocationAccount(undefined, marshal.nonNull(obj))}, nullable: false})
+  from!: TransferLocationAccount
 
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonTransferAsset(obj)}, nullable: false})
   asset!: TransferAsset
@@ -37,6 +37,6 @@ export class Transfer {
   @Column_("bool", {nullable: false})
   success!: boolean
 
-  @Column_("varchar", {length: 12, nullable: false})
+  @Column_("varchar", {length: 6, nullable: false})
   type!: TransferType
 }

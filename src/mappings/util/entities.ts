@@ -72,7 +72,7 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
               })
             : null,
         asset: new TransferAssetToken({
-            symbol: 'KSM',
+            symbol: 'RFI',
             amount,
         }),
         success,
