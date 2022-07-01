@@ -33,26 +33,33 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
     })
 
     if (attribute) {
-        if (attribute.key === 'name') {
-            if (attribute.token) {
-                const token = await ctx.store.findOneOrFail<Token>(Token, {
-                    where: { id: `${data.collectionId}-${data.tokenId}` },
-                    relations: {
-                        collection: true,
-                    },
-                })
+        if (attribute.token) {
+            const token = await ctx.store.findOneOrFail<Token>(Token, {
+                where: { id: `${data.collectionId}-${data.tokenId}` },
+                relations: {
+                    collection: true,
+                },
+            })
+
+            if (attribute.key === 'name') {
                 token.name = null
-                await ctx.store.save(token)
-            } else if (attribute.collection) {
-                const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-                    where: { id: data.collectionId.toString() },
-                    relations: {
-                        owner: true,
-                    },
-                })
-                collection.name = null
-                await ctx.store.save(collection)
             }
+
+            token.attributeCount -= 1
+            await ctx.store.save(token)
+        } else if (attribute.collection) {
+            const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+                where: { id: data.collectionId.toString() },
+                relations: {
+                    owner: true,
+                },
+            })
+
+            if (attribute.key === 'name') {
+                collection.name = null
+            }
+            collection.attributeCount -= 1
+            await ctx.store.save(collection)
         }
 
         await ctx.store.remove(attribute)

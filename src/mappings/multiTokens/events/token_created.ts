@@ -74,6 +74,9 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             where: { id: eventData.collectionId.toString() },
         })
 
+        collection.tokenCount += 1
+        await ctx.store.save(collection)
+
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,

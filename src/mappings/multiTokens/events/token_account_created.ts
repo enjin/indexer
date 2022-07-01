@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
-import { Collection, Token, TokenAccount } from '../../../model'
+import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -37,6 +37,16 @@ export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
     })
     const address = encodeId(data.accountId)
     const account = await getOrCreateAccount(ctx, address)
+
+    const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+        where: { id: `${data.collectionId}-${address}` },
+        relations: {
+            account: true,
+            collection: true,
+        },
+    })
+    collectionAccount.accountCount += 1
+    await ctx.store.save(collectionAccount)
 
     const tokenAccount = new TokenAccount({
         id: `${address}-${data.collectionId}-${data.tokenId}`,
