@@ -9,7 +9,7 @@ const config: ProcessorConfig = {
         archive: 'http://archive_gateway:8000/graphql',
         chain: 'wss://archive.rpc.rococo.efinity.io',
     },
-    batchSize: 1,
+    batchSize: 100,
     blockRange: {
         from: 0,
     },

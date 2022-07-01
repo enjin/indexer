@@ -73,6 +73,13 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
         })
 
         await ctx.store.insert(attribute)
+        if (token) {
+            token.attributeCount += 1
+            await ctx.store.save(token)
+        } else if (collection) {
+            collection.attributeCount += 1
+            await ctx.store.save(collection)
+        }
     }
 
     if (key === 'name') {
