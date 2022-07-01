@@ -58,6 +58,13 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-processor.addPostHook(handleChainState)
+processor.addPostHook(
+    {
+        range: {
+            from: 336500,
+        },
+    },
+    handleChainState
+)
 
 processor.run()

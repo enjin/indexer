@@ -28,6 +28,9 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
+        relations: {
+            owner: true,
+        },
     })
     collection.tokenCount -= 1
     await ctx.store.save(collection)
