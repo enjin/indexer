@@ -40,7 +40,7 @@ export class AccountInfo {
 export class AccountInfoResolver {
     @Query(() => AccountInfo)
     async accountInfo(@Arg('address') address: string): Promise<AccountInfo> {
-        const wsProvider = new WsProvider(config.dataSource.chain)
+        const wsProvider = new WsProvider(config.rpc)
         const api = await ApiPromise.create({ provider: wsProvider })
         const account = await api.query.system.account<AccInfo>(address)
 
