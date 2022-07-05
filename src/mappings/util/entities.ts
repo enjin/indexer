@@ -51,6 +51,9 @@ export interface TransferData extends ActionData {
     fromId: string
     toId: string | null
     amount: bigint
+    fee: bigint | undefined
+    tip: bigint | undefined
+    error: string
     success: boolean
     type: TransferType
 }
@@ -75,6 +78,9 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
             symbol: 'RFI',
             amount,
         }),
+        fee: data.fee,
+        tip: data.tip,
+        error: data.error,
         success,
         type,
     })
