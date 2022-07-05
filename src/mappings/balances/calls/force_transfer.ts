@@ -37,6 +37,9 @@ export async function handleForceTransfer(ctx: CallHandlerContext) {
         fromId: encodeId(data.from),
         toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
         amount: data.amount,
+        fee: ctx.extrinsic.fee,
+        tip: ctx.extrinsic.tip,
+        error: ctx.extrinsic.error,
         success: ctx.call.success,
         type: TransferType.Native,
     })

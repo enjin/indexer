@@ -33,6 +33,15 @@ export class Transfer {
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonTransferAsset(obj)}, nullable: false})
   asset!: TransferAsset
 
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+  fee!: bigint | undefined | null
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+  tip!: bigint | undefined | null
+
+  @Column_("text", {nullable: true})
+  error!: string | undefined | null
+
   @Index_()
   @Column_("bool", {nullable: false})
   success!: boolean

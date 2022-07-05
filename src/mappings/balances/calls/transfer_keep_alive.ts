@@ -38,6 +38,9 @@ export async function handleTransferKeepAlive(ctx: CallHandlerContext) {
         fromId: accountId,
         toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
         amount: data.amount,
+        fee: ctx.extrinsic.fee,
+        tip: ctx.extrinsic.tip,
+        error: ctx.extrinsic.error,
         success: ctx.call.success,
         type: TransferType.Native,
     })

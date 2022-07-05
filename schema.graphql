@@ -32,6 +32,9 @@ type Transfer implements Action & CanFail @entity {
   to: TransferLocationAccount
   from: TransferLocationAccount!
   asset: TransferAsset!
+  fee: BigInt
+  tip: BigInt
+  error: String
   success: Boolean! @index
   type: TransferType!
 }
