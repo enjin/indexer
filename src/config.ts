@@ -1,13 +1,13 @@
 import { ProcessorConfig } from './types/custom/processorConfig'
 
 const config: ProcessorConfig = {
-    chainName: 'rocfinity',
-    prefix: 195,
-    genesisHash: '0x1cb2120b3afd6da2dca23d8b95e30fd7eabe4357c3d470bc02487a7d6fd00d1d',
-    rpc: 'wss://rpc.rococo.efinity.io',
+    chainName: 'efinity',
+    prefix: 1110,
+    genesisHash: '0x335369975fced3fc22e23498da306a712f4fd964c957364d53c49cea9db8bc2f',
+    rpc: 'wss://rpc.efinity.io',
     dataSource: {
         archive: 'http://archive_gateway:8000/graphql',
-        chain: 'wss://archive.rpc.rococo.efinity.io',
+        chain: 'wss://archive.rpc.efinity.io',
     },
     batchSize: 100,
     blockRange: {

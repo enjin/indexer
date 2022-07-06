@@ -29,7 +29,7 @@ migration:
 
 
 ingest:
-	npx squid-substrate-ingest -e wss://archive.rpc.rococo.efinity.io --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
+	npx squid-substrate-ingest -e wss://archive.rpc.efinity.io --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
 
 
 explore:

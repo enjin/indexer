@@ -76,10 +76,6 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4347"
-    environment:
-      - LETSENCRYPT_HOST=rocfinity.inovatso.com.br
-      - VIRTUAL_HOST=rocfinity.inovatso.com.br
-      - VIRTUAL_PORT=4347
     depends_on:
       - indexer_db
       - indexer_processor
