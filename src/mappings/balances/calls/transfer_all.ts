@@ -11,8 +11,8 @@ interface EventData {
 
 function getCallData(ctx: CallContext): EventData | undefined {
     const call = new BalancesTransferAllCall(ctx)
-    if (call.isEfinityV1) {
-        const { dest } = call.asEfinityV1
+    if (call.isV1) {
+        const { dest } = call.asV1
         return {
             to: dest.value as Uint8Array,
         }

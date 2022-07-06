@@ -17,7 +17,7 @@ codegen:
 
 
 typegen:
-	@npx squid-substrate-typegen typegen.json
+	@npx squid-substrate-typegen typegen/typegen.json
 
 
 migrate:
@@ -35,7 +35,7 @@ ingest:
 explore:
 	@source .env && npx squid-substrate-metadata-explorer \
 		--chain "$${CHAIN_ENDPOINT}" \
-		--out chainSpecVersions.jsonl
+		--out typegen/chainSpecVersions.jsonl
 
 
 up:

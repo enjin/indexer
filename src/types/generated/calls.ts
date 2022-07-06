@@ -1,6 +1,6 @@
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result} from './support'
-import * as efinityV1 from './efinityV1'
+import * as v1 from './v1'
 import * as v2 from './v2'
 
 export class BalancesForceTransferCall {
@@ -24,7 +24,7 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
   }
 
@@ -36,8 +36,8 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get asEfinityV1(): {source: efinityV1.MultiAddress, dest: efinityV1.MultiAddress, value: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -85,7 +85,7 @@ export class BalancesTransferCall {
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -119,8 +119,8 @@ export class BalancesTransferCall {
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get asEfinityV1(): {dest: efinityV1.MultiAddress, value: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -157,7 +157,7 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
   }
 
@@ -180,8 +180,8 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get asEfinityV1(): {dest: efinityV1.MultiAddress, keepAlive: boolean} {
-    assert(this.isEfinityV1)
+  get asV1(): {dest: v1.MultiAddress, keepAlive: boolean} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -212,7 +212,7 @@ export class BalancesTransferKeepAliveCall {
    * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
    * #</weight>
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -229,8 +229,8 @@ export class BalancesTransferKeepAliveCall {
    * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
    * #</weight>
    */
-  get asEfinityV1(): {dest: efinityV1.MultiAddress, value: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }

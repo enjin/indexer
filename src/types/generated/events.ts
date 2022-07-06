@@ -1,6 +1,6 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result} from './support'
-import * as efinityV1 from './efinityV1'
+import * as v1 from './v1'
 import * as v2 from './v2'
 
 export class BalancesTransferEvent {
@@ -19,15 +19,15 @@ export class BalancesTransferEvent {
   /**
    * Transfer succeeded. \[from, to, value\]
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getEventHash('Balances.Transfer') === 'dad2bcdca357505fa3c7832085d0db53ce6f902bd9f5b52823ee8791d351872c'
   }
 
   /**
    * Transfer succeeded. \[from, to, value\]
    */
-  get asEfinityV1(): [efinityV1.AccountId32, efinityV1.AccountId32, bigint] {
-    assert(this.isEfinityV1)
+  get asV1(): [v1.AccountId32, v1.AccountId32, bigint] {
+    assert(this.isV1)
     return this._chain.decodeEvent(this.event)
   }
 

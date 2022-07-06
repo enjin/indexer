@@ -61,7 +61,7 @@ processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.
 processor.addPostHook(
     {
         range: {
-            from: 336500,
+            from: 750000,
         },
     },
     handleChainState

@@ -6,7 +6,7 @@ import config from './config'
 import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/contexts'
 
 let lastStateTimestamp = 0
-const startBlockHeight = 336500
+const startBlockHeight = 750000
 
 export async function handleChainState(ctx: BlockHandlerContext) {
     if (!lastStateTimestamp) {
