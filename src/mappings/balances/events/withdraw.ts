@@ -40,7 +40,7 @@ export async function handleWithdraw(ctx: EventHandlerContext) {
     const who = await getOrCreateAccount(ctx, encodeId(eventData.who))
     const fee = new Fee({
         id: ctx.event.call.id,
-        fee: eventData.amount,
+        amount: eventData.amount,
         who: who,
     })
 

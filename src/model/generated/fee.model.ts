@@ -12,7 +12,7 @@ export class Fee {
   id!: string
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  fee!: bigint | undefined | null
+  amount!: bigint | undefined | null
 
   @Index_()
   @ManyToOne_(() => Account, {nullable: false})
