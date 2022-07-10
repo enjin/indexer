@@ -24,7 +24,7 @@ services:
 
   archive_gateway:
     container_name: archive_gateway
-    image: subsquid/substrate-gateway:1.0.0
+    image: subsquid/substrate-gateway:1.2.0
     depends_on:
       - archive_cockroach
     command: [

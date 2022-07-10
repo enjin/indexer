@@ -10,6 +10,7 @@ interface EventData {
 }
 
 function getCallData(ctx: CallContext): EventData | undefined {
+    console.log(ctx.call.name)
     const call = new BalancesTransferAllCall(ctx)
     if (call.isV1) {
         const { dest } = call.asV1
@@ -36,7 +37,6 @@ export async function handleTransferAll(ctx: CallHandlerContext) {
         fromId: accountId,
         toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
         amount: 0n,
-        fee: ctx.extrinsic.fee,
         tip: ctx.extrinsic.tip,
         error: ctx.extrinsic.error,
         success: ctx.call.success,

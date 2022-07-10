@@ -1,7 +1,8 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_} from "typeorm"
 import * as marshal from "./marshal"
 import {TransferLocationAccount} from "./_transferLocationAccount"
 import {TransferAsset, fromJsonTransferAsset} from "./_transferAsset"
+import {Fee} from "./fee.model"
 import {TransferType} from "./_transferType"
 
 @Entity_()
@@ -33,8 +34,9 @@ export class Transfer {
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonTransferAsset(obj)}, nullable: false})
   asset!: TransferAsset
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  fee!: bigint | undefined | null
+  @Index_()
+  @ManyToOne_(() => Fee, {nullable: true})
+  fee!: Fee | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
   tip!: bigint | undefined | null

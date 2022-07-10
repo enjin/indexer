@@ -1,0 +1,48 @@
+import { UnknownVersionError } from '../../../common/errors'
+import { BalancesWithdrawEvent } from '../../../types/generated/events'
+import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
+import { EventHandlerContext } from '../../types/contexts'
+import { ChainContext } from '../../../types/generated/support'
+import { SubstrateCall } from '@subsquid/substrate-processor'
+import { AccountTransfer, Collection, Fee, Transfer, TransferDirection } from '../../../model'
+import { getOrCreateAccount } from '../../util/entities'
+import { encodeId } from '../../../common/tools'
+
+interface CallData {
+    maxTokenCount: bigint | undefined
+    maxTokenSupply: bigint | undefined
+    forceSingleMint: boolean
+}
+
+interface EventData {
+    who: Uint8Array
+    amount: bigint
+}
+
+function getEventData(ctx: EventHandlerContext): EventData {
+    const event = new BalancesWithdrawEvent(ctx)
+    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
+
+    if (event.isV2) {
+        const { who, amount } = event.asV2
+        return { who, amount }
+    } else {
+        throw new UnknownVersionError(event.constructor.name)
+    }
+}
+
+export async function handleWithdraw(ctx: EventHandlerContext) {
+    const eventData = getEventData(ctx as EventHandlerContext)
+
+    if (!eventData) return
+    if (!ctx.event.call?.id) return
+
+    const who = await getOrCreateAccount(ctx, encodeId(eventData.who))
+    const fee = new Fee({
+        id: ctx.event.call.id,
+        fee: eventData.amount,
+        who: who,
+    })
+
+    await ctx.store.insert(fee)
+}

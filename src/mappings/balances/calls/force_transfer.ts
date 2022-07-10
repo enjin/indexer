@@ -12,6 +12,7 @@ interface EventData {
 }
 
 function getCallData(ctx: CallContext): EventData | undefined {
+    console.log(ctx.call.name)
     const call = new BalancesForceTransferCall(ctx)
     if (call.isV1) {
         const { source, dest, value } = call.asV1
@@ -37,7 +38,6 @@ export async function handleForceTransfer(ctx: CallHandlerContext) {
         fromId: encodeId(data.from),
         toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
         amount: data.amount,
-        fee: ctx.extrinsic.fee,
         tip: ctx.extrinsic.tip,
         error: ctx.extrinsic.error,
         success: ctx.call.success,

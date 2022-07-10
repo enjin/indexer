@@ -24,6 +24,12 @@ enum TransferDirection {
   To
 }
 
+type Fee @entity {
+  id: ID!
+  fee: BigInt
+  who: Account!
+}
+
 type Transfer implements Action & CanFail @entity {
   id: ID!
   timestamp: DateTime!
@@ -32,7 +38,7 @@ type Transfer implements Action & CanFail @entity {
   to: TransferLocationAccount
   from: TransferLocationAccount!
   asset: TransferAsset!
-  fee: BigInt
+  fee: Fee
   tip: BigInt
   error: String
   success: Boolean! @index

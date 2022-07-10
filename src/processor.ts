@@ -34,6 +34,7 @@ processor.addCallHandler(
     modules.balances.extrinsics.handleTransferAll
 )
 
+processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler(

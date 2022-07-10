@@ -1,13 +1,17 @@
-module.exports = class Data1657125561865 {
-  name = 'Data1657125561865'
+module.exports = class Data1657485931500 {
+  name = 'Data1657485931500'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_22cb998efc624a5d40f74361d9" ON "chain_info" ("block_number") `)
-    await db.query(`CREATE TABLE "transfer" ("id" character varying NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "block_number" integer NOT NULL, "extrinsic_hash" text NOT NULL, "to" jsonb, "from" jsonb NOT NULL, "asset" jsonb NOT NULL, "fee" numeric, "tip" numeric, "error" text, "success" boolean NOT NULL, "type" character varying(6) NOT NULL, CONSTRAINT "PK_fd9ddbdd49a17afcbe014401295" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "transfer" ("id" character varying NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "block_number" integer NOT NULL, "extrinsic_hash" text NOT NULL, "to" jsonb, "from" jsonb NOT NULL, "asset" jsonb NOT NULL, "tip" numeric, "error" text, "success" boolean NOT NULL, "type" character varying(6) NOT NULL, "fee_id" character varying, CONSTRAINT "PK_fd9ddbdd49a17afcbe014401295" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_d6624eacc30144ea97915fe846" ON "transfer" ("block_number") `)
     await db.query(`CREATE INDEX "IDX_070c555a86b0b41a534a55a659" ON "transfer" ("extrinsic_hash") `)
+    await db.query(`CREATE INDEX "IDX_f6b9e9b86a1ce51c26cd08f596" ON "transfer" ("fee_id") `)
     await db.query(`CREATE INDEX "IDX_d0b7149e0dea3bfc1ffa8742a2" ON "transfer" ("success") `)
+    await db.query(`CREATE TABLE "account_transfer" ("id" character varying NOT NULL, "direction" character varying(4), "transfer_id" character varying, "account_id" character varying NOT NULL, CONSTRAINT "PK_3b959a286b97fc83be6cec239a9" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE INDEX "IDX_2c2313461bd6c19983900ef539" ON "account_transfer" ("transfer_id") `)
+    await db.query(`CREATE INDEX "IDX_d5240d17696e229585da974641" ON "account_transfer" ("account_id") `)
     await db.query(`CREATE TABLE "token_account" ("id" character varying NOT NULL, "balance" numeric NOT NULL, "reserved_balance" numeric NOT NULL, "locked_balance" numeric NOT NULL, "named_reserves" jsonb, "locks" jsonb, "approvals" jsonb, "is_frozen" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying NOT NULL, "collection_id" character varying NOT NULL, "token_id" character varying NOT NULL, CONSTRAINT "PK_6121d7a5eafbe71fba146a98fd3" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_7921fb23203316a5371f2be477" ON "token_account" ("account_id") `)
     await db.query(`CREATE INDEX "IDX_85663600e62c10034824e4caea" ON "token_account" ("collection_id") `)
@@ -23,9 +27,11 @@ module.exports = class Data1657125561865 {
     await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "mint_policy" jsonb NOT NULL, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "token_count" integer NOT NULL, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "name" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "owner_id" character varying NOT NULL, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_01d689ecc7eba32eaf962ad9d9" ON "collection" ("owner_id") `)
     await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "last_update_block" integer NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE TABLE "account_transfer" ("id" character varying NOT NULL, "direction" character varying(4), "transfer_id" character varying, "account_id" character varying NOT NULL, CONSTRAINT "PK_3b959a286b97fc83be6cec239a9" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE INDEX "IDX_2c2313461bd6c19983900ef539" ON "account_transfer" ("transfer_id") `)
-    await db.query(`CREATE INDEX "IDX_d5240d17696e229585da974641" ON "account_transfer" ("account_id") `)
+    await db.query(`CREATE TABLE "fee" ("id" character varying NOT NULL, "fee" numeric, "who_id" character varying NOT NULL, CONSTRAINT "PK_ee7e51cc563615bc60c2b234635" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE INDEX "IDX_8e1e7078cf03279cc94fb9147f" ON "fee" ("who_id") `)
+    await db.query(`ALTER TABLE "transfer" ADD CONSTRAINT "FK_f6b9e9b86a1ce51c26cd08f596a" FOREIGN KEY ("fee_id") REFERENCES "fee"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_2c2313461bd6c19983900ef539c" FOREIGN KEY ("transfer_id") REFERENCES "transfer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_d5240d17696e229585da974641a" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "token_account" ADD CONSTRAINT "FK_7921fb23203316a5371f2be4777" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "token_account" ADD CONSTRAINT "FK_85663600e62c10034824e4caea3" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "token_account" ADD CONSTRAINT "FK_02862fa18dececb99dd81a6a6a9" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -35,8 +41,7 @@ module.exports = class Data1657125561865 {
     await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_2b2b641fd385385ba996c66098f" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_a0ca7fffb7ae953536712abef23" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection" ADD CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96" FOREIGN KEY ("owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_2c2313461bd6c19983900ef539c" FOREIGN KEY ("transfer_id") REFERENCES "transfer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_d5240d17696e229585da974641a" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "fee" ADD CONSTRAINT "FK_8e1e7078cf03279cc94fb9147f1" FOREIGN KEY ("who_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
   }
 
   async down(db) {
@@ -45,7 +50,11 @@ module.exports = class Data1657125561865 {
     await db.query(`DROP TABLE "transfer"`)
     await db.query(`DROP INDEX "public"."IDX_d6624eacc30144ea97915fe846"`)
     await db.query(`DROP INDEX "public"."IDX_070c555a86b0b41a534a55a659"`)
+    await db.query(`DROP INDEX "public"."IDX_f6b9e9b86a1ce51c26cd08f596"`)
     await db.query(`DROP INDEX "public"."IDX_d0b7149e0dea3bfc1ffa8742a2"`)
+    await db.query(`DROP TABLE "account_transfer"`)
+    await db.query(`DROP INDEX "public"."IDX_2c2313461bd6c19983900ef539"`)
+    await db.query(`DROP INDEX "public"."IDX_d5240d17696e229585da974641"`)
     await db.query(`DROP TABLE "token_account"`)
     await db.query(`DROP INDEX "public"."IDX_7921fb23203316a5371f2be477"`)
     await db.query(`DROP INDEX "public"."IDX_85663600e62c10034824e4caea"`)
@@ -61,9 +70,11 @@ module.exports = class Data1657125561865 {
     await db.query(`DROP TABLE "collection"`)
     await db.query(`DROP INDEX "public"."IDX_01d689ecc7eba32eaf962ad9d9"`)
     await db.query(`DROP TABLE "account"`)
-    await db.query(`DROP TABLE "account_transfer"`)
-    await db.query(`DROP INDEX "public"."IDX_2c2313461bd6c19983900ef539"`)
-    await db.query(`DROP INDEX "public"."IDX_d5240d17696e229585da974641"`)
+    await db.query(`DROP TABLE "fee"`)
+    await db.query(`DROP INDEX "public"."IDX_8e1e7078cf03279cc94fb9147f"`)
+    await db.query(`ALTER TABLE "transfer" DROP CONSTRAINT "FK_f6b9e9b86a1ce51c26cd08f596a"`)
+    await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_2c2313461bd6c19983900ef539c"`)
+    await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_d5240d17696e229585da974641a"`)
     await db.query(`ALTER TABLE "token_account" DROP CONSTRAINT "FK_7921fb23203316a5371f2be4777"`)
     await db.query(`ALTER TABLE "token_account" DROP CONSTRAINT "FK_85663600e62c10034824e4caea3"`)
     await db.query(`ALTER TABLE "token_account" DROP CONSTRAINT "FK_02862fa18dececb99dd81a6a6a9"`)
@@ -73,7 +84,6 @@ module.exports = class Data1657125561865 {
     await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_2b2b641fd385385ba996c66098f"`)
     await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_a0ca7fffb7ae953536712abef23"`)
     await db.query(`ALTER TABLE "collection" DROP CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96"`)
-    await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_2c2313461bd6c19983900ef539c"`)
-    await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_d5240d17696e229585da974641a"`)
+    await db.query(`ALTER TABLE "fee" DROP CONSTRAINT "FK_8e1e7078cf03279cc94fb9147f1"`)
   }
 }
