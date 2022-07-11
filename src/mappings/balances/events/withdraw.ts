@@ -1,18 +1,9 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { BalancesWithdrawEvent } from '../../../types/generated/events'
-import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import { EventHandlerContext } from '../../types/contexts'
-import { ChainContext } from '../../../types/generated/support'
-import { SubstrateCall } from '@subsquid/substrate-processor'
-import { AccountTransfer, Collection, Fee, Transfer, TransferDirection } from '../../../model'
+import { Fee } from '../../../model'
 import { getOrCreateAccount } from '../../util/entities'
 import { encodeId } from '../../../common/tools'
-
-interface CallData {
-    maxTokenCount: bigint | undefined
-    maxTokenSupply: bigint | undefined
-    forceSingleMint: boolean
-}
 
 interface EventData {
     who: Uint8Array

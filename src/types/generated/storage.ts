@@ -1,8 +1,9 @@
 import assert from 'assert'
 import {Block, Chain, ChainContext, BlockContext, Result} from './support'
-import * as v1 from './v1'
+import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
-import * as v3 from './v3'
+import * as v4 from './v4'
+import * as efinityV3 from './efinityV3'
 
 export class BalancesAccountStorage {
   private readonly _chain: Chain
@@ -21,7 +22,7 @@ export class BalancesAccountStorage {
    * 
    *  NOTE: This is only used in the case that this pallet is used to store balances.
    */
-  get isV1() {
+  get isEfinityV1() {
     return this._chain.getStorageItemTypeHash('Balances', 'Account') === '0b3b4bf0dd7388459eba461bc7c3226bf58608c941710a714e02f33ec0f91e78'
   }
 
@@ -30,13 +31,13 @@ export class BalancesAccountStorage {
    * 
    *  NOTE: This is only used in the case that this pallet is used to store balances.
    */
-  async getAsV1(key: v1.AccountId32): Promise<v1.AccountData> {
-    assert(this.isV1)
+  async getAsEfinityV1(key: efinityV1.AccountId32): Promise<efinityV1.AccountData> {
+    assert(this.isEfinityV1)
     return this._chain.getStorage(this.blockHash, 'Balances', 'Account', key)
   }
 
-  async getManyAsV1(keys: v1.AccountId32[]): Promise<(v1.AccountData)[]> {
-    assert(this.isV1)
+  async getManyAsEfinityV1(keys: efinityV1.AccountId32[]): Promise<(efinityV1.AccountData)[]> {
+    assert(this.isEfinityV1)
     return this._chain.queryStorage(this.blockHash, 'Balances', 'Account', keys.map(k => [k]))
   }
 
@@ -63,15 +64,15 @@ export class BalancesTotalIssuanceStorage {
   /**
    *  The total units issued in the system.
    */
-  get isV1() {
+  get isEfinityV1() {
     return this._chain.getStorageItemTypeHash('Balances', 'TotalIssuance') === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
   }
 
   /**
    *  The total units issued in the system.
    */
-  async getAsV1(): Promise<bigint> {
-    assert(this.isV1)
+  async getAsEfinityV1(): Promise<bigint> {
+    assert(this.isEfinityV1)
     return this._chain.getStorage(this.blockHash, 'Balances', 'TotalIssuance')
   }
 
@@ -238,20 +239,20 @@ export class MultiTokensTokenAccountsStorage {
   /**
    *  Accounts per token
    */
-  get isV3() {
+  get isEfinityV3() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'TokenAccounts') === 'aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862'
   }
 
   /**
    *  Accounts per token
    */
-  async getAsV3(key1: v3.AccountId32, key2: bigint, key3: bigint): Promise<v3.TokenAccount | undefined> {
-    assert(this.isV3)
+  async getAsEfinityV3(key1: efinityV3.AccountId32, key2: bigint, key3: bigint): Promise<efinityV3.TokenAccount | undefined> {
+    assert(this.isEfinityV3)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
   }
 
-  async getManyAsV3(keys: [v3.AccountId32, bigint, bigint][]): Promise<(v3.TokenAccount | undefined)[]> {
-    assert(this.isV3)
+  async getManyAsEfinityV3(keys: [efinityV3.AccountId32, bigint, bigint][]): Promise<(efinityV3.TokenAccount | undefined)[]> {
+    assert(this.isEfinityV3)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
 
@@ -318,20 +319,20 @@ export class SystemAccountStorage {
   /**
    *  The full account information for a particular account ID.
    */
-  get isV1() {
+  get isEfinityV1() {
     return this._chain.getStorageItemTypeHash('System', 'Account') === '1ddc7ade926221442c388ee4405a71c9428e548fab037445aaf4b3a78f4735c1'
   }
 
   /**
    *  The full account information for a particular account ID.
    */
-  async getAsV1(key: v1.AccountId32): Promise<v1.AccountInfo> {
-    assert(this.isV1)
+  async getAsEfinityV1(key: efinityV1.AccountId32): Promise<efinityV1.AccountInfo> {
+    assert(this.isEfinityV1)
     return this._chain.getStorage(this.blockHash, 'System', 'Account', key)
   }
 
-  async getManyAsV1(keys: v1.AccountId32[]): Promise<(v1.AccountInfo)[]> {
-    assert(this.isV1)
+  async getManyAsEfinityV1(keys: efinityV1.AccountId32[]): Promise<(efinityV1.AccountInfo)[]> {
+    assert(this.isEfinityV1)
     return this._chain.queryStorage(this.blockHash, 'System', 'Account', keys.map(k => [k]))
   }
 
@@ -361,7 +362,7 @@ export class SystemEventsStorage {
    *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
    *  from within the runtime.
    */
-  get isV1() {
+  get isEfinityV1() {
     return this._chain.getStorageItemTypeHash('System', 'Events') === '23fd5dcee7cda161a02e562d592b78824641f0d3b02526c7af7182361bd6c01f'
   }
 
@@ -371,8 +372,8 @@ export class SystemEventsStorage {
    *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
    *  from within the runtime.
    */
-  async getAsV1(): Promise<v1.EventRecord[]> {
-    assert(this.isV1)
+  async getAsEfinityV1(): Promise<efinityV1.EventRecord[]> {
+    assert(this.isEfinityV1)
     return this._chain.getStorage(this.blockHash, 'System', 'Events')
   }
 
@@ -403,7 +404,7 @@ export class SystemEventsStorage {
    *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
    *  from within the runtime.
    */
-  get isV3() {
+  get isEfinityV3() {
     return this._chain.getStorageItemTypeHash('System', 'Events') === 'c8a0f30468e6e6d0918317212be73b33345be77657252cc8e53d581816112b83'
   }
 
@@ -413,8 +414,29 @@ export class SystemEventsStorage {
    *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
    *  from within the runtime.
    */
-  async getAsV3(): Promise<v3.EventRecord[]> {
-    assert(this.isV3)
+  async getAsEfinityV3(): Promise<efinityV3.EventRecord[]> {
+    assert(this.isEfinityV3)
+    return this._chain.getStorage(this.blockHash, 'System', 'Events')
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
+   *  from within the runtime.
+   */
+  get isV4() {
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '8c61aa1f3f49d4106d772e00117bb4cf55e9db904b3e5fddc65866171f5f7a6f'
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
+   *  from within the runtime.
+   */
+  async getAsV4(): Promise<v4.EventRecord[]> {
+    assert(this.isV4)
     return this._chain.getStorage(this.blockHash, 'System', 'Events')
   }
 
@@ -441,15 +463,15 @@ export class SystemLastRuntimeUpgradeStorage {
   /**
    *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
    */
-  get isV1() {
+  get isEfinityV1() {
     return this._chain.getStorageItemTypeHash('System', 'LastRuntimeUpgrade') === 'e03e445e7a7694163bede3a772a8a347abf7a3a00424fbafec75f819d6173a17'
   }
 
   /**
    *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
    */
-  async getAsV1(): Promise<v1.LastRuntimeUpgradeInfo | undefined> {
-    assert(this.isV1)
+  async getAsEfinityV1(): Promise<efinityV1.LastRuntimeUpgradeInfo | undefined> {
+    assert(this.isEfinityV1)
     return this._chain.getStorage(this.blockHash, 'System', 'LastRuntimeUpgrade')
   }
 

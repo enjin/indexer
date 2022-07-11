@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v4'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
