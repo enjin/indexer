@@ -2,7 +2,7 @@
   "outDir": "../src/types/generated",
   "specVersions": "./chainSpecVersions.jsonl",
   "events": [
-    "Balances.Transfer",
+    "Balances.Withdraw",
     "MultiTokens.CollectionCreated",
     "MultiTokens.CollectionDestroyed",
     "MultiTokens.CollectionAccountCreated",
@@ -21,25 +21,7 @@
     "MultiTokens.Approved",
     "MultiTokens.Unapproved"
   ],
-  "calls": [
-    "Balances.transfer",
-    "Balances.force_transfer",
-    "Balances.transfer_all",
-    "Balances.transfer_keep_alive",
-    "MultiTokens.approve_collection",
-    "MultiTokens.approve_token",
-    "MultiTokens.burn",
-    "MultiTokens.create_collection",
-    "MultiTokens.destroy_collection",
-    "MultiTokens.freeze",
-    "MultiTokens.mint",
-    "MultiTokens.remove_attribute",
-    "MultiTokens.set_attribute",
-    "MultiTokens.thaw",
-    "MultiTokens.transfer",
-    "MultiTokens.unapprove_collection",
-    "MultiTokens.unapprove_token"
-  ],
+  "calls": true,
   "storage": [
     "System.Account",
     "System.Events",

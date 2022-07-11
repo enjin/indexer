@@ -1,6 +1,7 @@
 import {
     Account,
     AccountTransfer,
+    Fee,
     Transfer,
     TransferAssetToken,
     TransferDirection,
@@ -51,7 +52,6 @@ export interface TransferData extends ActionData {
     fromId: string
     toId: string | null
     amount: bigint
-    fee: bigint | undefined
     tip: bigint | undefined
     error: string
     success: boolean
@@ -63,6 +63,13 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
 
     const from = await getOrCreateAccount(ctx, fromId)
     const to = toId ? await getOrCreateAccount(ctx, toId) : null
+
+    const fee = await ctx.store.findOne(Fee, {
+        where: { id: data.id },
+        relations: {
+            who: true,
+        },
+    })
 
     const transfer = new Transfer({
         ...getMeta(data),
@@ -78,7 +85,7 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
             symbol: 'RFI',
             amount,
         }),
-        fee: data.fee,
+        fee: fee,
         tip: data.tip,
         error: data.error,
         success,

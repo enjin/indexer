@@ -1,4 +1,5 @@
 export * from "./chainInfo.model"
+export * from "./fee.model"
 export * from "./transfer.model"
 export * from "./_transferLocationAccount"
 export * from "./_transferAsset"

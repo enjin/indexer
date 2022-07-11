@@ -11,6 +11,7 @@ interface EventData {
 }
 
 function getCallData(ctx: CallContext): EventData | undefined {
+    console.log(ctx.call.name)
     const call = new BalancesTransferCall(ctx)
     if (call.isEfinityV1) {
         const { dest, value } = call.asEfinityV1
@@ -28,6 +29,7 @@ export async function handleTransfer(ctx: CallHandlerContext) {
     if (!data) return
 
     const accountId = getOriginAccountId(ctx.call.origin)
+
     if (!accountId) return
 
     await saveTransfer(ctx, {
@@ -38,7 +40,6 @@ export async function handleTransfer(ctx: CallHandlerContext) {
         fromId: accountId,
         toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
         amount: data.amount,
-        fee: ctx.extrinsic.fee,
         tip: ctx.extrinsic.tip,
         error: ctx.extrinsic.error,
         success: ctx.call.success,

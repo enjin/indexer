@@ -3,8 +3,8 @@ import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { AccountId32, Approval } from '../../../types/generated/v4'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { AccountId32, Approval } from '../../../types/generated/v4'
 
 interface EventData {
     collectionId: bigint
@@ -58,8 +58,8 @@ async function getStorageData(
             approvals: data.approvals,
             isFrozen: data.isFrozen,
         }
-    } else if (storage.isV4) {
-        const data = await storage.getAsV4(account, collectionId, tokenId)
+    } else if (storage.isEfinityV3) {
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data

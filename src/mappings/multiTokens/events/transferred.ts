@@ -60,8 +60,8 @@ async function getStorageData(
             approvals: data.approvals,
             isFrozen: data.isFrozen,
         }
-    } else if (storage.isV4) {
-        const data = await storage.getAsV4(account, collectionId, tokenId)
+    } else if (storage.isEfinityV3) {
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
