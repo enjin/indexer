@@ -38,16 +38,15 @@ explore:
 		--out typegen/chainSpecVersions.jsonl
 
 
-up:
-	@docker compose up -d
+efinity:
+	@source .env && source .env.efinity && docker compose up -d
+
+
+rocfinity:
+	@source .env && source .env.rocfinity && docker compose up -d
 
 
 logs:
 	@docker compose logs --tail all -f
-
-
-down:
-	@docker compose down
-
 
 .PHONY: process serve start codegen migration migrate up down typegen
