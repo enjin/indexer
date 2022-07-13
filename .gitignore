@@ -6,6 +6,5 @@
 
 /**/!*
 *.dev*
-.env.rocfinity
 
 package-lock.json
