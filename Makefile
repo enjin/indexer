@@ -38,14 +38,6 @@ explore:
 		--out typegen/chainSpecVersions.jsonl
 
 
-efinity:
-	@source .env && source .env.efinity && docker compose up -d
-
-
-rocfinity:
-	@source .env && source .env.rocfinity && docker compose up -d
-
-
 logs:
 	@docker compose logs --tail all -f
 
