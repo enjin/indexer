@@ -4,6 +4,8 @@ services:
   archive_cockroach:
     container_name: archive_cockroach
     image: cockroachdb/cockroach:v21.2.9
+    volumes:
+      - /opt/indexer/archive_db:/cockroach/cockroach-data
     ports:
       - "${ARCHIVE_DB_PORT}:26257"
     command: [
@@ -56,7 +58,7 @@ services:
     image: postgres:12
     restart: unless-stopped
     volumes:
-      - indexerdb:/var/lib/postgresql/data
+      - /opt/indexer/indexer_db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
@@ -83,10 +85,6 @@ services:
     depends_on:
       - indexer_db
       - indexer_processor
-
-volumes:
-  archivedb:
-  indexerdb:
 
 networks:
   default:
