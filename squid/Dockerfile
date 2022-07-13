@@ -16,10 +16,10 @@ RUN node common/scripts/install-run-rush.js deploy --project @subsquid/substrate
 
 
 FROM node AS substrate-ingest
-ARG CHAIN_ENDPOINT
+ARG SELECTED_CHAIN
 ARG EFINITY_ENDPOINT
 ARG ROCFINITY_ENDPOINT
-ENV CHAIN_ENDPOINT=${CHAIN_ENDPOINT}
+ENV SELECTED_CHAIN=${SELECTED_CHAIN}
 ENV EFINITY_ENDPOINT=${EFINITY_ENDPOINT}
 ENV ROCFINITY_ENDPOINT=${ROCFINITY_ENDPOINT}
 COPY --from=substrate-ingest-builder /squid/common/deploy /squid
