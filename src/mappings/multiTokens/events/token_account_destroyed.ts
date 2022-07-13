@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
-import { TokenAccount } from '../../../model'
+import { CollectionAccount, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 
@@ -28,12 +28,20 @@ export async function handleTokenAccountDestroyed(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const tokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${address}-${data.collectionId}-${data.tokenId}`
-    )
 
-    if (tokenAccount) {
-        await ctx.store.remove(tokenAccount)
-    }
+    const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+        where: { id: `${data.collectionId}-${address}` },
+        relations: {
+            account: true,
+            collection: true,
+        },
+    })
+    collectionAccount.accountCount -= 1
+    await ctx.store.save(collectionAccount)
+
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+    })
+
+    await ctx.store.remove(tokenAccount)
 }

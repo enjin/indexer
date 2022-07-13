@@ -1,5 +1,5 @@
 import config from './config'
-// import { handleChainState } from './chainState'
+import { handleChainState } from './chainState'
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { DEFAULT_BATCH_SIZE, DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
@@ -13,6 +13,28 @@ processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(config.port || DEFAULT_PORT)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
+processor.addCallHandler(
+    'Balances.transfer',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransfer
+)
+processor.addCallHandler(
+    'Balances.transfer_keep_alive',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransferKeepAlive
+)
+processor.addCallHandler(
+    'Balances.force_transfer',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleForceTransfer
+)
+processor.addCallHandler(
+    'Balances.transfer_all',
+    { triggerForFailedCalls: true },
+    modules.balances.extrinsics.handleTransferAll
+)
+
+processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler(
@@ -37,6 +59,13 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-// processor.addPostHook(handleChainState)
+processor.addPostHook(
+    {
+        range: {
+            from: config.chainStateHeight,
+        },
+    },
+    handleChainState
+)
 
 processor.run()

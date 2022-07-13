@@ -28,33 +28,38 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
-    const attribute = await ctx.store.get<Attribute>(Attribute, attributeId)
+    const attribute = await ctx.store.findOne<Attribute>(Attribute, {
+        where: { id: attributeId },
+    })
 
     if (attribute) {
-        if (attribute.key === 'name') {
-            if (attribute.token) {
-                const token = await ctx.store.findOneOrFail<Token>(Token, {
-                    where: { id: `${data.collectionId}-${data.tokenId}` },
-                    relations: {
-                        collection: true,
-                    },
-                })
-                if (token) {
-                    token.name = null
-                    await ctx.store.save(token)
-                }
-            } else if (attribute.collection) {
-                const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-                    where: { id: data.collectionId.toString() },
-                    relations: {
-                        owner: true,
-                    },
-                })
-                if (collection) {
-                    collection.name = null
-                    await ctx.store.save(collection)
-                }
+        if (attribute.token) {
+            const token = await ctx.store.findOneOrFail<Token>(Token, {
+                where: { id: `${data.collectionId}-${data.tokenId}` },
+                relations: {
+                    collection: true,
+                },
+            })
+
+            if (attribute.key === 'name') {
+                token.name = null
             }
+
+            token.attributeCount -= 1
+            await ctx.store.save(token)
+        } else if (attribute.collection) {
+            const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+                where: { id: data.collectionId.toString() },
+                relations: {
+                    owner: true,
+                },
+            })
+
+            if (attribute.key === 'name') {
+                collection.name = null
+            }
+            collection.attributeCount -= 1
+            await ctx.store.save(collection)
         }
 
         await ctx.store.remove(attribute)

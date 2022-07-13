@@ -1,3 +1,4 @@
 import multiTokens from './multiTokens'
+import balances from './balances'
 
-export { multiTokens }
+export { multiTokens, balances }

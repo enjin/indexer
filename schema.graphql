@@ -9,8 +9,73 @@ type ChainInfo @entity {
   timestamp: DateTime!
 }
 
+interface Action {
+  timestamp: DateTime
+  blockNumber: Int
+  extrinsicHash: String
+}
+
+interface CanFail {
+  success: Boolean
+}
+
+enum TransferDirection {
+  From
+  To
+}
+
+type Fee @entity {
+  id: ID!
+  amount: BigInt
+  who: Account!
+}
+
+type Transfer implements Action & CanFail @entity {
+  id: ID!
+  timestamp: DateTime!
+  blockNumber: Int! @index
+  extrinsicHash: String! @index
+  to: TransferLocationAccount
+  from: TransferLocationAccount!
+  asset: TransferAsset!
+  fee: Fee
+  tip: BigInt
+  error: String
+  success: Boolean! @index
+  type: TransferType!
+}
+
+type TransferLocationAccount {
+  id: String!
+}
+
+union TransferAsset = TransferAssetToken | TransferAssetMultiToken
+
+enum TransferType {
+  Native
+}
+
+type TransferAssetToken {
+  symbol: String
+  amount: BigInt
+}
+
+type TransferAssetMultiToken {
+  tokens: [TransferAssetToken]
+}
+
+# entity for linking account and transfer
+type AccountTransfer @entity {
+  id: ID!
+  transfer: Transfer
+  account: Account!
+  direction: TransferDirection
+}
+
 type Account @entity {
   id: ID!
+
+  transfers: [AccountTransfer!] @derivedFrom(field: "account")
 
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")

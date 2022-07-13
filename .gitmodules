@@ -1,0 +1,3 @@
+[submodule "squid/squid-repo"]
+	path = squid/squid-repo
+	url = git@github.com:subsquid/squid.git

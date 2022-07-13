@@ -16,10 +16,14 @@ RUN node common/scripts/install-run-rush.js deploy --project @subsquid/substrate
 
 
 FROM node AS substrate-ingest
+ARG CHAIN_ENDPOINT
+ENV CHAIN_ENDPOINT=${CHAIN_ENDPOINT}
 COPY --from=substrate-ingest-builder /squid/common/deploy /squid
 WORKDIR /squid/substrate-ingest
+COPY init.sh init.sh
 EXPOSE 9090
-ENTRYPOINT ["node", "/squid/substrate-ingest/bin/run.js", "--out", "postgres://root@archive_cockroach:26257/defaultdb", "-e", "wss://archive.rpc.rococo.efinity.io", "-c", "80", "--prom-port", "9090", "--write-batch-size", "80", "--start-block", "0"]
+ENTRYPOINT ["/squid/substrate-ingest/init.sh"]
+
 
 FROM builder AS chain-status-service-builder
 RUN node common/scripts/install-run-rush.js deploy --project chain-status-service

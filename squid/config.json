@@ -1,5 +1,10 @@
 {
+  "efinity": [
+    "wss://archive.rpc.efinity.io",
+    "wss://rpc.efinity.io"
+  ],
   "rocfinity": [
-    "wss://archive.rpc.rococo.efinity.io"
+    "wss://archive.rpc.rococo.efinity.io",
+    "wss://rpc.rococo.efinity.io"
   ]
 }

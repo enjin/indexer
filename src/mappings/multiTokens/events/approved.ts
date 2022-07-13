@@ -49,8 +49,6 @@ export async function handleApproved(ctx: EventHandlerContext) {
             },
         })
 
-        if (!tokenAccount) return
-
         const approvals = tokenAccount.approvals ?? []
         approvals.push(
             new TokenApproval({
@@ -71,8 +69,6 @@ export async function handleApproved(ctx: EventHandlerContext) {
                 collection: true,
             },
         })
-
-        if (!collectionAccount) return
 
         const approvals = collectionAccount.approvals ?? []
         approvals.push(

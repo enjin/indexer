@@ -1,7 +1,9 @@
 FROM node:16-alpine3.15 AS node
 
+
 FROM node AS node-with-gyp
 RUN apk add g++ make python3
+
 
 FROM node-with-gyp AS builder
 WORKDIR /squid
@@ -12,11 +14,13 @@ ADD tsconfig.json .
 ADD src src
 RUN npm run build
 
+
 FROM node-with-gyp AS deps
 WORKDIR /squid
 ADD package.json .
 RUN npm install
 RUN npm ci --production
+
 
 FROM node AS squid
 WORKDIR /squid

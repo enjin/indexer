@@ -3,8 +3,8 @@ import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { AccountId32, Approval } from '../../../types/generated/v4'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { AccountId32, Approval } from '../../../types/generated/v4'
 
 interface EventData {
     collectionId: bigint
@@ -58,8 +58,8 @@ async function getStorageData(
             approvals: data.approvals,
             isFrozen: data.isFrozen,
         }
-    } else if (storage.isV4) {
-        const data = await storage.getAsV4(account, collectionId, tokenId)
+    } else if (storage.isEfinityV3) {
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
@@ -74,10 +74,15 @@ export async function handleBurned(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
-    const tokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${address}-${data.collectionId}-${data.tokenId}`
-    )
+    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+            token: true,
+            account: true,
+        },
+    })
+
     if (tokenAccount) {
         const storage = await getStorageData(ctx, data.accountId, data.collectionId, data.tokenId)
         if (storage) {

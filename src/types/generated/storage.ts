@@ -3,6 +3,7 @@ import {Block, Chain, ChainContext, BlockContext, Result} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
 import * as v4 from './v4'
+import * as efinityV3 from './efinityV3'
 
 export class BalancesAccountStorage {
   private readonly _chain: Chain
@@ -238,20 +239,20 @@ export class MultiTokensTokenAccountsStorage {
   /**
    *  Accounts per token
    */
-  get isV4() {
+  get isEfinityV3() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'TokenAccounts') === 'aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862'
   }
 
   /**
    *  Accounts per token
    */
-  async getAsV4(key1: v4.AccountId32, key2: bigint, key3: bigint): Promise<v4.TokenAccount | undefined> {
-    assert(this.isV4)
+  async getAsEfinityV3(key1: efinityV3.AccountId32, key2: bigint, key3: bigint): Promise<efinityV3.TokenAccount | undefined> {
+    assert(this.isEfinityV3)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
   }
 
-  async getManyAsV4(keys: [v4.AccountId32, bigint, bigint][]): Promise<(v4.TokenAccount | undefined)[]> {
-    assert(this.isV4)
+  async getManyAsEfinityV3(keys: [efinityV3.AccountId32, bigint, bigint][]): Promise<(efinityV3.TokenAccount | undefined)[]> {
+    assert(this.isEfinityV3)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
 
@@ -394,6 +395,27 @@ export class SystemEventsStorage {
    */
   async getAsV2(): Promise<v2.EventRecord[]> {
     assert(this.isV2)
+    return this._chain.getStorage(this.blockHash, 'System', 'Events')
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
+   *  from within the runtime.
+   */
+  get isEfinityV3() {
+    return this._chain.getStorageItemTypeHash('System', 'Events') === 'c8a0f30468e6e6d0918317212be73b33345be77657252cc8e53d581816112b83'
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: This storage item is explicitly unbounded since it is never intended to be read
+   *  from within the runtime.
+   */
+  async getAsEfinityV3(): Promise<efinityV3.EventRecord[]> {
+    assert(this.isEfinityV3)
     return this._chain.getStorage(this.blockHash, 'System', 'Events')
   }
 

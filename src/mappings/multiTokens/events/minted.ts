@@ -59,8 +59,8 @@ async function getStorageData(
             lockedBalance: 0n,
             locks: [],
         }
-    } else if (storage.isV4) {
-        const data = await storage.getAsV4(account, collectionId, tokenId)
+    } else if (storage.isEfinityV3) {
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
@@ -75,21 +75,22 @@ export async function handleMinted(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.recipient)
-    const tokenAccount = await ctx.store.get<TokenAccount>(
-        TokenAccount,
-        `${address}-${data.collectionId}-${data.tokenId}`
-    )
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: {
+            account: true,
+            collection: true,
+            token: true,
+        },
+    })
 
-    if (tokenAccount) {
-        const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
+    const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
+    if (storage) {
+        tokenAccount.balance = storage.balance
+        tokenAccount.reservedBalance = storage.reservedBalance
+        tokenAccount.lockedBalance = storage.lockedBalance
+        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
 
-        if (storage) {
-            tokenAccount.balance = storage.balance
-            tokenAccount.reservedBalance = storage.reservedBalance
-            tokenAccount.lockedBalance = storage.lockedBalance
-            tokenAccount.updatedAt = new Date(ctx.block.timestamp)
-
-            await ctx.store.save(tokenAccount)
-        }
+        await ctx.store.save(tokenAccount)
     }
 }

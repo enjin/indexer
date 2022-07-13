@@ -1,9 +1,8 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result} from './support'
-import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
 
-export class BalancesTransferEvent {
+export class BalancesWithdrawEvent {
   private readonly _chain: Chain
   private readonly event: Event
 
@@ -11,37 +10,22 @@ export class BalancesTransferEvent {
   constructor(ctx: ChainContext, event: Event)
   constructor(ctx: EventContext, event?: Event) {
     event = event || ctx.event
-    assert(event.name === 'Balances.Transfer')
+    assert(event.name === 'Balances.Withdraw')
     this._chain = ctx._chain
     this.event = event
   }
 
   /**
-   * Transfer succeeded. \[from, to, value\]
-   */
-  get isEfinityV1(): boolean {
-    return this._chain.getEventHash('Balances.Transfer') === 'dad2bcdca357505fa3c7832085d0db53ce6f902bd9f5b52823ee8791d351872c'
-  }
-
-  /**
-   * Transfer succeeded. \[from, to, value\]
-   */
-  get asEfinityV1(): [efinityV1.AccountId32, efinityV1.AccountId32, bigint] {
-    assert(this.isEfinityV1)
-    return this._chain.decodeEvent(this.event)
-  }
-
-  /**
-   * Transfer succeeded.
+   * Some amount was withdrawn from the account (e.g. for transaction fees).
    */
   get isV2(): boolean {
-    return this._chain.getEventHash('Balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
+    return this._chain.getEventHash('Balances.Withdraw') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
   }
 
   /**
-   * Transfer succeeded.
+   * Some amount was withdrawn from the account (e.g. for transaction fees).
    */
-  get asV2(): {from: v2.AccountId32, to: v2.AccountId32, amount: bigint} {
+  get asV2(): {who: v2.AccountId32, amount: bigint} {
     assert(this.isV2)
     return this._chain.decodeEvent(this.event)
   }
