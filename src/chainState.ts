@@ -6,7 +6,6 @@ import config from './config'
 import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/contexts'
 
 let lastStateTimestamp = 0
-const startBlockHeight = 750000
 
 export async function handleChainState(ctx: BlockHandlerContext) {
     if (!lastStateTimestamp) {
@@ -14,7 +13,7 @@ export async function handleChainState(ctx: BlockHandlerContext) {
         if (lastChainState[0]) lastStateTimestamp = lastChainState[0].timestamp.getTime() || 0
     }
 
-    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD && ctx.block.height > startBlockHeight) {
+    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
         await saveChainState(ctx)
         lastStateTimestamp = ctx.block.timestamp
         console.log(`Chain state updated at block ${ctx.block.height}`)

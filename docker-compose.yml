@@ -16,6 +16,10 @@ services:
     build:
       context: ./squid
       target: substrate-ingest
+      args:
+        - SELECTED_CHAIN=$SELECTED_CHAIN
+        - EFINITY_ENDPOINT=$EFINITY_ENDPOINT
+        - ROCFINITY_ENDPOINT=$ROCFINITY_ENDPOINT
     restart: unless-stopped
     ports:
       - "21523:9090"

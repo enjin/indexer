@@ -12,6 +12,7 @@ enum HandlerParams {
 export interface ProcessorConfig {
     chainName: string
     prefix: number | string
+    chainStateHeight: number
     genesisHash: string
     rpc: string
     dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[HandlerParams.NAME]
