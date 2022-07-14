@@ -26,11 +26,11 @@ export async function handleWithdraw(ctx: EventHandlerContext) {
     const eventData = getEventData(ctx as EventHandlerContext)
 
     if (!eventData) return
-    if (!ctx.event.call?.id) return
+    if (!ctx.event.extrinsic?.call?.id) return
 
     const who = await getOrCreateAccount(ctx, encodeId(eventData.who))
     const fee = new Fee({
-        id: ctx.event.call.id,
+        id: ctx.event.extrinsic.call.id,
         amount: eventData.amount,
         who: who,
     })
