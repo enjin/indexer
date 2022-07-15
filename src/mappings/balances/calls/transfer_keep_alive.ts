@@ -37,7 +37,7 @@ export async function handleTransferKeepAlive(ctx: CallHandlerContext) {
         blockNumber: ctx.block.height,
         extrinsicHash: ctx.extrinsic.hash,
         fromId: accountId,
-        toId: isAdressSS58(data.to) ? encodeId(data.to) : null,
+        toId: isAdressSS58(data.to) ? encodeId(data.to) : '0x' + Buffer.from(data.to).toString('hex'),
         amount: data.amount,
         tip: ctx.extrinsic.tip,
         error: ctx.extrinsic.error,
