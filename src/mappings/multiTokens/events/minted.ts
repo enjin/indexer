@@ -28,8 +28,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensMintedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, issuer, recipient, amount } = event.asV2
+    if (event.isV5) {
+        const { collectionId, tokenId, issuer, recipient, amount } = event.asV5
         return { collectionId, tokenId, issuer, recipient, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)

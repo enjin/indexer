@@ -14,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensCollectionAccountCreatedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, accountId } = event.asV2
+    if (event.isV5) {
+        const { collectionId, accountId } = event.asV5
         return { collectionId, accountId }
     } else {
         throw new UnknownVersionError(event.constructor.name)

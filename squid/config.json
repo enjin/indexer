@@ -6,5 +6,8 @@
   "rocfinity": [
     "wss://archive.rpc.rococo.efinity.io",
     "wss://rpc.rococo.efinity.io"
+  ],
+  "devfinity": [
+    "ws://18.222.114.225:8845"
   ]
 }

@@ -14,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     const event = new BalancesWithdrawEvent(ctx)
     console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
-    if (event.isV2) {
-        const { who, amount } = event.asV2
+    if (event.isV5) {
+        const { who, amount } = event.asV5
         return { who, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)
