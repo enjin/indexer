@@ -1,42 +1,5 @@
 import type {Result} from './support'
 
-export interface Header {
-  parentHash: H256
-  number: number
-  stateRoot: H256
-  extrinsicsRoot: H256
-  digest: Digest
-}
-
-export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
-
-export interface MultiAddress_Id {
-  __kind: 'Id'
-  value: AccountId32
-}
-
-export interface MultiAddress_Index {
-  __kind: 'Index'
-  value: null
-}
-
-export interface MultiAddress_Raw {
-  __kind: 'Raw'
-  value: Uint8Array
-}
-
-export interface MultiAddress_Address32 {
-  __kind: 'Address32'
-  value: Uint8Array
-}
-
-export interface MultiAddress_Address20 {
-  __kind: 'Address20'
-  value: Uint8Array
-}
-
-export type H256 = Uint8Array
-
 export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Sudo | Call_Preimage | Call_Scheduler | Call_Utility | Call_Contracts | Call_Balances | Call_Vesting | Call_VestingRegistrar | Call_Democracy | Call_Council | Call_TechnicalCommittee | Call_CommunityPool | Call_TechnicalMembership | Call_Multisig | Call_CollatorStaking | Call_Session | Call_Authorship | Call_XcmpQueue | Call_PolkadotXcm | Call_CumulusXcm | Call_DmpQueue | Call_OrmlXcm | Call_Bounties | Call_MultiTokens | Call_Claims | Call_Pools
 
 export interface Call_System {
@@ -198,6 +161,33 @@ export interface MaybeHashed_Hash {
   value: H256
 }
 
+export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
+
+export interface MultiAddress_Id {
+  __kind: 'Id'
+  value: AccountId32
+}
+
+export interface MultiAddress_Index {
+  __kind: 'Index'
+  value: null
+}
+
+export interface MultiAddress_Raw {
+  __kind: 'Raw'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address32 {
+  __kind: 'Address32'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address20 {
+  __kind: 'Address20'
+  value: Uint8Array
+}
+
 export type OriginCaller = OriginCaller_system | OriginCaller_Council | OriginCaller_TechnicalCommittee | OriginCaller_PolkadotXcm | OriginCaller_CumulusXcm | OriginCaller_Void
 
 export interface OriginCaller_system {
@@ -234,10 +224,6 @@ export interface EventRecord {
   phase: Phase
   event: Event
   topics: H256[]
-}
-
-export interface Digest {
-  logs: DigestItem[]
 }
 
 /**
@@ -3175,6 +3161,8 @@ export interface PoolsCall_mutate_pools {
   mutation: PoolsMutation
 }
 
+export type H256 = Uint8Array
+
 export type RawOrigin_212 = RawOrigin_212_Root | RawOrigin_212_Signed | RawOrigin_212_None
 
 export interface RawOrigin_212_Root {
@@ -3378,32 +3366,6 @@ export interface Event_Pools {
   value: PoolsEvent
 }
 
-export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
-
-export interface DigestItem_PreRuntime {
-  __kind: 'PreRuntime'
-  value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Consensus {
-  __kind: 'Consensus'
-  value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Seal {
-  __kind: 'Seal'
-  value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Other {
-  __kind: 'Other'
-  value: Uint8Array
-}
-
-export interface DigestItem_RuntimeEnvironmentUpdated {
-  __kind: 'RuntimeEnvironmentUpdated'
-}
-
 export type Perbill = number
 
 export interface ParachainInherentData {
@@ -3477,6 +3439,14 @@ export interface Timepoint {
 export interface SessionKeys {
   aura: Public
   pools: Public
+}
+
+export interface Header {
+  parentHash: H256
+  number: number
+  stateRoot: H256
+  extrinsicsRoot: H256
+  digest: Digest
 }
 
 export type VersionedMultiLocation = VersionedMultiLocation_V0 | VersionedMultiLocation_V1
@@ -5933,6 +5903,10 @@ export type Vote = number
 
 export type Public = Uint8Array
 
+export interface Digest {
+  logs: DigestItem[]
+}
+
 export type V0MultiLocation = V0MultiLocation_Null | V0MultiLocation_X1 | V0MultiLocation_X2 | V0MultiLocation_X3 | V0MultiLocation_X4 | V0MultiLocation_X5 | V0MultiLocation_X6 | V0MultiLocation_X7 | V0MultiLocation_X8
 
 export interface V0MultiLocation_Null {
@@ -7018,6 +6992,32 @@ export interface V2Response_Version {
 export type HeadData = Uint8Array
 
 export type BTreeSet = Uint8Array[]
+
+export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
+
+export interface DigestItem_PreRuntime {
+  __kind: 'PreRuntime'
+  value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Consensus {
+  __kind: 'Consensus'
+  value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Seal {
+  __kind: 'Seal'
+  value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Other {
+  __kind: 'Other'
+  value: Uint8Array
+}
+
+export interface DigestItem_RuntimeEnvironmentUpdated {
+  __kind: 'RuntimeEnvironmentUpdated'
+}
 
 export type V0Junction = V0Junction_Parent | V0Junction_Parachain | V0Junction_AccountId32 | V0Junction_AccountIndex64 | V0Junction_AccountKey20 | V0Junction_PalletInstance | V0Junction_GeneralIndex | V0Junction_GeneralKey | V0Junction_OnlyChild | V0Junction_Plurality
 

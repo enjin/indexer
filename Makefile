@@ -29,13 +29,13 @@ migration:
 
 
 ingest:
-	npx squid-substrate-ingest -e wss://archive.rpc.efinity.io --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
+	npx squid-substrate-ingest -e ws://18.222.114.225:8845 --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
 
 
 explore:
 	@source .env && npx squid-substrate-metadata-explorer \
 		--chain "$${CHAIN_ENDPOINT}" \
-		--out typegen/chainSpecVersions.jsonl
+		--out typegen/chainSpecVersions2.jsonl
 
 
 logs:

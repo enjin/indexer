@@ -1,5 +1,6 @@
 import assert from 'assert'
 import {Block, Chain, ChainContext, BlockContext, Result} from './support'
+import * as v5 from './v5'
 import * as efinityV1 from './efinityV1'
 import * as v2 from './v2'
 import * as v4 from './v4'
@@ -18,26 +19,68 @@ export class BalancesAccountStorage {
   }
 
   /**
-   *  The balance of an account.
+   *  The Balances pallet example of storing the balance of an account.
    * 
+   *  # Example
+   * 
+   *  ```nocompile
+   *   impl pallet_balances::Config for Runtime {
+   *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+   *   }
+   *  ```
+   * 
+   *  You can also store the balance of an account in the `System` pallet.
+   * 
+   *  # Example
+   * 
+   *  ```nocompile
+   *   impl pallet_balances::Config for Runtime {
+   *    type AccountStore = System
+   *   }
+   *  ```
+   * 
+   *  But this comes with tradeoffs, storing account balances in the system pallet stores
+   *  `frame_system` data alongside the account data contrary to storing account balances in the
+   *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
    *  NOTE: This is only used in the case that this pallet is used to store balances.
    */
-  get isEfinityV1() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('Balances', 'Account') === '0b3b4bf0dd7388459eba461bc7c3226bf58608c941710a714e02f33ec0f91e78'
   }
 
   /**
-   *  The balance of an account.
+   *  The Balances pallet example of storing the balance of an account.
    * 
+   *  # Example
+   * 
+   *  ```nocompile
+   *   impl pallet_balances::Config for Runtime {
+   *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+   *   }
+   *  ```
+   * 
+   *  You can also store the balance of an account in the `System` pallet.
+   * 
+   *  # Example
+   * 
+   *  ```nocompile
+   *   impl pallet_balances::Config for Runtime {
+   *    type AccountStore = System
+   *   }
+   *  ```
+   * 
+   *  But this comes with tradeoffs, storing account balances in the system pallet stores
+   *  `frame_system` data alongside the account data contrary to storing account balances in the
+   *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
    *  NOTE: This is only used in the case that this pallet is used to store balances.
    */
-  async getAsEfinityV1(key: efinityV1.AccountId32): Promise<efinityV1.AccountData> {
-    assert(this.isEfinityV1)
+  async getAsV5(key: v5.AccountId32): Promise<v5.AccountData> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'Balances', 'Account', key)
   }
 
-  async getManyAsEfinityV1(keys: efinityV1.AccountId32[]): Promise<(efinityV1.AccountData)[]> {
-    assert(this.isEfinityV1)
+  async getManyAsV5(keys: v5.AccountId32[]): Promise<(v5.AccountData)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'Balances', 'Account', keys.map(k => [k]))
   }
 
@@ -64,15 +107,15 @@ export class BalancesTotalIssuanceStorage {
   /**
    *  The total units issued in the system.
    */
-  get isEfinityV1() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('Balances', 'TotalIssuance') === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
   }
 
   /**
    *  The total units issued in the system.
    */
-  async getAsEfinityV1(): Promise<bigint> {
-    assert(this.isEfinityV1)
+  async getAsV5(): Promise<bigint> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'Balances', 'TotalIssuance')
   }
 
@@ -99,20 +142,20 @@ export class MultiTokensAttributesStorage {
   /**
    *  Metadata of collections and tokens.
    */
-  get isV2() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'Attributes') === 'a746a93405e250d7e804277de85e59649a8d0f26dcdbc38249cee2190785886d'
   }
 
   /**
    *  Metadata of collections and tokens.
    */
-  async getAsV2(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<v2.Attribute | undefined> {
-    assert(this.isV2)
+  async getAsV5(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<v5.Attribute | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Attributes', key1, key2, key3)
   }
 
-  async getManyAsV2(keys: [bigint, (bigint | undefined), Uint8Array][]): Promise<(v2.Attribute | undefined)[]> {
-    assert(this.isV2)
+  async getManyAsV5(keys: [bigint, (bigint | undefined), Uint8Array][]): Promise<(v5.Attribute | undefined)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Attributes', keys)
   }
 
@@ -139,20 +182,20 @@ export class MultiTokensCollectionAccountsStorage {
   /**
    *  Stores information for an account per collection
    */
-  get isV2() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'CollectionAccounts') === 'b46672e82d7bfd0dfb77b459f54edcb3814fab36fcd1e60c5702769a7fd5b155'
   }
 
   /**
    *  Stores information for an account per collection
    */
-  async getAsV2(key1: bigint, key2: v2.AccountId32): Promise<v2.CollectionAccount | undefined> {
-    assert(this.isV2)
+  async getAsV5(key1: bigint, key2: v5.AccountId32): Promise<v5.CollectionAccount | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts', key1, key2)
   }
 
-  async getManyAsV2(keys: [bigint, v2.AccountId32][]): Promise<(v2.CollectionAccount | undefined)[]> {
-    assert(this.isV2)
+  async getManyAsV5(keys: [bigint, v5.AccountId32][]): Promise<(v5.CollectionAccount | undefined)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts', keys)
   }
 
@@ -179,20 +222,20 @@ export class MultiTokensCollectionsStorage {
   /**
    *  The collections in existence and their ownership details.
    */
-  get isV2() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'Collections') === '796cee53b5b0994fbc828ea8d49c6ffd793ecd23b4c7a29bd969e059778d89f3'
   }
 
   /**
    *  The collections in existence and their ownership details.
    */
-  async getAsV2(key: bigint): Promise<v2.Collection | undefined> {
-    assert(this.isV2)
+  async getAsV5(key: bigint): Promise<v5.Collection | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Collections', key)
   }
 
-  async getManyAsV2(keys: bigint[]): Promise<(v2.Collection | undefined)[]> {
-    assert(this.isV2)
+  async getManyAsV5(keys: bigint[]): Promise<(v5.Collection | undefined)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections', keys.map(k => [k]))
   }
 
@@ -214,6 +257,26 @@ export class MultiTokensTokenAccountsStorage {
     block = block || ctx.block
     this.blockHash = block.hash
     this._chain = ctx._chain
+  }
+
+  /**
+   *  Accounts per token
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'TokenAccounts') === 'aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862'
+  }
+
+  /**
+   *  Accounts per token
+   */
+  async getAsV5(key1: v5.AccountId32, key2: bigint, key3: bigint): Promise<v5.TokenAccount | undefined> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
+  }
+
+  async getManyAsV5(keys: [v5.AccountId32, bigint, bigint][]): Promise<(v5.TokenAccount | undefined)[]> {
+    assert(this.isV5)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
 
   /**
@@ -279,20 +342,20 @@ export class MultiTokensTokensStorage {
   /**
    *  Tokens storage
    */
-  get isV2() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'Tokens') === '4eac4ac19f06319a6cc826f78f0b579a3c691cb8f1cdf61c93a535676b73abed'
   }
 
   /**
    *  Tokens storage
    */
-  async getAsV2(key1: bigint, key2: bigint): Promise<v2.Token | undefined> {
-    assert(this.isV2)
+  async getAsV5(key1: bigint, key2: bigint): Promise<v5.Token | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Tokens', key1, key2)
   }
 
-  async getManyAsV2(keys: [bigint, bigint][]): Promise<(v2.Token | undefined)[]> {
-    assert(this.isV2)
+  async getManyAsV5(keys: [bigint, bigint][]): Promise<(v5.Token | undefined)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens', keys)
   }
 
@@ -319,20 +382,20 @@ export class SystemAccountStorage {
   /**
    *  The full account information for a particular account ID.
    */
-  get isEfinityV1() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('System', 'Account') === '1ddc7ade926221442c388ee4405a71c9428e548fab037445aaf4b3a78f4735c1'
   }
 
   /**
    *  The full account information for a particular account ID.
    */
-  async getAsEfinityV1(key: efinityV1.AccountId32): Promise<efinityV1.AccountInfo> {
-    assert(this.isEfinityV1)
+  async getAsV5(key: v5.AccountId32): Promise<v5.AccountInfo> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'System', 'Account', key)
   }
 
-  async getManyAsEfinityV1(keys: efinityV1.AccountId32[]): Promise<(efinityV1.AccountInfo)[]> {
-    assert(this.isEfinityV1)
+  async getManyAsV5(keys: v5.AccountId32[]): Promise<(v5.AccountInfo)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'System', 'Account', keys.map(k => [k]))
   }
 
@@ -354,6 +417,33 @@ export class SystemEventsStorage {
     block = block || ctx.block
     this.blockHash = block.hash
     this._chain = ctx._chain
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: The item is unbound and should therefore never be read on chain.
+   *  It could otherwise inflate the PoV size of a block.
+   * 
+   *  Events have a large in-memory size. Box the events to not go out-of-memory
+   *  just in case someone still reads them from within the runtime.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('System', 'Events') === 'ef39e5f1c13dc9f246bed0ff3d3981861dd54102023ebe2eb2ebc17ebc2a9d92'
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: The item is unbound and should therefore never be read on chain.
+   *  It could otherwise inflate the PoV size of a block.
+   * 
+   *  Events have a large in-memory size. Box the events to not go out-of-memory
+   *  just in case someone still reads them from within the runtime.
+   */
+  async getAsV5(): Promise<v5.EventRecord[]> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'System', 'Events')
   }
 
   /**
@@ -463,15 +553,15 @@ export class SystemLastRuntimeUpgradeStorage {
   /**
    *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
    */
-  get isEfinityV1() {
+  get isV5() {
     return this._chain.getStorageItemTypeHash('System', 'LastRuntimeUpgrade') === 'e03e445e7a7694163bede3a772a8a347abf7a3a00424fbafec75f819d6173a17'
   }
 
   /**
    *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
    */
-  async getAsEfinityV1(): Promise<efinityV1.LastRuntimeUpgradeInfo | undefined> {
-    assert(this.isEfinityV1)
+  async getAsV5(): Promise<v5.LastRuntimeUpgradeInfo | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'System', 'LastRuntimeUpgrade')
   }
 

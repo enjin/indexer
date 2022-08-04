@@ -14,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensAttributeSetEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, key, value } = event.asV2
+    if (event.isV5) {
+        const { collectionId, tokenId, key, value } = event.asV5
         return { collectionId, tokenId, key, value }
     } else {
         throw new UnknownVersionError(event.constructor.name)

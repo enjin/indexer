@@ -27,8 +27,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensBurnedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, accountId, amount } = event.asV2
+    if (event.isV5) {
+        const { collectionId, tokenId, accountId, amount } = event.asV5
         return { collectionId, tokenId, accountId, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)
