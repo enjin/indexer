@@ -25,7 +25,7 @@ export class BalancesWithdrawEvent {
   /**
    * Some amount was withdrawn from the account (e.g. for transaction fees).
    */
-  get asV5(): {who: v5.AccountId32, amount: bigint} {
+  get asV5(): {who: Uint8Array, amount: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -54,7 +54,7 @@ export class MultiTokensApprovedEvent {
   /**
    * An approval took place. If `token_id` is `None`, it applies to the whole collection.
    */
-  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v5.AccountId32, operator: v5.AccountId32, amount: (bigint | undefined), expiration: (number | undefined)} {
+  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array, amount: (bigint | undefined), expiration: (number | undefined)} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -141,7 +141,7 @@ export class MultiTokensBurnedEvent {
   /**
    * Units of a `Token` were burned
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: v5.AccountId32, amount: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -170,7 +170,7 @@ export class MultiTokensCollectionAccountCreatedEvent {
   /**
    * A new `CollectionAccount` was created
    */
-  get asV5(): {collectionId: bigint, accountId: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, accountId: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -199,7 +199,7 @@ export class MultiTokensCollectionAccountDestroyedEvent {
   /**
    * A `CollectionAccount` was destroyed
    */
-  get asV5(): {collectionId: bigint, accountId: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, accountId: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -228,7 +228,7 @@ export class MultiTokensCollectionCreatedEvent {
   /**
    * A new `Collection` was created
    */
-  get asV5(): {collectionId: bigint, owner: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, owner: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -257,7 +257,7 @@ export class MultiTokensCollectionDestroyedEvent {
   /**
    * A `Collection` was destroyed.
    */
-  get asV5(): {collectionId: bigint, caller: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, caller: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -315,7 +315,7 @@ export class MultiTokensMintedEvent {
   /**
    * Units of a `Token` were minted
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, issuer: v5.AccountId32, recipient: v5.AccountId32, amount: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, issuer: Uint8Array, recipient: Uint8Array, amount: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -373,7 +373,7 @@ export class MultiTokensTokenAccountCreatedEvent {
   /**
    * A new `TokenAccount` was created
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: v5.AccountId32, balance: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, balance: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -402,7 +402,7 @@ export class MultiTokensTokenAccountDestroyedEvent {
   /**
    * A `TokenAccount` was destroyed
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -431,7 +431,7 @@ export class MultiTokensTokenCreatedEvent {
   /**
    * A `Token` was created
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, issuer: v5.AccountId32, initialSupply: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, issuer: Uint8Array, initialSupply: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -460,7 +460,7 @@ export class MultiTokensTokenDestroyedEvent {
   /**
    * A `Token` was destroyed
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, caller: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, caller: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -489,7 +489,7 @@ export class MultiTokensTransferredEvent {
   /**
    * Units of a `Token` were transferred
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, operator: v5.AccountId32, from: v5.AccountId32, to: v5.AccountId32, amount: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, from: Uint8Array, to: Uint8Array, amount: bigint} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
@@ -518,7 +518,7 @@ export class MultiTokensUnapprovedEvent {
   /**
    * An unapproval took place. If `token_id` is `None`, it applies to the collection.
    */
-  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), owner: v5.AccountId32, operator: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }

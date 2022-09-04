@@ -74,12 +74,12 @@ export class BalancesAccountStorage {
    *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
    *  NOTE: This is only used in the case that this pallet is used to store balances.
    */
-  async getAsV5(key: v5.AccountId32): Promise<v5.AccountData> {
+  async getAsV5(key: Uint8Array): Promise<v5.AccountData> {
     assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'Balances', 'Account', key)
   }
 
-  async getManyAsV5(keys: v5.AccountId32[]): Promise<(v5.AccountData)[]> {
+  async getManyAsV5(keys: Uint8Array[]): Promise<(v5.AccountData)[]> {
     assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'Balances', 'Account', keys.map(k => [k]))
   }
@@ -189,12 +189,12 @@ export class MultiTokensCollectionAccountsStorage {
   /**
    *  Stores information for an account per collection
    */
-  async getAsV5(key1: bigint, key2: v5.AccountId32): Promise<v5.CollectionAccount | undefined> {
+  async getAsV5(key1: bigint, key2: Uint8Array): Promise<v5.CollectionAccount | undefined> {
     assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts', key1, key2)
   }
 
-  async getManyAsV5(keys: [bigint, v5.AccountId32][]): Promise<(v5.CollectionAccount | undefined)[]> {
+  async getManyAsV5(keys: [bigint, Uint8Array][]): Promise<(v5.CollectionAccount | undefined)[]> {
     assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts', keys)
   }
@@ -269,12 +269,12 @@ export class MultiTokensTokenAccountsStorage {
   /**
    *  Accounts per token
    */
-  async getAsV5(key1: v5.AccountId32, key2: bigint, key3: bigint): Promise<v5.TokenAccount | undefined> {
+  async getAsV5(key1: Uint8Array, key2: bigint, key3: bigint): Promise<v5.TokenAccount | undefined> {
     assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
   }
 
-  async getManyAsV5(keys: [v5.AccountId32, bigint, bigint][]): Promise<(v5.TokenAccount | undefined)[]> {
+  async getManyAsV5(keys: [Uint8Array, bigint, bigint][]): Promise<(v5.TokenAccount | undefined)[]> {
     assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
@@ -289,12 +289,12 @@ export class MultiTokensTokenAccountsStorage {
   /**
    *  Accounts per token
    */
-  async getAsV2(key1: v2.AccountId32, key2: bigint, key3: bigint): Promise<v2.TokenAccount | undefined> {
+  async getAsV2(key1: Uint8Array, key2: bigint, key3: bigint): Promise<v2.TokenAccount | undefined> {
     assert(this.isV2)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
   }
 
-  async getManyAsV2(keys: [v2.AccountId32, bigint, bigint][]): Promise<(v2.TokenAccount | undefined)[]> {
+  async getManyAsV2(keys: [Uint8Array, bigint, bigint][]): Promise<(v2.TokenAccount | undefined)[]> {
     assert(this.isV2)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
@@ -309,12 +309,12 @@ export class MultiTokensTokenAccountsStorage {
   /**
    *  Accounts per token
    */
-  async getAsEfinityV3(key1: efinityV3.AccountId32, key2: bigint, key3: bigint): Promise<efinityV3.TokenAccount | undefined> {
+  async getAsEfinityV3(key1: Uint8Array, key2: bigint, key3: bigint): Promise<efinityV3.TokenAccount | undefined> {
     assert(this.isEfinityV3)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', key1, key2, key3)
   }
 
-  async getManyAsEfinityV3(keys: [efinityV3.AccountId32, bigint, bigint][]): Promise<(efinityV3.TokenAccount | undefined)[]> {
+  async getManyAsEfinityV3(keys: [Uint8Array, bigint, bigint][]): Promise<(efinityV3.TokenAccount | undefined)[]> {
     assert(this.isEfinityV3)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
@@ -389,12 +389,12 @@ export class SystemAccountStorage {
   /**
    *  The full account information for a particular account ID.
    */
-  async getAsV5(key: v5.AccountId32): Promise<v5.AccountInfo> {
+  async getAsV5(key: Uint8Array): Promise<v5.AccountInfo> {
     assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'System', 'Account', key)
   }
 
-  async getManyAsV5(keys: v5.AccountId32[]): Promise<(v5.AccountInfo)[]> {
+  async getManyAsV5(keys: Uint8Array[]): Promise<(v5.AccountInfo)[]> {
     assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'System', 'Account', keys.map(k => [k]))
   }

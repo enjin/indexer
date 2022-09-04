@@ -3,7 +3,7 @@ import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { AccountId32, Approval } from '../../../types/generated/v4'
+import { Approval } from '../../../types/generated/v4'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -20,7 +20,7 @@ interface StorageData {
     lockedBalance: bigint
     namedReserves: [Uint8Array, bigint][]
     locks: [Uint8Array, bigint][]
-    approvals: [AccountId32, Approval][]
+    approvals: [Uint8Array, Approval][]
     isFrozen: boolean
 }
 
