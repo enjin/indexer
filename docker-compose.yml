@@ -55,11 +55,7 @@ services:
     depends_on:
       - archive_db
     command: [
-      "-e", "wss://archive.rpc.efinity.io",
-      "-c", "40",
-      "-e", "wss://efinity-rpc.dwellir.com",
-      "-c", "40",
-      "-e", "wss://efinity.api.onfinality.io/public-ws",
+      "-e", "ws://18.222.114.225:8845",
       "-c", "40",
       "--out", "postgres://root@archive_db:26257/defaultdb"
     ]
