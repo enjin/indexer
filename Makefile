@@ -1,15 +1,24 @@
-SHELL := /bin/bash
-
 process: migrate
-	@node -r dotenv/config lib/process.js
-
-
-serve:
-	@npx squid-graphql-server
+	@node -r dotenv/config lib/processor.js
 
 
 build:
 	@npm run build
+
+build-processor-image:
+	@docker build . --target processor -t squid-processor
+
+build-query-node-image:
+	@docker build . --target query-node -t query-node
+
+build-images: build-processor-image build-query-node-image
+
+serve:
+	@npx squid-graphql-server --subscriptions
+
+
+migrate:
+	@npx squid-typeorm-migration apply
 
 
 codegen:
@@ -20,25 +29,12 @@ typegen:
 	@npx squid-substrate-typegen typegen/typegen.json
 
 
-migrate:
-	@npx squid-typeorm-migration apply
+up:
+	@docker-compose up -d
 
 
-migration:
-	@npx squid-typeorm-migration generate
+down:
+	@docker-compose down
 
 
-ingest:
-	npx squid-substrate-ingest -e ws://18.222.114.225:8845 --out postgres://root@localhost:26555/defaultdb --prom-port 9090 --write-batch-size 80 --start-block 0
-
-
-explore:
-	@source .env && npx squid-substrate-metadata-explorer \
-		--chain "$${CHAIN_ENDPOINT}" \
-		--out typegen/chainSpecVersions2.jsonl
-
-
-logs:
-	@docker compose logs --tail all -f
-
-.PHONY: process serve start codegen migration migrate up down typegen
+.PHONY: build serve process migrate codegen typegen up down

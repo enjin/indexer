@@ -825,7 +825,7 @@ export class ClaimsClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get asV5(): {dest: v5.AccountId32, ethereumSignature: Uint8Array} {
+  get asV5(): {dest: Uint8Array, ethereumSignature: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -878,7 +878,7 @@ export class ClaimsMintClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get asV5(): {who: v5.H160, value: bigint} {
+  get asV5(): {who: Uint8Array, value: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -901,7 +901,7 @@ export class ClaimsMoveClaimCall {
     return this._chain.getCallHash('Claims.move_claim') === 'f6ca004c519bffb9d3e43365a3d6810f9f443ead5407fe14deb41c7ab92c1336'
   }
 
-  get asV5(): {old: v5.H160, new: v5.H160, preclaim: (v5.AccountId32 | undefined)} {
+  get asV5(): {old: Uint8Array, new: Uint8Array, preclaim: (Uint8Array | undefined)} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -910,7 +910,7 @@ export class ClaimsMoveClaimCall {
     return this._chain.getCallHash('Claims.move_claim') === '141d7420c9fafec5c9c80590a2dc9e528311f92ec2465a0dfc29eb44c0c7f2c5'
   }
 
-  get asEfinityV1(): {old: efinityV1.H160, new: efinityV1.H160, maybePreclaim: (efinityV1.AccountId32 | undefined)} {
+  get asEfinityV1(): {old: Uint8Array, new: Uint8Array, maybePreclaim: (Uint8Array | undefined)} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -919,7 +919,7 @@ export class ClaimsMoveClaimCall {
     return this._chain.getCallHash('Claims.move_claim') === 'f6ca004c519bffb9d3e43365a3d6810f9f443ead5407fe14deb41c7ab92c1336'
   }
 
-  get asV2(): {old: v2.H160, new: v2.H160, preclaim: (v2.AccountId32 | undefined)} {
+  get asV2(): {old: Uint8Array, new: Uint8Array, preclaim: (Uint8Array | undefined)} {
     assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
@@ -1008,7 +1008,7 @@ export class CollatorStakingNominateCall {
   /**
    * Nominate a specific candidate to be selected for collation and block production.
    */
-  get asV5(): {collatorId: v5.AccountId32, amount: bigint} {
+  get asV5(): {collatorId: Uint8Array, amount: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1037,7 +1037,7 @@ export class CollatorStakingRemoveNominationCall {
   /**
    * Remove a nomination previously registered for a specific collator candidate.
    */
-  get asV5(): {collatorId: v5.AccountId32} {
+  get asV5(): {collatorId: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1060,7 +1060,7 @@ export class CollatorStakingSetBlockProducerCall {
     return this._chain.getCallHash('CollatorStaking.set_block_producer') === '67f88a22ebfbd8ee828d23cd78f4ee4ef5fe097d8e8b73cb87772e81f42726af'
   }
 
-  get asV5(): {producer: v5.AccountId32} {
+  get asV5(): {producer: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1089,7 +1089,7 @@ export class CollatorStakingSetInvulnerablesCall {
   /**
    * Join the list of candidates for collation.
    */
-  get asV5(): {accounts: v5.AccountId32[]} {
+  get asV5(): {accounts: Uint8Array[]} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1461,7 +1461,7 @@ export class ContractsInstantiateCall {
    * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
    * must be supplied.
    */
-  get asV5(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: v5.H256, data: Uint8Array, salt: Uint8Array} {
+  get asV5(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1575,7 +1575,7 @@ export class ContractsRemoveCodeCall {
    * A code can only be removed by its original uploader (its owner) and only if it is
    * not used by any contract.
    */
-  get asV5(): {codeHash: v5.H256} {
+  get asV5(): {codeHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1622,7 +1622,7 @@ export class ContractsSetCodeCall {
    * that the contract address is no longer derived from its code hash after calling
    * this dispatchable.
    */
-  get asV5(): {dest: v5.MultiAddress, codeHash: v5.H256} {
+  get asV5(): {dest: v5.MultiAddress, codeHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1772,7 +1772,7 @@ export class CouncilCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get asV5(): {proposalHash: v5.H256, index: number, proposalWeightBound: bigint, lengthBound: number} {
+  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -1827,7 +1827,7 @@ export class CouncilDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2354,7 +2354,7 @@ export class CouncilSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get asV5(): {newMembers: v5.AccountId32[], prime: (v5.AccountId32 | undefined), oldCount: number} {
+  get asV5(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2411,7 +2411,7 @@ export class CouncilVoteCall {
    * - 1 event
    * # </weight>
    */
-  get asV5(): {proposal: v5.H256, index: number, approve: boolean} {
+  get asV5(): {proposal: Uint8Array, index: number, approve: boolean} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2468,7 +2468,7 @@ export class DemocracyBlacklistCall {
    * Weight: `O(p)` (though as this is an high-privilege dispatch, we assume it has a
    *   reasonable value).
    */
-  get asV5(): {proposalHash: v5.H256, maybeRefIndex: (number | undefined)} {
+  get asV5(): {proposalHash: Uint8Array, maybeRefIndex: (number | undefined)} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2695,7 +2695,7 @@ export class DemocracyDelegateCall {
    * Weight: `O(R)` where R is the number of referendums the voter delegating to has
    *   voted on. Weight is charged as if maximum votes.
    */
-  get asV5(): {to: v5.AccountId32, conviction: v5.Conviction, balance: bigint} {
+  get asV5(): {to: Uint8Array, conviction: v5.Conviction, balance: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2767,7 +2767,7 @@ export class DemocracyEnactProposalCall {
   /**
    * Enact a proposal from a referendum. For now we just make the weight be the maximum.
    */
-  get asV5(): {proposalHash: v5.H256, index: number} {
+  get asV5(): {proposalHash: Uint8Array, index: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2812,7 +2812,7 @@ export class DemocracyExternalProposeCall {
    * Weight: `O(V)` with V number of vetoers in the blacklist of proposal.
    *   Decoding vec of length V. Charged as maximum
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2861,7 +2861,7 @@ export class DemocracyExternalProposeDefaultCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2910,7 +2910,7 @@ export class DemocracyExternalProposeMajorityCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -2969,7 +2969,7 @@ export class DemocracyFastTrackCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: v5.H256, votingPeriod: number, delay: number} {
+  get asV5(): {proposalHash: Uint8Array, votingPeriod: number, delay: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3174,7 +3174,7 @@ export class DemocracyProposeCall {
    * 
    * Weight: `O(p)`
    */
-  get asV5(): {proposalHash: v5.H256, value: bigint} {
+  get asV5(): {proposalHash: Uint8Array, value: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3231,7 +3231,7 @@ export class DemocracyReapPreimageCall {
    * 
    * Weight: `O(D)` where D is length of proposal.
    */
-  get asV5(): {proposalHash: v5.H256, proposalLenUpperBound: number} {
+  get asV5(): {proposalHash: Uint8Array, proposalLenUpperBound: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3288,7 +3288,7 @@ export class DemocracyRemoveOtherVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
-  get asV5(): {target: v5.AccountId32, index: number} {
+  get asV5(): {target: Uint8Array, index: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3508,7 +3508,7 @@ export class DemocracyUnlockCall {
    * 
    * Weight: `O(R)` with R number of vote of target.
    */
-  get asV5(): {target: v5.AccountId32} {
+  get asV5(): {target: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3553,7 +3553,7 @@ export class DemocracyVetoExternalCall {
    * 
    * Weight: `O(V + log(V))` where V is number of `existing vetoers`
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -3709,7 +3709,7 @@ export class MultiAssetsBatchTransferCall {
    * Transfers the specific amount of tokens of given `recipients` of `asset` from
    * `source` account.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, recipients: efinityV1.Recipient[]} {
+  get asEfinityV1(): {asset: bigint, recipients: efinityV1.Recipient[]} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3740,7 +3740,7 @@ export class MultiAssetsBatchTransferByChunkCall {
    * # TODO
    * - `recipients_by_chunk` must be bounded.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, recipientsByChunk: efinityV1.RecipientsByChunk[]} {
+  get asEfinityV1(): {asset: bigint, recipientsByChunk: efinityV1.RecipientsByChunk[]} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3773,7 +3773,7 @@ export class MultiAssetsBurnCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, token: number, amount: bigint} {
+  get asEfinityV1(): {asset: bigint, token: number, amount: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3806,7 +3806,7 @@ export class MultiAssetsBurnAssetCall {
    * 
    * See `Pallet::do_burn_asset`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, assetAttributeCount: number, nextTokenId: number} {
+  get asEfinityV1(): {asset: bigint, assetAttributeCount: number, nextTokenId: number} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3839,7 +3839,7 @@ export class MultiAssetsBurnByChunkCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, tokens: efinityV1.Chunk} {
+  get asEfinityV1(): {asset: bigint, tokens: efinityV1.Range[]} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3872,7 +3872,7 @@ export class MultiAssetsClearAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, key: Uint8Array} {
+  get asEfinityV1(): {asset: bigint, key: Uint8Array} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3905,7 +3905,7 @@ export class MultiAssetsClearTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, token: number, key: Uint8Array} {
+  get asEfinityV1(): {asset: bigint, token: number, key: Uint8Array} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3965,7 +3965,7 @@ export class MultiAssetsMintCall {
   /**
    * Mints new `amount` of `asset` and transfer to `origin` account.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, amount: bigint} {
+  get asEfinityV1(): {asset: bigint, amount: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -3998,7 +3998,7 @@ export class MultiAssetsSetAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, key: Uint8Array, value: Uint8Array} {
+  get asEfinityV1(): {asset: bigint, key: Uint8Array, value: Uint8Array} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4031,7 +4031,7 @@ export class MultiAssetsSetTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get asEfinityV1(): {asset: efinityV1.UUAID, token: number, key: Uint8Array, value: Uint8Array} {
+  get asEfinityV1(): {asset: bigint, token: number, key: Uint8Array, value: Uint8Array} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4062,7 +4062,7 @@ export class MultiAssetsTransferCall {
    * Transfers `amount` of `token` from `asset` from `origin` account to `target` account.
    * See `chunks::do_transfer`.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: efinityV1.UUAID, token: number, amount: bigint} {
+  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint, token: number, amount: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4091,7 +4091,7 @@ export class MultiAssetsTransferByChunkCall {
   /**
    * Transfers the `tokens` of `asset` from `origin` to `target`.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: efinityV1.UUAID, tokens: efinityV1.Chunk} {
+  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint, tokens: efinityV1.Range[]} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4126,7 +4126,7 @@ export class MultiAssetsTransferOwnershipCall {
    * # TODO
    * - Weight based on number of chunks instead of number or elements of tokens.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: efinityV1.UUAID} {
+  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4155,7 +4155,7 @@ export class MultiAssetsOperatorExtApproveAssetCall {
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32, asset: efinityV1.UUAID, expiration: efinityV1.Expiration} {
+  get asEfinityV1(): {operator: Uint8Array, asset: bigint, expiration: efinityV1.Expiration} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4184,7 +4184,7 @@ export class MultiAssetsOperatorExtApproveForAllCall {
   /**
    * Approve `operator` to manage all the `origin`'s assets.
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32, expiration: efinityV1.Expiration} {
+  get asEfinityV1(): {operator: Uint8Array, expiration: efinityV1.Expiration} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4213,7 +4213,7 @@ export class MultiAssetsOperatorExtApproveTokenCall {
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32, asset: efinityV1.UUAID, token: number, amount: bigint, expiration: efinityV1.Expiration} {
+  get asEfinityV1(): {operator: Uint8Array, asset: bigint, token: number, amount: bigint, expiration: efinityV1.Expiration} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4242,7 +4242,7 @@ export class MultiAssetsOperatorExtTransferFromCall {
   /**
    * Transfers `amount` of `tokens` from account `from` to address `to` if `origin` has enough allowance
    */
-  get asEfinityV1(): {from: efinityV1.AccountId32, to: efinityV1.AccountId32, asset: efinityV1.UUAID, token: number, amount: bigint} {
+  get asEfinityV1(): {from: Uint8Array, to: Uint8Array, asset: bigint, token: number, amount: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4271,7 +4271,7 @@ export class MultiAssetsOperatorExtUnapproveAssetCall {
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32, asset: efinityV1.UUAID} {
+  get asEfinityV1(): {operator: Uint8Array, asset: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4300,7 +4300,7 @@ export class MultiAssetsOperatorExtUnapproveForAllCall {
   /**
    * Unapprove `operator` to manage `origin's` assets
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32} {
+  get asEfinityV1(): {operator: Uint8Array} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4329,7 +4329,7 @@ export class MultiAssetsOperatorExtUnapproveTokenCall {
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get asEfinityV1(): {operator: efinityV1.AccountId32, asset: efinityV1.UUAID, token: number} {
+  get asEfinityV1(): {operator: Uint8Array, asset: bigint, token: number} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -4358,7 +4358,7 @@ export class MultiTokensApproveCollectionCall {
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV5(): {collectionId: bigint, operator: v5.AccountId32, expiration: (number | undefined)} {
+  get asV5(): {collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -4387,7 +4387,7 @@ export class MultiTokensApproveTokenCall {
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, operator: v5.AccountId32, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -4438,7 +4438,7 @@ export class MultiTokensBatchMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get asV5(): {collectionId: bigint, recipients: v5.Recipient_293[]} {
+  get asV5(): {collectionId: bigint, recipients: v5.Type_293[]} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -4479,7 +4479,7 @@ export class MultiTokensBatchTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `BalanceOverflow` if `target` balance of `collection` overflows.
    */
-  get asV5(): {collectionId: bigint, recipients: v5.Recipient_290[]} {
+  get asV5(): {collectionId: bigint, recipients: v5.Recipient[]} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5258,7 +5258,7 @@ export class MultiTokensUnapproveCollectionCall {
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV5(): {collectionId: bigint, operator: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, operator: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5287,7 +5287,7 @@ export class MultiTokensUnapproveTokenCall {
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, operator: v5.AccountId32} {
+  get asV5(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5384,7 +5384,7 @@ export class MultisigApproveAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account]
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: v5.AccountId32[], maybeTimepoint: (v5.Timepoint | undefined), callHash: Uint8Array, maxWeight: bigint} {
+  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), callHash: Uint8Array, maxWeight: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5501,7 +5501,7 @@ export class MultisigAsMultiCall {
    * - Plus Call Weight
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: v5.AccountId32[], maybeTimepoint: (v5.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: bigint} {
+  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5560,7 +5560,7 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get asV5(): {otherSignatories: v5.AccountId32[], call: v5.Call} {
+  get asV5(): {otherSignatories: Uint8Array[], call: v5.Call} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5605,7 +5605,7 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get asV2(): {otherSignatories: v2.AccountId32[], call: v2.Call} {
+  get asV2(): {otherSignatories: Uint8Array[], call: v2.Call} {
     assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
@@ -5650,7 +5650,7 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get asEfinityV3(): {otherSignatories: efinityV3.AccountId32[], call: efinityV3.Call} {
+  get asEfinityV3(): {otherSignatories: Uint8Array[], call: efinityV3.Call} {
     assert(this.isEfinityV3)
     return this._chain.decodeCall(this.call)
   }
@@ -5695,7 +5695,7 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get asV4(): {otherSignatories: v4.AccountId32[], call: v4.Call} {
+  get asV4(): {otherSignatories: Uint8Array[], call: v4.Call} {
     assert(this.isV4)
     return this._chain.decodeCall(this.call)
   }
@@ -5774,7 +5774,7 @@ export class MultisigCancelAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account], Refund Account, Calls
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: v5.AccountId32[], timepoint: v5.Timepoint, callHash: Uint8Array} {
+  get asV5(): {threshold: number, otherSignatories: Uint8Array[], timepoint: v5.Timepoint, callHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5803,7 +5803,7 @@ export class OrmlXcmSendAsSovereignCall {
   /**
    * Send an XCM message as parachain sovereign.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm_251} {
+  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -5826,7 +5826,7 @@ export class ParachainSystemAuthorizeUpgradeCall {
     return this._chain.getCallHash('ParachainSystem.authorize_upgrade') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
   }
 
-  get asV5(): {codeHash: v5.H256} {
+  get asV5(): {codeHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -6005,7 +6005,7 @@ export class PolkadotXcmExecuteCall {
    * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
    * to completion; only that *some* of it was executed.
    */
-  get asV5(): {message: v5.VersionedXcm_262, maxWeight: bigint} {
+  get asV5(): {message: v5.Type_262, maxWeight: bigint} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -6040,7 +6040,7 @@ export class PolkadotXcmExecuteCall {
    * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
    * to completion; only that *some* of it was executed.
    */
-  get asEfinityV1(): {message: efinityV1.VersionedXcm_178, maxWeight: bigint} {
+  get asEfinityV1(): {message: efinityV1.Type_178, maxWeight: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -6075,7 +6075,7 @@ export class PolkadotXcmExecuteCall {
    * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
    * to completion; only that *some* of it was executed.
    */
-  get asV2(): {message: v2.VersionedXcm_244, maxWeight: bigint} {
+  get asV2(): {message: v2.Type_244, maxWeight: bigint} {
     assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
@@ -6431,7 +6431,7 @@ export class PolkadotXcmSendCall {
     return this._chain.getCallHash('PolkadotXcm.send') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
   }
 
-  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm_251} {
+  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -6440,7 +6440,7 @@ export class PolkadotXcmSendCall {
     return this._chain.getCallHash('PolkadotXcm.send') === '9ec4149ae6cee6240a6e2aa06a8ef90285e68be29dd0de109b35af7922311609'
   }
 
-  get asEfinityV1(): {dest: efinityV1.VersionedMultiLocation, message: efinityV1.VersionedXcm_167} {
+  get asEfinityV1(): {dest: efinityV1.VersionedMultiLocation, message: efinityV1.VersionedXcm} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -6449,7 +6449,7 @@ export class PolkadotXcmSendCall {
     return this._chain.getCallHash('PolkadotXcm.send') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
   }
 
-  get asV2(): {dest: v2.VersionedMultiLocation, message: v2.VersionedXcm_233} {
+  get asV2(): {dest: v2.VersionedMultiLocation, message: v2.VersionedXcm} {
     assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
@@ -6698,7 +6698,7 @@ export class PreimageRequestPreimageCall {
    * If the preimage requests has already been provided on-chain, we unreserve any deposit
    * a user may have paid, and take the control of the preimage out of their hands.
    */
-  get asV5(): {hash: v5.H256} {
+  get asV5(): {hash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -6727,7 +6727,7 @@ export class PreimageUnnotePreimageCall {
   /**
    * Clear an unrequested preimage from the runtime storage.
    */
-  get asV5(): {hash: v5.H256} {
+  get asV5(): {hash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -6760,7 +6760,7 @@ export class PreimageUnrequestPreimageCall {
    * 
    * NOTE: THIS MUST NOT BE CALLED ON `hash` MORE TIMES THAN `request_preimage`.
    */
-  get asV5(): {hash: v5.H256} {
+  get asV5(): {hash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -7997,7 +7997,7 @@ export class SystemFillBlockCall {
   /**
    * A dispatch that will fill the block weight up to the given ratio.
    */
-  get asV5(): {ratio: v5.Perbill} {
+  get asV5(): {ratio: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -8386,7 +8386,7 @@ export class TagsTagAssetCall {
   /**
    * Adds `tag_id` to `asset_id`. `origin` must own the asset and tag.
    */
-  get asEfinityV1(): {assetId: efinityV1.UUAID, tagId: bigint} {
+  get asEfinityV1(): {assetId: bigint, tagId: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -8415,7 +8415,7 @@ export class TagsUntagAssetCall {
   /**
    * Removes `tag_id` from `asset_id`. `origin` must own the asset and tag.
    */
-  get asEfinityV1(): {assetId: efinityV1.UUAID, tagId: bigint} {
+  get asEfinityV1(): {assetId: bigint, tagId: bigint} {
     assert(this.isEfinityV1)
     return this._chain.decodeCall(this.call)
   }
@@ -8506,7 +8506,7 @@ export class TechnicalCommitteeCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get asV5(): {proposalHash: v5.H256, index: number, proposalWeightBound: bigint, lengthBound: number} {
+  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -8561,7 +8561,7 @@ export class TechnicalCommitteeDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get asV5(): {proposalHash: v5.H256} {
+  get asV5(): {proposalHash: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9088,7 +9088,7 @@ export class TechnicalCommitteeSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get asV5(): {newMembers: v5.AccountId32[], prime: (v5.AccountId32 | undefined), oldCount: number} {
+  get asV5(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9145,7 +9145,7 @@ export class TechnicalCommitteeVoteCall {
    * - 1 event
    * # </weight>
    */
-  get asV5(): {proposal: v5.H256, index: number, approve: boolean} {
+  get asV5(): {proposal: Uint8Array, index: number, approve: boolean} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9178,7 +9178,7 @@ export class TechnicalMembershipAddMemberCall {
    * 
    * May only be called from `T::AddOrigin`.
    */
-  get asV5(): {who: v5.AccountId32} {
+  get asV5(): {who: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9215,7 +9215,7 @@ export class TechnicalMembershipChangeKeyCall {
    * 
    * Prime membership is passed from the origin account to `new`, if extant.
    */
-  get asV5(): {new: v5.AccountId32} {
+  get asV5(): {new: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9281,7 +9281,7 @@ export class TechnicalMembershipRemoveMemberCall {
    * 
    * May only be called from `T::RemoveOrigin`.
    */
-  get asV5(): {who: v5.AccountId32} {
+  get asV5(): {who: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9316,7 +9316,7 @@ export class TechnicalMembershipResetMembersCall {
    * 
    * May only be called from `T::ResetOrigin`.
    */
-  get asV5(): {members: v5.AccountId32[]} {
+  get asV5(): {members: Uint8Array[]} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9349,7 +9349,7 @@ export class TechnicalMembershipSetPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
-  get asV5(): {who: v5.AccountId32} {
+  get asV5(): {who: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
@@ -9386,7 +9386,7 @@ export class TechnicalMembershipSwapMemberCall {
    * 
    * Prime membership is *not* passed from `remove` to `add`, if extant.
    */
-  get asV5(): {remove: v5.AccountId32, add: v5.AccountId32} {
+  get asV5(): {remove: Uint8Array, add: Uint8Array} {
     assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }

@@ -1,90 +1,93 @@
-version: "3.7"
+version: "3.9"
 
 services:
-  archive_cockroach:
-    container_name: archive_cockroach
-    image: cockroachdb/cockroach:v21.2.9
-    volumes:
-      - /opt/indexer/archive_db:/cockroach/cockroach-data
-    ports:
-      - "${ARCHIVE_DB_PORT}:26257"
-    command: [
-      "start-single-node",
-      "--insecure"
-    ]
-
-  archive_worker:
-    container_name: archive_worker
-    build:
-      context: ./squid
-      target: substrate-ingest
-      args:
-        - CHAIN_ENDPOINT=$CHAIN_ENDPOINT
-    restart: unless-stopped
-    ports:
-      - "21523:9090"
-    depends_on:
-      - archive_cockroach
-
-  archive_gateway:
-    container_name: archive_gateway
-    image: subsquid/substrate-gateway:1.2.0
-    depends_on:
-      - archive_cockroach
-    command: [
-      "--database-url", "postgres://root@archive_cockroach:26257/defaultdb",
-      "--database-max-connections", "5"
-    ]
-    environment:
-      RUST_LOG: actix_web=info,actix_server=info
-    ports:
-      - "${ARCHIVE_PORT}:8000"
-
-  archive_status:
-    container_name: archive_status
-    build:
-      context: ./squid
-      target: chain-status-service
-    restart: unless-stopped
-    ports:
-      - "21533:3000"
-    depends_on:
-      - archive_cockroach
-
   indexer_db:
     container_name: indexer_db
-    image: postgres:12
+    image: postgres:14
     restart: unless-stopped
-    volumes:
-      - /opt/indexer/indexer_db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - /opt/indexer/indexer_db:/var/lib/postgresql/data
     ports:
       - "${DB_PORT}:5432"
+      # command: ["postgres", "-c", "log_statement=all"]
 
   indexer_processor:
     container_name: indexer_processor
+    restart: unless-stopped
     build:
       context: .
       target: processor
-    restart: unless-stopped
     depends_on:
       - indexer_db
 
   indexer_graphql:
     container_name: indexer_graphql
+    restart: unless-stopped
     build:
       context: .
       target: query-node
-    restart: unless-stopped
     ports:
       - "4467:4347"
     depends_on:
       - indexer_db
       - indexer_processor
 
-networks:
-  default:
-    external:
-      name: experio
+  archive_db:
+    container_name: archive_db
+    image: cockroachdb/cockroach:latest-v21.2
+    restart: unless-stopped
+    volumes:
+      - /opt/indexer/archive_db:/cockroach/cockroach-data
+    ports:
+      - "26257:26257"
+    command: [
+      "start-single-node",
+      "--insecure"
+    ]
+
+  archive_ingest:
+    container_name: archive_ingest
+    image: subsquid/substrate-ingest:firesquid
+    restart: unless-stopped
+    depends_on:
+      - archive_db
+    command: [
+      "-e", "wss://archive.rpc.efinity.io",
+      "-c", "40",
+      "-e", "wss://efinity-rpc.dwellir.com",
+      "-c", "40",
+      "-e", "wss://efinity.api.onfinality.io/public-ws",
+      "-c", "40",
+      "--out", "postgres://root@archive_db:26257/defaultdb"
+    ]
+
+  archive_gateway:
+    container_name: archive_gateway
+    image: subsquid/substrate-gateway:firesquid
+    restart: unless-stopped
+    depends_on:
+      - archive_db
+    environment:
+      DATABASE_MAX_CONNECTIONS: 5
+      RUST_LOG: "actix_web=info,actix_server=info"
+    command: [
+      "--database-url", "postgres://root@archive_db:26257/defaultdb",
+    ]
+    ports:
+      - "8888:8000"
+
+  explorer:
+    container_name: archive_explorer
+    image: subsquid/substrate-explorer:firesquid
+    restart: unless-stopped
+    environment:
+      DB_TYPE: cockroach
+      DB_HOST: archive_db
+      DB_PORT: "26257"
+      DB_NAME: "defaultdb"
+      DB_USER: "root"
+    ports:
+      - "4444:3000"

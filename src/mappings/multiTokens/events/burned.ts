@@ -4,7 +4,7 @@ import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
-import { AccountId32, Approval } from '../../../types/generated/v4'
+import { Approval } from '../../../types/generated/v4'
 
 interface EventData {
     collectionId: bigint
@@ -19,7 +19,7 @@ interface StorageData {
     lockedBalance: bigint
     namedReserves: [Uint8Array, bigint][]
     locks: [Uint8Array, bigint][]
-    approvals: [AccountId32, Approval][]
+    approvals: [Uint8Array, Approval][]
     isFrozen: boolean
 }
 
