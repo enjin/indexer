@@ -23,11 +23,11 @@ export class CollectionAccount {
   accountCount!: number
 
   @Index_()
-  @ManyToOne_(() => Account, {nullable: false})
+  @ManyToOne_(() => Account, {nullable: true})
   account!: Account
 
   @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
+  @ManyToOne_(() => Collection, {nullable: true})
   collection!: Collection
 
   @Column_("timestamp with time zone", {nullable: false})

@@ -22,7 +22,7 @@ export class Attribute {
   deposit!: bigint
 
   @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
+  @ManyToOne_(() => Collection, {nullable: true})
   collection!: Collection
 
   @Index_()

@@ -42,7 +42,7 @@ export class Token {
   attributeCount!: number
 
   @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
+  @ManyToOne_(() => Collection, {nullable: true})
   collection!: Collection
 
   @OneToMany_(() => TokenAccount, e => e.token)

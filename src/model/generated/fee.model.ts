@@ -15,6 +15,6 @@ export class Fee {
   amount!: bigint | undefined | null
 
   @Index_()
-  @ManyToOne_(() => Account, {nullable: false})
+  @ManyToOne_(() => Account, {nullable: true})
   who!: Account
 }
