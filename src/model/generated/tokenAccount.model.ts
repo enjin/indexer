@@ -38,15 +38,15 @@ export class TokenAccount {
   isFrozen!: boolean
 
   @Index_()
-  @ManyToOne_(() => Account, {nullable: false})
+  @ManyToOne_(() => Account, {nullable: true})
   account!: Account
 
   @Index_()
-  @ManyToOne_(() => Collection, {nullable: false})
+  @ManyToOne_(() => Collection, {nullable: true})
   collection!: Collection
 
   @Index_()
-  @ManyToOne_(() => Token, {nullable: false})
+  @ManyToOne_(() => Token, {nullable: true})
   token!: Token
 
   @Column_("timestamp with time zone", {nullable: false})

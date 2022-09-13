@@ -18,7 +18,7 @@ export class Collection {
   id!: string
 
   @Index_()
-  @ManyToOne_(() => Account, {nullable: false})
+  @ManyToOne_(() => Account, {nullable: true})
   owner!: Account
 
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
