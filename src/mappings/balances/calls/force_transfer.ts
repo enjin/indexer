@@ -14,8 +14,8 @@ interface EventData {
 function getCallData(ctx: CallContext): EventData | undefined {
     console.log(ctx.call.name)
     const call = new BalancesForceTransferCall(ctx)
-    if (call.isV5) {
-        const { source, dest, value } = call.asV5
+    if (call.isV1) {
+        const { source, dest, value } = call.asV1
         return {
             from: source.value as Uint8Array,
             to: dest.value as Uint8Array,

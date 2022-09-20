@@ -12,8 +12,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensCollectionDestroyedEvent(ctx)
 
-    if (event.isV5) {
-        const { collectionId, caller } = event.asV5
+    if (event.isV2) {
+        const { collectionId, caller } = event.asV2
         return { collectionId, caller }
     } else {
         throw new UnknownVersionError(event.constructor.name)

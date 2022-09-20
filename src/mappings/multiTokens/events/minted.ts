@@ -3,8 +3,8 @@ import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { Approval } from '../../../types/generated/v4'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { Approval } from '../../../types/generated/v3'
 
 interface EventData {
     collectionId: bigint
@@ -28,8 +28,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensMintedEvent(ctx)
 
-    if (event.isV5) {
-        const { collectionId, tokenId, issuer, recipient, amount } = event.asV5
+    if (event.isV2) {
+        const { collectionId, tokenId, issuer, recipient, amount } = event.asV2
         return { collectionId, tokenId, issuer, recipient, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)
@@ -59,8 +59,8 @@ async function getStorageData(
             lockedBalance: 0n,
             locks: [],
         }
-    } else if (storage.isEfinityV3) {
-        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
+    } else if (storage.isV3) {
+        const data = await storage.getAsV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
