@@ -27,10 +27,10 @@ interface EventData {
 function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData {
     const call = new MultiTokensMintCall(ctx, subcall)
 
-    if (call.isV5) {
-        const collectionId = call.asV5.collectionId
-        const recipient = call.asV5.recipient.value as Uint8Array
-        const params = call.asV5.params as DefaultMintParams_CreateToken
+    if (call.isV2) {
+        const collectionId = call.asV2.collectionId
+        const recipient = call.asV2.recipient.value as Uint8Array
+        const params = call.asV2.params as DefaultMintParams_CreateToken
         const capType = params.cap?.__kind as CapType
 
         return {
@@ -50,8 +50,8 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData {
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensTokenCreatedEvent(ctx)
 
-    if (event.isV5) {
-        const { collectionId, tokenId, issuer, initialSupply } = event.asV5
+    if (event.isV2) {
+        const { collectionId, tokenId, issuer, initialSupply } = event.asV2
         console.log(
             `Block: ${ctx.block.height}, event: ${ctx.event.name}, collectionId: ${collectionId}, tokenId: ${tokenId}`
         )

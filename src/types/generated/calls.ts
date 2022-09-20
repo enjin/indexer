@@ -1,39 +1,8 @@
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result} from './support'
-import * as v5 from './v5'
-import * as efinityV1 from './efinityV1'
+import * as v1 from './v1'
 import * as v2 from './v2'
-import * as v4 from './v4'
-import * as efinityV3 from './efinityV3'
-
-export class AuthorshipSetUnclesCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Authorship.set_uncles')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Provide a set of uncles.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Authorship.set_uncles') === 'cf2d7dac8c8babfdda54dfcca36fda32336dc937b0f1767c6b2332a9b718e0b5'
-  }
-
-  /**
-   * Provide a set of uncles.
-   */
-  get asV5(): {newUncles: v5.Header[]} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
+import * as v3 from './v3'
 
 export class BalancesForceTransferCall {
   private readonly _chain: Chain
@@ -56,7 +25,7 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
   }
 
@@ -68,8 +37,8 @@ export class BalancesForceTransferCall {
    *   assumed to be in the overlay.
    * # </weight>
    */
-  get asV5(): {source: v5.MultiAddress, dest: v5.MultiAddress, value: bigint} {
-    assert(this.isV5)
+  get asV1(): {source: v1.MultiAddress, dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -92,7 +61,7 @@ export class BalancesForceUnreserveCall {
    * 
    * Can only be called by ROOT.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.force_unreserve') === '30bc48977e2a7ad3fc8ac014948ded50fc54886bad9a1f65b02bb64f27d8a6be'
   }
 
@@ -101,8 +70,8 @@ export class BalancesForceUnreserveCall {
    * 
    * Can only be called by ROOT.
    */
-  get asV5(): {who: v5.MultiAddress, amount: bigint} {
-    assert(this.isV5)
+  get asV1(): {who: v1.MultiAddress, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -124,13 +93,23 @@ export class BalancesSetBalanceCall {
    * Set the balances of a given account.
    * 
    * This will alter `FreeBalance` and `ReservedBalance` in storage. it will
-   * also alter the total issuance of the system (`TotalIssuance`) appropriately.
+   * also decrease the total issuance of the system (`TotalIssuance`).
    * If the new free or reserved balance is below the existential deposit,
    * it will reset the account nonce (`frame_system::AccountNonce`).
    * 
    * The dispatch origin for this call is `root`.
+   * 
+   * # <weight>
+   * - Independent of the arguments.
+   * - Contains a limited number of reads and writes.
+   * ---------------------
+   * - Base Weight:
+   *     - Creating: 27.56 µs
+   *     - Killing: 35.11 µs
+   * - DB Weight: 1 Read, 1 Write to `who`
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.set_balance') === 'beb82909d38c015bc075ff8b107e47a02f8772bf5cf681d6cd84ef685e448a8f'
   }
 
@@ -138,14 +117,24 @@ export class BalancesSetBalanceCall {
    * Set the balances of a given account.
    * 
    * This will alter `FreeBalance` and `ReservedBalance` in storage. it will
-   * also alter the total issuance of the system (`TotalIssuance`) appropriately.
+   * also decrease the total issuance of the system (`TotalIssuance`).
    * If the new free or reserved balance is below the existential deposit,
    * it will reset the account nonce (`frame_system::AccountNonce`).
    * 
    * The dispatch origin for this call is `root`.
+   * 
+   * # <weight>
+   * - Independent of the arguments.
+   * - Contains a limited number of reads and writes.
+   * ---------------------
+   * - Base Weight:
+   *     - Creating: 27.56 µs
+   *     - Killing: 35.11 µs
+   * - DB Weight: 1 Read, 1 Write to `who`
+   * # </weight>
    */
-  get asV5(): {who: v5.MultiAddress, newFree: bigint, newReserved: bigint} {
-    assert(this.isV5)
+  get asV1(): {who: v1.MultiAddress, newFree: bigint, newReserved: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -167,6 +156,7 @@ export class BalancesTransferCall {
    * Transfer some liquid free balance to another account.
    * 
    * `transfer` will set the `FreeBalance` of the sender and receiver.
+   * It will decrease the total issuance of the system by the `TransferFee`.
    * If the sender's account is below the existential deposit as a result
    * of the transfer, the account will be reaped.
    * 
@@ -187,10 +177,12 @@ export class BalancesTransferCall {
    *   - `transfer_keep_alive` works the same way as `transfer`, but has an additional check
    *     that the transfer will not kill the origin account.
    * ---------------------------------
+   * - Base Weight: 73.64 µs, worst case scenario (account created, account removed)
+   * - DB Weight: 1 Read and 1 Write to destination account
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -198,6 +190,7 @@ export class BalancesTransferCall {
    * Transfer some liquid free balance to another account.
    * 
    * `transfer` will set the `FreeBalance` of the sender and receiver.
+   * It will decrease the total issuance of the system by the `TransferFee`.
    * If the sender's account is below the existential deposit as a result
    * of the transfer, the account will be reaped.
    * 
@@ -218,11 +211,13 @@ export class BalancesTransferCall {
    *   - `transfer_keep_alive` works the same way as `transfer`, but has an additional check
    *     that the transfer will not kill the origin account.
    * ---------------------------------
+   * - Base Weight: 73.64 µs, worst case scenario (account created, account removed)
+   * - DB Weight: 1 Read and 1 Write to destination account
    * - Origin account is already in memory, so no DB operations for them.
    * # </weight>
    */
-  get asV5(): {dest: v5.MultiAddress, value: bigint} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -259,7 +254,7 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
   }
 
@@ -282,8 +277,8 @@ export class BalancesTransferAllCall {
    * - O(1). Just like transfer, but reading the user's transferable balance first.
    *   #</weight>
    */
-  get asV5(): {dest: v5.MultiAddress, keepAlive: boolean} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.MultiAddress, keepAlive: boolean} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -308,8 +303,13 @@ export class BalancesTransferKeepAliveCall {
    * 99% of the time you want [`transfer`] instead.
    * 
    * [`transfer`]: struct.Pallet.html#method.transfer
+   * # <weight>
+   * - Cheaper than transfer because account cannot be killed.
+   * - Base Weight: 51.4 µs
+   * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
+   * #</weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
   }
 
@@ -320,9 +320,14 @@ export class BalancesTransferKeepAliveCall {
    * 99% of the time you want [`transfer`] instead.
    * 
    * [`transfer`]: struct.Pallet.html#method.transfer
+   * # <weight>
+   * - Cheaper than transfer because account cannot be killed.
+   * - Base Weight: 51.4 µs
+   * - DB Weight: 1 Read and 1 Write to dest (sender is in overlay already)
+   * #</weight>
    */
-  get asV5(): {dest: v5.MultiAddress, value: bigint} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.MultiAddress, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -350,7 +355,7 @@ export class BountiesAcceptCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.accept_curator') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
   }
 
@@ -364,8 +369,8 @@ export class BountiesAcceptCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -393,7 +398,7 @@ export class BountiesApproveBountyCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.approve_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
   }
 
@@ -407,8 +412,8 @@ export class BountiesApproveBountyCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -439,7 +444,7 @@ export class BountiesAwardBountyCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.award_bounty') === 'cfa73dafdcbe89b3b4e24bfc41cf4f3b1fcd9527b052ecc6549b6ac07b965606'
   }
 
@@ -456,8 +461,8 @@ export class BountiesAwardBountyCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number, beneficiary: v5.MultiAddress} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number, beneficiary: v2.MultiAddress} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -486,7 +491,7 @@ export class BountiesClaimBountyCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.claim_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
   }
 
@@ -501,8 +506,8 @@ export class BountiesClaimBountyCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -532,7 +537,7 @@ export class BountiesCloseBountyCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.close_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
   }
 
@@ -548,8 +553,8 @@ export class BountiesCloseBountyCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -579,7 +584,7 @@ export class BountiesExtendBountyExpiryCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.extend_bounty_expiry') === '710d6b76ffcee45bd9bffc1f299fa0b621450769559963379fa259c0f427f1bb'
   }
 
@@ -595,8 +600,8 @@ export class BountiesExtendBountyExpiryCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number, remark: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number, remark: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -628,7 +633,7 @@ export class BountiesProposeBountyCall {
    * - `value`: The total payment amount of this bounty, curator fee included.
    * - `description`: The description of this bounty.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.propose_bounty') === '6a012b4069a991972d0d3268cb20dfba3163919c325c7ebbe980b2dc15f1b1f5'
   }
 
@@ -646,8 +651,8 @@ export class BountiesProposeBountyCall {
    * - `value`: The total payment amount of this bounty, curator fee included.
    * - `description`: The description of this bounty.
    */
-  get asV5(): {value: bigint, description: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {value: bigint, description: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -674,7 +679,7 @@ export class BountiesProposeCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.propose_curator') === 'db115713847ce9db3eac62037c4aefcca595bcd9aa876776d8fba64491d881d3'
   }
 
@@ -687,8 +692,8 @@ export class BountiesProposeCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number, curator: v5.MultiAddress, fee: bigint} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number, curator: v2.MultiAddress, fee: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -726,7 +731,7 @@ export class BountiesUnassignCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Bounties.unassign_curator') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
   }
 
@@ -750,8 +755,8 @@ export class BountiesUnassignCuratorCall {
    * - O(1).
    * # </weight>
    */
-  get asV5(): {bountyId: number} {
-    assert(this.isV5)
+  get asV2(): {bountyId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -795,7 +800,7 @@ export class ClaimsClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Claims.claim') === '46f6fbe643b51ee7e3a08e102493b6291f118e76145971a19fb90446b9af7251'
   }
 
@@ -825,8 +830,8 @@ export class ClaimsClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get asV5(): {dest: Uint8Array, ethereumSignature: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {dest: Uint8Array, ethereumSignature: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -859,7 +864,7 @@ export class ClaimsMintClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Claims.mint_claim') === 'bd93629e146aeda1b31bc7c1c194470feee46b9e4aed4d426ce152fe4c633fce'
   }
 
@@ -878,8 +883,8 @@ export class ClaimsMintClaimCall {
    * Total Complexity: O(1)
    * </weight>
    */
-  get asV5(): {who: Uint8Array, value: bigint} {
-    assert(this.isV5)
+  get asV1(): {who: Uint8Array, value: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -897,21 +902,12 @@ export class ClaimsMoveClaimCall {
     this.call = call
   }
 
-  get isV5(): boolean {
-    return this._chain.getCallHash('Claims.move_claim') === 'f6ca004c519bffb9d3e43365a3d6810f9f443ead5407fe14deb41c7ab92c1336'
-  }
-
-  get asV5(): {old: Uint8Array, new: Uint8Array, preclaim: (Uint8Array | undefined)} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Claims.move_claim') === '141d7420c9fafec5c9c80590a2dc9e528311f92ec2465a0dfc29eb44c0c7f2c5'
   }
 
-  get asEfinityV1(): {old: Uint8Array, new: Uint8Array, maybePreclaim: (Uint8Array | undefined)} {
-    assert(this.isEfinityV1)
+  get asV1(): {old: Uint8Array, new: Uint8Array, maybePreclaim: (Uint8Array | undefined)} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -942,7 +938,7 @@ export class CollatorStakingForceSetCurrentMaxCandidatesCall {
    * Set the current max candidates, must be within 0 and `T::MaxCandidates`
    * Sudo call only
    */
-  get isV5(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('CollatorStaking.force_set_current_max_candidates') === '310ae211a2124713dfde4d9d728ef98d0b24b616c3e5410d3181c5ef2e8ddade'
   }
 
@@ -950,8 +946,8 @@ export class CollatorStakingForceSetCurrentMaxCandidatesCall {
    * Set the current max candidates, must be within 0 and `T::MaxCandidates`
    * Sudo call only
    */
-  get asV5(): {maxCandidates: number} {
-    assert(this.isV5)
+  get asV3(): {maxCandidates: number} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -972,15 +968,15 @@ export class CollatorStakingJoinCandidatesCall {
   /**
    * Join the list of candidates for collation.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('CollatorStaking.join_candidates') === 'a3bdd43eed59e7b65720eef9b2dfe72389ca71ac9dbe7fe2874438aae4f18886'
   }
 
   /**
    * Join the list of candidates for collation.
    */
-  get asV5(): {amount: bigint} {
-    assert(this.isV5)
+  get asV1(): {amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1001,15 +997,15 @@ export class CollatorStakingNominateCall {
   /**
    * Nominate a specific candidate to be selected for collation and block production.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('CollatorStaking.nominate') === '30f29e64cc7b4f99f08cb48567ffb4af918d57fe9455b7152205397218f72966'
   }
 
   /**
    * Nominate a specific candidate to be selected for collation and block production.
    */
-  get asV5(): {collatorId: Uint8Array, amount: bigint} {
-    assert(this.isV5)
+  get asV1(): {collatorId: Uint8Array, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1030,15 +1026,15 @@ export class CollatorStakingRemoveNominationCall {
   /**
    * Remove a nomination previously registered for a specific collator candidate.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('CollatorStaking.remove_nomination') === '850c9ad9685e8b8f2587b1f9106e128c780b5d96e4560a40cf7d75d51543f181'
   }
 
   /**
    * Remove a nomination previously registered for a specific collator candidate.
    */
-  get asV5(): {collatorId: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {collatorId: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1056,12 +1052,12 @@ export class CollatorStakingSetBlockProducerCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('CollatorStaking.set_block_producer') === '67f88a22ebfbd8ee828d23cd78f4ee4ef5fe097d8e8b73cb87772e81f42726af'
   }
 
-  get asV5(): {producer: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {producer: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1082,15 +1078,15 @@ export class CollatorStakingSetInvulnerablesCall {
   /**
    * Join the list of candidates for collation.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('CollatorStaking.set_invulnerables') === 'f991968966792a125cac7c888dc7194239a215e624de7c15edbe7afe0e683c8a'
   }
 
   /**
    * Join the list of candidates for collation.
    */
-  get asV5(): {accounts: Uint8Array[]} {
-    assert(this.isV5)
+  get asV2(): {accounts: Uint8Array[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1116,7 +1112,7 @@ export class CollatorStakingUnbondCall {
    * Otherwise, if the account is only a candidate, this candidate will be removed
    * and the nominations would be freed up.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('CollatorStaking.unbond') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -1128,8 +1124,8 @@ export class CollatorStakingUnbondCall {
    * Otherwise, if the account is only a candidate, this candidate will be removed
    * and the nominations would be freed up.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV1(): null {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1159,7 +1155,7 @@ export class CommunityPoolApproveProposalCall {
    * - DbWrite: `Approvals`
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('CommunityPool.approve_proposal') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
   }
 
@@ -1175,8 +1171,8 @@ export class CommunityPoolApproveProposalCall {
    * - DbWrite: `Approvals`
    * # </weight>
    */
-  get asV5(): {proposalId: number} {
-    assert(this.isV5)
+  get asV2(): {proposalId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1205,7 +1201,7 @@ export class CommunityPoolProposeSpendCall {
    * - DbWrites: `ProposalCount`, `Proposals`, `origin account`
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('CommunityPool.propose_spend') === 'ffef9f31e8ae5085e7c0a55a685daef52218f0bf7083015ac904dafceedf09ee'
   }
 
@@ -1220,8 +1216,8 @@ export class CommunityPoolProposeSpendCall {
    * - DbWrites: `ProposalCount`, `Proposals`, `origin account`
    * # </weight>
    */
-  get asV5(): {value: bigint, beneficiary: v5.MultiAddress} {
-    assert(this.isV5)
+  get asV2(): {value: bigint, beneficiary: v2.MultiAddress} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1250,7 +1246,7 @@ export class CommunityPoolRejectProposalCall {
    * - DbWrites: `Proposals`, `rejected proposer account`
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('CommunityPool.reject_proposal') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
   }
 
@@ -1265,424 +1261,8 @@ export class CommunityPoolRejectProposalCall {
    * - DbWrites: `Proposals`, `rejected proposer account`
    * # </weight>
    */
-  get asV5(): {proposalId: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class CommunityPoolRemoveApprovalCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'CommunityPool.remove_approval')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Force a previously approved proposal to be removed from the approval queue.
-   * The original deposit will no longer be returned.
-   * 
-   * May only be called from `T::RejectOrigin`.
-   * - `proposal_id`: The index of a proposal
-   * 
-   * # <weight>
-   * - Complexity: O(A) where `A` is the number of approvals
-   * - Db reads and writes: `Approvals`
-   * # </weight>
-   * 
-   * Errors:
-   * - `ProposalNotApproved`: The `proposal_id` supplied was not found in the approval queue,
-   * i.e., the proposal has not been approved. This could also mean the proposal does not
-   * exist altogether, thus there is no way it would have been approved in the first place.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('CommunityPool.remove_approval') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
-  }
-
-  /**
-   * Force a previously approved proposal to be removed from the approval queue.
-   * The original deposit will no longer be returned.
-   * 
-   * May only be called from `T::RejectOrigin`.
-   * - `proposal_id`: The index of a proposal
-   * 
-   * # <weight>
-   * - Complexity: O(A) where `A` is the number of approvals
-   * - Db reads and writes: `Approvals`
-   * # </weight>
-   * 
-   * Errors:
-   * - `ProposalNotApproved`: The `proposal_id` supplied was not found in the approval queue,
-   * i.e., the proposal has not been approved. This could also mean the proposal does not
-   * exist altogether, thus there is no way it would have been approved in the first place.
-   */
-  get asV5(): {proposalId: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class CommunityPoolSpendCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'CommunityPool.spend')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Propose and approve a spend of treasury funds.
-   * 
-   * - `origin`: Must be `SpendOrigin` with the `Success` value being at least `amount`.
-   * - `amount`: The amount to be transferred from the treasury to the `beneficiary`.
-   * - `beneficiary`: The destination account for the transfer.
-   * 
-   * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
-   * beneficiary.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('CommunityPool.spend') === '18a5bcfd718b2b225ac128952f0fc34fff8371520e0ab5bac3a0ab20286b496d'
-  }
-
-  /**
-   * Propose and approve a spend of treasury funds.
-   * 
-   * - `origin`: Must be `SpendOrigin` with the `Success` value being at least `amount`.
-   * - `amount`: The amount to be transferred from the treasury to the `beneficiary`.
-   * - `beneficiary`: The destination account for the transfer.
-   * 
-   * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
-   * beneficiary.
-   */
-  get asV5(): {amount: bigint, beneficiary: v5.MultiAddress} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsCallCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.call')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Makes a call to an account, optionally transferring some balance.
-   * 
-   * # Parameters
-   * 
-   * * `dest`: Address of the contract to call.
-   * * `value`: The balance to transfer from the `origin` to `dest`.
-   * * `gas_limit`: The gas limit enforced when executing the constructor.
-   * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
-   *   caller to pay for the storage consumed.
-   * * `data`: The input data to pass to the contract.
-   * 
-   * * If the account is a smart-contract account, the associated code will be
-   * executed and any value will be transferred.
-   * * If the account is a regular account, any value will be transferred.
-   * * If no account exists and the call value is not less than `existential_deposit`,
-   * a regular account will be created and any value will be transferred.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.call') === 'd96c8a6656d7a4d6af6d5d0d51dd36e041c9ea8a92a7ead343d711addd74780f'
-  }
-
-  /**
-   * Makes a call to an account, optionally transferring some balance.
-   * 
-   * # Parameters
-   * 
-   * * `dest`: Address of the contract to call.
-   * * `value`: The balance to transfer from the `origin` to `dest`.
-   * * `gas_limit`: The gas limit enforced when executing the constructor.
-   * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
-   *   caller to pay for the storage consumed.
-   * * `data`: The input data to pass to the contract.
-   * 
-   * * If the account is a smart-contract account, the associated code will be
-   * executed and any value will be transferred.
-   * * If the account is a regular account, any value will be transferred.
-   * * If no account exists and the call value is not less than `existential_deposit`,
-   * a regular account will be created and any value will be transferred.
-   */
-  get asV5(): {dest: v5.MultiAddress, value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), data: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsInstantiateCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.instantiate')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Instantiates a contract from a previously deployed wasm binary.
-   * 
-   * This function is identical to [`Self::instantiate_with_code`] but without the
-   * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
-   * must be supplied.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.instantiate') === '065e28d4aca8ef55389ab2cdeb357c40056320f063a3db0a6c9157a597c14b5b'
-  }
-
-  /**
-   * Instantiates a contract from a previously deployed wasm binary.
-   * 
-   * This function is identical to [`Self::instantiate_with_code`] but without the
-   * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
-   * must be supplied.
-   */
-  get asV5(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsInstantiateWithCodeCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.instantiate_with_code')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Instantiates a new contract from the supplied `code` optionally transferring
-   * some balance.
-   * 
-   * This dispatchable has the same effect as calling [`Self::upload_code`] +
-   * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
-   * also check the documentation of [`Self::upload_code`].
-   * 
-   * # Parameters
-   * 
-   * * `value`: The balance to transfer from the `origin` to the newly created contract.
-   * * `gas_limit`: The gas limit enforced when executing the constructor.
-   * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
-   *   from the caller to pay for the storage consumed.
-   * * `code`: The contract code to deploy in raw bytes.
-   * * `data`: The input data to pass to the contract constructor.
-   * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
-   * 
-   * Instantiation is executed as follows:
-   * 
-   * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
-   *   code.
-   * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
-   * - The destination address is computed based on the sender, code_hash and the salt.
-   * - The smart-contract account is created at the computed address.
-   * - The `value` is transferred to the new account.
-   * - The `deploy` function is executed in the context of the newly-created account.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.instantiate_with_code') === '2204435764a14a39d7c13f6cffbf98550fcaad4cba9d91306fe99d88a718a62c'
-  }
-
-  /**
-   * Instantiates a new contract from the supplied `code` optionally transferring
-   * some balance.
-   * 
-   * This dispatchable has the same effect as calling [`Self::upload_code`] +
-   * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
-   * also check the documentation of [`Self::upload_code`].
-   * 
-   * # Parameters
-   * 
-   * * `value`: The balance to transfer from the `origin` to the newly created contract.
-   * * `gas_limit`: The gas limit enforced when executing the constructor.
-   * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
-   *   from the caller to pay for the storage consumed.
-   * * `code`: The contract code to deploy in raw bytes.
-   * * `data`: The input data to pass to the contract constructor.
-   * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
-   * 
-   * Instantiation is executed as follows:
-   * 
-   * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
-   *   code.
-   * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
-   * - The destination address is computed based on the sender, code_hash and the salt.
-   * - The smart-contract account is created at the computed address.
-   * - The `value` is transferred to the new account.
-   * - The `deploy` function is executed in the context of the newly-created account.
-   */
-  get asV5(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsRemoveCodeCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.remove_code')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Remove the code stored under `code_hash` and refund the deposit to its owner.
-   * 
-   * A code can only be removed by its original uploader (its owner) and only if it is
-   * not used by any contract.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.remove_code') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
-  }
-
-  /**
-   * Remove the code stored under `code_hash` and refund the deposit to its owner.
-   * 
-   * A code can only be removed by its original uploader (its owner) and only if it is
-   * not used by any contract.
-   */
-  get asV5(): {codeHash: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsSetCodeCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.set_code')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Privileged function that changes the code of an existing contract.
-   * 
-   * This takes care of updating refcounts and all other necessary operations. Returns
-   * an error if either the `code_hash` or `dest` do not exist.
-   * 
-   * # Note
-   * 
-   * This does **not** change the address of the contract in question. This means
-   * that the contract address is no longer derived from its code hash after calling
-   * this dispatchable.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.set_code') === '70cd8e4f03fe2c8334a13735563897eedfa16eb9b8e0c97b3aacce6c108aacc0'
-  }
-
-  /**
-   * Privileged function that changes the code of an existing contract.
-   * 
-   * This takes care of updating refcounts and all other necessary operations. Returns
-   * an error if either the `code_hash` or `dest` do not exist.
-   * 
-   * # Note
-   * 
-   * This does **not** change the address of the contract in question. This means
-   * that the contract address is no longer derived from its code hash after calling
-   * this dispatchable.
-   */
-  get asV5(): {dest: v5.MultiAddress, codeHash: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class ContractsUploadCodeCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Contracts.upload_code')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Upload new `code` without instantiating a contract from it.
-   * 
-   * If the code does not already exist a deposit is reserved from the caller
-   * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
-   * depends on the instrumented size of the the supplied `code`.
-   * 
-   * If the code already exists in storage it will still return `Ok` and upgrades
-   * the in storage version to the current
-   * [`InstructionWeights::version`](InstructionWeights).
-   * 
-   * # Note
-   * 
-   * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
-   * To avoid this situation a constructor could employ access control so that it can
-   * only be instantiated by permissioned entities. The same is true when uploading
-   * through [`Self::instantiate_with_code`].
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Contracts.upload_code') === 'e5d80c6158333f4c26b9bf07184fcf08a6cc009b6fca8d942ba16f848c6a6417'
-  }
-
-  /**
-   * Upload new `code` without instantiating a contract from it.
-   * 
-   * If the code does not already exist a deposit is reserved from the caller
-   * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
-   * depends on the instrumented size of the the supplied `code`.
-   * 
-   * If the code already exists in storage it will still return `Ok` and upgrades
-   * the in storage version to the current
-   * [`InstructionWeights::version`](InstructionWeights).
-   * 
-   * # Note
-   * 
-   * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
-   * To avoid this situation a constructor could employ access control so that it can
-   * only be instantiated by permissioned entities. The same is true when uploading
-   * through [`Self::instantiate_with_code`].
-   */
-  get asV5(): {code: Uint8Array, storageDepositLimit: (bigint | undefined)} {
-    assert(this.isV5)
+  get asV2(): {proposalId: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1734,7 +1314,7 @@ export class CouncilCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Council.close') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
   }
 
@@ -1772,8 +1352,8 @@ export class CouncilCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1807,7 +1387,7 @@ export class CouncilDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Council.disapprove_proposal') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -1827,8 +1407,8 @@ export class CouncilDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1844,41 +1424,6 @@ export class CouncilExecuteCall {
     assert(call.name === 'Council.execute')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Council.execute') === 'e0d880cf8401a0c5638c41cb293c4b38168617b5f7bab5137974710777182b7c'
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get asV5(): {proposal: v5.Call, lengthBound: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -1929,7 +1474,7 @@ export class CouncilExecuteCall {
    * - 1 event
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Council.execute') === '66fffa1ff650edb25b908c2b043acf71553670c63c283f14cd88ca2ca47dc52a'
   }
 
@@ -1946,43 +1491,8 @@ export class CouncilExecuteCall {
    * - 1 event
    * # </weight>
    */
-  get asEfinityV3(): {proposal: efinityV3.Call, lengthBound: number} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Council.execute') === '434328da28967827bb8283f3ce28711d29f08ead753ee82c19ddb7d2f03b2414'
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get asV4(): {proposal: v4.Call, lengthBound: number} {
-    assert(this.isV4)
+  get asV3(): {proposal: v3.Call, lengthBound: number} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1998,73 +1508,6 @@ export class CouncilProposeCall {
     assert(call.name === 'Council.propose')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Council.propose') === 'ad8a7fe52f7fef10f4157f81503e71d4964428b6498ec13b408ab3e793784437'
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get asV5(): {threshold: number, proposal: v5.Call, lengthBound: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -2163,7 +1606,7 @@ export class CouncilProposeCall {
    *   - 1 event
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Council.propose') === 'cdf7d19b893f28f26424698248ad1b2f03188005aa449f0092d7c707cdefda8a'
   }
 
@@ -2196,75 +1639,8 @@ export class CouncilProposeCall {
    *   - 1 event
    * # </weight>
    */
-  get asEfinityV3(): {threshold: number, proposal: efinityV3.Call, lengthBound: number} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Council.propose') === '6bd332594349ef39c75e7acbfcc6a7b37038b9ff279b0eb3de825a8e2a4955a7'
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get asV4(): {threshold: number, proposal: v4.Call, lengthBound: number} {
-    assert(this.isV4)
+  get asV3(): {threshold: number, proposal: v3.Call, lengthBound: number} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2316,7 +1692,7 @@ export class CouncilSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Council.set_members') === '71b7fcb1d8a62eff96a9ef006517578ce9189e6d931948a256a04ca75ff68d4a'
   }
 
@@ -2354,8 +1730,8 @@ export class CouncilSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get asV5(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
-    assert(this.isV5)
+  get asV2(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2390,7 +1766,7 @@ export class CouncilVoteCall {
    * - 1 event
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Council.vote') === 'f8a1069a57f7b721f47c086d08b6838ae1a0c08f58caddb82428ba5f1407540f'
   }
 
@@ -2411,8 +1787,8 @@ export class CouncilVoteCall {
    * - 1 event
    * # </weight>
    */
-  get asV5(): {proposal: Uint8Array, index: number, approve: boolean} {
-    assert(this.isV5)
+  get asV2(): {proposal: Uint8Array, index: number, approve: boolean} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2447,7 +1823,7 @@ export class DemocracyBlacklistCall {
    * Weight: `O(p)` (though as this is an high-privilege dispatch, we assume it has a
    *   reasonable value).
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.blacklist') === '8d8922c0775adfb1df719211ab4fc6fb40b6cc8864038bcb1b544d9cf039b30a'
   }
 
@@ -2468,8 +1844,8 @@ export class DemocracyBlacklistCall {
    * Weight: `O(p)` (though as this is an high-privilege dispatch, we assume it has a
    *   reasonable value).
    */
-  get asV5(): {proposalHash: Uint8Array, maybeRefIndex: (number | undefined)} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, maybeRefIndex: (number | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2496,7 +1872,7 @@ export class DemocracyCancelProposalCall {
    * 
    * Weight: `O(p)` where `p = PublicProps::<T>::decode_len()`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.cancel_proposal') === '0e50c7564a4a7f4e6a09a0abcc8022f4445c064144d2318ed086e6080bee800d'
   }
 
@@ -2509,8 +1885,8 @@ export class DemocracyCancelProposalCall {
    * 
    * Weight: `O(p)` where `p = PublicProps::<T>::decode_len()`
    */
-  get asV5(): {propIndex: number} {
-    assert(this.isV5)
+  get asV2(): {propIndex: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2537,7 +1913,7 @@ export class DemocracyCancelQueuedCall {
    * 
    * Weight: `O(D)` where `D` is the items in the dispatch queue. Weighted as `D = 10`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.cancel_queued') === '60780274011857b5305b5413b2b4742e5d41eb58a0948049d0672e81af198cb7'
   }
 
@@ -2550,8 +1926,8 @@ export class DemocracyCancelQueuedCall {
    * 
    * Weight: `O(D)` where `D` is the items in the dispatch queue. Weighted as `D = 10`.
    */
-  get asV5(): {which: number} {
-    assert(this.isV5)
+  get asV2(): {which: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2578,7 +1954,7 @@ export class DemocracyCancelReferendumCall {
    * 
    * # Weight: `O(1)`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.cancel_referendum') === 'efe4ecff834678ca8b73ea6e2f38e514997eb402e82da2ce4cf036008844a857'
   }
 
@@ -2591,8 +1967,8 @@ export class DemocracyCancelReferendumCall {
    * 
    * # Weight: `O(1)`.
    */
-  get asV5(): {refIndex: number} {
-    assert(this.isV5)
+  get asV2(): {refIndex: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2617,7 +1993,7 @@ export class DemocracyClearPublicProposalsCall {
    * 
    * Weight: `O(1)`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.clear_public_proposals') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -2628,8 +2004,8 @@ export class DemocracyClearPublicProposalsCall {
    * 
    * Weight: `O(1)`.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2669,7 +2045,7 @@ export class DemocracyDelegateCall {
    * Weight: `O(R)` where R is the number of referendums the voter delegating to has
    *   voted on. Weight is charged as if maximum votes.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.delegate') === '719d303e364256b757876a8d1b18c8d62a96223d68ffc6f6c1bf18240e8d9793'
   }
 
@@ -2695,8 +2071,8 @@ export class DemocracyDelegateCall {
    * Weight: `O(R)` where R is the number of referendums the voter delegating to has
    *   voted on. Weight is charged as if maximum votes.
    */
-  get asV5(): {to: Uint8Array, conviction: v5.Conviction, balance: bigint} {
-    assert(this.isV5)
+  get asV2(): {to: Uint8Array, conviction: v2.Conviction, balance: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2724,7 +2100,7 @@ export class DemocracyEmergencyCancelCall {
    * 
    * Weight: `O(1)`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.emergency_cancel') === '8a84371403a09e2f8fc2aac80f5a8a53229b346c4b3859069867b8e656b13450'
   }
 
@@ -2738,8 +2114,8 @@ export class DemocracyEmergencyCancelCall {
    * 
    * Weight: `O(1)`.
    */
-  get asV5(): {refIndex: number} {
-    assert(this.isV5)
+  get asV2(): {refIndex: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2760,15 +2136,15 @@ export class DemocracyEnactProposalCall {
   /**
    * Enact a proposal from a referendum. For now we just make the weight be the maximum.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.enact_proposal') === 'de192ab0f058d1fb7eacc523bf0e05128d16509ec21bf445f0eefa47c89e60bf'
   }
 
   /**
    * Enact a proposal from a referendum. For now we just make the weight be the maximum.
    */
-  get asV5(): {proposalHash: Uint8Array, index: number} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, index: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2797,7 +2173,7 @@ export class DemocracyExternalProposeCall {
    * Weight: `O(V)` with V number of vetoers in the blacklist of proposal.
    *   Decoding vec of length V. Charged as maximum
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.external_propose') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -2812,8 +2188,8 @@ export class DemocracyExternalProposeCall {
    * Weight: `O(V)` with V number of vetoers in the blacklist of proposal.
    *   Decoding vec of length V. Charged as maximum
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2844,7 +2220,7 @@ export class DemocracyExternalProposeDefaultCall {
    * 
    * Weight: `O(1)`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.external_propose_default') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -2861,8 +2237,8 @@ export class DemocracyExternalProposeDefaultCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2893,7 +2269,7 @@ export class DemocracyExternalProposeMajorityCall {
    * 
    * Weight: `O(1)`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.external_propose_majority') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -2910,8 +2286,8 @@ export class DemocracyExternalProposeMajorityCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2937,9 +2313,8 @@ export class DemocracyFastTrackCall {
    * The dispatch of this call must be `FastTrackOrigin`.
    * 
    * - `proposal_hash`: The hash of the current external proposal.
-   * - `voting_period`: The period that is allowed for voting on this proposal.
-   * 	Must be always greater than zero.
-   * 	For `FastTrackOrigin` must be equal or greater than `FastTrackVotingPeriod`.
+   * - `voting_period`: The period that is allowed for voting on this proposal. Increased to
+   *   `FastTrackVotingPeriod` if too low.
    * - `delay`: The number of block after voting has ended in approval and this should be
    *   enacted. This doesn't have a minimum amount.
    * 
@@ -2947,7 +2322,7 @@ export class DemocracyFastTrackCall {
    * 
    * Weight: `O(1)`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.fast_track') === '27cb200e922e485b41e3150b3d7bf5e8624346f6ff1d78601373ba3d80689c89'
   }
 
@@ -2959,9 +2334,8 @@ export class DemocracyFastTrackCall {
    * The dispatch of this call must be `FastTrackOrigin`.
    * 
    * - `proposal_hash`: The hash of the current external proposal.
-   * - `voting_period`: The period that is allowed for voting on this proposal.
-   * 	Must be always greater than zero.
-   * 	For `FastTrackOrigin` must be equal or greater than `FastTrackVotingPeriod`.
+   * - `voting_period`: The period that is allowed for voting on this proposal. Increased to
+   *   `FastTrackVotingPeriod` if too low.
    * - `delay`: The number of block after voting has ended in approval and this should be
    *   enacted. This doesn't have a minimum amount.
    * 
@@ -2969,8 +2343,8 @@ export class DemocracyFastTrackCall {
    * 
    * Weight: `O(1)`
    */
-  get asV5(): {proposalHash: Uint8Array, votingPeriod: number, delay: number} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, votingPeriod: number, delay: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3002,7 +2376,7 @@ export class DemocracyNoteImminentPreimageCall {
    * 
    * Weight: `O(E)` with E size of `encoded_proposal` (protected by a required deposit).
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.note_imminent_preimage') === 'bc60303cdd91077cf965a8aec4728ff7f49fea4055259a274e22145314e7c9eb'
   }
 
@@ -3020,8 +2394,8 @@ export class DemocracyNoteImminentPreimageCall {
    * 
    * Weight: `O(E)` with E size of `encoded_proposal` (protected by a required deposit).
    */
-  get asV5(): {encodedProposal: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {encodedProposal: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3042,15 +2416,15 @@ export class DemocracyNoteImminentPreimageOperationalCall {
   /**
    * Same as `note_imminent_preimage` but origin is `OperationalPreimageOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.note_imminent_preimage_operational') === 'bc60303cdd91077cf965a8aec4728ff7f49fea4055259a274e22145314e7c9eb'
   }
 
   /**
    * Same as `note_imminent_preimage` but origin is `OperationalPreimageOrigin`.
    */
-  get asV5(): {encodedProposal: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {encodedProposal: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3080,7 +2454,7 @@ export class DemocracyNotePreimageCall {
    * 
    * Weight: `O(E)` with E size of `encoded_proposal` (protected by a required deposit).
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.note_preimage') === 'bc60303cdd91077cf965a8aec4728ff7f49fea4055259a274e22145314e7c9eb'
   }
 
@@ -3096,8 +2470,8 @@ export class DemocracyNotePreimageCall {
    * 
    * Weight: `O(E)` with E size of `encoded_proposal` (protected by a required deposit).
    */
-  get asV5(): {encodedProposal: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {encodedProposal: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3118,15 +2492,15 @@ export class DemocracyNotePreimageOperationalCall {
   /**
    * Same as `note_preimage` but origin is `OperationalPreimageOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.note_preimage_operational') === 'bc60303cdd91077cf965a8aec4728ff7f49fea4055259a274e22145314e7c9eb'
   }
 
   /**
    * Same as `note_preimage` but origin is `OperationalPreimageOrigin`.
    */
-  get asV5(): {encodedProposal: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {encodedProposal: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3157,7 +2531,7 @@ export class DemocracyProposeCall {
    * 
    * Weight: `O(p)`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.propose') === '99f964e94c86db2029fab3e54a9230e36fe7533d252b5ecbc36f16c06e11f18b'
   }
 
@@ -3174,8 +2548,8 @@ export class DemocracyProposeCall {
    * 
    * Weight: `O(p)`
    */
-  get asV5(): {proposalHash: Uint8Array, value: bigint} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, value: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3210,7 +2584,7 @@ export class DemocracyReapPreimageCall {
    * 
    * Weight: `O(D)` where D is length of proposal.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.reap_preimage') === '23573ffc912e8a31889875352d3543e4538e2f3beb6a89ef86d10cf1cb8b7aca'
   }
 
@@ -3231,8 +2605,8 @@ export class DemocracyReapPreimageCall {
    * 
    * Weight: `O(D)` where D is length of proposal.
    */
-  get asV5(): {proposalHash: Uint8Array, proposalLenUpperBound: number} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, proposalLenUpperBound: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3267,7 +2641,7 @@ export class DemocracyRemoveOtherVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.remove_other_vote') === '57db819150acc73e380a9908a05d4f777cd3af825527d7ad88560426e1d0f652'
   }
 
@@ -3288,8 +2662,8 @@ export class DemocracyRemoveOtherVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
-  get asV5(): {target: Uint8Array, index: number} {
-    assert(this.isV5)
+  get asV2(): {target: Uint8Array, index: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3336,7 +2710,7 @@ export class DemocracyRemoveVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.remove_vote') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
   }
 
@@ -3369,8 +2743,8 @@ export class DemocracyRemoveVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
-  get asV5(): {index: number} {
-    assert(this.isV5)
+  get asV2(): {index: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3400,7 +2774,7 @@ export class DemocracySecondCall {
    * 
    * Weight: `O(S)` where S is the number of seconds a proposal already has.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.second') === 'abe1357aae784eefd21f6999076deb6cfbc92fcb9e80c21e93a944ceb739423c'
   }
 
@@ -3416,8 +2790,8 @@ export class DemocracySecondCall {
    * 
    * Weight: `O(S)` where S is the number of seconds a proposal already has.
    */
-  get asV5(): {proposal: number, secondsUpperBound: number} {
-    assert(this.isV5)
+  get asV2(): {proposal: number, secondsUpperBound: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3449,7 +2823,7 @@ export class DemocracyUndelegateCall {
    * Weight: `O(R)` where R is the number of referendums the voter delegating to has
    *   voted on. Weight is charged as if maximum votes.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.undelegate') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -3467,8 +2841,8 @@ export class DemocracyUndelegateCall {
    * Weight: `O(R)` where R is the number of referendums the voter delegating to has
    *   voted on. Weight is charged as if maximum votes.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3495,7 +2869,7 @@ export class DemocracyUnlockCall {
    * 
    * Weight: `O(R)` with R number of vote of target.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.unlock') === '66d8abf7976ff596d8d614948b9d84cb24f0b898d88d24eb2cc035ae5e93c7b8'
   }
 
@@ -3508,8 +2882,8 @@ export class DemocracyUnlockCall {
    * 
    * Weight: `O(R)` with R number of vote of target.
    */
-  get asV5(): {target: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {target: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3538,7 +2912,7 @@ export class DemocracyVetoExternalCall {
    * 
    * Weight: `O(V + log(V))` where V is number of `existing vetoers`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.veto_external') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -3553,8 +2927,8 @@ export class DemocracyVetoExternalCall {
    * 
    * Weight: `O(V + log(V))` where V is number of `existing vetoers`
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3583,7 +2957,7 @@ export class DemocracyVoteCall {
    * 
    * Weight: `O(R)` where R is the number of referendums the voter has voted on.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Democracy.vote') === '3936a4cb49f77280bd94142d4ec458afcf5cb8a5e5b0d602b1b1530928021e28'
   }
 
@@ -3598,8 +2972,8 @@ export class DemocracyVoteCall {
    * 
    * Weight: `O(R)` where R is the number of referendums the voter has voted on.
    */
-  get asV5(): {refIndex: number, vote: v5.AccountVote} {
-    assert(this.isV5)
+  get asV2(): {refIndex: number, vote: v2.AccountVote} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3631,7 +3005,7 @@ export class DmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('DmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
   }
 
@@ -3649,8 +3023,8 @@ export class DmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
-  get asV5(): {index: bigint, weightLimit: bigint} {
-    assert(this.isV5)
+  get asV1(): {index: bigint, weightLimit: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3671,15 +3045,15 @@ export class MultiAssetsBatchMultiTransferCall {
   /**
    * Transfers an amount of tokens for a specific Asset to a given `recipient` from `source` account
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.batch_multi_transfer') === '914f10beec5bd65ea351457ca9b6b6f748c23d4c75a051252e15776e869fb606'
   }
 
   /**
    * Transfers an amount of tokens for a specific Asset to a given `recipient` from `source` account
    */
-  get asEfinityV1(): {recipients: efinityV1.RecipientWithAsset[]} {
-    assert(this.isEfinityV1)
+  get asV1(): {recipients: v1.RecipientWithAsset[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3701,7 +3075,7 @@ export class MultiAssetsBatchTransferCall {
    * Transfers the specific amount of tokens of given `recipients` of `asset` from
    * `source` account.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.batch_transfer') === '456577a22159d13a26684641ae5c76c4cba13f06ce341444a1ee3c6c9025b388'
   }
 
@@ -3709,8 +3083,8 @@ export class MultiAssetsBatchTransferCall {
    * Transfers the specific amount of tokens of given `recipients` of `asset` from
    * `source` account.
    */
-  get asEfinityV1(): {asset: bigint, recipients: efinityV1.Recipient[]} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, recipients: v1.Recipient[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3732,7 +3106,7 @@ export class MultiAssetsBatchTransferByChunkCall {
    * # TODO
    * - `recipients_by_chunk` must be bounded.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.batch_transfer_by_chunk') === 'aff0983d45fafc37e93000940213d7bb0cdd4f98ef32aff3d45b0fcf15777987'
   }
 
@@ -3740,8 +3114,8 @@ export class MultiAssetsBatchTransferByChunkCall {
    * # TODO
    * - `recipients_by_chunk` must be bounded.
    */
-  get asEfinityV1(): {asset: bigint, recipientsByChunk: efinityV1.RecipientsByChunk[]} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, recipientsByChunk: v1.RecipientsByChunk[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3764,7 +3138,7 @@ export class MultiAssetsBurnCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.burn') === '89e2bbfd58aaf8e4e4b34e50f0b6a36823f59c189c929cf627fd21805abaff88'
   }
 
@@ -3773,8 +3147,8 @@ export class MultiAssetsBurnCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get asEfinityV1(): {asset: bigint, token: number, amount: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, token: number, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3797,7 +3171,7 @@ export class MultiAssetsBurnAssetCall {
    * 
    * See `Pallet::do_burn_asset`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.burn_asset') === '6fd47e6c95eb24f766a5048e47cccda4b627923b95609599662394187c43719a'
   }
 
@@ -3806,8 +3180,8 @@ export class MultiAssetsBurnAssetCall {
    * 
    * See `Pallet::do_burn_asset`.
    */
-  get asEfinityV1(): {asset: bigint, assetAttributeCount: number, nextTokenId: number} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, assetAttributeCount: number, nextTokenId: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3830,7 +3204,7 @@ export class MultiAssetsBurnByChunkCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.burn_by_chunk') === 'f77759d89c0a33d577578902c89dda877d88ab351d4de2049445426214fe91c3'
   }
 
@@ -3839,8 +3213,8 @@ export class MultiAssetsBurnByChunkCall {
    * 
    * See `Pallet::do_burn_by_chunk`.
    */
-  get asEfinityV1(): {asset: bigint, tokens: efinityV1.Range[]} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, tokens: v1.Range[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3863,7 +3237,7 @@ export class MultiAssetsClearAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.clear_asset_attribute') === 'f22ac865e73aaa67c80a5ec4c91b784905ddc2621a6a06c7b39bc2eef9be129b'
   }
 
@@ -3872,8 +3246,8 @@ export class MultiAssetsClearAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get asEfinityV1(): {asset: bigint, key: Uint8Array} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, key: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3896,7 +3270,7 @@ export class MultiAssetsClearTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.clear_token_attribute') === '64afec1b6eff34d57f20408472851a2f2b8c53aa4f4f5769b77f30e88ae05d94'
   }
 
@@ -3905,8 +3279,8 @@ export class MultiAssetsClearTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get asEfinityV1(): {asset: bigint, token: number, key: Uint8Array} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, token: number, key: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3928,7 +3302,7 @@ export class MultiAssetsCreateAssetCall {
    * Creates a new asset using the given `fungibility` policy where `origin` will be the
    * owner.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.create_asset') === '430c714d88289b17f9be8d9d96b9075678817d13381069273a4e4e832ce859fe'
   }
 
@@ -3936,8 +3310,8 @@ export class MultiAssetsCreateAssetCall {
    * Creates a new asset using the given `fungibility` policy where `origin` will be the
    * owner.
    */
-  get asEfinityV1(): {policy: efinityV1.AssetPolicy} {
-    assert(this.isEfinityV1)
+  get asV1(): {policy: v1.AssetPolicy} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3958,15 +3332,15 @@ export class MultiAssetsMintCall {
   /**
    * Mints new `amount` of `asset` and transfer to `origin` account.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.mint') === '50349db6705298bb8eaa32167b7bc80bcd141b573a0ffe5816fe5815d45c9048'
   }
 
   /**
    * Mints new `amount` of `asset` and transfer to `origin` account.
    */
-  get asEfinityV1(): {asset: bigint, amount: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -3989,7 +3363,7 @@ export class MultiAssetsSetAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.set_asset_attribute') === '6c4de0867e652d759d38b12002fbf4f996d0502639c4affa0fb990ccda3976bf'
   }
 
@@ -3998,8 +3372,8 @@ export class MultiAssetsSetAssetAttributeCall {
    * 
    * See `Pallet::do_set_asset_attribute`.
    */
-  get asEfinityV1(): {asset: bigint, key: Uint8Array, value: Uint8Array} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, key: Uint8Array, value: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4022,7 +3396,7 @@ export class MultiAssetsSetTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.set_token_attribute') === 'b86220f609f1dfa1a8d558f3a138299881e17f1803eaad4ed7811cdd9acb46e0'
   }
 
@@ -4031,8 +3405,8 @@ export class MultiAssetsSetTokenAttributeCall {
    * 
    * See `Pallet::do_set_token_attribute`.
    */
-  get asEfinityV1(): {asset: bigint, token: number, key: Uint8Array, value: Uint8Array} {
-    assert(this.isEfinityV1)
+  get asV1(): {asset: bigint, token: number, key: Uint8Array, value: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4054,7 +3428,7 @@ export class MultiAssetsTransferCall {
    * Transfers `amount` of `token` from `asset` from `origin` account to `target` account.
    * See `chunks::do_transfer`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.transfer') === '1cf329fd44dd643eec80e1891fa55a8593573c4fd8be3899927d729651beaa70'
   }
 
@@ -4062,8 +3436,8 @@ export class MultiAssetsTransferCall {
    * Transfers `amount` of `token` from `asset` from `origin` account to `target` account.
    * See `chunks::do_transfer`.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint, token: number, amount: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {target: v1.MultiAddress, asset: bigint, token: number, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4084,15 +3458,15 @@ export class MultiAssetsTransferByChunkCall {
   /**
    * Transfers the `tokens` of `asset` from `origin` to `target`.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.transfer_by_chunk') === 'e5bdb32e4d697848a3d8ada464a7f155bb4ee92e9a38a2cfd4c18c9d06f3ffac'
   }
 
   /**
    * Transfers the `tokens` of `asset` from `origin` to `target`.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint, tokens: efinityV1.Range[]} {
-    assert(this.isEfinityV1)
+  get asV1(): {target: v1.MultiAddress, asset: bigint, tokens: v1.Range[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4116,7 +3490,7 @@ export class MultiAssetsTransferOwnershipCall {
    * # TODO
    * - Weight based on number of chunks instead of number or elements of tokens.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssets.transfer_ownership') === '4fc84afad542edaeaf16d474863437eda6cfe37592a3f0c79fe25b5f6692834a'
   }
 
@@ -4126,8 +3500,8 @@ export class MultiAssetsTransferOwnershipCall {
    * # TODO
    * - Weight based on number of chunks instead of number or elements of tokens.
    */
-  get asEfinityV1(): {target: efinityV1.MultiAddress, asset: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {target: v1.MultiAddress, asset: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4148,15 +3522,15 @@ export class MultiAssetsOperatorExtApproveAssetCall {
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.approve_asset') === 'db55dc4b03c8ef12022496ae990420a14eccdd3d872d9d794a5fb7fdb3de7f17'
   }
 
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get asEfinityV1(): {operator: Uint8Array, asset: bigint, expiration: efinityV1.Expiration} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array, asset: bigint, expiration: v1.Expiration} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4177,15 +3551,15 @@ export class MultiAssetsOperatorExtApproveForAllCall {
   /**
    * Approve `operator` to manage all the `origin`'s assets.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.approve_for_all') === '0af30968868cefa5e7db1f582d32bef581d5db30f30249d1b22231ef95d46ce4'
   }
 
   /**
    * Approve `operator` to manage all the `origin`'s assets.
    */
-  get asEfinityV1(): {operator: Uint8Array, expiration: efinityV1.Expiration} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array, expiration: v1.Expiration} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4206,15 +3580,15 @@ export class MultiAssetsOperatorExtApproveTokenCall {
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.approve_token') === 'e2f7d1fc75bb209b73d09e9b85a55e01a597344dd6ad55c10be6783d21a74fb6'
   }
 
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get asEfinityV1(): {operator: Uint8Array, asset: bigint, token: number, amount: bigint, expiration: efinityV1.Expiration} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array, asset: bigint, token: number, amount: bigint, expiration: v1.Expiration} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4235,15 +3609,15 @@ export class MultiAssetsOperatorExtTransferFromCall {
   /**
    * Transfers `amount` of `tokens` from account `from` to address `to` if `origin` has enough allowance
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.transfer_from') === 'd2b913d3a3a5ae008034a9f518424b2d005761c4c7a1e4ccb9ba10bdfe9e0fcf'
   }
 
   /**
    * Transfers `amount` of `tokens` from account `from` to address `to` if `origin` has enough allowance
    */
-  get asEfinityV1(): {from: Uint8Array, to: Uint8Array, asset: bigint, token: number, amount: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {from: Uint8Array, to: Uint8Array, asset: bigint, token: number, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4264,15 +3638,15 @@ export class MultiAssetsOperatorExtUnapproveAssetCall {
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.unapprove_asset') === '71c184bcd95e12e5934c981796e88b2c153fd83bad3068dedf7f1b4813574758'
   }
 
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `asset`
    */
-  get asEfinityV1(): {operator: Uint8Array, asset: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array, asset: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4293,15 +3667,15 @@ export class MultiAssetsOperatorExtUnapproveForAllCall {
   /**
    * Unapprove `operator` to manage `origin's` assets
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.unapprove_for_all') === '1e2713efb65114597ed1c5d791da173e5bb427cca368815c69e1f8390525f949'
   }
 
   /**
    * Unapprove `operator` to manage `origin's` assets
    */
-  get asEfinityV1(): {operator: Uint8Array} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4322,15 +3696,15 @@ export class MultiAssetsOperatorExtUnapproveTokenCall {
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('MultiAssetsOperatorExt.unapprove_token') === 'be9956cdf9e200b2a3af02d09578cc79f1b5939b74da917ba4a30d5b943da1d9'
   }
 
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get asEfinityV1(): {operator: Uint8Array, asset: bigint, token: number} {
-    assert(this.isEfinityV1)
+  get asV1(): {operator: Uint8Array, asset: bigint, token: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4351,15 +3725,15 @@ export class MultiTokensApproveCollectionCall {
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.approve_collection') === '488accbd8a7ccff93c1ce6b5609ef67874c52cc8fc80b3b48a2cad226450c092'
   }
 
   /**
    * Approve the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV5(): {collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4380,15 +3754,15 @@ export class MultiTokensApproveTokenCall {
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.approve_token') === '7266369f860222731cfac3b4dc9f7b3eb8550de09ee165a184b933efc53cd27a'
   }
 
   /**
    * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4420,7 +3794,7 @@ export class MultiTokensBatchMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.batch_mint') === '084d61eb68c7be95ad054eb3343b987f9d956254a27444db9f5e8c124cd1674c'
   }
 
@@ -4438,8 +3812,8 @@ export class MultiTokensBatchMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get asV5(): {collectionId: bigint, recipients: v5.Type_293[]} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, recipients: v2.Type_274[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4466,7 +3840,7 @@ export class MultiTokensBatchTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `BalanceOverflow` if `target` balance of `collection` overflows.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.batch_transfer') === 'b19d3917f5096e2cef3e73752e8a3bd0b5e30cadfc6a4ff16c68ce84082c1ce5'
   }
 
@@ -4479,8 +3853,8 @@ export class MultiTokensBatchTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `BalanceOverflow` if `target` balance of `collection` overflows.
    */
-  get asV5(): {collectionId: bigint, recipients: v5.Recipient[]} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, recipients: v2.Recipient[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4512,7 +3886,7 @@ export class MultiTokensBurnCall {
    * overflow.
    * - `DepositUnreserveFailed` if caller does not have enough reserved balance to unreserve
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.burn') === '5e518fd41f2e62474b4a1bae295d7c2b0bec3f70f20ccbfeb4517ee9e7984bc3'
   }
 
@@ -4530,8 +3904,8 @@ export class MultiTokensBurnCall {
    * overflow.
    * - `DepositUnreserveFailed` if caller does not have enough reserved balance to unreserve
    */
-  get asV5(): {collectionId: bigint, params: v5.DefaultBurnParams} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, params: v2.DefaultBurnParams} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4555,7 +3929,7 @@ export class MultiTokensCreateCollectionCall {
    * # Errors
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.create_collection') === '7cf4fe3885361ce6eb79e4db2f2b1f99352c2e5697d2c8b7df956148e7c0f2c6'
   }
 
@@ -4565,8 +3939,8 @@ export class MultiTokensCreateCollectionCall {
    * # Errors
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
-  get asV5(): {descriptor: v5.DefaultCollectionDescriptor} {
-    assert(this.isV5)
+  get asV2(): {descriptor: v2.DefaultCollectionDescriptor} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4598,7 +3972,7 @@ export class MultiTokensDestroyCollectionCall {
    * - `DestroyForbiddenByAttributeCount` if collection still has attributes when destroying
    * current number of collection attributes.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.destroy_collection') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
   }
 
@@ -4616,8 +3990,8 @@ export class MultiTokensDestroyCollectionCall {
    * - `DestroyForbiddenByAttributeCount` if collection still has attributes when destroying
    * current number of collection attributes.
    */
-  get asV5(): {collectionId: bigint} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4643,7 +4017,7 @@ export class MultiTokensForceMutateCollectionCall {
    * - `BadOrigin` if origin != root
    * - Same as mutate_collection
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_mutate_collection') === 'b24a11f1bb3034565515518d4293039de8c701ec744f5c5e6b41a17b3c4d2288'
   }
 
@@ -4655,8 +4029,8 @@ export class MultiTokensForceMutateCollectionCall {
    * - `BadOrigin` if origin != root
    * - Same as mutate_collection
    */
-  get asV5(): {collectionId: bigint, mutation: v5.DefaultCollectionMutation} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, mutation: v2.DefaultCollectionMutation} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4680,7 +4054,7 @@ export class MultiTokensForceSetAttributeCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_attribute') === '0c376373bedc267e8526ef4acf5c6c81f9faf25c7d1d5e610d39748132d3507f'
   }
 
@@ -4690,8 +4064,8 @@ export class MultiTokensForceSetAttributeCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: (v5.Attribute | undefined)} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: (v2.Attribute | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4715,7 +4089,7 @@ export class MultiTokensForceSetCollectionCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_collection') === '8a2a5df1ba028f33f223ac8859e40a2d653dca55be6db52bec414a455e53cbe0'
   }
 
@@ -4725,8 +4099,8 @@ export class MultiTokensForceSetCollectionCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asV5(): {collectionId: bigint, value: (v5.Collection | undefined)} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, value: (v2.Collection | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4750,7 +4124,7 @@ export class MultiTokensForceSetCollectionAccountCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_collection_account') === '9d50ec94aed5d50147723e89e22a9b159311680f9492c74e81d60a9d8c141683'
   }
 
@@ -4760,8 +4134,8 @@ export class MultiTokensForceSetCollectionAccountCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asV5(): {collectionId: bigint, accountId: v5.MultiAddress, value: (v5.CollectionAccount | undefined)} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, accountId: v2.MultiAddress, value: (v2.CollectionAccount | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4785,7 +4159,7 @@ export class MultiTokensForceSetNextCollectionIdCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_next_collection_id') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
   }
 
@@ -4795,8 +4169,8 @@ export class MultiTokensForceSetNextCollectionIdCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asV5(): {collectionId: bigint} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4820,7 +4194,7 @@ export class MultiTokensForceSetTokenCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_token') === 'f7628acc76287fdc2bac39c228d23045fc6e92b88bc282b64abd6bf3e2b8a24d'
   }
 
@@ -4830,8 +4204,8 @@ export class MultiTokensForceSetTokenCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, value: (v5.Token | undefined)} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: bigint, value: (v2.Token | undefined)} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4847,27 +4221,6 @@ export class MultiTokensForceSetTokenAccountCall {
     assert(call.name === 'MultiTokens.force_set_token_account')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Set the TokenAccounts storage to the given `value`, origin must be root
-   * 
-   * # Errors
-   * - `BadOrigin` if origin != root
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('MultiTokens.force_set_token_account') === 'bf35663d50dd3916b43afdc084f9827ad9764b0cd317f3ca102ce9251a909dad'
-  }
-
-  /**
-   * Set the TokenAccounts storage to the given `value`, origin must be root
-   * 
-   * # Errors
-   * - `BadOrigin` if origin != root
-   */
-  get asV5(): {collectionId: bigint, tokenId: bigint, accountId: v5.MultiAddress, value: (v5.TokenAccount | undefined)} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -4897,7 +4250,7 @@ export class MultiTokensForceSetTokenAccountCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('MultiTokens.force_set_token_account') === 'bf35663d50dd3916b43afdc084f9827ad9764b0cd317f3ca102ce9251a909dad'
   }
 
@@ -4907,8 +4260,8 @@ export class MultiTokensForceSetTokenAccountCall {
    * # Errors
    * - `BadOrigin` if origin != root
    */
-  get asEfinityV3(): {collectionId: bigint, tokenId: bigint, accountId: efinityV3.MultiAddress, value: (efinityV3.TokenAccount | undefined)} {
-    assert(this.isEfinityV3)
+  get asV3(): {collectionId: bigint, tokenId: bigint, accountId: v3.MultiAddress, value: (v3.TokenAccount | undefined)} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4934,7 +4287,7 @@ export class MultiTokensForceTransferCall {
    * - `BadOrigin` if origin != root
    * - Same as transfer
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.force_transfer') === '7eb6f59738c54c66d88f77215603bab748b9d4ed2bc404e7a6627743e91b27f6'
   }
 
@@ -4946,8 +4299,8 @@ export class MultiTokensForceTransferCall {
    * - `BadOrigin` if origin != root
    * - Same as transfer
    */
-  get asV5(): {source: v5.MultiAddress, destination: v5.MultiAddress, collectionId: bigint, params: v5.DefaultTransferParams} {
-    assert(this.isV5)
+  get asV2(): {source: v2.MultiAddress, destination: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4968,15 +4321,15 @@ export class MultiTokensFreezeCall {
   /**
    * Freeze collection, token or account
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.freeze') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
    * Freeze collection, token or account
    */
-  get asV5(): {info: v5.Freeze} {
-    assert(this.isV5)
+  get asV2(): {info: v2.Freeze} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5009,7 +4362,7 @@ export class MultiTokensMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.mint') === 'eaebb17dc952303dfd16624a15d2cde22e3b66a7f91ca95f2f92cd3104cb2499'
   }
 
@@ -5028,8 +4381,8 @@ export class MultiTokensMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
-  get asV5(): {recipient: v5.MultiAddress, collectionId: bigint, params: v5.DefaultMintParams} {
-    assert(this.isV5)
+  get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultMintParams} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5054,7 +4407,7 @@ export class MultiTokensMutateCollectionCall {
    * - `NotFound`, if `collection_id` does not exist.
    * - `NoPermission`, if `origin` is not the owner of `collection`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.mutate_collection') === 'b24a11f1bb3034565515518d4293039de8c701ec744f5c5e6b41a17b3c4d2288'
   }
 
@@ -5065,8 +4418,8 @@ export class MultiTokensMutateCollectionCall {
    * - `NotFound`, if `collection_id` does not exist.
    * - `NoPermission`, if `origin` is not the owner of `collection`.
    */
-  get asV5(): {collectionId: bigint, mutation: v5.DefaultCollectionMutation} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, mutation: v2.DefaultCollectionMutation} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5095,7 +4448,7 @@ export class MultiTokensRemoveAttributeCall {
    * - `AttributeStorageOverflow` if the attribute key and value total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.remove_attribute') === '5e8dda41d19b04f7e051283b9b20aed0a83222ef4bc596239942a512d10e143c'
   }
 
@@ -5110,8 +4463,8 @@ export class MultiTokensRemoveAttributeCall {
    * - `AttributeStorageOverflow` if the attribute key and value total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5142,7 +4495,7 @@ export class MultiTokensSetAttributeCall {
    * total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.set_attribute') === '1442e960b51ef446ff50fc6d27284693378495f9905ed8fbc35811b81dcf7c7b'
   }
 
@@ -5159,8 +4512,8 @@ export class MultiTokensSetAttributeCall {
    * total bytes exceeds the limit.
    * - `DepositReserveFailed` if unable to reserve the depposit for the attribute storage.
    */
-  get asV5(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5181,15 +4534,15 @@ export class MultiTokensThawCall {
   /**
    * Thaw collection, token or account
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.thaw') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
   }
 
   /**
    * Thaw collection, token or account
    */
-  get asV5(): {info: v5.Freeze} {
-    assert(this.isV5)
+  get asV2(): {info: v2.Freeze} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5216,7 +4569,7 @@ export class MultiTokensTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `Overflow` if `target` balance of `collection` overflows.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.transfer') === '3a904597294b52262716ac476178f413a640c58c5df5fdee9d6a42b369dab12a'
   }
 
@@ -5229,8 +4582,8 @@ export class MultiTokensTransferCall {
    * - `BalanceLow` if `source` does not own enough amount of `collection`.
    * - `Overflow` if `target` balance of `collection` overflows.
    */
-  get asV5(): {recipient: v5.MultiAddress, collectionId: bigint, params: v5.DefaultTransferParams} {
-    assert(this.isV5)
+  get asV2(): {recipient: v2.MultiAddress, collectionId: bigint, params: v2.DefaultTransferParams} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5251,15 +4604,15 @@ export class MultiTokensUnapproveCollectionCall {
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.unapprove_collection') === 'e5170bfdb3c4351aa216ff597896abe5ecc75ec89c47b522a97790870cc3b5ef'
   }
 
   /**
    * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `collection`
    */
-  get asV5(): {collectionId: bigint, operator: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, operator: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5280,15 +4633,15 @@ export class MultiTokensUnapproveTokenCall {
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('MultiTokens.unapprove_token') === 'bf808826dcdafcc9b31e08b287969eda26c2a350dbd9b501129943a436ab8854'
   }
 
   /**
    * Unapprove `operator` to transfer `origin`'s `token`s
    */
-  get asV5(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5343,7 +4696,7 @@ export class MultisigApproveAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account]
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Multisig.approve_as_multi') === '615a5baaaa889f9e30839c70485b8c752e5eb050a85a23102b2f9f4c301be63a'
   }
 
@@ -5384,8 +4737,8 @@ export class MultisigApproveAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account]
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), callHash: Uint8Array, maxWeight: bigint} {
-    assert(this.isV5)
+  get asV2(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v2.Timepoint | undefined), callHash: Uint8Array, maxWeight: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5450,7 +4803,7 @@ export class MultisigAsMultiCall {
    * - Plus Call Weight
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Multisig.as_multi') === '548dea53ff79fe99438cf591950a533c93f9772d03a3995ec72a80376fcae222'
   }
 
@@ -5501,8 +4854,8 @@ export class MultisigAsMultiCall {
    * - Plus Call Weight
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: bigint} {
-    assert(this.isV5)
+  get asV2(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v2.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5518,51 +4871,6 @@ export class MultisigAsMultiThreshold1Call {
     assert(call.name === 'Multisig.as_multi_threshold_1')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Immediately dispatch a multi-signature call using a single approval from the caller.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * - `other_signatories`: The accounts (other than the sender) who are part of the
-   * multi-signature, but do not participate in the approval process.
-   * - `call`: The call to be executed.
-   * 
-   * Result is equivalent to the dispatched result.
-   * 
-   * # <weight>
-   * O(Z + C) where Z is the length of the call and C its execution weight.
-   * -------------------------------
-   * - DB Weight: None
-   * - Plus Call Weight
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '24a1fd414620edf5fbd7bccfb361379f14877ed269f3701e2ac6d8cb65d3f532'
-  }
-
-  /**
-   * Immediately dispatch a multi-signature call using a single approval from the caller.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * - `other_signatories`: The accounts (other than the sender) who are part of the
-   * multi-signature, but do not participate in the approval process.
-   * - `call`: The call to be executed.
-   * 
-   * Result is equivalent to the dispatched result.
-   * 
-   * # <weight>
-   * O(Z + C) where Z is the length of the call and C its execution weight.
-   * -------------------------------
-   * - DB Weight: None
-   * - Plus Call Weight
-   * # </weight>
-   */
-  get asV5(): {otherSignatories: Uint8Array[], call: v5.Call} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -5628,7 +4936,7 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Multisig.as_multi_threshold_1') === 'ab9c08020581417787114df994f378c8f60be5e3ab555d074b02c41a339cd10a'
   }
 
@@ -5650,53 +4958,8 @@ export class MultisigAsMultiThreshold1Call {
    * - Plus Call Weight
    * # </weight>
    */
-  get asEfinityV3(): {otherSignatories: Uint8Array[], call: efinityV3.Call} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Immediately dispatch a multi-signature call using a single approval from the caller.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * - `other_signatories`: The accounts (other than the sender) who are part of the
-   * multi-signature, but do not participate in the approval process.
-   * - `call`: The call to be executed.
-   * 
-   * Result is equivalent to the dispatched result.
-   * 
-   * # <weight>
-   * O(Z + C) where Z is the length of the call and C its execution weight.
-   * -------------------------------
-   * - DB Weight: None
-   * - Plus Call Weight
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '99a546dfddd6352ec74b425384db8beb9f350dff5cd465c63e172da3e75e513e'
-  }
-
-  /**
-   * Immediately dispatch a multi-signature call using a single approval from the caller.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * - `other_signatories`: The accounts (other than the sender) who are part of the
-   * multi-signature, but do not participate in the approval process.
-   * - `call`: The call to be executed.
-   * 
-   * Result is equivalent to the dispatched result.
-   * 
-   * # <weight>
-   * O(Z + C) where Z is the length of the call and C its execution weight.
-   * -------------------------------
-   * - DB Weight: None
-   * - Plus Call Weight
-   * # </weight>
-   */
-  get asV4(): {otherSignatories: Uint8Array[], call: v4.Call} {
-    assert(this.isV4)
+  get asV3(): {otherSignatories: Uint8Array[], call: v3.Call} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5742,7 +5005,7 @@ export class MultisigCancelAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account], Refund Account, Calls
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Multisig.cancel_as_multi') === '4ccc75a4f739c659f177e3df98fba2ea59ddade74c4ebccd51b2fc4c52e923af'
   }
 
@@ -5774,8 +5037,8 @@ export class MultisigCancelAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account], Refund Account, Calls
    * # </weight>
    */
-  get asV5(): {threshold: number, otherSignatories: Uint8Array[], timepoint: v5.Timepoint, callHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {threshold: number, otherSignatories: Uint8Array[], timepoint: v2.Timepoint, callHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5796,15 +5059,15 @@ export class OrmlXcmSendAsSovereignCall {
   /**
    * Send an XCM message as parachain sovereign.
    */
-  get isV5(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('OrmlXcm.send_as_sovereign') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
   }
 
   /**
    * Send an XCM message as parachain sovereign.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm} {
-    assert(this.isV5)
+  get asV3(): {dest: v3.VersionedMultiLocation, message: v3.VersionedXcm} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5822,12 +5085,12 @@ export class ParachainSystemAuthorizeUpgradeCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('ParachainSystem.authorize_upgrade') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
   }
 
-  get asV5(): {codeHash: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {codeHash: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5845,12 +5108,12 @@ export class ParachainSystemEnactAuthorizedUpgradeCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('ParachainSystem.enact_authorized_upgrade') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
   }
 
-  get asV5(): {code: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {code: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5876,7 +5139,7 @@ export class ParachainSystemSetUpgradeBlockCall {
    * and this bypasses all checks and and normal protocols. Very easy to brick your chain
    * if done wrong.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('ParachainSystem.set_upgrade_block') === '4552b4c9a331e27653dd826226a620c7ef63c4af553ba86f11cdfd63fb1b1028'
   }
 
@@ -5888,8 +5151,8 @@ export class ParachainSystemSetUpgradeBlockCall {
    * and this bypasses all checks and and normal protocols. Very easy to brick your chain
    * if done wrong.
    */
-  get asEfinityV1(): {relayChainBlock: number} {
-    assert(this.isEfinityV1)
+  get asV1(): {relayChainBlock: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5918,7 +5181,7 @@ export class ParachainSystemSetValidationDataCall {
    * As a side effect, this function upgrades the current validation function
    * if the appropriate time has come.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('ParachainSystem.set_validation_data') === 'df843f97e4c625e033541d5f205c5889f3131bdb4549570310e924d96769c1cd'
   }
 
@@ -5933,8 +5196,8 @@ export class ParachainSystemSetValidationDataCall {
    * As a side effect, this function upgrades the current validation function
    * if the appropriate time has come.
    */
-  get asV5(): {data: v5.ParachainInherentData} {
-    assert(this.isV5)
+  get asV1(): {data: v1.ParachainInherentData} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5952,12 +5215,12 @@ export class ParachainSystemSudoSendUpwardMessageCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('ParachainSystem.sudo_send_upward_message') === '34457b6daded32ddc4ec3a5a21e34b9af8dcd7d190a5a7833fa8a7ed53b31206'
   }
 
-  get asV5(): {message: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {message: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5988,42 +5251,7 @@ export class PolkadotXcmExecuteCall {
    * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
    * to completion; only that *some* of it was executed.
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('PolkadotXcm.execute') === 'c6251691ab3319ecee95442d381c308f9ada155e423798c908cbd6b063aa26b4'
-  }
-
-  /**
-   * Execute an XCM message from a local, signed, origin.
-   * 
-   * An event is deposited indicating whether `msg` could be executed completely or only
-   * partially.
-   * 
-   * No more than `max_weight` will be used in its attempted execution. If this is less than the
-   * maximum amount of weight that the message could take to be executed, then no execution
-   * attempt will be made.
-   * 
-   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-   * to completion; only that *some* of it was executed.
-   */
-  get asV5(): {message: v5.Type_262, maxWeight: bigint} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Execute an XCM message from a local, signed, origin.
-   * 
-   * An event is deposited indicating whether `msg` could be executed completely or only
-   * partially.
-   * 
-   * No more than `max_weight` will be used in its attempted execution. If this is less than the
-   * maximum amount of weight that the message could take to be executed, then no execution
-   * attempt will be made.
-   * 
-   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-   * to completion; only that *some* of it was executed.
-   */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.execute') === '41f7d0295efed5db73229cbd1e9f1fdc0e7f9e159af3b17a10880e74bcdb3ad4'
   }
 
@@ -6040,8 +5268,8 @@ export class PolkadotXcmExecuteCall {
    * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
    * to completion; only that *some* of it was executed.
    */
-  get asEfinityV1(): {message: efinityV1.Type_178, maxWeight: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {message: v1.Type_178, maxWeight: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -6101,7 +5329,7 @@ export class PolkadotXcmForceDefaultXcmVersionCall {
    * - `origin`: Must be Root.
    * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.force_default_xcm_version') === 'd4bcd64cc4c940eafd14296ec6cbfb7d27e4ca42a4c7dab4c0b89f6c8102257e'
   }
 
@@ -6112,8 +5340,8 @@ export class PolkadotXcmForceDefaultXcmVersionCall {
    * - `origin`: Must be Root.
    * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
    */
-  get asV5(): {maybeXcmVersion: (number | undefined)} {
-    assert(this.isV5)
+  get asV1(): {maybeXcmVersion: (number | undefined)} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6137,7 +5365,7 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
    * - `origin`: Must be Root.
    * - `location`: The location to which we should subscribe for XCM version notifications.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
   }
 
@@ -6147,8 +5375,8 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
    * - `origin`: Must be Root.
    * - `location`: The location to which we should subscribe for XCM version notifications.
    */
-  get asV5(): {location: v5.VersionedMultiLocation} {
-    assert(this.isV5)
+  get asV1(): {location: v1.VersionedMultiLocation} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6174,7 +5402,7 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
    * - `location`: The location to which we are currently subscribed for XCM version
    *   notifications which we no longer desire.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
   }
 
@@ -6186,8 +5414,8 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
    * - `location`: The location to which we are currently subscribed for XCM version
    *   notifications which we no longer desire.
    */
-  get asV5(): {location: v5.VersionedMultiLocation} {
-    assert(this.isV5)
+  get asV1(): {location: v1.VersionedMultiLocation} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6213,7 +5441,7 @@ export class PolkadotXcmForceXcmVersionCall {
    * - `location`: The destination that is being described.
    * - `xcm_version`: The latest version of XCM that `location` supports.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '3bdd3ba3db54facd962462ff1c2c0ede1b428cf9119b36a4e96fa86916145f75'
   }
 
@@ -6225,8 +5453,8 @@ export class PolkadotXcmForceXcmVersionCall {
    * - `location`: The destination that is being described.
    * - `xcm_version`: The latest version of XCM that `location` supports.
    */
-  get asV5(): {location: v5.V1MultiLocation, xcmVersion: number} {
-    assert(this.isV5)
+  get asV1(): {location: v1.V1MultiLocation, xcmVersion: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6245,13 +5473,10 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
   }
 
   /**
-   * Transfer some assets from the local chain to the sovereign account of a destination
-   * chain and forward a notification XCM.
+   * Transfer some assets from the local chain to the sovereign account of a destination chain and forward
+   * a notification XCM.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-   * is needed than `weight_limit`, then the operation will fail and the assets send may be
-   * at risk.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6264,18 +5489,15 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
    *   fees.
    * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.limited_reserve_transfer_assets') === '3c203a3f95b9fe53b8c376802c4fe60fa6077815af7432dcd2a3e458169a5d2a'
   }
 
   /**
-   * Transfer some assets from the local chain to the sovereign account of a destination
-   * chain and forward a notification XCM.
+   * Transfer some assets from the local chain to the sovereign account of a destination chain and forward
+   * a notification XCM.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-   * is needed than `weight_limit`, then the operation will fail and the assets send may be
-   * at risk.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6288,8 +5510,8 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
    *   fees.
    * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, beneficiary: v5.VersionedMultiLocation, assets: v5.VersionedMultiAssets, feeAssetItem: number, weightLimit: v5.V2WeightLimit} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.VersionedMultiLocation, beneficiary: v1.VersionedMultiLocation, assets: v1.VersionedMultiAssets, feeAssetItem: number, weightLimit: v1.V2WeightLimit} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6310,10 +5532,7 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
   /**
    * Teleport some assets from the local chain to some destination chain.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-   * is needed than `weight_limit`, then the operation will fail and the assets send may be
-   * at risk.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6322,21 +5541,18 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
    *   an `AccountId32` value.
    * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
    *   `dest` side. May not be empty.
-   * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-   *   fees.
+   * - `dest_weight`: Equal to the total weight on `dest` of the XCM message
+   *   `Teleport { assets, effects: [ BuyExecution{..}, DepositAsset{..} ] }`.
    * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.limited_teleport_assets') === '3c203a3f95b9fe53b8c376802c4fe60fa6077815af7432dcd2a3e458169a5d2a'
   }
 
   /**
    * Teleport some assets from the local chain to some destination chain.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-   * is needed than `weight_limit`, then the operation will fail and the assets send may be
-   * at risk.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6345,12 +5561,12 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
    *   an `AccountId32` value.
    * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
    *   `dest` side. May not be empty.
-   * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-   *   fees.
+   * - `dest_weight`: Equal to the total weight on `dest` of the XCM message
+   *   `Teleport { assets, effects: [ BuyExecution{..}, DepositAsset{..} ] }`.
    * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, beneficiary: v5.VersionedMultiLocation, assets: v5.VersionedMultiAssets, feeAssetItem: number, weightLimit: v5.V2WeightLimit} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.VersionedMultiLocation, beneficiary: v1.VersionedMultiLocation, assets: v1.VersionedMultiAssets, feeAssetItem: number, weightLimit: v1.V2WeightLimit} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6369,12 +5585,12 @@ export class PolkadotXcmReserveTransferAssetsCall {
   }
 
   /**
-   * Transfer some assets from the local chain to the sovereign account of a destination
-   * chain and forward a notification XCM.
+   * Transfer some assets from the local chain to the sovereign account of a destination chain and forward
+   * a notification XCM.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-   * with all fees taken as needed from the asset.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector and
+   * fee-weight is calculated locally and thus remote weights are assumed to be equal to
+   * local weights.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6386,17 +5602,17 @@ export class PolkadotXcmReserveTransferAssetsCall {
    * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
    *   fees.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.reserve_transfer_assets') === '123b8170fa49ede01f38623e457f4e4d417c90cff5b93ced45a9eb8fe8e6ca2e'
   }
 
   /**
-   * Transfer some assets from the local chain to the sovereign account of a destination
-   * chain and forward a notification XCM.
+   * Transfer some assets from the local chain to the sovereign account of a destination chain and forward
+   * a notification XCM.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-   * with all fees taken as needed from the asset.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector and
+   * fee-weight is calculated locally and thus remote weights are assumed to be equal to
+   * local weights.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6408,8 +5624,8 @@ export class PolkadotXcmReserveTransferAssetsCall {
    * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
    *   fees.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, beneficiary: v5.VersionedMultiLocation, assets: v5.VersionedMultiAssets, feeAssetItem: number} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.VersionedMultiLocation, beneficiary: v1.VersionedMultiLocation, assets: v1.VersionedMultiAssets, feeAssetItem: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6427,21 +5643,12 @@ export class PolkadotXcmSendCall {
     this.call = call
   }
 
-  get isV5(): boolean {
-    return this._chain.getCallHash('PolkadotXcm.send') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
-  }
-
-  get asV5(): {dest: v5.VersionedMultiLocation, message: v5.VersionedXcm} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.send') === '9ec4149ae6cee6240a6e2aa06a8ef90285e68be29dd0de109b35af7922311609'
   }
 
-  get asEfinityV1(): {dest: efinityV1.VersionedMultiLocation, message: efinityV1.VersionedXcm} {
-    assert(this.isEfinityV1)
+  get asV1(): {dest: v1.VersionedMultiLocation, message: v1.VersionedXcm} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -6471,9 +5678,9 @@ export class PolkadotXcmTeleportAssetsCall {
   /**
    * Teleport some assets from the local chain to some destination chain.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-   * with all fees taken as needed from the asset.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector and
+   * fee-weight is calculated locally and thus remote weights are assumed to be equal to
+   * local weights.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6482,19 +5689,19 @@ export class PolkadotXcmTeleportAssetsCall {
    *   an `AccountId32` value.
    * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
    *   `dest` side. May not be empty.
-   * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-   *   fees.
+   * - `dest_weight`: Equal to the total weight on `dest` of the XCM message
+   *   `Teleport { assets, effects: [ BuyExecution{..}, DepositAsset{..} ] }`.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('PolkadotXcm.teleport_assets') === '123b8170fa49ede01f38623e457f4e4d417c90cff5b93ced45a9eb8fe8e6ca2e'
   }
 
   /**
    * Teleport some assets from the local chain to some destination chain.
    * 
-   * Fee payment on the destination side is made from the asset in the `assets` vector of
-   * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-   * with all fees taken as needed from the asset.
+   * Fee payment on the destination side is made from the first asset listed in the `assets` vector and
+   * fee-weight is calculated locally and thus remote weights are assumed to be equal to
+   * local weights.
    * 
    * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
    * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
@@ -6503,11 +5710,11 @@ export class PolkadotXcmTeleportAssetsCall {
    *   an `AccountId32` value.
    * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
    *   `dest` side. May not be empty.
-   * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-   *   fees.
+   * - `dest_weight`: Equal to the total weight on `dest` of the XCM message
+   *   `Teleport { assets, effects: [ BuyExecution{..}, DepositAsset{..} ] }`.
    */
-  get asV5(): {dest: v5.VersionedMultiLocation, beneficiary: v5.VersionedMultiLocation, assets: v5.VersionedMultiAssets, feeAssetItem: number} {
-    assert(this.isV5)
+  get asV1(): {dest: v1.VersionedMultiLocation, beneficiary: v1.VersionedMultiLocation, assets: v1.VersionedMultiAssets, feeAssetItem: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6531,7 +5738,7 @@ export class PoolsCreateFuelTankCall {
    * Fuel tanks are allowed to be created by anyone who can allocate
    * funds so that these fuel tanks can be used for their own purposes.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Pools.create_fuel_tank') === '3dd0f1893ec5786064608ae93b19dda0c2796e066c34ddb233b18ebf2a5a7a63'
   }
 
@@ -6541,8 +5748,8 @@ export class PoolsCreateFuelTankCall {
    * Fuel tanks are allowed to be created by anyone who can allocate
    * funds so that these fuel tanks can be used for their own purposes.
    */
-  get asEfinityV1(): {fundAccount: efinityV1.MultiAddress} {
-    assert(this.isEfinityV1)
+  get asV1(): {fundAccount: v1.MultiAddress} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6563,15 +5770,15 @@ export class PoolsMutatePoolsCall {
   /**
    * Mutate the pools. Can only be called by root.
    */
-  get isV5(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Pools.mutate_pools') === 'b6e16c50ea323b82f6ed539c6ec342660e4b39ca7192a157a54536b69eaf5a62'
   }
 
   /**
    * Mutate the pools. Can only be called by root.
    */
-  get asV5(): {mutation: v5.PoolsMutation} {
-    assert(this.isV5)
+  get asV3(): {mutation: v3.PoolsMutation} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6592,15 +5799,15 @@ export class PoolsTransferOwnershipCall {
   /**
    * Transfer ownership of a pool to new account.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Pools.transfer_ownership') === '2d479f81acac3188d6668e91281a0ffa1cf7ec942881627b2a225cdbe798ec5f'
   }
 
   /**
    * Transfer ownership of a pool to new account.
    */
-  get asEfinityV1(): {poolId: bigint, newOwner: efinityV1.MultiAddress} {
-    assert(this.isEfinityV1)
+  get asV1(): {poolId: bigint, newOwner: v1.MultiAddress} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6621,15 +5828,15 @@ export class PoolsWithdrawFromPoolCall {
   /**
    * Withdraw funds from pool to the pool owner's account.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Pools.withdraw_from_pool') === '0bb9eac6a341f00fb460184b1547b63758423c38c309e493601881eec6b68897'
   }
 
   /**
    * Withdraw funds from pool to the pool owner's account.
    */
-  get asEfinityV1(): {poolId: bigint, amount: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {poolId: bigint, amount: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6653,7 +5860,7 @@ export class PreimageNotePreimageCall {
    * If the preimage was previously requested, no fees or deposits are taken for providing
    * the preimage. Otherwise, a deposit is taken proportional to the size of the preimage.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Preimage.note_preimage') === 'fb6f9f7fd683160ab20dcde42ca8f757bc13845dc544f497e534fcf19c270a46'
   }
 
@@ -6663,8 +5870,8 @@ export class PreimageNotePreimageCall {
    * If the preimage was previously requested, no fees or deposits are taken for providing
    * the preimage. Otherwise, a deposit is taken proportional to the size of the preimage.
    */
-  get asV5(): {bytes: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {bytes: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6688,7 +5895,7 @@ export class PreimageRequestPreimageCall {
    * If the preimage requests has already been provided on-chain, we unreserve any deposit
    * a user may have paid, and take the control of the preimage out of their hands.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Preimage.request_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
   }
 
@@ -6698,8 +5905,8 @@ export class PreimageRequestPreimageCall {
    * If the preimage requests has already been provided on-chain, we unreserve any deposit
    * a user may have paid, and take the control of the preimage out of their hands.
    */
-  get asV5(): {hash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {hash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6720,15 +5927,15 @@ export class PreimageUnnotePreimageCall {
   /**
    * Clear an unrequested preimage from the runtime storage.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Preimage.unnote_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
   }
 
   /**
    * Clear an unrequested preimage from the runtime storage.
    */
-  get asV5(): {hash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {hash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6751,7 +5958,7 @@ export class PreimageUnrequestPreimageCall {
    * 
    * NOTE: THIS MUST NOT BE CALLED ON `hash` MORE TIMES THAN `request_preimage`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Preimage.unrequest_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
   }
 
@@ -6760,8 +5967,8 @@ export class PreimageUnrequestPreimageCall {
    * 
    * NOTE: THIS MUST NOT BE CALLED ON `hash` MORE TIMES THAN `request_preimage`.
    */
-  get asV5(): {hash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {hash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6782,15 +5989,15 @@ export class SchedulerCancelCall {
   /**
    * Cancel an anonymously scheduled task.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Scheduler.cancel') === '4186e24556a58b04e04d6d697a530eedf78f255da1ba9d84df6511dd6d6465f7'
   }
 
   /**
    * Cancel an anonymously scheduled task.
    */
-  get asV5(): {when: number, index: number} {
-    assert(this.isV5)
+  get asV2(): {when: number, index: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6811,15 +6018,15 @@ export class SchedulerCancelNamedCall {
   /**
    * Cancel a named scheduled task.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Scheduler.cancel_named') === 'a0b847240e1232c10a62578340a2af6708e760669b06344b70c15e6370b514cf'
   }
 
   /**
    * Cancel a named scheduled task.
    */
-  get asV5(): {id: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {id: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6840,21 +6047,6 @@ export class SchedulerScheduleCall {
   /**
    * Anonymously schedule a task.
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule') === '0d531aee8d5da07d8e0b70e5df21561266202f47165c8ee746c4c6a2b4c4aebd'
-  }
-
-  /**
-   * Anonymously schedule a task.
-   */
-  get asV5(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v5.MaybeHashed} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Anonymously schedule a task.
-   */
   get isV2(): boolean {
     return this._chain.getCallHash('Scheduler.schedule') === '6fb5a7e00a9e049113f7b263473adc25d7f5038efa76ee5171b9acfad3a5f2ef'
   }
@@ -6870,30 +6062,15 @@ export class SchedulerScheduleCall {
   /**
    * Anonymously schedule a task.
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Scheduler.schedule') === '7dd515ec8bf6d740b940ae6ebfa2ebec9985aad95756902bfe1dfdb707df4b3a'
   }
 
   /**
    * Anonymously schedule a task.
    */
-  get asEfinityV3(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Anonymously schedule a task.
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule') === '70ffad93782ed0aa7dbddaa6201268bd3203ce4ea8a3e1ece667e75c460a68c1'
-  }
-
-  /**
-   * Anonymously schedule a task.
-   */
-  get asV4(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v4.MaybeHashed} {
-    assert(this.isV4)
+  get asV3(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3.MaybeHashed} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -6909,29 +6086,6 @@ export class SchedulerScheduleAfterCall {
     assert(call.name === 'Scheduler.schedule_after')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Anonymously schedule a task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule`].
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_after') === '45f5f3267e1b4471489653b74ba6177cd8c8a7361fe1fc1babc1ea7c6aa045cd'
-  }
-
-  /**
-   * Anonymously schedule a task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule`].
-   * # </weight>
-   */
-  get asV5(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v5.MaybeHashed} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -6964,7 +6118,7 @@ export class SchedulerScheduleAfterCall {
    * Same as [`schedule`].
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Scheduler.schedule_after') === '5a3e0c229f51c1b1c4da42c68c0eb639ede3de9b41dbe4cfc77b8fb77ea182df'
   }
 
@@ -6975,31 +6129,8 @@ export class SchedulerScheduleAfterCall {
    * Same as [`schedule`].
    * # </weight>
    */
-  get asEfinityV3(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Anonymously schedule a task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule`].
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_after') === 'c58f13c67f75bba827006db7079dbdbc962822a890f0b7462df88dad16ed1641'
-  }
-
-  /**
-   * Anonymously schedule a task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule`].
-   * # </weight>
-   */
-  get asV4(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v4.MaybeHashed} {
-    assert(this.isV4)
+  get asV3(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3.MaybeHashed} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7020,21 +6151,6 @@ export class SchedulerScheduleNamedCall {
   /**
    * Schedule a named task.
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_named') === 'cb12b4526199fb12f0bd4751f49d4eebe9a99d14a4e1c3c0dedac215b2f6261d'
-  }
-
-  /**
-   * Schedule a named task.
-   */
-  get asV5(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v5.MaybeHashed} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Schedule a named task.
-   */
   get isV2(): boolean {
     return this._chain.getCallHash('Scheduler.schedule_named') === '02d5fd88a810ae003279c1c62e9df3f754cbf2bb85f83ae7676f7a04d6d89ec3'
   }
@@ -7050,30 +6166,15 @@ export class SchedulerScheduleNamedCall {
   /**
    * Schedule a named task.
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Scheduler.schedule_named') === '4e51ecbcd53e88e46cb18dc26c56784156382e564af6a6d2556f7d39c997453c'
   }
 
   /**
    * Schedule a named task.
    */
-  get asEfinityV3(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Schedule a named task.
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_named') === '3c3d55a76fc09f66ffde130f5833f33c4bcb68bed66dee81b5cb5fbf63e0f0c7'
-  }
-
-  /**
-   * Schedule a named task.
-   */
-  get asV4(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v4.MaybeHashed} {
-    assert(this.isV4)
+  get asV3(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3.MaybeHashed} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7089,29 +6190,6 @@ export class SchedulerScheduleNamedAfterCall {
     assert(call.name === 'Scheduler.schedule_named_after')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Schedule a named task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule_named`](Self::schedule_named).
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_named_after') === '42ddaa95d154903d2e5f83edfba325bf56d28440b9fcdf31239ac15379c6bc0b'
-  }
-
-  /**
-   * Schedule a named task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule_named`](Self::schedule_named).
-   * # </weight>
-   */
-  get asV5(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v5.MaybeHashed} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -7144,7 +6222,7 @@ export class SchedulerScheduleNamedAfterCall {
    * Same as [`schedule_named`](Self::schedule_named).
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Scheduler.schedule_named_after') === 'fb6574f7d5f42cbe56595bd781db43f2abfb5c1e8c13fc8d8eb7915bdf09fbc6'
   }
 
@@ -7155,31 +6233,8 @@ export class SchedulerScheduleNamedAfterCall {
    * Same as [`schedule_named`](Self::schedule_named).
    * # </weight>
    */
-  get asEfinityV3(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Schedule a named task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule_named`](Self::schedule_named).
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Scheduler.schedule_named_after') === 'ba2d0a44a05b0c55133bf36b563f062d37d1a73df16592781bd71a98240b11b5'
-  }
-
-  /**
-   * Schedule a named task after a delay.
-   * 
-   * # <weight>
-   * Same as [`schedule_named`](Self::schedule_named).
-   * # </weight>
-   */
-  get asV4(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v4.MaybeHashed} {
-    assert(this.isV4)
+  get asV3(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3.MaybeHashed} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7215,7 +6270,7 @@ export class SessionPurgeKeysCall {
    * - DbWrites per key id: `KeyOwner`
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Session.purge_keys') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -7237,8 +6292,8 @@ export class SessionPurgeKeysCall {
    * - DbWrites per key id: `KeyOwner`
    * # </weight>
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7254,47 +6309,6 @@ export class SessionSetKeysCall {
     assert(call.name === 'Session.set_keys')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Sets the session key(s) of the function caller to `keys`.
-   * Allows an account to set its session key prior to becoming a validator.
-   * This doesn't take effect until the next session.
-   * 
-   * The dispatch origin of this function must be signed.
-   * 
-   * # <weight>
-   * - Complexity: `O(1)`. Actual cost depends on the number of length of
-   *   `T::Keys::key_ids()` which is fixed.
-   * - DbReads: `origin account`, `T::ValidatorIdOf`, `NextKeys`
-   * - DbWrites: `origin account`, `NextKeys`
-   * - DbReads per key id: `KeyOwner`
-   * - DbWrites per key id: `KeyOwner`
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Session.set_keys') === 'addd7c626f9aa937cd1834dc66bd024e3ceb303e43e64ebf3d8d267053cff2b5'
-  }
-
-  /**
-   * Sets the session key(s) of the function caller to `keys`.
-   * Allows an account to set its session key prior to becoming a validator.
-   * This doesn't take effect until the next session.
-   * 
-   * The dispatch origin of this function must be signed.
-   * 
-   * # <weight>
-   * - Complexity: `O(1)`. Actual cost depends on the number of length of
-   *   `T::Keys::key_ids()` which is fixed.
-   * - DbReads: `origin account`, `T::ValidatorIdOf`, `NextKeys`
-   * - DbWrites: `origin account`, `NextKeys`
-   * - DbReads per key id: `KeyOwner`
-   * - DbWrites per key id: `KeyOwner`
-   * # </weight>
-   */
-  get asV5(): {keys: v5.SessionKeys, proof: Uint8Array} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -7354,7 +6368,7 @@ export class SessionSetKeysCall {
    * - DbWrites per key id: `KeyOwner`
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Session.set_keys') === 'addd7c626f9aa937cd1834dc66bd024e3ceb303e43e64ebf3d8d267053cff2b5'
   }
 
@@ -7374,8 +6388,8 @@ export class SessionSetKeysCall {
    * - DbWrites per key id: `KeyOwner`
    * # </weight>
    */
-  get asEfinityV3(): {keys: efinityV3.SessionKeys, proof: Uint8Array} {
-    assert(this.isEfinityV3)
+  get asV3(): {keys: v3.SessionKeys, proof: Uint8Array} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7405,7 +6419,7 @@ export class SudoSetKeyCall {
    * - One DB change.
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Sudo.set_key') === 'e634aac3331d47a56ff572c52ad90a648769dfbf2c00d7bd44498b4ee41f6ac7'
   }
 
@@ -7421,8 +6435,8 @@ export class SudoSetKeyCall {
    * - One DB change.
    * # </weight>
    */
-  get asV5(): {new: v5.MultiAddress} {
-    assert(this.isV5)
+  get asV1(): {new: v1.MultiAddress} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7452,40 +6466,7 @@ export class SudoSudoCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Sudo.sudo') === 'e012971186d24150768a01e178a50e0093b25a9bd9fbd727a60b594e3005ce1d'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get asV5(): {call: v5.Call} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Sudo.sudo') === 'd2b78287df37e2ce6a606d4e2dee9d4b7ff25dcb98d93d875d5b118d1fe2082f'
   }
 
@@ -7501,8 +6482,8 @@ export class SudoSudoCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get asEfinityV1(): {call: efinityV1.Call} {
-    assert(this.isEfinityV1)
+  get asV1(): {call: v1.Call} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -7551,7 +6532,7 @@ export class SudoSudoCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Sudo.sudo') === 'f769581b601e45c4e8c2234dc7fb3735b28ab739e0920351a8fb33a8467f2660'
   }
 
@@ -7567,41 +6548,8 @@ export class SudoSudoCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get asEfinityV3(): {call: efinityV3.Call} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Sudo.sudo') === '3651476ace54bf9e464d2e295fd9b466a86aac01f49e4bed8fa1ba5b87049a14'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get asV4(): {call: v4.Call} {
-    assert(this.isV4)
+  get asV3(): {call: v3.Call} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7632,42 +6580,7 @@ export class SudoSudoAsCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Sudo.sudo_as') === '92d998dedef81904439c16d7e91aa4061a6f5356d9dddbd119b47c7be1de6490'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-   * a given account.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get asV5(): {who: v5.MultiAddress, call: v5.Call} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-   * a given account.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Sudo.sudo_as') === 'f4ea003b546fc535bd54de3b960e082931ec3b7affad049efd579b5bdf4a9d42'
   }
 
@@ -7684,8 +6597,8 @@ export class SudoSudoAsCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get asEfinityV1(): {who: efinityV1.MultiAddress, call: efinityV1.Call} {
-    assert(this.isEfinityV1)
+  get asV1(): {who: v1.MultiAddress, call: v1.Call} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -7737,7 +6650,7 @@ export class SudoSudoAsCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Sudo.sudo_as') === '5e596c11637f9bee4df056daea0e979d7ddbf6fca274f87d9b933ea9718c0542'
   }
 
@@ -7754,43 +6667,8 @@ export class SudoSudoAsCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
-  get asEfinityV3(): {who: efinityV3.MultiAddress, call: efinityV3.Call} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-   * a given account.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Sudo.sudo_as') === 'c3ff6b7aea093bb6cbc991cdd65a753b54e674dc0ee3e736ba5e8481752bc585'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-   * a given account.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + 10,000.
-   * # </weight>
-   */
-  get asV4(): {who: v4.MultiAddress, call: v4.Call} {
-    assert(this.isV4)
+  get asV3(): {who: v3.MultiAddress, call: v3.Call} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7820,40 +6698,7 @@ export class SudoSudoUncheckedWeightCall {
    * - The weight of this call is defined by the caller.
    * # </weight>
    */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '977d3a28662691b116ccf4ad4ee5fb4bb35579ec24b5fb961ec8f86e06193368'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * This function does not check the weight of the call, and instead allows the
-   * Sudo user to specify the weight of the call.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - The weight of this call is defined by the caller.
-   * # </weight>
-   */
-  get asV5(): {call: v5.Call, weight: bigint} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * This function does not check the weight of the call, and instead allows the
-   * Sudo user to specify the weight of the call.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - The weight of this call is defined by the caller.
-   * # </weight>
-   */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '139c29f9d292e00dc7e4942cb8c766ce9daa053645d6b561ddc5dfb5bde24eec'
   }
 
@@ -7869,8 +6714,8 @@ export class SudoSudoUncheckedWeightCall {
    * - The weight of this call is defined by the caller.
    * # </weight>
    */
-  get asEfinityV1(): {call: efinityV1.Call, weight: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {call: v1.Call, weight: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 
@@ -7919,7 +6764,7 @@ export class SudoSudoUncheckedWeightCall {
    * - The weight of this call is defined by the caller.
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === 'cb1598fd7ece9eccf204c0f2617b853f11428881447c35ebdacf232119be87d5'
   }
 
@@ -7935,41 +6780,8 @@ export class SudoSudoUncheckedWeightCall {
    * - The weight of this call is defined by the caller.
    * # </weight>
    */
-  get asEfinityV3(): {call: efinityV3.Call, weight: bigint} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * This function does not check the weight of the call, and instead allows the
-   * Sudo user to specify the weight of the call.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - The weight of this call is defined by the caller.
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '4a1961c87c32f2c5244aed5a1f280f736ea07609f4187313b258d7a0ea000736'
-  }
-
-  /**
-   * Authenticates the sudo key and dispatches a function call with `Root` origin.
-   * This function does not check the weight of the call, and instead allows the
-   * Sudo user to specify the weight of the call.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - The weight of this call is defined by the caller.
-   * # </weight>
-   */
-  get asV4(): {call: v4.Call, weight: bigint} {
-    assert(this.isV4)
+  get asV3(): {call: v3.Call, weight: bigint} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7990,15 +6802,15 @@ export class SystemFillBlockCall {
   /**
    * A dispatch that will fill the block weight up to the given ratio.
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.fill_block') === '41c1841312db092642508be699e4a3f54d52efe2dcaa8101ca9518398fb70c49'
   }
 
   /**
    * A dispatch that will fill the block weight up to the given ratio.
    */
-  get asV5(): {ratio: number} {
-    assert(this.isV5)
+  get asV1(): {ratio: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8021,8 +6833,15 @@ export class SystemKillPrefixCall {
    * 
    * **NOTE:** We rely on the Root origin to provide us the number of subkeys under
    * the prefix we are removing to accurately calculate the weight of this function.
+   * 
+   * # <weight>
+   * - `O(P)` where `P` amount of keys with prefix `prefix`
+   * - `P` storage deletions.
+   * - Base Weight: 0.834 * P µs
+   * - Writes: Number of subkeys + 1
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.kill_prefix') === 'dfbadd42bee8b18fc81cf78683511061181cffbf7a8ebfd3e5719c389b373d93'
   }
 
@@ -8031,9 +6850,16 @@ export class SystemKillPrefixCall {
    * 
    * **NOTE:** We rely on the Root origin to provide us the number of subkeys under
    * the prefix we are removing to accurately calculate the weight of this function.
+   * 
+   * # <weight>
+   * - `O(P)` where `P` amount of keys with prefix `prefix`
+   * - `P` storage deletions.
+   * - Base Weight: 0.834 * P µs
+   * - Writes: Number of subkeys + 1
+   * # </weight>
    */
-  get asV5(): {prefix: Uint8Array, subkeys: number} {
-    assert(this.isV5)
+  get asV1(): {prefix: Uint8Array, subkeys: number} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8053,16 +6879,30 @@ export class SystemKillStorageCall {
 
   /**
    * Kill some items from storage.
+   * 
+   * # <weight>
+   * - `O(IK)` where `I` length of `keys` and `K` length of one key
+   * - `I` storage deletions.
+   * - Base Weight: .378 * i µs
+   * - Writes: Number of items
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.kill_storage') === 'eac21dc14e927c003d9c634fb019d04128f71f8529d2914b10a56b85289c2c11'
   }
 
   /**
    * Kill some items from storage.
+   * 
+   * # <weight>
+   * - `O(IK)` where `I` length of `keys` and `K` length of one key
+   * - `I` storage deletions.
+   * - Base Weight: .378 * i µs
+   * - Writes: Number of items
+   * # </weight>
    */
-  get asV5(): {keys: Uint8Array[]} {
-    assert(this.isV5)
+  get asV1(): {keys: Uint8Array[]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8087,7 +6927,7 @@ export class SystemRemarkCall {
    * - `O(1)`
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.remark') === 'f4e9b5b7572eeae92978087ece9b4f57cb5cab4f16baf5625bb9ec4a432bad63'
   }
 
@@ -8098,8 +6938,8 @@ export class SystemRemarkCall {
    * - `O(1)`
    * # </weight>
    */
-  get asV5(): {remark: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {remark: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8119,16 +6959,26 @@ export class SystemRemarkWithEventCall {
 
   /**
    * Make some on-chain remark and emit event.
+   * 
+   * # <weight>
+   * - `O(b)` where b is the length of the remark.
+   * - 1 event.
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.remark_with_event') === 'f4e9b5b7572eeae92978087ece9b4f57cb5cab4f16baf5625bb9ec4a432bad63'
   }
 
   /**
    * Make some on-chain remark and emit event.
+   * 
+   * # <weight>
+   * - `O(b)` where b is the length of the remark.
+   * - 1 event.
+   * # </weight>
    */
-  get asV5(): {remark: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {remark: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8158,7 +7008,7 @@ export class SystemSetChangesTrieConfigCall {
    *     - Writes: Changes Trie, System Digest
    * # </weight>
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.set_changes_trie_config') === 'ced137e2f8792ce87e1f2b20f97e1de9a31001f9c44069dc6e73b9e4c061c311'
   }
 
@@ -8174,8 +7024,8 @@ export class SystemSetChangesTrieConfigCall {
    *     - Writes: Changes Trie, System Digest
    * # </weight>
    */
-  get asEfinityV1(): {changesTrieConfig: (efinityV1.ChangesTrieConfiguration | undefined)} {
-    assert(this.isEfinityV1)
+  get asV1(): {changesTrieConfig: (v1.ChangesTrieConfiguration | undefined)} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8207,7 +7057,7 @@ export class SystemSetCodeCall {
    * expensive. We will treat this as a full block.
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.set_code') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
   }
 
@@ -8225,8 +7075,8 @@ export class SystemSetCodeCall {
    * expensive. We will treat this as a full block.
    * # </weight>
    */
-  get asV5(): {code: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {code: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8255,7 +7105,7 @@ export class SystemSetCodeWithoutChecksCall {
    * The weight of this function is dependent on the runtime. We will treat this as a full
    * block. # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.set_code_without_checks') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
   }
 
@@ -8270,8 +7120,8 @@ export class SystemSetCodeWithoutChecksCall {
    * The weight of this function is dependent on the runtime. We will treat this as a full
    * block. # </weight>
    */
-  get asV5(): {code: Uint8Array} {
-    assert(this.isV5)
+  get asV1(): {code: Uint8Array} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8291,16 +7141,32 @@ export class SystemSetHeapPagesCall {
 
   /**
    * Set the number of pages in the WebAssembly environment's heap.
+   * 
+   * # <weight>
+   * - `O(1)`
+   * - 1 storage write.
+   * - Base Weight: 1.405 µs
+   * - 1 write to HEAP_PAGES
+   * - 1 digest item
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.set_heap_pages') === '130172e47c5e517627712b4d084768b98489d920284223ea8ef9c462339b5808'
   }
 
   /**
    * Set the number of pages in the WebAssembly environment's heap.
+   * 
+   * # <weight>
+   * - `O(1)`
+   * - 1 storage write.
+   * - Base Weight: 1.405 µs
+   * - 1 write to HEAP_PAGES
+   * - 1 digest item
+   * # </weight>
    */
-  get asV5(): {pages: bigint} {
-    assert(this.isV5)
+  get asV1(): {pages: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8320,16 +7186,30 @@ export class SystemSetStorageCall {
 
   /**
    * Set some items of storage.
+   * 
+   * # <weight>
+   * - `O(I)` where `I` length of `items`
+   * - `I` storage writes (`O(1)`).
+   * - Base Weight: 0.568 * i µs
+   * - Writes: Number of items
+   * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('System.set_storage') === 'a4fb507615d69849afb1b2ee654006f9be48bb6e960a4674624d6e46e4382083'
   }
 
   /**
    * Set some items of storage.
+   * 
+   * # <weight>
+   * - `O(I)` where `I` length of `items`
+   * - `I` storage writes (`O(1)`).
+   * - Base Weight: 0.568 * i µs
+   * - Writes: Number of items
+   * # </weight>
    */
-  get asV5(): {items: [Uint8Array, Uint8Array][]} {
-    assert(this.isV5)
+  get asV1(): {items: [Uint8Array, Uint8Array][]} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8350,15 +7230,15 @@ export class TagsCreateTagCall {
   /**
    * Create a tag
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Tags.create_tag') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
   /**
    * Create a tag
    */
-  get asEfinityV1(): null {
-    assert(this.isEfinityV1)
+  get asV1(): null {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8379,15 +7259,15 @@ export class TagsTagAssetCall {
   /**
    * Adds `tag_id` to `asset_id`. `origin` must own the asset and tag.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Tags.tag_asset') === 'e62e9dda5ca3f63b93581dab7a7c7b0517bee40b1d85fbadde147219ef05bf52'
   }
 
   /**
    * Adds `tag_id` to `asset_id`. `origin` must own the asset and tag.
    */
-  get asEfinityV1(): {assetId: bigint, tagId: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {assetId: bigint, tagId: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8408,15 +7288,15 @@ export class TagsUntagAssetCall {
   /**
    * Removes `tag_id` from `asset_id`. `origin` must own the asset and tag.
    */
-  get isEfinityV1(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Tags.untag_asset') === 'e62e9dda5ca3f63b93581dab7a7c7b0517bee40b1d85fbadde147219ef05bf52'
   }
 
   /**
    * Removes `tag_id` from `asset_id`. `origin` must own the asset and tag.
    */
-  get asEfinityV1(): {assetId: bigint, tagId: bigint} {
-    assert(this.isEfinityV1)
+  get asV1(): {assetId: bigint, tagId: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8468,7 +7348,7 @@ export class TechnicalCommitteeCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.close') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
   }
 
@@ -8506,8 +7386,8 @@ export class TechnicalCommitteeCloseCall {
    * - up to 3 events
    * # </weight>
    */
-  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8541,7 +7421,7 @@ export class TechnicalCommitteeDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.disapprove_proposal') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
   }
 
@@ -8561,8 +7441,8 @@ export class TechnicalCommitteeDisapproveProposalCall {
    * * Writes: Voting, Proposals, ProposalOf
    * # </weight>
    */
-  get asV5(): {proposalHash: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {proposalHash: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8578,41 +7458,6 @@ export class TechnicalCommitteeExecuteCall {
     assert(call.name === 'TechnicalCommittee.execute')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('TechnicalCommittee.execute') === 'e0d880cf8401a0c5638c41cb293c4b38168617b5f7bab5137974710777182b7c'
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get asV5(): {proposal: v5.Call, lengthBound: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -8663,7 +7508,7 @@ export class TechnicalCommitteeExecuteCall {
    * - 1 event
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.execute') === '66fffa1ff650edb25b908c2b043acf71553670c63c283f14cd88ca2ca47dc52a'
   }
 
@@ -8680,43 +7525,8 @@ export class TechnicalCommitteeExecuteCall {
    * - 1 event
    * # </weight>
    */
-  get asEfinityV3(): {proposal: efinityV3.Call, lengthBound: number} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('TechnicalCommittee.execute') === '434328da28967827bb8283f3ce28711d29f08ead753ee82c19ddb7d2f03b2414'
-  }
-
-  /**
-   * Dispatch a proposal from a member using the `Member` origin.
-   * 
-   * Origin must be a member of the collective.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-   *   `proposal`
-   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-   * - 1 event
-   * # </weight>
-   */
-  get asV4(): {proposal: v4.Call, lengthBound: number} {
-    assert(this.isV4)
+  get asV3(): {proposal: v3.Call, lengthBound: number} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -8732,73 +7542,6 @@ export class TechnicalCommitteeProposeCall {
     assert(call.name === 'TechnicalCommittee.propose')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('TechnicalCommittee.propose') === 'ad8a7fe52f7fef10f4157f81503e71d4964428b6498ec13b408ab3e793784437'
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get asV5(): {threshold: number, proposal: v5.Call, lengthBound: number} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -8897,7 +7640,7 @@ export class TechnicalCommitteeProposeCall {
    *   - 1 event
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.propose') === 'cdf7d19b893f28f26424698248ad1b2f03188005aa449f0092d7c707cdefda8a'
   }
 
@@ -8930,75 +7673,8 @@ export class TechnicalCommitteeProposeCall {
    *   - 1 event
    * # </weight>
    */
-  get asEfinityV3(): {threshold: number, proposal: efinityV3.Call, lengthBound: number} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('TechnicalCommittee.propose') === '6bd332594349ef39c75e7acbfcc6a7b37038b9ff279b0eb3de825a8e2a4955a7'
-  }
-
-  /**
-   * Add a new proposal to either be voted on or executed directly.
-   * 
-   * Requires the sender to be member.
-   * 
-   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-   * or put up for voting.
-   * 
-   * # <weight>
-   * ## Weight
-   * - `O(B + M + P1)` or `O(B + M + P2)` where:
-   *   - `B` is `proposal` size in bytes (length-fee-bounded)
-   *   - `M` is members-count (code- and governance-bounded)
-   *   - branching is influenced by `threshold` where:
-   *     - `P1` is proposal execution complexity (`threshold < 2`)
-   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-   * - DB:
-   *   - 1 storage read `is_member` (codec `O(M)`)
-   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-   *   - DB accesses influenced by `threshold`:
-   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-   *     - OR proposal insertion (`threshold <= 2`)
-   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-   *       - 1 storage write `ProposalOf` (codec `O(B)`)
-   *       - 1 storage write `Voting` (codec `O(M)`)
-   *   - 1 event
-   * # </weight>
-   */
-  get asV4(): {threshold: number, proposal: v4.Call, lengthBound: number} {
-    assert(this.isV4)
+  get asV3(): {threshold: number, proposal: v3.Call, lengthBound: number} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9050,7 +7726,7 @@ export class TechnicalCommitteeSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.set_members') === '71b7fcb1d8a62eff96a9ef006517578ce9189e6d931948a256a04ca75ff68d4a'
   }
 
@@ -9088,8 +7764,8 @@ export class TechnicalCommitteeSetMembersCall {
    *   - 1 storage write (codec `O(1)`) for deleting the old `prime` and setting the new one
    * # </weight>
    */
-  get asV5(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
-    assert(this.isV5)
+  get asV2(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9124,7 +7800,7 @@ export class TechnicalCommitteeVoteCall {
    * - 1 event
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.vote') === 'f8a1069a57f7b721f47c086d08b6838ae1a0c08f58caddb82428ba5f1407540f'
   }
 
@@ -9145,8 +7821,8 @@ export class TechnicalCommitteeVoteCall {
    * - 1 event
    * # </weight>
    */
-  get asV5(): {proposal: Uint8Array, index: number, approve: boolean} {
-    assert(this.isV5)
+  get asV2(): {proposal: Uint8Array, index: number, approve: boolean} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9169,7 +7845,7 @@ export class TechnicalMembershipAddMemberCall {
    * 
    * May only be called from `T::AddOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.add_member') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
   }
 
@@ -9178,8 +7854,8 @@ export class TechnicalMembershipAddMemberCall {
    * 
    * May only be called from `T::AddOrigin`.
    */
-  get asV5(): {who: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {who: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9204,7 +7880,7 @@ export class TechnicalMembershipChangeKeyCall {
    * 
    * Prime membership is passed from the origin account to `new`, if extant.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.change_key') === 'f866dcb3e8857987a2d21e57c13216c10bb21546a718b81d5e2c0989d6e95df7'
   }
 
@@ -9215,8 +7891,8 @@ export class TechnicalMembershipChangeKeyCall {
    * 
    * Prime membership is passed from the origin account to `new`, if extant.
    */
-  get asV5(): {new: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {new: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9239,7 +7915,7 @@ export class TechnicalMembershipClearPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.clear_prime') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -9248,8 +7924,8 @@ export class TechnicalMembershipClearPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9272,7 +7948,7 @@ export class TechnicalMembershipRemoveMemberCall {
    * 
    * May only be called from `T::RemoveOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.remove_member') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
   }
 
@@ -9281,8 +7957,8 @@ export class TechnicalMembershipRemoveMemberCall {
    * 
    * May only be called from `T::RemoveOrigin`.
    */
-  get asV5(): {who: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {who: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9306,7 +7982,7 @@ export class TechnicalMembershipResetMembersCall {
    * 
    * May only be called from `T::ResetOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.reset_members') === 'd8adca14f9b9cadeaf2b2e6dd47991d05cb423ce3a00dccbb9efa35e36f5a65a'
   }
 
@@ -9316,8 +7992,8 @@ export class TechnicalMembershipResetMembersCall {
    * 
    * May only be called from `T::ResetOrigin`.
    */
-  get asV5(): {members: Uint8Array[]} {
-    assert(this.isV5)
+  get asV2(): {members: Uint8Array[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9340,7 +8016,7 @@ export class TechnicalMembershipSetPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.set_prime') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
   }
 
@@ -9349,8 +8025,8 @@ export class TechnicalMembershipSetPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
-  get asV5(): {who: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {who: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9375,7 +8051,7 @@ export class TechnicalMembershipSwapMemberCall {
    * 
    * Prime membership is *not* passed from `remove` to `add`, if extant.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('TechnicalMembership.swap_member') === 'f9cf5ef851567c52b54f359126b80e6fa967b49f082dd77310b8461819cd13df'
   }
 
@@ -9386,8 +8062,8 @@ export class TechnicalMembershipSwapMemberCall {
    * 
    * Prime membership is *not* passed from `remove` to `add`, if extant.
    */
-  get asV5(): {remove: Uint8Array, add: Uint8Array} {
-    assert(this.isV5)
+  get asV2(): {remove: Uint8Array, add: Uint8Array} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9423,7 +8099,7 @@ export class TimestampSetCall {
    * - 1 event handler `on_timestamp_set`. Must be `O(1)`.
    * # </weight>
    */
-  get isV5(): boolean {
+  get isV1(): boolean {
     return this._chain.getCallHash('Timestamp.set') === '6a8b8ba2be107f0853b674eec0026cc440b314db44d0e2c59b36e353355aed14'
   }
 
@@ -9445,8 +8121,8 @@ export class TimestampSetCall {
    * - 1 event handler `on_timestamp_set`. Must be `O(1)`.
    * # </weight>
    */
-  get asV5(): {now: bigint} {
-    assert(this.isV5)
+  get asV1(): {now: bigint} {
+    assert(this.isV1)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9462,45 +8138,6 @@ export class UtilityAsDerivativeCall {
     assert(call.name === 'Utility.as_derivative')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Send a call through an indexed pseudonym of the sender.
-   * 
-   * Filter from origin are passed along. The call will be dispatched with an origin which
-   * use the same filter as the origin of this call.
-   * 
-   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-   * because you expect `proxy` to have been used prior in the call stack and you do not want
-   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-   * in the Multisig pallet instead.
-   * 
-   * NOTE: Prior to version *12, this was called `as_limited_sub`.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Utility.as_derivative') === '3d4fa9b5f386d4de9f945a7df5941c1801c4712e9d035a6c1630c4263775eae5'
-  }
-
-  /**
-   * Send a call through an indexed pseudonym of the sender.
-   * 
-   * Filter from origin are passed along. The call will be dispatched with an origin which
-   * use the same filter as the origin of this call.
-   * 
-   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-   * because you expect `proxy` to have been used prior in the call stack and you do not want
-   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-   * in the Multisig pallet instead.
-   * 
-   * NOTE: Prior to version *12, this was called `as_limited_sub`.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   */
-  get asV5(): {index: number, call: v5.Call} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -9557,7 +8194,7 @@ export class UtilityAsDerivativeCall {
    * 
    * The dispatch origin for this call must be _Signed_.
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Utility.as_derivative') === '372d5898f4bcd5ad2160d1b2b710938400d6a7d7f01f37da58ee22c6e13fa7d0'
   }
 
@@ -9576,47 +8213,8 @@ export class UtilityAsDerivativeCall {
    * 
    * The dispatch origin for this call must be _Signed_.
    */
-  get asEfinityV3(): {index: number, call: efinityV3.Call} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Send a call through an indexed pseudonym of the sender.
-   * 
-   * Filter from origin are passed along. The call will be dispatched with an origin which
-   * use the same filter as the origin of this call.
-   * 
-   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-   * because you expect `proxy` to have been used prior in the call stack and you do not want
-   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-   * in the Multisig pallet instead.
-   * 
-   * NOTE: Prior to version *12, this was called `as_limited_sub`.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Utility.as_derivative') === 'b25833400ed57f0eea17d318ca14c3950e3c3a5a4a43d43471dd8d43fad70779'
-  }
-
-  /**
-   * Send a call through an indexed pseudonym of the sender.
-   * 
-   * Filter from origin are passed along. The call will be dispatched with an origin which
-   * use the same filter as the origin of this call.
-   * 
-   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-   * because you expect `proxy` to have been used prior in the call stack and you do not want
-   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-   * in the Multisig pallet instead.
-   * 
-   * NOTE: Prior to version *12, this was called `as_limited_sub`.
-   * 
-   * The dispatch origin for this call must be _Signed_.
-   */
-  get asV4(): {index: number, call: v4.Call} {
-    assert(this.isV4)
+  get asV3(): {index: number, call: v3.Call} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9632,57 +8230,6 @@ export class UtilityBatchCall {
     assert(call.name === 'Utility.batch')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   * 
-   * This will return `Ok` in all circumstances. To determine the success of the batch, an
-   * event is deposited. If a call failed and the batch was interrupted, then the
-   * `BatchInterrupted` event is deposited, along with the number of successful calls made
-   * and the error of the failed call. If all were successful, then the `BatchCompleted`
-   * event is deposited.
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Utility.batch') === 'a3d50824fe0f9fed46769d5921764e892e21a6ab35e4c349ae8275175cc9c2f5'
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   * 
-   * This will return `Ok` in all circumstances. To determine the success of the batch, an
-   * event is deposited. If a call failed and the batch was interrupted, then the
-   * `BatchInterrupted` event is deposited, along with the number of successful calls made
-   * and the error of the failed call. If all were successful, then the `BatchCompleted`
-   * event is deposited.
-   */
-  get asV5(): {calls: v5.Call[]} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -9757,7 +8304,7 @@ export class UtilityBatchCall {
    * and the error of the failed call. If all were successful, then the `BatchCompleted`
    * event is deposited.
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Utility.batch') === '9d7fe5e4c746f82073a3773ab3b7a6e5f8922a4ea8dad6e7909da9a5df1cadfa'
   }
 
@@ -9782,59 +8329,8 @@ export class UtilityBatchCall {
    * and the error of the failed call. If all were successful, then the `BatchCompleted`
    * event is deposited.
    */
-  get asEfinityV3(): {calls: efinityV3.Call[]} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   * 
-   * This will return `Ok` in all circumstances. To determine the success of the batch, an
-   * event is deposited. If a call failed and the batch was interrupted, then the
-   * `BatchInterrupted` event is deposited, along with the number of successful calls made
-   * and the error of the failed call. If all were successful, then the `BatchCompleted`
-   * event is deposited.
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Utility.batch') === '5b36e013df11e85bb134785edc105b18eccf13ace05386bc3c3ba14054bebded'
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   * 
-   * This will return `Ok` in all circumstances. To determine the success of the batch, an
-   * event is deposited. If a call failed and the batch was interrupted, then the
-   * `BatchInterrupted` event is deposited, along with the number of successful calls made
-   * and the error of the failed call. If all were successful, then the `BatchCompleted`
-   * event is deposited.
-   */
-  get asV4(): {calls: v4.Call[]} {
-    assert(this.isV4)
+  get asV3(): {calls: v3.Call[]} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -9850,47 +8346,6 @@ export class UtilityBatchAllCall {
     assert(call.name === 'Utility.batch_all')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Send a batch of dispatch calls and atomically execute them.
-   * The whole transaction will rollback and fail if any of the calls failed.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Utility.batch_all') === 'a3d50824fe0f9fed46769d5921764e892e21a6ab35e4c349ae8275175cc9c2f5'
-  }
-
-  /**
-   * Send a batch of dispatch calls and atomically execute them.
-   * The whole transaction will rollback and fail if any of the calls failed.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get asV5(): {calls: v5.Call[]} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -9950,7 +8405,7 @@ export class UtilityBatchAllCall {
    * - Complexity: O(C) where C is the number of calls to be batched.
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Utility.batch_all') === '9d7fe5e4c746f82073a3773ab3b7a6e5f8922a4ea8dad6e7909da9a5df1cadfa'
   }
 
@@ -9970,49 +8425,8 @@ export class UtilityBatchAllCall {
    * - Complexity: O(C) where C is the number of calls to be batched.
    * # </weight>
    */
-  get asEfinityV3(): {calls: efinityV3.Call[]} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Send a batch of dispatch calls and atomically execute them.
-   * The whole transaction will rollback and fail if any of the calls failed.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Utility.batch_all') === '5b36e013df11e85bb134785edc105b18eccf13ace05386bc3c3ba14054bebded'
-  }
-
-  /**
-   * Send a batch of dispatch calls and atomically execute them.
-   * The whole transaction will rollback and fail if any of the calls failed.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get asV4(): {calls: v4.Call[]} {
-    assert(this.isV4)
+  get asV3(): {calls: v3.Call[]} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10028,39 +8442,6 @@ export class UtilityDispatchAsCall {
     assert(call.name === 'Utility.dispatch_as')
     this._chain = ctx._chain
     this.call = call
-  }
-
-  /**
-   * Dispatches a function call with a provided origin.
-   * 
-   * The dispatch origin for this call must be _Root_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Utility.dispatch_as') === 'b3f85592d38b11d9341a45481d99c8ca073f925cbc83b208476dd2fad8c87cf5'
-  }
-
-  /**
-   * Dispatches a function call with a provided origin.
-   * 
-   * The dispatch origin for this call must be _Root_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-   * # </weight>
-   */
-  get asV5(): {asOrigin: v5.OriginCaller, call: v5.Call} {
-    assert(this.isV5)
-    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -10108,7 +8489,7 @@ export class UtilityDispatchAsCall {
    * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
    * # </weight>
    */
-  get isEfinityV3(): boolean {
+  get isV3(): boolean {
     return this._chain.getCallHash('Utility.dispatch_as') === '7ae8c51eff672854c3de137262979b24be3a0ca30efd66f5a305b85c41649f2a'
   }
 
@@ -10124,96 +8505,8 @@ export class UtilityDispatchAsCall {
    * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
    * # </weight>
    */
-  get asEfinityV3(): {asOrigin: efinityV3.OriginCaller, call: efinityV3.Call} {
-    assert(this.isEfinityV3)
-    return this._chain.decodeCall(this.call)
-  }
-
-  /**
-   * Dispatches a function call with a provided origin.
-   * 
-   * The dispatch origin for this call must be _Root_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-   * # </weight>
-   */
-  get isV4(): boolean {
-    return this._chain.getCallHash('Utility.dispatch_as') === 'a5f02eb64c0b29decf95969d4ecf73b9d74acf1f8b5228584cc27deafcff9331'
-  }
-
-  /**
-   * Dispatches a function call with a provided origin.
-   * 
-   * The dispatch origin for this call must be _Root_.
-   * 
-   * # <weight>
-   * - O(1).
-   * - Limited storage reads.
-   * - One DB write (event).
-   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-   * # </weight>
-   */
-  get asV4(): {asOrigin: v4.OriginCaller, call: v4.Call} {
-    assert(this.isV4)
-    return this._chain.decodeCall(this.call)
-  }
-}
-
-export class UtilityForceBatchCall {
-  private readonly _chain: Chain
-  private readonly call: Call
-
-  constructor(ctx: CallContext)
-  constructor(ctx: ChainContext, call: Call)
-  constructor(ctx: CallContext, call?: Call) {
-    call = call || ctx.call
-    assert(call.name === 'Utility.force_batch')
-    this._chain = ctx._chain
-    this.call = call
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * Unlike `batch`, it allows errors and won't interrupt.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get isV5(): boolean {
-    return this._chain.getCallHash('Utility.force_batch') === 'a3d50824fe0f9fed46769d5921764e892e21a6ab35e4c349ae8275175cc9c2f5'
-  }
-
-  /**
-   * Send a batch of dispatch calls.
-   * Unlike `batch`, it allows errors and won't interrupt.
-   * 
-   * May be called from any origin.
-   * 
-   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-   * 
-   * If origin is root then call are dispatch without checking origin filter. (This includes
-   * bypassing `frame_system::Config::BaseCallFilter`).
-   * 
-   * # <weight>
-   * - Complexity: O(C) where C is the number of calls to be batched.
-   * # </weight>
-   */
-  get asV5(): {calls: v5.Call[]} {
-    assert(this.isV5)
+  get asV3(): {asOrigin: v3.OriginCaller, call: v3.Call} {
+    assert(this.isV3)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10231,12 +8524,12 @@ export class VestingClaimCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Vesting.claim') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10254,12 +8547,12 @@ export class VestingClaimForCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Vesting.claim_for') === 'b1b9d2bb9f2a27d3dfcb795f19a6625638978d1474d5d4dd34d918f46415e1e9'
   }
 
-  get asV5(): {dest: v5.MultiAddress} {
-    assert(this.isV5)
+  get asV2(): {dest: v2.MultiAddress} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10277,12 +8570,12 @@ export class VestingUpdateVestingSchedulesCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Vesting.update_vesting_schedules') === '5cf5b6a09a9387300d4c3c69374c4045d3ca2a2794fa169a86fec9d8e1f3920c'
   }
 
-  get asV5(): {who: v5.MultiAddress, vestingSchedules: v5.VestingSchedule[]} {
-    assert(this.isV5)
+  get asV2(): {who: v2.MultiAddress, vestingSchedules: v2.VestingSchedule[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10300,12 +8593,12 @@ export class VestingVestedTransferCall {
     this.call = call
   }
 
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('Vesting.vested_transfer') === 'f1e312a24c806adf72eb68877c2620386cbfc53664014b14338b9491e044cb0d'
   }
 
-  get asV5(): {dest: v5.MultiAddress, schedule: v5.VestingSchedule} {
-    assert(this.isV5)
+  get asV2(): {dest: v2.MultiAddress, schedule: v2.VestingSchedule} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10326,15 +8619,15 @@ export class VestingRegistrarClaimBatchCall {
   /**
    * Batch claim for vested accounts
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('VestingRegistrar.claim_batch') === '12886a7697ff37821fd3068ef982fe5fe78bd390b2f49b4ad09eb1856aa01e23'
   }
 
   /**
    * Batch claim for vested accounts
    */
-  get asV5(): {accounts: v5.VestedAccount[]} {
-    assert(this.isV5)
+  get asV2(): {accounts: v2.VestedAccount[]} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10355,15 +8648,15 @@ export class VestingRegistrarRegisterBatchCall {
   /**
    * Register a batch of accounts and their vesting amounts.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('VestingRegistrar.register_batch') === '5a91bb5342005787ddd27073836bcb94df9d7da26d615824a05b79bb0149a662'
   }
 
   /**
    * Register a batch of accounts and their vesting amounts.
    */
-  get asV5(): {accounts: v5.VestedAccount[], startBlockNumber: number, period: number, periodCount: number} {
-    assert(this.isV5)
+  get asV2(): {accounts: v2.VestedAccount[], startBlockNumber: number, period: number, periodCount: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10388,7 +8681,7 @@ export class XcmpQueueResumeXcmExecutionCall {
    * 
    * - `origin`: Must pass `ControllerOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.resume_xcm_execution') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -10399,8 +8692,8 @@ export class XcmpQueueResumeXcmExecutionCall {
    * 
    * - `origin`: Must pass `ControllerOrigin`.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10433,7 +8726,7 @@ export class XcmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
   }
 
@@ -10452,8 +8745,8 @@ export class XcmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
-  get asV5(): {index: bigint, weightLimit: bigint} {
-    assert(this.isV5)
+  get asV2(): {index: bigint, weightLimit: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10476,7 +8769,7 @@ export class XcmpQueueSuspendXcmExecutionCall {
    * 
    * - `origin`: Must pass `ControllerOrigin`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.suspend_xcm_execution') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
@@ -10485,8 +8778,8 @@ export class XcmpQueueSuspendXcmExecutionCall {
    * 
    * - `origin`: Must pass `ControllerOrigin`.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asV2(): null {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10511,7 +8804,7 @@ export class XcmpQueueUpdateDropThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.drop_threshold`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_drop_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
   }
 
@@ -10522,8 +8815,8 @@ export class XcmpQueueUpdateDropThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.drop_threshold`
    */
-  get asV5(): {new: number} {
-    assert(this.isV5)
+  get asV2(): {new: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10548,7 +8841,7 @@ export class XcmpQueueUpdateResumeThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.resume_threshold`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_resume_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
   }
 
@@ -10559,8 +8852,8 @@ export class XcmpQueueUpdateResumeThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.resume_threshold`
    */
-  get asV5(): {new: number} {
-    assert(this.isV5)
+  get asV2(): {new: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10585,7 +8878,7 @@ export class XcmpQueueUpdateSuspendThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.suspend_value`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_suspend_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
   }
 
@@ -10596,8 +8889,8 @@ export class XcmpQueueUpdateSuspendThresholdCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.suspend_value`
    */
-  get asV5(): {new: number} {
-    assert(this.isV5)
+  get asV2(): {new: number} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10621,7 +8914,7 @@ export class XcmpQueueUpdateThresholdWeightCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.threshold_weight`
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
   }
 
@@ -10631,8 +8924,8 @@ export class XcmpQueueUpdateThresholdWeightCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.threshold_weight`
    */
-  get asV5(): {new: bigint} {
-    assert(this.isV5)
+  get asV2(): {new: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10657,7 +8950,7 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
   }
 
@@ -10668,8 +8961,8 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
    */
-  get asV5(): {new: bigint} {
-    assert(this.isV5)
+  get asV2(): {new: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -10694,7 +8987,7 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
    */
-  get isV5(): boolean {
+  get isV2(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
   }
 
@@ -10705,8 +8998,8 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
    */
-  get asV5(): {new: bigint} {
-    assert(this.isV5)
+  get asV2(): {new: bigint} {
+    assert(this.isV2)
     return this._chain.decodeCall(this.call)
   }
 }

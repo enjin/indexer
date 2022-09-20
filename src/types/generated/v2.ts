@@ -1,5 +1,37 @@
 import type {Result} from './support'
 
+export interface Freeze {
+  collectionId: bigint
+  freezeType: FreezeType
+}
+
+export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
+
+export interface MultiAddress_Id {
+  __kind: 'Id'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Index {
+  __kind: 'Index'
+  value: null
+}
+
+export interface MultiAddress_Raw {
+  __kind: 'Raw'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address32 {
+  __kind: 'Address32'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address20 {
+  __kind: 'Address20'
+  value: Uint8Array
+}
+
 export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Sudo | Call_Preimage | Call_Scheduler | Call_Utility | Call_Balances | Call_Vesting | Call_VestingRegistrar | Call_Democracy | Call_Council | Call_TechnicalCommittee | Call_CommunityPool | Call_TechnicalMembership | Call_Multisig | Call_CollatorStaking | Call_Session | Call_XcmpQueue | Call_PolkadotXcm | Call_CumulusXcm | Call_DmpQueue | Call_Bounties | Call_MultiTokens | Call_Claims
 
 export interface Call_System {
@@ -127,31 +159,102 @@ export interface Call_Claims {
   value: ClaimsCall
 }
 
-export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
+export type Conviction = Conviction_None | Conviction_Locked1x | Conviction_Locked2x | Conviction_Locked3x | Conviction_Locked4x | Conviction_Locked5x | Conviction_Locked6x
 
-export interface MultiAddress_Id {
-  __kind: 'Id'
-  value: Uint8Array
+export interface Conviction_None {
+  __kind: 'None'
 }
 
-export interface MultiAddress_Index {
-  __kind: 'Index'
-  value: null
+export interface Conviction_Locked1x {
+  __kind: 'Locked1x'
 }
 
-export interface MultiAddress_Raw {
-  __kind: 'Raw'
-  value: Uint8Array
+export interface Conviction_Locked2x {
+  __kind: 'Locked2x'
 }
 
-export interface MultiAddress_Address32 {
-  __kind: 'Address32'
-  value: Uint8Array
+export interface Conviction_Locked3x {
+  __kind: 'Locked3x'
 }
 
-export interface MultiAddress_Address20 {
-  __kind: 'Address20'
+export interface Conviction_Locked4x {
+  __kind: 'Locked4x'
+}
+
+export interface Conviction_Locked5x {
+  __kind: 'Locked5x'
+}
+
+export interface Conviction_Locked6x {
+  __kind: 'Locked6x'
+}
+
+export type AccountVote = AccountVote_Standard | AccountVote_Split
+
+export interface AccountVote_Standard {
+  __kind: 'Standard'
+  vote: number
+  balance: bigint
+}
+
+export interface AccountVote_Split {
+  __kind: 'Split'
+  aye: bigint
+  nay: bigint
+}
+
+export interface Type_274 {
+  accountId: Uint8Array
+  params: DefaultMintParams
+}
+
+export interface Recipient {
+  accountId: Uint8Array
+  params: DefaultTransferParams
+}
+
+export interface DefaultBurnParams {
+  tokenId: bigint
+  amount: bigint
+  keepAlive: boolean
+  removeTokenStorage: boolean
+}
+
+export interface DefaultCollectionDescriptor {
+  policy: DefaultCollectionPolicyDescriptor
+}
+
+export interface DefaultCollectionMutation {
+  owner: Uint8Array
+}
+
+export interface Attribute {
   value: Uint8Array
+  deposit: bigint
+}
+
+export interface Collection {
+  owner: Uint8Array
+  policy: DefaultCollectionPolicy
+  tokenCount: bigint
+  attributeCount: number
+  totalDeposit: bigint
+}
+
+export interface CollectionAccount {
+  isFrozen: boolean
+  approvals: [Uint8Array, (number | undefined)][]
+  accountCount: number
+}
+
+export interface Token {
+  supply: bigint
+  cap: (TokenCap | undefined)
+  isFrozen: boolean
+  minimumBalance: bigint
+  unitPrice: bigint
+  mintDeposit: bigint
+  attributeCount: number
 }
 
 export interface TokenAccount {
@@ -160,6 +263,45 @@ export interface TokenAccount {
   namedReserves: [Uint8Array, bigint][]
   approvals: [Uint8Array, Approval][]
   isFrozen: boolean
+}
+
+export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
+
+export interface DefaultTransferParams_Simple {
+  __kind: 'Simple'
+  tokenId: bigint
+  amount: bigint
+  keepAlive: boolean
+}
+
+export interface DefaultTransferParams_Operator {
+  __kind: 'Operator'
+  tokenId: bigint
+  source: Uint8Array
+  amount: bigint
+  keepAlive: boolean
+}
+
+export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
+
+export interface DefaultMintParams_CreateToken {
+  __kind: 'CreateToken'
+  tokenId: bigint
+  initialSupply: bigint
+  unitPrice: bigint
+  cap: (TokenCap | undefined)
+}
+
+export interface DefaultMintParams_Mint {
+  __kind: 'Mint'
+  tokenId: bigint
+  amount: bigint
+  unitPrice: (bigint | undefined)
+}
+
+export interface Timepoint {
+  height: number
+  index: number
 }
 
 export type Type_244 = Type_244_V0 | Type_244_V1 | Type_244_V2
@@ -257,10 +399,44 @@ export interface OriginCaller_Void {
   value: Void
 }
 
+export interface VestingSchedule {
+  start: number
+  period: number
+  periodCount: number
+  perPeriod: bigint
+}
+
+export interface VestedAccount {
+  accountId: Uint8Array
+  amount: bigint
+}
+
 export interface EventRecord {
   phase: Phase
   event: Event
   topics: Uint8Array[]
+}
+
+export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
+
+export interface FreezeType_Collection {
+  __kind: 'Collection'
+}
+
+export interface FreezeType_Token {
+  __kind: 'Token'
+  value: bigint
+}
+
+export interface FreezeType_CollectionAccount {
+  __kind: 'CollectionAccount'
+  value: Uint8Array
+}
+
+export interface FreezeType_TokenAccount {
+  __kind: 'TokenAccount'
+  tokenId: bigint
+  accountId: Uint8Array
 }
 
 /**
@@ -3021,6 +3197,26 @@ export interface ClaimsCall_move_claim {
   preclaim: (Uint8Array | undefined)
 }
 
+export interface DefaultCollectionPolicyDescriptor {
+  mint: DefaultMintPolicyDescriptor
+}
+
+export interface DefaultCollectionPolicy {
+  mint: DefaultMintPolicy
+  transfer: DefaultTransferPolicy
+}
+
+export type TokenCap = TokenCap_SingleMint | TokenCap_Supply
+
+export interface TokenCap_SingleMint {
+  __kind: 'SingleMint'
+}
+
+export interface TokenCap_Supply {
+  __kind: 'Supply'
+  value: bigint
+}
+
 export interface Approval {
   amount: bigint
   expiration: (number | undefined)
@@ -3926,67 +4122,6 @@ export interface ParachainInherentData {
   horizontalMessages: [number, InboundHrmpMessage[]][]
 }
 
-export interface VestingSchedule {
-  start: number
-  period: number
-  periodCount: number
-  perPeriod: bigint
-}
-
-export interface VestedAccount {
-  accountId: Uint8Array
-  amount: bigint
-}
-
-export type AccountVote = AccountVote_Standard | AccountVote_Split
-
-export interface AccountVote_Standard {
-  __kind: 'Standard'
-  vote: number
-  balance: bigint
-}
-
-export interface AccountVote_Split {
-  __kind: 'Split'
-  aye: bigint
-  nay: bigint
-}
-
-export type Conviction = Conviction_None | Conviction_Locked1x | Conviction_Locked2x | Conviction_Locked3x | Conviction_Locked4x | Conviction_Locked5x | Conviction_Locked6x
-
-export interface Conviction_None {
-  __kind: 'None'
-}
-
-export interface Conviction_Locked1x {
-  __kind: 'Locked1x'
-}
-
-export interface Conviction_Locked2x {
-  __kind: 'Locked2x'
-}
-
-export interface Conviction_Locked3x {
-  __kind: 'Locked3x'
-}
-
-export interface Conviction_Locked4x {
-  __kind: 'Locked4x'
-}
-
-export interface Conviction_Locked5x {
-  __kind: 'Locked5x'
-}
-
-export interface Conviction_Locked6x {
-  __kind: 'Locked6x'
-}
-
-export interface Timepoint {
-  height: number
-  index: number
-}
-
 export type VersionedMultiAssets = VersionedMultiAssets_V0 | VersionedMultiAssets_V1
 
 export interface VersionedMultiAssets_V0 {
@@ -4010,97 +4145,20 @@ export interface V2WeightLimit_Limited {
   value: bigint
 }
 
-export interface DefaultCollectionDescriptor {
-  policy: DefaultCollectionPolicyDescriptor
+export interface DefaultMintPolicyDescriptor {
+  maxTokenCount: (bigint | undefined)
+  maxTokenSupply: (bigint | undefined)
+  forceSingleMint: boolean
 }
 
-export interface DefaultCollectionMutation {
-  owner: Uint8Array
+export interface DefaultMintPolicy {
+  maxTokenCount: (bigint | undefined)
+  maxTokenSupply: (bigint | undefined)
+  forceSingleMint: boolean
 }
 
-export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
-
-export interface DefaultMintParams_CreateToken {
-  __kind: 'CreateToken'
-  tokenId: bigint
-  initialSupply: bigint
-  unitPrice: bigint
-  cap: (TokenCap | undefined)
-}
-
-export interface DefaultMintParams_Mint {
-  __kind: 'Mint'
-  tokenId: bigint
-  amount: bigint
-  unitPrice: (bigint | undefined)
-}
-
-export interface DefaultBurnParams {
-  tokenId: bigint
-  amount: bigint
-  keepAlive: boolean
-  removeTokenStorage: boolean
-}
-
-export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
-
-export interface DefaultTransferParams_Simple {
-  __kind: 'Simple'
-  tokenId: bigint
-  amount: bigint
-  keepAlive: boolean
-}
-
-export interface DefaultTransferParams_Operator {
-  __kind: 'Operator'
-  tokenId: bigint
-  source: Uint8Array
-  amount: bigint
-  keepAlive: boolean
-}
-
-export interface Freeze {
-  collectionId: bigint
-  freezeType: FreezeType
-}
-
-export interface Recipient {
-  accountId: Uint8Array
-  params: DefaultTransferParams
-}
-
-export interface Type_274 {
-  accountId: Uint8Array
-  params: DefaultMintParams
-}
-
-export interface Collection {
-  owner: Uint8Array
-  policy: DefaultCollectionPolicy
-  tokenCount: bigint
-  attributeCount: number
-  totalDeposit: bigint
-}
-
-export interface Token {
-  supply: bigint
-  cap: (TokenCap | undefined)
+export interface DefaultTransferPolicy {
   isFrozen: boolean
-  minimumBalance: bigint
-  unitPrice: bigint
-  mintDeposit: bigint
-  attributeCount: number
-}
-
-export interface Attribute {
-  value: Uint8Array
-  deposit: bigint
-}
-
-export interface CollectionAccount {
-  isFrozen: boolean
-  approvals: [Uint8Array, (number | undefined)][]
-  accountCount: number
 }
 
 export type V0MultiAsset = V0MultiAsset_None | V0MultiAsset_All | V0MultiAsset_AllFungible | V0MultiAsset_AllNonFungible | V0MultiAsset_AllAbstractFungible | V0MultiAsset_AllAbstractNonFungible | V0MultiAsset_AllConcreteFungible | V0MultiAsset_AllConcreteNonFungible | V0MultiAsset_AbstractFungible | V0MultiAsset_AbstractNonFungible | V0MultiAsset_ConcreteFungible | V0MultiAsset_ConcreteNonFungible
@@ -6590,48 +6648,6 @@ export interface InboundHrmpMessage {
   data: Uint8Array
 }
 
-export interface DefaultCollectionPolicyDescriptor {
-  mint: DefaultMintPolicyDescriptor
-}
-
-export type TokenCap = TokenCap_SingleMint | TokenCap_Supply
-
-export interface TokenCap_SingleMint {
-  __kind: 'SingleMint'
-}
-
-export interface TokenCap_Supply {
-  __kind: 'Supply'
-  value: bigint
-}
-
-export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
-
-export interface FreezeType_Collection {
-  __kind: 'Collection'
-}
-
-export interface FreezeType_Token {
-  __kind: 'Token'
-  value: bigint
-}
-
-export interface FreezeType_CollectionAccount {
-  __kind: 'CollectionAccount'
-  value: Uint8Array
-}
-
-export interface FreezeType_TokenAccount {
-  __kind: 'TokenAccount'
-  tokenId: bigint
-  accountId: Uint8Array
-}
-
-export interface DefaultCollectionPolicy {
-  mint: DefaultMintPolicy
-  transfer: DefaultTransferPolicy
-}
-
 export type V1AssetInstance = V1AssetInstance_Undefined | V1AssetInstance_Index | V1AssetInstance_Array4 | V1AssetInstance_Array8 | V1AssetInstance_Array16 | V1AssetInstance_Array32 | V1AssetInstance_Blob
 
 export interface V1AssetInstance_Undefined {
@@ -7038,22 +7054,6 @@ export interface V2Outcome_Incomplete {
 export interface V2Outcome_Error {
   __kind: 'Error'
   value: V2Error
-}
-
-export interface DefaultMintPolicyDescriptor {
-  maxTokenCount: (bigint | undefined)
-  maxTokenSupply: (bigint | undefined)
-  forceSingleMint: boolean
-}
-
-export interface DefaultMintPolicy {
-  maxTokenCount: (bigint | undefined)
-  maxTokenSupply: (bigint | undefined)
-  forceSingleMint: boolean
-}
-
-export interface DefaultTransferPolicy {
-  isFrozen: boolean
 }
 
 export type V1WildFungibility = V1WildFungibility_Fungible | V1WildFungibility_NonFungible
