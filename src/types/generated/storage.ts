@@ -40,6 +40,11 @@ export class BalancesAccountStorage {
     return this._chain.queryStorage(this.blockHash, 'Balances', 'Account', keys.map(k => [k]))
   }
 
+  async getAllAsV1(): Promise<(v1.AccountData)[]> {
+    assert(this.isV1)
+    return this._chain.queryStorage(this.blockHash, 'Balances', 'Account')
+  }
+
   /**
    * Checks whether the storage item is defined for the current chain version.
    */
@@ -115,6 +120,11 @@ export class MultiTokensAttributesStorage {
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Attributes', keys)
   }
 
+  async getAllAsV2(): Promise<(v2.Attribute)[]> {
+    assert(this.isV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Attributes')
+  }
+
   /**
    * Checks whether the storage item is defined for the current chain version.
    */
@@ -153,6 +163,11 @@ export class MultiTokensCollectionAccountsStorage {
   async getManyAsV2(keys: [bigint, Uint8Array][]): Promise<(v2.CollectionAccount | undefined)[]> {
     assert(this.isV2)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts', keys)
+  }
+
+  async getAllAsV2(): Promise<(v2.CollectionAccount)[]> {
+    assert(this.isV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'CollectionAccounts')
   }
 
   /**
@@ -195,6 +210,11 @@ export class MultiTokensCollectionsStorage {
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections', keys.map(k => [k]))
   }
 
+  async getAllAsV2(): Promise<(v2.Collection)[]> {
+    assert(this.isV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections')
+  }
+
   /**
    * Checks whether the storage item is defined for the current chain version.
    */
@@ -235,6 +255,11 @@ export class MultiTokensTokenAccountsStorage {
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
   }
 
+  async getAllAsV2(): Promise<(v2.TokenAccount)[]> {
+    assert(this.isV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts')
+  }
+
   /**
    *  Accounts per token
    */
@@ -253,6 +278,11 @@ export class MultiTokensTokenAccountsStorage {
   async getManyAsV3(keys: [Uint8Array, bigint, bigint][]): Promise<(v3.TokenAccount | undefined)[]> {
     assert(this.isV3)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts', keys)
+  }
+
+  async getAllAsV3(): Promise<(v3.TokenAccount)[]> {
+    assert(this.isV3)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'TokenAccounts')
   }
 
   /**
@@ -295,6 +325,11 @@ export class MultiTokensTokensStorage {
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens', keys)
   }
 
+  async getAllAsV2(): Promise<(v2.Token)[]> {
+    assert(this.isV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens')
+  }
+
   /**
    * Checks whether the storage item is defined for the current chain version.
    */
@@ -333,6 +368,11 @@ export class SystemAccountStorage {
   async getManyAsV1(keys: Uint8Array[]): Promise<(v1.AccountInfo)[]> {
     assert(this.isV1)
     return this._chain.queryStorage(this.blockHash, 'System', 'Account', keys.map(k => [k]))
+  }
+
+  async getAllAsV1(): Promise<(v1.AccountInfo)[]> {
+    assert(this.isV1)
+    return this._chain.queryStorage(this.blockHash, 'System', 'Account')
   }
 
   /**

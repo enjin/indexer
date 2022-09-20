@@ -7,7 +7,7 @@ const config: ProcessorConfig = {
     genesisHash: process.env.GENESIS_HASH || '0x335369975fced3fc22e23498da306a712f4fd964c957364d53c49cea9db8bc2f',
     rpc: process.env.CHAIN_RPC || 'wss://rpc.efinity.io',
     dataSource: {
-        archive: 'http://archive_gateway:8000/graphql',
+        archive: 'https://efinity.archive.subsquid.io/graphql',
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.rpc.efinity.io',
     },
     batchSize: 100,
