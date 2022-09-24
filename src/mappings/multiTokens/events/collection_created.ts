@@ -34,6 +34,13 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData | unde
             maxTokenSupply,
             forceSingleMint,
         }
+    } else if (call.isV6) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
+        return {
+            maxTokenCount,
+            maxTokenSupply,
+            forceSingleMint,
+        }
     } else {
         throw new UnknownVersionError(call.constructor.name)
     }

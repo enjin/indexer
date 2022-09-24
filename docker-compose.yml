@@ -55,7 +55,7 @@ services:
     depends_on:
       - archive_db
     command: [
-      "-e", "ws://18.222.114.225:8845",
+      "-e", "wss://tmp-rpc-sg.parachain.efinitystaging.com",
       "-c", "40",
       "--out", "postgres://root@archive_db:26257/defaultdb"
     ]

@@ -15,7 +15,7 @@
     "@polkadot/api": "^9.4.2",
     "@subsquid/archive-registry": "1.0.14",
     "@subsquid/cli": "0.7.1",
-    "@subsquid/graphql-server": "3.2.0",
+    "@subsquid/graphql-server": "2.1.0",
     "@subsquid/ss58": "^0.1.2",
     "@subsquid/substrate-processor": "1.9.1",
     "@subsquid/typeorm-migration": "0.1.2",
