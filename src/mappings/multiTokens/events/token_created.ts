@@ -34,7 +34,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             const recipientCall = recipients.find(
                 r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
             );
-            console.log(recipientCall)
+
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
@@ -50,6 +50,8 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     capSupply: (params.cap as TokenCap_Supply)?.value,
                 }
             }
+        } else {
+            throw new UnknownVersionError(call.constructor.name)
         }
     }
 
