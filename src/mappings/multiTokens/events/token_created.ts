@@ -1,11 +1,11 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import { CapType, Collection, Token } from '../../../model'
-import { MultiTokensMintCall } from '../../../types/generated/calls'
-import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v2'
-import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
+import { EventHandlerContext } from '../../types/contexts'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
+import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/efinityV3'
 
 interface CallData {
     recipient: Uint8Array
@@ -24,13 +24,41 @@ interface EventData {
     initialSupply: bigint
 }
 
-function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData {
+function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): CallData {
+    if (subcall.name === 'MultiTokens.batch_mint') {
+        const call = new MultiTokensBatchMintCall(ctx, subcall);
+
+        if (call.isEfinityV2) {
+            const collectionId = call.asEfinityV2.collectionId
+            const recipients = call.asEfinityV2.recipients
+            const recipientCall = recipients.find(
+                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            );
+            console.log(recipientCall)
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParams_CreateToken
+                const capType = params.cap?.__kind as CapType
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: params.unitPrice,
+                    capType: capType,
+                    capSupply: (params.cap as TokenCap_Supply)?.value,
+                }
+            }
+        }
+    }
+
     const call = new MultiTokensMintCall(ctx, subcall)
 
-    if (call.isV2) {
-        const collectionId = call.asV2.collectionId
-        const recipient = call.asV2.recipient.value as Uint8Array
-        const params = call.asV2.params as DefaultMintParams_CreateToken
+    if (call.isEfinityV2) {
+        const collectionId = call.asEfinityV2.collectionId
+        const recipient = call.asEfinityV2.recipient.value as Uint8Array
+        const params = call.asEfinityV2.params as DefaultMintParams_CreateToken
         const capType = params.cap?.__kind as CapType
 
         return {
@@ -50,8 +78,8 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData {
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensTokenCreatedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, issuer, initialSupply } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, tokenId, issuer, initialSupply } = event.asEfinityV2
         console.log(
             `Block: ${ctx.block.height}, event: ${ctx.event.name}, collectionId: ${collectionId}, tokenId: ${tokenId}`
         )
@@ -66,7 +94,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
     const eventData = getEventData(ctx as EventHandlerContext)
 
     if (ctx.event.call) {
-        const callData = getCallData(ctx, ctx.event.call)
+        const callData = getCallData(ctx, ctx.event.call, eventData)
 
         if (!eventData || !callData) return
 

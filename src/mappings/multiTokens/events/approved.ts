@@ -17,8 +17,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensApprovedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, owner, operator, amount, expiration } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, tokenId, owner, operator, amount, expiration } = event.asEfinityV2
         return {
             collectionId,
             tokenId,

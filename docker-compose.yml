@@ -75,7 +75,7 @@ services:
     ports:
       - "8888:8000"
 
-  explorer:
+  archive_explorer:
     container_name: archive_explorer
     image: subsquid/substrate-explorer:firesquid
     restart: unless-stopped

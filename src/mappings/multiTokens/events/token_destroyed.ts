@@ -13,8 +13,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensTokenDestroyedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, caller } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, tokenId, caller } = event.asEfinityV2
         return { collectionId, tokenId, caller }
     } else {
         throw new UnknownVersionError(event.constructor.name)

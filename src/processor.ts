@@ -35,29 +35,29 @@ processor.addCallHandler(
 )
 
 processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
-// processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
-// processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
-// processor.addEventHandler(
-//     'MultiTokens.CollectionAccountCreated',
-//     modules.multiTokens.events.handleCollectionAccountCreated
-// )
-// processor.addEventHandler(
-//     'MultiTokens.CollectionAccountDestroyed',
-//     modules.multiTokens.events.handleCollectionAccountDestroyed
-// )
-// processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
-// processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
-// processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
-// processor.addEventHandler('MultiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
-// processor.addEventHandler('MultiTokens.Minted', modules.multiTokens.events.handleMinted)
-// processor.addEventHandler('MultiTokens.Burned', modules.multiTokens.events.handleBurned)
-// processor.addEventHandler('MultiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
-// processor.addEventHandler('MultiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
-// processor.addEventHandler('MultiTokens.Frozen', modules.multiTokens.events.handleFrozen)
-// processor.addEventHandler('MultiTokens.Thawed', modules.multiTokens.events.handleThawed)
-// processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.handleApproved)
-// processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
-// processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
+processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
+processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
+processor.addEventHandler(
+    'MultiTokens.CollectionAccountCreated',
+    modules.multiTokens.events.handleCollectionAccountCreated
+)
+processor.addEventHandler(
+    'MultiTokens.CollectionAccountDestroyed',
+    modules.multiTokens.events.handleCollectionAccountDestroyed
+)
+processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
+processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
+processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
+processor.addEventHandler('MultiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
+processor.addEventHandler('MultiTokens.Minted', modules.multiTokens.events.handleMinted)
+processor.addEventHandler('MultiTokens.Burned', modules.multiTokens.events.handleBurned)
+processor.addEventHandler('MultiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
+processor.addEventHandler('MultiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
+processor.addEventHandler('MultiTokens.Frozen', modules.multiTokens.events.handleFrozen)
+processor.addEventHandler('MultiTokens.Thawed', modules.multiTokens.events.handleThawed)
+processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.handleApproved)
+processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
+processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
 processor.addPostHook(
     {
