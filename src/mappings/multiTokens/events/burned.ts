@@ -4,7 +4,7 @@ import { TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
-import { Approval } from '../../../types/generated/v3'
+import { Approval } from '../../../types/generated/efinityV3'
 
 interface EventData {
     collectionId: bigint
@@ -27,8 +27,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensBurnedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, tokenId, accountId, amount } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, tokenId, accountId, amount } = event.asEfinityV2
         return { collectionId, tokenId, accountId, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)
@@ -44,8 +44,8 @@ async function getStorageData(
     const storage = new MultiTokensTokenAccountsStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isV2) {
-        const data = await storage.getAsV2(account, collectionId, tokenId)
+    if (storage.isEfinityV2) {
+        const data = await storage.getAsEfinityV2(account, collectionId, tokenId)
 
         if (!data) return undefined
 
@@ -58,8 +58,8 @@ async function getStorageData(
             approvals: data.approvals,
             isFrozen: data.isFrozen,
         }
-    } else if (storage.isV3) {
-        const data = await storage.getAsV3(account, collectionId, tokenId)
+    } else if (storage.isEfinityV3) {
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data

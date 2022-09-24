@@ -1,37 +1,7 @@
 {
   "outDir": "../src/types/generated",
   "specVersions": "./chainSpecVersions.jsonl",
-  "events": [
-    "Balances.Withdraw",
-    "MultiTokens.CollectionCreated",
-    "MultiTokens.CollectionDestroyed",
-    "MultiTokens.CollectionAccountCreated",
-    "MultiTokens.CollectionAccountDestroyed",
-    "MultiTokens.TokenCreated",
-    "MultiTokens.TokenDestroyed",
-    "MultiTokens.TokenAccountCreated",
-    "MultiTokens.TokenAccountDestroyed",
-    "MultiTokens.Minted",
-    "MultiTokens.Burned",
-    "MultiTokens.Frozen",
-    "MultiTokens.Thawed",
-    "MultiTokens.Transferred",
-    "MultiTokens.AttributeSet",
-    "MultiTokens.AttributeRemoved",
-    "MultiTokens.Approved",
-    "MultiTokens.Unapproved"
-  ],
+  "events": true,
   "calls": true,
-  "storage": [
-    "System.Account",
-    "System.Events",
-    "System.LastRuntimeUpgrade",
-    "Balances.Account",
-    "Balances.TotalIssuance",
-    "MultiTokens.Attributes",
-    "MultiTokens.CollectionAccounts",
-    "MultiTokens.Collections",
-    "MultiTokens.TokenAccounts",
-    "MultiTokens.Tokens"
-  ]
+  "storage": true
 }

@@ -3,7 +3,11 @@ import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
-import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3'
+import {
+    FreezeType_CollectionAccount,
+    FreezeType_Token,
+    FreezeType_TokenAccount,
+} from '../../../types/generated/efinityV3'
 
 interface EventData {
     collectionId: bigint
@@ -17,8 +21,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensThawedEvent(ctx)
 
-    if (event.isV2) {
-        const { collectionId, freezeType } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, freezeType } = event.asEfinityV2
 
         if (freezeType.__kind == 'Collection') {
             return {

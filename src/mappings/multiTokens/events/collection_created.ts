@@ -27,8 +27,8 @@ interface EventData {
 function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData | undefined {
     const call = new MultiTokensCreateCollectionCall(ctx, subcall)
 
-    if (call.isV2) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV2.descriptor.policy.mint
+    if (call.isEfinityV2) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV2.descriptor.policy.mint
         return {
             maxTokenCount,
             maxTokenSupply,
@@ -43,8 +43,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensCollectionCreatedEvent(ctx)
     console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
-    if (event.isV2) {
-        const { collectionId, owner } = event.asV2
+    if (event.isEfinityV2) {
+        const { collectionId, owner } = event.asEfinityV2
         console.log(`collectionId: ${collectionId}`)
         return { collectionId, owner }
     } else {
