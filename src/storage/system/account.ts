@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../common/errors'
 import { decodeId } from '../../common/tools'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { BlockContext } from '../../types/generated/support'
-import { AccountInfo } from '../../types/generated/efinityV1'
+import { AccountInfo } from '../../types/generated/rocfinityV5'
 
 async function getStorageData(
     ctx: BlockContext,
@@ -11,8 +11,8 @@ async function getStorageData(
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isEfinityV1) {
-        return await storage.getManyAsEfinityV1(accounts)
+    if (storage.isRocfinityV5) {
+        return await storage.getManyAsRocfinityV5(accounts)
     } else {
         throw new UnknownVersionError(storage.constructor.name)
     }

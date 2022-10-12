@@ -7,7 +7,7 @@ import {
     FreezeType_CollectionAccount,
     FreezeType_Token,
     FreezeType_TokenAccount,
-} from '../../../types/generated/efinityV3'
+} from '../../../types/generated/rocfinityV6'
 
 interface EventData {
     collectionId: bigint
@@ -21,8 +21,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensFrozenEvent(ctx)
 
-    if (event.isEfinityV2) {
-        const { collectionId, freezeType } = event.asEfinityV2
+    if (event.isRocfinityV5) {
+        const { collectionId, freezeType } = event.asRocfinityV5
 
         if (freezeType.__kind == 'Collection') {
             return {
