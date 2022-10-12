@@ -12,8 +12,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensCollectionDestroyedEvent(ctx)
 
-    if (event.isEfinityV2) {
-        const { collectionId, caller } = event.asEfinityV2
+    if (event.isRocfinityV5) {
+        const { collectionId, caller } = event.asRocfinityV5
         return { collectionId, caller }
     } else {
         throw new UnknownVersionError(event.constructor.name)
