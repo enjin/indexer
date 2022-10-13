@@ -50,7 +50,7 @@ services:
 
   archive_ingest:
     container_name: archive_ingest
-    image: subsquid/substrate-ingest:firesquid
+    image: subsquid/substrate-ingest:latest
     restart: unless-stopped
     depends_on:
       - archive_db
@@ -77,7 +77,7 @@ services:
 
   archive_explorer:
     container_name: archive_explorer
-    image: subsquid/substrate-explorer:firesquid
+    image: subsquid/substrate-explorer:latest
     restart: unless-stopped
     environment:
       DB_TYPE: cockroach
