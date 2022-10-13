@@ -30,6 +30,10 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
     const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
+        relations: {
+            collection: true,
+            token: true,
+        },
     })
 
     if (attribute) {
