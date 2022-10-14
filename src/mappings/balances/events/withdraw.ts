@@ -14,8 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     const event = new BalancesWithdrawEvent(ctx)
     console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
-    if (event.isRocfinityV5) {
-        const { who, amount } = event.asRocfinityV5
+    if (event.isEfinityV2) {
+        const { who, amount } = event.asEfinityV2
         return { who, amount }
     } else {
         throw new UnknownVersionError(event.constructor.name)

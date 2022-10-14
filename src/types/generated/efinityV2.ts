@@ -68,6 +68,40 @@ export interface V2Outcome_Error {
   value: V2Error
 }
 
+export type VoteThreshold = VoteThreshold_SuperMajorityApprove | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SimpleMajority
+
+export interface VoteThreshold_SuperMajorityApprove {
+  __kind: 'SuperMajorityApprove'
+}
+
+export interface VoteThreshold_SuperMajorityAgainst {
+  __kind: 'SuperMajorityAgainst'
+}
+
+export interface VoteThreshold_SimpleMajority {
+  __kind: 'SimpleMajority'
+}
+
+export type AccountVote = AccountVote_Standard | AccountVote_Split
+
+export interface AccountVote_Standard {
+  __kind: 'Standard'
+  vote: number
+  balance: bigint
+}
+
+export interface AccountVote_Split {
+  __kind: 'Split'
+  aye: bigint
+  nay: bigint
+}
+
+export interface CollectionAccount {
+  isFrozen: boolean
+  approvals: [Uint8Array, (number | undefined)][]
+  accountCount: number
+}
+
 export interface DefaultCollectionMutation {
   owner: Uint8Array
 }
@@ -78,6 +112,11 @@ export interface Collection {
   tokenCount: bigint
   attributeCount: number
   totalDeposit: bigint
+}
+
+export interface Freeze {
+  collectionId: bigint
+  freezeType: FreezeType
 }
 
 export interface TokenAccount {
@@ -404,10 +443,54 @@ export interface V2Instruction_UnsubscribeVersion {
   __kind: 'UnsubscribeVersion'
 }
 
+export type LookupError = LookupError_Unknown | LookupError_BadFormat
+
+export interface LookupError_Unknown {
+  __kind: 'Unknown'
+}
+
+export interface LookupError_BadFormat {
+  __kind: 'BadFormat'
+}
+
 export interface DispatchInfo {
   weight: bigint
   class: DispatchClass
   paysFee: Pays
+}
+
+export interface VestingSchedule {
+  start: number
+  period: number
+  periodCount: number
+  perPeriod: bigint
+}
+
+export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
+
+export interface MultiAddress_Id {
+  __kind: 'Id'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Index {
+  __kind: 'Index'
+  value: null
+}
+
+export interface MultiAddress_Raw {
+  __kind: 'Raw'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address32 {
+  __kind: 'Address32'
+  value: Uint8Array
+}
+
+export interface MultiAddress_Address20 {
+  __kind: 'Address20'
+  value: Uint8Array
 }
 
 export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Sudo | Call_Preimage | Call_Scheduler | Call_Utility | Call_Balances | Call_Vesting | Call_VestingRegistrar | Call_Democracy | Call_Council | Call_TechnicalCommittee | Call_CommunityPool | Call_TechnicalMembership | Call_Multisig | Call_CollatorStaking | Call_Session | Call_XcmpQueue | Call_PolkadotXcm | Call_CumulusXcm | Call_DmpQueue | Call_Bounties | Call_MultiTokens | Call_Claims
@@ -577,35 +660,37 @@ export interface Recipient {
   params: DefaultTransferParams
 }
 
+export interface DefaultBurnParams {
+  tokenId: bigint
+  amount: bigint
+  keepAlive: boolean
+  removeTokenStorage: boolean
+}
+
 export interface DefaultCollectionDescriptor {
   policy: DefaultCollectionPolicyDescriptor
 }
 
-export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
-
-export interface MultiAddress_Id {
-  __kind: 'Id'
+export interface Attribute {
   value: Uint8Array
+  deposit: bigint
 }
 
-export interface MultiAddress_Index {
-  __kind: 'Index'
-  value: null
+export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
+
+export interface DefaultTransferParams_Simple {
+  __kind: 'Simple'
+  tokenId: bigint
+  amount: bigint
+  keepAlive: boolean
 }
 
-export interface MultiAddress_Raw {
-  __kind: 'Raw'
-  value: Uint8Array
-}
-
-export interface MultiAddress_Address32 {
-  __kind: 'Address32'
-  value: Uint8Array
-}
-
-export interface MultiAddress_Address20 {
-  __kind: 'Address20'
-  value: Uint8Array
+export interface DefaultTransferParams_Operator {
+  __kind: 'Operator'
+  tokenId: bigint
+  source: Uint8Array
+  amount: bigint
+  keepAlive: boolean
 }
 
 export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
@@ -720,9 +805,105 @@ export interface OriginCaller_Void {
   value: Void
 }
 
+export interface VestedAccount {
+  accountId: Uint8Array
+  amount: bigint
+}
+
+export interface Bounty {
+  proposer: Uint8Array
+  value: bigint
+  fee: bigint
+  curatorDeposit: bigint
+  bond: bigint
+  status: BountyStatus
+}
+
+export interface Collator {
+  account: Uint8Array
+  amount: bigint
+  totalStake: bigint
+  nominators: Uint8Array[]
+}
+
+export interface Proposal {
+  proposer: Uint8Array
+  value: bigint
+  beneficiary: Uint8Array
+  bond: bigint
+}
+
+export interface Votes {
+  index: number
+  threshold: number
+  ayes: Uint8Array[]
+  nays: Uint8Array[]
+  end: number
+}
+
+export type PreimageStatus = PreimageStatus_Missing | PreimageStatus_Available
+
+export interface PreimageStatus_Missing {
+  __kind: 'Missing'
+  value: number
+}
+
+export interface PreimageStatus_Available {
+  __kind: 'Available'
+  data: Uint8Array
+  provider: Uint8Array
+  deposit: bigint
+  since: number
+  expiry: (number | undefined)
+}
+
+export type ReferendumInfo = ReferendumInfo_Ongoing | ReferendumInfo_Finished
+
+export interface ReferendumInfo_Ongoing {
+  __kind: 'Ongoing'
+  value: ReferendumStatus
+}
+
+export interface ReferendumInfo_Finished {
+  __kind: 'Finished'
+  approved: boolean
+  end: number
+}
+
+export type Type_322 = Type_322_V1
+
+export interface Type_322_V1 {
+  __kind: 'V1'
+}
+
+export type Voting = Voting_Direct | Voting_Delegating
+
+export interface Voting_Direct {
+  __kind: 'Direct'
+  votes: [number, AccountVote][]
+  delegations: Delegations
+  prior: [number, bigint]
+}
+
+export interface Voting_Delegating {
+  __kind: 'Delegating'
+  balance: bigint
+  target: Uint8Array
+  conviction: Conviction
+  delegations: Delegations
+  prior: [number, bigint]
+}
+
 export interface WeightedIdleOperation {
   operation: IdleOperation
   estimatedWeight: bigint
+}
+
+export interface Multisig {
+  when: Timepoint
+  deposit: bigint
+  depositor: Uint8Array
+  approvals: Uint8Array[]
 }
 
 export interface V1AbridgedHostConfiguration {
@@ -735,6 +916,28 @@ export interface V1AbridgedHostConfiguration {
   hrmpMaxMessageNumPerCandidate: number
   validationUpgradeCooldown: number
   validationUpgradeDelay: number
+}
+
+export interface StorageProof {
+  trieNodes: Uint8Array[]
+}
+
+export type V1UpgradeRestriction = V1UpgradeRestriction_Present
+
+export interface V1UpgradeRestriction_Present {
+  __kind: 'Present'
+}
+
+export type RequestStatus = RequestStatus_Unrequested | RequestStatus_Requested
+
+export interface RequestStatus_Unrequested {
+  __kind: 'Unrequested'
+  value: ([Uint8Array, bigint] | undefined)
+}
+
+export interface RequestStatus_Requested {
+  __kind: 'Requested'
+  value: number
 }
 
 export interface ScheduledV3 {
@@ -830,6 +1033,28 @@ export interface ArithmeticError_DivisionByZero {
 export interface DefaultCollectionPolicy {
   mint: DefaultMintPolicy
   transfer: DefaultTransferPolicy
+}
+
+export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
+
+export interface FreezeType_Collection {
+  __kind: 'Collection'
+}
+
+export interface FreezeType_Token {
+  __kind: 'Token'
+  value: bigint
+}
+
+export interface FreezeType_CollectionAccount {
+  __kind: 'CollectionAccount'
+  value: Uint8Array
+}
+
+export interface FreezeType_TokenAccount {
+  __kind: 'TokenAccount'
+  tokenId: bigint
+  accountId: Uint8Array
 }
 
 export interface Approval {
@@ -3726,23 +3951,6 @@ export interface ClaimsCall_move_claim {
   preclaim: (Uint8Array | undefined)
 }
 
-export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
-
-export interface DefaultTransferParams_Simple {
-  __kind: 'Simple'
-  tokenId: bigint
-  amount: bigint
-  keepAlive: boolean
-}
-
-export interface DefaultTransferParams_Operator {
-  __kind: 'Operator'
-  tokenId: bigint
-  source: Uint8Array
-  amount: bigint
-  keepAlive: boolean
-}
-
 export interface DefaultCollectionPolicyDescriptor {
   mint: DefaultMintPolicyDescriptor
 }
@@ -4336,6 +4544,51 @@ export interface Type_206_SiblingParachain {
 
 export type Void = never
 
+export type BountyStatus = BountyStatus_Proposed | BountyStatus_Approved | BountyStatus_Funded | BountyStatus_CuratorProposed | BountyStatus_Active | BountyStatus_PendingPayout
+
+export interface BountyStatus_Proposed {
+  __kind: 'Proposed'
+}
+
+export interface BountyStatus_Approved {
+  __kind: 'Approved'
+}
+
+export interface BountyStatus_Funded {
+  __kind: 'Funded'
+}
+
+export interface BountyStatus_CuratorProposed {
+  __kind: 'CuratorProposed'
+  curator: Uint8Array
+}
+
+export interface BountyStatus_Active {
+  __kind: 'Active'
+  curator: Uint8Array
+  updateDue: number
+}
+
+export interface BountyStatus_PendingPayout {
+  __kind: 'PendingPayout'
+  curator: Uint8Array
+  beneficiary: Uint8Array
+  unlockAt: number
+}
+
+export interface ReferendumStatus {
+  end: number
+  proposalHash: Uint8Array
+  threshold: VoteThreshold
+  delay: number
+  tally: Tally
+}
+
+export interface Delegations {
+  votes: bigint
+  capital: bigint
+}
+
 export type IdleOperation = IdleOperation_DeleteAttributes
 
 export interface IdleOperation_DeleteAttributes {
@@ -4640,32 +4893,6 @@ export interface ParachainInherentData {
   horizontalMessages: [number, InboundHrmpMessage[]][]
 }
 
-export interface VestingSchedule {
-  start: number
-  period: number
-  periodCount: number
-  perPeriod: bigint
-}
-
-export interface VestedAccount {
-  accountId: Uint8Array
-  amount: bigint
-}
-
-export type AccountVote = AccountVote_Standard | AccountVote_Split
-
-export interface AccountVote_Standard {
-  __kind: 'Standard'
-  vote: number
-  balance: bigint
-}
-
-export interface AccountVote_Split {
-  __kind: 'Split'
-  aye: bigint
-  nay: bigint
-}
-
 export type VersionedMultiAssets = VersionedMultiAssets_V0 | VersionedMultiAssets_V1
 
 export interface VersionedMultiAssets_V0 {
@@ -4676,29 +4903,6 @@ export interface VersionedMultiAssets_V0 {
 export interface VersionedMultiAssets_V1 {
   __kind: 'V1'
   value: V1MultiAsset[]
-}
-
-export interface DefaultBurnParams {
-  tokenId: bigint
-  amount: bigint
-  keepAlive: boolean
-  removeTokenStorage: boolean
-}
-
-export interface Freeze {
-  collectionId: bigint
-  freezeType: FreezeType
-}
-
-export interface Attribute {
-  value: Uint8Array
-  deposit: bigint
-}
-
-export interface CollectionAccount {
-  isFrozen: boolean
-  approvals: [Uint8Array, (number | undefined)][]
-  accountCount: number
 }
 
 export interface DefaultMintPolicyDescriptor {
@@ -5064,6 +5268,12 @@ export interface V0Junction_Plurality {
   __kind: 'Plurality'
   id: V0BodyId
   part: V0BodyPart
+}
+
+export interface Tally {
+  ayes: bigint
+  nays: bigint
+  turnout: bigint
 }
 
 /**
@@ -7200,10 +7410,6 @@ export interface V1PersistedValidationData {
   maxPovSize: number
 }
 
-export interface StorageProof {
-  trieNodes: Uint8Array[]
-}
-
 export interface InboundDownwardMessage {
   sentAt: number
   msg: Uint8Array
@@ -7212,50 +7418,4 @@ export interface InboundDownwardMessage {
 export interface InboundHrmpMessage {
   sentAt: number
   data: Uint8Array
-}
-
-export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
-
-export interface FreezeType_Collection {
-  __kind: 'Collection'
-}
-
-export interface FreezeType_Token {
-  __kind: 'Token'
-  value: bigint
-}
-
-export interface FreezeType_CollectionAccount {
-  __kind: 'CollectionAccount'
-  value: Uint8Array
-}
-
-export interface FreezeType_TokenAccount {
-  __kind: 'TokenAccount'
-  tokenId: bigint
-  accountId: Uint8Array
-}
-
-export type LookupError = LookupError_Unknown | LookupError_BadFormat
-
-export interface LookupError_Unknown {
-  __kind: 'Unknown'
-}
-
-export interface LookupError_BadFormat {
-  __kind: 'BadFormat'
-}
-
-export type VoteThreshold = VoteThreshold_SuperMajorityApprove | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SimpleMajority
-
-export interface VoteThreshold_SuperMajorityApprove {
-  __kind: 'SuperMajorityApprove'
-}
-
-export interface VoteThreshold_SuperMajorityAgainst {
-  __kind: 'SuperMajorityAgainst'
-}
-
-export interface VoteThreshold_SimpleMajority {
-  __kind: 'SimpleMajority'
 }
