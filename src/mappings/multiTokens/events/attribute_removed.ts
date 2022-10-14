@@ -13,8 +13,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MultiTokensAttributeRemovedEvent(ctx)
 
-    if (event.isRocfinityV5) {
-        const { collectionId, tokenId, key } = event.asRocfinityV5
+    if (event.isEfinityV2) {
+        const { collectionId, tokenId, key } = event.asEfinityV2
         return { collectionId, tokenId, key }
     } else {
         throw new UnknownVersionError(event.constructor.name)
