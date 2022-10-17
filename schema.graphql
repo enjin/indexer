@@ -7,6 +7,13 @@ type ChainInfo @entity {
   blockNumber: Int! @index
   existentialDeposit: BigInt!
   timestamp: DateTime!
+  marketplace: Marketplace
+}
+
+type Marketplace {
+  protocolFee: Float!
+  fixedPriceListingCount: Int!
+  auctionListingCount: Int!
 }
 
 interface Action {
@@ -223,3 +230,106 @@ type Attribute @entity {
   createdAt: DateTime!
   updatedAt: DateTime!
 }
+
+enum FeeSide {
+  NoFee
+  Make
+  Take
+}
+
+enum ListingType {
+  FixedPrice
+  Auction
+}
+
+type FixedPriceData {
+  listingType: ListingType!
+}
+
+type AuctionData {
+  listingType: ListingType!
+  startHeight: Int!
+  endHeight: Int!
+}
+
+union ListingData = FixedPriceData | AuctionData
+
+type FixedPriceState {
+  listingType: ListingType!
+  amountFilled: BigInt!
+}
+
+type AuctionState {
+  listingType: ListingType!
+  highBid: Bid
+}
+
+type Bid @entity {
+  id: ID!
+
+  # Storage defaults
+  bidder: Account!
+  price: BigInt!
+
+  # Extras
+  listing: Listing!
+  height: Int!
+
+  createdAt: DateTime!
+
+}
+
+union ListingState = FixedPriceState | AuctionState
+
+
+enum ListingStatusType {
+  Active
+  Cancelled
+  Finalized
+}
+
+type ActiveListing {
+  listingStatus: ListingStatusType!
+}
+
+type CancelledListing {
+  listingStatus: ListingStatusType!
+  height: Int
+  createdAt: DateTime
+}
+
+type FinalizedListing {
+  listingStatus: ListingStatusType!
+  height: Int
+  createdAt: DateTime
+}
+
+union ListingStatus = ActiveListing | CancelledListing | FinalizedListing
+
+type Listing @entity {
+  id: ID!
+
+  # Storage defaults
+  seller: Account!
+  makeAssetId: Token!
+  takeAssetId: Token!
+  amount: BigInt!
+  price: BigInt!
+  minTakeValue: BigInt!
+  feeSide: FeeSide!
+  height: Int!
+  deposit: BigInt!
+  salt: String!
+  data: ListingData!
+  state: ListingState!
+
+  # Relations
+  bids: [Bid] @derivedFrom(field: "listing")
+
+  # Extras
+  status: ListingStatus!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
