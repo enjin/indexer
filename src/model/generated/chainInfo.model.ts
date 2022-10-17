@@ -1,5 +1,6 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
+import {Marketplace} from "./_marketplace"
 
 @Entity_()
 export class ChainInfo {
@@ -31,4 +32,7 @@ export class ChainInfo {
 
   @Column_("timestamp with time zone", {nullable: false})
   timestamp!: Date
+
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new Marketplace(undefined, marshal.nonNull(obj))}, nullable: false})
+  marketplace!: Marketplace
 }
