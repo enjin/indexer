@@ -1,23 +1,29 @@
 import { UnknownVersionError } from '../../../common/errors'
 import {
-    MarketplaceBidPlacedEvent,
+    MarketplaceAuctionFinalizedEvent,
 } from '../../../types/generated/events'
-import { Listing } from '../../../model'
+import {
+    FinalizedListing,
+    Listing,
+    ListingStatusType,
+} from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
 
 interface EventData {
     listingId: Uint8Array
-    bid: Bid,
+    winningBid: Bid|undefined,
+    protocolFee: BigInt,
+    royalty: BigInt
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
-    const event = new MarketplaceBidPlacedEvent(ctx);
+    const event = new MarketplaceAuctionFinalizedEvent(ctx);
 
     if (event.isV6) {
-        const { listingId, bid } = event.asV6
-        return { listingId, bid }
+        const { listingId, winningBid, protocolFee, royalty } = event.asV6
+        return { listingId, winningBid, protocolFee, royalty }
     } else {
         throw new UnknownVersionError(event.constructor.name)
     }
@@ -37,8 +43,11 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         }
     })
 
-    // listing.cancelled = true
-    // listing.cancelledAt = new Date(ctx.block.timestamp)
-    //
-    // await ctx.store.save(listing)
+    listing.status = new FinalizedListing({
+        listingStatus: ListingStatusType.Finalized,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp),
+    });
+
+    await ctx.store.save(listing)
 }

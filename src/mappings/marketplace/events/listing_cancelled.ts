@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import {
     MarketplaceListingCancelledEvent,
 } from '../../../types/generated/events'
-import { Listing } from '../../../model'
+import { CancelledListing, Listing, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -35,8 +35,11 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         }
     })
 
-    // listing.cancelled = true
-    // listing.cancelledAt = new Date(ctx.block.timestamp)
+    listing.status = new CancelledListing({
+        listingStatus: ListingStatusType.Cancelled,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp),
+    })
 
     await ctx.store.save(listing)
 }

@@ -1,8 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MarketplaceListingFilledEvent,
-} from '../../../types/generated/events'
-import { Listing } from '../../../model'
+import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
+import { FinalizedListing, FixedPriceState, Listing, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -40,8 +38,15 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         }
     })
 
-    // listing.cancelled = true
-    // listing.cancelledAt = new Date(ctx.block.timestamp)
-    //
-    // await ctx.store.save(listing)
+    listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: data.amountFilled })
+
+    if (data.amountRemaining === 0n) {
+        listing.status = new FinalizedListing({
+            listingStatus: ListingStatusType.Finalized,
+            height: ctx.block.height,
+            createdAt: new Date(ctx.block.timestamp),
+        });
+    }
+
+    await ctx.store.save(listing)
 }
