@@ -7,7 +7,7 @@ type ChainInfo @entity {
   blockNumber: Int! @index
   existentialDeposit: BigInt!
   timestamp: DateTime!
-  marketplace: Marketplace!
+  marketplace: Marketplace
 }
 
 type Marketplace {
