@@ -2,7 +2,14 @@ import { UnknownVersionError } from '../../../common/errors'
 import {
     MarketplaceBidPlacedEvent,
 } from '../../../types/generated/events'
-import { Listing } from '../../../model'
+import {
+    AuctionState,
+    FinalizedListing,
+    FixedPriceState,
+    Listing,
+    ListingStatusType,
+    ListingType,
+} from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
 
@@ -37,8 +44,11 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         }
     })
 
-    // listing.cancelled = true
-    // listing.cancelledAt = new Date(ctx.block.timestamp)
-    //
-    // await ctx.store.save(listing)
+    listing.status = new FinalizedListing({
+        listingStatus: ListingStatusType.Finalized,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp),
+    });
+
+    await ctx.store.save(listing)
 }
