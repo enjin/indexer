@@ -1,12 +1,21 @@
 import { UnknownVersionError } from '../../../common/errors'
+import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
-    MarketplaceListingCreatedEvent,
-} from '../../../types/generated/events'
-import { ActiveListing, Listing, Token } from '../../../model'
+    ActiveListing,
+    AuctionData,
+    AuctionState,
+    FeeSide,
+    FixedPriceData,
+    FixedPriceState,
+    Listing,
+    ListingStatusType,
+    ListingType,
+    Token,
+} from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { Listing as EventListing } from '../../../types/generated/v6'
+import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
 import { Buffer } from 'buffer'
 
 interface EventData {
@@ -41,6 +50,18 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const address = encodeId(data.listing.seller)
     const account = await getOrCreateAccount(ctx, address)
 
+    const feeSide =  data.listing.feeSide.__kind as FeeSide
+    const listingData = data.listing.data.__kind === ListingType.FixedPrice.toString()
+        ? new FixedPriceData({listingType: ListingType.FixedPrice})
+        : new AuctionData({
+            listingType: ListingType.Auction,
+            startHeight: (data.listing.data as ListingData_Auction).value.startBlock,
+            endHeight: (data.listing.data as ListingData_Auction).value.endBlock,
+        })
+    const listingState = data.listing.state.__kind === FixedPriceState.toString()
+        ? new FixedPriceState({listingType: ListingType.FixedPrice, amountFilled: 0n})
+        : new AuctionState({listingType: ListingType.Auction})
+
     const listing = new Listing({
         id: Buffer.from(data.listingId).toString("hex"),
         seller: account,
@@ -49,11 +70,13 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         amount: data.listing.amount,
         price: data.listing.price,
         minTakeValue: data.listing.minTakeValue,
-        // feeSide: data.listing.feeSide,
+        feeSide: feeSide,
         height: data.listing.creationBlock,
         deposit: data.listing.deposit,
         salt: Buffer.from(data.listing.salt).toString("hex"),
-        // data: data.listing.data,
+        data: listingData,
+        state: listingState,
+        status: new ActiveListing({listingStatus: ListingStatusType.Active}),
         createdAt: new Date(ctx.block.timestamp),
         updatedAt: new Date(ctx.block.timestamp),
     });

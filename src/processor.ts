@@ -4,6 +4,7 @@ import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { DEFAULT_BATCH_SIZE, DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
+import { createEfiToken } from './createEfiToken'
 
 const database = new TypeormDatabase()
 const processor = new SubstrateProcessor(database)
@@ -59,11 +60,17 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-// processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
+processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
 // processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.events.handleListingCancelled)
 // processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
 // processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
 // processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
+
+processor.addPreHook({
+    range: { from: 1, to: 1 },
+   },
+    createEfiToken
+)
 
 processor.addPostHook(
     {

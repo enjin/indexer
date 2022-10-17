@@ -281,7 +281,6 @@ type Bid @entity {
 
 union ListingState = FixedPriceState | AuctionState
 
-
 enum ListingStatusType {
   Active
   Cancelled
