@@ -1,8 +1,8 @@
-module.exports = class Data1664030565345 {
-  name = 'Data1664030565345'
+module.exports = class Data1666012614466 {
+  name = 'Data1666012614466'
 
   async up(db) {
-    await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb NOT NULL, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_22cb998efc624a5d40f74361d9" ON "chain_info" ("block_number") `)
     await db.query(`CREATE TABLE "transfer" ("id" character varying NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "block_number" integer NOT NULL, "extrinsic_hash" text NOT NULL, "to" jsonb, "from" jsonb NOT NULL, "asset" jsonb NOT NULL, "tip" numeric, "error" text, "success" boolean NOT NULL, "type" character varying(6) NOT NULL, "fee_id" character varying, CONSTRAINT "PK_fd9ddbdd49a17afcbe014401295" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_d6624eacc30144ea97915fe846" ON "transfer" ("block_number") `)
@@ -29,6 +29,13 @@ module.exports = class Data1664030565345 {
     await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "last_update_block" integer NOT NULL, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
     await db.query(`CREATE TABLE "fee" ("id" character varying NOT NULL, "amount" numeric, "who_id" character varying, CONSTRAINT "PK_ee7e51cc563615bc60c2b234635" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_8e1e7078cf03279cc94fb9147f" ON "fee" ("who_id") `)
+    await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "status" jsonb NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
+    await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
+    await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
+    await db.query(`CREATE TABLE "bid" ("id" character varying NOT NULL, "price" numeric NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "bidder_id" character varying, "listing_id" character varying, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE INDEX "IDX_e7618559409a903a897164156b" ON "bid" ("bidder_id") `)
+    await db.query(`CREATE INDEX "IDX_facdd38f7948fbdd281063419b" ON "bid" ("listing_id") `)
     await db.query(`ALTER TABLE "transfer" ADD CONSTRAINT "FK_f6b9e9b86a1ce51c26cd08f596a" FOREIGN KEY ("fee_id") REFERENCES "fee"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_2c2313461bd6c19983900ef539c" FOREIGN KEY ("transfer_id") REFERENCES "transfer"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "account_transfer" ADD CONSTRAINT "FK_d5240d17696e229585da974641a" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -42,6 +49,11 @@ module.exports = class Data1664030565345 {
     await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_a0ca7fffb7ae953536712abef23" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection" ADD CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96" FOREIGN KEY ("owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "fee" ADD CONSTRAINT "FK_8e1e7078cf03279cc94fb9147f1" FOREIGN KEY ("who_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00e1e709436862a20ae074f111b" FOREIGN KEY ("seller_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b" FOREIGN KEY ("make_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00656ee0f326da82878ddc91be8" FOREIGN KEY ("take_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "bid" ADD CONSTRAINT "FK_e7618559409a903a897164156b7" FOREIGN KEY ("bidder_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "bid" ADD CONSTRAINT "FK_facdd38f7948fbdd281063419b5" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
   }
 
   async down(db) {
@@ -72,6 +84,13 @@ module.exports = class Data1664030565345 {
     await db.query(`DROP TABLE "account"`)
     await db.query(`DROP TABLE "fee"`)
     await db.query(`DROP INDEX "public"."IDX_8e1e7078cf03279cc94fb9147f"`)
+    await db.query(`DROP TABLE "listing"`)
+    await db.query(`DROP INDEX "public"."IDX_00e1e709436862a20ae074f111"`)
+    await db.query(`DROP INDEX "public"."IDX_9d1cea2a04a169d58f13cea7e8"`)
+    await db.query(`DROP INDEX "public"."IDX_00656ee0f326da82878ddc91be"`)
+    await db.query(`DROP TABLE "bid"`)
+    await db.query(`DROP INDEX "public"."IDX_e7618559409a903a897164156b"`)
+    await db.query(`DROP INDEX "public"."IDX_facdd38f7948fbdd281063419b"`)
     await db.query(`ALTER TABLE "transfer" DROP CONSTRAINT "FK_f6b9e9b86a1ce51c26cd08f596a"`)
     await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_2c2313461bd6c19983900ef539c"`)
     await db.query(`ALTER TABLE "account_transfer" DROP CONSTRAINT "FK_d5240d17696e229585da974641a"`)
@@ -85,5 +104,10 @@ module.exports = class Data1664030565345 {
     await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_a0ca7fffb7ae953536712abef23"`)
     await db.query(`ALTER TABLE "collection" DROP CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96"`)
     await db.query(`ALTER TABLE "fee" DROP CONSTRAINT "FK_8e1e7078cf03279cc94fb9147f1"`)
+    await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00e1e709436862a20ae074f111b"`)
+    await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b"`)
+    await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00656ee0f326da82878ddc91be8"`)
+    await db.query(`ALTER TABLE "bid" DROP CONSTRAINT "FK_e7618559409a903a897164156b7"`)
+    await db.query(`ALTER TABLE "bid" DROP CONSTRAINT "FK_facdd38f7948fbdd281063419b5"`)
   }
 }
