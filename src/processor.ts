@@ -59,11 +59,11 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
-processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
-processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.events.handleListingCancelled)
-processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
-processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
-processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
+// processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
+// processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.events.handleListingCancelled)
+// processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
+// processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
+// processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
 
 processor.addPostHook(
     {
