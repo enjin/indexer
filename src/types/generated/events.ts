@@ -5,6 +5,7 @@ import * as v5 from './v5'
 import * as v6 from './v6'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
+import * as efinityV3000 from './efinityV3000'
 
 export class AssetRegistryRegisteredAssetEvent {
   private readonly _chain: Chain
@@ -19,12 +20,12 @@ export class AssetRegistryRegisteredAssetEvent {
     this.event = event
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('AssetRegistry.RegisteredAsset') === '68ebe2eff76d6c4097e831d8aa160ebbe6cac840732dc752b721f7d490c3b779'
   }
 
-  get asV6(): {assetId: number, metadata: v6.AssetMetadata} {
-    assert(this.isV6)
+  get asEfinityV3000(): {assetId: number, metadata: efinityV3000.AssetMetadata} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -42,12 +43,12 @@ export class AssetRegistryUpdatedAssetEvent {
     this.event = event
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('AssetRegistry.UpdatedAsset') === '68ebe2eff76d6c4097e831d8aa160ebbe6cac840732dc752b721f7d490c3b779'
   }
 
-  get asV6(): {assetId: number, metadata: v6.AssetMetadata} {
-    assert(this.isV6)
+  get asEfinityV3000(): {assetId: number, metadata: efinityV3000.AssetMetadata} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -1202,15 +1203,15 @@ export class CommunityPoolSpendApprovedEvent {
   /**
    * A new spend proposal has been approved.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('CommunityPool.SpendApproved') === 'fce90c02bffde89fb0e8723868aa8e94bfe9c1c48c5af8c34efd8ff5173184f9'
   }
 
   /**
    * A new spend proposal has been approved.
    */
-  get asV5(): {proposalIndex: number, amount: bigint, beneficiary: Uint8Array} {
-    assert(this.isV5)
+  get asEfinityV3000(): {proposalIndex: number, amount: bigint, beneficiary: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2236,15 +2237,15 @@ export class DemocracyProposalCanceledEvent {
   /**
    * A proposal got canceled.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Democracy.ProposalCanceled') === '4229a060ed682a59f5b96a0a1d18ae4a471b42fbbe5beff110f3dbb41e7d7224'
   }
 
   /**
    * A proposal got canceled.
    */
-  get asV5(): {propIndex: number} {
-    assert(this.isV5)
+  get asEfinityV3000(): {propIndex: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2502,15 +2503,15 @@ export class DmpQueueExecutedDownwardEvent {
   /**
    * Downward message executed with the given outcome.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('DmpQueue.ExecutedDownward') === '9b6c90aca74067a591eda76a227e61ce66cd6597483f828a039aba267c0d21a9'
   }
 
   /**
    * Downward message executed with the given outcome.
    */
-  get asV5(): {messageId: Uint8Array, outcome: v5.V2Outcome} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageId: Uint8Array, outcome: efinityV3000.V2Outcome} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2548,15 +2549,15 @@ export class DmpQueueInvalidFormatEvent {
   /**
    * Downward message is invalid XCM.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('DmpQueue.InvalidFormat') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
   }
 
   /**
    * Downward message is invalid XCM.
    */
-  get asV5(): {messageId: Uint8Array} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2588,6 +2589,21 @@ export class DmpQueueOverweightEnqueuedEvent {
    */
   get asEfinityV1(): [Uint8Array, bigint, bigint] {
     assert(this.isEfinityV1)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Downward message is overweight and was placed in the overweight queue.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('DmpQueue.OverweightEnqueued') === 'ad9cb107597768cf938dffc06f4759d95e30b4d686ee33c209c5a44145df0c73'
+  }
+
+  /**
+   * Downward message is overweight and was placed in the overweight queue.
+   */
+  get asEfinityV3000(): {messageId: Uint8Array, overweightIndex: bigint, requiredWeight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -2655,6 +2671,21 @@ export class DmpQueueOverweightServicedEvent {
   /**
    * Downward message from the overweight queue was executed.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('DmpQueue.OverweightServiced') === 'f16ac3f6b10f93f6d4efd4dde1eba6cc73e06d27c2e2ec66eec4923e16cbfc6f'
+  }
+
+  /**
+   * Downward message from the overweight queue was executed.
+   */
+  get asEfinityV3000(): {overweightIndex: bigint, weightUsed: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Downward message from the overweight queue was executed.
+   */
   get isV5(): boolean {
     return this._chain.getEventHash('DmpQueue.OverweightServiced') === '7deec7d9ba4a81157571b321671d50b393890bd802f27d9b3ba2609ffa497713'
   }
@@ -2716,15 +2747,15 @@ export class DmpQueueUnsupportedVersionEvent {
   /**
    * Downward message is unsupported version of XCM.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('DmpQueue.UnsupportedVersion') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
   }
 
   /**
    * Downward message is unsupported version of XCM.
    */
-  get asV5(): {messageId: Uint8Array} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2756,6 +2787,21 @@ export class DmpQueueWeightExhaustedEvent {
    */
   get asEfinityV1(): [Uint8Array, bigint, bigint] {
     assert(this.isEfinityV1)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * The weight limit for handling downward messages was reached.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('DmpQueue.WeightExhausted') === 'b9a55b745575cc47de66be392bf446a9558a5b3e9201c5b37598517251cff44f'
+  }
+
+  /**
+   * The weight limit for handling downward messages was reached.
+   */
+  get asEfinityV3000(): {messageId: Uint8Array, remainingWeight: efinityV3000.Weight, requiredWeight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -2806,15 +2852,15 @@ export class ExtrinsicPauseExtrinsicPausedEvent {
   /**
    * Extrinsic is paused.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ExtrinsicPause.ExtrinsicPaused') === '6ef577cdfb00cd6410f53ba28c3235494d461bd891dc700de04b9b0006f06777'
   }
 
   /**
    * Extrinsic is paused.
    */
-  get asV6(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2835,15 +2881,15 @@ export class ExtrinsicPauseExtrinsicResumedEvent {
   /**
    * Extrinsic is resumed
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ExtrinsicPause.ExtrinsicResumed') === '6ef577cdfb00cd6410f53ba28c3235494d461bd891dc700de04b9b0006f06777'
   }
 
   /**
    * Extrinsic is resumed
    */
-  get asV6(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2864,15 +2910,15 @@ export class ExtrinsicPausePalletPausedEvent {
   /**
    * All pallet extrinsics are paused.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ExtrinsicPause.PalletPaused') === '05a07cab9aa4011d0b711292d898fdb778885ca7cb3469b117d99d61976a52e1'
   }
 
   /**
    * All pallet extrinsics are paused.
    */
-  get asV6(): {palletName: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2893,15 +2939,15 @@ export class ExtrinsicPausePalletResumedEvent {
   /**
    * All pallet extrinsics are resumed.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ExtrinsicPause.PalletResumed') === '05a07cab9aa4011d0b711292d898fdb778885ca7cb3469b117d99d61976a52e1'
   }
 
   /**
    * All pallet extrinsics are resumed.
    */
-  get asV6(): {palletName: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2922,15 +2968,15 @@ export class FuelTanksAccountAddedEvent {
   /**
    * An account was added to a `FuelTank`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.AccountAdded') === 'eaba5f9eb5b376c10a9ee1aded196439de7b5045a6bdf4f20126a6ceada70754'
   }
 
   /**
    * An account was added to a `FuelTank`
    */
-  get asV6(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2951,15 +2997,15 @@ export class FuelTanksAccountRemovedEvent {
   /**
    * An account was removed from a `FuelTank`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.AccountRemoved') === '43c705fb2ded534752f36760bbd7adf8ef7a48bb267a3e4ba8d013de6ebb2af7'
   }
 
   /**
    * An account was removed from a `FuelTank`
    */
-  get asV6(): {tankId: Uint8Array, userId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, userId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -2977,12 +3023,12 @@ export class FuelTanksAccountRuleDataRemovedEvent {
     this.event = event
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.AccountRuleDataRemoved') === 'db874e9016c234ff7c0d3d7513e322a8f341a1aadea9f5ad94cd841c8c66cf58'
   }
 
-  get asV6(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: v6.DispatchRuleKind} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: efinityV3000.DispatchRuleKind} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3003,15 +3049,15 @@ export class FuelTanksCallDispatchedEvent {
   /**
    * A call was dispatched through a `FuelTank`.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.CallDispatched') === 'c286719ddfc6a64566bdc115c4ace78fd41c94915f092887ef38021ae647e549'
   }
 
   /**
    * A call was dispatched through a `FuelTank`.
    */
-  get asV6(): {caller: Uint8Array, tankId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {caller: Uint8Array, tankId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3032,15 +3078,15 @@ export class FuelTanksDispatchFailedEvent {
   /**
    * The dispatch of a call has failed
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'ecc4387a0d31a78d64a6b00bc747bf092949bc2de147733ac66379c6f018f75d'
   }
 
   /**
    * The dispatch of a call has failed
    */
-  get asV6(): {tankId: Uint8Array, caller: Uint8Array, error: v6.DispatchError} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, caller: Uint8Array, error: efinityV3000.DispatchError} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3061,15 +3107,15 @@ export class FuelTanksFreezeStateMutatedEvent {
   /**
    * The freeze state change for fuel tank or its rule set was executed in `on_finalize`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.FreezeStateMutated') === '487d487c4b8088c43cf90c0ffbee2c293b22157c580d0629a9657751820d3405'
   }
 
   /**
    * The freeze state change for fuel tank or its rule set was executed in `on_finalize`
    */
-  get asV6(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3090,15 +3136,15 @@ export class FuelTanksFuelTankCreatedEvent {
   /**
    * A new `FuelTank` was created.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.FuelTankCreated') === '5048d94dfd3a5170e9ea1d697d818d3166955fb933f983e64f3af4cd0e7b2c52'
   }
 
   /**
    * A new `FuelTank` was created.
    */
-  get asV6(): {owner: Uint8Array, name: Uint8Array, tankId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {owner: Uint8Array, name: Uint8Array, tankId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3119,15 +3165,15 @@ export class FuelTanksFuelTankDestroyedEvent {
   /**
    * A `FuelTank` was destroyed
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.FuelTankDestroyed') === '4a9035be2f47fbe13a50c15f06b7abda8e85d0d8378fc409cc5492db6ff608d5'
   }
 
   /**
    * A `FuelTank` was destroyed
    */
-  get asV6(): {tankId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3148,15 +3194,15 @@ export class FuelTanksFuelTankMutatedEvent {
   /**
    * A `FuelTank` was mutated
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.FuelTankMutated') === '319f92edc8c49bd44ce6aadeb63537f12d3f47c92d53f48e6605066e28278185'
   }
 
   /**
    * A `FuelTank` was mutated
    */
-  get asV6(): {tankId: Uint8Array, mutation: v6.DefaultTankMutation} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, mutation: efinityV3000.DefaultTankMutation} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3177,15 +3223,15 @@ export class FuelTanksMutateFreezeStateScheduledEvent {
   /**
    * The freeze state mutation for fuel tank or its rule set was scheduled
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.MutateFreezeStateScheduled') === '487d487c4b8088c43cf90c0ffbee2c293b22157c580d0629a9657751820d3405'
   }
 
   /**
    * The freeze state mutation for fuel tank or its rule set was scheduled
    */
-  get asV6(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3203,12 +3249,12 @@ export class FuelTanksRuleSetInsertedEvent {
     this.event = event
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.RuleSetInserted') === 'f0c7cbfea12e67a5e10a71fb2103b883d2fdacdce7e9e339d55ea06b41087531'
   }
 
-  get asV6(): {tankId: Uint8Array, ruleSetId: number} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3226,12 +3272,12 @@ export class FuelTanksRuleSetRemovedEvent {
     this.event = event
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.RuleSetRemoved') === 'f0c7cbfea12e67a5e10a71fb2103b883d2fdacdce7e9e339d55ea06b41087531'
   }
 
-  get asV6(): {tankId: Uint8Array, ruleSetId: number} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3252,15 +3298,15 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
   /**
    * The freeze state change for fuel tank or its rule set failed in `on_finalize`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === 'c73fb229d29728f33c9309648949729ae95af1b837bc64b2e5e7ac3bf3fc6ef2'
   }
 
   /**
    * The freeze state change for fuel tank or its rule set failed in `on_finalize`
    */
-  get asV6(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: v6.DispatchError} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: efinityV3000.DispatchError} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3281,15 +3327,15 @@ export class MarketplaceAuctionFinalizedEvent {
   /**
    * An auction was finalized
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Marketplace.AuctionFinalized') === '85c874f079d7788c46e5ee8f064d0e75d1bee7e2b192276db015bf838a4226a7'
   }
 
   /**
    * An auction was finalized
    */
-  get asV6(): {listingId: Uint8Array, winningBid: (v6.Bid | undefined), protocolFee: bigint, royalty: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, winningBid: (efinityV3000.Bid | undefined), protocolFee: bigint, royalty: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3310,15 +3356,15 @@ export class MarketplaceBidPlacedEvent {
   /**
    * A bid was placed
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Marketplace.BidPlaced') === '43772e41069f9311a69337de1da60bd0d625f0cbb2b82db1e5646defd34f6318'
   }
 
   /**
    * A bid was placed
    */
-  get asV6(): {listingId: Uint8Array, bid: v6.Bid} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, bid: efinityV3000.Bid} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3339,15 +3385,15 @@ export class MarketplaceListingCancelledEvent {
   /**
    * A listing was cancelled
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Marketplace.ListingCancelled') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
   }
 
   /**
    * A listing was cancelled
    */
-  get asV6(): {listingId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3368,15 +3414,15 @@ export class MarketplaceListingCreatedEvent {
   /**
    * A listing was created
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Marketplace.ListingCreated') === '396b87e5fef710b0fb92ab0a1d2f82c41b7ad217eaec1ac1b7c0b53b3d4e8449'
   }
 
   /**
    * A listing was created
    */
-  get asV6(): {listingId: Uint8Array, listing: v6.Listing} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, listing: efinityV3000.Listing} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -3397,15 +3443,15 @@ export class MarketplaceListingFilledEvent {
   /**
    * A listing was filled or partially filled
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Marketplace.ListingFilled') === '3fb016766e57e5a9a1b2da399d304573a092435b3fea70b58bb10cdf6bacc899'
   }
 
   /**
    * A listing was filled or partially filled
    */
-  get asV6(): {listingId: Uint8Array, buyer: Uint8Array, amountFilled: bigint, amountRemaining: bigint, protocolFee: bigint, royalty: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, buyer: Uint8Array, amountFilled: bigint, amountRemaining: bigint, protocolFee: bigint, royalty: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -4168,6 +4214,36 @@ export class MultiTokensCollectionMutatedEvent {
   /**
    * An `Collection` was mutated
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '3576d262848cc0833f1d40e6a157d5e47a3330611ce12ad55f089059c16668cb'
+  }
+
+  /**
+   * An `Collection` was mutated
+   */
+  get asEfinityV3000(): {collectionId: bigint, mutation: efinityV3000.DefaultCollectionMutation} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An `Collection` was mutated
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '6cfbadc0a3eb0cef9398f0025daf688142ac6aa6e0de6e285a14fc6cfa182a82'
+  }
+
+  /**
+   * An `Collection` was mutated
+   */
+  get asV5(): {collectionId: bigint, mutation: v5.DefaultCollectionMutation} {
+    assert(this.isV5)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An `Collection` was mutated
+   */
   get isV6(): boolean {
     return this._chain.getEventHash('MultiTokens.CollectionMutated') === '3576d262848cc0833f1d40e6a157d5e47a3330611ce12ad55f089059c16668cb'
   }
@@ -4206,6 +4282,36 @@ export class MultiTokensCollectionUpdatedEvent {
    */
   get asEfinityV2(): {collectionId: bigint, value: (efinityV2.Collection | undefined)} {
     assert(this.isEfinityV2)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Collection storage was set to `value`
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('MultiTokens.CollectionUpdated') === '98bf9d540f024070954f2f94467d9e9b5cd79997861f988b682972dd34f2a757'
+  }
+
+  /**
+   * Collection storage was set to `value`
+   */
+  get asEfinityV3000(): {collectionId: bigint, value: (efinityV3000.Collection | undefined)} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Collection storage was set to `value`
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('MultiTokens.CollectionUpdated') === 'f5757c9d77f7bee93bc0b99201eca0f6cae6e80308cbc199e313b3f308f3421b'
+  }
+
+  /**
+   * Collection storage was set to `value`
+   */
+  get asV5(): {collectionId: bigint, value: (v5.Collection | undefined)} {
+    assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -4662,15 +4768,15 @@ export class MultiTokensTokenMutatedEvent {
   /**
    * A `Token` was mutated
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('MultiTokens.TokenMutated') === 'b9e6d1410285f3bc87627e3af858be42853828e90a2b3358e958a8fbce1c4c54'
   }
 
   /**
    * A `Token` was mutated
    */
-  get asV6(): {collectionId: bigint, tokenId: bigint, mutation: v6.DefaultTokenMutation} {
-    assert(this.isV6)
+  get asEfinityV3000(): {collectionId: bigint, tokenId: bigint, mutation: efinityV3000.DefaultTokenMutation} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -4700,6 +4806,36 @@ export class MultiTokensTokenUpdatedEvent {
    */
   get asEfinityV2(): {collectionId: bigint, tokenId: bigint, value: (efinityV2.Token | undefined)} {
     assert(this.isEfinityV2)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Token storage was set to `value`
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('MultiTokens.TokenUpdated') === '68dab1a73aeb9562a863b4166594c8a4077559fe59acd80b1a7928bb8fa65660'
+  }
+
+  /**
+   * Token storage was set to `value`
+   */
+  get asEfinityV3000(): {collectionId: bigint, tokenId: bigint, value: (efinityV3000.Token | undefined)} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Token storage was set to `value`
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('MultiTokens.TokenUpdated') === '5f1bf659beeb498e6e354ff084479e36018001e9788272d9af904110e5fcc8ab'
+  }
+
+  /**
+   * Token storage was set to `value`
+   */
+  get asV5(): {collectionId: bigint, tokenId: bigint, value: (v5.Token | undefined)} {
+    assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -5028,6 +5164,21 @@ export class ParachainSystemDownwardMessagesProcessedEvent {
   /**
    * Downward messages were processed using the given weight.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('ParachainSystem.DownwardMessagesProcessed') === '5ae72cc32ab9a15192bb84c788530d1d739717b8f9f85bd654953f12515e41f1'
+  }
+
+  /**
+   * Downward messages were processed using the given weight.
+   */
+  get asEfinityV3000(): {weightUsed: efinityV3000.Weight, dmqHead: Uint8Array} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Downward messages were processed using the given weight.
+   */
   get isV5(): boolean {
     return this._chain.getEventHash('ParachainSystem.DownwardMessagesProcessed') === '83022e6226975081ba018c2b45a90d494bc922ece44e69af0322583651264f8e'
   }
@@ -5089,15 +5240,15 @@ export class ParachainSystemDownwardMessagesReceivedEvent {
   /**
    * Some downward messages have been received and will be processed.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ParachainSystem.DownwardMessagesReceived') === '1cdbdc8ac203922f95ae6ab3e8b98004e956389f7ec11480ec5633d29b48cf71'
   }
 
   /**
    * Some downward messages have been received and will be processed.
    */
-  get asV5(): {count: number} {
-    assert(this.isV5)
+  get asEfinityV3000(): {count: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -5133,15 +5284,15 @@ export class ParachainSystemUpgradeAuthorizedEvent {
   /**
    * An upgrade has been authorized.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ParachainSystem.UpgradeAuthorized') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
   }
 
   /**
    * An upgrade has been authorized.
    */
-  get asV5(): {codeHash: Uint8Array} {
-    assert(this.isV5)
+  get asEfinityV3000(): {codeHash: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -5177,15 +5328,15 @@ export class ParachainSystemValidationFunctionAppliedEvent {
   /**
    * The validation function was applied as of the contained relay chain block number.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('ParachainSystem.ValidationFunctionApplied') === 'f35adbaa82c93636884997faedd16369ac498b9208d7c11f2233b9ef2aa4f092'
   }
 
   /**
    * The validation function was applied as of the contained relay chain block number.
    */
-  get asV5(): {relayChainBlockNum: number} {
-    assert(this.isV5)
+  get asEfinityV3000(): {relayChainBlockNum: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -5572,6 +5723,52 @@ export class PolkadotXcmNotifyOverweightEvent {
    */
   get asEfinityV1(): [bigint, number, number, bigint, bigint] {
     assert(this.isEfinityV1)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Query response has been received and query is removed. The registered notification could
+   * not be dispatched because the dispatch weight is greater than the maximum weight
+   * originally budgeted by this runtime for the query result.
+   * 
+   * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('PolkadotXcm.NotifyOverweight') === '017f3a2e2d06e91d1be294456b9555e805a1e72a1ad2a469f493c21bf4da0feb'
+  }
+
+  /**
+   * Query response has been received and query is removed. The registered notification could
+   * not be dispatched because the dispatch weight is greater than the maximum weight
+   * originally budgeted by this runtime for the query result.
+   * 
+   * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+   */
+  get asEfinityV3000(): [bigint, number, number, efinityV3000.Weight, efinityV3000.Weight] {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Query response has been received and query is removed. The registered notification could
+   * not be dispatched because the dispatch weight is greater than the maximum weight
+   * originally budgeted by this runtime for the query result.
+   * 
+   * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('PolkadotXcm.NotifyOverweight') === '0104ccc866506c43592e56f342852c22c060b58c586141b7900f6ad97353e8b2'
+  }
+
+  /**
+   * Query response has been received and query is removed. The registered notification could
+   * not be dispatched because the dispatch weight is greater than the maximum weight
+   * originally budgeted by this runtime for the query result.
+   * 
+   * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+   */
+  get asV5(): [bigint, number, number, bigint, bigint] {
+    assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -6042,6 +6239,24 @@ export class PoolsPoolsMutatedEvent {
 
   get asEfinityV3(): efinityV3.PoolsMutation {
     assert(this.isEfinityV3)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('Pools.PoolsMutated') === 'b16ffa04290d7cc517e7d6b466ba41ac23a91f050d81350d896bcb03eebd76b1'
+  }
+
+  get asEfinityV3000(): efinityV3000.PoolsMutation {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  get isV5(): boolean {
+    return this._chain.getEventHash('Pools.PoolsMutated') === 'da7a38085ecaa625d9d5548eddc73299992e480f1dceebac832ae09e10c2acd0'
+  }
+
+  get asV5(): v5.PoolsMutation {
+    assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -6556,6 +6771,36 @@ export class SystemExtrinsicFailedEvent {
   /**
    * An extrinsic failed.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('System.ExtrinsicFailed') === '7a219a9eae41ad22651fdcb4f6a7453254b0ecc7be4b30821be2ab5b44e5f1b4'
+  }
+
+  /**
+   * An extrinsic failed.
+   */
+  get asEfinityV3000(): {dispatchError: efinityV3000.DispatchError, dispatchInfo: efinityV3000.DispatchInfo} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An extrinsic failed.
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('System.ExtrinsicFailed') === 'a6220584fa4f22cb02db1bfad4eacf1a689aea2324f22b4763def7376b7dd9bf'
+  }
+
+  /**
+   * An extrinsic failed.
+   */
+  get asV5(): {dispatchError: v5.DispatchError, dispatchInfo: v5.DispatchInfo} {
+    assert(this.isV5)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An extrinsic failed.
+   */
   get isV6(): boolean {
     return this._chain.getEventHash('System.ExtrinsicFailed') === '7a219a9eae41ad22651fdcb4f6a7453254b0ecc7be4b30821be2ab5b44e5f1b4'
   }
@@ -6609,6 +6854,36 @@ export class SystemExtrinsicSuccessEvent {
    */
   get asEfinityV2(): {dispatchInfo: efinityV2.DispatchInfo} {
     assert(this.isEfinityV2)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An extrinsic completed successfully.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('System.ExtrinsicSuccess') === '6fc1e5ad9f5b3851c6e301764b8507ebb0861fd57381e6bc020a47f2b710167d'
+  }
+
+  /**
+   * An extrinsic completed successfully.
+   */
+  get asEfinityV3000(): {dispatchInfo: efinityV3000.DispatchInfo} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An extrinsic completed successfully.
+   */
+  get isV5(): boolean {
+    return this._chain.getEventHash('System.ExtrinsicSuccess') === '407ed94c14f243acbe2cdb53df52c37d97bbb5ae550a10a6036bf59677cdd165'
+  }
+
+  /**
+   * An extrinsic completed successfully.
+   */
+  get asV5(): {dispatchInfo: v5.DispatchInfo} {
+    assert(this.isV5)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -7275,7 +7550,7 @@ export class TransactionPaymentTransactionFeePaidEvent {
    * A transaction fee `actual_fee`, of which `tip` was added to the minimum inclusion fee,
    * has been paid by `who`.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('TransactionPayment.TransactionFeePaid') === 'f2e962e9996631445edecd62b0646df79871442a2d1a1a6e1f550a0b3a56b226'
   }
 
@@ -7283,8 +7558,8 @@ export class TransactionPaymentTransactionFeePaidEvent {
    * A transaction fee `actual_fee`, of which `tip` was added to the minimum inclusion fee,
    * has been paid by `who`.
    */
-  get asV5(): {who: Uint8Array, actualFee: bigint, tip: bigint} {
-    assert(this.isV5)
+  get asEfinityV3000(): {who: Uint8Array, actualFee: bigint, tip: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7334,15 +7609,15 @@ export class UtilityBatchCompletedWithErrorsEvent {
   /**
    * Batch of dispatches completed but has errors.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Utility.BatchCompletedWithErrors') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
   }
 
   /**
    * Batch of dispatches completed but has errors.
    */
-  get asV5(): null {
-    assert(this.isV5)
+  get asEfinityV3000(): null {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7484,15 +7759,15 @@ export class UtilityItemFailedEvent {
   /**
    * A single item within a Batch of dispatches has completed with error.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('Utility.ItemFailed') === '59e964849fe0837c16b04e3c81782ce0ee22b9efe3d6a8d43d6ea61e9b25b998'
   }
 
   /**
    * A single item within a Batch of dispatches has completed with error.
    */
-  get asV5(): {error: v5.DispatchError} {
-    assert(this.isV5)
+  get asEfinityV3000(): {error: efinityV3000.DispatchError} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7615,15 +7890,15 @@ export class XcmpQueueBadFormatEvent {
   /**
    * Bad XCM format used.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('XcmpQueue.BadFormat') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
   }
 
   /**
    * Bad XCM format used.
    */
-  get asV5(): {messageHash: (Uint8Array | undefined)} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7659,15 +7934,15 @@ export class XcmpQueueBadVersionEvent {
   /**
    * Bad XCM version used.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('XcmpQueue.BadVersion') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
   }
 
   /**
    * Bad XCM version used.
    */
-  get asV5(): {messageHash: (Uint8Array | undefined)} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7712,6 +7987,21 @@ export class XcmpQueueFailEvent {
    */
   get asEfinityV2(): [(Uint8Array | undefined), efinityV2.V2Error] {
     assert(this.isEfinityV2)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Some XCM failed.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('XcmpQueue.Fail') === 'd72a6fdcbedea7017572a7b9b1b30fb50d753160a20111c371f00be9c05691c2'
+  }
+
+  /**
+   * Some XCM failed.
+   */
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined), error: efinityV3000.V2Error, weight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -7777,6 +8067,21 @@ export class XcmpQueueOverweightEnqueuedEvent {
   /**
    * An XCM exceeded the individual message weight budget.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('XcmpQueue.OverweightEnqueued') === '067a3a3aa8ee6726ecb8bf35ab307ac7566fec3acc2a84c25854711f6279d584'
+  }
+
+  /**
+   * An XCM exceeded the individual message weight budget.
+   */
+  get asEfinityV3000(): {sender: number, sentAt: number, index: bigint, required: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An XCM exceeded the individual message weight budget.
+   */
   get isV5(): boolean {
     return this._chain.getEventHash('XcmpQueue.OverweightEnqueued') === '66fcd6ac0f8478601d6008edf04a5f6e1988dad34d2e67484bc112967caeddbb'
   }
@@ -7830,6 +8135,21 @@ export class XcmpQueueOverweightServicedEvent {
    */
   get asEfinityV2(): [bigint, bigint] {
     assert(this.isEfinityV2)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * An XCM from the overweight queue was executed with the given actual weight used.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('XcmpQueue.OverweightServiced') === '05c4258fc96a5477a2e7d79afbaae99e134fdf08770b5619a826272ad1e82c22'
+  }
+
+  /**
+   * An XCM from the overweight queue was executed with the given actual weight used.
+   */
+  get asEfinityV3000(): {index: bigint, used: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 
@@ -7895,6 +8215,21 @@ export class XcmpQueueSuccessEvent {
   /**
    * Some XCM was executed ok.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getEventHash('XcmpQueue.Success') === '305c23f5c5645b4330237519e6b8fa038af5dfc624c8dd8e1de3b97b6e51faf4'
+  }
+
+  /**
+   * Some XCM was executed ok.
+   */
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined), weight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeEvent(this.event)
+  }
+
+  /**
+   * Some XCM was executed ok.
+   */
   get isV5(): boolean {
     return this._chain.getEventHash('XcmpQueue.Success') === '70e4953d4755440ebd53ef8a5482ada34f27cd1aac56b0493142d711aebc0e85'
   }
@@ -7954,15 +8289,15 @@ export class XcmpQueueUpwardMessageSentEvent {
   /**
    * An upward message was sent to the relay chain.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('XcmpQueue.UpwardMessageSent') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
   }
 
   /**
    * An upward message was sent to the relay chain.
    */
-  get asV5(): {messageHash: (Uint8Array | undefined)} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }
@@ -7998,15 +8333,15 @@ export class XcmpQueueXcmpMessageSentEvent {
   /**
    * An HRMP message was sent to a sibling parachain.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getEventHash('XcmpQueue.XcmpMessageSent') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
   }
 
   /**
    * An HRMP message was sent to a sibling parachain.
    */
-  get asV5(): {messageHash: (Uint8Array | undefined)} {
-    assert(this.isV5)
+  get asEfinityV3000(): {messageHash: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeEvent(this.event)
   }
 }

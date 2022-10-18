@@ -1,10 +1,11 @@
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result} from './support'
-import * as v5 from './v5'
 import * as efinityV1 from './efinityV1'
+import * as v5 from './v5'
 import * as v6 from './v6'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
+import * as efinityV3000 from './efinityV3000'
 
 export class AssetRegistryRegisterAssetCall {
   private readonly _chain: Chain
@@ -19,12 +20,12 @@ export class AssetRegistryRegisterAssetCall {
     this.call = call
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('AssetRegistry.register_asset') === 'ea0e92743e5190ca6e86478c6aac3405aad272cde9727e1bccad7353b4897dfd'
   }
 
-  get asV6(): {metadata: v6.AssetMetadata, assetId: (number | undefined)} {
-    assert(this.isV6)
+  get asEfinityV3000(): {metadata: efinityV3000.AssetMetadata, assetId: (number | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -42,12 +43,12 @@ export class AssetRegistryUpdateAssetCall {
     this.call = call
   }
 
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('AssetRegistry.update_asset') === '5b6218e7571bf9bfa644a2d83fb0206f6aaef5591bf37c7b8dcaa30c75529d13'
   }
 
-  get asV6(): {assetId: number, decimals: (number | undefined), name: (Uint8Array | undefined), symbol: (Uint8Array | undefined), existentialDeposit: (bigint | undefined), location: ((v6.VersionedMultiLocation | undefined) | undefined), additional: (v6.CustomMetadata | undefined)} {
-    assert(this.isV6)
+  get asEfinityV3000(): {assetId: number, decimals: (number | undefined), name: (Uint8Array | undefined), symbol: (Uint8Array | undefined), existentialDeposit: (bigint | undefined), location: ((efinityV3000.VersionedMultiLocation | undefined) | undefined), additional: (efinityV3000.CustomMetadata | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -68,15 +69,15 @@ export class AuthorshipSetUnclesCall {
   /**
    * Provide a set of uncles.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Authorship.set_uncles') === 'cf2d7dac8c8babfdda54dfcca36fda32336dc937b0f1767c6b2332a9b718e0b5'
   }
 
   /**
    * Provide a set of uncles.
    */
-  get asV5(): {newUncles: v5.Header[]} {
-    assert(this.isV5)
+  get asEfinityV3000(): {newUncles: efinityV3000.Header[]} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1374,7 +1375,7 @@ export class CommunityPoolRemoveApprovalCall {
    * i.e., the proposal has not been approved. This could also mean the proposal does not
    * exist altogether, thus there is no way it would have been approved in the first place.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('CommunityPool.remove_approval') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
   }
 
@@ -1395,8 +1396,8 @@ export class CommunityPoolRemoveApprovalCall {
    * i.e., the proposal has not been approved. This could also mean the proposal does not
    * exist altogether, thus there is no way it would have been approved in the first place.
    */
-  get asV5(): {proposalId: number} {
-    assert(this.isV5)
+  get asEfinityV3000(): {proposalId: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -1424,7 +1425,7 @@ export class CommunityPoolSpendCall {
    * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
    * beneficiary.
    */
-  get isV5(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('CommunityPool.spend') === '18a5bcfd718b2b225ac128952f0fc34fff8371520e0ab5bac3a0ab20286b496d'
   }
 
@@ -1438,8 +1439,8 @@ export class CommunityPoolSpendCall {
    * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
    * beneficiary.
    */
-  get asV5(): {amount: bigint, beneficiary: v5.MultiAddress} {
-    assert(this.isV5)
+  get asEfinityV3000(): {amount: bigint, beneficiary: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -2017,6 +2018,160 @@ export class CouncilCloseCall {
    * - up to 3 events
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Council.close') === '683905378cce329de8c5e9460bd36984188fb48a39207d985ea43cb10bd1eb81'
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get asEfinityV3000(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Council.close') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Council.close') === '683905378cce329de8c5e9460bd36984188fb48a39207d985ea43cb10bd1eb81'
   }
@@ -2196,6 +2351,41 @@ export class CouncilExecuteCall {
    */
   get asEfinityV3(): {proposal: efinityV3.Call, lengthBound: number} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Dispatch a proposal from a member using the `Member` origin.
+   * 
+   * Origin must be a member of the collective.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+   *   `proposal`
+   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+   * - 1 event
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Council.execute') === 'f7c13fc7ad3cc7b9239d67e6f66e18aa29af19f2409b52a9a01936a7b4010484'
+  }
+
+  /**
+   * Dispatch a proposal from a member using the `Member` origin.
+   * 
+   * Origin must be a member of the collective.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+   *   `proposal`
+   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+   * - 1 event
+   * # </weight>
+   */
+  get asEfinityV3000(): {proposal: efinityV3000.Call, lengthBound: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -2414,6 +2604,73 @@ export class CouncilProposeCall {
    */
   get asEfinityV3(): {threshold: number, proposal: efinityV3.Call, lengthBound: number} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Add a new proposal to either be voted on or executed directly.
+   * 
+   * Requires the sender to be member.
+   * 
+   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+   * or put up for voting.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1)` or `O(B + M + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - branching is influenced by `threshold` where:
+   *     - `P1` is proposal execution complexity (`threshold < 2`)
+   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+   * - DB:
+   *   - 1 storage read `is_member` (codec `O(M)`)
+   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+   *   - DB accesses influenced by `threshold`:
+   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+   *     - OR proposal insertion (`threshold <= 2`)
+   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+   *       - 1 storage write `ProposalOf` (codec `O(B)`)
+   *       - 1 storage write `Voting` (codec `O(M)`)
+   *   - 1 event
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Council.propose') === 'aa055232416a5ef8b09fa2f17d5592dcbddf1e9487fb45a6a69b3412734afbe9'
+  }
+
+  /**
+   * Add a new proposal to either be voted on or executed directly.
+   * 
+   * Requires the sender to be member.
+   * 
+   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+   * or put up for voting.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1)` or `O(B + M + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - branching is influenced by `threshold` where:
+   *     - `P1` is proposal execution complexity (`threshold < 2`)
+   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+   * - DB:
+   *   - 1 storage read `is_member` (codec `O(M)`)
+   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+   *   - DB accesses influenced by `threshold`:
+   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+   *     - OR proposal insertion (`threshold <= 2`)
+   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+   *       - 1 storage write `ProposalOf` (codec `O(B)`)
+   *       - 1 storage write `Voting` (codec `O(M)`)
+   *   - 1 event
+   * # </weight>
+   */
+  get asEfinityV3000(): {threshold: number, proposal: efinityV3000.Call, lengthBound: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -2980,6 +3237,112 @@ export class DemocracyDelegateCall {
    */
   get asEfinityV2(): {to: Uint8Array, conviction: efinityV2.Conviction, balance: bigint} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Delegate the voting power (with some given conviction) of the sending account.
+   * 
+   * The balance delegated is locked for as long as it's delegated, and thereafter for the
+   * time appropriate for the conviction's lock period.
+   * 
+   * The dispatch origin of this call must be _Signed_, and the signing account must either:
+   *   - be delegating already; or
+   *   - have no voting activity (if there is, then it will need to be removed/consolidated
+   *     through `reap_vote` or `unvote`).
+   * 
+   * - `to`: The account whose voting the `target` account's voting power will follow.
+   * - `conviction`: The conviction that will be attached to the delegated votes. When the
+   *   account is undelegated, the funds will be locked for the corresponding period.
+   * - `balance`: The amount of the account's balance to be used in delegating. This must not
+   *   be more than the account's current balance.
+   * 
+   * Emits `Delegated`.
+   * 
+   * Weight: `O(R)` where R is the number of referendums the voter delegating to has
+   *   voted on. Weight is charged as if maximum votes.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Democracy.delegate') === '789db36a1c43e1ffdad52288f8573a492f529890632f51821e7bd1d74ba6cffc'
+  }
+
+  /**
+   * Delegate the voting power (with some given conviction) of the sending account.
+   * 
+   * The balance delegated is locked for as long as it's delegated, and thereafter for the
+   * time appropriate for the conviction's lock period.
+   * 
+   * The dispatch origin of this call must be _Signed_, and the signing account must either:
+   *   - be delegating already; or
+   *   - have no voting activity (if there is, then it will need to be removed/consolidated
+   *     through `reap_vote` or `unvote`).
+   * 
+   * - `to`: The account whose voting the `target` account's voting power will follow.
+   * - `conviction`: The conviction that will be attached to the delegated votes. When the
+   *   account is undelegated, the funds will be locked for the corresponding period.
+   * - `balance`: The amount of the account's balance to be used in delegating. This must not
+   *   be more than the account's current balance.
+   * 
+   * Emits `Delegated`.
+   * 
+   * Weight: `O(R)` where R is the number of referendums the voter delegating to has
+   *   voted on. Weight is charged as if maximum votes.
+   */
+  get asEfinityV3000(): {to: efinityV3000.MultiAddress, conviction: efinityV3000.Conviction, balance: bigint} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Delegate the voting power (with some given conviction) of the sending account.
+   * 
+   * The balance delegated is locked for as long as it's delegated, and thereafter for the
+   * time appropriate for the conviction's lock period.
+   * 
+   * The dispatch origin of this call must be _Signed_, and the signing account must either:
+   *   - be delegating already; or
+   *   - have no voting activity (if there is, then it will need to be removed/consolidated
+   *     through `reap_vote` or `unvote`).
+   * 
+   * - `to`: The account whose voting the `target` account's voting power will follow.
+   * - `conviction`: The conviction that will be attached to the delegated votes. When the
+   *   account is undelegated, the funds will be locked for the corresponding period.
+   * - `balance`: The amount of the account's balance to be used in delegating. This must not
+   *   be more than the account's current balance.
+   * 
+   * Emits `Delegated`.
+   * 
+   * Weight: `O(R)` where R is the number of referendums the voter delegating to has
+   *   voted on. Weight is charged as if maximum votes.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Democracy.delegate') === '719d303e364256b757876a8d1b18c8d62a96223d68ffc6f6c1bf18240e8d9793'
+  }
+
+  /**
+   * Delegate the voting power (with some given conviction) of the sending account.
+   * 
+   * The balance delegated is locked for as long as it's delegated, and thereafter for the
+   * time appropriate for the conviction's lock period.
+   * 
+   * The dispatch origin of this call must be _Signed_, and the signing account must either:
+   *   - be delegating already; or
+   *   - have no voting activity (if there is, then it will need to be removed/consolidated
+   *     through `reap_vote` or `unvote`).
+   * 
+   * - `to`: The account whose voting the `target` account's voting power will follow.
+   * - `conviction`: The conviction that will be attached to the delegated votes. When the
+   *   account is undelegated, the funds will be locked for the corresponding period.
+   * - `balance`: The amount of the account's balance to be used in delegating. This must not
+   *   be more than the account's current balance.
+   * 
+   * Emits `Delegated`.
+   * 
+   * Weight: `O(R)` where R is the number of referendums the voter delegating to has
+   *   voted on. Weight is charged as if maximum votes.
+   */
+  get asV5(): {to: Uint8Array, conviction: v5.Conviction, balance: bigint} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -3644,6 +4007,92 @@ export class DemocracyRemoveOtherVoteCall {
    * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
    *   Weight is calculated for the maximum number of vote.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Democracy.remove_other_vote') === '43d317508cc3ba04dcadb411eb6499f25532d64ab5a169b27410116c72f40a26'
+  }
+
+  /**
+   * Remove a vote for a referendum.
+   * 
+   * If the `target` is equal to the signer, then this function is exactly equivalent to
+   * `remove_vote`. If not equal to the signer, then the vote must have expired,
+   * either because the referendum was cancelled, because the voter lost the referendum or
+   * because the conviction period is over.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account of the vote to be removed; this account must have voted for
+   *   referendum `index`.
+   * - `index`: The index of referendum of the vote to be removed.
+   * 
+   * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
+   *   Weight is calculated for the maximum number of vote.
+   */
+  get asEfinityV3000(): {target: efinityV3000.MultiAddress, index: number} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Remove a vote for a referendum.
+   * 
+   * If the `target` is equal to the signer, then this function is exactly equivalent to
+   * `remove_vote`. If not equal to the signer, then the vote must have expired,
+   * either because the referendum was cancelled, because the voter lost the referendum or
+   * because the conviction period is over.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account of the vote to be removed; this account must have voted for
+   *   referendum `index`.
+   * - `index`: The index of referendum of the vote to be removed.
+   * 
+   * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
+   *   Weight is calculated for the maximum number of vote.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Democracy.remove_other_vote') === '57db819150acc73e380a9908a05d4f777cd3af825527d7ad88560426e1d0f652'
+  }
+
+  /**
+   * Remove a vote for a referendum.
+   * 
+   * If the `target` is equal to the signer, then this function is exactly equivalent to
+   * `remove_vote`. If not equal to the signer, then the vote must have expired,
+   * either because the referendum was cancelled, because the voter lost the referendum or
+   * because the conviction period is over.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account of the vote to be removed; this account must have voted for
+   *   referendum `index`.
+   * - `index`: The index of referendum of the vote to be removed.
+   * 
+   * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
+   *   Weight is calculated for the maximum number of vote.
+   */
+  get asV5(): {target: Uint8Array, index: number} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Remove a vote for a referendum.
+   * 
+   * If the `target` is equal to the signer, then this function is exactly equivalent to
+   * `remove_vote`. If not equal to the signer, then the vote must have expired,
+   * either because the referendum was cancelled, because the voter lost the referendum or
+   * because the conviction period is over.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account of the vote to be removed; this account must have voted for
+   *   referendum `index`.
+   * - `index`: The index of referendum of the vote to be removed.
+   * 
+   * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
+   *   Weight is calculated for the maximum number of vote.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Democracy.remove_other_vote') === '43d317508cc3ba04dcadb411eb6499f25532d64ab5a169b27410116c72f40a26'
   }
@@ -3899,6 +4348,60 @@ export class DemocracyUnlockCall {
    * 
    * Weight: `O(R)` with R number of vote of target.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Democracy.unlock') === '8142da248a3023c20f65ce8f6287f9eaf75336ab8815cb15537149abcdd0c20c'
+  }
+
+  /**
+   * Unlock tokens that have an expired lock.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account to remove the lock on.
+   * 
+   * Weight: `O(R)` with R number of vote of target.
+   */
+  get asEfinityV3000(): {target: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Unlock tokens that have an expired lock.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account to remove the lock on.
+   * 
+   * Weight: `O(R)` with R number of vote of target.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Democracy.unlock') === '66d8abf7976ff596d8d614948b9d84cb24f0b898d88d24eb2cc035ae5e93c7b8'
+  }
+
+  /**
+   * Unlock tokens that have an expired lock.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account to remove the lock on.
+   * 
+   * Weight: `O(R)` with R number of vote of target.
+   */
+  get asV5(): {target: Uint8Array} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Unlock tokens that have an expired lock.
+   * 
+   * The dispatch origin of this call must be _Signed_.
+   * 
+   * - `target`: The account to remove the lock on.
+   * 
+   * Weight: `O(R)` with R number of vote of target.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Democracy.unlock') === '8142da248a3023c20f65ce8f6287f9eaf75336ab8815cb15537149abcdd0c20c'
   }
@@ -4072,6 +4575,80 @@ export class DmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('DmpQueue.service_overweight') === '3e0d440993be1d69328adae3a1b30f3261ca945f8f307c396f4de7f51796a0c6'
+  }
+
+  /**
+   * Service a single overweight message.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight message to service.
+   * - `weight_limit`: The amount of weight that message execution may take.
+   * 
+   * Errors:
+   * - `Unknown`: Message of `index` is unknown.
+   * - `OverLimit`: Message execution may use greater than `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get asEfinityV3000(): {index: bigint, weightLimit: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Service a single overweight message.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight message to service.
+   * - `weight_limit`: The amount of weight that message execution may take.
+   * 
+   * Errors:
+   * - `Unknown`: Message of `index` is unknown.
+   * - `OverLimit`: Message execution may use greater than `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('DmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
+  }
+
+  /**
+   * Service a single overweight message.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight message to service.
+   * - `weight_limit`: The amount of weight that message execution may take.
+   * 
+   * Errors:
+   * - `Unknown`: Message of `index` is unknown.
+   * - `OverLimit`: Message execution may use greater than `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get asV5(): {index: bigint, weightLimit: bigint} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Service a single overweight message.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight message to service.
+   * - `weight_limit`: The amount of weight that message execution may take.
+   * 
+   * Errors:
+   * - `Unknown`: Message of `index` is unknown.
+   * - `OverLimit`: Message execution may use greater than `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('DmpQueue.service_overweight') === '3e0d440993be1d69328adae3a1b30f3261ca945f8f307c396f4de7f51796a0c6'
   }
@@ -4112,15 +4689,15 @@ export class EfinityXcmTransferToAcalaCall {
   /**
    * `origin` transfers `amount` of EFI to `beneficiary` to the Acala parachain.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('EfinityXcm.transfer_to_acala') === 'bbe8e2dc71d1fe7d30079268633160962ad108f52017d722e4d8abc00fc8c267'
   }
 
   /**
    * `origin` transfers `amount` of EFI to `beneficiary` to the Acala parachain.
    */
-  get asV6(): {beneficiary: Uint8Array, amount: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {beneficiary: Uint8Array, amount: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4141,21 +4718,21 @@ export class ExtrinsicPausePauseExtrinsicCall {
   /**
    * Pause execution of extrinsic(s)
    * 
-   * If "*" wildcard is passed as `extrinsic_name`, all extrinsics of the `pallet_name` will
+   * If `None` is passed as `extrinsic_name`, all extrinsics of the `pallet_name` will
    * be paused.
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '7f2b28b7679561fd5e530007531c35553f4e164e941c300a5dc1c88bb7f55f67'
   }
 
   /**
    * Pause execution of extrinsic(s)
    * 
-   * If "*" wildcard is passed as `extrinsic_name`, all extrinsics of the `pallet_name` will
+   * If `None` is passed as `extrinsic_name`, all extrinsics of the `pallet_name` will
    * be paused.
    */
-  get asV6(): {palletName: Uint8Array, extrinsicName: (Uint8Array | undefined)} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array, extrinsicName: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4176,15 +4753,15 @@ export class ExtrinsicPauseResumeExtrinsicCall {
   /**
    * Resume extrinsic
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '7f2b28b7679561fd5e530007531c35553f4e164e941c300a5dc1c88bb7f55f67'
   }
 
   /**
    * Resume extrinsic
    */
-  get asV6(): {palletName: Uint8Array, extrinsicName: (Uint8Array | undefined)} {
-    assert(this.isV6)
+  get asEfinityV3000(): {palletName: Uint8Array, extrinsicName: (Uint8Array | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4211,7 +4788,7 @@ export class FuelTanksAddAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountAlreadyExists` if account at `user_id` already exists
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.add_account') === '6b49a9c6d7cc4fec142fc02f8f252f4fa0bd06e832d1e877b43f77b3d8ef27b3'
   }
 
@@ -4224,8 +4801,8 @@ export class FuelTanksAddAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountAlreadyExists` if account at `user_id` already exists
    */
-  get asV6(): {tankId: v6.MultiAddress, userId: v6.MultiAddress} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userId: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4251,7 +4828,7 @@ export class FuelTanksBatchAddAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountAlreadyExists` if account at `user_id` already exists
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.batch_add_account') === 'e548a21f55c9e5bef7a56196dab640774174a939562687e1e6e32b377168ebb5'
   }
 
@@ -4263,8 +4840,8 @@ export class FuelTanksBatchAddAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountAlreadyExists` if account at `user_id` already exists
    */
-  get asV6(): {tankId: v6.MultiAddress, userIds: v6.MultiAddress[]} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userIds: efinityV3000.MultiAddress[]} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4290,7 +4867,7 @@ export class FuelTanksBatchRemoveAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountNotFound` if account at `user_id` does not exist
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.batch_remove_account') === 'e548a21f55c9e5bef7a56196dab640774174a939562687e1e6e32b377168ebb5'
   }
 
@@ -4302,8 +4879,8 @@ export class FuelTanksBatchRemoveAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountNotFound` if account at `user_id` does not exist
    */
-  get asV6(): {tankId: v6.MultiAddress, userIds: v6.MultiAddress[]} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userIds: efinityV3000.MultiAddress[]} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4328,7 +4905,7 @@ export class FuelTanksCreateFuelTankCall {
    * - `FuelTankAlreadyExists` if `tank_id` already exists
    * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '349d9c11643e18c14abb4dbe03ead06a20383be68cd80011765b4c8cf8c14ebe'
   }
 
@@ -4339,8 +4916,8 @@ export class FuelTanksCreateFuelTankCall {
    * - `FuelTankAlreadyExists` if `tank_id` already exists
    * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
    */
-  get asV6(): {descriptor: v6.FuelTankDescriptor} {
-    assert(this.isV6)
+  get asEfinityV3000(): {descriptor: efinityV3000.FuelTankDescriptor} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4364,7 +4941,7 @@ export class FuelTanksDestroyFuelTankCall {
    * The fuel tank must be frozen
    * Can only be destroyed if all accounts are removed
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.destroy_fuel_tank') === '2b9b490c0171de9f8a3f945d1457a9a08933564a71b77cb634db2aa898e91e63'
   }
 
@@ -4374,8 +4951,8 @@ export class FuelTanksDestroyFuelTankCall {
    * The fuel tank must be frozen
    * Can only be destroyed if all accounts are removed
    */
-  get asV6(): {tankId: v6.MultiAddress} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4391,6 +4968,55 @@ export class FuelTanksDispatchCall {
     assert(call.name === 'FuelTanks.dispatch')
     this._chain = ctx._chain
     this.call = call
+  }
+
+  /**
+   * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+   * 
+   * # Errors
+   * - `FuelTankNotFound` if `tank_id` does not exist.
+   * - `InvalidRuleSetId` if `rule_set_id` does not exist
+   * - `UsageRestricted` if caller is not part of ruleset whitelist
+   * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
+   * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
+   *   ruleset
+   * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
+   *   ruleset
+   * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
+   *   ruleset
+   * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
+   * - `Overflow` if amount overflows type
+   * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
+   *   remaining_fee when `pays_remaining_fee` is true
+   * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('FuelTanks.dispatch') === '3d9976c9a23fc5af5f239e43af0fed45be9d0d4a9a6c66019e30912404a47f34'
+  }
+
+  /**
+   * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+   * 
+   * # Errors
+   * - `FuelTankNotFound` if `tank_id` does not exist.
+   * - `InvalidRuleSetId` if `rule_set_id` does not exist
+   * - `UsageRestricted` if caller is not part of ruleset whitelist
+   * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
+   * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
+   *   ruleset
+   * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
+   *   ruleset
+   * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
+   *   ruleset
+   * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
+   * - `Overflow` if amount overflows type
+   * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
+   *   remaining_fee when `pays_remaining_fee` is true
+   * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
+   */
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, ruleSetId: number, call: efinityV3000.Call, paysRemainingFee: boolean} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -4463,6 +5089,29 @@ export class FuelTanksDispatchAndTouchCall {
    * Returns the same errors as [dispatch](Self::dispatch) and
    * [add_account](Self::add_account)
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '3d9976c9a23fc5af5f239e43af0fed45be9d0d4a9a6c66019e30912404a47f34'
+  }
+
+  /**
+   * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+   * exist and is allowed by the fuel tank's `user_account_management` settings.
+   * # Errors
+   * Returns the same errors as [dispatch](Self::dispatch) and
+   * [add_account](Self::add_account)
+   */
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, ruleSetId: number, call: efinityV3000.Call, paysRemainingFee: boolean} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+   * exist and is allowed by the fuel tank's `user_account_management` settings.
+   * # Errors
+   * Returns the same errors as [dispatch](Self::dispatch) and
+   * [add_account](Self::add_account)
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '8b9ba47409cfb95c910cdaa74adf9a0a1b2dec647725fc842e4aa620a4904293'
   }
@@ -4503,7 +5152,7 @@ export class FuelTanksForceSetConsumptionCall {
    * - `FuelTankNotFound` if tank_id does not exist
    * - `NoPermission` if caller is not ForceOrigin or fuel tank owner
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.force_set_consumption') === '465df72f8d1b6dcfdd1b6a3bc9673a492b029ff7adea01f798ff0b1ae3e8dca4'
   }
 
@@ -4517,8 +5166,8 @@ export class FuelTanksForceSetConsumptionCall {
    * - `FuelTankNotFound` if tank_id does not exist
    * - `NoPermission` if caller is not ForceOrigin or fuel tank owner
    */
-  get asV6(): {tankId: v6.MultiAddress, userId: (v6.MultiAddress | undefined), ruleSetId: number, consumption: v6.Consumption} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userId: (efinityV3000.MultiAddress | undefined), ruleSetId: number, consumption: efinityV3000.Consumption} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4553,7 +5202,7 @@ export class FuelTanksInsertRuleSetCall {
    * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
    * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.insert_rule_set') === '2b06f118a8be5687d72b0c7cca48fbb7daae4c128ac7c48b350418cb461ae87e'
   }
 
@@ -4574,8 +5223,8 @@ export class FuelTanksInsertRuleSetCall {
    * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
    * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
    */
-  get asV6(): {tankId: v6.MultiAddress, ruleSetId: number, rules: v6.DispatchRuleDescriptor[]} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, ruleSetId: number, rules: efinityV3000.DispatchRuleDescriptor[]} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4600,7 +5249,7 @@ export class FuelTanksMutateFuelTankCall {
    * - `FuelTankNotFound` if `tank_id` does not exist.
    * - `NoPermission` if `origin` is not the fuel tank owner
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.mutate_fuel_tank') === '02c99ce975a4e5a9a63467f954fcccb4f8e3774490fb252399b0a36e87b13c2b'
   }
 
@@ -4611,8 +5260,8 @@ export class FuelTanksMutateFuelTankCall {
    * - `FuelTankNotFound` if `tank_id` does not exist.
    * - `NoPermission` if `origin` is not the fuel tank owner
    */
-  get asV6(): {tankId: v6.MultiAddress, mutation: v6.DefaultTankMutation} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, mutation: efinityV3000.DefaultTankMutation} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4638,7 +5287,7 @@ export class FuelTanksRemoveAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountNotFound` if account at `user_id` does not exist
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.remove_account') === '6b49a9c6d7cc4fec142fc02f8f252f4fa0bd06e832d1e877b43f77b3d8ef27b3'
   }
 
@@ -4650,8 +5299,8 @@ export class FuelTanksRemoveAccountCall {
    * - `NoPermission` if `origin` does not have permission to add an account
    * - `AccountNotFound` if account at `user_id` does not exist
    */
-  get asV6(): {tankId: v6.MultiAddress, userId: v6.MultiAddress} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userId: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4680,7 +5329,7 @@ export class FuelTanksRemoveAccountRuleDataCall {
    * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
    * - `RuleNotFound` if rule does not exist for `rule_kind`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.remove_account_rule_data') === 'f5ec3a04a36a724aaa7d39fdbfabb5580f0e13951f9342b70fcaeb06dea298e4'
   }
 
@@ -4695,8 +5344,8 @@ export class FuelTanksRemoveAccountRuleDataCall {
    * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
    * - `RuleNotFound` if rule does not exist for `rule_kind`
    */
-  get asV6(): {tankId: v6.MultiAddress, userId: v6.MultiAddress, ruleSetId: number, ruleKind: v6.DispatchRuleKind} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, userId: efinityV3000.MultiAddress, ruleSetId: number, ruleKind: efinityV3000.DispatchRuleKind} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4725,7 +5374,7 @@ export class FuelTanksRemoveRuleSetCall {
    * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
    *   data
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.remove_rule_set') === 'f09ae45a5e0ac6e1a34b392a13e3d81deefc3581926451813030e95e15c397fb'
   }
 
@@ -4740,8 +5389,8 @@ export class FuelTanksRemoveRuleSetCall {
    * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
    *   data
    */
-  get asV6(): {tankId: v6.MultiAddress, ruleSetId: number} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, ruleSetId: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4770,7 +5419,7 @@ export class FuelTanksScheduleMutateFreezeStateCall {
    * - `NoPermission` if caller is not a fuel tank owner
    * - `FreezeQueueFull` if the queue is full
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('FuelTanks.schedule_mutate_freeze_state') === '400d585823f6a5fce567d3e438bd1ddac0b7cc3662931a51424df14279fde426'
   }
 
@@ -4785,8 +5434,8 @@ export class FuelTanksScheduleMutateFreezeStateCall {
    * - `NoPermission` if caller is not a fuel tank owner
    * - `FreezeQueueFull` if the queue is full
    */
-  get asV6(): {tankId: v6.MultiAddress, ruleSetId: (number | undefined), isFrozen: boolean} {
-    assert(this.isV6)
+  get asEfinityV3000(): {tankId: efinityV3000.MultiAddress, ruleSetId: (number | undefined), isFrozen: boolean} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4812,7 +5461,7 @@ export class MarketplaceCancelListingCall {
    * - `ListingNotFound` if the listing under `listing_id` does not exist
    * - `NoPermission` if the listing seller is not the caller, `origin`
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.cancel_listing') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
   }
 
@@ -4824,8 +5473,8 @@ export class MarketplaceCancelListingCall {
    * - `ListingNotFound` if the listing under `listing_id` does not exist
    * - `NoPermission` if the listing seller is not the caller, `origin`
    */
-  get asV6(): {listingId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4866,7 +5515,7 @@ export class MarketplaceCreateListingCall {
    * - `LowTokenBalance` token balance is too low for reserve
    * - `ListingAlreadyExists` if a listing with the same ID already exists
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.create_listing') === '78b7a393701f9f95d8413f0683f9a8071358025ff047a772b81cffc1c315d7b4'
   }
 
@@ -4893,8 +5542,8 @@ export class MarketplaceCreateListingCall {
    * - `LowTokenBalance` token balance is too low for reserve
    * - `ListingAlreadyExists` if a listing with the same ID already exists
    */
-  get asV6(): {makeAssetId: v6.AssetId, takeAssetId: v6.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v6.AuctionData | undefined)} {
-    assert(this.isV6)
+  get asEfinityV3000(): {makeAssetId: efinityV3000.AssetId, takeAssetId: efinityV3000.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (efinityV3000.AuctionData | undefined)} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4926,7 +5575,7 @@ export class MarketplaceFillListingCall {
    * - `TakeValueUnderMinimum` if the listings `take` value is under the minimum required
    * - `LowTokenBalance` if the buyer does not have enough tokens for reserve
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.fill_listing') === 'e370d131ef17581bf77299b58dd556c1a78d367f937bce7f44e290d100f7ed4d'
   }
 
@@ -4944,8 +5593,8 @@ export class MarketplaceFillListingCall {
    * - `TakeValueUnderMinimum` if the listings `take` value is under the minimum required
    * - `LowTokenBalance` if the buyer does not have enough tokens for reserve
    */
-  get asV6(): {listingId: Uint8Array, amount: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, amount: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -4975,7 +5624,7 @@ export class MarketplaceFinalizeAuctionCall {
    * - `TakeValueUnderMinimum` if the take value is less than the minimum required
    * - `Overflow` if bid price * listing_amount is too large
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.finalize_auction') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
   }
 
@@ -4991,8 +5640,8 @@ export class MarketplaceFinalizeAuctionCall {
    * - `TakeValueUnderMinimum` if the take value is less than the minimum required
    * - `Overflow` if bid price * listing_amount is too large
    */
-  get asV6(): {listingId: Uint8Array} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5025,7 +5674,7 @@ export class MarketplacePlaceBidCall {
    * - `Overflow` if older bid * amount is too large
    * - `Overflow` if new bid price is too large
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.place_bid') === 'ef3821a4c9f8f54d06f376b33812844522af03669204d7f987e47edffe72dcf3'
   }
 
@@ -5044,8 +5693,8 @@ export class MarketplacePlaceBidCall {
    * - `Overflow` if older bid * amount is too large
    * - `Overflow` if new bid price is too large
    */
-  get asV6(): {listingId: Uint8Array, price: bigint} {
-    assert(this.isV6)
+  get asEfinityV3000(): {listingId: Uint8Array, price: bigint} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5068,7 +5717,7 @@ export class MarketplaceSetProtocolFeeCall {
    * ### Parameters
    * - `protocol_fee`: Percentage of fee to set
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('Marketplace.set_protocol_fee') === '164c71fe8ee3317ae364f8c5528ba44b7eddb84e7a9a394e59bb344ad0ec2293'
   }
 
@@ -5077,8 +5726,8 @@ export class MarketplaceSetProtocolFeeCall {
    * ### Parameters
    * - `protocol_fee`: Percentage of fee to set
    */
-  get asV6(): {protocolFee: number} {
-    assert(this.isV6)
+  get asEfinityV3000(): {protocolFee: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -5889,6 +6538,88 @@ export class MultiTokensBatchMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.batch_mint') === 'ab7a70ee53e3aba4bb2a3c1da9009cb089a50a0e65d2e2b33224718a2ce40813'
+  }
+
+  /**
+   * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+   * `AccountId` and `MintParams`
+   * 
+   * If `continue_on_failure` is false, a single mint failure will fail all operations. If
+   * it is true, execution will continue when a failure is encountered.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `NotFound` if `collection` does **not** exist.
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `MintForbidden` if the policy disallows the operation
+   * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+   * - `TokenCountOverflow` if the token_count overflows
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get asEfinityV3000(): {collectionId: bigint, recipients: efinityV3000.Type_351[], continueOnFailure: boolean} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Collection owner mints tokens of `collection_id` to `recipients` consisting of an `AccountId` and `MintParams`
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `NotFound` if `collection` does **not** exist.
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `MintForbidden` if the policy disallows the operation
+   * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+   * - `TokenCountOverflow` if the token_count overflows
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.batch_mint') === '084d61eb68c7be95ad054eb3343b987f9d956254a27444db9f5e8c124cd1674c'
+  }
+
+  /**
+   * Collection owner mints tokens of `collection_id` to `recipients` consisting of an `AccountId` and `MintParams`
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `NotFound` if `collection` does **not** exist.
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `MintForbidden` if the policy disallows the operation
+   * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+   * - `TokenCountOverflow` if the token_count overflows
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get asV5(): {collectionId: bigint, recipients: v5.Type_293[]} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+   * `AccountId` and `MintParams`
+   * 
+   * If `continue_on_failure` is false, a single mint failure will fail all operations. If
+   * it is true, execution will continue when a failure is encountered.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `NotFound` if `collection` does **not** exist.
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `MintForbidden` if the policy disallows the operation
+   * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+   * - `TokenCountOverflow` if the token_count overflows
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('MultiTokens.batch_mint') === 'ab7a70ee53e3aba4bb2a3c1da9009cb089a50a0e65d2e2b33224718a2ce40813'
   }
@@ -5954,6 +6685,68 @@ export class MultiTokensBatchTransferCall {
    */
   get asEfinityV2(): {collectionId: bigint, recipients: efinityV2.Recipient[]} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
+   * account.
+   * 
+   * If `continue_on_failure` is false, a single transfer failure will fail all of them. If
+   * it is true, execution will continue when a failure is encountered.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `InvalidTargetAccount` if `source == target`.
+   * - `BalanceLow` if `source` does not own enough amount of `collection`.
+   * - `BalanceOverflow` if `target` balance of `collection` overflows.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.batch_transfer') === 'c718d96eb4cef2f0b265f91410c44209f76ef21e07cdccf590d380b2c173a631'
+  }
+
+  /**
+   * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
+   * account.
+   * 
+   * If `continue_on_failure` is false, a single transfer failure will fail all of them. If
+   * it is true, execution will continue when a failure is encountered.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `InvalidTargetAccount` if `source == target`.
+   * - `BalanceLow` if `source` does not own enough amount of `collection`.
+   * - `BalanceOverflow` if `target` balance of `collection` overflows.
+   */
+  get asEfinityV3000(): {collectionId: bigint, recipients: efinityV3000.Recipient[], continueOnFailure: boolean} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Transfers the specific amount of tokens of `collection` to `recipients` from `origin` account.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `InvalidTargetAccount` if `source == target`.
+   * - `BalanceLow` if `source` does not own enough amount of `collection`.
+   * - `BalanceOverflow` if `target` balance of `collection` overflows.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.batch_transfer') === 'b19d3917f5096e2cef3e73752e8a3bd0b5e30cadfc6a4ff16c68ce84082c1ce5'
+  }
+
+  /**
+   * Transfers the specific amount of tokens of `collection` to `recipients` from `origin` account.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `InvalidTargetAccount` if `source == target`.
+   * - `BalanceLow` if `source` does not own enough amount of `collection`.
+   * - `BalanceOverflow` if `target` balance of `collection` overflows.
+   */
+  get asV5(): {collectionId: bigint, recipients: v5.Recipient[]} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -6084,6 +6877,48 @@ export class MultiTokensCreateCollectionCall {
    * # Errors
    * - `DepositReserveFailed` if the deposit cannot be reserved
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.create_collection') === 'd8b4db54e7463f7afa50c198a27aab0590c5d192435b02cc04b3bf19d21ae409'
+  }
+
+  /**
+   * Creates a new collection from `descriptor`
+   * 
+   * # Errors
+   * - `DepositReserveFailed` if the deposit cannot be reserved
+   */
+  get asEfinityV3000(): {descriptor: efinityV3000.DefaultCollectionDescriptor} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Creates a new collection from `descriptor`
+   * 
+   * # Errors
+   * - `DepositReserveFailed` if the deposit cannot be reserved
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.create_collection') === '7cf4fe3885361ce6eb79e4db2f2b1f99352c2e5697d2c8b7df956148e7c0f2c6'
+  }
+
+  /**
+   * Creates a new collection from `descriptor`
+   * 
+   * # Errors
+   * - `DepositReserveFailed` if the deposit cannot be reserved
+   */
+  get asV5(): {descriptor: v5.DefaultCollectionDescriptor} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Creates a new collection from `descriptor`
+   * 
+   * # Errors
+   * - `DepositReserveFailed` if the deposit cannot be reserved
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('MultiTokens.create_collection') === 'd8b4db54e7463f7afa50c198a27aab0590c5d192435b02cc04b3bf19d21ae409'
   }
@@ -6197,6 +7032,56 @@ export class MultiTokensForceMutateCollectionCall {
    * - `BadOrigin` if origin != root
    * - Same as mutate_collection
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_mutate_collection') === '6be8c158ea6a3e57e4bbcb88f06feae4472c5f5d9c4b4a640b49b1f42c1171cf'
+  }
+
+  /**
+   * Exactly as `mutate_collection`, except the origin must be root and the `caller` account
+   * should be specified.
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   * - Same as mutate_collection
+   */
+  get asEfinityV3000(): {collectionId: bigint, mutation: efinityV3000.DefaultCollectionMutation} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Exactly as `mutate_collection`, except the origin must be root and the `caller` account should be
+   * specified.
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   * - Same as mutate_collection
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_mutate_collection') === 'b24a11f1bb3034565515518d4293039de8c701ec744f5c5e6b41a17b3c4d2288'
+  }
+
+  /**
+   * Exactly as `mutate_collection`, except the origin must be root and the `caller` account should be
+   * specified.
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   * - Same as mutate_collection
+   */
+  get asV5(): {collectionId: bigint, mutation: v5.DefaultCollectionMutation} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Exactly as `mutate_collection`, except the origin must be root and the `caller` account
+   * should be specified.
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   * - Same as mutate_collection
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('MultiTokens.force_mutate_collection') === '6be8c158ea6a3e57e4bbcb88f06feae4472c5f5d9c4b4a640b49b1f42c1171cf'
   }
@@ -6281,6 +7166,48 @@ export class MultiTokensForceSetCollectionCall {
    */
   get asEfinityV2(): {collectionId: bigint, value: (efinityV2.Collection | undefined)} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the Collections storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_set_collection') === 'd75af3c3c47bd7f1909045c69b61ffb4bbd68459ef76923bcdbd9203caeb90d5'
+  }
+
+  /**
+   * Set the Collections storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get asEfinityV3000(): {collectionId: bigint, value: (efinityV3000.Collection | undefined)} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the Collections storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_set_collection') === '8a2a5df1ba028f33f223ac8859e40a2d653dca55be6db52bec414a455e53cbe0'
+  }
+
+  /**
+   * Set the Collections storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get asV5(): {collectionId: bigint, value: (v5.Collection | undefined)} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -6407,6 +7334,48 @@ export class MultiTokensForceSetTokenCall {
    */
   get asEfinityV2(): {collectionId: bigint, tokenId: bigint, value: (efinityV2.Token | undefined)} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the Tokens storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_set_token') === '637f79a55bc3effe99dfe08ab34e60673b06b2c340b0795565720b52b69e2c34'
+  }
+
+  /**
+   * Set the Tokens storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get asEfinityV3000(): {collectionId: bigint, tokenId: bigint, value: (efinityV3000.Token | undefined)} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the Tokens storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.force_set_token') === 'f7628acc76287fdc2bac39c228d23045fc6e92b88bc282b64abd6bf3e2b8a24d'
+  }
+
+  /**
+   * Set the Tokens storage to the given `value`, origin must be root
+   * 
+   * # Errors
+   * - `BadOrigin` if origin != root
+   */
+  get asV5(): {collectionId: bigint, tokenId: bigint, value: (v5.Token | undefined)} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -6625,6 +7594,88 @@ export class MultiTokensMintCall {
    * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
    * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.mint') === '21cd203787dc1fda2b2f186b4eb0d9ed01f0cc56f492d023e49ec2d05ff5d8b2'
+  }
+
+  /**
+   * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+   * `MintPolicy`.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `CollectionNotFound` if `Collection` does not exist.
+   * - `TokenNotFound` if `Token` does not exist.
+   * - `TokenAlreadyExists` if attempting to create a token that already exists
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
+   *   token_count
+   * overflows.
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get asEfinityV3000(): {recipient: efinityV3000.MultiAddress, collectionId: bigint, params: efinityV3000.DefaultMintParams} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's `MintPolicy`.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `CollectionNotFound` if `Collection` does not exist.
+   * - `TokenNotFound` if `Token` does not exist.
+   * - `TokenAlreadyExists` if attempting to create a token that already exists
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `Overflow` if `amount + current_total_supply` overflows its type, or if the token_count
+   * overflows.
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.mint') === 'eaebb17dc952303dfd16624a15d2cde22e3b66a7f91ca95f2f92cd3104cb2499'
+  }
+
+  /**
+   * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's `MintPolicy`.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `CollectionNotFound` if `Collection` does not exist.
+   * - `TokenNotFound` if `Token` does not exist.
+   * - `TokenAlreadyExists` if attempting to create a token that already exists
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `Overflow` if `amount + current_total_supply` overflows its type, or if the token_count
+   * overflows.
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
+  get asV5(): {recipient: v5.MultiAddress, collectionId: bigint, params: v5.DefaultMintParams} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+   * `MintPolicy`.
+   * 
+   * # Errors
+   * - `AmountZero` if `amount == 0`.
+   * - `CollectionNotFound` if `Collection` does not exist.
+   * - `TokenNotFound` if `Token` does not exist.
+   * - `TokenAlreadyExists` if attempting to create a token that already exists
+   * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+   * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
+   *   token_count
+   * overflows.
+   * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+   * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+   * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('MultiTokens.mint') === '21cd203787dc1fda2b2f186b4eb0d9ed01f0cc56f492d023e49ec2d05ff5d8b2'
   }
@@ -6695,6 +7746,52 @@ export class MultiTokensMutateCollectionCall {
    * - `NotFound`, if `collection_id` does not exist.
    * - `NoPermission`, if `origin` is not the owner of `collection`.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('MultiTokens.mutate_collection') === '6be8c158ea6a3e57e4bbcb88f06feae4472c5f5d9c4b4a640b49b1f42c1171cf'
+  }
+
+  /**
+   * Modify `Collection` with `id` by applying `mutation`
+   * 
+   * # Errors
+   * - `NotFound`, if `collection_id` does not exist.
+   * - `NoPermission`, if `origin` is not the owner of `collection`.
+   */
+  get asEfinityV3000(): {collectionId: bigint, mutation: efinityV3000.DefaultCollectionMutation} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Modify `Collection` with `id` by applying `mutation`
+   * 
+   * # Errors
+   * - `NotFound`, if `collection_id` does not exist.
+   * - `NoPermission`, if `origin` is not the owner of `collection`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('MultiTokens.mutate_collection') === 'b24a11f1bb3034565515518d4293039de8c701ec744f5c5e6b41a17b3c4d2288'
+  }
+
+  /**
+   * Modify `Collection` with `id` by applying `mutation`
+   * 
+   * # Errors
+   * - `NotFound`, if `collection_id` does not exist.
+   * - `NoPermission`, if `origin` is not the owner of `collection`.
+   */
+  get asV5(): {collectionId: bigint, mutation: v5.DefaultCollectionMutation} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Modify `Collection` with `id` by applying `mutation`
+   * 
+   * # Errors
+   * - `NotFound`, if `collection_id` does not exist.
+   * - `NoPermission`, if `origin` is not the owner of `collection`.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('MultiTokens.mutate_collection') === '6be8c158ea6a3e57e4bbcb88f06feae4472c5f5d9c4b4a640b49b1f42c1171cf'
   }
@@ -6735,7 +7832,7 @@ export class MultiTokensMutateTokenCall {
    * - `NoPermission` if not the collection owner
    * - `TokenNotFound` if Token does not exist
    */
-  get isV6(): boolean {
+  get isEfinityV3000(): boolean {
     return this._chain.getCallHash('MultiTokens.mutate_token') === 'a913bd892e7a3a156d6d0525773780105cb511c6b4e74b8c4660cacfc2612246'
   }
 
@@ -6749,8 +7846,8 @@ export class MultiTokensMutateTokenCall {
    * - `NoPermission` if not the collection owner
    * - `TokenNotFound` if Token does not exist
    */
-  get asV6(): {collectionId: bigint, tokenId: bigint, mutation: v6.DefaultTokenMutation} {
-    assert(this.isV6)
+  get asEfinityV3000(): {collectionId: bigint, tokenId: bigint, mutation: efinityV3000.DefaultTokenMutation} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 }
@@ -7110,6 +8207,172 @@ export class MultisigApproveAsMultiCall {
    *     - Write: Multisig Storage, [Caller Account]
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Multisig.approve_as_multi') === 'af4617697c04ce56b4748943a851b51ff5b80d64991c7ecf495a4651ff57debb'
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call_hash`: The hash of the call to be executed.
+   * 
+   * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+   * 
+   * # <weight>
+   * - `O(S)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * ----------------------------------
+   * - DB Weight:
+   *     - Read: Multisig Storage, [Caller Account]
+   *     - Write: Multisig Storage, [Caller Account]
+   * # </weight>
+   */
+  get asEfinityV3000(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (efinityV3000.Timepoint | undefined), callHash: Uint8Array, maxWeight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call_hash`: The hash of the call to be executed.
+   * 
+   * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+   * 
+   * # <weight>
+   * - `O(S)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * ----------------------------------
+   * - DB Weight:
+   *     - Read: Multisig Storage, [Caller Account]
+   *     - Write: Multisig Storage, [Caller Account]
+   * # </weight>
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Multisig.approve_as_multi') === '615a5baaaa889f9e30839c70485b8c752e5eb050a85a23102b2f9f4c301be63a'
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call_hash`: The hash of the call to be executed.
+   * 
+   * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+   * 
+   * # <weight>
+   * - `O(S)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * ----------------------------------
+   * - DB Weight:
+   *     - Read: Multisig Storage, [Caller Account]
+   *     - Write: Multisig Storage, [Caller Account]
+   * # </weight>
+   */
+  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), callHash: Uint8Array, maxWeight: bigint} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call_hash`: The hash of the call to be executed.
+   * 
+   * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+   * 
+   * # <weight>
+   * - `O(S)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * ----------------------------------
+   * - DB Weight:
+   *     - Read: Multisig Storage, [Caller Account]
+   *     - Write: Multisig Storage, [Caller Account]
+   * # </weight>
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Multisig.approve_as_multi') === 'af4617697c04ce56b4748943a851b51ff5b80d64991c7ecf495a4651ff57debb'
   }
@@ -7320,6 +8583,212 @@ export class MultisigAsMultiCall {
    * - Plus Call Weight
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Multisig.as_multi') === 'f62d383b8db5d9025f2e3e98181c8439346292d755afd9729e7168a703e7be01'
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * If there are enough, then dispatch the call.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call`: The call to be executed.
+   * 
+   * NOTE: Unless this is the final approval, you will generally want to use
+   * `approve_as_multi` instead, since it only requires a hash of the call.
+   * 
+   * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+   * on success, result is `Ok` and the result from the interior call, if it was executed,
+   * may be found in the deposited `MultisigExecuted` event.
+   * 
+   * # <weight>
+   * - `O(S + Z + Call)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - The weight of the `call`.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * -------------------------------
+   * - DB Weight:
+   *     - Reads: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   *     - Writes: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   * - Plus Call Weight
+   * # </weight>
+   */
+  get asEfinityV3000(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (efinityV3000.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * If there are enough, then dispatch the call.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call`: The call to be executed.
+   * 
+   * NOTE: Unless this is the final approval, you will generally want to use
+   * `approve_as_multi` instead, since it only requires a hash of the call.
+   * 
+   * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+   * on success, result is `Ok` and the result from the interior call, if it was executed,
+   * may be found in the deposited `MultisigExecuted` event.
+   * 
+   * # <weight>
+   * - `O(S + Z + Call)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - The weight of the `call`.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * -------------------------------
+   * - DB Weight:
+   *     - Reads: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   *     - Writes: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   * - Plus Call Weight
+   * # </weight>
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Multisig.as_multi') === '548dea53ff79fe99438cf591950a533c93f9772d03a3995ec72a80376fcae222'
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * If there are enough, then dispatch the call.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call`: The call to be executed.
+   * 
+   * NOTE: Unless this is the final approval, you will generally want to use
+   * `approve_as_multi` instead, since it only requires a hash of the call.
+   * 
+   * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+   * on success, result is `Ok` and the result from the interior call, if it was executed,
+   * may be found in the deposited `MultisigExecuted` event.
+   * 
+   * # <weight>
+   * - `O(S + Z + Call)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - The weight of the `call`.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * -------------------------------
+   * - DB Weight:
+   *     - Reads: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   *     - Writes: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   * - Plus Call Weight
+   * # </weight>
+   */
+  get asV5(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v5.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: bigint} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Register approval for a dispatch to be made from a deterministic composite account if
+   * approved by a total of `threshold - 1` of `other_signatories`.
+   * 
+   * If there are enough, then dispatch the call.
+   * 
+   * Payment: `DepositBase` will be reserved if this is the first approval, plus
+   * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+   * is cancelled.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `threshold`: The total number of approvals for this dispatch before it is executed.
+   * - `other_signatories`: The accounts (other than the sender) who can approve this
+   * dispatch. May not be empty.
+   * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+   * not the first approval, then it must be `Some`, with the timepoint (block number and
+   * transaction index) of the first approval transaction.
+   * - `call`: The call to be executed.
+   * 
+   * NOTE: Unless this is the final approval, you will generally want to use
+   * `approve_as_multi` instead, since it only requires a hash of the call.
+   * 
+   * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+   * on success, result is `Ok` and the result from the interior call, if it was executed,
+   * may be found in the deposited `MultisigExecuted` event.
+   * 
+   * # <weight>
+   * - `O(S + Z + Call)`.
+   * - Up to one balance-reserve or unreserve operation.
+   * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+   *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+   * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+   * - One encode & hash, both of complexity `O(S)`.
+   * - Up to one binary search and insert (`O(logS + S)`).
+   * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+   * - One event.
+   * - The weight of the `call`.
+   * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+   *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+   * -------------------------------
+   * - DB Weight:
+   *     - Reads: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   *     - Writes: Multisig Storage, [Caller Account], Calls (if `store_call`)
+   * - Plus Call Weight
+   * # </weight>
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Multisig.as_multi') === 'f62d383b8db5d9025f2e3e98181c8439346292d755afd9729e7168a703e7be01'
   }
@@ -7477,6 +8946,51 @@ export class MultisigAsMultiThreshold1Call {
    */
   get asEfinityV3(): {otherSignatories: Uint8Array[], call: efinityV3.Call} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Immediately dispatch a multi-signature call using a single approval from the caller.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `other_signatories`: The accounts (other than the sender) who are part of the
+   * multi-signature, but do not participate in the approval process.
+   * - `call`: The call to be executed.
+   * 
+   * Result is equivalent to the dispatched result.
+   * 
+   * # <weight>
+   * O(Z + C) where Z is the length of the call and C its execution weight.
+   * -------------------------------
+   * - DB Weight: None
+   * - Plus Call Weight
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Multisig.as_multi_threshold_1') === 'f96f1224f51e7f2596694421f1c24d024dd8882ea99fb31f678da20c91defa75'
+  }
+
+  /**
+   * Immediately dispatch a multi-signature call using a single approval from the caller.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * - `other_signatories`: The accounts (other than the sender) who are part of the
+   * multi-signature, but do not participate in the approval process.
+   * - `call`: The call to be executed.
+   * 
+   * Result is equivalent to the dispatched result.
+   * 
+   * # <weight>
+   * O(Z + C) where Z is the length of the call and C its execution weight.
+   * -------------------------------
+   * - DB Weight: None
+   * - Plus Call Weight
+   * # </weight>
+   */
+  get asEfinityV3000(): {otherSignatories: Uint8Array[], call: efinityV3000.Call} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -7912,6 +9426,76 @@ export class PolkadotXcmExecuteCall {
    */
   get asEfinityV2(): {message: efinityV2.Type_244, maxWeight: bigint} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Execute an XCM message from a local, signed, origin.
+   * 
+   * An event is deposited indicating whether `msg` could be executed completely or only
+   * partially.
+   * 
+   * No more than `max_weight` will be used in its attempted execution. If this is less than the
+   * maximum amount of weight that the message could take to be executed, then no execution
+   * attempt will be made.
+   * 
+   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+   * to completion; only that *some* of it was executed.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('PolkadotXcm.execute') === '76149fbd7c3d18753d366687484d7bf651dd9b444cec7c11b944262b7ee4dcf5'
+  }
+
+  /**
+   * Execute an XCM message from a local, signed, origin.
+   * 
+   * An event is deposited indicating whether `msg` could be executed completely or only
+   * partially.
+   * 
+   * No more than `max_weight` will be used in its attempted execution. If this is less than the
+   * maximum amount of weight that the message could take to be executed, then no execution
+   * attempt will be made.
+   * 
+   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+   * to completion; only that *some* of it was executed.
+   */
+  get asEfinityV3000(): {message: efinityV3000.Type_315, maxWeight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Execute an XCM message from a local, signed, origin.
+   * 
+   * An event is deposited indicating whether `msg` could be executed completely or only
+   * partially.
+   * 
+   * No more than `max_weight` will be used in its attempted execution. If this is less than the
+   * maximum amount of weight that the message could take to be executed, then no execution
+   * attempt will be made.
+   * 
+   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+   * to completion; only that *some* of it was executed.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('PolkadotXcm.execute') === 'c6251691ab3319ecee95442d381c308f9ada155e423798c908cbd6b063aa26b4'
+  }
+
+  /**
+   * Execute an XCM message from a local, signed, origin.
+   * 
+   * An event is deposited indicating whether `msg` could be executed completely or only
+   * partially.
+   * 
+   * No more than `max_weight` will be used in its attempted execution. If this is less than the
+   * maximum amount of weight that the message could take to be executed, then no execution
+   * attempt will be made.
+   * 
+   * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+   * to completion; only that *some* of it was executed.
+   */
+  get asV5(): {message: v5.Type_262, maxWeight: bigint} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -8427,6 +10011,36 @@ export class PoolsMutatePoolsCall {
   /**
    * Mutate the pools. Can only be called by root.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Pools.mutate_pools') === '59397bde495bc4bf6e9ce90d9d117f187d090806cb3f83eb4b3669141aabffed'
+  }
+
+  /**
+   * Mutate the pools. Can only be called by root.
+   */
+  get asEfinityV3000(): {mutation: efinityV3000.PoolsMutation} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Mutate the pools. Can only be called by root.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('Pools.mutate_pools') === 'b6e16c50ea323b82f6ed539c6ec342660e4b39ca7192a157a54536b69eaf5a62'
+  }
+
+  /**
+   * Mutate the pools. Can only be called by root.
+   */
+  get asV5(): {mutation: v5.PoolsMutation} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Mutate the pools. Can only be called by root.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('Pools.mutate_pools') === '59397bde495bc4bf6e9ce90d9d117f187d090806cb3f83eb4b3669141aabffed'
   }
@@ -8734,6 +10348,21 @@ export class SchedulerScheduleCall {
   /**
    * Anonymously schedule a task.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Scheduler.schedule') === '2783a953b587bc21cf2a8fd1f8e42766b9ecd8cc866f403e5fc13f961279d1cf'
+  }
+
+  /**
+   * Anonymously schedule a task.
+   */
+  get asEfinityV3000(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3000.MaybeHashed} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Anonymously schedule a task.
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Scheduler.schedule') === '0d531aee8d5da07d8e0b70e5df21561266202f47165c8ee746c4c6a2b4c4aebd'
   }
@@ -8818,6 +10447,29 @@ export class SchedulerScheduleAfterCall {
    */
   get asEfinityV3(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Anonymously schedule a task after a delay.
+   * 
+   * # <weight>
+   * Same as [`schedule`].
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Scheduler.schedule_after') === '727d77d8a041c231c214e596570600e2a0cd579e5b76e35d7ac28f1fcf6fb5d6'
+  }
+
+  /**
+   * Anonymously schedule a task after a delay.
+   * 
+   * # <weight>
+   * Same as [`schedule`].
+   * # </weight>
+   */
+  get asEfinityV3000(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3000.MaybeHashed} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -8914,6 +10566,21 @@ export class SchedulerScheduleNamedCall {
   /**
    * Schedule a named task.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Scheduler.schedule_named') === '0960154676676a5f146e39d3586b9ff75f61057a077fc260a2e5718366fa9961'
+  }
+
+  /**
+   * Schedule a named task.
+   */
+  get asEfinityV3000(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3000.MaybeHashed} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Schedule a named task.
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Scheduler.schedule_named') === 'cb12b4526199fb12f0bd4751f49d4eebe9a99d14a4e1c3c0dedac215b2f6261d'
   }
@@ -8998,6 +10665,29 @@ export class SchedulerScheduleNamedAfterCall {
    */
   get asEfinityV3(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3.MaybeHashed} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Schedule a named task after a delay.
+   * 
+   * # <weight>
+   * Same as [`schedule_named`](Self::schedule_named).
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Scheduler.schedule_named_after') === 'b4a0cb33d286fb21cdda50b6c6bfa7618b5bdc636caf58e71aaba38e784a1119'
+  }
+
+  /**
+   * Schedule a named task after a delay.
+   * 
+   * # <weight>
+   * Same as [`schedule_named`](Self::schedule_named).
+   * # </weight>
+   */
+  get asEfinityV3000(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3000.MaybeHashed} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -9374,6 +11064,39 @@ export class SudoSudoCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Sudo.sudo') === '45f74ce291ef22bcb46b40ce823b9f25e41797d22a05c94c322363fb15b48f5b'
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Root` origin.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + 10,000.
+   * # </weight>
+   */
+  get asEfinityV3000(): {call: efinityV3000.Call} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Root` origin.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + 10,000.
+   * # </weight>
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Sudo.sudo') === 'e012971186d24150768a01e178a50e0093b25a9bd9fbd727a60b594e3005ce1d'
   }
@@ -9560,6 +11283,41 @@ export class SudoSudoAsCall {
    * - Weight of derivative `call` execution + 10,000.
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Sudo.sudo_as') === '72c0d26bcb9ca79fd688ceaa6f12a5c228c6dc1f0d2901fc26eb5a8797f7360f'
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+   * a given account.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + 10,000.
+   * # </weight>
+   */
+  get asEfinityV3000(): {who: efinityV3000.MultiAddress, call: efinityV3000.Call} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+   * a given account.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + 10,000.
+   * # </weight>
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Sudo.sudo_as') === '92d998dedef81904439c16d7e91aa4061a6f5356d9dddbd119b47c7be1de6490'
   }
@@ -9727,6 +11485,39 @@ export class SudoSudoUncheckedWeightCall {
    */
   get asEfinityV3(): {call: efinityV3.Call, weight: bigint} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Root` origin.
+   * This function does not check the weight of the call, and instead allows the
+   * Sudo user to specify the weight of the call.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - The weight of this call is defined by the caller.
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '6c0a5348a61c03f772ed27df9b1f8caad23cfde7612b9dd0510211b5194b1cb5'
+  }
+
+  /**
+   * Authenticates the sudo key and dispatches a function call with `Root` origin.
+   * This function does not check the weight of the call, and instead allows the
+   * Sudo user to specify the weight of the call.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - The weight of this call is defined by the caller.
+   * # </weight>
+   */
+  get asEfinityV3000(): {call: efinityV3000.Call, weight: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -10436,6 +12227,160 @@ export class TechnicalCommitteeCloseCall {
    * - up to 3 events
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalCommittee.close') === '683905378cce329de8c5e9460bd36984188fb48a39207d985ea43cb10bd1eb81'
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get asEfinityV3000(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalCommittee.close') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
+  get asV5(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Close a vote that is either approved, disapproved or whose voting period has ended.
+   * 
+   * May be called by any signed account in order to finish voting and close the proposal.
+   * 
+   * If called before the end of the voting period it will only close the vote if it is
+   * has enough votes to be approved or disapproved.
+   * 
+   * If called after the end of the voting period abstentions are counted as rejections
+   * unless there is a prime member set and the prime member cast an approval.
+   * 
+   * If the close operation completes successfully with disapproval, the transaction fee will
+   * be waived. Otherwise execution of the approved operation will be charged to the caller.
+   * 
+   * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+   * proposal.
+   * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+   * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1 + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - `P1` is the complexity of `proposal` preimage.
+   *   - `P2` is proposal-count (code-bounded)
+   * - DB:
+   *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+   *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+   *    `O(P2)`)
+   *  - any mutations done while executing `proposal` (`P1`)
+   * - up to 3 events
+   * # </weight>
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('TechnicalCommittee.close') === '683905378cce329de8c5e9460bd36984188fb48a39207d985ea43cb10bd1eb81'
   }
@@ -10615,6 +12560,41 @@ export class TechnicalCommitteeExecuteCall {
    */
   get asEfinityV3(): {proposal: efinityV3.Call, lengthBound: number} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Dispatch a proposal from a member using the `Member` origin.
+   * 
+   * Origin must be a member of the collective.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+   *   `proposal`
+   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+   * - 1 event
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalCommittee.execute') === 'f7c13fc7ad3cc7b9239d67e6f66e18aa29af19f2409b52a9a01936a7b4010484'
+  }
+
+  /**
+   * Dispatch a proposal from a member using the `Member` origin.
+   * 
+   * Origin must be a member of the collective.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+   *   `proposal`
+   * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+   * - 1 event
+   * # </weight>
+   */
+  get asEfinityV3000(): {proposal: efinityV3000.Call, lengthBound: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -10833,6 +12813,73 @@ export class TechnicalCommitteeProposeCall {
    */
   get asEfinityV3(): {threshold: number, proposal: efinityV3.Call, lengthBound: number} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Add a new proposal to either be voted on or executed directly.
+   * 
+   * Requires the sender to be member.
+   * 
+   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+   * or put up for voting.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1)` or `O(B + M + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - branching is influenced by `threshold` where:
+   *     - `P1` is proposal execution complexity (`threshold < 2`)
+   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+   * - DB:
+   *   - 1 storage read `is_member` (codec `O(M)`)
+   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+   *   - DB accesses influenced by `threshold`:
+   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+   *     - OR proposal insertion (`threshold <= 2`)
+   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+   *       - 1 storage write `ProposalOf` (codec `O(B)`)
+   *       - 1 storage write `Voting` (codec `O(M)`)
+   *   - 1 event
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalCommittee.propose') === 'aa055232416a5ef8b09fa2f17d5592dcbddf1e9487fb45a6a69b3412734afbe9'
+  }
+
+  /**
+   * Add a new proposal to either be voted on or executed directly.
+   * 
+   * Requires the sender to be member.
+   * 
+   * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+   * or put up for voting.
+   * 
+   * # <weight>
+   * ## Weight
+   * - `O(B + M + P1)` or `O(B + M + P2)` where:
+   *   - `B` is `proposal` size in bytes (length-fee-bounded)
+   *   - `M` is members-count (code- and governance-bounded)
+   *   - branching is influenced by `threshold` where:
+   *     - `P1` is proposal execution complexity (`threshold < 2`)
+   *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+   * - DB:
+   *   - 1 storage read `is_member` (codec `O(M)`)
+   *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+   *   - DB accesses influenced by `threshold`:
+   *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+   *     - OR proposal insertion (`threshold <= 2`)
+   *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+   *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+   *       - 1 storage write `ProposalOf` (codec `O(B)`)
+   *       - 1 storage write `Voting` (codec `O(M)`)
+   *   - 1 event
+   * # </weight>
+   */
+  get asEfinityV3000(): {threshold: number, proposal: efinityV3000.Call, lengthBound: number} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -11156,6 +13203,44 @@ export class TechnicalMembershipAddMemberCall {
    * 
    * May only be called from `T::AddOrigin`.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.add_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
+  }
+
+  /**
+   * Add a member `who` to the set.
+   * 
+   * May only be called from `T::AddOrigin`.
+   */
+  get asEfinityV3000(): {who: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Add a member `who` to the set.
+   * 
+   * May only be called from `T::AddOrigin`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.add_member') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
+  }
+
+  /**
+   * Add a member `who` to the set.
+   * 
+   * May only be called from `T::AddOrigin`.
+   */
+  get asV5(): {who: Uint8Array} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Add a member `who` to the set.
+   * 
+   * May only be called from `T::AddOrigin`.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('TechnicalMembership.add_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
   }
@@ -11204,6 +13289,52 @@ export class TechnicalMembershipChangeKeyCall {
    */
   get asEfinityV2(): {new: Uint8Array} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Swap out the sending member for some other key `new`.
+   * 
+   * May only be called from `Signed` origin of a current member.
+   * 
+   * Prime membership is passed from the origin account to `new`, if extant.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.change_key') === 'e634aac3331d47a56ff572c52ad90a648769dfbf2c00d7bd44498b4ee41f6ac7'
+  }
+
+  /**
+   * Swap out the sending member for some other key `new`.
+   * 
+   * May only be called from `Signed` origin of a current member.
+   * 
+   * Prime membership is passed from the origin account to `new`, if extant.
+   */
+  get asEfinityV3000(): {new: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Swap out the sending member for some other key `new`.
+   * 
+   * May only be called from `Signed` origin of a current member.
+   * 
+   * Prime membership is passed from the origin account to `new`, if extant.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.change_key') === 'f866dcb3e8857987a2d21e57c13216c10bb21546a718b81d5e2c0989d6e95df7'
+  }
+
+  /**
+   * Swap out the sending member for some other key `new`.
+   * 
+   * May only be called from `Signed` origin of a current member.
+   * 
+   * Prime membership is passed from the origin account to `new`, if extant.
+   */
+  get asV5(): {new: Uint8Array} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -11301,6 +13432,44 @@ export class TechnicalMembershipRemoveMemberCall {
    * 
    * May only be called from `T::RemoveOrigin`.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.remove_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
+  }
+
+  /**
+   * Remove a member `who` from the set.
+   * 
+   * May only be called from `T::RemoveOrigin`.
+   */
+  get asEfinityV3000(): {who: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Remove a member `who` from the set.
+   * 
+   * May only be called from `T::RemoveOrigin`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.remove_member') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
+  }
+
+  /**
+   * Remove a member `who` from the set.
+   * 
+   * May only be called from `T::RemoveOrigin`.
+   */
+  get asV5(): {who: Uint8Array} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Remove a member `who` from the set.
+   * 
+   * May only be called from `T::RemoveOrigin`.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('TechnicalMembership.remove_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
   }
@@ -11388,6 +13557,44 @@ export class TechnicalMembershipSetPrimeCall {
    * 
    * May only be called from `T::PrimeOrigin`.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.set_prime') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
+  }
+
+  /**
+   * Set the prime member. Must be a current member.
+   * 
+   * May only be called from `T::PrimeOrigin`.
+   */
+  get asEfinityV3000(): {who: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the prime member. Must be a current member.
+   * 
+   * May only be called from `T::PrimeOrigin`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.set_prime') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
+  }
+
+  /**
+   * Set the prime member. Must be a current member.
+   * 
+   * May only be called from `T::PrimeOrigin`.
+   */
+  get asV5(): {who: Uint8Array} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Set the prime member. Must be a current member.
+   * 
+   * May only be called from `T::PrimeOrigin`.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('TechnicalMembership.set_prime') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
   }
@@ -11436,6 +13643,52 @@ export class TechnicalMembershipSwapMemberCall {
    */
   get asEfinityV2(): {remove: Uint8Array, add: Uint8Array} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Swap out one member `remove` for another `add`.
+   * 
+   * May only be called from `T::SwapOrigin`.
+   * 
+   * Prime membership is *not* passed from `remove` to `add`, if extant.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.swap_member') === '5efd724fae29eef6393e039bf2dbfd2d5a3081770cc9cc8a80a1475fd6b40cf4'
+  }
+
+  /**
+   * Swap out one member `remove` for another `add`.
+   * 
+   * May only be called from `T::SwapOrigin`.
+   * 
+   * Prime membership is *not* passed from `remove` to `add`, if extant.
+   */
+  get asEfinityV3000(): {remove: efinityV3000.MultiAddress, add: efinityV3000.MultiAddress} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Swap out one member `remove` for another `add`.
+   * 
+   * May only be called from `T::SwapOrigin`.
+   * 
+   * Prime membership is *not* passed from `remove` to `add`, if extant.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('TechnicalMembership.swap_member') === 'f9cf5ef851567c52b54f359126b80e6fa967b49f082dd77310b8461819cd13df'
+  }
+
+  /**
+   * Swap out one member `remove` for another `add`.
+   * 
+   * May only be called from `T::SwapOrigin`.
+   * 
+   * Prime membership is *not* passed from `remove` to `add`, if extant.
+   */
+  get asV5(): {remove: Uint8Array, add: Uint8Array} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -11610,6 +13863,45 @@ export class UtilityAsDerivativeCall {
    */
   get asEfinityV3(): {index: number, call: efinityV3.Call} {
     assert(this.isEfinityV3)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Send a call through an indexed pseudonym of the sender.
+   * 
+   * Filter from origin are passed along. The call will be dispatched with an origin which
+   * use the same filter as the origin of this call.
+   * 
+   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+   * because you expect `proxy` to have been used prior in the call stack and you do not want
+   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+   * in the Multisig pallet instead.
+   * 
+   * NOTE: Prior to version *12, this was called `as_limited_sub`.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Utility.as_derivative') === '4f6e39dff485c21deb3896b950e0d3108acd0c67cd319fadf7f328fe5e448b32'
+  }
+
+  /**
+   * Send a call through an indexed pseudonym of the sender.
+   * 
+   * Filter from origin are passed along. The call will be dispatched with an origin which
+   * use the same filter as the origin of this call.
+   * 
+   * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+   * because you expect `proxy` to have been used prior in the call stack and you do not want
+   * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+   * in the Multisig pallet instead.
+   * 
+   * NOTE: Prior to version *12, this was called `as_limited_sub`.
+   * 
+   * The dispatch origin for this call must be _Signed_.
+   */
+  get asEfinityV3000(): {index: number, call: efinityV3000.Call} {
+    assert(this.isEfinityV3000)
     return this._chain.decodeCall(this.call)
   }
 
@@ -11828,6 +14120,57 @@ export class UtilityBatchCall {
    * and the error of the failed call. If all were successful, then the `BatchCompleted`
    * event is deposited.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Utility.batch') === 'fce3a427fddceab0fdcca629ccf8f2ad29df6bb6e1ed6667cbf01ca81746b38a'
+  }
+
+  /**
+   * Send a batch of dispatch calls.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   * 
+   * This will return `Ok` in all circumstances. To determine the success of the batch, an
+   * event is deposited. If a call failed and the batch was interrupted, then the
+   * `BatchInterrupted` event is deposited, along with the number of successful calls made
+   * and the error of the failed call. If all were successful, then the `BatchCompleted`
+   * event is deposited.
+   */
+  get asEfinityV3000(): {calls: efinityV3000.Call[]} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Send a batch of dispatch calls.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   * 
+   * This will return `Ok` in all circumstances. To determine the success of the batch, an
+   * event is deposited. If a call failed and the batch was interrupted, then the
+   * `BatchInterrupted` event is deposited, along with the number of successful calls made
+   * and the error of the failed call. If all were successful, then the `BatchCompleted`
+   * event is deposited.
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Utility.batch') === 'a3d50824fe0f9fed46769d5921764e892e21a6ab35e4c349ae8275175cc9c2f5'
   }
@@ -12021,6 +14364,47 @@ export class UtilityBatchAllCall {
    * - Complexity: O(C) where C is the number of calls to be batched.
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Utility.batch_all') === 'fce3a427fddceab0fdcca629ccf8f2ad29df6bb6e1ed6667cbf01ca81746b38a'
+  }
+
+  /**
+   * Send a batch of dispatch calls and atomically execute them.
+   * The whole transaction will rollback and fail if any of the calls failed.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   */
+  get asEfinityV3000(): {calls: efinityV3000.Call[]} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Send a batch of dispatch calls and atomically execute them.
+   * The whole transaction will rollback and fail if any of the calls failed.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Utility.batch_all') === 'a3d50824fe0f9fed46769d5921764e892e21a6ab35e4c349ae8275175cc9c2f5'
   }
@@ -12179,6 +14563,39 @@ export class UtilityDispatchAsCall {
    * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
    * # </weight>
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Utility.dispatch_as') === '45597107961c93154e78812bc78141ae1cfe93bd1b2b0d2ce58ec84d163ae33b'
+  }
+
+  /**
+   * Dispatches a function call with a provided origin.
+   * 
+   * The dispatch origin for this call must be _Root_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+   * # </weight>
+   */
+  get asEfinityV3000(): {asOrigin: efinityV3000.OriginCaller, call: efinityV3000.Call} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Dispatches a function call with a provided origin.
+   * 
+   * The dispatch origin for this call must be _Root_.
+   * 
+   * # <weight>
+   * - O(1).
+   * - Limited storage reads.
+   * - One DB write (event).
+   * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+   * # </weight>
+   */
   get isV5(): boolean {
     return this._chain.getCallHash('Utility.dispatch_as') === 'b3f85592d38b11d9341a45481d99c8ca073f925cbc83b208476dd2fad8c87cf5'
   }
@@ -12245,6 +14662,47 @@ export class UtilityForceBatchCall {
     assert(call.name === 'Utility.force_batch')
     this._chain = ctx._chain
     this.call = call
+  }
+
+  /**
+   * Send a batch of dispatch calls.
+   * Unlike `batch`, it allows errors and won't interrupt.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('Utility.force_batch') === 'fce3a427fddceab0fdcca629ccf8f2ad29df6bb6e1ed6667cbf01ca81746b38a'
+  }
+
+  /**
+   * Send a batch of dispatch calls.
+   * Unlike `batch`, it allows errors and won't interrupt.
+   * 
+   * May be called from any origin.
+   * 
+   * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+   *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+   * 
+   * If origin is root then call are dispatch without checking origin filter. (This includes
+   * bypassing `frame_system::Config::BaseCallFilter`).
+   * 
+   * # <weight>
+   * - Complexity: O(C) where C is the number of calls to be batched.
+   * # </weight>
+   */
+  get asEfinityV3000(): {calls: efinityV3000.Call[]} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
   }
 
   /**
@@ -12584,6 +15042,84 @@ export class XcmpQueueServiceOverweightCall {
    * Events:
    * - `OverweightServiced`: On success.
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('XcmpQueue.service_overweight') === '3e0d440993be1d69328adae3a1b30f3261ca945f8f307c396f4de7f51796a0c6'
+  }
+
+  /**
+   * Services a single overweight XCM.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight XCM to service
+   * - `weight_limit`: The amount of weight that XCM execution may take.
+   * 
+   * Errors:
+   * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+   * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+   * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get asEfinityV3000(): {index: bigint, weightLimit: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Services a single overweight XCM.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight XCM to service
+   * - `weight_limit`: The amount of weight that XCM execution may take.
+   * 
+   * Errors:
+   * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+   * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+   * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('XcmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
+  }
+
+  /**
+   * Services a single overweight XCM.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight XCM to service
+   * - `weight_limit`: The amount of weight that XCM execution may take.
+   * 
+   * Errors:
+   * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+   * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+   * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
+  get asV5(): {index: bigint, weightLimit: bigint} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Services a single overweight XCM.
+   * 
+   * - `origin`: Must pass `ExecuteOverweightOrigin`.
+   * - `index`: The index of the overweight XCM to service
+   * - `weight_limit`: The amount of weight that XCM execution may take.
+   * 
+   * Errors:
+   * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+   * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+   * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+   * 
+   * Events:
+   * - `OverweightServiced`: On success.
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('XcmpQueue.service_overweight') === '3e0d440993be1d69328adae3a1b30f3261ca945f8f307c396f4de7f51796a0c6'
   }
@@ -12793,6 +15329,48 @@ export class XcmpQueueUpdateThresholdWeightCall {
    * - `origin`: Must pass `Root`.
    * - `new`: Desired value for `QueueConfigData.threshold_weight`
    */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === 'ceb02ac7f45638dcb446470f1d43ad1d0dd56ac82f1a2cd9432b8e99555f672c'
+  }
+
+  /**
+   * Overwrites the amount of remaining weight under which we stop processing messages.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.threshold_weight`
+   */
+  get asEfinityV3000(): {new: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrites the amount of remaining weight under which we stop processing messages.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.threshold_weight`
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+  }
+
+  /**
+   * Overwrites the amount of remaining weight under which we stop processing messages.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.threshold_weight`
+   */
+  get asV5(): {new: bigint} {
+    assert(this.isV5)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrites the amount of remaining weight under which we stop processing messages.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.threshold_weight`
+   */
   get isV6(): boolean {
     return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === 'ceb02ac7f45638dcb446470f1d43ad1d0dd56ac82f1a2cd9432b8e99555f672c'
   }
@@ -12842,6 +15420,52 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
    */
   get asEfinityV2(): {new: bigint} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrites the speed to which the available weight approaches the maximum weight.
+   * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === 'ceb02ac7f45638dcb446470f1d43ad1d0dd56ac82f1a2cd9432b8e99555f672c'
+  }
+
+  /**
+   * Overwrites the speed to which the available weight approaches the maximum weight.
+   * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+   */
+  get asEfinityV3000(): {new: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrites the speed to which the available weight approaches the maximum weight.
+   * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+  }
+
+  /**
+   * Overwrites the speed to which the available weight approaches the maximum weight.
+   * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+   */
+  get asV5(): {new: bigint} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 
@@ -12902,6 +15526,52 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
    */
   get asEfinityV2(): {new: bigint} {
     assert(this.isEfinityV2)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrite the maximum amount of weight any individual message may consume.
+   * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+   */
+  get isEfinityV3000(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === 'ceb02ac7f45638dcb446470f1d43ad1d0dd56ac82f1a2cd9432b8e99555f672c'
+  }
+
+  /**
+   * Overwrite the maximum amount of weight any individual message may consume.
+   * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+   */
+  get asEfinityV3000(): {new: efinityV3000.Weight} {
+    assert(this.isEfinityV3000)
+    return this._chain.decodeCall(this.call)
+  }
+
+  /**
+   * Overwrite the maximum amount of weight any individual message may consume.
+   * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+   */
+  get isV5(): boolean {
+    return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+  }
+
+  /**
+   * Overwrite the maximum amount of weight any individual message may consume.
+   * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+   * 
+   * - `origin`: Must pass `Root`.
+   * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+   */
+  get asV5(): {new: bigint} {
+    assert(this.isV5)
     return this._chain.decodeCall(this.call)
   }
 

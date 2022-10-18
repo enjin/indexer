@@ -1,10 +1,11 @@
 import assert from 'assert'
 import {Block, Chain, ChainContext, BlockContext, Result} from './support'
-import * as v5 from './v5'
 import * as efinityV1 from './efinityV1'
+import * as v5 from './v5'
 import * as v6 from './v6'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
+import * as efinityV3000 from './efinityV3000'
 
 export class AssetRegistryLastAssetIdStorage {
   private readonly _chain: Chain
@@ -21,15 +22,15 @@ export class AssetRegistryLastAssetIdStorage {
   /**
    *  The last processed asset id - used when assigning a sequential id.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('AssetRegistry', 'LastAssetId') === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
   }
 
   /**
    *  The last processed asset id - used when assigning a sequential id.
    */
-  async getAsV6(): Promise<number> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<number> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'AssetRegistry', 'LastAssetId')
   }
 
@@ -57,7 +58,7 @@ export class AssetRegistryLocationToAssetIdStorage {
    *  Maps a multilocation to an asset id - useful when processing xcm
    *  messages.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('AssetRegistry', 'LocationToAssetId') === '3c043d5ada7fce2b8b426c49f9b15d1308835a7483919400e4c42d24e95b4193'
   }
 
@@ -65,18 +66,18 @@ export class AssetRegistryLocationToAssetIdStorage {
    *  Maps a multilocation to an asset id - useful when processing xcm
    *  messages.
    */
-  async getAsV6(key: v6.V1MultiLocation): Promise<number | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: efinityV3000.V1MultiLocation): Promise<number | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'AssetRegistry', 'LocationToAssetId', key)
   }
 
-  async getManyAsV6(keys: v6.V1MultiLocation[]): Promise<(number | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: efinityV3000.V1MultiLocation[]): Promise<(number | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'LocationToAssetId', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(number)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(number)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'LocationToAssetId')
   }
 
@@ -103,25 +104,25 @@ export class AssetRegistryMetadataStorage {
   /**
    *  The metadata of an asset, indexed by asset id.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('AssetRegistry', 'Metadata') === 'ecee0301595c8efdb7bb75fce789ce73c12d7f7cec5bc83b08871d28b4b1a98f'
   }
 
   /**
    *  The metadata of an asset, indexed by asset id.
    */
-  async getAsV6(key: number): Promise<v6.AssetMetadata | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: number): Promise<efinityV3000.AssetMetadata | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'AssetRegistry', 'Metadata', key)
   }
 
-  async getManyAsV6(keys: number[]): Promise<(v6.AssetMetadata | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: number[]): Promise<(efinityV3000.AssetMetadata | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'Metadata', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(v6.AssetMetadata)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.AssetMetadata)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'Metadata')
   }
 
@@ -148,15 +149,15 @@ export class AuthorshipAuthorStorage {
   /**
    *  Author of current block.
    */
-  get isV5() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Authorship', 'Author') === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
   }
 
   /**
    *  Author of current block.
    */
-  async getAsV5(): Promise<Uint8Array | undefined> {
-    assert(this.isV5)
+  async getAsEfinityV3000(): Promise<Uint8Array | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Authorship', 'Author')
   }
 
@@ -183,15 +184,15 @@ export class AuthorshipDidSetUnclesStorage {
   /**
    *  Whether uncles were already set in this block.
    */
-  get isV5() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Authorship', 'DidSetUncles') === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
   }
 
   /**
    *  Whether uncles were already set in this block.
    */
-  async getAsV5(): Promise<boolean> {
-    assert(this.isV5)
+  async getAsEfinityV3000(): Promise<boolean> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Authorship', 'DidSetUncles')
   }
 
@@ -218,15 +219,15 @@ export class AuthorshipUnclesStorage {
   /**
    *  Uncles
    */
-  get isV5() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Authorship', 'Uncles') === '320be201dc467df78c8912d3a5ad0cb57cd9b25ab8bff2e738597ffc0a83b551'
   }
 
   /**
    *  Uncles
    */
-  async getAsV5(): Promise<v5.UncleEntryItem[]> {
-    assert(this.isV5)
+  async getAsEfinityV3000(): Promise<efinityV3000.UncleEntryItem[]> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Authorship', 'Uncles')
   }
 
@@ -1640,6 +1641,31 @@ export class CouncilProposalOfStorage {
   /**
    *  Actual proposal for a given hash, if it's current.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === '9519c67ef57e5b8670140b6dd3e5e6fe1442826b838497aaa7815062025f6649'
+  }
+
+  /**
+   *  Actual proposal for a given hash, if it's current.
+   */
+  async getAsEfinityV3000(key: Uint8Array): Promise<efinityV3000.Call | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'Council', 'ProposalOf', key)
+  }
+
+  async getManyAsEfinityV3000(keys: Uint8Array[]): Promise<(efinityV3000.Call | undefined)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'Council', 'ProposalOf', keys.map(k => [k]))
+  }
+
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.Call)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'Council', 'ProposalOf')
+  }
+
+  /**
+   *  Actual proposal for a given hash, if it's current.
+   */
   get isV5() {
     return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === '3086cb7dd72e8a750dd7b1a207b9f94123651b10d43e995c166c43e4d1b38101'
   }
@@ -2352,6 +2378,36 @@ export class DmpQueueConfigurationStorage {
   /**
    *  The configuration.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('DmpQueue', 'Configuration') === '67bde14908f93a3aea4aa5877726bd296c59aa66227203739244319bbf5fb443'
+  }
+
+  /**
+   *  The configuration.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.ConfigData> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'DmpQueue', 'Configuration')
+  }
+
+  /**
+   *  The configuration.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('DmpQueue', 'Configuration') === 'de2fc633d896ffed21e1f630f0a1bfe710ecfa69921c58a4a758e7fd49d0b5a4'
+  }
+
+  /**
+   *  The configuration.
+   */
+  async getAsV5(): Promise<v5.ConfigData> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'DmpQueue', 'Configuration')
+  }
+
+  /**
+   *  The configuration.
+   */
   get isV6() {
     return this._chain.getStorageItemTypeHash('DmpQueue', 'Configuration') === '67bde14908f93a3aea4aa5877726bd296c59aa66227203739244319bbf5fb443'
   }
@@ -2515,7 +2571,7 @@ export class ExtrinsicPausePausedExtrinsicsStorage {
    *  The key is tuple with the name of the pallet and the extrinsic name and value is
    *  an Option<()> which is None if the extrinsic is not paused and Some(()) if it is.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('ExtrinsicPause', 'PausedExtrinsics') === '9914d71a2b43fa7da00c957184ae8b79abfcf4e6a63fb1b814680e322156164c'
   }
 
@@ -2525,18 +2581,18 @@ export class ExtrinsicPausePausedExtrinsicsStorage {
    *  The key is tuple with the name of the pallet and the extrinsic name and value is
    *  an Option<()> which is None if the extrinsic is not paused and Some(()) if it is.
    */
-  async getAsV6(key: v6.ExtrinsicInfo): Promise<null | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: efinityV3000.ExtrinsicInfo): Promise<null | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'ExtrinsicPause', 'PausedExtrinsics', key)
   }
 
-  async getManyAsV6(keys: v6.ExtrinsicInfo[]): Promise<(null | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: efinityV3000.ExtrinsicInfo[]): Promise<(null | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'ExtrinsicPause', 'PausedExtrinsics', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(null)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(null)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'ExtrinsicPause', 'PausedExtrinsics')
   }
 
@@ -2563,25 +2619,25 @@ export class FuelTanksAccountsStorage {
   /**
    *  Mapping of Fuel Tanks and their user Accounts to account data
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('FuelTanks', 'Accounts') === '779942d2fcd4cd5dbeb1843d9556a6249b0b76ec19382709018ef4f07e288ee0'
   }
 
   /**
    *  Mapping of Fuel Tanks and their user Accounts to account data
    */
-  async getAsV6(key1: Uint8Array, key2: Uint8Array): Promise<v6.UserAccount | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: Uint8Array, key2: Uint8Array): Promise<efinityV3000.UserAccount | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'FuelTanks', 'Accounts', key1, key2)
   }
 
-  async getManyAsV6(keys: [Uint8Array, Uint8Array][]): Promise<(v6.UserAccount | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [Uint8Array, Uint8Array][]): Promise<(efinityV3000.UserAccount | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'FuelTanks', 'Accounts', keys)
   }
 
-  async getAllAsV6(): Promise<(v6.UserAccount)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.UserAccount)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'FuelTanks', 'Accounts')
   }
 
@@ -2609,7 +2665,7 @@ export class FuelTanksFreezeQueueStorage {
    *  The queue for fuel tank and rule set freezing
    *  Composed of (`tank_id`, `rule_set_id`, new `is_frozen` value)
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('FuelTanks', 'FreezeQueue') === '6417b6c5aebb64849792349d17be222d1c212c6254e5517ec62f89a5e5e14ddc'
   }
 
@@ -2617,8 +2673,8 @@ export class FuelTanksFreezeQueueStorage {
    *  The queue for fuel tank and rule set freezing
    *  Composed of (`tank_id`, `rule_set_id`, new `is_frozen` value)
    */
-  async getAsV6(): Promise<v6.FreezeQueueItem[]> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<efinityV3000.FreezeQueueItem[]> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'FuelTanks', 'FreezeQueue')
   }
 
@@ -2645,25 +2701,25 @@ export class FuelTanksTanksStorage {
   /**
    *  Mapping of Fuel Tanks accounts to their data
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('FuelTanks', 'Tanks') === 'f75b278131ab790de7986c66a9238030c7fde76022a4a06bd888cff70440801d'
   }
 
   /**
    *  Mapping of Fuel Tanks accounts to their data
    */
-  async getAsV6(key: Uint8Array): Promise<v6.FuelTank | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: Uint8Array): Promise<efinityV3000.FuelTank | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'FuelTanks', 'Tanks', key)
   }
 
-  async getManyAsV6(keys: Uint8Array[]): Promise<(v6.FuelTank | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: Uint8Array[]): Promise<(efinityV3000.FuelTank | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'FuelTanks', 'Tanks', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(v6.FuelTank)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.FuelTank)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'FuelTanks', 'Tanks')
   }
 
@@ -2690,15 +2746,15 @@ export class MarketplaceInfoStorage {
   /**
    *  Stores information about the marketplace
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Marketplace', 'Info') === '8f3079a34bccec98eddaa087299c671597b9b6c0401ca8c900734ef257151b13'
   }
 
   /**
    *  Stores information about the marketplace
    */
-  async getAsV6(): Promise<v6.MarketPlaceInfo> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<efinityV3000.MarketPlaceInfo> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Marketplace', 'Info')
   }
 
@@ -2725,25 +2781,25 @@ export class MarketplaceListingIdsByAccountIdStorage {
   /**
    *  Listing Ids by `AccountId`
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Marketplace', 'ListingIdsByAccountId') === '33e12ad309c02112b5ea505c6e3e739ba83921bfe6bed7e5eb08d21907895180'
   }
 
   /**
    *  Listing Ids by `AccountId`
    */
-  async getAsV6(key1: Uint8Array, key2: Uint8Array): Promise<null | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: Uint8Array, key2: Uint8Array): Promise<null | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Marketplace', 'ListingIdsByAccountId', key1, key2)
   }
 
-  async getManyAsV6(keys: [Uint8Array, Uint8Array][]): Promise<(null | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [Uint8Array, Uint8Array][]): Promise<(null | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByAccountId', keys)
   }
 
-  async getAllAsV6(): Promise<(null)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(null)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByAccountId')
   }
 
@@ -2770,25 +2826,25 @@ export class MarketplaceListingIdsByMakeAssetStorage {
   /**
    *  Listing Ids by make asset's collection id and token id
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Marketplace', 'ListingIdsByMakeAsset') === 'cc5df187f7a6ddcd474c0c1e410e8d72bd71954d4b2ad06da5882588a225356a'
   }
 
   /**
    *  Listing Ids by make asset's collection id and token id
    */
-  async getAsV6(key1: bigint, key2: bigint): Promise<Uint8Array | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: bigint, key2: bigint): Promise<Uint8Array | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Marketplace', 'ListingIdsByMakeAsset', key1, key2)
   }
 
-  async getManyAsV6(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByMakeAsset', keys)
   }
 
-  async getAllAsV6(): Promise<(Uint8Array)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(Uint8Array)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByMakeAsset')
   }
 
@@ -2815,25 +2871,25 @@ export class MarketplaceListingIdsByTakeAssetStorage {
   /**
    *  Listing Ids by take asset's collection id and token id
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Marketplace', 'ListingIdsByTakeAsset') === 'cc5df187f7a6ddcd474c0c1e410e8d72bd71954d4b2ad06da5882588a225356a'
   }
 
   /**
    *  Listing Ids by take asset's collection id and token id
    */
-  async getAsV6(key1: bigint, key2: bigint): Promise<Uint8Array | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: bigint, key2: bigint): Promise<Uint8Array | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Marketplace', 'ListingIdsByTakeAsset', key1, key2)
   }
 
-  async getManyAsV6(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByTakeAsset', keys)
   }
 
-  async getAllAsV6(): Promise<(Uint8Array)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(Uint8Array)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'ListingIdsByTakeAsset')
   }
 
@@ -2860,25 +2916,25 @@ export class MarketplaceListingsStorage {
   /**
    *  Listings by ID
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('Marketplace', 'Listings') === 'e51936bd4e8b63920dc0b1c10bbd1672cd077197cb65f17e9eba1f1a57c36335'
   }
 
   /**
    *  Listings by ID
    */
-  async getAsV6(key: Uint8Array): Promise<v6.Listing | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: Uint8Array): Promise<efinityV3000.Listing | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'Marketplace', 'Listings', key)
   }
 
-  async getManyAsV6(keys: Uint8Array[]): Promise<(v6.Listing | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: Uint8Array[]): Promise<(efinityV3000.Listing | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'Listings', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(v6.Listing)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.Listing)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Marketplace', 'Listings')
   }
 
@@ -3480,6 +3536,56 @@ export class MultiTokensCollectionsStorage {
   /**
    *  The collections in existence and their ownership details.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'Collections') === 'e505bb38c2f05501278271d4d92422c32c38f8976d079eddae5a656ea2e00d3e'
+  }
+
+  /**
+   *  The collections in existence and their ownership details.
+   */
+  async getAsEfinityV3000(key: bigint): Promise<efinityV3000.Collection | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Collections', key)
+  }
+
+  async getManyAsEfinityV3000(keys: bigint[]): Promise<(efinityV3000.Collection | undefined)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections', keys.map(k => [k]))
+  }
+
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.Collection)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections')
+  }
+
+  /**
+   *  The collections in existence and their ownership details.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'Collections') === '796cee53b5b0994fbc828ea8d49c6ffd793ecd23b4c7a29bd969e059778d89f3'
+  }
+
+  /**
+   *  The collections in existence and their ownership details.
+   */
+  async getAsV5(key: bigint): Promise<v5.Collection | undefined> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Collections', key)
+  }
+
+  async getManyAsV5(keys: bigint[]): Promise<(v5.Collection | undefined)[]> {
+    assert(this.isV5)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections', keys.map(k => [k]))
+  }
+
+  async getAllAsV5(): Promise<(v5.Collection)[]> {
+    assert(this.isV5)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Collections')
+  }
+
+  /**
+   *  The collections in existence and their ownership details.
+   */
   get isV6() {
     return this._chain.getStorageItemTypeHash('MultiTokens', 'Collections') === 'e505bb38c2f05501278271d4d92422c32c38f8976d079eddae5a656ea2e00d3e'
   }
@@ -3534,6 +3640,36 @@ export class MultiTokensIdleOperationsStorage {
    */
   async getAsEfinityV2(): Promise<efinityV2.WeightedIdleOperation[]> {
     assert(this.isEfinityV2)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'IdleOperations')
+  }
+
+  /**
+   *  Pending operations to be executed on `Hooks::on_idle`.
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'IdleOperations') === 'b90452918976da2c388676316009c640f822e1e429f7262cddef8c96a87aa496'
+  }
+
+  /**
+   *  Pending operations to be executed on `Hooks::on_idle`.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.WeightedIdleOperation[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'IdleOperations')
+  }
+
+  /**
+   *  Pending operations to be executed on `Hooks::on_idle`.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'IdleOperations') === '3eb5f23bd85218994c65072029a61dbd467eb712c53d9f7e5dfa83a6dc8687f3'
+  }
+
+  /**
+   *  Pending operations to be executed on `Hooks::on_idle`.
+   */
+  async getAsV5(): Promise<v5.WeightedIdleOperation[]> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'MultiTokens', 'IdleOperations')
   }
 
@@ -3699,6 +3835,56 @@ export class MultiTokensTokensStorage {
 
   async getAllAsEfinityV2(): Promise<(efinityV2.Token)[]> {
     assert(this.isEfinityV2)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens')
+  }
+
+  /**
+   *  Tokens storage
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'Tokens') === 'a212292bd554690a043da4ee9ec0a79e4b8384cb8b35b8038a2d72f85bf5d0bc'
+  }
+
+  /**
+   *  Tokens storage
+   */
+  async getAsEfinityV3000(key1: bigint, key2: bigint): Promise<efinityV3000.Token | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Tokens', key1, key2)
+  }
+
+  async getManyAsEfinityV3000(keys: [bigint, bigint][]): Promise<(efinityV3000.Token | undefined)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens', keys)
+  }
+
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.Token)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens')
+  }
+
+  /**
+   *  Tokens storage
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('MultiTokens', 'Tokens') === '4eac4ac19f06319a6cc826f78f0b579a3c691cb8f1cdf61c93a535676b73abed'
+  }
+
+  /**
+   *  Tokens storage
+   */
+  async getAsV5(key1: bigint, key2: bigint): Promise<v5.Token | undefined> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'MultiTokens', 'Tokens', key1, key2)
+  }
+
+  async getManyAsV5(keys: [bigint, bigint][]): Promise<(v5.Token | undefined)[]> {
+    assert(this.isV5)
+    return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens', keys)
+  }
+
+  async getAllAsV5(): Promise<(v5.Token)[]> {
+    assert(this.isV5)
     return this._chain.queryStorage(this.blockHash, 'MultiTokens', 'Tokens')
   }
 
@@ -4239,15 +4425,15 @@ export class ParachainSystemLastRelayChainBlockNumberStorage {
   /**
    *  The relay chain block number associated with the last parachain block.
    */
-  get isV5() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('ParachainSystem', 'LastRelayChainBlockNumber') === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
   }
 
   /**
    *  The relay chain block number associated with the last parachain block.
    */
-  async getAsV5(): Promise<number> {
-    assert(this.isV5)
+  async getAsEfinityV3000(): Promise<number> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'LastRelayChainBlockNumber')
   }
 
@@ -4614,6 +4800,40 @@ export class ParachainSystemReservedDmpWeightOverrideStorage {
    *  The weight we reserve at the beginning of the block for processing DMP messages. This
    *  overrides the amount set in the Config trait.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('ParachainSystem', 'ReservedDmpWeightOverride') === '1e8de4f65927863b2d720c007e917cc371de0d6c8aee8f5e19251fcf4c5a171b'
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing DMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.Weight | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'ReservedDmpWeightOverride')
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing DMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('ParachainSystem', 'ReservedDmpWeightOverride') === 'd3f0e4c96dad8d73df3c44f02993a46a9ed2eed15208047c7d80882af09d67cc'
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing DMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  async getAsV5(): Promise<bigint | undefined> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'ReservedDmpWeightOverride')
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing DMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
   get isV6() {
     return this._chain.getStorageItemTypeHash('ParachainSystem', 'ReservedDmpWeightOverride') === '1e8de4f65927863b2d720c007e917cc371de0d6c8aee8f5e19251fcf4c5a171b'
   }
@@ -4661,6 +4881,40 @@ export class ParachainSystemReservedXcmpWeightOverrideStorage {
    */
   async getAsEfinityV1(): Promise<bigint | undefined> {
     assert(this.isEfinityV1)
+    return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'ReservedXcmpWeightOverride')
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing XCMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('ParachainSystem', 'ReservedXcmpWeightOverride') === '1e8de4f65927863b2d720c007e917cc371de0d6c8aee8f5e19251fcf4c5a171b'
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing XCMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.Weight | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'ReservedXcmpWeightOverride')
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing XCMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('ParachainSystem', 'ReservedXcmpWeightOverride') === 'd3f0e4c96dad8d73df3c44f02993a46a9ed2eed15208047c7d80882af09d67cc'
+  }
+
+  /**
+   *  The weight we reserve at the beginning of the block for processing XCMP messages. This
+   *  overrides the amount set in the Config trait.
+   */
+  async getAsV5(): Promise<bigint | undefined> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'ParachainSystem', 'ReservedXcmpWeightOverride')
   }
 
@@ -4828,7 +5082,7 @@ export class PolkadotXcmAssetTrapsStorage {
    *  Key is the blake2 256 hash of (origin, versioned `MultiAssets`) pair. Value is the number of
    *  times this pair has been trapped (usually just 1 if it exists at all).
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'AssetTraps') === '25f0d63900988134e6767c7fe398885c0448fd3bd7a0d8ff90cf6b33a482cebd'
   }
 
@@ -4838,18 +5092,18 @@ export class PolkadotXcmAssetTrapsStorage {
    *  Key is the blake2 256 hash of (origin, versioned `MultiAssets`) pair. Value is the number of
    *  times this pair has been trapped (usually just 1 if it exists at all).
    */
-  async getAsV6(key: Uint8Array): Promise<number> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: Uint8Array): Promise<number> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'AssetTraps', key)
   }
 
-  async getManyAsV6(keys: Uint8Array[]): Promise<(number)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: Uint8Array[]): Promise<(number)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'AssetTraps', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(number)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(number)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'AssetTraps')
   }
 
@@ -4876,15 +5130,15 @@ export class PolkadotXcmCurrentMigrationStorage {
   /**
    *  The current migration's stage, if any.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'CurrentMigration') === '59e487b7d451459fc1f76b51279b7db0b09ff9d3906a0cafa428954a73be0c50'
   }
 
   /**
    *  The current migration's stage, if any.
    */
-  async getAsV6(): Promise<v6.VersionMigrationStage | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<efinityV3000.VersionMigrationStage | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'CurrentMigration')
   }
 
@@ -4911,25 +5165,25 @@ export class PolkadotXcmQueriesStorage {
   /**
    *  The ongoing queries.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'Queries') === '8497eae9bd9ecc14a9d7da5daf99074e5fb888ce8b1254175ebacb93a450f902'
   }
 
   /**
    *  The ongoing queries.
    */
-  async getAsV6(key: bigint): Promise<v6.QueryStatus | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key: bigint): Promise<efinityV3000.QueryStatus | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'Queries', key)
   }
 
-  async getManyAsV6(keys: bigint[]): Promise<(v6.QueryStatus | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: bigint[]): Promise<(efinityV3000.QueryStatus | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'Queries', keys.map(k => [k]))
   }
 
-  async getAllAsV6(): Promise<(v6.QueryStatus)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.QueryStatus)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'Queries')
   }
 
@@ -4956,15 +5210,15 @@ export class PolkadotXcmQueryCounterStorage {
   /**
    *  The latest available query index.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'QueryCounter') === '95ff4f914f08e149ddbe1ae2dcb1743bbf9aaae69d04c486e1a398cacfcca06a'
   }
 
   /**
    *  The latest available query index.
    */
-  async getAsV6(): Promise<bigint> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<bigint> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'QueryCounter')
   }
 
@@ -4992,7 +5246,7 @@ export class PolkadotXcmSafeXcmVersionStorage {
    *  Default version to encode XCM when latest version of destination is unknown. If `None`,
    *  then the destinations whose XCM version is unknown are considered unreachable.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'SafeXcmVersion') === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
   }
 
@@ -5000,8 +5254,8 @@ export class PolkadotXcmSafeXcmVersionStorage {
    *  Default version to encode XCM when latest version of destination is unknown. If `None`,
    *  then the destinations whose XCM version is unknown are considered unreachable.
    */
-  async getAsV6(): Promise<number | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<number | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'SafeXcmVersion')
   }
 
@@ -5028,25 +5282,25 @@ export class PolkadotXcmSupportedVersionStorage {
   /**
    *  The Latest versions that we know various locations support.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'SupportedVersion') === 'bf203870a932f637011bee3e0dae76dc35a120f80e5ac7fb32e2dbede4fd5795'
   }
 
   /**
    *  The Latest versions that we know various locations support.
    */
-  async getAsV6(key1: number, key2: v6.VersionedMultiLocation): Promise<number | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: number, key2: efinityV3000.VersionedMultiLocation): Promise<number | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'SupportedVersion', key1, key2)
   }
 
-  async getManyAsV6(keys: [number, v6.VersionedMultiLocation][]): Promise<(number | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [number, efinityV3000.VersionedMultiLocation][]): Promise<(number | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'SupportedVersion', keys)
   }
 
-  async getAllAsV6(): Promise<(number)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(number)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'SupportedVersion')
   }
 
@@ -5075,7 +5329,7 @@ export class PolkadotXcmVersionDiscoveryQueueStorage {
    *  the `u32` counter is the number of times that a send to the destination has been attempted,
    *  which is used as a prioritization.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'VersionDiscoveryQueue') === '16a258fa3891b3d97c16b446ca40a6dbafd16eb5bc2936a51286241b38207f42'
   }
 
@@ -5084,8 +5338,8 @@ export class PolkadotXcmVersionDiscoveryQueueStorage {
    *  the `u32` counter is the number of times that a send to the destination has been attempted,
    *  which is used as a prioritization.
    */
-  async getAsV6(): Promise<[v6.VersionedMultiLocation, number][]> {
-    assert(this.isV6)
+  async getAsEfinityV3000(): Promise<[efinityV3000.VersionedMultiLocation, number][]> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'VersionDiscoveryQueue')
   }
 
@@ -5112,25 +5366,25 @@ export class PolkadotXcmVersionNotifiersStorage {
   /**
    *  All locations that we have requested version notifications from.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'VersionNotifiers') === 'c04d92c1d09bb51782b185c1fa4f78678bd7c63c2388986e2fe34f2f1e02cf9a'
   }
 
   /**
    *  All locations that we have requested version notifications from.
    */
-  async getAsV6(key1: number, key2: v6.VersionedMultiLocation): Promise<bigint | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: number, key2: efinityV3000.VersionedMultiLocation): Promise<bigint | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifiers', key1, key2)
   }
 
-  async getManyAsV6(keys: [number, v6.VersionedMultiLocation][]): Promise<(bigint | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [number, efinityV3000.VersionedMultiLocation][]): Promise<(bigint | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifiers', keys)
   }
 
-  async getAllAsV6(): Promise<(bigint)[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<(bigint)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifiers')
   }
 
@@ -5158,7 +5412,7 @@ export class PolkadotXcmVersionNotifyTargetsStorage {
    *  The target locations that are subscribed to our version changes, as well as the most recent
    *  of our versions we informed them of.
    */
-  get isV6() {
+  get isEfinityV3000() {
     return this._chain.getStorageItemTypeHash('PolkadotXcm', 'VersionNotifyTargets') === 'be7b24532d6af66a6c35ced8427c3201e32a7ab9e2a0c901f57c6d5a416ddc46'
   }
 
@@ -5166,18 +5420,18 @@ export class PolkadotXcmVersionNotifyTargetsStorage {
    *  The target locations that are subscribed to our version changes, as well as the most recent
    *  of our versions we informed them of.
    */
-  async getAsV6(key1: number, key2: v6.VersionedMultiLocation): Promise<[bigint, bigint, number] | undefined> {
-    assert(this.isV6)
+  async getAsEfinityV3000(key1: number, key2: efinityV3000.VersionedMultiLocation): Promise<[bigint, bigint, number] | undefined> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifyTargets', key1, key2)
   }
 
-  async getManyAsV6(keys: [number, v6.VersionedMultiLocation][]): Promise<([bigint, bigint, number] | undefined)[]> {
-    assert(this.isV6)
+  async getManyAsEfinityV3000(keys: [number, efinityV3000.VersionedMultiLocation][]): Promise<([bigint, bigint, number] | undefined)[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifyTargets', keys)
   }
 
-  async getAllAsV6(): Promise<([bigint, bigint, number])[]> {
-    assert(this.isV6)
+  async getAllAsEfinityV3000(): Promise<([bigint, bigint, number])[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'PolkadotXcm', 'VersionNotifyTargets')
   }
 
@@ -5460,6 +5714,31 @@ export class SchedulerAgendaStorage {
 
   async getAllAsEfinityV3(): Promise<((efinityV3.ScheduledV3 | undefined)[])[]> {
     assert(this.isEfinityV3)
+    return this._chain.queryStorage(this.blockHash, 'Scheduler', 'Agenda')
+  }
+
+  /**
+   *  Items to be executed, indexed by the block number that they should be executed on.
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('Scheduler', 'Agenda') === '58dbbafa37eaa11ddb10a7091dd0874ed28fd59adf3b4a2b96f73e8ff03feae7'
+  }
+
+  /**
+   *  Items to be executed, indexed by the block number that they should be executed on.
+   */
+  async getAsEfinityV3000(key: number): Promise<(efinityV3000.ScheduledV3 | undefined)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'Scheduler', 'Agenda', key)
+  }
+
+  async getManyAsEfinityV3000(keys: number[]): Promise<((efinityV3000.ScheduledV3 | undefined)[])[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'Scheduler', 'Agenda', keys.map(k => [k]))
+  }
+
+  async getAllAsEfinityV3000(): Promise<((efinityV3000.ScheduledV3 | undefined)[])[]> {
+    assert(this.isEfinityV3000)
     return this._chain.queryStorage(this.blockHash, 'Scheduler', 'Agenda')
   }
 
@@ -6090,6 +6369,36 @@ export class SystemBlockWeightStorage {
   /**
    *  The current weight for the block.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('System', 'BlockWeight') === 'd35f09c6f3fd2f6e93d9006f364b5b6e91ce1207594e51247070364731dba424'
+  }
+
+  /**
+   *  The current weight for the block.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.PerDispatchClass> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'System', 'BlockWeight')
+  }
+
+  /**
+   *  The current weight for the block.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('System', 'BlockWeight') === '3117e920c869758010946f61bdfb045561b02a263bdc3bcff42e4ce915e4e5d4'
+  }
+
+  /**
+   *  The current weight for the block.
+   */
+  async getAsV5(): Promise<v5.PerDispatchClass> {
+    assert(this.isV5)
+    return this._chain.getStorage(this.blockHash, 'System', 'BlockWeight')
+  }
+
+  /**
+   *  The current weight for the block.
+   */
   get isV6() {
     return this._chain.getStorageItemTypeHash('System', 'BlockWeight') === 'd35f09c6f3fd2f6e93d9006f364b5b6e91ce1207594e51247070364731dba424'
   }
@@ -6330,6 +6639,33 @@ export class SystemEventsStorage {
    */
   async getAsEfinityV3(): Promise<efinityV3.EventRecord[]> {
     assert(this.isEfinityV3)
+    return this._chain.getStorage(this.blockHash, 'System', 'Events')
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: The item is unbound and should therefore never be read on chain.
+   *  It could otherwise inflate the PoV size of a block.
+   * 
+   *  Events have a large in-memory size. Box the events to not go out-of-memory
+   *  just in case someone still reads them from within the runtime.
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('System', 'Events') === 'b70f706a2f64520d0ff81795c9401418aaa26adbc03c7dfeb874c49b9266dd7a'
+  }
+
+  /**
+   *  Events deposited for the current block.
+   * 
+   *  NOTE: The item is unbound and should therefore never be read on chain.
+   *  It could otherwise inflate the PoV size of a block.
+   * 
+   *  Events have a large in-memory size. Box the events to not go out-of-memory
+   *  just in case someone still reads them from within the runtime.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.EventRecord[]> {
+    assert(this.isEfinityV3000)
     return this._chain.getStorage(this.blockHash, 'System', 'Events')
   }
 
@@ -7072,6 +7408,31 @@ export class TechnicalCommitteeProposalOfStorage {
   /**
    *  Actual proposal for a given hash, if it's current.
    */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === '9519c67ef57e5b8670140b6dd3e5e6fe1442826b838497aaa7815062025f6649'
+  }
+
+  /**
+   *  Actual proposal for a given hash, if it's current.
+   */
+  async getAsEfinityV3000(key: Uint8Array): Promise<efinityV3000.Call | undefined> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'TechnicalCommittee', 'ProposalOf', key)
+  }
+
+  async getManyAsEfinityV3000(keys: Uint8Array[]): Promise<(efinityV3000.Call | undefined)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'TechnicalCommittee', 'ProposalOf', keys.map(k => [k]))
+  }
+
+  async getAllAsEfinityV3000(): Promise<(efinityV3000.Call)[]> {
+    assert(this.isEfinityV3000)
+    return this._chain.queryStorage(this.blockHash, 'TechnicalCommittee', 'ProposalOf')
+  }
+
+  /**
+   *  Actual proposal for a given hash, if it's current.
+   */
   get isV5() {
     return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === '3086cb7dd72e8a750dd7b1a207b9f94123651b10d43e995c166c43e4d1b38101'
   }
@@ -7791,6 +8152,36 @@ export class XcmpQueueQueueConfigStorage {
    */
   async getAsEfinityV2(): Promise<efinityV2.QueueConfigData> {
     assert(this.isEfinityV2)
+    return this._chain.getStorage(this.blockHash, 'XcmpQueue', 'QueueConfig')
+  }
+
+  /**
+   *  The configuration which controls the dynamics of the outbound queue.
+   */
+  get isEfinityV3000() {
+    return this._chain.getStorageItemTypeHash('XcmpQueue', 'QueueConfig') === 'b9e7fe75fd5e16e066448c0d0a704aec5c90e5e751ca04108c2b35ab00764560'
+  }
+
+  /**
+   *  The configuration which controls the dynamics of the outbound queue.
+   */
+  async getAsEfinityV3000(): Promise<efinityV3000.QueueConfigData> {
+    assert(this.isEfinityV3000)
+    return this._chain.getStorage(this.blockHash, 'XcmpQueue', 'QueueConfig')
+  }
+
+  /**
+   *  The configuration which controls the dynamics of the outbound queue.
+   */
+  get isV5() {
+    return this._chain.getStorageItemTypeHash('XcmpQueue', 'QueueConfig') === 'bc17b84c06c7e0df3f2684c76020e6d76ff231be948076edbe6751b00937b0b1'
+  }
+
+  /**
+   *  The configuration which controls the dynamics of the outbound queue.
+   */
+  async getAsV5(): Promise<v5.QueueConfigData> {
+    assert(this.isV5)
     return this._chain.getStorage(this.blockHash, 'XcmpQueue', 'QueueConfig')
   }
 
