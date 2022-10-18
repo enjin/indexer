@@ -34,6 +34,7 @@ async function saveChainState(ctx: BlockHandlerContext) {
     state.blockHash = ctx.block.hash
     state.existentialDeposit = 1n
     state.timestamp = new Date(ctx.block.timestamp)
+    state.marketplace = null
 
     await ctx.store.save(state)
 }
