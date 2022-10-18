@@ -13,8 +13,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MarketplaceListingCancelledEvent(ctx);
 
-    if (event.isV6) {
-        const { listingId } = event.asV6
+    if (event.isEfinityV3000) {
+        const { listingId } = event.asEfinityV3000
         return { listingId }
     } else {
         throw new UnknownVersionError(event.constructor.name)

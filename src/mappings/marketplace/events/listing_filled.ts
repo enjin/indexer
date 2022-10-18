@@ -16,8 +16,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
     const event = new MarketplaceListingFilledEvent(ctx);
 
-    if (event.isV6) {
-        const { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty } = event.asV6
+    if (event.isEfinityV3000) {
+        const { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty } = event.asEfinityV3000
         return { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty }
     } else {
         throw new UnknownVersionError(event.constructor.name)
