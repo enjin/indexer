@@ -226,7 +226,7 @@ type MetadataMeta {
 type MetadataMedia {
   uri: String!
   alt: String
-  type: String!
+  type: String
 }
 
 type Metadata {
