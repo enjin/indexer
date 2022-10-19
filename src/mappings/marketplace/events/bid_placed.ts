@@ -28,8 +28,9 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
 
     if (!data) return
 
+    const listingId = Buffer.from(data.listingId).toString("hex")
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
-        where: { id: Buffer.from(data.listingId).toString("hex") },
+        where: { id: listingId },
         relations: {
             seller: true,
             makeAssetId: true,
@@ -41,7 +42,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     const account = await getOrCreateAccount(ctx, address)
 
     const bid = new Bid({
-        id: `${data.listingId.toString()}-${address}-${data.bid.price}`,
+        id: `${listingId}-${address}-${data.bid.price}`,
         bidder: account,
         price: data.bid.price,
         listing: listing,
