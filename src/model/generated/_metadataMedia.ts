@@ -4,14 +4,14 @@ import * as marshal from "./marshal"
 export class MetadataMedia {
   private _uri!: string
   private _alt!: string | undefined | null
-  private _type!: string
+  private _type!: string | undefined | null
 
   constructor(props?: Partial<Omit<MetadataMedia, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
       this._uri = marshal.string.fromJSON(json.uri)
       this._alt = json.alt == null ? undefined : marshal.string.fromJSON(json.alt)
-      this._type = marshal.string.fromJSON(json.type)
+      this._type = json.type == null ? undefined : marshal.string.fromJSON(json.type)
     }
   }
 
@@ -32,12 +32,11 @@ export class MetadataMedia {
     this._alt = value
   }
 
-  get type(): string {
-    assert(this._type != null, 'uninitialized access')
+  get type(): string | undefined | null {
     return this._type
   }
 
-  set type(value: string) {
+  set type(value: string | undefined | null) {
     this._type = value
   }
 
