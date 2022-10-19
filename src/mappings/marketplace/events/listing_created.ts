@@ -40,6 +40,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
 
     if (!data) return
 
+    const listingId = Buffer.from(data.listingId).toString("hex")
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
     })
@@ -63,7 +64,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         : new AuctionState({listingType: ListingType.Auction})
 
     const listing = new Listing({
-        id: Buffer.from(data.listingId).toString("hex"),
+        id: listingId,
         seller: account,
         makeAssetId: makeAssetId,
         takeAssetId: takeAssetId,

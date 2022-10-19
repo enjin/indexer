@@ -29,8 +29,9 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
 
     if (!data) return
 
+    const listingId = Buffer.from(data.listingId).toString("hex")
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
-        where: { id: Buffer.from(data.listingId).toString("hex") },
+        where: { id: listingId },
         relations: {
             seller: true,
             makeAssetId: true,
