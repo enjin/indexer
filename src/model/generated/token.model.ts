@@ -5,6 +5,7 @@ import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
+import {Metadata} from "./_metadata"
 
 @Entity_()
 export class Token {
@@ -55,9 +56,12 @@ export class Token {
   @OneToMany_(() => Listing, e => e.makeAssetId)
   listings!: Listing[]
 
-  @Column_("text", {nullable: true})
-  name!: string | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
+  metadata!: Metadata | undefined | null
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
+
+  @Column_("text", {nullable: true})
+  name!: string | undefined | null
 }

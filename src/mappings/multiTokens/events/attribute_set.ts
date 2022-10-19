@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Token } from '../../../model'
+import { Attribute, Collection, Metadata, MetadataMedia, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -49,19 +49,37 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
 
-    const attribute = await ctx.store.findOne<Attribute>(Attribute, {
+    let attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
         relations: {
             collection: true,
             token: true,
         },
     })
+
     if (attribute) {
         attribute.value = value
         attribute.updatedAt = new Date(ctx.block.timestamp)
+        if (token) {
+            if (!token.metadata) {
+                token.metadata = new Metadata()
+            }
+            if (attribute.key === 'name') {
+                token.name = attribute.value
+            }
+            token.metadata = metadataParser(token.metadata, attribute)
+        } else if (collection) {
+            if (!collection.metadata) {
+                collection.metadata = new Metadata()
+            }
+            if (attribute.key === 'name') {
+                collection.name = attribute.value
+            }
+            collection.metadata = metadataParser(collection.metadata, attribute)
+        }
         await ctx.store.save(attribute)
     } else {
-        const attribute = new Attribute({
+        attribute = new Attribute({
             id: attributeId,
             key: key,
             value: value,
@@ -73,22 +91,44 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
         })
 
         await ctx.store.insert(attribute)
+
         if (token) {
+            if (!token.metadata) {
+                token.metadata = new Metadata()
+            }
+            if (attribute.key === 'name') {
+                token.name = attribute.value
+            }
+            token.metadata = metadataParser(token.metadata, attribute)
             token.attributeCount += 1
             await ctx.store.save(token)
         } else if (collection) {
+            if (!collection.metadata) {
+                collection.metadata = new Metadata()
+            }
+            if (attribute.key === 'name') {
+                collection.name = attribute.value
+            }
+            collection.metadata = metadataParser(collection.metadata, attribute)
             collection.attributeCount += 1
             await ctx.store.save(collection)
         }
     }
+}
 
-    if (key === 'name') {
-        if (token) {
-            token.name = value
-            await ctx.store.save(token)
-        } else if (collection) {
-            collection.name = value
-            await ctx.store.save(collection)
-        }
+function metadataParser(metadata: Metadata, attribute: Attribute) {
+    if (attribute.key === 'name') {
+        metadata.name = attribute.value
+    } else if (attribute.key === 'description') {
+        metadata.description = attribute.value
+    } else if (attribute.key === 'fallback_image') {
+        metadata.fallbackImage = attribute.value
+    } else if (attribute.key === 'external_uri') {
+        metadata.externalUri = attribute.value
+    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
+        let media = new MetadataMedia()
+        media.uri = attribute.value
+        metadata.media = [media]
     }
+    return metadata
 }

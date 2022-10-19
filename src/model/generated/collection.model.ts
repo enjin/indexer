@@ -7,6 +7,7 @@ import {Token} from "./token.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
+import {Metadata} from "./_metadata"
 
 @Entity_()
 export class Collection {
@@ -54,9 +55,12 @@ export class Collection {
   @OneToMany_(() => Attribute, e => e.collection)
   attributes!: Attribute[]
 
-  @Column_("text", {nullable: true})
-  name!: string | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
+  metadata!: Metadata | undefined | null
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
+
+  @Column_("text", {nullable: true})
+  name!: string | undefined | null
 }
