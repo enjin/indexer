@@ -4,6 +4,7 @@ import {CapType} from "./_capType"
 import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
+import {Listing} from "./listing.model"
 
 @Entity_()
 export class Token {
@@ -50,6 +51,9 @@ export class Token {
 
   @OneToMany_(() => Attribute, e => e.token)
   attributes!: Attribute[]
+
+  @OneToMany_(() => Listing, e => e.makeAssetId)
+  listings!: Listing[]
 
   @Column_("text", {nullable: true})
   name!: string | undefined | null
