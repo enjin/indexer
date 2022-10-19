@@ -121,8 +121,9 @@ type Collection @entity {
   attributes: [Attribute] @derivedFrom(field: "collection")
 
   # Extras
-  name: String
+  metadata: Metadata
   createdAt: DateTime!
+  name: String
 }
 
 type CollectionApproval {
@@ -173,8 +174,9 @@ type Token @entity {
   listings: [Listing] @derivedFrom(field: "makeAssetId")
 
   # Extras
-  name: String
+  metadata: Metadata
   createdAt: DateTime!
+  name: String
 }
 
 type TokenApproval {
@@ -213,6 +215,28 @@ type TokenAccount @entity {
   # Extras
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+type MetadataMeta {
+  version: Float!
+  language: String
+  sensitiveContent: String
+}
+
+type MetadataMedia {
+  uri: String!
+  alt: String
+  type: String!
+}
+
+type Metadata {
+  name: String
+  description: String
+  externalUri: String
+  keywords: [String]
+  fallbackImage: String
+  media: [MetadataMedia]
+  meta: MetadataMeta
 }
 
 type Attribute @entity {

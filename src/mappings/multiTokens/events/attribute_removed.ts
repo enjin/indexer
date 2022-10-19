@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Token } from '../../../model'
+import { Attribute, Collection, Metadata, MetadataMedia, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -45,10 +45,13 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
                 },
             })
 
+            if (!token.metadata) {
+                token.metadata = new Metadata()
+            }
             if (attribute.key === 'name') {
                 token.name = null
             }
-
+            token.metadata = metadataParser(token.metadata, attribute)
             token.attributeCount -= 1
             await ctx.store.save(token)
         } else if (attribute.collection) {
@@ -59,13 +62,32 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
                 },
             })
 
+            if (!collection.metadata) {
+                collection.metadata = new Metadata()
+            }
             if (attribute.key === 'name') {
                 collection.name = null
             }
+            collection.metadata = metadataParser(collection.metadata, attribute)
             collection.attributeCount -= 1
             await ctx.store.save(collection)
         }
 
         await ctx.store.remove(attribute)
     }
+}
+
+function metadataParser(metadata: Metadata, attribute: Attribute) {
+    if (attribute.key === 'name') {
+        metadata.name = null
+    } else if (attribute.key === 'description') {
+        metadata.description = null
+    } else if (attribute.key === 'fallback_image') {
+        metadata.fallbackImage = null
+    } else if (attribute.key === 'external_uri') {
+        metadata.externalUri = null
+    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
+        metadata.media = null
+    }
+    return metadata
 }
