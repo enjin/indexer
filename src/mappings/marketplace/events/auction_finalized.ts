@@ -50,5 +50,6 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         createdAt: new Date(ctx.block.timestamp),
     });
 
+    listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 }

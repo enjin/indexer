@@ -42,5 +42,6 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         createdAt: new Date(ctx.block.timestamp),
     })
 
+    listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 }
