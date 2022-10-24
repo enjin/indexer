@@ -68,6 +68,7 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
                 token.name = attribute.value
             }
             token.metadata = metadataParser(token.metadata, attribute)
+            await ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
@@ -76,6 +77,7 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
                 collection.name = attribute.value
             }
             collection.metadata = metadataParser(collection.metadata, attribute)
+            await ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
     } else {
