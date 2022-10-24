@@ -49,5 +49,6 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         });
     }
 
+    listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 }

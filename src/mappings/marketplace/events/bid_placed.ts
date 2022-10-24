@@ -56,5 +56,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     })
 
     await ctx.store.save(bid)
+
+    listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 }
