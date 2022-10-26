@@ -1,6 +1,6 @@
-import http from 'http'
-import CacheableRequest from 'cacheable-request'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
+import Axios from 'axios'
+import https from 'https'
 
 export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata>  {
     return processMetadata(metadata, attribute)
@@ -41,7 +41,6 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
         metadata.media = [media]
     }
 
-
     if (attribute.key === 'name') {
         metadata.name = attribute.value
     } else if (attribute.key === 'description') {
@@ -59,20 +58,35 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     return metadata
 }
 
-function fetchMetadata(url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        url = url.replace('https', 'http')
-        const cacheableRequest = CacheableRequest(http.request) as any
-        const cacheReq = cacheableRequest(url, async (response: any) => {
-            let rawData = ''
-            response.on('data', (chunk: any) => { rawData += chunk })
-            response.on('end', () => {
-                try {
-                    resolve(rawData)
-                } catch (e) {
-                    reject(e)
-                }
-            })
-        }).on('request', (req: any) => req.end())
+async function fetchMetadata(url: string) {
+    const api = Axios.create({
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        withCredentials: false,
+        timeout: 5000,
+        httpsAgent: new https.Agent({ keepAlive: true }),
     })
+
+    const { data } = await api.get(url)
+
+    return data
 }
+
+// function fetchMetadata(url: string): Promise<string> {
+//     return new Promise((resolve, reject) => {
+//         url = url.replace('https', 'http')
+//         const cacheableRequest = CacheableRequest(http.request) as any
+//         const cacheReq = cacheableRequest(url, async (response: any) => {
+//             let rawData = ''
+//             response.on('data', (chunk: any) => { rawData += chunk })
+//             response.on('end', () => {
+//                 try {
+//                     resolve(rawData)
+//                 } catch (e) {
+//                     reject(e)
+//                 }
+//             })
+//         }).on('request', (req: any) => req.end())
+//     })
+// }
