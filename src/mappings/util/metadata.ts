@@ -65,7 +65,7 @@ async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 5000,
-        httpsAgent: new https.Agent({ keepAlive: true }),
+        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false}),
     })
 
     const { data } = await api.get(url)
