@@ -13,13 +13,13 @@ async function processMetadata(metadata: Metadata, attribute: Attribute) {
         metadata.externalUri = attribute.value
         const externalMetadata = await fetchMetadata(attribute.value)
         console.log('externalMetadata: ' + externalMetadata)
+        return metadataParser(metadata, attribute, externalMetadata)
 
-        try {
-            const parsedMetadata = JSON.parse(externalMetadata)
-            return metadataParser(metadata, attribute, parsedMetadata)
-        } catch (e) {
-            console.log('error parsing external metadata: ' + e)
-        }
+        // try {
+        //     const parsedMetadata = JSON.parse(externalMetadata)
+        // } catch (e) {
+        //     console.log('error parsing external metadata: ' + e)
+        // }
     }
 
     return metadataParser(metadata, attribute, null)
