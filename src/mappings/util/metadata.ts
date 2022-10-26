@@ -15,8 +15,8 @@ async function processMetadata(metadata: Metadata, attribute: Attribute) {
         console.log('externalMetadata: ' + externalMetadata)
 
         try {
-            const metadata = JSON.parse(externalMetadata)
-            return metadataParser(metadata, attribute, metadata)
+            const parsedMetadata = JSON.parse(externalMetadata)
+            return metadataParser(metadata, attribute, parsedMetadata)
         } catch (e) {
             console.log('error parsing external metadata: ' + e)
         }
