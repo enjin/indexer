@@ -1,22 +1,29 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
-import { Collection, MintPolicy, TransferPolicy } from '../../../model'
+import {
+    Collection,
+    MarketPolicy,
+    MintPolicy, Royalty,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency, TokenBehaviorType,
+    TransferPolicy,
+} from '../../../model'
 import { encodeId } from '../../../common/tools'
 import {
-    BlockHandlerContext,
-    CallHandlerContext,
     CommonHandlerContext,
     EventHandlerContext,
 } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
+import { DefaultRoyalty, TokenMarketBehavior, TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
 
 interface CallData {
     maxTokenCount: bigint | undefined
     maxTokenSupply: bigint | undefined
     forceSingleMint: boolean
+    market: MarketPolicy | null
 }
 
 interface EventData {
@@ -24,22 +31,48 @@ interface EventData {
     owner: Uint8Array
 }
 
-function getCallData(ctx: ChainContext, subcall: SubstrateCall): CallData | undefined {
+async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<CallData> {
     const call = new MultiTokensCreateCollectionCall(ctx, subcall)
 
     if (call.isEfinityV2) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV2.descriptor.policy.mint
+
         return {
             maxTokenCount,
             maxTokenSupply,
             forceSingleMint,
+            market: null,
         }
     } else if (call.isV6) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
+        const royalty = call.asV6.descriptor.policy.market?.royalty
+        const market = royalty ? await getMarket(royalty, ctx) : null
+
         return {
             maxTokenCount,
             maxTokenSupply,
             forceSingleMint,
+            market
+        }
+    } else if (call.isV5) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV5.descriptor.policy.mint
+
+        return {
+            maxTokenCount,
+            maxTokenSupply,
+            forceSingleMint,
+            market: null,
+        }
+    } else if (call.isEfinityV3000) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
+        const royalty = call.asV6.descriptor.policy.market?.royalty
+        const market = royalty ? await getMarket(royalty, ctx) : null
+
+        return {
+            maxTokenCount,
+            maxTokenSupply,
+            forceSingleMint,
+            market
         }
     } else {
         throw new UnknownVersionError(call.constructor.name)
@@ -59,11 +92,23 @@ function getEventData(ctx: EventHandlerContext): EventData {
     }
 }
 
+async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
+    const address = encodeId(royalty.beneficiary)
+    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+
+    return new MarketPolicy({
+        royalty: new Royalty({
+            beneficiary: account.id,
+            percentage: royalty.percentage,
+        })
+    })
+}
+
 export async function handleCollectionCreated(ctx: EventHandlerContext) {
-    const eventData = getEventData(ctx as EventHandlerContext)
+    const eventData = getEventData(ctx)
 
     if (ctx.event.call) {
-        const callData = getCallData(ctx, ctx.event.call)
+        const callData = await getCallData(ctx, ctx.event.call)
 
         if (!eventData || !callData) return
 
@@ -76,6 +121,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
                 maxTokenSupply: callData.maxTokenSupply,
                 forceSingleMint: callData.forceSingleMint,
             }),
+            marketPolicy: callData.market,
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
             }),

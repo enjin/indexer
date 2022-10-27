@@ -2,6 +2,8 @@ import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, M
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
+import {MarketPolicy} from "./_marketPolicy"
+import {AssetId} from "./_assetId"
 import {TransferPolicy} from "./_transferPolicy"
 import {Token} from "./token.model"
 import {CollectionAccount} from "./collectionAccount.model"
@@ -24,6 +26,12 @@ export class Collection {
 
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
   mintPolicy!: MintPolicy
+
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
+  marketPolicy!: MarketPolicy | undefined | null
+
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new AssetId(undefined, val))}, nullable: true})
+  explicitRoyaltyCurrencies!: (AssetId | undefined | null)[] | undefined | null
 
   @Column_("text", {nullable: true})
   burnPolicy!: string | undefined | null

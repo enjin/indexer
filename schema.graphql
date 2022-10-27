@@ -101,12 +101,23 @@ type TransferPolicy {
   isFrozen: Boolean
 }
 
+type MarketPolicy {
+  royalty: Royalty!
+}
+
+type AssetId {
+  collectionId: BigInt!
+  tokenId: BigInt!
+}
+
 type Collection @entity {
   id: ID!
 
   # Storage defaults
   owner: Account!
   mintPolicy: MintPolicy!
+  marketPolicy: MarketPolicy
+  explicitRoyaltyCurrencies: [AssetId]
   burnPolicy: String
   transferPolicy: TransferPolicy
   attributePolicy: String
