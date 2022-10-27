@@ -7,19 +7,10 @@ export async function getMetadata(metadata: Metadata, attribute: Attribute): Pro
 }
 
 async function processMetadata(metadata: Metadata, attribute: Attribute) {
-    if (attribute.key === 'external_uri') {
-        console.log('fetching metadata from: ' + attribute.value)
-
+    if (['uri', 'external_uri'].includes(attribute.key)) {
         metadata.externalUri = attribute.value
         const externalMetadata = await fetchMetadata(attribute.value)
-        console.log('externalMetadata: ' + externalMetadata)
         return metadataParser(metadata, attribute, externalMetadata)
-
-        // try {
-        //     const parsedMetadata = JSON.parse(externalMetadata)
-        // } catch (e) {
-        //     console.log('error parsing external metadata: ' + e)
-        // }
     }
 
     return metadataParser(metadata, attribute, null)
@@ -52,8 +43,6 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
         media.uri = attribute.value
         metadata.media = [media]
     }
-
-    console.log(metadata)
 
     return metadata
 }
