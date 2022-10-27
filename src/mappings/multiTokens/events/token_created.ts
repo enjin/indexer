@@ -1,11 +1,28 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
-import { CapType, Collection, Token, TokenCapSingleMint, TokenCapSupply } from '../../../model'
+import {
+    CapType,
+    Collection,
+    Token,
+    TokenBehaviorType,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenCapSingleMint,
+    TokenCapSupply, Royalty,
+} from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
-import { EventHandlerContext } from '../../types/contexts'
+import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
-import { DefaultMintParams_CreateToken, TokenCap, TokenCap_Supply } from '../../../types/generated/v6'
+import {
+    DefaultMintParams_CreateToken,
+    TokenCap,
+    TokenCap_Supply,
+    TokenMarketBehavior,
+    TokenMarketBehavior_HasRoyalty
+} from '../../../types/generated/v6'
+import { getOrCreateAccount } from '../../util/entities'
+import { encodeId } from '../../../common/tools'
 
 interface CallData {
     recipient: Uint8Array
@@ -14,6 +31,7 @@ interface CallData {
     initialSupply: bigint
     unitPrice: bigint
     cap: TokenCapSupply | TokenCapSingleMint | null
+    behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null
     listingForbidden: boolean
 }
 
@@ -24,7 +42,7 @@ interface EventData {
     initialSupply: bigint
 }
 
-function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): CallData {
+async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
     if (subcall.name === 'MultiTokens.batch_mint') {
         const call = new MultiTokensBatchMintCall(ctx, subcall);
 
@@ -39,6 +57,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
                 return {
                     recipient,
@@ -47,6 +66,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    behavior: behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -61,6 +81,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
                 return {
                     recipient,
@@ -69,6 +90,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    behavior: behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -83,6 +105,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
                 return {
                     recipient,
@@ -91,6 +114,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    behavior: behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -105,6 +129,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
                 return {
                     recipient,
@@ -113,6 +138,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    behavior: behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -128,6 +154,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
         const recipient = call.asEfinityV2.recipient.value as Uint8Array
         const params = call.asEfinityV2.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
         return {
             recipient,
@@ -136,6 +163,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            behavior: behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isV6) {
@@ -143,6 +171,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
         const recipient = call.asV6.recipient.value as Uint8Array
         const params = call.asV6.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
         return {
             recipient,
@@ -151,6 +180,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            behavior: behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isV5) {
@@ -158,6 +188,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
         const recipient = call.asV5.recipient.value as Uint8Array
         const params = call.asV5.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
         return {
             recipient,
@@ -166,6 +197,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            behavior: behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isEfinityV3000) {
@@ -173,6 +205,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
         const recipient = call.asEfinityV3000.recipient.value as Uint8Array
         const params = call.asEfinityV3000.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
 
         return {
             recipient,
@@ -181,6 +214,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            behavior: behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
     } else {
@@ -215,13 +249,30 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
     });
 }
 
+async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
+    if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
+        return new TokenBehaviorIsCurrency({
+            type: TokenBehaviorType.IsCurrency,
+        })
+    }
+    const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+    return new TokenBehaviorHasRoyalty({
+        type: TokenBehaviorType.HasRoyalty,
+        royalty: new Royalty({
+            beneficiary: account.id,
+            percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
+        })
+    })
+
+}
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
     console.log('MultiTokens.TokenCreated')
     const eventData = getEventData(ctx)
 
     if (ctx.event.call) {
-        const callData = getCallData(ctx, ctx.event.call, eventData)
+        const callData = await getCallData(ctx, ctx.event.call, eventData)
 
         if (!eventData || !callData) return
 
@@ -240,6 +291,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             tokenId: eventData.tokenId,
             supply: eventData.initialSupply,
             cap: callData.cap,
+            behavior: callData.behavior,
             isFrozen: false,
             minimumBalance: 0n, // TODO: Fixed for now
             unitPrice: callData.unitPrice,

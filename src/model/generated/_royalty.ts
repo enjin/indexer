@@ -1,5 +1,6 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {Account} from "./account.model"
 
 export class Royalty {
   private _beneficiary!: string

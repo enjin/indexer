@@ -164,7 +164,7 @@ type TokenCapSupply {
   supply: BigInt!
 }
 
-enum BehaviorType {
+enum TokenBehaviorType {
   HasRoyalty
   IsCurrency
 }
@@ -172,17 +172,17 @@ enum BehaviorType {
 union TokenBehavior = TokenBehaviorHasRoyalty | TokenBehaviorIsCurrency
 
 type Royalty {
-  beneficiary: String!
+  beneficiary: Account!
   percentage: Float!
 }
 
 type TokenBehaviorHasRoyalty {
-  type: BehaviorType!
+  type: TokenBehaviorType!
   royalty: Royalty!
 }
 
 type TokenBehaviorIsCurrency {
-  type: BehaviorType!
+  type: TokenBehaviorType!
 }
 
 type Token @entity {

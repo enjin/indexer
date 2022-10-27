@@ -1,27 +1,27 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {BehaviorType} from "./_behaviorType"
+import {TokenBehaviorType} from "./_tokenBehaviorType"
 import {Royalty} from "./_royalty"
 
 export class TokenBehaviorHasRoyalty {
   public readonly isTypeOf = 'TokenBehaviorHasRoyalty'
-  private _type!: BehaviorType
+  private _type!: TokenBehaviorType
   private _royalty!: Royalty
 
   constructor(props?: Partial<Omit<TokenBehaviorHasRoyalty, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
-      this._type = marshal.enumFromJson(json.type, BehaviorType)
+      this._type = marshal.enumFromJson(json.type, TokenBehaviorType)
       this._royalty = new Royalty(undefined, marshal.nonNull(json.royalty))
     }
   }
 
-  get type(): BehaviorType {
+  get type(): TokenBehaviorType {
     assert(this._type != null, 'uninitialized access')
     return this._type
   }
 
-  set type(value: BehaviorType) {
+  set type(value: TokenBehaviorType) {
     this._type = value
   }
 
