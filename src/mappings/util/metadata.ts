@@ -68,9 +68,13 @@ async function fetchMetadata(url: string) {
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false}),
     })
 
+    try {
     const { status, data } = await api.get(url)
-    if (status < 400) {
-        return data
+        if (status < 400) {
+            return data
+        }
+    } catch (e) {
+        return null
     }
 
     return null
