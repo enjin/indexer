@@ -257,6 +257,7 @@ async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Pr
     }
     const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -264,7 +265,6 @@ async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Pr
             percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
         })
     })
-
 }
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
