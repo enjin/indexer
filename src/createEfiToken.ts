@@ -36,6 +36,7 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             supply: 2_000_000_000n,
             isFrozen: false,
             minimumBalance: 1n,
+            listingForbidden: true,
             unitPrice: 1n,
             mintDeposit: 1n,
             attributeCount: 0,

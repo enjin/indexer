@@ -1,5 +1,5 @@
-module.exports = class Data1666207009154 {
-  name = 'Data1666207009154'
+module.exports = class Data1666898436147 {
+  name = 'Data1666898436147'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -26,7 +26,7 @@ module.exports = class Data1666207009154 {
     await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
     await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
     await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
-    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "cap_type" character varying(10), "cap_supply" numeric, "is_frozen" boolean NOT NULL, "minimum_balance" numeric NOT NULL, "unit_price" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "name" text, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric NOT NULL, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "name" text, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
     await db.query(`CREATE TABLE "collection_account" ("id" character varying NOT NULL, "is_frozen" boolean NOT NULL, "approvals" jsonb, "account_count" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying, "collection_id" character varying, CONSTRAINT "PK_149cc78cfb0b9c3da0f8a2ff5e9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_2b2b641fd385385ba996c66098" ON "collection_account" ("account_id") `)

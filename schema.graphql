@@ -153,17 +153,52 @@ enum CapType {
   Supply
 }
 
+union TokenCap = TokenCapSingleMint | TokenCapSupply
+
+type TokenCapSingleMint {
+  type: CapType!
+}
+
+type TokenCapSupply {
+  type: CapType!
+  supply: BigInt!
+}
+
+enum BehaviorType {
+  HasRoyalty
+  IsCurrency
+}
+
+union TokenBehavior = TokenBehaviorHasRoyalty | TokenBehaviorIsCurrency
+
+type Royalty {
+  beneficiary: String!
+  percentage: Float!
+}
+
+type TokenBehaviorHasRoyalty {
+  type: BehaviorType!
+  royalty: Royalty!
+}
+
+type TokenBehaviorIsCurrency {
+  type: BehaviorType!
+}
+
 type Token @entity {
   id: ID!
 
-  # Storage defaults
+  # Extrinsic defaults
   tokenId: BigInt!
   supply: BigInt!
-  capType: CapType
-  capSupply: BigInt
   isFrozen: Boolean!
-  minimumBalance: BigInt!
+  cap: TokenCap
+  behavior: TokenBehavior
+  listingForbidden: Boolean!
   unitPrice: BigInt!
+
+  # Storage extras
+  minimumBalance: BigInt!
   mintDeposit: BigInt!
   attributeCount: Int!
 

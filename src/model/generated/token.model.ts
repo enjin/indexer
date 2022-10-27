@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
-import {CapType} from "./_capType"
+import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
+import {TokenBehavior, fromJsonTokenBehavior} from "./_tokenBehavior"
 import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
@@ -22,20 +23,23 @@ export class Token {
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   supply!: bigint
 
-  @Column_("varchar", {length: 10, nullable: true})
-  capType!: CapType | undefined | null
-
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
-  capSupply!: bigint | undefined | null
-
   @Column_("bool", {nullable: false})
   isFrozen!: boolean
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  minimumBalance!: bigint
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenCap(obj)}, nullable: true})
+  cap!: TokenCap | undefined | null
+
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenBehavior(obj)}, nullable: true})
+  behavior!: TokenBehavior | undefined | null
+
+  @Column_("bool", {nullable: false})
+  listingForbidden!: boolean
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   unitPrice!: bigint
+
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  minimumBalance!: bigint
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   mintDeposit!: bigint
