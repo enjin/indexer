@@ -14,6 +14,7 @@ interface CallData {
     initialSupply: bigint
     unitPrice: bigint
     cap: TokenCapSupply | TokenCapSingleMint | null
+    listingForbidden: boolean
 }
 
 interface EventData {
@@ -46,6 +47,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isV6) {
@@ -67,6 +69,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isV5) {
@@ -88,6 +91,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isEfinityV3000) {
@@ -109,6 +113,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
                     cap: cap,
+                    listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else {
@@ -131,6 +136,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isV6) {
         const collectionId = call.asV6.collectionId
@@ -145,6 +151,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isV5) {
         const collectionId = call.asV5.collectionId
@@ -159,6 +166,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            listingForbidden: params.listingForbidden ?? false,
         }
     } else if (call.isEfinityV3000) {
         const collectionId = call.asEfinityV3000.collectionId
@@ -173,6 +181,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
             cap: cap,
+            listingForbidden: params.listingForbidden ?? false,
         }
     } else {
         throw new UnknownVersionError(call.constructor.name)
@@ -209,7 +218,7 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
     console.log('MultiTokens.TokenCreated')
-    const eventData = getEventData(ctx as EventHandlerContext)
+    const eventData = getEventData(ctx)
 
     if (ctx.event.call) {
         const callData = getCallData(ctx, ctx.event.call, eventData)
@@ -237,7 +246,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection: collection,
-            listingForbidden: false,
+            listingForbidden: callData.listingForbidden,
             // accounts: [],
             createdAt: new Date(ctx.block.timestamp),
         })

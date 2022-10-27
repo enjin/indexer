@@ -7,3 +7,4 @@ docker compose up -d indexer_db
 sleep 5
 DB_HOST=localhost sh -c 'make migrate'
 docker compose up -d indexer_graphql indexer_processor
+docker logs -f indexer_processor

@@ -1,7 +1,6 @@
 import { BlockHandlerContext } from './mappings/types/contexts'
-import { Collection, MintPolicy, Token, TransferPolicy } from './model'
+import { CapType, Collection, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { encodeId } from './common/tools'
 
 export async function createEfiToken(ctx: BlockHandlerContext) {
     let efi = await ctx.store.get(Token, '0-0')
@@ -36,6 +35,10 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             supply: 2_000_000_000n,
             isFrozen: false,
             minimumBalance: 1n,
+            cap: new TokenCapSupply({
+                type: CapType.Supply,
+                supply: 2_000_000_000n,
+            }),
             listingForbidden: true,
             unitPrice: 1n,
             mintDeposit: 1n,
