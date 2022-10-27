@@ -1,11 +1,11 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
-import { CapType, Collection, Token } from '../../../model'
+import { CapType, Collection, Token, TokenCapSingleMint, TokenCapSupply } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { EventHandlerContext } from '../../types/contexts'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
-import { DefaultMintParams_CreateToken, TokenCap_Supply } from '../../../types/generated/v6'
+import { DefaultMintParams_CreateToken, TokenCap, TokenCap_Supply } from '../../../types/generated/v6'
 
 interface CallData {
     recipient: Uint8Array
@@ -13,8 +13,7 @@ interface CallData {
     tokenId: bigint
     initialSupply: bigint
     unitPrice: bigint
-    capType: CapType | undefined
-    capSupply: bigint | undefined
+    cap: TokenCapSupply | TokenCapSingleMint | null
 }
 
 interface EventData {
@@ -38,7 +37,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
-                const capType = params.cap?.__kind as CapType
+                const cap = params.cap ? getCapType(params.cap) : null
 
                 return {
                     recipient,
@@ -46,30 +45,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    capType: capType,
-                    capSupply: (params.cap as TokenCap_Supply)?.value,
-                }
-            }
-        }else if (call.isV6) {
-            const collectionId = call.asV6.collectionId
-            const recipients = call.asV6.recipients
-            const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParams_CreateToken
-                const capType = params.cap?.__kind as CapType
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    unitPrice: params.unitPrice,
-                    capType: capType,
-                    capSupply: (params.cap as TokenCap_Supply)?.value,
+                    cap: cap,
                 }
             }
         } else if (call.isV6) {
@@ -82,7 +58,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
-                const capType = params.cap?.__kind as CapType
+                const cap = params.cap ? getCapType(params.cap) : null
 
                 return {
                     recipient,
@@ -90,8 +66,49 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    capType: capType,
-                    capSupply: (params.cap as TokenCap_Supply)?.value,
+                    cap: cap,
+                }
+            }
+        } else if (call.isV5) {
+            const collectionId = call.asV5.collectionId
+            const recipients = call.asV5.recipients
+            const recipientCall = recipients.find(
+                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            );
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: params.unitPrice,
+                    cap: cap,
+                }
+            }
+        } else if (call.isEfinityV3000) {
+            const collectionId = call.asEfinityV3000.collectionId
+            const recipients = call.asEfinityV3000.recipients
+            const recipientCall = recipients.find(
+                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            );
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: params.unitPrice,
+                    cap: cap,
                 }
             }
         } else {
@@ -105,7 +122,7 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
         const collectionId = call.asEfinityV2.collectionId
         const recipient = call.asEfinityV2.recipient.value as Uint8Array
         const params = call.asEfinityV2.params as DefaultMintParams_CreateToken
-        const capType = params.cap?.__kind as CapType
+        const cap = params.cap ? getCapType(params.cap) : null
 
         return {
             recipient,
@@ -113,14 +130,13 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            capType: capType,
-            capSupply: (params.cap as TokenCap_Supply)?.value,
+            cap: cap,
         }
     } else if (call.isV6) {
         const collectionId = call.asV6.collectionId
         const recipient = call.asV6.recipient.value as Uint8Array
         const params = call.asV6.params as DefaultMintParams_CreateToken
-        const capType = params.cap?.__kind as CapType
+        const cap = params.cap ? getCapType(params.cap) : null
 
         return {
             recipient,
@@ -128,8 +144,35 @@ function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            capType: capType,
-            capSupply: (params.cap as TokenCap_Supply)?.value,
+            cap: cap,
+        }
+    } else if (call.isV5) {
+        const collectionId = call.asV5.collectionId
+        const recipient = call.asV5.recipient.value as Uint8Array
+        const params = call.asV5.params as DefaultMintParams_CreateToken
+        const cap = params.cap ? getCapType(params.cap) : null
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            unitPrice: params.unitPrice,
+            cap: cap,
+        }
+    } else if (call.isEfinityV3000) {
+        const collectionId = call.asEfinityV3000.collectionId
+        const recipient = call.asEfinityV3000.recipient.value as Uint8Array
+        const params = call.asEfinityV3000.params as DefaultMintParams_CreateToken
+        const cap = params.cap ? getCapType(params.cap) : null
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            unitPrice: params.unitPrice,
+            cap: cap,
         }
     } else {
         throw new UnknownVersionError(call.constructor.name)
@@ -149,6 +192,20 @@ function getEventData(ctx: EventHandlerContext): EventData {
         throw new UnknownVersionError(event.constructor.name)
     }
 }
+
+function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
+    if (cap.__kind === CapType.Supply.toString()) {
+        return new TokenCapSupply({
+            type: CapType.Supply,
+            supply: (cap as TokenCap_Supply).value,
+        })
+    }
+
+    return new TokenCapSingleMint({
+        type: CapType.SingleMint
+    });
+}
+
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
     console.log('MultiTokens.TokenCreated')
@@ -173,14 +230,14 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
             supply: eventData.initialSupply,
-            capType: callData.capType,
-            capSupply: callData.capSupply,
+            cap: callData.cap,
             isFrozen: false,
             minimumBalance: 0n, // TODO: Fixed for now
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection: collection,
+            listingForbidden: false,
             // accounts: [],
             createdAt: new Date(ctx.block.timestamp),
         })
