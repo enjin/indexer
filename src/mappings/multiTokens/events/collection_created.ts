@@ -24,7 +24,7 @@ interface CallData {
     maxTokenSupply: bigint | undefined
     forceSingleMint: boolean
     market: MarketPolicy | null
-    explicitRoyaltyCurrencies: [AssetId]
+    explicitRoyaltyCurrencies: AssetId[]
 }
 
 interface EventData {
@@ -49,7 +49,9 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
         const royalty = call.asV6.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies as [AssetId]
+        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies.map(
+            (assetId) => new AssetId({collectionId: assetId.collectionId, tokenId: assetId.tokenId})
+        )
 
         return {
             maxTokenCount,
@@ -69,11 +71,12 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             explicitRoyaltyCurrencies: [new AssetId({collectionId: 0n, tokenId: 0n})]
         }
     } else if (call.isEfinityV3000) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
-        const royalty = call.asV6.descriptor.policy.market?.royalty
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV3000.descriptor.policy.mint
+        const royalty = call.asEfinityV3000.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies as [AssetId]
-
+        const explicitRoyaltyCurrencies = call.asEfinityV3000.descriptor.explicitRoyaltyCurrencies.map(
+            (assetId) => new AssetId({collectionId: assetId.collectionId, tokenId: assetId.tokenId})
+        )
         return {
             maxTokenCount,
             maxTokenSupply,
