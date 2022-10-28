@@ -32,6 +32,11 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
         where: { id: data.collectionId.toString() },
         relations: {
             owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
         },
     })
 

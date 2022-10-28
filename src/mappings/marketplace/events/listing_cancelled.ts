@@ -1,6 +1,10 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { CancelledListing, Listing, ListingStatusType } from '../../../model'
+import {
+    MarketplaceListingCancelledEvent,
+} from '../../../types/generated/events'
+import { CancelledListing, Collection, Listing, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Event } from '../../../event'
 
@@ -45,4 +49,36 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
     await ctx.store.save(listing)
 
     new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
+
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: listing.makeAssetId.collection.id.toString() },
+        relations: {
+            owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
+        }
+    })
+
+    if (collection.floorListing?.id === listing.id) {
+        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+            where: {
+                makeAssetId: { collection: { id: collection.id } },
+                status: { listingStatus: ListingStatusType.Active },
+            },
+            order: {
+                highestPrice: "DESC",
+            },
+        })
+
+        if (floorListing && floorListing.id !== listing.id) {
+            collection.floorListing = floorListing
+            await ctx.store.save(collection)
+        } else {
+            collection.floorListing = null
+            await ctx.store.save(collection)
+        }
+    }
 }

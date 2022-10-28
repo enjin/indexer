@@ -3,7 +3,7 @@ import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
     ActiveListing,
     AuctionData,
-    AuctionState,
+    AuctionState, Collection,
     FeeSide,
     FixedPriceData,
     FixedPriceState,
@@ -89,4 +89,21 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     await ctx.store.insert(listing)
 
     new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
+
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: makeAssetId.collection.id.toString() },
+        relations: {
+            owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
+        }
+    })
+
+    if (!collection.floorListing || listing.price < collection.floorListing.price) {
+        collection.floorListing = listing
+        await ctx.store.save(collection)
+    }
 }

@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import { FinalizedListing, FixedPriceState, Listing, ListingStatusType, ListingType } from '../../../model'
+import { Collection, FinalizedListing, FixedPriceState, Listing, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
 import { Event } from '../../../event'
@@ -62,4 +62,36 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         data.amountFilled,
         data.amountRemaining
     )
+
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: listing.makeAssetId.collection.id.toString() },
+        relations: {
+            owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
+        }
+    })
+
+    if (collection.floorListing?.id === listing.id) {
+        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+            where: {
+                makeAssetId: { collection: { id: collection.id } },
+                status: { listingStatus: ListingStatusType.Active },
+            },
+            order: {
+                highestPrice: "DESC",
+            },
+        })
+
+        if (floorListing && floorListing.id !== listing.id) {
+            collection.floorListing = floorListing
+            await ctx.store.save(collection)
+        } else {
+            collection.floorListing = null
+            await ctx.store.save(collection)
+        }
+    }
 }

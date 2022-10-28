@@ -135,6 +135,7 @@ type Collection @entity {
 
   # Extras
   metadata: Metadata
+  floorListing: Listing
   createdAt: DateTime!
 }
 
