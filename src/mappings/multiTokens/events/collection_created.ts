@@ -2,11 +2,10 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import {
-    AssetId,
-    Collection,
+    Collection, CollectionAccount,
     MarketPolicy,
     MintPolicy,
-    Royalty,
+    Royalty, RoyaltyCurrency, Token,
     TransferPolicy,
 } from '../../../model'
 import { encodeId } from '../../../common/tools'
@@ -17,7 +16,7 @@ import {
 import { getOrCreateAccount } from '../../util/entities'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
-import { DefaultRoyalty } from '../../../types/generated/v6'
+import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
 
 interface CallData {
     maxTokenCount: bigint | undefined
@@ -43,15 +42,13 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market: null,
-            explicitRoyaltyCurrencies: [new AssetId({collectionId: 0n, tokenId: 0n})]
+            explicitRoyaltyCurrencies: [{collectionId: 0n, tokenId: 0n}]
         }
     } else if (call.isV6) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
         const royalty = call.asV6.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies.map(
-            (assetId) => new AssetId({collectionId: assetId.collectionId, tokenId: assetId.tokenId})
-        )
+        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies
 
         return {
             maxTokenCount,
@@ -68,15 +65,14 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market: null,
-            explicitRoyaltyCurrencies: [new AssetId({collectionId: 0n, tokenId: 0n})]
+            explicitRoyaltyCurrencies: [{collectionId: 0n, tokenId: 0n}]
         }
     } else if (call.isEfinityV3000) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV3000.descriptor.policy.mint
         const royalty = call.asEfinityV3000.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asEfinityV3000.descriptor.explicitRoyaltyCurrencies.map(
-            (assetId) => new AssetId({collectionId: assetId.collectionId, tokenId: assetId.tokenId})
-        )
+        const explicitRoyaltyCurrencies = call.asEfinityV3000.descriptor.explicitRoyaltyCurrencies
+
         return {
             maxTokenCount,
             maxTokenSupply,
@@ -132,7 +128,6 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
                 forceSingleMint: callData.forceSingleMint,
             }),
             marketPolicy: callData.market,
-            explicitRoyaltyCurrencies: callData.explicitRoyaltyCurrencies,
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
             }),
@@ -145,5 +140,17 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
         })
 
         await ctx.store.insert(collection)
+
+        for (const currency of callData.explicitRoyaltyCurrencies) {
+            const token = await ctx.store.findOneOrFail<Token>(Token, {
+                where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
+            })
+            const royaltyCurrency = new RoyaltyCurrency({
+                id: `${collection.id}-${token.id}`,
+                collection: collection,
+                token: token,
+            })
+            await ctx.store.insert(royaltyCurrency)
+        }
     }
 }
