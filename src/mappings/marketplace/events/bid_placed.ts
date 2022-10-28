@@ -50,6 +50,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         createdAt: new Date(ctx.block.timestamp),
     })
 
+    listing.highestPrice = data.bid.price
     listing.state = new AuctionState({
         listingType: ListingType.Auction,
         highBid: bid.id,

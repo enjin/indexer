@@ -70,6 +70,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         takeAssetId: takeAssetId,
         amount: data.listing.amount,
         price: data.listing.price,
+        highestPrice: data.listing.price,
         minTakeValue: data.listing.minTakeValue,
         feeSide: feeSide,
         height: data.listing.creationBlock,

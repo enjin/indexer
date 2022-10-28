@@ -400,6 +400,7 @@ type Listing @entity {
 
   # Extras
   status: ListingStatus!
+  highestPrice: BigInt!
 
   createdAt: DateTime!
   updatedAt: DateTime!

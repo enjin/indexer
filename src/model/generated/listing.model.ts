@@ -62,6 +62,9 @@ export class Listing {
   @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingStatus(obj)}, nullable: false})
   status!: ListingStatus
 
+  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+  highestPrice!: bigint
+
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
 
