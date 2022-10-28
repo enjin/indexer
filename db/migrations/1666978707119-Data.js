@@ -1,5 +1,5 @@
-module.exports = class Data1666967285729 {
-  name = 'Data1666967285729'
+module.exports = class Data1666978707119 {
+  name = 'Data1666978707119'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -22,7 +22,7 @@ module.exports = class Data1666967285729 {
     await db.query(`CREATE TABLE "bid" ("id" character varying NOT NULL, "price" numeric NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "bidder_id" character varying, "listing_id" character varying, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_e7618559409a903a897164156b" ON "bid" ("bidder_id") `)
     await db.query(`CREATE INDEX "IDX_facdd38f7948fbdd281063419b" ON "bid" ("listing_id") `)
-    await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "status" jsonb NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "status" jsonb NOT NULL, "highest_price" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
     await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
     await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
