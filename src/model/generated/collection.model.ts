@@ -3,7 +3,7 @@ import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
 import {MarketPolicy} from "./_marketPolicy"
-import {AssetId} from "./_assetId"
+import {RoyaltyCurrency} from "./royaltyCurrency.model"
 import {TransferPolicy} from "./_transferPolicy"
 import {Token} from "./token.model"
 import {CollectionAccount} from "./collectionAccount.model"
@@ -30,8 +30,8 @@ export class Collection {
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
   marketPolicy!: MarketPolicy | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new AssetId(undefined, val))}, nullable: true})
-  explicitRoyaltyCurrencies!: (AssetId | undefined | null)[] | undefined | null
+  @OneToMany_(() => RoyaltyCurrency, e => e.collection)
+  explicitRoyaltyCurrencies!: RoyaltyCurrency[]
 
   @Column_("text", {nullable: true})
   burnPolicy!: string | undefined | null

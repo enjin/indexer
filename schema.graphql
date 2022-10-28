@@ -105,9 +105,11 @@ type MarketPolicy {
   royalty: Royalty!
 }
 
-type AssetId {
-  collectionId: BigInt!
-  tokenId: BigInt!
+type RoyaltyCurrency @entity {
+  id: ID!
+
+  collection: Collection!
+  token: Token!
 }
 
 type Collection @entity {
@@ -117,7 +119,7 @@ type Collection @entity {
   owner: Account!
   mintPolicy: MintPolicy!
   marketPolicy: MarketPolicy
-  explicitRoyaltyCurrencies: [AssetId]
+  explicitRoyaltyCurrencies: [RoyaltyCurrency] @derivedFrom(field: "collection")
   burnPolicy: String
   transferPolicy: TransferPolicy
   attributePolicy: String

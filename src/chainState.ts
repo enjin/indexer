@@ -1,9 +1,9 @@
 import { ChainInfo } from './model'
 import { PERIOD } from './common/consts'
-import { Chain as ProcessorChain } from '@subsquid/substrate-processor/lib/chain'
-import { ResilientRpcClient } from '@subsquid/rpc-client/lib/resilient'
 import config from './config'
 import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/contexts'
+import { ApiPromise, WsProvider } from '@polkadot/api'
+import { Marketplace } from './model'
 
 let lastStateTimestamp = 0
 
@@ -23,9 +23,14 @@ export async function handleChainState(ctx: BlockHandlerContext) {
 async function saveChainState(ctx: BlockHandlerContext) {
     const state = new ChainInfo({ id: ctx.block.hash })
 
-    const chain = ctx._chain as ProcessorChain
-    const client = (chain as any).client as ResilientRpcClient
-    const runtime = await client.call('state_getRuntimeVersion')
+    const wsProvider = new WsProvider(config.dataSource.chain)
+    const api = await ApiPromise.create({ provider: wsProvider })
+    const apiAt = await api.at(ctx.block.hash)
+
+    const [ runtime, marketplace ] = await Promise.all<any>([
+        api.rpc.state.getRuntimeVersion(ctx.block.hash),
+        apiAt.query.marketplace.info()
+    ])
 
     state.genesisHash = config.genesisHash
     state.transactionVersion = runtime['transactionVersion']
@@ -34,13 +39,17 @@ async function saveChainState(ctx: BlockHandlerContext) {
     state.blockHash = ctx.block.hash
     state.existentialDeposit = 1n
     state.timestamp = new Date(ctx.block.timestamp)
-    state.marketplace = null
+    state.marketplace = new Marketplace({
+        protocolFee: marketplace['protocolFee'],
+        fixedPriceListingCount: marketplace['fixedPriceListingCount'],
+        auctionListingCount: marketplace['auctionListingCount'],
+    });
 
     await ctx.store.save(state)
 }
 
-async function getLastChainState(ctx: CommonHandlerContext) {
-    return await ctx.store.find(ChainInfo, {
+function getLastChainState(ctx: CommonHandlerContext) {
+    return ctx.store.find(ChainInfo, {
         take: 1,
         order: {
             timestamp: 'DESC',

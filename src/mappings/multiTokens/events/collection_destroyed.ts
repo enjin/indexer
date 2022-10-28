@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
-import { Collection } from '../../../model'
+import { Collection, RoyaltyCurrency } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -28,6 +28,10 @@ export async function handleCollectionDestroyed(ctx: EventHandlerContext) {
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
+    const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
+        where: { collection: { id: collection.id }},
+    })
 
+    await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(collection)
 }
