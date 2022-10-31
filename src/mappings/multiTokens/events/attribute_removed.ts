@@ -84,8 +84,8 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
         metadata.description = null
     } else if (attribute.key === 'fallback_image') {
         metadata.fallbackImage = null
-    } else if (attribute.key === 'external_uri') {
-        metadata.externalUri = null
+    } else if (attribute.key === 'external_url') {
+        metadata.externalUrl = null
     } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
         metadata.media = null
     }

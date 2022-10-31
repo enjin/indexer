@@ -6,7 +6,7 @@ import {MetadataMeta} from "./_metadataMeta"
 export class Metadata {
   private _name!: string | undefined | null
   private _description!: string | undefined | null
-  private _externalUri!: string | undefined | null
+  private _externalUrl!: string | undefined | null
   private _keywords!: (string | undefined | null)[] | undefined | null
   private _fallbackImage!: string | undefined | null
   private _media!: (MetadataMedia | undefined | null)[] | undefined | null
@@ -17,7 +17,7 @@ export class Metadata {
     if (json != null) {
       this._name = json.name == null ? undefined : marshal.string.fromJSON(json.name)
       this._description = json.description == null ? undefined : marshal.string.fromJSON(json.description)
-      this._externalUri = json.externalUri == null ? undefined : marshal.string.fromJSON(json.externalUri)
+      this._externalUrl = json.externalUrl == null ? undefined : marshal.string.fromJSON(json.externalUrl)
       this._keywords = json.keywords == null ? undefined : marshal.fromList(json.keywords, val => val == null ? undefined : marshal.string.fromJSON(val))
       this._fallbackImage = json.fallbackImage == null ? undefined : marshal.string.fromJSON(json.fallbackImage)
       this._media = json.media == null ? undefined : marshal.fromList(json.media, val => val == null ? undefined : new MetadataMedia(undefined, val))
@@ -41,12 +41,12 @@ export class Metadata {
     this._description = value
   }
 
-  get externalUri(): string | undefined | null {
-    return this._externalUri
+  get externalUrl(): string | undefined | null {
+    return this._externalUrl
   }
 
-  set externalUri(value: string | undefined | null) {
-    this._externalUri = value
+  set externalUrl(value: string | undefined | null) {
+    this._externalUrl = value
   }
 
   get keywords(): (string | undefined | null)[] | undefined | null {
@@ -85,7 +85,7 @@ export class Metadata {
     return {
       name: this.name,
       description: this.description,
-      externalUri: this.externalUri,
+      externalUrl: this.externalUrl,
       keywords: this.keywords,
       fallbackImage: this.fallbackImage,
       media: this.media == null ? undefined : this.media.map((val: any) => val == null ? undefined : val.toJSON()),
