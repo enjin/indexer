@@ -4,7 +4,7 @@ import { CancelledListing, Listing, ListingStatusType } from '../../../model'
 import {
     MarketplaceListingCancelledEvent,
 } from '../../../types/generated/events'
-import { CancelledListing, Collection, Listing, ListingStatusType } from '../../../model'
+import { CancelledListing, Collection, Listing, ListingStatusType, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Event } from '../../../event'
 
@@ -34,7 +34,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: { collection: true },
             takeAssetId: true,
         },
     })
@@ -51,7 +51,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
     new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: listing.makeAssetId.collection.id.toString() },
+        where: { id: listing.makeAssetId.collection.id },
         relations: {
             owner: true,
             floorListing: true,
@@ -61,9 +61,11 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
             attributes: true,
         }
     })
+    console.log("after collection")
 
     if (collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+        console.log("before floor listing fetching")
+        const floorListing = await ctx.store.find<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: collection.id } },
                 status: { listingStatus: ListingStatusType.Active },
@@ -72,13 +74,29 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
                 highestPrice: "DESC",
             },
         })
+        console.log(floorListing)
+        // const floorListing = await ctx.store.findOne<Listing>(Listing, {
+        //     where: {
+        //         makeAssetId: { collection: { id: collection.id } },
+        //         status: { listingStatus: ListingStatusType.Active },
+        //     },
+        //     relations: {
+        //         seller: true,
+        //         makeAssetId: true,
+        //         takeAssetId: true,
+        //     },
+        //     order: {
+        //         highestPrice: "DESC",
+        //     },
+        // })
+        // console.log(floorListing)
 
-        if (floorListing && floorListing.id !== listing.id) {
-            collection.floorListing = floorListing
-            await ctx.store.save(collection)
-        } else {
-            collection.floorListing = null
-            await ctx.store.save(collection)
-        }
+        // if (floorListing && floorListing.id !== listing.id) {
+        //     collection.floorListing = floorListing
+        //     await ctx.store.save(collection)
+        // } else {
+        //     collection.floorListing = null
+        //     await ctx.store.save(collection)
+        // }
     }
 }

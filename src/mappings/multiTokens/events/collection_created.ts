@@ -136,6 +136,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
             tokenCount: 0,
             attributeCount: 0,
             totalDeposit: 0n, // TODO
+            floorListing: null,
             createdAt: new Date(ctx.block.timestamp),
         })
 

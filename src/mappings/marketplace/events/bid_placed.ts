@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Collection, Listing, ListingStatusType, ListingType } from '../../../model'
+import { AuctionState, Bid, Collection, Listing, ListingStatusType, ListingType, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
@@ -34,7 +34,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: { collection: true },
             takeAssetId: true,
         },
     })
@@ -65,7 +65,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: listing.makeAssetId.collection.id.toString() },
+        where: { id: listing.makeAssetId.collection.id },
         relations: {
             owner: true,
             floorListing: true,

@@ -44,6 +44,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const listingId = Buffer.from(data.listingId).toString('hex')
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
+        relations: {
+            collection: true,
+        }
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
@@ -91,7 +94,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: makeAssetId.collection.id.toString() },
+        where: { id: makeAssetId.collection.id },
         relations: {
             owner: true,
             floorListing: true,

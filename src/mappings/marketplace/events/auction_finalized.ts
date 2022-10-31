@@ -8,7 +8,7 @@ import {
     Collection,
     FinalizedListing,
     Listing,
-    ListingStatusType,
+    ListingStatusType, Token,
 } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
@@ -45,7 +45,9 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: {
+                collection: true
+            },
             takeAssetId: true,
         },
     })
@@ -69,7 +71,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
     }
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: listing.makeAssetId.collection.id.toString() },
+        where: { id: listing.makeAssetId.collection.id },
         relations: {
             owner: true,
             floorListing: true,

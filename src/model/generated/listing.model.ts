@@ -50,17 +50,17 @@ export class Listing {
   @Column_("text", {nullable: false})
   salt!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingData(obj)}, nullable: false})
-  data!: ListingData
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: true})
+  data!: ListingData | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingState(obj)}, nullable: false})
-  state!: ListingState
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: true})
+  state!: ListingState | undefined | null
 
   @OneToMany_(() => Bid, e => e.listing)
   bids!: Bid[]
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingStatus(obj)}, nullable: false})
-  status!: ListingStatus
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingStatus(obj)}, nullable: true})
+  status!: ListingStatus | undefined | null
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   highestPrice!: bigint

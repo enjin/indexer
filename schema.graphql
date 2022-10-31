@@ -393,14 +393,14 @@ type Listing @entity {
   height: Int!
   deposit: BigInt!
   salt: String!
-  data: ListingData!
-  state: ListingState!
+  data: ListingData
+  state: ListingState
 
   # Relations
   bids: [Bid] @derivedFrom(field: "listing")
 
   # Extras
-  status: ListingStatus!
+  status: ListingStatus
   highestPrice: BigInt!
 
   createdAt: DateTime!

@@ -1,6 +1,14 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import { Collection, FinalizedListing, FixedPriceState, Listing, ListingStatusType, ListingType } from '../../../model'
+import {
+    Collection,
+    FinalizedListing,
+    FixedPriceState,
+    Listing,
+    ListingStatusType,
+    ListingType,
+    Token,
+} from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
 import { Event } from '../../../event'
@@ -37,7 +45,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: { collection: true },
             takeAssetId: true,
         },
     })
@@ -64,7 +72,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
     )
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: listing.makeAssetId.collection.id.toString() },
+        where: { id: listing.makeAssetId.collection.id },
         relations: {
             owner: true,
             floorListing: true,
