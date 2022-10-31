@@ -2,26 +2,26 @@ import assert from "assert"
 import * as marshal from "./marshal"
 
 export class MetadataMedia {
-  private _uri!: string
+  private _url!: string
   private _alt!: string | undefined | null
   private _type!: string | undefined | null
 
   constructor(props?: Partial<Omit<MetadataMedia, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
-      this._uri = marshal.string.fromJSON(json.uri)
+      this._url = marshal.string.fromJSON(json.url)
       this._alt = json.alt == null ? undefined : marshal.string.fromJSON(json.alt)
       this._type = json.type == null ? undefined : marshal.string.fromJSON(json.type)
     }
   }
 
-  get uri(): string {
-    assert(this._uri != null, 'uninitialized access')
-    return this._uri
+  get url(): string {
+    assert(this._url != null, 'uninitialized access')
+    return this._url
   }
 
-  set uri(value: string) {
-    this._uri = value
+  set url(value: string) {
+    this._url = value
   }
 
   get alt(): string | undefined | null {
@@ -42,7 +42,7 @@ export class MetadataMedia {
 
   toJSON(): object {
     return {
-      uri: this.uri,
+      url: this.url,
       alt: this.alt,
       type: this.type,
     }

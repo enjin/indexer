@@ -7,8 +7,8 @@ export async function getMetadata(metadata: Metadata, attribute: Attribute): Pro
 }
 
 async function processMetadata(metadata: Metadata, attribute: Attribute) {
-    if (['uri', 'external_uri'].includes(attribute.key)) {
-        metadata.externalUri = attribute.value
+    if ('uri' === attribute.key) {
+        metadata.externalUrl = attribute.value
         const externalMetadata = await fetchMetadata(attribute.value)
         return metadataParser(metadata, attribute, externalMetadata)
     }
@@ -28,7 +28,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     }
     if (externalMetadata?.image) {
         let media = new MetadataMedia()
-        media.uri = externalMetadata.image
+        media.url = externalMetadata.image
         metadata.media = [media]
     }
 
@@ -40,7 +40,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
         metadata.fallbackImage = attribute.value
     } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
         let media = new MetadataMedia()
-        media.uri = attribute.value
+        media.url = attribute.value
         metadata.media = [media]
     }
 

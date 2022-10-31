@@ -272,7 +272,7 @@ type MetadataMeta {
 }
 
 type MetadataMedia {
-  uri: String!
+  url: String!
   alt: String
   type: String
 }
@@ -280,7 +280,7 @@ type MetadataMedia {
 type Metadata {
   name: String
   description: String
-  externalUri: String
+  externalUrl: String
   keywords: [String]
   fallbackImage: String
   media: [MetadataMedia]
