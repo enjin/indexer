@@ -7,6 +7,7 @@ export class MarketplacePurchaseEvent {
   public readonly isTypeOf = 'MarketplacePurchaseEvent'
   private _from!: string
   private _to!: string
+  private _amount!: bigint
   private _listing!: string
 
   constructor(props?: Partial<Omit<MarketplacePurchaseEvent, 'toJSON'>>, json?: any) {
@@ -14,6 +15,7 @@ export class MarketplacePurchaseEvent {
     if (json != null) {
       this._from = marshal.string.fromJSON(json.from)
       this._to = marshal.string.fromJSON(json.to)
+      this._amount = marshal.bigint.fromJSON(json.amount)
       this._listing = marshal.string.fromJSON(json.listing)
     }
   }
@@ -36,6 +38,15 @@ export class MarketplacePurchaseEvent {
     this._to = value
   }
 
+  get amount(): bigint {
+    assert(this._amount != null, 'uninitialized access')
+    return this._amount
+  }
+
+  set amount(value: bigint) {
+    this._amount = value
+  }
+
   get listing(): string {
     assert(this._listing != null, 'uninitialized access')
     return this._listing
@@ -50,6 +61,7 @@ export class MarketplacePurchaseEvent {
       isTypeOf: this.isTypeOf,
       from: this.from,
       to: this.to,
+      amount: marshal.bigint.toJSON(this.amount),
       listing: this.listing,
     }
   }

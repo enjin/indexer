@@ -1,9 +1,8 @@
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MarketplaceListingCancelledEvent,
-} from '../../../types/generated/events'
+import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { CancelledListing, Listing, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
+import { Event } from '../../../event'
 
 interface EventData {
     listingId: Uint8Array
@@ -11,7 +10,7 @@ interface EventData {
 
 function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
-    const event = new MarketplaceListingCancelledEvent(ctx);
+    const event = new MarketplaceListingCancelledEvent(ctx)
 
     if (event.isEfinityV3000) {
         const { listingId } = event.asEfinityV3000
@@ -26,14 +25,14 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const listingId = Buffer.from(data.listingId).toString("hex")
+    const listingId = Buffer.from(data.listingId).toString('hex')
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
             makeAssetId: true,
             takeAssetId: true,
-        }
+        },
     })
 
     listing.status = new CancelledListing({
@@ -44,4 +43,6 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
 
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
+
+    new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 }

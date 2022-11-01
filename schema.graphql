@@ -410,13 +410,14 @@ type Listing @entity {
 """ asset events, added Event as suffix to prevent name collision """
 
 type  MarketplaceListEvent {
-  from: Account!
+  from: Account! # this field makes it easier to query user activities
   listing: Listing!
 }
 
 type MarketplacePurchaseEvent {
   from: Account!
   to:  Account!
+  amount: BigInt!
   listing: Listing!
 }
 
