@@ -63,6 +63,7 @@ export class Token {
 
   @OneToMany_(() => Listing, e => e.takeAssetId)
   offers!: Listing[]
+
   @OneToMany_(() => TokenEvent, e => e.token)
   events!: TokenEvent[]
 
