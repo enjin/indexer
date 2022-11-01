@@ -68,7 +68,4 @@ export class Token {
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
-
-  @Column_("text", {nullable: true})
-  name!: string | undefined | null
 }

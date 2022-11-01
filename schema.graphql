@@ -136,7 +136,6 @@ type Collection @entity {
   # Extras
   metadata: Metadata
   createdAt: DateTime!
-  name: String
 }
 
 type CollectionApproval {
@@ -225,7 +224,6 @@ type Token @entity {
   # Extras
   metadata: Metadata
   createdAt: DateTime!
-  name: String
 }
 
 type TokenApproval {

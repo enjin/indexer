@@ -65,17 +65,11 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            if (attribute.key === 'name') {
-                token.name = attribute.value
-            }
             token.metadata = await getMetadata(token.metadata, attribute)
             await ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
-            }
-            if (attribute.key === 'name') {
-                collection.name = attribute.value
             }
             collection.metadata = await getMetadata(collection.metadata, attribute)
             console.log(collection.metadata)
@@ -100,18 +94,12 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            if (attribute.key === 'name') {
-                token.name = attribute.value
-            }
             token.metadata = await getMetadata(token.metadata, attribute)
             token.attributeCount += 1
             await ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
-            }
-            if (attribute.key === 'name') {
-                collection.name = attribute.value
             }
             collection.metadata = await getMetadata(collection.metadata, attribute)
             collection.attributeCount += 1
