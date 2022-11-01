@@ -48,9 +48,6 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            if (attribute.key === 'name') {
-                token.name = null
-            }
             token.metadata = metadataParser(token.metadata, attribute)
             token.attributeCount -= 1
             await ctx.store.save(token)
@@ -64,9 +61,6 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
-            }
-            if (attribute.key === 'name') {
-                collection.name = null
             }
             collection.metadata = metadataParser(collection.metadata, attribute)
             collection.attributeCount -= 1
