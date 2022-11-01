@@ -51,13 +51,11 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
     await ctx.store.save(listing)
 
     if (data.winningBid) {
-        console.log(data.winningBid.bidder);
-        
-    /*    return new Event(ctx, listing.makeAssetId).MarketplacePurchase(
+        return new Event(ctx, listing.makeAssetId).MarketplacePurchase(
             listing.seller,
-            await getOrCreateAccount(ctx, encodeId(data.winningBid.bidder.id)),
+            await getOrCreateAccount(ctx, encodeId(data.winningBid.bidder)),
             listing,
             1n
-        ) */
+        )
     }
 }

@@ -5,7 +5,9 @@ import {
     MarketplaceListEvent,
     MarketplaceListingCancelEvent,
     MarketplacePurchaseEvent,
+    MarketplaceBidEvent,
     Token,
+    Bid,
 } from '../model'
 import { EventHandlerContext } from '../mappings/types/contexts'
 
@@ -18,6 +20,11 @@ export class Event {
             height: this.ctx.block.height,
             createdAt: new Date(this.ctx.block.timestamp),
         }
+    }
+
+    private catchError(err: any) {
+        const error = err.message ?? err
+        this.ctx.log.error(error.toString())
     }
 
     public async MarketplaceListingCancel(from: Account, listing: Listing) {
@@ -69,6 +76,20 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.info('MarketplacePurchaseEvent saved!')
+        this.ctx.log.debug('MarketplacePurchaseEvent saved!')
+    }
+
+    public async MarketplaceBid(from: Account, bid: Bid) {
+        const event = new TokenEvent({
+            id: `${bid.id}-bid`,
+            event: new MarketplaceBidEvent({
+                from: from.id,
+                bid: bid.id,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+        this.ctx.log.debug('MarketplaceBidEvent saved!')
     }
 }

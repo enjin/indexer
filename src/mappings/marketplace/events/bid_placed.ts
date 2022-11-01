@@ -5,15 +5,16 @@ import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
+import { Event } from '../../../event'
 
 interface EventData {
     listingId: Uint8Array
-    bid: BidEvent,
+    bid: BidEvent
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
     console.log(ctx.event.name)
-    const event = new MarketplaceBidPlacedEvent(ctx);
+    const event = new MarketplaceBidPlacedEvent(ctx)
 
     if (event.isEfinityV3000) {
         const { listingId, bid } = event.asEfinityV3000
@@ -28,14 +29,14 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const listingId = Buffer.from(data.listingId).toString("hex")
+    const listingId = Buffer.from(data.listingId).toString('hex')
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
             makeAssetId: true,
             takeAssetId: true,
-        }
+        },
     })
 
     const address = encodeId(data.bid.bidder)
@@ -60,4 +61,6 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
 
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
+
+    new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 }
