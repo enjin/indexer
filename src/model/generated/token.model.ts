@@ -6,6 +6,7 @@ import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
+import {TokenEvent} from "./tokenEvent.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -62,6 +63,8 @@ export class Token {
 
   @OneToMany_(() => Listing, e => e.takeAssetId)
   offers!: Listing[]
+  @OneToMany_(() => TokenEvent, e => e.token)
+  events!: TokenEvent[]
 
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
   metadata!: Metadata | undefined | null
