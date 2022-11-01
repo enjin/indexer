@@ -220,6 +220,7 @@ type Token @entity {
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
+  events: [TokenEvent] @derivedFrom(field: "token")
 
   # Extras
   metadata: Metadata
@@ -405,3 +406,50 @@ type Listing @entity {
   updatedAt: DateTime!
 }
 
+
+
+""" asset events, added Event as suffix to prevent name collision """
+
+type  MarketplaceListEvent {
+  from: Account! # this field makes it easier to query user activities
+  listing: Listing!
+}
+
+type MarketplacePurchaseEvent {
+  from: Account!
+  to:  Account!
+  amount: BigInt!
+  listing: Listing!
+}
+
+type MarketplaceListingCancelEvent {
+  from: Account!
+  listing: Listing!
+}
+
+type MarketplaceBidEvent {
+  from: Account!
+  bid: Bid!
+}
+
+type TransferEvent {
+  from: Account!
+  to:  Account!
+}
+
+type BurnEvent {
+  from: Account!
+  amount: BigInt!
+}
+
+union TokenEventType = MarketplaceListEvent | MarketplacePurchaseEvent | MarketplaceListingCancelEvent | MarketplaceBidEvent | TransferEvent | BurnEvent
+
+type TokenEvent @entity {
+  id: ID!
+
+  event: TokenEventType!
+  token: Token!
+  height: Int!
+
+  createdAt: DateTime!
+}
