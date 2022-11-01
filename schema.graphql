@@ -220,6 +220,7 @@ type Token @entity {
   tokenAccounts: [TokenAccount] @derivedFrom(field: "token")
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
+  offers: [Listing] @derivedFrom(field: "takeAssetId")
 
   # Extras
   metadata: Metadata
