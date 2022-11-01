@@ -32,11 +32,6 @@ export async function handleTransferAll(ctx: CallHandlerContext) {
 
     const transfer = await ctx.store.findOne<Transfer>(Transfer, {
         where: { id: ctx.call.id },
-        relations: {
-            from: true,
-            to: true,
-            asset: true,
-        }
     })
 
     if (transfer) {
