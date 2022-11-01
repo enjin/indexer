@@ -5,6 +5,7 @@ import { DEFAULT_BATCH_SIZE, DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { createEfiToken } from './createEfiToken'
+import { handleTransfer } from './mappings/balances/events/transfer'
 
 const database = new TypeormDatabase()
 const processor = new SubstrateProcessor(database)
@@ -35,6 +36,7 @@ processor.addCallHandler(
     modules.balances.extrinsics.handleTransferAll
 )
 
+processor.addEventHandler('Balances.Transfer', modules.balances.events.handleTransfer)
 processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
