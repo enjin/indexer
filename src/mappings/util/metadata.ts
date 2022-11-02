@@ -26,10 +26,8 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     if (externalMetadata?.fallback_image) {
         metadata.fallbackImage = externalMetadata.fallback_image
     }
-    if (externalMetadata?.image) {
-        let media = new MetadataMedia()
-        media.url = externalMetadata.image
-        metadata.media = [media]
+    if (externalMetadata?.media) {
+        metadata.media = parseMedia(externalMetadata.media)
     }
 
     if (attribute.key === 'name') {
@@ -39,12 +37,26 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     } else if (attribute.key === 'fallback_image') {
         metadata.fallbackImage = attribute.value
     } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
-        let media = new MetadataMedia()
-        media.url = attribute.value
-        metadata.media = [media]
+        metadata.media = parseMedia(attribute.value)
     }
 
     return metadata
+}
+
+function parseMedia(media: any)
+{
+    try {
+        const mediaObject = JSON.parse(media)
+        return mediaObject.map(
+            (media: any) => new MetadataMedia({
+                url: media.url,
+                type: media.type,
+                alt: media.alt,
+            })
+        )
+    } catch (e) {
+        return null
+    }
 }
 
 async function fetchMetadata(url: string) {
@@ -58,7 +70,7 @@ async function fetchMetadata(url: string) {
     })
 
     try {
-    const { status, data } = await api.get(url)
+        const { status, data } = await api.get(url)
         if (status < 400) {
             return data
         }
