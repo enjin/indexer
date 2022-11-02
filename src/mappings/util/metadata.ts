@@ -28,7 +28,6 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)
-        console.log(metadata.media)
     }
 
     if (attribute.key === 'name') {
