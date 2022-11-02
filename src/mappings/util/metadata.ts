@@ -46,8 +46,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
 function parseMedia(media: any)
 {
     try {
-        const mediaObject = JSON.parse(media)
-        return mediaObject.map(
+        return media.map(
             (media: any) => new MetadataMedia({
                 url: media.url,
                 type: media.type,
