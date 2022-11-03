@@ -280,6 +280,11 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             where: { id: eventData.collectionId.toString() },
             relations: {
                 owner: true,
+                floorListing: true,
+                tokens: true,
+                collectionAccounts: true,
+                tokenAccounts: true,
+                attributes: true,
             },
         })
 

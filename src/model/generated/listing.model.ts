@@ -6,7 +6,7 @@ import {FeeSide} from "./_feeSide"
 import {ListingData, fromJsonListingData} from "./_listingData"
 import {ListingState, fromJsonListingState} from "./_listingState"
 import {Bid} from "./bid.model"
-import {ListingStatus, fromJsonListingStatus} from "./_listingStatus"
+import {ListingStatus} from "./listingStatus.model"
 
 @Entity_()
 export class Listing {
@@ -50,17 +50,17 @@ export class Listing {
   @Column_("text", {nullable: false})
   salt!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingData(obj)}, nullable: false})
-  data!: ListingData
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: true})
+  data!: ListingData | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingState(obj)}, nullable: false})
-  state!: ListingState
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: true})
+  state!: ListingState | undefined | null
 
   @OneToMany_(() => Bid, e => e.listing)
   bids!: Bid[]
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonListingStatus(obj)}, nullable: false})
-  status!: ListingStatus
+  @OneToMany_(() => ListingStatus, e => e.listing)
+  status!: ListingStatus[]
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
   highestPrice!: bigint

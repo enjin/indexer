@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Listing, ListingType } from '../../../model'
+import { AuctionState, Bid, Collection, Listing, ListingStatusType, ListingType, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
@@ -34,7 +34,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: { collection: true },
             takeAssetId: true,
         },
     })
@@ -63,4 +63,33 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     await ctx.store.save(listing)
 
     new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
+
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: listing.makeAssetId.collection.id },
+        relations: {
+            owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
+        }
+    })
+
+    if (collection.floorListing?.id === listing.id) {
+        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+            where: {
+                makeAssetId: { collection: { id: collection.id } },
+                status: { type: ListingStatusType.Active },
+            },
+            order: {
+                highestPrice: "DESC",
+            },
+        })
+
+        if (floorListing && floorListing.id !== listing.id) {
+            collection.floorListing = floorListing
+            await ctx.store.save(collection)
+        }
+    }
 }

@@ -10,6 +10,7 @@ import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Metadata} from "./_metadata"
+import {Listing} from "./listing.model"
 
 @Entity_()
 export class Collection {
@@ -65,6 +66,10 @@ export class Collection {
 
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
   metadata!: Metadata | undefined | null
+
+  @Index_()
+  @ManyToOne_(() => Listing, {nullable: true})
+  floorListing!: Listing | undefined | null
 
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date

@@ -1,6 +1,12 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import { FinalizedListing, FixedPriceState, Listing, ListingStatusType, ListingType } from '../../../model'
+import {
+    Collection,
+    FixedPriceState,
+    Listing, ListingStatus,
+    ListingStatusType,
+    ListingType,
+} from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
 import { Event } from '../../../event'
@@ -37,7 +43,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             seller: true,
-            makeAssetId: true,
+            makeAssetId: { collection: true },
             takeAssetId: true,
         },
     })
@@ -45,11 +51,14 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
     listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: data.amountFilled })
 
     if (data.amountRemaining === 0n) {
-        listing.status = new FinalizedListing({
-            listingStatus: ListingStatusType.Finalized,
+        const listingStatus = new ListingStatus({
+            id: `${listingId}-${ctx.block.height}`,
+            type: ListingStatusType.Finalized,
+            listing: listing,
             height: ctx.block.height,
-            createdAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(ctx.block.timestamp)
         })
+        await ctx.store.insert(listingStatus)
     }
 
     listing.updatedAt = new Date(ctx.block.timestamp)
@@ -62,4 +71,36 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         data.amountFilled,
         data.amountRemaining
     )
+
+    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        where: { id: listing.makeAssetId.collection.id },
+        relations: {
+            owner: true,
+            floorListing: true,
+            tokens: true,
+            collectionAccounts: true,
+            tokenAccounts: true,
+            attributes: true,
+        }
+    })
+
+    if (collection.floorListing?.id === listing.id) {
+        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+            where: {
+                makeAssetId: { collection: { id: collection.id } },
+                status: { type: ListingStatusType.Active },
+            },
+            order: {
+                highestPrice: "DESC",
+            },
+        })
+
+        if (floorListing && floorListing.id !== listing.id) {
+            collection.floorListing = floorListing
+            await ctx.store.save(collection)
+        } else {
+            collection.floorListing = null
+            await ctx.store.save(collection)
+        }
+    }
 }
