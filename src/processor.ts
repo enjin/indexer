@@ -45,6 +45,7 @@ processor.addEventHandler('MultiTokens.CollectionAccountCreated', modules.multiT
 processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', modules.multiTokens.events.handleCollectionAccountDestroyed)
 processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
 processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
+processor.addEventHandler('MultiTokens.TokenMutated', modules.multiTokens.events.handleTokenMutated)
 processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
 processor.addEventHandler('MultiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
 processor.addEventHandler('MultiTokens.Minted', modules.multiTokens.events.handleMinted)
