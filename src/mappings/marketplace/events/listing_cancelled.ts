@@ -1,10 +1,8 @@
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
-import { CancelledListing, Listing, ListingStatusType } from '../../../model'
 import {
     MarketplaceListingCancelledEvent,
 } from '../../../types/generated/events'
-import { CancelledListing, Collection, Listing, ListingStatusType, Token } from '../../../model'
+import { Collection, Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Event } from '../../../event'
 
@@ -38,15 +36,17 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
             takeAssetId: true,
         },
     })
-
-    listing.status = new CancelledListing({
-        listingStatus: ListingStatusType.Cancelled,
-        height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp),
-    })
-
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
+
+    const listingStatus = new ListingStatus({
+        id: `${listingId}-${ctx.block.height}`,
+        type: ListingStatusType.Cancelled,
+        listing: listing,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp)
+    })
+    await ctx.store.insert(listingStatus)
 
     new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
@@ -61,42 +61,29 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
             attributes: true,
         }
     })
-    console.log("after collection")
 
     if (collection.floorListing?.id === listing.id) {
-        console.log("before floor listing fetching")
-        const floorListing = await ctx.store.find<Listing>(Listing, {
+        const floorListing = await ctx.store.findOne<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: collection.id } },
-                status: { listingStatus: ListingStatusType.Active },
+                status: { type: ListingStatusType.Active },
+            },
+            relations: {
+                seller: true,
+                makeAssetId: true,
+                takeAssetId: true,
             },
             order: {
                 highestPrice: "DESC",
             },
         })
-        console.log(floorListing)
-        // const floorListing = await ctx.store.findOne<Listing>(Listing, {
-        //     where: {
-        //         makeAssetId: { collection: { id: collection.id } },
-        //         status: { listingStatus: ListingStatusType.Active },
-        //     },
-        //     relations: {
-        //         seller: true,
-        //         makeAssetId: true,
-        //         takeAssetId: true,
-        //     },
-        //     order: {
-        //         highestPrice: "DESC",
-        //     },
-        // })
-        // console.log(floorListing)
 
-        // if (floorListing && floorListing.id !== listing.id) {
-        //     collection.floorListing = floorListing
-        //     await ctx.store.save(collection)
-        // } else {
-        //     collection.floorListing = null
-        //     await ctx.store.save(collection)
-        // }
+        if (floorListing && floorListing.id !== listing.id) {
+            collection.floorListing = floorListing
+            await ctx.store.save(collection)
+        } else {
+            collection.floorListing = null
+            await ctx.store.save(collection)
+        }
     }
 }

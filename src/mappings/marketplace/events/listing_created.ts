@@ -1,13 +1,12 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
-    ActiveListing,
     AuctionData,
     AuctionState, Collection,
     FeeSide,
     FixedPriceData,
     FixedPriceState,
-    Listing,
+    Listing, ListingStatus,
     ListingStatusType,
     ListingType,
     Token,
@@ -84,12 +83,21 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         salt: Buffer.from(data.listing.salt).toString('hex'),
         data: listingData,
         state: listingState,
-        status: new ActiveListing({ listingStatus: ListingStatusType.Active }),
         createdAt: new Date(ctx.block.timestamp),
         updatedAt: new Date(ctx.block.timestamp),
     })
 
     await ctx.store.insert(listing)
+
+    const listingStatus = new ListingStatus({
+        id: `${listingId}-${ctx.block.height}`,
+        type: ListingStatusType.Active,
+        listing: listing,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp)
+    })
+    await ctx.store.insert(listingStatus)
+
 
     new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 

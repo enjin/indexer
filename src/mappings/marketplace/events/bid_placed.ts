@@ -80,7 +80,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         const floorListing = await ctx.store.findOne<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: collection.id } },
-                status: { listingStatus: ListingStatusType.Active },
+                status: { type: ListingStatusType.Active },
             },
             order: {
                 highestPrice: "DESC",

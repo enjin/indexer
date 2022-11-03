@@ -2,12 +2,10 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
 import {
     Collection,
-    FinalizedListing,
     FixedPriceState,
-    Listing,
+    Listing, ListingStatus,
     ListingStatusType,
     ListingType,
-    Token,
 } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
@@ -53,11 +51,14 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
     listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: data.amountFilled })
 
     if (data.amountRemaining === 0n) {
-        listing.status = new FinalizedListing({
-            listingStatus: ListingStatusType.Finalized,
+        const listingStatus = new ListingStatus({
+            id: `${listingId}-${ctx.block.height}`,
+            type: ListingStatusType.Finalized,
+            listing: listing,
             height: ctx.block.height,
-            createdAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(ctx.block.timestamp)
         })
+        await ctx.store.insert(listingStatus)
     }
 
     listing.updatedAt = new Date(ctx.block.timestamp)
@@ -87,7 +88,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         const floorListing = await ctx.store.findOne<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: collection.id } },
-                status: { listingStatus: ListingStatusType.Active },
+                status: { type: ListingStatusType.Active },
             },
             order: {
                 highestPrice: "DESC",

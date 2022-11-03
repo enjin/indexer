@@ -361,23 +361,13 @@ enum ListingStatusType {
   Finalized
 }
 
-type ActiveListing {
-  listingStatus: ListingStatusType!
+type ListingStatus @entity {
+    id: ID!
+    type: ListingStatusType!
+    listing: Listing!
+    height: Int!
+    createdAt: DateTime!
 }
-
-type CancelledListing {
-  listingStatus: ListingStatusType!
-  height: Int
-  createdAt: DateTime
-}
-
-type FinalizedListing {
-  listingStatus: ListingStatusType!
-  height: Int
-  createdAt: DateTime
-}
-
-union ListingStatus = ActiveListing | CancelledListing | FinalizedListing
 
 type Listing @entity {
   id: ID!
@@ -398,9 +388,9 @@ type Listing @entity {
 
   # Relations
   bids: [Bid] @derivedFrom(field: "listing")
+  status: [ListingStatus] @derivedFrom(field: "listing")
 
   # Extras
-  status: ListingStatus
   highestPrice: BigInt!
 
   createdAt: DateTime!

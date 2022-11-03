@@ -1,14 +1,12 @@
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
-import { FinalizedListing, Listing, ListingStatusType } from '../../../model'
 import {
     MarketplaceAuctionFinalizedEvent,
 } from '../../../types/generated/events'
 import {
     Collection,
-    FinalizedListing,
     Listing,
-    ListingStatusType, Token,
+    ListingStatus,
+    ListingStatusType,
 } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
@@ -52,14 +50,17 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         },
     })
 
-    listing.status = new FinalizedListing({
-        listingStatus: ListingStatusType.Finalized,
-        height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp),
-    })
-
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
+
+    const listingStatus = new ListingStatus({
+        id: `${listingId}-${ctx.block.height}`,
+        type: ListingStatusType.Finalized,
+        listing: listing,
+        height: ctx.block.height,
+        createdAt: new Date(ctx.block.timestamp)
+    })
+    await ctx.store.insert(listingStatus)
 
     if (data.winningBid) {
         return new Event(ctx, listing.makeAssetId).MarketplacePurchase(
@@ -86,7 +87,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         const floorListing = await ctx.store.findOne<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: collection.id } },
-                status: { listingStatus: ListingStatusType.Active },
+                status: { type: ListingStatusType.Active },
             },
             order: {
                 highestPrice: "DESC",
