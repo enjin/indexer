@@ -40,14 +40,9 @@ processor.addEventHandler('Balances.Transfer', modules.balances.events.handleTra
 processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
-processor.addEventHandler(
-    'MultiTokens.CollectionAccountCreated',
-    modules.multiTokens.events.handleCollectionAccountCreated
-)
-processor.addEventHandler(
-    'MultiTokens.CollectionAccountDestroyed',
-    modules.multiTokens.events.handleCollectionAccountDestroyed
-)
+processor.addEventHandler('MultiTokens.CollectionMutated', modules.multiTokens.events.handleCollectionMutated)
+processor.addEventHandler('MultiTokens.CollectionAccountCreated', modules.multiTokens.events.handleCollectionAccountCreated)
+processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', modules.multiTokens.events.handleCollectionAccountDestroyed)
 processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
 processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
 processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
