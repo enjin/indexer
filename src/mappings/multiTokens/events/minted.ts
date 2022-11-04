@@ -25,7 +25,6 @@ interface StorageData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensMintedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -77,11 +76,6 @@ export async function handleMinted(ctx: EventHandlerContext) {
     const address = encodeId(data.recipient)
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-        relations: {
-            account: true,
-            collection: true,
-            token: true,
-        },
     })
 
     const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)

@@ -14,7 +14,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensApprovedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -42,11 +41,6 @@ export async function handleApproved(ctx: EventHandlerContext) {
     if (data.tokenId) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-            relations: {
-                account: true,
-                collection: true,
-                token: true,
-            },
         })
 
         const approvals = tokenAccount.approvals ?? []
@@ -64,10 +58,6 @@ export async function handleApproved(ctx: EventHandlerContext) {
     } else {
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
-            relations: {
-                account: true,
-                collection: true,
-            },
         })
 
         const approvals = collectionAccount.approvals ?? []

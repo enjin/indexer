@@ -12,7 +12,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensAttributeSetEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -30,23 +29,12 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
-        relations: {
-            owner: true,
-            floorListing: true,
-            tokens: true,
-            collectionAccounts: true,
-            tokenAccounts: true,
-            attributes: true,
-        },
     })
 
     let token = null
     if (data.tokenId) {
         token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
-            relations: {
-                collection: true,
-            },
         })
     }
 
@@ -57,10 +45,6 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
 
     let attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
-        relations: {
-            collection: true,
-            token: true,
-        },
     })
 
     if (attribute) {
@@ -77,7 +61,6 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
                 collection.metadata = new Metadata()
             }
             collection.metadata = await getMetadata(collection.metadata, attribute)
-            console.log(collection.metadata)
             await ctx.store.save(collection)
         }
         await ctx.store.save(attribute)

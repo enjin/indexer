@@ -18,7 +18,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensFrozenEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -75,11 +74,6 @@ export async function handleFrozen(ctx: EventHandlerContext) {
         const address = encodeId(data.tokenAccount)
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-            relations: {
-                account: true,
-                collection: true,
-                token: true,
-            },
         })
 
         tokenAccount.isFrozen = true
@@ -89,10 +83,6 @@ export async function handleFrozen(ctx: EventHandlerContext) {
         const address = encodeId(data.collectionAccount)
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
-            relations: {
-                account: true,
-                collection: true,
-            },
         })
 
         collectionAccount.isFrozen = true
@@ -101,9 +91,6 @@ export async function handleFrozen(ctx: EventHandlerContext) {
     } else if (data.tokenId) {
         const token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
-            relations: {
-                collection: true,
-            },
         })
 
         token.isFrozen = true
@@ -111,14 +98,6 @@ export async function handleFrozen(ctx: EventHandlerContext) {
     } else {
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: data.collectionId.toString() },
-            relations: {
-                owner: true,
-                floorListing: true,
-                tokens: true,
-                collectionAccounts: true,
-                tokenAccounts: true,
-                attributes: true,
-            },
         })
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })

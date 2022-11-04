@@ -17,7 +17,6 @@ interface EventData {
 
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensCollectionMutatedEvent(ctx)
-    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isEfinityV2) {
         const { collectionId, mutation } = event.asEfinityV2
@@ -75,9 +74,6 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
-        relations: {
-            owner: true
-        }
     })
 
     if (data.owner) {

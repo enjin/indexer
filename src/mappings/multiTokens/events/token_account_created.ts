@@ -13,7 +13,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensTokenAccountCreatedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -40,10 +39,6 @@ export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
 
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${address}` },
-        relations: {
-            account: true,
-            collection: true,
-        },
     })
     collectionAccount.accountCount += 1
     await ctx.store.save(collectionAccount)

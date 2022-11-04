@@ -12,7 +12,6 @@ interface EventData {
 }
 
 function getCallData(ctx: CallContext): EventData | undefined {
-    console.log(ctx.call.name)
     const call = new BalancesForceTransferCall(ctx)
     if (call.isEfinityV1) {
         const { source, dest, value } = call.asEfinityV1

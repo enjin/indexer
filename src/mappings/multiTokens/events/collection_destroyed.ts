@@ -9,7 +9,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensCollectionDestroyedEvent(ctx)
 
     if (event.isEfinityV2) {

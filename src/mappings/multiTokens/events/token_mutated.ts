@@ -26,11 +26,9 @@ interface EventData {
 
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensTokenMutatedEvent(ctx)
-    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isEfinityV3000) {
         const { collectionId, tokenId, mutation } = event.asEfinityV3000
-        console.log('Behavior: ' + mutation.behavior)
         return {
             collectionId: collectionId,
             tokenId: tokenId,
@@ -67,9 +65,6 @@ export async function handleTokenMutated(ctx: EventHandlerContext) {
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: {
-            collection: true,
-        },
     })
 
     if (data.listingForbidden) {

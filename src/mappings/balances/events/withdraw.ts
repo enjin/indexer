@@ -12,7 +12,6 @@ interface EventData {
 
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new BalancesWithdrawEvent(ctx)
-    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isEfinityV2) {
         const { who, amount } = event.asEfinityV2
