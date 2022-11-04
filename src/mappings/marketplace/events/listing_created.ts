@@ -24,7 +24,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MarketplaceListingCreatedEvent(ctx)
 
     if (event.isEfinityV3000) {
@@ -44,7 +43,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
-            collection: true,
+            collection: {
+                floorListing: true
+            },
         }
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -101,20 +102,8 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
 
     new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: makeAssetId.collection.id },
-        relations: {
-            owner: true,
-            floorListing: true,
-            tokens: true,
-            collectionAccounts: true,
-            tokenAccounts: true,
-            attributes: true,
-        }
-    })
-
-    if (!collection.floorListing || listing.price < collection.floorListing.price) {
-        collection.floorListing = listing
-        await ctx.store.save(collection)
+    if (!makeAssetId.collection.floorListing || listing.price < makeAssetId.collection.floorListing.price) {
+        makeAssetId.collection.floorListing = listing
+        await ctx.store.save(makeAssetId.collection)
     }
 }

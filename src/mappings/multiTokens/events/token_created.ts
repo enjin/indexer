@@ -227,9 +227,6 @@ function getEventData(ctx: EventHandlerContext): EventData {
 
     if (event.isEfinityV2) {
         const { collectionId, tokenId, issuer, initialSupply } = event.asEfinityV2
-        console.log(
-            `Block: ${ctx.block.height}, event: ${ctx.event.name}, collectionId: ${collectionId}, tokenId: ${tokenId}`
-        )
         return { collectionId, tokenId, issuer, initialSupply }
     } else {
         throw new UnknownVersionError(event.constructor.name)
@@ -268,7 +265,6 @@ async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Pr
 }
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
-    console.log('MultiTokens.TokenCreated')
     const eventData = getEventData(ctx)
 
     if (ctx.event.call) {
@@ -278,14 +274,6 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
-            relations: {
-                owner: true,
-                floorListing: true,
-                tokens: true,
-                collectionAccounts: true,
-                tokenAccounts: true,
-                attributes: true,
-            },
         })
 
         collection.tokenCount += 1

@@ -10,7 +10,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensTokenDestroyedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -28,14 +27,6 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
-        relations: {
-            owner: true,
-            floorListing: true,
-            tokens: true,
-            collectionAccounts: true,
-            tokenAccounts: true,
-            attributes: true,
-        },
     })
     collection.tokenCount -= 1
     await ctx.store.save(collection)

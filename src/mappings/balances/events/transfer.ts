@@ -13,7 +13,6 @@ interface EventData {
 
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new BalancesTransferEvent(ctx)
-    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isEfinityV2) {
         const { from, to, amount } = event.asEfinityV2

@@ -24,7 +24,6 @@ interface StorageData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensBurnedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -76,11 +75,6 @@ export async function handleBurned(ctx: EventHandlerContext) {
     const address = encodeId(data.accountId)
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-        relations: {
-            collection: true,
-            token: true,
-            account: true,
-        },
     })
 
     if (tokenAccount) {

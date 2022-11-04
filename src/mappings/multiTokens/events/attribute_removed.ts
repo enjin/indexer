@@ -10,7 +10,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensAttributeRemovedEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -40,9 +39,6 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
         if (attribute.token) {
             const token = await ctx.store.findOneOrFail<Token>(Token, {
                 where: { id: `${data.collectionId}-${data.tokenId}` },
-                relations: {
-                    collection: true,
-                },
             })
 
             if (!token.metadata) {
@@ -54,14 +50,6 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
         } else if (attribute.collection) {
             const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
-                relations: {
-                    owner: true,
-                    floorListing: true,
-                    tokens: true,
-                    collectionAccounts: true,
-                    tokenAccounts: true,
-                    attributes: true,
-                },
             })
 
             if (!collection.metadata) {

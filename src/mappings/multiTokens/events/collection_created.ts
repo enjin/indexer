@@ -87,11 +87,9 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
 
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensCollectionCreatedEvent(ctx)
-    console.log(`Block: ${ctx.block.height}, event: ${ctx.event.name}`)
 
     if (event.isEfinityV2) {
         const { collectionId, owner } = event.asEfinityV2
-        console.log(`collectionId: ${collectionId}`)
         return { collectionId, owner }
     } else {
         throw new UnknownVersionError(event.constructor.name)

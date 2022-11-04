@@ -26,7 +26,6 @@ interface StorageData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MultiTokensTransferredEvent(ctx)
 
     if (event.isEfinityV2) {
@@ -78,11 +77,6 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     const fromAddress = encodeId(data.from)
     const fromTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
-        relations: {
-            account: true,
-            collection: true,
-            token: true,
-        },
     })
 
     if (fromTokenAccount) {
@@ -100,11 +94,6 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     const toAddress = encodeId(data.to)
     const toTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
-        relations: {
-            account: true,
-            collection: true,
-            token: true,
-        },
     })
 
     if (toTokenAccount) {

@@ -3,7 +3,6 @@ import {
     MarketplaceAuctionFinalizedEvent,
 } from '../../../types/generated/events'
 import {
-    Collection,
     Listing,
     ListingStatus,
     ListingStatusType,
@@ -22,7 +21,6 @@ interface EventData {
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
-    console.log(ctx.event.name)
     const event = new MarketplaceAuctionFinalizedEvent(ctx)
 
     if (event.isEfinityV3000) {
@@ -44,9 +42,10 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         relations: {
             seller: true,
             makeAssetId: {
-                collection: true
+                collection: {
+                    floorListing: true
+                }
             },
-            takeAssetId: true,
         },
     })
 
@@ -71,22 +70,10 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         )
     }
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: listing.makeAssetId.collection.id },
-        relations: {
-            owner: true,
-            floorListing: true,
-            tokens: true,
-            collectionAccounts: true,
-            tokenAccounts: true,
-            attributes: true,
-        }
-    })
-
-    if (collection.floorListing?.id === listing.id) {
+    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
         const floorListing = await ctx.store.findOne<Listing>(Listing, {
             where: {
-                makeAssetId: { collection: { id: collection.id } },
+                makeAssetId: { collection: { id:  listing.makeAssetId.collection.id } },
                 status: { type: ListingStatusType.Active },
             },
             order: {
@@ -95,11 +82,11 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         })
 
         if (floorListing && floorListing.id !== listing.id) {
-            collection.floorListing = floorListing
-            await ctx.store.save(collection)
+            listing.makeAssetId.collection.floorListing = floorListing
+            await ctx.store.save(listing.makeAssetId.collection)
         } else {
-            collection.floorListing = null
-            await ctx.store.save(collection)
+            listing.makeAssetId.collection.floorListing = null
+            await ctx.store.save(listing.makeAssetId.collection)
         }
     }
 }

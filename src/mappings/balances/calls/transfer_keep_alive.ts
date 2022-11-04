@@ -11,7 +11,6 @@ interface EventData {
 }
 
 function getCallData(ctx: CallContext): EventData | undefined {
-    console.log(ctx.call.name)
     const call = new BalancesTransferKeepAliveCall(ctx)
     if (call.isEfinityV1) {
         const { dest, value } = call.asEfinityV1
