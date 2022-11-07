@@ -50,11 +50,11 @@ export class Listing {
   @Column_("text", {nullable: false})
   salt!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: true})
-  data!: ListingData | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: false})
+  data!: ListingData
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: true})
-  state!: ListingState | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: false})
+  state!: ListingState
 
   @OneToMany_(() => Bid, e => e.listing)
   bids!: Bid[]

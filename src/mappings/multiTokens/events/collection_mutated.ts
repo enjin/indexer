@@ -5,13 +5,12 @@ import { encodeId } from '../../../common/tools'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
-import { ChainContext } from '../../../types/generated/support'
-
+import { ChainContext, Option } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
     owner: Uint8Array | undefined
-    royalty: DefaultRoyalty | undefined
+    royalty: Option<(DefaultRoyalty | undefined)>
     explicitRoyaltyCurrencies: AssetId[] | undefined
 }
 
@@ -23,7 +22,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
         return {
             collectionId: collectionId,
             owner: mutation.owner,
-            royalty: undefined,
+            royalty: {__kind: "None"},
             explicitRoyaltyCurrencies: undefined,
         }
     } else if (event.isEfinityV3000) {
@@ -47,7 +46,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
         return {
             collectionId: collectionId,
             owner: mutation.owner,
-            royalty: undefined,
+            royalty: {__kind: "None"},
             explicitRoyaltyCurrencies: undefined,
         }
     } else {
@@ -80,8 +79,12 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
         collection.owner = await getOrCreateAccount(ctx, encodeId(data.owner))
     }
 
-    if (data.royalty) {
-        collection.marketPolicy = await getMarket(data.royalty, ctx)
+    if (data.royalty.__kind != "None") {
+        if (data.royalty.value === undefined) {
+            collection.marketPolicy = undefined
+        } else {
+            collection.marketPolicy = await getMarket(data.royalty.value, ctx)
+        }
     }
 
     if (data.explicitRoyaltyCurrencies !== undefined) {

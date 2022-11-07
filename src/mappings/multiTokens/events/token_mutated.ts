@@ -12,15 +12,15 @@ import {
 import { encodeId } from '../../../common/tools'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { DefaultRoyalty, TokenMarketBehavior } from '../../../types/generated/efinityV3000'
-import { ChainContext } from '../../../types/generated/support'
+import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
+import { ChainContext, Option } from '../../../types/generated/support'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
 
 
 interface EventData {
     collectionId: bigint
     tokenId: bigint
-    behavior: TokenMarketBehavior | undefined
+    behavior: Option<(TokenMarketBehavior | undefined)>
     listingForbidden: boolean | undefined
 }
 
@@ -71,8 +71,12 @@ export async function handleTokenMutated(ctx: EventHandlerContext) {
         token.listingForbidden = data.listingForbidden
     }
 
-    if (data.behavior) {
-        token.behavior = await getBehavior(data.behavior, ctx)
+    if (data.behavior.__kind !== "None") {
+        if (data.behavior.value === undefined) {
+            token.behavior = undefined
+        } else {
+            token.behavior = await getBehavior(data.behavior.value, ctx)
+        }
     }
 
     await ctx.store.save(token)

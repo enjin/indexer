@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {Block, Chain, ChainContext, BlockContext, Result} from './support'
+import {Block, Chain, ChainContext, BlockContext, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v5 from './v5'
 import * as v6 from './v6'
@@ -1642,7 +1642,7 @@ export class CouncilProposalOfStorage {
    *  Actual proposal for a given hash, if it's current.
    */
   get isEfinityV3000() {
-    return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === '9519c67ef57e5b8670140b6dd3e5e6fe1442826b838497aaa7815062025f6649'
+    return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === 'a8aad93a48825f59eda8290b5f376abaad23ad8d117ace81aed42a2fc9a707f6'
   }
 
   /**
@@ -1692,7 +1692,7 @@ export class CouncilProposalOfStorage {
    *  Actual proposal for a given hash, if it's current.
    */
   get isV6() {
-    return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === '1d2fe834da1946560a18e385db353906535734a3ba734a68bb830b167e352a8a'
+    return this._chain.getStorageItemTypeHash('Council', 'ProposalOf') === '6429914fd81f6f5a61775b01b8dbf57aeb9ba02892e63196149be82e858e0135'
   }
 
   /**
@@ -5721,7 +5721,7 @@ export class SchedulerAgendaStorage {
    *  Items to be executed, indexed by the block number that they should be executed on.
    */
   get isEfinityV3000() {
-    return this._chain.getStorageItemTypeHash('Scheduler', 'Agenda') === '58dbbafa37eaa11ddb10a7091dd0874ed28fd59adf3b4a2b96f73e8ff03feae7'
+    return this._chain.getStorageItemTypeHash('Scheduler', 'Agenda') === '610cd949ab174bd8b298e376210be6cc1d03634ec5d606f4cba97007dd28d8b2'
   }
 
   /**
@@ -5771,7 +5771,7 @@ export class SchedulerAgendaStorage {
    *  Items to be executed, indexed by the block number that they should be executed on.
    */
   get isV6() {
-    return this._chain.getStorageItemTypeHash('Scheduler', 'Agenda') === '489cc03243149a7f48e06f866bd088df2597e50cb80dc2adca721620723e0a8a'
+    return this._chain.getStorageItemTypeHash('Scheduler', 'Agenda') === '62b55e7b7816de470a37eb07f8ca08653b1ec92b7db0f0196b88e8126dc40a18'
   }
 
   /**
@@ -6586,7 +6586,7 @@ export class SystemEventsStorage {
    *  from within the runtime.
    */
   get isEfinityV1() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === '23fd5dcee7cda161a02e562d592b78824641f0d3b02526c7af7182361bd6c01f'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === 'e2e27bde8fdf9bad9ddddc0fc285b7ef62cff712fef3d74a66c498bbb7203afc'
   }
 
   /**
@@ -6607,7 +6607,7 @@ export class SystemEventsStorage {
    *  from within the runtime.
    */
   get isEfinityV2() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === '35c64341488fff4210e4cf63ee50752aa4d11209f47b066f4d681bde5efcfef1'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '2d3b4f07367b61246f48b21ccc8d9644239a100a17c4470d93e7e45336f3e657'
   }
 
   /**
@@ -6628,7 +6628,7 @@ export class SystemEventsStorage {
    *  from within the runtime.
    */
   get isEfinityV3() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === 'c8a0f30468e6e6d0918317212be73b33345be77657252cc8e53d581816112b83'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '251cf5048539bec1a87a7a8bddfdce3356a338d567ecb5f72ac661124df9a416'
   }
 
   /**
@@ -6652,7 +6652,7 @@ export class SystemEventsStorage {
    *  just in case someone still reads them from within the runtime.
    */
   get isEfinityV3000() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === 'b70f706a2f64520d0ff81795c9401418aaa26adbc03c7dfeb874c49b9266dd7a'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '69f53ee0fadfcaaecc22becb6a891969074329e9c2ac0f84a139fa4a261bf240'
   }
 
   /**
@@ -6679,7 +6679,7 @@ export class SystemEventsStorage {
    *  just in case someone still reads them from within the runtime.
    */
   get isV5() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === 'ef39e5f1c13dc9f246bed0ff3d3981861dd54102023ebe2eb2ebc17ebc2a9d92'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '7c7c47d393bf2bc4e480a9f68d22a0b5249afd129fcd21befeadec081e89bf0a'
   }
 
   /**
@@ -6706,7 +6706,7 @@ export class SystemEventsStorage {
    *  just in case someone still reads them from within the runtime.
    */
   get isV6() {
-    return this._chain.getStorageItemTypeHash('System', 'Events') === '552d66de5a0be80ca24cfe3354a66aaf600154156628cd3b3f76f34a7c87a5a5'
+    return this._chain.getStorageItemTypeHash('System', 'Events') === '03d7614906b22bbf5b724b5ce3fba743511702c731246964712e2259bbd85edd'
   }
 
   /**
@@ -7409,7 +7409,7 @@ export class TechnicalCommitteeProposalOfStorage {
    *  Actual proposal for a given hash, if it's current.
    */
   get isEfinityV3000() {
-    return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === '9519c67ef57e5b8670140b6dd3e5e6fe1442826b838497aaa7815062025f6649'
+    return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === 'a8aad93a48825f59eda8290b5f376abaad23ad8d117ace81aed42a2fc9a707f6'
   }
 
   /**
@@ -7459,7 +7459,7 @@ export class TechnicalCommitteeProposalOfStorage {
    *  Actual proposal for a given hash, if it's current.
    */
   get isV6() {
-    return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === '1d2fe834da1946560a18e385db353906535734a3ba734a68bb830b167e352a8a'
+    return this._chain.getStorageItemTypeHash('TechnicalCommittee', 'ProposalOf') === '6429914fd81f6f5a61775b01b8dbf57aeb9ba02892e63196149be82e858e0135'
   }
 
   /**

@@ -1,4 +1,4 @@
-import type {Result} from './support'
+import type {Result, Option} from './support'
 
 export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
 
@@ -389,6 +389,17 @@ export interface PoolType_Community {
 
 export interface PoolType_PriceDiscovery {
   __kind: 'PriceDiscovery'
+}
+
+export type Type_30 = Type_30_Ok | Type_30_Err
+
+export interface Type_30_Ok {
+  __kind: 'Ok'
+}
+
+export interface Type_30_Err {
+  __kind: 'Err'
+  value: DispatchError
 }
 
 export type DispatchError = DispatchError_Other | DispatchError_CannotLookup | DispatchError_BadOrigin | DispatchError_Module | DispatchError_ConsumerRemaining | DispatchError_NoProviders | DispatchError_Token | DispatchError_Arithmetic
@@ -3410,7 +3421,7 @@ export type SudoEvent = SudoEvent_Sudid | SudoEvent_KeyChanged | SudoEvent_SudoA
  */
 export interface SudoEvent_Sudid {
   __kind: 'Sudid'
-  value: Result<null, DispatchError>
+  value: Type_30
 }
 
 /**
@@ -3426,7 +3437,7 @@ export interface SudoEvent_KeyChanged {
  */
 export interface SudoEvent_SudoAsDone {
   __kind: 'SudoAsDone'
-  value: Result<null, DispatchError>
+  value: Type_30
 }
 
 /**
