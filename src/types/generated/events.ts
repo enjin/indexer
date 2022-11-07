@@ -1,5 +1,5 @@
 import assert from 'assert'
-import {Chain, ChainContext, EventContext, Event, Result} from './support'
+import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v5 from './v5'
 import * as v6 from './v6'
@@ -1615,13 +1615,13 @@ export class CouncilExecutedEvent {
    * A motion was executed; result will be `Ok` if it returned without error.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Council.Executed') === 'e7bba992b17737087cf79037068ecde07b0ef6afb29be3ddbe1d7afe57e365aa'
+    return this._chain.getEventHash('Council.Executed') === '277b4c0e428c2d4a9558753a98f57fb1fce7e27c7e6311138f5416b2baf86e33'
   }
 
   /**
    * A motion was executed; result will be `Ok` if it returned without error.
    */
-  get asEfinityV2(): {proposalHash: Uint8Array, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {proposalHash: Uint8Array, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -1630,13 +1630,13 @@ export class CouncilExecutedEvent {
    * A motion was executed; result will be `Ok` if it returned without error.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Council.Executed') === '891fd2ad27e5f8bc799d45bb765ef77383902fd4e1cc4c6981cba99123803ac7'
+    return this._chain.getEventHash('Council.Executed') === 'e3462770cd5fd27e557ee1e7e9aa904092ca387f3eec55182b953d310847e044'
   }
 
   /**
    * A motion was executed; result will be `Ok` if it returned without error.
    */
-  get asEfinityV3(): {proposalHash: Uint8Array, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -1659,13 +1659,13 @@ export class CouncilMemberExecutedEvent {
    * A single member did some action; result will be `Ok` if it returned without error.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Council.MemberExecuted') === 'e7bba992b17737087cf79037068ecde07b0ef6afb29be3ddbe1d7afe57e365aa'
+    return this._chain.getEventHash('Council.MemberExecuted') === '277b4c0e428c2d4a9558753a98f57fb1fce7e27c7e6311138f5416b2baf86e33'
   }
 
   /**
    * A single member did some action; result will be `Ok` if it returned without error.
    */
-  get asEfinityV2(): {proposalHash: Uint8Array, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {proposalHash: Uint8Array, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -1674,13 +1674,13 @@ export class CouncilMemberExecutedEvent {
    * A single member did some action; result will be `Ok` if it returned without error.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Council.MemberExecuted') === '891fd2ad27e5f8bc799d45bb765ef77383902fd4e1cc4c6981cba99123803ac7'
+    return this._chain.getEventHash('Council.MemberExecuted') === 'e3462770cd5fd27e557ee1e7e9aa904092ca387f3eec55182b953d310847e044'
   }
 
   /**
    * A single member did some action; result will be `Ok` if it returned without error.
    */
-  get asEfinityV3(): {proposalHash: Uint8Array, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -1962,13 +1962,13 @@ export class DemocracyExecutedEvent {
    * A proposal has been enacted.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Democracy.Executed') === '98c3caaef1b84143deea16c761096200c5e0e631c6a3776ed012edc9788cf6e2'
+    return this._chain.getEventHash('Democracy.Executed') === '270512fa9651c9fa2eb584a439cab409bb758634bd42c08ad5fc0e9bbed943b0'
   }
 
   /**
    * A proposal has been enacted.
    */
-  get asEfinityV2(): {refIndex: number, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {refIndex: number, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -1977,13 +1977,13 @@ export class DemocracyExecutedEvent {
    * A proposal has been enacted.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Democracy.Executed') === '2abe2e7ca2af8b119eb4f3a1f669843943049e3f4e2f613fc3b077115902ca2b'
+    return this._chain.getEventHash('Democracy.Executed') === '957b797337eaa1f370b65a94f7685042cc04730ba165349e248cfdde80b53c25'
   }
 
   /**
    * A proposal has been enacted.
    */
-  get asEfinityV3(): {refIndex: number, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {refIndex: number, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -3195,7 +3195,7 @@ export class FuelTanksFuelTankMutatedEvent {
    * A `FuelTank` was mutated
    */
   get isEfinityV3000(): boolean {
-    return this._chain.getEventHash('FuelTanks.FuelTankMutated') === '319f92edc8c49bd44ce6aadeb63537f12d3f47c92d53f48e6605066e28278185'
+    return this._chain.getEventHash('FuelTanks.FuelTankMutated') === 'cdb9a620506084d6a0cb024697caf63c1c7fcf41c78cc66b58dd66fe04b3289f'
   }
 
   /**
@@ -4215,7 +4215,7 @@ export class MultiTokensCollectionMutatedEvent {
    * An `Collection` was mutated
    */
   get isEfinityV3000(): boolean {
-    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '3576d262848cc0833f1d40e6a157d5e47a3330611ce12ad55f089059c16668cb'
+    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '8e9d60ee018cb7a7dae9676bbcfa8c3708237568463f1dfc595745607e17c93e'
   }
 
   /**
@@ -4245,7 +4245,7 @@ export class MultiTokensCollectionMutatedEvent {
    * An `Collection` was mutated
    */
   get isV6(): boolean {
-    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '3576d262848cc0833f1d40e6a157d5e47a3330611ce12ad55f089059c16668cb'
+    return this._chain.getEventHash('MultiTokens.CollectionMutated') === '8e9d60ee018cb7a7dae9676bbcfa8c3708237568463f1dfc595745607e17c93e'
   }
 
   /**
@@ -4769,7 +4769,7 @@ export class MultiTokensTokenMutatedEvent {
    * A `Token` was mutated
    */
   get isEfinityV3000(): boolean {
-    return this._chain.getEventHash('MultiTokens.TokenMutated') === 'b9e6d1410285f3bc87627e3af858be42853828e90a2b3358e958a8fbce1c4c54'
+    return this._chain.getEventHash('MultiTokens.TokenMutated') === 'cadefef5e8a907d70a9a2bcf768631e050eee2486fb07c850b59a96059b6b9de'
   }
 
   /**
@@ -5046,13 +5046,13 @@ export class MultisigMultisigExecutedEvent {
    * A multisig operation has been executed.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Multisig.MultisigExecuted') === '64fde797dd4ea0a5e8b72fba6c3511764d52e9d275c92fae4375d984eddab747'
+    return this._chain.getEventHash('Multisig.MultisigExecuted') === 'a4f4f4f2422a1c4cb5359e5ca7ce069035018dd917feceb324240a45edc121d6'
   }
 
   /**
    * A multisig operation has been executed.
    */
-  get asEfinityV2(): {approving: Uint8Array, timepoint: efinityV2.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {approving: Uint8Array, timepoint: efinityV2.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -5061,13 +5061,13 @@ export class MultisigMultisigExecutedEvent {
    * A multisig operation has been executed.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Multisig.MultisigExecuted') === '9a90127767690cc1a48990f005cdf6993802881e3af2da8d0fe9f8294b8c4b9d'
+    return this._chain.getEventHash('Multisig.MultisigExecuted') === '893c7ea80ff9b8edc0f0e804a754035301e2cf91cbfe60a5a7d0565bfa1c133e'
   }
 
   /**
    * A multisig operation has been executed.
    */
-  get asEfinityV3(): {approving: Uint8Array, timepoint: efinityV3.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {approving: Uint8Array, timepoint: efinityV3.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -6432,13 +6432,13 @@ export class SchedulerDispatchedEvent {
    * Dispatched some task.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Scheduler.Dispatched') === '39cf66f8b318db4669e183ffaa1290aec1f8ac972b379087a931cf63e5ddf8f9'
+    return this._chain.getEventHash('Scheduler.Dispatched') === '4439d3bf37ab8e1b7b14c411aa9c4d9622aa96b4dd169cb67da04ec196da4c09'
   }
 
   /**
    * Dispatched some task.
    */
-  get asEfinityV2(): {task: [number, number], id: (Uint8Array | undefined), result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {task: [number, number], id: (Uint8Array | undefined), result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -6447,13 +6447,13 @@ export class SchedulerDispatchedEvent {
    * Dispatched some task.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Scheduler.Dispatched') === '3fd36e1da4dd6a57fbaf34f23c31e64a8c167849f0135f4fce7567f3db728290'
+    return this._chain.getEventHash('Scheduler.Dispatched') === 'ba59527b3bb4801aee2fda92f8229d8d572cc38c565e139a667a87dd8171194b'
   }
 
   /**
    * Dispatched some task.
    */
-  get asEfinityV3(): {task: [number, number], id: (Uint8Array | undefined), result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {task: [number, number], id: (Uint8Array | undefined), result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -6580,13 +6580,13 @@ export class SudoSudidEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV1(): boolean {
-    return this._chain.getEventHash('Sudo.Sudid') === 'ab888611b1630e8ada6ae91aa73bbcaa3417be141a0a0db92f4f509e4cfba02a'
+    return this._chain.getEventHash('Sudo.Sudid') === '8fdfbdd4d08d5c98b7a7eada31ee13c01f31ab10c8752e768b9d4f32f2edfd25'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV1(): Result<null, efinityV1.DispatchError> {
+  get asEfinityV1(): efinityV1.Type_30 {
     assert(this.isEfinityV1)
     return this._chain.decodeEvent(this.event)
   }
@@ -6595,13 +6595,13 @@ export class SudoSudidEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Sudo.Sudid') === 'df00148bd8d36e5e2756be8c56bdf238f29aa9538028f4f316d580eaba1be9b0'
+    return this._chain.getEventHash('Sudo.Sudid') === '7cde07a00087fe00204a886eb195e51ab4ed328b48e00f89cab63a3354eedb31'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV2(): {sudoResult: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {sudoResult: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -6610,13 +6610,13 @@ export class SudoSudidEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Sudo.Sudid') === '790144505f3238f63eeea8b351d8b0c3c90a3b9cd88e7ee262cd9b81c35d80c6'
+    return this._chain.getEventHash('Sudo.Sudid') === 'bfff987b04269a820686fcc24b9885fd64cbc87c576cf203a79a3a99a7c596e1'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV3(): {sudoResult: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {sudoResult: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -6639,13 +6639,13 @@ export class SudoSudoAsDoneEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV1(): boolean {
-    return this._chain.getEventHash('Sudo.SudoAsDone') === 'ab888611b1630e8ada6ae91aa73bbcaa3417be141a0a0db92f4f509e4cfba02a'
+    return this._chain.getEventHash('Sudo.SudoAsDone') === '8fdfbdd4d08d5c98b7a7eada31ee13c01f31ab10c8752e768b9d4f32f2edfd25'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV1(): Result<null, efinityV1.DispatchError> {
+  get asEfinityV1(): efinityV1.Type_30 {
     assert(this.isEfinityV1)
     return this._chain.decodeEvent(this.event)
   }
@@ -6654,13 +6654,13 @@ export class SudoSudoAsDoneEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Sudo.SudoAsDone') === 'df00148bd8d36e5e2756be8c56bdf238f29aa9538028f4f316d580eaba1be9b0'
+    return this._chain.getEventHash('Sudo.SudoAsDone') === '7cde07a00087fe00204a886eb195e51ab4ed328b48e00f89cab63a3354eedb31'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV2(): {sudoResult: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {sudoResult: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -6669,13 +6669,13 @@ export class SudoSudoAsDoneEvent {
    * A sudo just took place. \[result\]
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Sudo.SudoAsDone') === '790144505f3238f63eeea8b351d8b0c3c90a3b9cd88e7ee262cd9b81c35d80c6'
+    return this._chain.getEventHash('Sudo.SudoAsDone') === 'bfff987b04269a820686fcc24b9885fd64cbc87c576cf203a79a3a99a7c596e1'
   }
 
   /**
    * A sudo just took place. \[result\]
    */
-  get asEfinityV3(): {sudoResult: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {sudoResult: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -7226,13 +7226,13 @@ export class TechnicalCommitteeExecutedEvent {
    * A motion was executed; result will be `Ok` if it returned without error.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('TechnicalCommittee.Executed') === 'e7bba992b17737087cf79037068ecde07b0ef6afb29be3ddbe1d7afe57e365aa'
+    return this._chain.getEventHash('TechnicalCommittee.Executed') === '277b4c0e428c2d4a9558753a98f57fb1fce7e27c7e6311138f5416b2baf86e33'
   }
 
   /**
    * A motion was executed; result will be `Ok` if it returned without error.
    */
-  get asEfinityV2(): {proposalHash: Uint8Array, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {proposalHash: Uint8Array, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -7241,13 +7241,13 @@ export class TechnicalCommitteeExecutedEvent {
    * A motion was executed; result will be `Ok` if it returned without error.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('TechnicalCommittee.Executed') === '891fd2ad27e5f8bc799d45bb765ef77383902fd4e1cc4c6981cba99123803ac7'
+    return this._chain.getEventHash('TechnicalCommittee.Executed') === 'e3462770cd5fd27e557ee1e7e9aa904092ca387f3eec55182b953d310847e044'
   }
 
   /**
    * A motion was executed; result will be `Ok` if it returned without error.
    */
-  get asEfinityV3(): {proposalHash: Uint8Array, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -7270,13 +7270,13 @@ export class TechnicalCommitteeMemberExecutedEvent {
    * A single member did some action; result will be `Ok` if it returned without error.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'e7bba992b17737087cf79037068ecde07b0ef6afb29be3ddbe1d7afe57e365aa'
+    return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === '277b4c0e428c2d4a9558753a98f57fb1fce7e27c7e6311138f5416b2baf86e33'
   }
 
   /**
    * A single member did some action; result will be `Ok` if it returned without error.
    */
-  get asEfinityV2(): {proposalHash: Uint8Array, result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {proposalHash: Uint8Array, result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -7285,13 +7285,13 @@ export class TechnicalCommitteeMemberExecutedEvent {
    * A single member did some action; result will be `Ok` if it returned without error.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === '891fd2ad27e5f8bc799d45bb765ef77383902fd4e1cc4c6981cba99123803ac7'
+    return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'e3462770cd5fd27e557ee1e7e9aa904092ca387f3eec55182b953d310847e044'
   }
 
   /**
    * A single member did some action; result will be `Ok` if it returned without error.
    */
-  get asEfinityV3(): {proposalHash: Uint8Array, result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }
@@ -7687,13 +7687,13 @@ export class UtilityDispatchedAsEvent {
    * A call was dispatched.
    */
   get isEfinityV2(): boolean {
-    return this._chain.getEventHash('Utility.DispatchedAs') === '437b0d6b61f01d02ca149f7d3a9e00406fc26ecde780532ed80e532801995307'
+    return this._chain.getEventHash('Utility.DispatchedAs') === '123f6c35bbf8bd8d1cc0ada05ce8ad9758b8462076e62ae91382a7270c95ff10'
   }
 
   /**
    * A call was dispatched.
    */
-  get asEfinityV2(): {result: Result<null, efinityV2.DispatchError>} {
+  get asEfinityV2(): {result: efinityV2.Type_28} {
     assert(this.isEfinityV2)
     return this._chain.decodeEvent(this.event)
   }
@@ -7702,13 +7702,13 @@ export class UtilityDispatchedAsEvent {
    * A call was dispatched.
    */
   get isEfinityV3(): boolean {
-    return this._chain.getEventHash('Utility.DispatchedAs') === 'cbb13e6f8f0e2a0b00b89705f05de04cf34bbb44653bcdccedddc8448bc95bfc'
+    return this._chain.getEventHash('Utility.DispatchedAs') === '7d690b5ed9f2caaea0254a371bcab7b5a7b6fa958ff0b07661390aaf23c39439'
   }
 
   /**
    * A call was dispatched.
    */
-  get asEfinityV3(): {result: Result<null, efinityV3.DispatchError>} {
+  get asEfinityV3(): {result: efinityV3.Type_29} {
     assert(this.isEfinityV3)
     return this._chain.decodeEvent(this.event)
   }

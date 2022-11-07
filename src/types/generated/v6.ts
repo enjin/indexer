@@ -1,4 +1,4 @@
-import type {Result} from './support'
+import type {Result, Option} from './support'
 
 export interface Weight {
   refTime: bigint
@@ -6,7 +6,7 @@ export interface Weight {
 
 export interface DefaultCollectionMutation {
   owner: (Uint8Array | undefined)
-  royalty: ((DefaultRoyalty | undefined) | undefined)
+  royalty: Option<(DefaultRoyalty | undefined)>
   explicitRoyaltyCurrencies: (AssetId[] | undefined)
 }
 
@@ -3113,7 +3113,7 @@ export interface AssetRegistryCall_update_asset {
   name: (Uint8Array | undefined)
   symbol: (Uint8Array | undefined)
   existentialDeposit: (bigint | undefined)
-  location: ((VersionedMultiLocation | undefined) | undefined)
+  location: Option<(VersionedMultiLocation | undefined)>
   additional: (CustomMetadata | undefined)
 }
 
@@ -4872,7 +4872,7 @@ export interface CustomMetadata {
 }
 
 export interface DefaultTokenMutation {
-  behavior: ((TokenMarketBehavior | undefined) | undefined)
+  behavior: Option<(TokenMarketBehavior | undefined)>
   listingForbidden: (boolean | undefined)
 }
 
@@ -4918,7 +4918,7 @@ export interface FuelTankDescriptor {
 }
 
 export interface DefaultTankMutation {
-  userAccountManagement: ((UserAccountManagement | undefined) | undefined)
+  userAccountManagement: Option<(UserAccountManagement | undefined)>
   providesDeposit: (boolean | undefined)
   accountRules: (AccountRuleDescriptor[] | undefined)
 }
@@ -5756,7 +5756,7 @@ export type SudoEvent = SudoEvent_Sudid | SudoEvent_KeyChanged | SudoEvent_SudoA
  */
 export interface SudoEvent_Sudid {
   __kind: 'Sudid'
-  sudoResult: Result<null, DispatchError>
+  sudoResult: Type_30
 }
 
 /**
@@ -5772,7 +5772,7 @@ export interface SudoEvent_KeyChanged {
  */
 export interface SudoEvent_SudoAsDone {
   __kind: 'SudoAsDone'
-  sudoResult: Result<null, DispatchError>
+  sudoResult: Type_30
 }
 
 /**
@@ -5837,7 +5837,7 @@ export interface SchedulerEvent_Dispatched {
   __kind: 'Dispatched'
   task: [number, number]
   id: (Uint8Array | undefined)
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -5902,7 +5902,7 @@ export interface UtilityEvent_ItemFailed {
  */
 export interface UtilityEvent_DispatchedAs {
   __kind: 'DispatchedAs'
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6267,7 +6267,7 @@ export interface DemocracyEvent_Cancelled {
 export interface DemocracyEvent_Executed {
   __kind: 'Executed'
   refIndex: number
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6436,7 +6436,7 @@ export interface CouncilEvent_Disapproved {
 export interface CouncilEvent_Executed {
   __kind: 'Executed'
   proposalHash: Uint8Array
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6445,7 +6445,7 @@ export interface CouncilEvent_Executed {
 export interface CouncilEvent_MemberExecuted {
   __kind: 'MemberExecuted'
   proposalHash: Uint8Array
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6513,7 +6513,7 @@ export interface TechnicalCommitteeEvent_Disapproved {
 export interface TechnicalCommitteeEvent_Executed {
   __kind: 'Executed'
   proposalHash: Uint8Array
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6522,7 +6522,7 @@ export interface TechnicalCommitteeEvent_Executed {
 export interface TechnicalCommitteeEvent_MemberExecuted {
   __kind: 'MemberExecuted'
   proposalHash: Uint8Array
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -6700,7 +6700,7 @@ export interface MultisigEvent_MultisigExecuted {
   timepoint: Timepoint
   multisig: Uint8Array
   callHash: Uint8Array
-  result: Result<null, DispatchError>
+  result: Type_30
 }
 
 /**
@@ -8796,6 +8796,17 @@ export interface V1WildMultiAsset_AllOf {
   __kind: 'AllOf'
   id: V1AssetId
   fun: V1WildFungibility
+}
+
+export type Type_30 = Type_30_Ok | Type_30_Err
+
+export interface Type_30_Ok {
+  __kind: 'Ok'
+}
+
+export interface Type_30_Err {
+  __kind: 'Err'
+  value: DispatchError
 }
 
 export type LookupError = LookupError_Unknown | LookupError_BadFormat

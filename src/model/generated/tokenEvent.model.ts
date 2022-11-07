@@ -12,7 +12,7 @@ export class TokenEvent {
   @PrimaryColumn_()
   id!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => fromJsonTokenEventType(obj)}, nullable: false})
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenEventType(obj)}, nullable: false})
   event!: TokenEventType
 
   @Index_()

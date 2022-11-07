@@ -383,8 +383,8 @@ type Listing @entity {
   height: Int!
   deposit: BigInt!
   salt: String!
-  data: ListingData
-  state: ListingState
+  data: ListingData!
+  state: ListingState!
 
   # Relations
   bids: [Bid] @derivedFrom(field: "listing")

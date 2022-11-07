@@ -25,7 +25,7 @@ export class Collection {
   @ManyToOne_(() => Account, {nullable: true})
   owner!: Account
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => new MintPolicy(undefined, marshal.nonNull(obj))}, nullable: false})
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: false})
   mintPolicy!: MintPolicy
 
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
