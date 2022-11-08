@@ -50,7 +50,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         },
     })
 
-    listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: data.amountFilled })
+    listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: listing.amount - data.amountRemaining })
 
     if (data.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({
