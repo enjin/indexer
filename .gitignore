@@ -7,5 +7,3 @@
 /**/!*
 *.dev*
 .env
-
-package-lock.json
