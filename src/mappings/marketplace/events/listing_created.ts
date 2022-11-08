@@ -66,7 +66,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
               })
     const listingState =
         data.listing.state.__kind === FixedPriceState.toString()
-            ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+            ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountRemaining: data.listing.amount })
             : new AuctionState({ listingType: ListingType.Auction })
 
     const listing = new Listing({

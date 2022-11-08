@@ -330,7 +330,7 @@ union ListingData = FixedPriceData | AuctionData
 
 type FixedPriceState {
   listingType: ListingType!
-  amountFilled: BigInt!
+  amountRemaining: BigInt!
 }
 
 type AuctionState {
