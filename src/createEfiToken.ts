@@ -3,10 +3,10 @@ import { CapType, Collection, MintPolicy, Token, TokenCapSupply, TransferPolicy 
 import { getOrCreateAccount } from './mappings/util/entities'
 
 export async function createEfiToken(ctx: BlockHandlerContext) {
-    let efi = await ctx.store.get(Token, '0-0')
+    const efi = await ctx.store.get(Token, '0-0')
 
     if (!efi) {
-        const account = await getOrCreateAccount(ctx, "rf8YmxhSe9WGJZvCH8wtzAndweEmz6dTV6DjmSHgHvPEFNLAJ")
+        const account = await getOrCreateAccount(ctx, 'rf8YmxhSe9WGJZvCH8wtzAndweEmz6dTV6DjmSHgHvPEFNLAJ')
 
         const collection = new Collection({
             id: '0',
@@ -43,7 +43,7 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             unitPrice: 1n,
             mintDeposit: 1n,
             attributeCount: 0,
-            collection: collection,
+            collection,
             createdAt: new Date(ctx.block.timestamp),
         })
 

@@ -15,9 +15,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, tokenId, caller } = event.asEfinityV2
         return { collectionId, tokenId, caller }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleTokenDestroyed(ctx: EventHandlerContext) {

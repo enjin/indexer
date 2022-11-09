@@ -1,3 +1,4 @@
+import { SubstrateCall } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
@@ -8,18 +9,18 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenCapSingleMint,
-    TokenCapSupply, Royalty,
+    TokenCapSupply,
+    Royalty,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { ChainContext } from '../../../types/generated/support'
-import { SubstrateCall } from '@subsquid/substrate-processor'
 import {
     DefaultMintParams_CreateToken,
     TokenCap,
     TokenCap_Supply,
     TokenMarketBehavior,
-    TokenMarketBehavior_HasRoyalty
+    TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/v6'
 import { getOrCreateAccount } from '../../util/entities'
 import { encodeId } from '../../../common/tools'
@@ -42,16 +43,51 @@ interface EventData {
     initialSupply: bigint
 }
 
+function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
+    if (cap.__kind === CapType.Supply.toString()) {
+        return new TokenCapSupply({
+            type: CapType.Supply,
+            supply: (cap as TokenCap_Supply).value,
+        })
+    }
+
+    return new TokenCapSingleMint({
+        type: CapType.SingleMint,
+    })
+}
+
+async function getBehavior(
+    behavior: TokenMarketBehavior,
+    ctx: ChainContext
+): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
+    if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
+        return new TokenBehaviorIsCurrency({
+            type: TokenBehaviorType.IsCurrency,
+        })
+    }
+    const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
+
+    return new TokenBehaviorHasRoyalty({
+        type: TokenBehaviorType.HasRoyalty,
+        royalty: new Royalty({
+            beneficiary: account.id,
+            percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
+        }),
+    })
+}
+
+// eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
     if (subcall.name === 'MultiTokens.batch_mint') {
-        const call = new MultiTokensBatchMintCall(ctx, subcall);
+        const call = new MultiTokensBatchMintCall(ctx, subcall)
 
         if (call.isEfinityV2) {
-            const collectionId = call.asEfinityV2.collectionId
-            const recipients = call.asEfinityV2.recipients
+            const { collectionId } = call.asEfinityV2
+            const { recipients } = call.asEfinityV2
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -65,17 +101,17 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    cap: cap,
-                    behavior: behavior,
+                    cap,
+                    behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isV6) {
-            const collectionId = call.asV6.collectionId
-            const recipients = call.asV6.recipients
+            const { collectionId } = call.asV6
+            const { recipients } = call.asV6
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -89,17 +125,17 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    cap: cap,
-                    behavior: behavior,
+                    cap,
+                    behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isV5) {
-            const collectionId = call.asV5.collectionId
-            const recipients = call.asV5.recipients
+            const { collectionId } = call.asV5
+            const { recipients } = call.asV5
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -113,17 +149,17 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    cap: cap,
-                    behavior: behavior,
+                    cap,
+                    behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
         } else if (call.isEfinityV3000) {
-            const collectionId = call.asEfinityV3000.collectionId
-            const recipients = call.asEfinityV3000.recipients
+            const { collectionId } = call.asEfinityV3000
+            const { recipients } = call.asEfinityV3000
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -137,8 +173,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
                     unitPrice: params.unitPrice,
-                    cap: cap,
-                    behavior: behavior,
+                    cap,
+                    behavior,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -150,7 +186,7 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
     const call = new MultiTokensMintCall(ctx, subcall)
 
     if (call.isEfinityV2) {
-        const collectionId = call.asEfinityV2.collectionId
+        const { collectionId } = call.asEfinityV2
         const recipient = call.asEfinityV2.recipient.value as Uint8Array
         const params = call.asEfinityV2.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
@@ -162,12 +198,13 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            cap: cap,
-            behavior: behavior,
+            cap,
+            behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (call.isV6) {
-        const collectionId = call.asV6.collectionId
+    }
+    if (call.isV6) {
+        const { collectionId } = call.asV6
         const recipient = call.asV6.recipient.value as Uint8Array
         const params = call.asV6.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
@@ -179,12 +216,13 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            cap: cap,
-            behavior: behavior,
+            cap,
+            behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (call.isV5) {
-        const collectionId = call.asV5.collectionId
+    }
+    if (call.isV5) {
+        const { collectionId } = call.asV5
         const recipient = call.asV5.recipient.value as Uint8Array
         const params = call.asV5.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
@@ -196,12 +234,13 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            cap: cap,
-            behavior: behavior,
+            cap,
+            behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (call.isEfinityV3000) {
-        const collectionId = call.asEfinityV3000.collectionId
+    }
+    if (call.isEfinityV3000) {
+        const { collectionId } = call.asEfinityV3000
         const recipient = call.asEfinityV3000.recipient.value as Uint8Array
         const params = call.asEfinityV3000.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
@@ -213,13 +252,12 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
             unitPrice: params.unitPrice,
-            cap: cap,
-            behavior: behavior,
+            cap,
+            behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else {
-        throw new UnknownVersionError(call.constructor.name)
     }
+    throw new UnknownVersionError(call.constructor.name)
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
@@ -228,40 +266,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, tokenId, issuer, initialSupply } = event.asEfinityV2
         return { collectionId, tokenId, issuer, initialSupply }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
-}
-
-function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
-    if (cap.__kind === CapType.Supply.toString()) {
-        return new TokenCapSupply({
-            type: CapType.Supply,
-            supply: (cap as TokenCap_Supply).value,
-        })
-    }
-
-    return new TokenCapSingleMint({
-        type: CapType.SingleMint
-    });
-}
-
-async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-    if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
-        return new TokenBehaviorIsCurrency({
-            type: TokenBehaviorType.IsCurrency,
-        })
-    }
-    const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
-    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
-
-    return new TokenBehaviorHasRoyalty({
-        type: TokenBehaviorType.HasRoyalty,
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
-        })
-    })
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleTokenCreated(ctx: EventHandlerContext) {
@@ -290,7 +296,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
-            collection: collection,
+            collection,
             listingForbidden: callData.listingForbidden,
             // accounts: [],
             createdAt: new Date(ctx.block.timestamp),

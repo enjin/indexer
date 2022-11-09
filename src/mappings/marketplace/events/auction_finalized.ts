@@ -10,8 +10,35 @@ import { getOrCreateAccount } from '../../util/entities'
 interface EventData {
     listingId: Uint8Array
     winningBid: Bid | undefined
-    protocolFee: BigInt
-    royalty: BigInt
+    protocolFee: bigint
+    royalty: bigint
+}
+
+async function getHighestSale(winningBid: Bid, listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
+    if (!listing.makeAssetId.collection.highestSale) {
+        return listing
+    }
+
+    if (listing.makeAssetId.collection.highestSale.state.listingType === ListingType.FixedPrice) {
+        return BigInt(winningBid.price) > listing.makeAssetId.collection.highestSale.price
+            ? listing
+            : listing.makeAssetId.collection.highestSale
+    }
+
+    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
+    if (!highBidId) {
+        return listing
+    }
+
+    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
+        where: { id: highBidId },
+    })
+
+    if (!highBid) {
+        return listing
+    }
+
+    return BigInt(winningBid.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
@@ -20,9 +47,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { listingId, winningBid, protocolFee, royalty } = event.asEfinityV3000
         return { listingId, winningBid, protocolFee, royalty }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleAuctionFinalized(ctx: EventHandlerContext) {
@@ -37,8 +63,8 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
             seller: true,
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                }
+                    floorListing: true,
+                },
             },
         },
     })
@@ -49,9 +75,9 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
     const listingStatus = new ListingStatus({
         id: `${listingId}-${ctx.block.height}`,
         type: ListingStatusType.Finalized,
-        listing: listing,
+        listing,
         height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp)
+        createdAt: new Date(ctx.block.timestamp),
     })
     await ctx.store.insert(listingStatus)
 
@@ -60,7 +86,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         listing.makeAssetId.collection.highestSale = await getHighestSale(data.winningBid, listing, ctx)
         await ctx.store.save(listing.makeAssetId.collection)
 
-        return new Event(ctx, listing.makeAssetId).MarketplacePurchase(
+        new Event(ctx, listing.makeAssetId).MarketplacePurchase(
             listing.seller,
             await getOrCreateAccount(ctx, encodeId(data.winningBid.bidder)),
             listing,
@@ -75,9 +101,9 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
-            take: 2
+            take: 2,
         })
 
         if (floorListing.length === 1 && floorListing[0].id === listing.id) {
@@ -86,35 +112,8 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         }
 
         if (floorListing.length >= 2 && floorListing[0].id === listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing[1]
+            ;[, listing.makeAssetId.collection.floorListing] = floorListing
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }
-}
-
-async function getHighestSale(winningBid: Bid, listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
-    if (!listing.makeAssetId.collection.highestSale) {
-        return listing
-    }
-
-    if (listing.makeAssetId.collection.highestSale.state.listingType == ListingType.FixedPrice) {
-        return BigInt(winningBid.price) > listing.makeAssetId.collection.highestSale.price
-            ? listing
-            : listing.makeAssetId.collection.highestSale
-    }
-
-    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
-    if (!highBidId) {
-        return listing
-    }
-
-    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
-        where: { id: highBidId }
-    })
-
-    if (!highBid) {
-        return listing
-    }
-
-    return BigInt(winningBid.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
 }

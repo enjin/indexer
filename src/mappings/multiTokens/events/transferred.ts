@@ -31,9 +31,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, tokenId, operator, from, to, amount } = event.asEfinityV2
         return { collectionId, tokenId, operator, from, to, amount }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 async function getStorageData(
@@ -59,14 +58,14 @@ async function getStorageData(
             approvals: data.approvals,
             isFrozen: data.isFrozen,
         }
-    } else if (storage.isEfinityV3) {
+    }
+    if (storage.isEfinityV3) {
         const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
-    } else {
-        throw new UnknownVersionError(storage.constructor.name)
     }
+    throw new UnknownVersionError(storage.constructor.name)
 }
 
 export async function handleTransferred(ctx: EventHandlerContext) {

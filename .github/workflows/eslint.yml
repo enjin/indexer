@@ -1,0 +1,29 @@
+name: eslint
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+
+  tests:
+
+    name: Code Standard & Format
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Install Node v16
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'npm'
+
+    - name: Install modules
+      run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint

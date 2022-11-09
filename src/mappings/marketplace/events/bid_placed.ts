@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Collection, Listing, ListingStatusType, ListingType, Token } from '../../../model'
+import { AuctionState, Bid, Listing, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
@@ -18,9 +18,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { listingId, bid } = event.asEfinityV3000
         return { listingId, bid }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleBidPlaced(ctx: EventHandlerContext) {
@@ -34,8 +33,8 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         relations: {
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                }
+                    floorListing: true,
+                },
             },
         },
     })
@@ -47,7 +46,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         id: `${listingId}-${address}-${data.bid.price}`,
         bidder: account,
         price: data.bid.price,
-        listing: listing,
+        listing,
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
@@ -72,13 +71,13 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
             take: 2,
         })
 
-        if (floorListing.length >= 2 && floorListing[0].id != listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing[0]
+        if (floorListing.length >= 2 && floorListing[0].id !== listing.id) {
+            ;[listing.makeAssetId.collection.floorListing] = floorListing
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }

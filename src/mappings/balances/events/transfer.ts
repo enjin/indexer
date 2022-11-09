@@ -17,12 +17,12 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { from, to, amount } = event.asEfinityV2
         return { from, to, amount }
-    } else if (event.isEfinityV1) {
-        const [ from, to, amount ] = event.asEfinityV1
-        return { from, to, amount }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    if (event.isEfinityV1) {
+        const [from, to, amount] = event.asEfinityV1
+        return { from, to, amount }
+    }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleTransfer(ctx: EventHandlerContext) {

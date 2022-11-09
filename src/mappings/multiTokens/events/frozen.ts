@@ -3,11 +3,7 @@ import { MultiTokensFrozenEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
-import {
-    FreezeType_CollectionAccount,
-    FreezeType_Token,
-    FreezeType_TokenAccount,
-} from '../../../types/generated/v6'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
 
 interface EventData {
     collectionId: bigint
@@ -23,7 +19,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, freezeType } = event.asEfinityV2
 
-        if (freezeType.__kind == 'Collection') {
+        if (freezeType.__kind === 'Collection') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -33,7 +29,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
             }
         }
 
-        if (freezeType.__kind == 'CollectionAccount') {
+        if (freezeType.__kind === 'CollectionAccount') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -43,7 +39,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
             }
         }
 
-        if (freezeType.__kind == 'Token') {
+        if (freezeType.__kind === 'Token') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -60,9 +56,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
             collectionAccount: undefined,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleFrozen(ctx: EventHandlerContext) {

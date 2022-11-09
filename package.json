@@ -9,7 +9,9 @@
     "db:migrate": "npx squid-typeorm-migration apply",
     "processor:start": "node lib/processor.js",
     "processor:debug": "node -r dotenv/config lib/processor.js",
-    "query-node:start": "squid-graphql-server --subscriptions"
+    "query-node:start": "squid-graphql-server --subscriptions",
+    "lint": "eslint src --ext .ts,.js",
+    "fix": "eslint src --ext .ts,.js --fix"
   },
   "dependencies": {
     "@keyv/redis": "^2.5",
@@ -32,6 +34,22 @@
     "@subsquid/substrate-typegen": "^1.5",
     "@subsquid/typeorm-codegen": "^0.2",
     "@types/node": "^16.11",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-sonarjs": "^0.16.0",
+    "eslint-plugin-unicorn": "^44.0.2",
+    "prettier": "2.7.1",
     "typescript": "^4.8"
+  },
+  "peerDependencies": {
+    "@polkadot/types": "9.7.1",
+    "reflect-metadata": "0.1.13",
+    "typeorm": "0.3.10",
+    "@subsquid/util-internal-hex": "0.0.1"
   }
 }

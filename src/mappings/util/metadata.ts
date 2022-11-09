@@ -1,19 +1,42 @@
-import { Attribute, Metadata, MetadataMedia } from '../../model'
 import Axios from 'axios'
 import https from 'https'
+import { Attribute, Metadata, MetadataMedia } from '../../model'
 
-export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata>  {
-    return processMetadata(metadata, attribute)
-}
+async function fetchMetadata(url: string) {
+    const api = Axios.create({
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        withCredentials: false,
+        timeout: 5000,
+        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
+    })
 
-async function processMetadata(metadata: Metadata, attribute: Attribute) {
-    if ('uri' === attribute.key) {
-        metadata.externalUrl = attribute.value
-        const externalMetadata = await fetchMetadata(attribute.value)
-        return metadataParser(metadata, attribute, externalMetadata)
+    try {
+        const { status, data } = await api.get(url)
+        if (status < 400) {
+            return data
+        }
+    } catch (e) {
+        return null
     }
 
-    return metadataParser(metadata, attribute, null)
+    return null
+}
+
+function parseMedia(media: any) {
+    try {
+        return media.map(
+            (_media: any) =>
+                new MetadataMedia({
+                    url: _media.url,
+                    type: _media.type,
+                    alt: _media.alt,
+                })
+        )
+    } catch (e) {
+        return null
+    }
 }
 
 function metadataParser(metadata: Metadata, attribute: Attribute, externalMetadata: any) {
@@ -43,41 +66,18 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     return metadata
 }
 
-function parseMedia(media: any)
-{
-    try {
-        return media.map(
-            (media: any) => new MetadataMedia({
-                url: media.url,
-                type: media.type,
-                alt: media.alt,
-            })
-        )
-    } catch (e) {
-        return null
+async function processMetadata(metadata: Metadata, attribute: Attribute) {
+    if (attribute.key === 'uri') {
+        metadata.externalUrl = attribute.value
+        const externalMetadata = await fetchMetadata(attribute.value)
+        return metadataParser(metadata, attribute, externalMetadata)
     }
+
+    return metadataParser(metadata, attribute, null)
 }
 
-async function fetchMetadata(url: string) {
-    const api = Axios.create({
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        withCredentials: false,
-        timeout: 5000,
-        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false}),
-    })
-
-    try {
-        const { status, data } = await api.get(url)
-        if (status < 400) {
-            return data
-        }
-    } catch (e) {
-        return null
-    }
-
-    return null
+export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
+    return processMetadata(metadata, attribute)
 }
 
 // function fetchMetadata(url: string): Promise<string> {

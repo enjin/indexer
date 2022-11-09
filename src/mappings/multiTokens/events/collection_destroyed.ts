@@ -14,9 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, caller } = event.asEfinityV2
         return { collectionId, caller }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleCollectionDestroyed(ctx: EventHandlerContext) {
@@ -28,7 +27,7 @@ export async function handleCollectionDestroyed(ctx: EventHandlerContext) {
         where: { id: data.collectionId.toString() },
     })
     const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-        where: { collection: { id: collection.id }},
+        where: { collection: { id: collection.id } },
     })
 
     await ctx.store.remove(royaltyCurrencies)

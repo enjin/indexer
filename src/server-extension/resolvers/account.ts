@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import { ApiPromise, WsProvider } from '@polkadot/api'

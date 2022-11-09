@@ -18,9 +18,8 @@ function getCallData(ctx: CallContext): EventData | undefined {
             to: dest.value as Uint8Array,
             amount: value,
         }
-    } else {
-        throw new UnknownVersionError(call.constructor.name)
     }
+    throw new UnknownVersionError(call.constructor.name)
 }
 
 export async function handleTransferKeepAlive(ctx: CallHandlerContext) {
@@ -36,7 +35,7 @@ export async function handleTransferKeepAlive(ctx: CallHandlerContext) {
         blockNumber: ctx.block.height,
         extrinsicHash: ctx.extrinsic.hash,
         fromId: accountId,
-        toId: isAdressSS58(data.to) ? encodeId(data.to) : '0x' + Buffer.from(data.to).toString('hex'),
+        toId: isAdressSS58(data.to) ? encodeId(data.to) : `0x${Buffer.from(data.to).toString('hex')}`,
         amount: data.amount,
         tip: ctx.extrinsic.tip,
         error: ctx.extrinsic.error,

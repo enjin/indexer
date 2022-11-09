@@ -1,3 +1,4 @@
+import { ArrayContains } from 'typeorm'
 import {
     Account,
     AccountTransfer,
@@ -9,8 +10,7 @@ import {
     TransferType,
 } from '../../model'
 import { CommonHandlerContext } from '../types/contexts'
-import { ArrayContains } from 'typeorm'
-import { createPrevStorageContext, getMeta } from './actions'
+import { getMeta } from './actions'
 import { ActionData } from '../types/data'
 
 export async function getOrCreateAccount(ctx: CommonHandlerContext, id: string): Promise<Account> {
@@ -30,17 +30,19 @@ export async function getOrCreateAccounts(ctx: CommonHandlerContext, ids: string
     const query = await ctx.store.findBy(Account, { id: ArrayContains(ids) })
 
     const accountsMap: Map<string, Account> = new Map()
+    // eslint-disable-next-line no-restricted-syntax
     for (const q of query) accountsMap.set(q.id, q)
 
     const newAccounts: Set<Account> = new Set()
+    // eslint-disable-next-line no-restricted-syntax
     for (const id of ids) {
-        if (accountsMap.has(id)) continue
-
-        const account = new Account({
-            id,
-            lastUpdateBlock: ctx.block.height - 1,
-        })
-        newAccounts.add(account)
+        if (!accountsMap.has(id)) {
+            const account = new Account({
+                id,
+                lastUpdateBlock: ctx.block.height - 1,
+            })
+            newAccounts.add(account)
+        }
     }
 
     if (newAccounts.size > 0) await ctx.store.save([...newAccounts])
@@ -85,7 +87,7 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
             symbol: 'RFI',
             amount,
         }),
-        fee: fee,
+        fee,
         tip: data.tip,
         error: data.error,
         success,

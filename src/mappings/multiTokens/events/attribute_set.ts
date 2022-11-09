@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Metadata, MetadataMedia, Token } from '../../../model'
+import { Attribute, Collection, Metadata, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { getMetadata } from '../../util/metadata'
 
@@ -17,11 +17,11 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, tokenId, key, value } = event.asEfinityV2
         return { collectionId, tokenId, key, value }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function handleAttributeSet(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
@@ -67,11 +67,11 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
     } else {
         attribute = new Attribute({
             id: attributeId,
-            key: key,
-            value: value,
+            key,
+            value,
             deposit: 0n, // TODO: Change fixed for now
-            collection: collection,
-            token: token,
+            collection,
+            token,
             createdAt: new Date(ctx.block.timestamp),
             updatedAt: new Date(ctx.block.timestamp),
         })

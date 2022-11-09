@@ -26,9 +26,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             amount,
             expiration,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleApproved(ctx: EventHandlerContext) {

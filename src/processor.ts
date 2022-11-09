@@ -1,9 +1,9 @@
+import { SubstrateProcessor } from '@subsquid/substrate-processor'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
 import config from './config'
 import { handleChainState } from './chainState'
-import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
-import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { createEfiToken } from './createEfiToken'
 
 const database = new TypeormDatabase()
@@ -39,8 +39,14 @@ processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWit
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler('MultiTokens.CollectionMutated', modules.multiTokens.events.handleCollectionMutated)
-processor.addEventHandler('MultiTokens.CollectionAccountCreated', modules.multiTokens.events.handleCollectionAccountCreated)
-processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', modules.multiTokens.events.handleCollectionAccountDestroyed)
+processor.addEventHandler(
+    'MultiTokens.CollectionAccountCreated',
+    modules.multiTokens.events.handleCollectionAccountCreated
+)
+processor.addEventHandler(
+    'MultiTokens.CollectionAccountDestroyed',
+    modules.multiTokens.events.handleCollectionAccountDestroyed
+)
 processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
 processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
 processor.addEventHandler('MultiTokens.TokenMutated', modules.multiTokens.events.handleTokenMutated)
@@ -62,9 +68,10 @@ processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.event
 processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
 processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
 
-processor.addPreHook({
-    range: { from: 1, to: 1 },
-   },
+processor.addPreHook(
+    {
+        range: { from: 1, to: 1 },
+    },
     createEfiToken
 )
 

@@ -28,7 +28,7 @@ const chains = [
         relay: 'rococo',
         genesisHash: '0x1cb2120b3afd6da2dca23d8b95e30fd7eabe4357c3d470bc02487a7d6fd00d1d',
         website: 'https://efinity.io/',
-    }
+    },
 ] as const
 
 export default chains
