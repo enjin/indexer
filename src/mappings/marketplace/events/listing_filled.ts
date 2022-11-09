@@ -30,9 +30,35 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty } = event.asEfinityV3000
         return { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
+}
+
+async function getHighestSale(listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
+    if (!listing.makeAssetId.collection.highestSale) {
+        return listing
+    }
+
+    if (listing.makeAssetId.collection.highestSale.state.listingType === ListingType.FixedPrice) {
+        return BigInt(listing.price) > listing.makeAssetId.collection.highestSale.price
+            ? listing
+            : listing.makeAssetId.collection.highestSale
+    }
+
+    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
+    if (!highBidId) {
+        return listing
+    }
+
+    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
+        where: { id: highBidId },
+    })
+
+    if (!highBid) {
+        return listing
+    }
+
+    return BigInt(listing.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
 }
 
 export async function handleListingFilled(ctx: EventHandlerContext) {
@@ -62,7 +88,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         const listingStatus = new ListingStatus({
             id: `${listingId}-${ctx.block.height}`,
             type: ListingStatusType.Finalized,
-            listing: listing,
+            listing,
             height: ctx.block.height,
             createdAt: new Date(ctx.block.timestamp),
         })
@@ -106,31 +132,4 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }
-}
-
-async function getHighestSale(listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
-    if (!listing.makeAssetId.collection.highestSale) {
-        return listing
-    }
-
-    if (listing.makeAssetId.collection.highestSale.state.listingType == ListingType.FixedPrice) {
-        return BigInt(listing.price) > listing.makeAssetId.collection.highestSale.price
-            ? listing
-            : listing.makeAssetId.collection.highestSale
-    }
-
-    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
-    if (!highBidId) {
-        return listing
-    }
-
-    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
-        where: { id: highBidId },
-    })
-
-    if (!highBid) {
-        return listing
-    }
-
-    return BigInt(listing.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
 }

@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
-import { Collection, Listing, ListingStatus, ListingStatusType } from '../../../model'
+import { Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Event } from '../../../event'
 
@@ -14,9 +14,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { listingId } = event.asEfinityV3000
         return { listingId }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleListingCancelled(ctx: EventHandlerContext) {
@@ -42,7 +41,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
     const listingStatus = new ListingStatus({
         id: `${listingId}-${ctx.block.height}`,
         type: ListingStatusType.Cancelled,
-        listing: listing,
+        listing,
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
@@ -68,7 +67,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         }
 
         if (floorListing.length >= 2 && floorListing[0].id === listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing[1]
+            ;[, listing.makeAssetId.collection.floorListing] = floorListing
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }

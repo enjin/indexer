@@ -1,9 +1,9 @@
+import { SubstrateProcessor } from '@subsquid/substrate-processor'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
 import config from './config'
 import { handleChainState } from './chainState'
-import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
-import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { createEfiToken } from './createEfiToken'
 
 const database = new TypeormDatabase()

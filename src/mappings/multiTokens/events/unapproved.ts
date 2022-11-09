@@ -22,9 +22,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             owner,
             operator,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleUnapproved(ctx: EventHandlerContext) {
@@ -40,7 +39,7 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
         })
 
         tokenAccount.approvals = tokenAccount.approvals?.filter(
-            (approval) => approval.account != encodeId(data.operator)
+            (approval) => approval.account !== encodeId(data.operator)
         )
         tokenAccount.updatedAt = new Date(ctx.block.timestamp)
 
@@ -51,7 +50,7 @@ export async function handleUnapproved(ctx: EventHandlerContext) {
         })
 
         collectionAccount.approvals = collectionAccount.approvals?.filter(
-            (approval) => approval.account != encodeId(data.operator)
+            (approval) => approval.account !== encodeId(data.operator)
         )
         collectionAccount.updatedAt = new Date(ctx.block.timestamp)
 

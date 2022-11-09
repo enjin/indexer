@@ -1,7 +1,7 @@
 import * as ss58 from '@subsquid/ss58'
-import config from '../config'
 import { decodeHex } from '@subsquid/util-internal-hex'
 import { CommonHandlerContext } from '@subsquid/substrate-processor'
+import config from '../config'
 
 export function encodeId(id: Uint8Array) {
     return ss58.codec(config.prefix).encode(id)
@@ -35,6 +35,7 @@ export function isAdressSS58(address: Uint8Array) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getOriginAccountId(origin: any) {
     if (!origin) return undefined
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (origin.__kind) {
         case 'system':
             // eslint-disable-next-line sonarjs/no-nested-switch, sonarjs/no-small-switch
@@ -57,13 +58,15 @@ export function saturatingSumBigInt(
     const sum = BigInt(a) + BigInt(b)
     if (sum < min) {
         return min
-    } else if (max && sum > max) {
-        return max
-    } else {
-        return sum
     }
+    if (max && sum > max) {
+        return max
+    }
+    return sum
 }
 
 export function isStorageCorrupted(ctx: CommonHandlerContext<unknown>) {
-    if (ctx.block.height >= 1375087 && ctx.block.height <= 1500000) return undefined
+    if (ctx.block.height >= 1375087 && ctx.block.height <= 1500000) return null
+
+    return true
 }

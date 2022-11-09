@@ -19,7 +19,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, freezeType } = event.asEfinityV2
 
-        if (freezeType.__kind == 'Collection') {
+        if (freezeType.__kind === 'Collection') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -29,7 +29,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
             }
         }
 
-        if (freezeType.__kind == 'CollectionAccount') {
+        if (freezeType.__kind === 'CollectionAccount') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -39,7 +39,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
             }
         }
 
-        if (freezeType.__kind == 'Token') {
+        if (freezeType.__kind === 'Token') {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
@@ -56,9 +56,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
             collectionAccount: undefined,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleFrozen(ctx: EventHandlerContext) {

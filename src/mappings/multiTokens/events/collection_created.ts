@@ -1,21 +1,12 @@
+import { SubstrateCall } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
-import {
-    Collection,
-    CollectionAccount,
-    MarketPolicy,
-    MintPolicy,
-    Royalty,
-    RoyaltyCurrency,
-    Token,
-    TransferPolicy,
-} from '../../../model'
+import { Collection, MarketPolicy, MintPolicy, Royalty, RoyaltyCurrency, Token, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { ChainContext } from '../../../types/generated/support'
-import { SubstrateCall } from '@subsquid/substrate-processor'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
 
 interface CallData {
@@ -31,6 +22,18 @@ interface EventData {
     owner: Uint8Array
 }
 
+async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
+    const address = encodeId(royalty.beneficiary)
+    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
+
+    return new MarketPolicy({
+        royalty: new Royalty({
+            beneficiary: account.id,
+            percentage: royalty.percentage,
+        }),
+    })
+}
+
 async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<CallData> {
     const call = new MultiTokensCreateCollectionCall(ctx, subcall)
 
@@ -44,11 +47,12 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             market: null,
             explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
         }
-    } else if (call.isV6) {
+    }
+    if (call.isV6) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
         const royalty = call.asV6.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asV6.descriptor.explicitRoyaltyCurrencies
+        const { explicitRoyaltyCurrencies } = call.asV6.descriptor
 
         return {
             maxTokenCount,
@@ -57,7 +61,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             market,
             explicitRoyaltyCurrencies,
         }
-    } else if (call.isV5) {
+    }
+    if (call.isV5) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV5.descriptor.policy.mint
 
         return {
@@ -67,11 +72,12 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             market: null,
             explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
         }
-    } else if (call.isEfinityV3000) {
+    }
+    if (call.isEfinityV3000) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV3000.descriptor.policy.mint
         const royalty = call.asEfinityV3000.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(royalty, ctx) : null
-        const explicitRoyaltyCurrencies = call.asEfinityV3000.descriptor.explicitRoyaltyCurrencies
+        const { explicitRoyaltyCurrencies } = call.asEfinityV3000.descriptor
 
         return {
             maxTokenCount,
@@ -80,9 +86,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             market,
             explicitRoyaltyCurrencies,
         }
-    } else {
-        throw new UnknownVersionError(call.constructor.name)
     }
+    throw new UnknownVersionError(call.constructor.name)
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
@@ -91,21 +96,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, owner } = event.asEfinityV2
         return { collectionId, owner }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
-}
-
-async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
-    const address = encodeId(royalty.beneficiary)
-    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
-
-    return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: royalty.percentage,
-        }),
-    })
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleCollectionCreated(ctx: EventHandlerContext) {
@@ -140,15 +132,18 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
 
         await ctx.store.insert(collection)
 
+        // eslint-disable-next-line no-restricted-syntax
         for (const currency of callData.explicitRoyaltyCurrencies) {
+            // eslint-disable-next-line no-await-in-loop
             const token = await ctx.store.findOneOrFail<Token>(Token, {
                 where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
             })
             const royaltyCurrency = new RoyaltyCurrency({
                 id: `${collection.id}-${token.id}`,
-                collection: collection,
-                token: token,
+                collection,
+                token,
             })
+            // eslint-disable-next-line no-await-in-loop
             await ctx.store.insert(royaltyCurrency)
         }
     }

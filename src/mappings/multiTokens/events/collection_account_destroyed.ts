@@ -15,9 +15,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, accountId } = event.asEfinityV2
         return { collectionId, accountId }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleCollectionAccountDestroyed(ctx: EventHandlerContext) {

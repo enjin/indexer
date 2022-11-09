@@ -18,9 +18,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, tokenId, accountId, balance } = event.asEfinityV2
         return { collectionId, tokenId, accountId, balance }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
@@ -52,9 +51,9 @@ export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
         locks: null,
         approvals: null,
         isFrozen: false,
-        account: account,
-        collection: collection,
-        token: token,
+        account,
+        collection,
+        token,
         createdAt: new Date(ctx.block.timestamp),
         updatedAt: new Date(ctx.block.timestamp),
     })

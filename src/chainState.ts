@@ -1,24 +1,10 @@
-import { ChainInfo } from './model'
+import { ApiPromise, WsProvider } from '@polkadot/api'
+import { ChainInfo, Marketplace } from './model'
 import { PERIOD } from './common/consts'
 import config from './config'
 import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/contexts'
-import { ApiPromise, WsProvider } from '@polkadot/api'
-import { Marketplace } from './model'
 
 let lastStateTimestamp = 0
-
-export async function handleChainState(ctx: BlockHandlerContext) {
-    if (!lastStateTimestamp) {
-        const lastChainState = await getLastChainState(ctx)
-        if (lastChainState[0]) lastStateTimestamp = lastChainState[0].timestamp.getTime() || 0
-    }
-
-    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
-        await saveChainState(ctx)
-        lastStateTimestamp = ctx.block.timestamp
-        console.log(`Chain state updated at block ${ctx.block.height}`)
-    }
-}
 
 async function saveChainState(ctx: BlockHandlerContext) {
     const state = new ChainInfo({ id: ctx.block.hash })
@@ -33,16 +19,16 @@ async function saveChainState(ctx: BlockHandlerContext) {
     ])
 
     state.genesisHash = config.genesisHash
-    state.transactionVersion = runtime['transactionVersion']
+    state.transactionVersion = runtime.transactionVersion
     state.specVersion = Number(ctx.block.specId.split('@')[1])
     state.blockNumber = ctx.block.height
     state.blockHash = ctx.block.hash
     state.existentialDeposit = 1n
     state.timestamp = new Date(ctx.block.timestamp)
     state.marketplace = new Marketplace({
-        protocolFee: marketplace['protocolFee'],
-        fixedPriceListingCount: marketplace['fixedPriceListingCount'],
-        auctionListingCount: marketplace['auctionListingCount'],
+        protocolFee: marketplace.protocolFee,
+        fixedPriceListingCount: marketplace.fixedPriceListingCount,
+        auctionListingCount: marketplace.auctionListingCount,
     })
 
     await ctx.store.save(state)
@@ -55,4 +41,17 @@ function getLastChainState(ctx: CommonHandlerContext) {
             timestamp: 'DESC',
         },
     })
+}
+
+export async function handleChainState(ctx: BlockHandlerContext) {
+    if (!lastStateTimestamp) {
+        const lastChainState = await getLastChainState(ctx)
+        if (lastChainState[0]) lastStateTimestamp = lastChainState[0].timestamp.getTime() || 0
+    }
+
+    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
+        await saveChainState(ctx)
+        lastStateTimestamp = ctx.block.timestamp
+        console.log(`Chain state updated at block ${ctx.block.height}`)
+    }
 }

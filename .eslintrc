@@ -8,6 +8,10 @@
   ],
   "rules": {
     "no-console":"warn",
+    "import/prefer-default-export":"off",
+    "class-methods-use-this": "off",
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off",
     "max-len": [
       "error",
       {
@@ -19,9 +23,11 @@
     ]
   },
   "extends": [
-    "eslint:recommended",
+    "airbnb-base",
+    "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
     "plugin:sonarjs/recommended",
+   // "plugin:unicorn/recommended",
     "plugin:prettier/recommended",
     "prettier"
   ],

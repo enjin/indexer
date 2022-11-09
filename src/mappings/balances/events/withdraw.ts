@@ -16,9 +16,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { who, amount } = event.asEfinityV2
         return { who, amount }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleWithdraw(ctx: EventHandlerContext) {
@@ -31,7 +30,7 @@ export async function handleWithdraw(ctx: EventHandlerContext) {
     const fee = new Fee({
         id: ctx.event.extrinsic.call.id,
         amount: eventData.amount,
-        who: who,
+        who,
     })
 
     await ctx.store.insert(fee)

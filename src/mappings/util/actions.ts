@@ -13,6 +13,7 @@ export function getMeta(data: ActionData) {
 
 export function createPrevStorageContext(ctx: CommonHandlerContext) {
     return {
+        // eslint-disable-next-line no-underscore-dangle
         _chain: ctx._chain,
         block: {
             ...ctx.block,

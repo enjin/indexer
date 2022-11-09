@@ -1,15 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
-import {
-    Collection,
-    MarketPolicy,
-    Royalty,
-    RoyaltyCurrency,
-    Token,
-    TokenBehaviorHasRoyalty,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
-} from '../../../model'
+import { Royalty, Token, TokenBehaviorHasRoyalty, TokenBehaviorIsCurrency, TokenBehaviorType } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -30,14 +21,13 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { collectionId, tokenId, mutation } = event.asEfinityV3000
         return {
-            collectionId: collectionId,
-            tokenId: tokenId,
+            collectionId,
+            tokenId,
             behavior: mutation.behavior,
             listingForbidden: mutation.listingForbidden,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 async function getBehavior(

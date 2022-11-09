@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
@@ -16,7 +17,6 @@ import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
-import { Buffer } from 'buffer'
 import { Event } from '../../../event'
 
 interface EventData {
@@ -30,9 +30,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV3000) {
         const { listingId, listing } = event.asEfinityV3000
         return { listingId, listing }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleListingCreated(ctx: EventHandlerContext) {
@@ -73,13 +72,13 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const listing = new Listing({
         id: listingId,
         seller: account,
-        makeAssetId: makeAssetId,
-        takeAssetId: takeAssetId,
+        makeAssetId,
+        takeAssetId,
         amount: data.listing.amount,
         price: data.listing.price,
         highestPrice: data.listing.price,
         minTakeValue: data.listing.minTakeValue,
-        feeSide: feeSide,
+        feeSide,
         height: data.listing.creationBlock,
         deposit: data.listing.deposit,
         salt: Buffer.from(data.listing.salt).toString('hex'),
@@ -94,7 +93,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const listingStatus = new ListingStatus({
         id: `${listingId}-${ctx.block.height}`,
         type: ListingStatusType.Active,
-        listing: listing,
+        listing,
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })

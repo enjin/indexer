@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Metadata, MetadataMedia, Token } from '../../../model'
+import { Attribute, Collection, Metadata, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -9,15 +9,29 @@ interface EventData {
     key: Uint8Array
 }
 
+function metadataParser(metadata: Metadata, attribute: Attribute) {
+    if (attribute.key === 'name') {
+        metadata.name = null
+    } else if (attribute.key === 'description') {
+        metadata.description = null
+    } else if (attribute.key === 'fallback_image') {
+        metadata.fallbackImage = null
+    } else if (attribute.key === 'external_url') {
+        metadata.externalUrl = null
+    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
+        metadata.media = null
+    }
+    return metadata
+}
+
 function getEventData(ctx: EventHandlerContext): EventData {
     const event = new MultiTokensAttributeRemovedEvent(ctx)
 
     if (event.isEfinityV2) {
         const { collectionId, tokenId, key } = event.asEfinityV2
         return { collectionId, tokenId, key }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function handleAttributeRemoved(ctx: EventHandlerContext) {
@@ -62,19 +76,4 @@ export async function handleAttributeRemoved(ctx: EventHandlerContext) {
 
         await ctx.store.remove(attribute)
     }
-}
-
-function metadataParser(metadata: Metadata, attribute: Attribute) {
-    if (attribute.key === 'name') {
-        metadata.name = null
-    } else if (attribute.key === 'description') {
-        metadata.description = null
-    } else if (attribute.key === 'fallback_image') {
-        metadata.fallbackImage = null
-    } else if (attribute.key === 'external_url') {
-        metadata.externalUrl = null
-    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
-        metadata.media = null
-    }
-    return metadata
 }

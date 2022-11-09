@@ -43,7 +43,7 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             unitPrice: 1n,
             mintDeposit: 1n,
             attributeCount: 0,
-            collection: collection,
+            collection,
             createdAt: new Date(ctx.block.timestamp),
         })
 

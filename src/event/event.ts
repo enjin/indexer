@@ -65,7 +65,9 @@ export class Event {
         const event = new TokenEvent({
             // Why remainingAmount here?
             // An address could possibly buy same amount of nft twice from the same listing.
-            id: `${listing.id}-${from.id}-${remainingAmount ? amount + '-' + remainingAmount : amount}-purchased`,
+
+            // eslint-disable-next-line sonarjs/no-nested-template-literals
+            id: `${listing.id}-${from.id}-${remainingAmount ? `${amount}-${remainingAmount}` : amount}-purchased`,
             event: new MarketplacePurchaseEvent({
                 from: from.id,
                 to: to.id,

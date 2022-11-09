@@ -12,20 +12,19 @@ async function getStorageData(
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
-        return await storage.getManyAsEfinityV1(accounts)
-    } else {
-        throw new UnknownVersionError(storage.constructor.name)
+        return storage.getManyAsEfinityV1(accounts)
     }
+    throw new UnknownVersionError(storage.constructor.name)
 }
 
 export const account = {
-    get: async (ctx: BlockContext, account: string) => {
-        const u8 = decodeId(account)
+    get: async (ctx: BlockContext, _account: string) => {
+        const u8 = decodeId(_account)
 
         const data = await getStorageData(ctx, [u8])
         if (!data || !data[0]) return undefined
 
-        return [{ [account]: data[0] }]
+        return [{ [_account]: data[0] }]
     },
     getMany: async (ctx: BlockContext, accounts: string[]) => {
         if (accounts.length === 0) return {}
@@ -36,6 +35,7 @@ export const account = {
         if (!data) return {}
 
         const infos: { [account: string]: AccountInfo | undefined } = {}
+        // eslint-disable-next-line no-return-assign
         accounts.forEach((a, i) => (infos[a] = data[i]))
 
         return infos

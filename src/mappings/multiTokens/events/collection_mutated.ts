@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
 import { Collection, MarketPolicy, Royalty, RoyaltyCurrency, Token } from '../../../model'
@@ -20,38 +21,40 @@ function getEventData(ctx: EventHandlerContext): EventData {
     if (event.isEfinityV2) {
         const { collectionId, mutation } = event.asEfinityV2
         return {
-            collectionId: collectionId,
+            collectionId,
             owner: mutation.owner,
             royalty: { __kind: 'None' },
             explicitRoyaltyCurrencies: undefined,
         }
-    } else if (event.isEfinityV3000) {
+    }
+    if (event.isEfinityV3000) {
         const { collectionId, mutation } = event.asEfinityV3000
         return {
-            collectionId: collectionId,
+            collectionId,
             owner: mutation.owner,
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
-    } else if (event.isV6) {
+    }
+    if (event.isV6) {
         const { collectionId, mutation } = event.asV6
         return {
-            collectionId: collectionId,
+            collectionId,
             owner: mutation.owner,
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
-    } else if (event.isV5) {
+    }
+    if (event.isV5) {
         const { collectionId, mutation } = event.asV5
         return {
-            collectionId: collectionId,
+            collectionId,
             owner: mutation.owner,
             royalty: { __kind: 'None' },
             explicitRoyaltyCurrencies: undefined,
         }
-    } else {
-        throw new UnknownVersionError(event.constructor.name)
     }
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
@@ -66,6 +69,7 @@ async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<Ma
     })
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function handleCollectionMutated(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
@@ -79,7 +83,7 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
         collection.owner = await getOrCreateAccount(ctx, encodeId(data.owner))
     }
 
-    if (data.royalty.__kind != 'None') {
+    if (data.royalty.__kind !== 'None') {
         if (data.royalty.value === undefined) {
             collection.marketPolicy = undefined
         } else {
@@ -97,23 +101,26 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
         } else {
             for (const currency of data.explicitRoyaltyCurrencies) {
                 const rc = royaltyCurrencies.find(
-                    (rc) => rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`
+                    (_rc) => _rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`
                 )
                 if (rc) {
                     royaltyCurrencies.splice(royaltyCurrencies.indexOf(rc), 1)
+                    // eslint-disable-next-line no-continue
                     continue
                 }
 
+                // eslint-disable-next-line no-await-in-loop
                 const token = await ctx.store.findOneOrFail<Token>(Token, {
                     where: { id: `${currency.collectionId}-${currency.tokenId}` },
                 })
 
                 const royaltyCurrency = new RoyaltyCurrency({
                     id: `${collection.id}-${token.id}`,
-                    collection: collection,
-                    token: token,
+                    collection,
+                    token,
                 })
 
+                // eslint-disable-next-line no-await-in-loop
                 await ctx.store.insert(royaltyCurrency)
             }
             await ctx.store.remove(royaltyCurrencies)
