@@ -2,7 +2,7 @@ import { Attribute, Metadata, MetadataMedia } from '../../model'
 import Axios from 'axios'
 import https from 'https'
 
-export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata>  {
+export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
     return processMetadata(metadata, attribute)
 }
 
@@ -43,15 +43,15 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     return metadata
 }
 
-function parseMedia(media: any)
-{
+function parseMedia(media: any) {
     try {
         return media.map(
-            (media: any) => new MetadataMedia({
-                url: media.url,
-                type: media.type,
-                alt: media.alt,
-            })
+            (media: any) =>
+                new MetadataMedia({
+                    url: media.url,
+                    type: media.type,
+                    alt: media.alt,
+                })
         )
     } catch (e) {
         return null
@@ -65,7 +65,7 @@ async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 5000,
-        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false}),
+        httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
     try {

@@ -8,7 +8,8 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenCapSingleMint,
-    TokenCapSupply, Royalty,
+    TokenCapSupply,
+    Royalty,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
@@ -19,7 +20,7 @@ import {
     TokenCap,
     TokenCap_Supply,
     TokenMarketBehavior,
-    TokenMarketBehavior_HasRoyalty
+    TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/v6'
 import { getOrCreateAccount } from '../../util/entities'
 import { encodeId } from '../../../common/tools'
@@ -44,14 +45,14 @@ interface EventData {
 
 async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
     if (subcall.name === 'MultiTokens.batch_mint') {
-        const call = new MultiTokensBatchMintCall(ctx, subcall);
+        const call = new MultiTokensBatchMintCall(ctx, subcall)
 
         if (call.isEfinityV2) {
             const collectionId = call.asEfinityV2.collectionId
             const recipients = call.asEfinityV2.recipients
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -74,8 +75,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             const collectionId = call.asV6.collectionId
             const recipients = call.asV6.recipients
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -98,8 +99,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             const collectionId = call.asV5.collectionId
             const recipients = call.asV5.recipients
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -122,8 +123,8 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: Eve
             const collectionId = call.asEfinityV3000.collectionId
             const recipients = call.asEfinityV3000.recipients
             const recipientCall = recipients.find(
-                r => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            );
+                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
+            )
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
@@ -242,25 +243,28 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
     }
 
     return new TokenCapSingleMint({
-        type: CapType.SingleMint
-    });
+        type: CapType.SingleMint,
+    })
 }
 
-async function getBehavior(behavior: TokenMarketBehavior, ctx: ChainContext): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
+async function getBehavior(
+    behavior: TokenMarketBehavior,
+    ctx: ChainContext
+): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })
     }
     const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
-    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
 
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
             beneficiary: account.id,
             percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
-        })
+        }),
     })
 }
 

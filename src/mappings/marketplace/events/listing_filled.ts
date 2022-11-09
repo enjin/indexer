@@ -1,10 +1,11 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
 import {
-    AuctionState, Bid as BidModel,
-    Collection,
+    AuctionState,
+    Bid as BidModel,
     FixedPriceState,
-    Listing, ListingStatus,
+    Listing,
+    ListingStatus,
     ListingStatusType,
     ListingType,
 } from '../../../model'
@@ -46,13 +47,16 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             seller: true,
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                }
+                    floorListing: true,
+                },
             },
         },
     })
 
-    listing.state = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: listing.amount - data.amountRemaining })
+    listing.state = new FixedPriceState({
+        listingType: ListingType.FixedPrice,
+        amountFilled: listing.amount - data.amountRemaining,
+    })
 
     if (data.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({
@@ -60,7 +64,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             type: ListingStatusType.Finalized,
             listing: listing,
             height: ctx.block.height,
-            createdAt: new Date(ctx.block.timestamp)
+            createdAt: new Date(ctx.block.timestamp),
         })
         await ctx.store.insert(listingStatus)
     }
@@ -87,7 +91,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
             take: 2,
         })
@@ -97,11 +101,9 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             await ctx.store.save(listing.makeAssetId.collection)
         }
 
-        if (floorListing.length >= 1 && data.amountRemaining === 0n) {
-            if (floorListing[0].id === listing.id) {
-                listing.makeAssetId.collection.floorListing = floorListing[1] ?? null
-                await ctx.store.save(listing.makeAssetId.collection)
-            }
+        if (floorListing.length >= 1 && data.amountRemaining === 0n && floorListing[0].id === listing.id) {
+            listing.makeAssetId.collection.floorListing = floorListing[1] ?? null
+            await ctx.store.save(listing.makeAssetId.collection)
         }
     }
 }
@@ -123,7 +125,7 @@ async function getHighestSale(listing: Listing, ctx: EventHandlerContext): Promi
     }
 
     const highBid = await ctx.store.findOne<BidModel>(BidModel, {
-        where: { id: highBidId }
+        where: { id: highBidId },
     })
 
     if (!highBid) {

@@ -27,9 +27,9 @@ async function saveChainState(ctx: BlockHandlerContext) {
     const api = await ApiPromise.create({ provider: wsProvider })
     const apiAt = await api.at(ctx.block.hash)
 
-    const [ runtime, marketplace ] = await Promise.all<any>([
+    const [runtime, marketplace] = await Promise.all<any>([
         api.rpc.state.getRuntimeVersion(ctx.block.hash),
-        apiAt.query.marketplace.info()
+        apiAt.query.marketplace.info(),
     ])
 
     state.genesisHash = config.genesisHash
@@ -43,7 +43,7 @@ async function saveChainState(ctx: BlockHandlerContext) {
         protocolFee: marketplace['protocolFee'],
         fixedPriceListingCount: marketplace['fixedPriceListingCount'],
         auctionListingCount: marketplace['auctionListingCount'],
-    });
+    })
 
     await ctx.store.save(state)
 }

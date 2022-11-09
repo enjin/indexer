@@ -10,8 +10,8 @@ import { getOrCreateAccount } from '../../util/entities'
 interface EventData {
     listingId: Uint8Array
     winningBid: Bid | undefined
-    protocolFee: BigInt
-    royalty: BigInt
+    protocolFee: bigint
+    royalty: bigint
 }
 
 function getEventData(ctx: EventHandlerContext): EventData {
@@ -37,8 +37,8 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
             seller: true,
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                }
+                    floorListing: true,
+                },
             },
         },
     })
@@ -51,7 +51,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         type: ListingStatusType.Finalized,
         listing: listing,
         height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp)
+        createdAt: new Date(ctx.block.timestamp),
     })
     await ctx.store.insert(listingStatus)
 
@@ -75,9 +75,9 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
-            take: 2
+            take: 2,
         })
 
         if (floorListing.length === 1 && floorListing[0].id === listing.id) {
@@ -109,7 +109,7 @@ async function getHighestSale(winningBid: Bid, listing: Listing, ctx: EventHandl
     }
 
     const highBid = await ctx.store.findOne<BidModel>(BidModel, {
-        where: { id: highBidId }
+        where: { id: highBidId },
     })
 
     if (!highBid) {

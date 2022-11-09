@@ -3,11 +3,7 @@ import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
-import {
-    FreezeType_CollectionAccount,
-    FreezeType_Token,
-    FreezeType_TokenAccount,
-} from '../../../types/generated/v6'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
 
 interface EventData {
     collectionId: bigint

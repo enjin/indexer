@@ -1,7 +1,5 @@
 import { UnknownVersionError } from '../../../common/errors'
-import {
-    MarketplaceListingCancelledEvent,
-} from '../../../types/generated/events'
+import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { Collection, Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Event } from '../../../event'
@@ -33,8 +31,8 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
             seller: true,
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                } ,
+                    floorListing: true,
+                },
             },
         },
     })
@@ -46,7 +44,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         type: ListingStatusType.Cancelled,
         listing: listing,
         height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp)
+        createdAt: new Date(ctx.block.timestamp),
     })
     await ctx.store.insert(listingStatus)
 
@@ -59,12 +57,12 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
             take: 2,
         })
 
-        if (floorListing.length === 0 || floorListing.length === 1 && floorListing[0].id === listing.id) {
+        if (floorListing.length === 0 || (floorListing.length === 1 && floorListing[0].id === listing.id)) {
             listing.makeAssetId.collection.floorListing = null
             await ctx.store.save(listing.makeAssetId.collection)
         }

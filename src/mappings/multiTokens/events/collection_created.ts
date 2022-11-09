@@ -2,17 +2,17 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import {
-    Collection, CollectionAccount,
+    Collection,
+    CollectionAccount,
     MarketPolicy,
     MintPolicy,
-    Royalty, RoyaltyCurrency, Token,
+    Royalty,
+    RoyaltyCurrency,
+    Token,
     TransferPolicy,
 } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import {
-    CommonHandlerContext,
-    EventHandlerContext,
-} from '../../types/contexts'
+import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { ChainContext } from '../../../types/generated/support'
 import { SubstrateCall } from '@subsquid/substrate-processor'
@@ -42,7 +42,7 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market: null,
-            explicitRoyaltyCurrencies: [{collectionId: 0n, tokenId: 0n}]
+            explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
         }
     } else if (call.isV6) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV6.descriptor.policy.mint
@@ -55,7 +55,7 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market,
-            explicitRoyaltyCurrencies
+            explicitRoyaltyCurrencies,
         }
     } else if (call.isV5) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asV5.descriptor.policy.mint
@@ -65,7 +65,7 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market: null,
-            explicitRoyaltyCurrencies: [{collectionId: 0n, tokenId: 0n}]
+            explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
         }
     } else if (call.isEfinityV3000) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = call.asEfinityV3000.descriptor.policy.mint
@@ -78,7 +78,7 @@ async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<C
             maxTokenSupply,
             forceSingleMint,
             market,
-            explicitRoyaltyCurrencies
+            explicitRoyaltyCurrencies,
         }
     } else {
         throw new UnknownVersionError(call.constructor.name)
@@ -98,13 +98,13 @@ function getEventData(ctx: EventHandlerContext): EventData {
 
 async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
     const address = encodeId(royalty.beneficiary)
-    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
 
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
             percentage: royalty.percentage,
-        })
+        }),
     })
 }
 

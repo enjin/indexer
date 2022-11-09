@@ -34,8 +34,8 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         relations: {
             makeAssetId: {
                 collection: {
-                    floorListing: true
-                }
+                    floorListing: true,
+                },
             },
         },
     })
@@ -72,7 +72,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "ASC",
+                highestPrice: 'ASC',
             },
             take: 2,
         })

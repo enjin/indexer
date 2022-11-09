@@ -28,7 +28,7 @@ export async function handleCollectionDestroyed(ctx: EventHandlerContext) {
         where: { id: data.collectionId.toString() },
     })
     const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-        where: { collection: { id: collection.id }},
+        where: { collection: { id: collection.id } },
     })
 
     await ctx.store.remove(royaltyCurrencies)

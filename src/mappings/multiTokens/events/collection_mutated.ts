@@ -10,7 +10,7 @@ import { ChainContext, Option } from '../../../types/generated/support'
 interface EventData {
     collectionId: bigint
     owner: Uint8Array | undefined
-    royalty: Option<(DefaultRoyalty | undefined)>
+    royalty: Option<DefaultRoyalty | undefined>
     explicitRoyaltyCurrencies: AssetId[] | undefined
 }
 
@@ -22,7 +22,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
         return {
             collectionId: collectionId,
             owner: mutation.owner,
-            royalty: {__kind: "None"},
+            royalty: { __kind: 'None' },
             explicitRoyaltyCurrencies: undefined,
         }
     } else if (event.isEfinityV3000) {
@@ -46,7 +46,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
         return {
             collectionId: collectionId,
             owner: mutation.owner,
-            royalty: {__kind: "None"},
+            royalty: { __kind: 'None' },
             explicitRoyaltyCurrencies: undefined,
         }
     } else {
@@ -56,13 +56,13 @@ function getEventData(ctx: EventHandlerContext): EventData {
 
 async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
     const address = encodeId(royalty.beneficiary)
-    const account = await getOrCreateAccount((ctx as CommonHandlerContext), address)
+    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
 
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
             percentage: royalty.percentage,
-        })
+        }),
     })
 }
 
@@ -79,7 +79,7 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
         collection.owner = await getOrCreateAccount(ctx, encodeId(data.owner))
     }
 
-    if (data.royalty.__kind != "None") {
+    if (data.royalty.__kind != 'None') {
         if (data.royalty.value === undefined) {
             collection.marketPolicy = undefined
         } else {
@@ -89,14 +89,16 @@ export async function handleCollectionMutated(ctx: EventHandlerContext) {
 
     if (data.explicitRoyaltyCurrencies !== undefined) {
         const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-            where: { collection: { id: collection.id }},
+            where: { collection: { id: collection.id } },
         })
 
         if (data.explicitRoyaltyCurrencies.length === 0) {
             await ctx.store.remove(royaltyCurrencies)
         } else {
             for (const currency of data.explicitRoyaltyCurrencies) {
-                const rc = royaltyCurrencies.find((rc) => rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`)
+                const rc = royaltyCurrencies.find(
+                    (rc) => rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`
+                )
                 if (rc) {
                     royaltyCurrencies.splice(royaltyCurrencies.indexOf(rc), 1)
                     continue
