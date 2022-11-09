@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
-import { AuctionState, FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
+import { AuctionState, Bid as BidModel, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
 import { Event } from '../../../event'
@@ -57,7 +57,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
 
     if (data.winningBid) {
         listing.makeAssetId.collection.lastSale = listing
-        listing.makeAssetId.collection.highestSale = getHighestSale(listing)
+        listing.makeAssetId.collection.highestSale = await getHighestSale(data.winningBid, listing, ctx)
         await ctx.store.save(listing.makeAssetId.collection)
 
         return new Event(ctx, listing.makeAssetId).MarketplacePurchase(
@@ -92,26 +92,29 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
     }
 }
 
-function getHighestSale(listing: Listing): Listing {
+async function getHighestSale(winningBid: Bid, listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
     if (!listing.makeAssetId.collection.highestSale) {
         return listing
     }
 
-    const winningValue = (listing.state as AuctionState).highBid
-    if (!winningValue) {
-        return listing.makeAssetId.collection.highestSale
-    }
-
     if (listing.makeAssetId.collection.highestSale.state.listingType == ListingType.FixedPrice) {
-        return BigInt(winningValue) > listing.makeAssetId.collection.highestSale.price
+        return BigInt(winningBid.price) > listing.makeAssetId.collection.highestSale.price
             ? listing
             : listing.makeAssetId.collection.highestSale
     }
 
-    const previousWinningValue = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
-    if (!previousWinningValue) {
+    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
+    if (!highBidId) {
         return listing
     }
 
-    return BigInt(winningValue) > BigInt(previousWinningValue) ? listing : listing.makeAssetId.collection.highestSale
+    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
+        where: { id: highBidId }
+    })
+
+    if (!highBid) {
+        return listing
+    }
+
+    return BigInt(winningBid.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
 }

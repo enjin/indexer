@@ -354,7 +354,6 @@ type Bid @entity {
   height: Int!
 
   createdAt: DateTime!
-
 }
 
 union ListingState = FixedPriceState | AuctionState
