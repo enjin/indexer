@@ -2,11 +2,12 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
     AuctionData,
-    AuctionState, Collection,
+    AuctionState,
     FeeSide,
     FixedPriceData,
     FixedPriceState,
-    Listing, ListingStatus,
+    Listing,
+    ListingStatus,
     ListingStatusType,
     ListingType,
     Token,
@@ -44,9 +45,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
             collection: {
-                floorListing: true
+                floorListing: true,
             },
-        }
+        },
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
@@ -65,7 +66,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
                   endHeight: (data.listing.data as ListingData_Auction).value.endBlock,
               })
     const listingState =
-        data.listing.state.__kind === FixedPriceState.toString()
+        data.listing.state.__kind === ListingType.FixedPrice.toString()
             ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
             : new AuctionState({ listingType: ListingType.Auction })
 
@@ -95,10 +96,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         type: ListingStatusType.Active,
         listing: listing,
         height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp)
+        createdAt: new Date(ctx.block.timestamp),
     })
     await ctx.store.insert(listingStatus)
-
 
     new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
