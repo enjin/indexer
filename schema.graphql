@@ -135,8 +135,12 @@ type Collection @entity {
 
   # Extras
   metadata: Metadata
-  floorListing: Listing
   createdAt: DateTime!
+
+  # Marketplace analytics
+  floorListing: Listing
+  lastSale: Listing
+  highestSale: Listing
 }
 
 type CollectionApproval {

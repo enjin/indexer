@@ -67,10 +67,18 @@ export class Collection {
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
   metadata!: Metadata | undefined | null
 
+  @Column_("timestamp with time zone", {nullable: false})
+  createdAt!: Date
+
   @Index_()
   @ManyToOne_(() => Listing, {nullable: true})
   floorListing!: Listing | undefined | null
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+  @Index_()
+  @ManyToOne_(() => Listing, {nullable: true})
+  lastSale!: Listing | undefined | null
+
+  @Index_()
+  @ManyToOne_(() => Listing, {nullable: true})
+  highestSale!: Listing | undefined | null
 }
