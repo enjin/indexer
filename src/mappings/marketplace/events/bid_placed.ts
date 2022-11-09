@@ -66,18 +66,19 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
     if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+        const floorListing = await ctx.store.find<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "DESC",
+                highestPrice: "ASC",
             },
+            take: 2,
         })
 
-        if (floorListing && floorListing.id !== listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing
+        if (floorListing.length >= 2 && floorListing[0].id != listing.id) {
+            listing.makeAssetId.collection.floorListing = floorListing[0]
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }
