@@ -53,21 +53,24 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
     new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
     if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.findOne<Listing>(Listing, {
+        const floorListing = await ctx.store.find<Listing>(Listing, {
             where: {
                 makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
                 status: { type: ListingStatusType.Active },
             },
             order: {
-                highestPrice: "DESC",
+                highestPrice: "ASC",
             },
+            take: 2,
         })
 
-        if (floorListing && floorListing.id !== listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing
-            await ctx.store.save(listing.makeAssetId.collection)
-        } else {
+        if (floorListing.length === 0 || floorListing.length === 1 && floorListing[0].id === listing.id) {
             listing.makeAssetId.collection.floorListing = null
+            await ctx.store.save(listing.makeAssetId.collection)
+        }
+
+        if (floorListing.length >= 2 && floorListing[0].id === listing.id) {
+            listing.makeAssetId.collection.floorListing = floorListing[1]
             await ctx.store.save(listing.makeAssetId.collection)
         }
     }
