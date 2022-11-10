@@ -1,3 +1,4 @@
 import { AccountInfoResolver } from './account'
+import { TokenSalesHistoryResolver } from './token-sales-history'
 
-export { AccountInfoResolver }
+export { AccountInfoResolver, TokenSalesHistoryResolver }
