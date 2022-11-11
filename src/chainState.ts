@@ -6,11 +6,12 @@ import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/cont
 
 let lastStateTimestamp = 0
 
+const wsProvider = new WsProvider(config.dataSource.chain)
+const apiPromise = ApiPromise.create({ provider: wsProvider })
+
 async function saveChainState(ctx: BlockHandlerContext) {
     const state = new ChainInfo({ id: ctx.block.hash })
-
-    const wsProvider = new WsProvider(config.dataSource.chain)
-    const api = await ApiPromise.create({ provider: wsProvider })
+    const api = await apiPromise
     const apiAt = await api.at(ctx.block.hash)
 
     const [runtime, marketplace] = await Promise.all<any>([

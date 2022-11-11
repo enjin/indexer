@@ -290,6 +290,7 @@ type Metadata {
   fallbackImage: String
   media: [MetadataMedia]
   meta: MetadataMeta
+  attributes: JSON
 }
 
 type Attribute @entity {
