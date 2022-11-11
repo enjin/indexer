@@ -25,7 +25,7 @@ export class TokenSalesHistoryResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [TokenSale])
-    async TokenSalesHistory(
+    async tokenSalesHistory(
         @Arg('id', { description: 'id i.e. collectionId+tokenId' }) id: string,
         @Arg('fromDate', { nullable: true }) fromDate: string
     ): Promise<TokenSale[]> {
