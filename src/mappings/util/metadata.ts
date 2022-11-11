@@ -39,18 +39,47 @@ function parseMedia(media: any) {
     }
 }
 
-function metadataParser(metadata: Metadata, attribute: Attribute, externalMetadata: any) {
+function parseArrayAttributes(attributes: any[]) {
+    const obj = {} as any
+    attributes.forEach((attr) => {
+        let key = null
+        if (attr.key) {
+            key = 'key'
+        }
+        if (attr.name) {
+            key = 'name'
+        }
+        if (attr.trait_type) {
+            key = 'trait_type'
+        }
+        if (key && attr.value) {
+            obj[key] = { value: attr.value, display_value: attr.display_value ?? undefined }
+        }
+    })
+    return obj
+}
+
+function metadataParser(metadata: Metadata, attribute: Attribute, externalMetadata: any | null) {
     if (externalMetadata?.name) {
         metadata.name = externalMetadata.name
     }
     if (externalMetadata?.description) {
         metadata.description = externalMetadata.description
     }
+    if (externalMetadata?.external_url) {
+        metadata.externalUrl = externalMetadata.external_url
+    }
     if (externalMetadata?.fallback_image) {
         metadata.fallbackImage = externalMetadata.fallback_image
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)
+    }
+    if (externalMetadata?.attribute && typeof externalMetadata.attribute === 'object') {
+        metadata.attributes = externalMetadata.attribute
+        if (Array.isArray(externalMetadata.attribute)) {
+            metadata.attributes = parseArrayAttributes(externalMetadata.attribute)
+        }
     }
 
     if (attribute.key === 'name') {
@@ -68,7 +97,6 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
 
 async function processMetadata(metadata: Metadata, attribute: Attribute) {
     if (attribute.key === 'uri') {
-        metadata.externalUrl = attribute.value
         const externalMetadata = await fetchMetadata(attribute.value)
         return metadataParser(metadata, attribute, externalMetadata)
     }
