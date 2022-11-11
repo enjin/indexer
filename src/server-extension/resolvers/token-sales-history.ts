@@ -26,7 +26,7 @@ export class TokenSalesHistoryResolver {
 
     @Query(() => [TokenSale])
     async TokenSalesHistory(
-        @Arg('tokenId') tokenId: string,
+        @Arg('id', { description: 'id i.e. collectionId+tokenId' }) id: string,
         @Arg('fromDate', { nullable: true }) fromDate: string
     ): Promise<TokenSale[]> {
         const manager = await this.tx()
@@ -39,7 +39,7 @@ export class TokenSalesHistoryResolver {
             .addSelect('COUNT(*) AS trades')
             .addSelect('SUM(listing.highestPrice) as price')
             .where(`token_event.event->>'isTypeOf' = :isTypeOf`, { isTypeOf: 'MarketplacePurchaseEvent' })
-            .andWhere('token_event.token = :tokenId', { tokenId })
+            .andWhere('token_event.token = :id', { id })
         if (fromDate) {
             builder.andWhere('token_event.created_at >= :fromDate', { fromDate })
         }

@@ -13,7 +13,6 @@ import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
 import { Event } from '../../../event'
 import { getOrCreateAccount } from '../../util/entities'
-import { Bid } from '../../../types/generated/v6'
 
 interface EventData {
     listingId: Uint8Array
