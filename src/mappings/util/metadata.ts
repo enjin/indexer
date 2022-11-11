@@ -44,16 +44,16 @@ function parseArrayAttributes(attributes: any[]) {
     attributes.forEach((attr) => {
         let key = null
         if (attr.key) {
-            key = 'key'
+            key = attr.key
         }
         if (attr.name) {
-            key = 'name'
+            key = attr.name
         }
         if (attr.trait_type) {
-            key = 'trait_type'
+            key = attr.trait_type
         }
         if (key && attr.value) {
-            obj[key] = { value: attr.value, display_value: attr.display_value ?? undefined }
+            obj[key] = { ...attr, type: attr.display_type ?? attr.type ?? undefined }
         }
     })
     return obj
