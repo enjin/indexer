@@ -75,10 +75,10 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)
     }
-    if (externalMetadata?.attribute && typeof externalMetadata.attribute === 'object') {
-        metadata.attributes = externalMetadata.attribute
-        if (Array.isArray(externalMetadata.attribute)) {
-            metadata.attributes = parseArrayAttributes(externalMetadata.attribute)
+    if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
+        metadata.attributes = externalMetadata.attributes
+        if (Array.isArray(externalMetadata.attributes)) {
+            metadata.attributes = parseArrayAttributes(externalMetadata.attributes)
         }
     }
 
