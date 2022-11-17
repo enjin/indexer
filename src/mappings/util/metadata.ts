@@ -24,8 +24,9 @@ async function fetchMetadata(url: string) {
     return null
 }
 
-function parseMedia(media: any) {
+function parseMedia(value: any) {
     try {
+        const media = typeof value === 'string' ? JSON.parse(value) : value
         return media.map(
             (_media: any) =>
                 new MetadataMedia({
@@ -88,7 +89,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
         metadata.description = attribute.value
     } else if (attribute.key === 'fallback_image') {
         metadata.fallbackImage = attribute.value
-    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
+    } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
     }
 
