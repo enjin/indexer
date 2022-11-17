@@ -26,6 +26,7 @@
     "axios": "^1.1",
     "cacheable-request": "^8.3",
     "dotenv": "^16.0",
+    "node-cache": "^5.1.2",
     "pg": "^8.8",
     "type-graphql": "^1.2.0-rc.1"
   },
@@ -48,8 +49,8 @@
   },
   "peerDependencies": {
     "@polkadot/types": "9.7.1",
+    "@subsquid/util-internal-hex": "0.0.1",
     "reflect-metadata": "0.1.13",
-    "typeorm": "0.3.10",
-    "@subsquid/util-internal-hex": "0.0.1"
+    "typeorm": "0.3.10"
   }
 }

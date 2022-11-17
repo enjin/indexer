@@ -14,6 +14,7 @@ async function saveChainState(ctx: BlockHandlerContext) {
     const api = await apiPromise
     const apiAt = await api.at(ctx.block.hash)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [runtime, marketplace] = await Promise.all<any>([
         api.rpc.state.getRuntimeVersion(ctx.block.hash),
         apiAt.query.marketplace.info(),
@@ -53,6 +54,7 @@ export async function handleChainState(ctx: BlockHandlerContext) {
     if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
         await saveChainState(ctx)
         lastStateTimestamp = ctx.block.timestamp
+        // eslint-disable-next-line no-console
         console.log(`Chain state updated at block ${ctx.block.height}`)
     }
 }
