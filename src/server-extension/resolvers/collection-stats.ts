@@ -56,7 +56,7 @@ export class CollectionStatsResolver {
             .addSelect('MAX(l.highest_price) AS highest_sale')
             .addSelect(`MAX(l.last_sale) AS last_sale`)
             .addSelect('SUM(l.highest_price) AS total_volume')
-            .addSelect('SUM(l.highest_price * l.collection_token_count) AS market_cap')
+            .addSelect('SUM(l.last_sale * l.collection_token_count) AS market_cap')
             .addSelect('AVG(l.collection_token_count)::int AS assets')
             .addSelect('COUNT(l.id)::int AS sales')
             .from((qb) => {
