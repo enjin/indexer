@@ -43,11 +43,11 @@ export class CollectionStatsResolver {
 
     @Query(() => CollectionStats)
     async collectionStats(@Arg('id', { description: 'collectionId' }) id: string): Promise<CollectionStats> {
-        const manager = await this.tx()
-
         if (cache.has(`collectionStats:${id}`)) {
             return cache.get(`collectionStats:${id}`) as CollectionStats
         }
+
+        const manager = await this.tx()
 
         const query = manager
             .createQueryBuilder()
