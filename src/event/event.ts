@@ -76,7 +76,6 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MarketplacePurchaseEvent saved!')
     }
 
     public async MarketplaceBid(from: Account, bid: Bid) {
@@ -90,12 +89,11 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MarketplaceBidEvent saved!')
     }
 
     public async MultiTokenMint(to: Account, amount: bigint) {
         const event = new TokenEvent({
-            id: `${this.token.id}-${to.id}-${amount}-${this.ctx.block.height}-minted`,
+            id: `${this.token.id}-${to.id}-${amount}-${this.ctx.event.id}-minted`,
             event: new MintEvent({
                 to: to.id,
                 amount,
@@ -104,12 +102,11 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MultiTokenMintEvent saved!')
     }
 
     public async MultiTokenBurn(from: Account, amount: bigint) {
         const event = new TokenEvent({
-            id: `${this.token.id}-${from.id}-${amount}-${this.ctx.block.height}-burned`,
+            id: `${this.token.id}-${from.id}-${amount}-${this.ctx.event.id}-burned`,
             event: new BurnEvent({
                 from: from.id,
                 amount,
@@ -118,12 +115,11 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MultiTokenBurnEvent saved!')
     }
 
     public async MultiTokenTransfer(from: Account, to: Account, amount: bigint) {
         const event = new TokenEvent({
-            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.block.height}-transferred`,
+            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.event.id}-transferred`,
             event: new TransferEvent({
                 from: from.id,
                 to: to.id,
@@ -133,6 +129,5 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MultiTokenTransferEvent saved!')
     }
 }
