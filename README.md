@@ -17,7 +17,13 @@
 
 ## Introduction
 
-The Efinity Indexer is a project that uses Subsquid to extract, transform and serve blockchain data.
+The Efinity Indexer...
+
+### What is a Squid?
+
+> A squid is a project that extracts and transforms on-chain data in order to present it as a GraphQL API. Squids are developed using the Subsquid SDK, which provides extensive tooling to define data schemas, data transfomation rules, and the shape of the resulting API.
+
+We recommend that you read SubSquid docs to understand how it works: https://docs.subsquid.io/
 
 ## Prerequisites
 
@@ -29,3 +35,14 @@ The Efinity Indexer is a project that uses Subsquid to extract, transform and se
 
 1. Clone the repository
 2. Run `docker compose up -d`
+3. Access the GraphiQL Playground at http://localhost:4467/graphql
+
+## Typegen
+
+## Codegen
+
+## Migrations
+
+
+## Utilities
+
