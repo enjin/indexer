@@ -2,28 +2,17 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 
-export class TransferEvent {
-  public readonly isTypeOf = 'TransferEvent'
-  private _from!: string
+export class MintEvent {
+  public readonly isTypeOf = 'MintEvent'
   private _to!: string
   private _amount!: bigint
 
-  constructor(props?: Partial<Omit<TransferEvent, 'toJSON'>>, json?: any) {
+  constructor(props?: Partial<Omit<MintEvent, 'toJSON'>>, json?: any) {
     Object.assign(this, props)
     if (json != null) {
-      this._from = marshal.string.fromJSON(json.from)
       this._to = marshal.string.fromJSON(json.to)
       this._amount = marshal.bigint.fromJSON(json.amount)
     }
-  }
-
-  get from(): string {
-    assert(this._from != null, 'uninitialized access')
-    return this._from
-  }
-
-  set from(value: string) {
-    this._from = value
   }
 
   get to(): string {
@@ -47,7 +36,6 @@ export class TransferEvent {
   toJSON(): object {
     return {
       isTypeOf: this.isTypeOf,
-      from: this.from,
       to: this.to,
       amount: marshal.bigint.toJSON(this.amount),
     }

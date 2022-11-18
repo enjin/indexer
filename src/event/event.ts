@@ -8,6 +8,9 @@ import {
     MarketplaceBidEvent,
     Token,
     Bid,
+    MintEvent,
+    TransferEvent,
+    BurnEvent,
 } from '../model'
 import { EventHandlerContext } from '../mappings/types/contexts'
 
@@ -20,11 +23,6 @@ export class Event {
             height: this.ctx.block.height,
             createdAt: new Date(this.ctx.block.timestamp),
         }
-    }
-
-    private catchError(err: any) {
-        const error = err.message ?? err
-        this.ctx.log.error(error.toString())
     }
 
     public async MarketplaceListingCancel(from: Account, listing: Listing) {
@@ -78,7 +76,6 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MarketplacePurchaseEvent saved!')
     }
 
     public async MarketplaceBid(from: Account, bid: Bid) {
@@ -92,6 +89,45 @@ export class Event {
         })
 
         await this.ctx.store.save(event)
-        this.ctx.log.debug('MarketplaceBidEvent saved!')
+    }
+
+    public async MultiTokenMint(to: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${to.id}-${amount}-${this.ctx.event.id}-minted`,
+            event: new MintEvent({
+                to: to.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+    }
+
+    public async MultiTokenBurn(from: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${from.id}-${amount}-${this.ctx.event.id}-burned`,
+            event: new BurnEvent({
+                from: from.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+    }
+
+    public async MultiTokenTransfer(from: Account, to: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.event.id}-transferred`,
+            event: new TransferEvent({
+                from: from.id,
+                to: to.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
     }
 }

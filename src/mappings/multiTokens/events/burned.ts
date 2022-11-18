@@ -1,7 +1,8 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import { TokenAccount } from '../../../model'
+import { Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
+import { Event } from '../../../event'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/efinityV3'
@@ -74,6 +75,7 @@ export async function handleBurned(ctx: EventHandlerContext) {
     const address = encodeId(data.accountId)
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
     })
 
     if (tokenAccount) {
@@ -86,5 +88,10 @@ export async function handleBurned(ctx: EventHandlerContext) {
 
             await ctx.store.save(tokenAccount)
         }
+
+        new Event(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenBurn(
+            tokenAccount.account,
+            data.amount
+        )
     }
 }
