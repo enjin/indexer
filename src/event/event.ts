@@ -8,6 +8,8 @@ import {
     MarketplaceBidEvent,
     Token,
     Bid,
+    MintEvent,
+    TransferEvent,
 } from '../model'
 import { EventHandlerContext } from '../mappings/types/contexts'
 
@@ -20,11 +22,6 @@ export class Event {
             height: this.ctx.block.height,
             createdAt: new Date(this.ctx.block.timestamp),
         }
-    }
-
-    private catchError(err: any) {
-        const error = err.message ?? err
-        this.ctx.log.error(error.toString())
     }
 
     public async MarketplaceListingCancel(from: Account, listing: Listing) {
@@ -93,5 +90,34 @@ export class Event {
 
         await this.ctx.store.save(event)
         this.ctx.log.debug('MarketplaceBidEvent saved!')
+    }
+
+    public async MultiTokenMint(to: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${to.id}-${amount}-${this.ctx.block.height}-minted`,
+            event: new MintEvent({
+                to: to.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+        this.ctx.log.debug('MultiTokenMintEvent saved!')
+    }
+
+    public async MultiTokenTransfer(from: Account, to: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.block.height}-transfer`,
+            event: new TransferEvent({
+                from: from.id,
+                to: to.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+        this.ctx.log.debug('MultiTokenTransferEvent saved!')
     }
 }

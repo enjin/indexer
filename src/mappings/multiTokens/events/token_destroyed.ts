@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Collection, Token } from '../../../model'
+import { Collection, Token, TokenEvent } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 
 interface EventData {
@@ -33,5 +33,18 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
+
+    if (token) {
+        const events = await ctx.store.find(TokenEvent, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        })
+
+        await ctx.store.remove(events)
+    }
+
     await ctx.store.remove(token)
 }

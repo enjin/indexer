@@ -1,7 +1,8 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
-import { TokenAccount } from '../../../model'
+import { Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
+import { Event } from '../../../event'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
@@ -76,6 +77,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     const fromAddress = encodeId(data.from)
     const fromTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
     })
 
     if (fromTokenAccount) {
@@ -93,6 +95,7 @@ export async function handleTransferred(ctx: EventHandlerContext) {
     const toAddress = encodeId(data.to)
     const toTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
     })
 
     if (toTokenAccount) {
@@ -105,5 +108,13 @@ export async function handleTransferred(ctx: EventHandlerContext) {
 
             await ctx.store.save(toTokenAccount)
         }
+    }
+
+    if (fromTokenAccount && toTokenAccount) {
+        new Event(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenTransfer(
+            fromTokenAccount.account,
+            toTokenAccount.account,
+            data.amount
+        )
     }
 }
