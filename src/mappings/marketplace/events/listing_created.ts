@@ -17,7 +17,7 @@ import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -99,7 +99,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     })
     await ctx.store.insert(listingStatus)
 
-    new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
+    new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
     if (!makeAssetId.collection.floorListing || listing.price < makeAssetId.collection.floorListing.price) {
         makeAssetId.collection.floorListing = listing

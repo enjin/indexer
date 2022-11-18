@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import config from './config'
@@ -5,9 +6,20 @@ import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { createEfiToken } from './createEfiToken'
+import datasource from './datasource'
+import Collection from './services/collection'
 
 const database = new TypeormDatabase()
 const processor = new SubstrateProcessor(database)
+
+setTimeout(() => {
+    Collection.sync('3550')
+}, 3000)
+
+datasource
+    .initialize()
+    .then(() => console.log('datasource connected!'))
+    .catch(console.error)
 
 processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(config.port || DEFAULT_PORT)
@@ -84,4 +96,4 @@ processor.addPostHook(
     handleChainState
 )
 
-processor.run()
+// processor.run()

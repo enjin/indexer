@@ -3,7 +3,7 @@ import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/event
 import { AuctionState, Bid as BidModel, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -86,7 +86,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         listing.makeAssetId.collection.highestSale = await getHighestSale(data.winningBid, listing, ctx)
         await ctx.store.save(listing.makeAssetId.collection)
 
-        new Event(ctx, listing.makeAssetId).MarketplacePurchase(
+        new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
             listing.seller,
             await getOrCreateAccount(ctx, encodeId(data.winningBid.bidder)),
             listing,

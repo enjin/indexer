@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/efinityV3'
@@ -89,7 +89,7 @@ export async function handleBurned(ctx: EventHandlerContext) {
             await ctx.store.save(tokenAccount)
         }
 
-        new Event(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenBurn(
+        new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenBurn(
             tokenAccount.account,
             data.amount
         )

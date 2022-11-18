@@ -112,6 +112,17 @@ type RoyaltyCurrency @entity {
   token: Token!
 }
 
+type CollectionStats {
+    floorPrice: BigInt
+    lastSale: BigInt
+    highestSale: BigInt
+    tokenCount: Int!
+    salesCount: Int!
+    rank: String!
+    marketCap: BigInt!
+    volume: BigInt!
+}
+
 type Collection @entity {
   id: ID!
 
@@ -138,6 +149,7 @@ type Collection @entity {
   createdAt: DateTime!
 
   # Marketplace analytics
+  stats: CollectionStats!
   floorListing: Listing
   lastSale: Listing
   highestSale: Listing

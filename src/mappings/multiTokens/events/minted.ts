@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
@@ -89,7 +89,7 @@ export async function handleMinted(ctx: EventHandlerContext) {
         await ctx.store.save(tokenAccount)
     }
 
-    new Event(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
+    new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
         tokenAccount.account,
         data.amount
     )

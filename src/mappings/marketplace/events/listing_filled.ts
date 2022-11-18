@@ -11,7 +11,7 @@ import {
 } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
@@ -101,7 +101,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
     listing.makeAssetId.collection.highestSale = await getHighestSale(listing, ctx)
     await ctx.store.save(listing.makeAssetId.collection)
 
-    new Event(ctx, listing.makeAssetId).MarketplacePurchase(
+    new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
         listing.seller,
         await getOrCreateAccount(ctx, encodeId(data.buyer)),
         listing,

@@ -5,7 +5,7 @@ import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
-import { Event } from '../../../event'
+import { EventService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -62,7 +62,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 
-    new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
+    new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
     if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
         const floorListing = await ctx.store.find<Listing>(Listing, {
