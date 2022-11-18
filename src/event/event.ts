@@ -10,6 +10,7 @@ import {
     Bid,
     MintEvent,
     TransferEvent,
+    BurnEvent,
 } from '../model'
 import { EventHandlerContext } from '../mappings/types/contexts'
 
@@ -106,9 +107,23 @@ export class Event {
         this.ctx.log.debug('MultiTokenMintEvent saved!')
     }
 
+    public async MultiTokenBurn(from: Account, amount: bigint) {
+        const event = new TokenEvent({
+            id: `${this.token.id}-${from.id}-${amount}-${this.ctx.block.height}-burned`,
+            event: new BurnEvent({
+                from: from.id,
+                amount,
+            }),
+            ...this.commonFields,
+        })
+
+        await this.ctx.store.save(event)
+        this.ctx.log.debug('MultiTokenBurnEvent saved!')
+    }
+
     public async MultiTokenTransfer(from: Account, to: Account, amount: bigint) {
         const event = new TokenEvent({
-            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.block.height}-transfer`,
+            id: `${this.token.id}-${from.id}-${to.id}-${amount}-${this.ctx.block.height}-transferred`,
             event: new TransferEvent({
                 from: from.id,
                 to: to.id,

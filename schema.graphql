@@ -438,7 +438,12 @@ type MintEvent {
   amount: BigInt!
 }
 
-union TokenEventType = MarketplaceListEvent | MarketplacePurchaseEvent | MarketplaceListingCancelEvent | MarketplaceBidEvent | TransferEvent | MintEvent 
+type BurnEvent {
+  from: Account!
+  amount: BigInt!
+}
+
+union TokenEventType = MarketplaceListEvent | MarketplacePurchaseEvent | MarketplaceListingCancelEvent | MarketplaceBidEvent | TransferEvent | MintEvent | BurnEvent
 
 type TokenEvent @entity {
   id: ID!
