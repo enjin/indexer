@@ -18,6 +18,7 @@ import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
 import { EventService } from '../../../services'
+import collectionService from '../../../services/collection'
 
 interface EventData {
     listingId: Uint8Array
@@ -43,9 +44,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
-            collection: {
-                floorListing: true,
-            },
+            collection: true,
         },
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -101,8 +100,5 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
 
     new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
-    if (!makeAssetId.collection.floorListing || listing.price < makeAssetId.collection.floorListing.price) {
-        makeAssetId.collection.floorListing = listing
-        await ctx.store.save(makeAssetId.collection)
-    }
+    collectionService.sync(makeAssetId.collection.id)
 }

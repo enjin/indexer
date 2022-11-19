@@ -7,14 +7,9 @@ import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { createEfiToken } from './createEfiToken'
 import datasource from './datasource'
-import Collection from './services/collection'
 
 const database = new TypeormDatabase()
 const processor = new SubstrateProcessor(database)
-
-setTimeout(() => {
-    Collection.sync('3550')
-}, 3000)
 
 datasource
     .initialize()
@@ -96,4 +91,4 @@ processor.addPostHook(
     handleChainState
 )
 
-// processor.run()
+processor.run()

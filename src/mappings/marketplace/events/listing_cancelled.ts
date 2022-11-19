@@ -3,6 +3,7 @@ import { MarketplaceListingCancelledEvent } from '../../../types/generated/event
 import { Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { EventService } from '../../../services'
+import collectionService from '../../../services/collection'
 
 interface EventData {
     listingId: Uint8Array
@@ -29,9 +30,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         relations: {
             seller: true,
             makeAssetId: {
-                collection: {
-                    floorListing: true,
-                },
+                collection: true,
             },
         },
     })
@@ -49,26 +48,5 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
 
     new EventService(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
-    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.find<Listing>(Listing, {
-            where: {
-                makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
-                status: { type: ListingStatusType.Active },
-            },
-            order: {
-                highestPrice: 'ASC',
-            },
-            take: 2,
-        })
-
-        if (floorListing.length === 0 || (floorListing.length === 1 && floorListing[0].id === listing.id)) {
-            listing.makeAssetId.collection.floorListing = null
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-
-        if (floorListing.length >= 2 && floorListing[0].id === listing.id) {
-            ;[, listing.makeAssetId.collection.floorListing] = floorListing
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-    }
+    collectionService.sync(listing.makeAssetId.collection.id)
 }

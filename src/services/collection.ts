@@ -4,10 +4,14 @@ import { Collection, CollectionStats, Listing, ListingStatus, Token } from '../m
 class CollectionService {
     private em = datasource.manager
 
+    constructor() {
+        console.log('called collection service')
+    }
+
     private get salesQuery() {
         return datasource.manager
             .createQueryBuilder()
-            .select('token_collection_id')
+            .select('l.collection_id AS collection_id')
             .addSelect('RANK() OVER (ORDER BY SUM(l.highest_price) DESC NULLS LAST) AS rank')
             .addSelect('MAX(l.highest_price) AS highest_sale')
             .addSelect('MAX(l.last_sale) AS last_sale')
@@ -16,8 +20,10 @@ class CollectionService {
             .addSelect('COUNT(l.id)::int AS sales')
             .from((qb) => {
                 return qb
-                    .select('listing.highest_price as highest_price')
-                    .addSelect('"collection"."token_count" as "collection_token_count"')
+                    .select('listing.id AS id')
+                    .addSelect('listing.highest_price AS highest_price')
+                    .addSelect('collection.token_count AS collection_token_count')
+                    .addSelect('collection.id AS collection_id')
                     .addSelect(
                         'CASE WHEN lead(listing.id) OVER(PARTITION BY collection.id ORDER BY listing.created_at) IS NULL THEN listing.highest_price END AS last_sale'
                     )
@@ -26,7 +32,7 @@ class CollectionService {
                     .innerJoin(Collection, 'collection', 'token.collection = collection.id')
                     .innerJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
             }, 'l')
-            .groupBy('token_collection_id')
+            .groupBy('l.collection_id')
             .getQuery()
     }
 
@@ -38,7 +44,7 @@ class CollectionService {
         if (!datasource.isInitialized) throw new Error('datasource is not initialized')
 
         const promises = [
-            this.em.query(`;With cte AS (${this.salesQuery}) SELECT * FROM cte WHERE token_collection_id = $1;`, [
+            this.em.query(`;With cte AS (${this.salesQuery}) SELECT * FROM cte WHERE collection_id = $1;`, [
                 collectionId,
             ]),
             this.em.query(this.floorQuery, [collectionId]),
@@ -51,8 +57,6 @@ class CollectionService {
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
         const [[sales], [{ floor_price }], tokenCount] = await Promise.all(promises)
-
-        return console.log(sales)
 
         const stats = new CollectionStats({
             tokenCount,

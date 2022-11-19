@@ -6,6 +6,7 @@ import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
 import { EventService } from '../../../services'
+import collectionService from '../../../services/collection'
 
 interface EventData {
     listingId: Uint8Array
@@ -32,9 +33,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             makeAssetId: {
-                collection: {
-                    floorListing: true,
-                },
+                collection: true,
             },
         },
     })
@@ -64,21 +63,5 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
 
     new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
-    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.find<Listing>(Listing, {
-            where: {
-                makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
-                status: { type: ListingStatusType.Active },
-            },
-            order: {
-                highestPrice: 'ASC',
-            },
-            take: 2,
-        })
-
-        if (floorListing.length >= 2 && floorListing[0].id !== listing.id) {
-            ;[listing.makeAssetId.collection.floorListing] = floorListing
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-    }
+    collectionService.sync(listing.makeAssetId.collection.id)
 }

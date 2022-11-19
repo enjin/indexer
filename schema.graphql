@@ -150,9 +150,6 @@ type Collection @entity {
 
   # Marketplace analytics
   stats: CollectionStats!
-  floorListing: Listing
-  lastSale: Listing
-  highestSale: Listing
 }
 
 type CollectionApproval {

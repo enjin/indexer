@@ -1,5 +1,5 @@
 import { BlockHandlerContext } from './mappings/types/contexts'
-import { CapType, Collection, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
+import { CapType, Collection, CollectionStats, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
 import { getOrCreateAccount } from './mappings/util/entities'
 
 export async function createEfiToken(ctx: BlockHandlerContext) {
@@ -18,6 +18,16 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             }),
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
+            }),
+            stats: new CollectionStats({
+                lastSale: null,
+                floorPrice: null,
+                highestSale: null,
+                tokenCount: 0,
+                salesCount: 0,
+                rank: '0',
+                marketCap: 0n,
+                volume: 0n,
             }),
             burnPolicy: null,
             attributePolicy: null,
