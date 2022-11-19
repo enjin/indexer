@@ -35,7 +35,7 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 1. Clone the repository
 2. Run `docker compose up -d`
-3. Access the GraphiQL Playground at http://localhost:4467/graphql
+3. Access the GraphiQL Playground at http://localhost:4467/graphql <!-- markdown-link-check-disable-line -->
 
 ## Architecture
 
