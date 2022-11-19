@@ -25,7 +25,7 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
                 highestSale: null,
                 tokenCount: 0,
                 salesCount: 0,
-                rank: '0',
+                rank: 0,
                 marketCap: 0n,
                 volume: 0n,
             }),

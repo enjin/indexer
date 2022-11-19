@@ -136,7 +136,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
                 highestSale: null,
                 tokenCount: 0,
                 salesCount: 0,
-                rank: '0',
+                rank: 0,
                 marketCap: 0n,
                 volume: 0n,
             }),

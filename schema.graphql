@@ -118,7 +118,7 @@ type CollectionStats {
     highestSale: BigInt
     tokenCount: Int!
     salesCount: Int!
-    rank: String!
+    rank: Int!
     marketCap: BigInt!
     volume: BigInt!
 }

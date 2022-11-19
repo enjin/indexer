@@ -1,18 +1,14 @@
-import datasource from '../datasource'
+import { EntityManager } from 'typeorm'
 import { Collection, CollectionStats, Listing, ListingStatus, Token } from '../model'
 
-class CollectionService {
-    private em = datasource.manager
-
-    constructor() {
-        console.log('called collection service')
-    }
+export class CollectionService {
+    constructor(public em: EntityManager) {}
 
     private get salesQuery() {
-        return datasource.manager
+        return this.em
             .createQueryBuilder()
             .select('l.collection_id AS collection_id')
-            .addSelect('RANK() OVER (ORDER BY SUM(l.highest_price) DESC NULLS LAST) AS rank')
+            .addSelect('RANK() OVER (ORDER BY SUM(l.highest_price) DESC NULLS LAST)::int AS rank')
             .addSelect('MAX(l.highest_price) AS highest_sale')
             .addSelect('MAX(l.last_sale) AS last_sale')
             .addSelect('SUM(l.highest_price) AS total_volume')
@@ -39,9 +35,8 @@ class CollectionService {
     private floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND
      (SELECT count(*) FROM "listing_status" AS "listing_status" WHERE "listing_status"."type" = 'Active' AND "listing_status"."listing_id" = "listing"."id") = (SELECT count(*) FROM "listing_status" AS "listing_status_1" WHERE "listing_status_1"."listing_id" = "listing"."id")`
 
-    async sync(collectionId: string) {
-        if (!collectionId) throw new Error('nulll collectionId not allowed')
-        if (!datasource.isInitialized) throw new Error('datasource is not initialized')
+    private async process(collectionId: string) {
+        if (!collectionId) throw new Error('null collectionId not allowed')
 
         const promises = [
             this.em.query(`;With cte AS (${this.salesQuery}) SELECT * FROM cte WHERE collection_id = $1;`, [
@@ -61,7 +56,7 @@ class CollectionService {
         const stats = new CollectionStats({
             tokenCount,
             salesCount: sales?.sales ?? 0,
-            rank: sales?.rank ?? '0',
+            rank: sales?.rank ?? 0,
             volume: sales?.total_volume ?? 0n,
             marketCap: sales?.market_cap ?? 0n,
             floorPrice: floor_price,
@@ -77,5 +72,3 @@ class CollectionService {
             .execute()
     }
 }
-
-export default new CollectionService()
