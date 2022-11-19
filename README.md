@@ -17,7 +17,7 @@
 
 ## Introduction
 
-The Efinity Indexer...
+The Efinity Indexer is a Squid that serves processed blockchain data for another applications and dApps that requires a more performatic approach to retrieve the data as well as filtering, sorting and relationships.
 
 ### What is a Squid?
 
