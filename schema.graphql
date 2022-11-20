@@ -134,7 +134,6 @@ type Collection @entity {
   burnPolicy: String
   transferPolicy: TransferPolicy
   attributePolicy: String
-  tokenCount: Int!
   attributeCount: Int!
   totalDeposit: BigInt!
 

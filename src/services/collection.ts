@@ -12,13 +12,11 @@ export class CollectionService {
             .addSelect('MAX(l.highest_price) AS highest_sale')
             .addSelect('MAX(l.last_sale) AS last_sale')
             .addSelect('SUM(l.highest_price) AS total_volume')
-            .addSelect('SUM(l.last_sale * l.collection_token_count) AS market_cap')
             .addSelect('COUNT(l.id)::int AS sales')
             .from((qb) => {
                 return qb
                     .select('listing.id AS id')
                     .addSelect('listing.highest_price AS highest_price')
-                    .addSelect('collection.token_count AS collection_token_count')
                     .addSelect('collection.id AS collection_id')
                     .addSelect(
                         'CASE WHEN lead(listing.id) OVER(PARTITION BY collection.id ORDER BY listing.created_at) IS NULL THEN listing.highest_price END AS last_sale'
@@ -58,17 +56,12 @@ export class CollectionService {
             salesCount: sales?.sales ?? 0,
             rank: sales?.rank ?? 0,
             volume: sales?.total_volume ?? 0n,
-            marketCap: sales?.market_cap ?? 0n,
+            marketCap: BigInt(sales?.last_sale ?? 0n) * BigInt(tokenCount),
             floorPrice: floor_price,
             lastSale: sales?.last_sale ?? null,
             highestSale: sales?.highest_sale ?? null,
         })
 
-        this.em
-            .createQueryBuilder()
-            .update(Collection)
-            .set({ stats })
-            .where('id = :collectionId', { collectionId })
-            .execute()
+        this.em.update(Collection, { id: collectionId }, { stats })
     }
 }

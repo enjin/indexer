@@ -44,9 +44,6 @@ export class Collection {
   attributePolicy!: string | undefined | null
 
   @Column_("int4", {nullable: false})
-  tokenCount!: number
-
-  @Column_("int4", {nullable: false})
   attributeCount!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})

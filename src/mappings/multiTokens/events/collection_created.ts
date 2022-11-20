@@ -142,7 +142,6 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
             }),
             burnPolicy: null,
             attributePolicy: null,
-            tokenCount: 0,
             attributeCount: 0,
             totalDeposit: 0n, // TODO
             createdAt: new Date(ctx.block.timestamp),
