@@ -50,7 +50,6 @@
   "peerDependencies": {
     "@polkadot/types": "9.7.1",
     "@subsquid/util-internal-hex": "0.0.1",
-    "@subsquid/typeorm-config": "2.0.0",
     "reflect-metadata": "0.1.13",
     "typeorm": "0.3.10"
   }
