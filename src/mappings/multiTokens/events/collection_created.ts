@@ -162,7 +162,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
                 token,
             })
             // eslint-disable-next-line no-await-in-loop
-            await ctx.store.insert(Collection, royaltyCurrency as any)
+            await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
         }
     }
 }
