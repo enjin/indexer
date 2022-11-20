@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import { Attribute, Token, TokenEvent } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
-import collectionService from '../../../services/collection'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     collectionId: bigint
@@ -51,5 +51,5 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
     }
 
     await ctx.store.remove(token)
-    collectionService.sync(data.collectionId.toString())
+    new CollectionService(ctx.store).sync(data.collectionId.toString())
 }

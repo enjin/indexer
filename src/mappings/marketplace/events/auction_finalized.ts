@@ -3,10 +3,9 @@ import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/event
 import { Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid } from '../../../types/generated/v6'
-import { EventService } from '../../../services'
+import { EventService, CollectionService } from '../../../services'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
-import collectionService from '../../../services/collection'
 
 interface EventData {
     listingId: Uint8Array
@@ -51,7 +50,7 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
 
     if (data.winningBid) {
         new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
@@ -61,6 +60,6 @@ export async function handleAuctionFinalized(ctx: EventHandlerContext) {
             1n
         )
 
-        collectionService.sync(listing.makeAssetId.collection.id)
+        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
     }
 }

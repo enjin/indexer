@@ -1,4 +1,4 @@
-import { Store } from '@subsquid/typeorm-store'
+import { EntityManager } from 'typeorm'
 import {
     BlockHandlerContext as PrBlockHandlerContext,
     EventHandlerContext as PrEventHandlerContext,
@@ -7,12 +7,12 @@ import {
 } from '@subsquid/substrate-processor'
 import { CallDataRequest, EventDataRequest } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 
-export type EventHandlerContext<T extends EventDataRequest = { event: true }> = PrEventHandlerContext<Store, T>
-export type BlockHandlerContext = PrBlockHandlerContext<Store>
+export type EventHandlerContext<T extends EventDataRequest = { event: true }> = PrEventHandlerContext<EntityManager, T>
+export type BlockHandlerContext = PrBlockHandlerContext<EntityManager>
 export type CallHandlerContext<T extends CallDataRequest = { call: true; extrinsic: true }> = PrCallHandlerContext<
-    Store,
+    EntityManager,
     T
 >
-export type CommonHandlerContext = PrCommonHandlerContext<Store>
+export type CommonHandlerContext = PrCommonHandlerContext<EntityManager>
 
 export { CallContext, EventContext } from '../../types/generated/support'

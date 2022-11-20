@@ -42,5 +42,5 @@ export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
         updatedAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(collectionAccount)
+    await ctx.store.insert(CollectionAccount, collectionAccount as any)
 }

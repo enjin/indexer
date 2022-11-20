@@ -33,5 +33,5 @@ export async function handleWithdraw(ctx: EventHandlerContext) {
         who,
     })
 
-    await ctx.store.insert(fee)
+    await ctx.store.insert(Fee, fee as any)
 }

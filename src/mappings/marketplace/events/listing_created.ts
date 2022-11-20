@@ -17,8 +17,7 @@ import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
-import { EventService } from '../../../services'
-import collectionService from '../../../services/collection'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -87,7 +86,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         updatedAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(listing)
+    await ctx.store.insert(Listing, listing as any)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${ctx.block.height}`,
@@ -96,9 +95,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
 
     new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
-    collectionService.sync(makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 }

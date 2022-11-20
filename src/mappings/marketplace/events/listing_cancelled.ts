@@ -2,8 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
-import { EventService } from '../../../services'
-import collectionService from '../../../services/collection'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -44,9 +43,9 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
 
     new EventService(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
-    collectionService.sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

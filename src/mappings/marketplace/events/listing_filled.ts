@@ -3,9 +3,8 @@ import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
 import { FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
-import { EventService } from '../../../services'
+import { EventService, CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
-import collectionService from '../../../services/collection'
 
 interface EventData {
     listingId: Uint8Array
@@ -55,7 +54,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             height: ctx.block.height,
             createdAt: new Date(ctx.block.timestamp),
         })
-        await ctx.store.insert(listingStatus)
+        await ctx.store.insert(ListingStatus, listingStatus as any)
     }
 
     listing.updatedAt = new Date(ctx.block.timestamp)
@@ -69,5 +68,5 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         data.amountRemaining
     )
 
-    collectionService.sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

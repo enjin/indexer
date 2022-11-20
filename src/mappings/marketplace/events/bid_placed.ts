@@ -1,12 +1,11 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Listing, ListingStatusType, ListingType } from '../../../model'
+import { AuctionState, Bid, Listing, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
-import { EventService } from '../../../services'
-import collectionService from '../../../services/collection'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -63,5 +62,5 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
 
     new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
-    collectionService.sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }
