@@ -10,7 +10,7 @@ import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Metadata} from "./_metadata"
-import {Listing} from "./listing.model"
+import {CollectionStats} from "./_collectionStats"
 
 @Entity_()
 export class Collection {
@@ -44,9 +44,6 @@ export class Collection {
   attributePolicy!: string | undefined | null
 
   @Column_("int4", {nullable: false})
-  tokenCount!: number
-
-  @Column_("int4", {nullable: false})
   attributeCount!: number
 
   @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
@@ -70,15 +67,6 @@ export class Collection {
   @Column_("timestamp with time zone", {nullable: false})
   createdAt!: Date
 
-  @Index_()
-  @ManyToOne_(() => Listing, {nullable: true})
-  floorListing!: Listing | undefined | null
-
-  @Index_()
-  @ManyToOne_(() => Listing, {nullable: true})
-  lastSale!: Listing | undefined | null
-
-  @Index_()
-  @ManyToOne_(() => Listing, {nullable: true})
-  highestSale!: Listing | undefined | null
+  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})
+  stats!: CollectionStats
 }

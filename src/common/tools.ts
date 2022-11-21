@@ -32,7 +32,6 @@ export function isAdressSS58(address: Uint8Array) {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getOriginAccountId(origin: any) {
     if (!origin) return undefined
     // eslint-disable-next-line sonarjs/no-small-switch

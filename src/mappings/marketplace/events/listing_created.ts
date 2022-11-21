@@ -17,7 +17,7 @@ import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
-import { Event } from '../../../event'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -43,9 +43,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
-            collection: {
-                floorListing: true,
-            },
+            collection: true,
         },
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -88,7 +86,7 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         updatedAt: new Date(ctx.block.timestamp),
     })
 
-    await ctx.store.insert(listing)
+    await ctx.store.insert(Listing, listing as any)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${ctx.block.height}`,
@@ -97,12 +95,9 @@ export async function handleListingCreated(ctx: EventHandlerContext) {
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
 
-    new Event(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
+    new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
 
-    if (!makeAssetId.collection.floorListing || listing.price < makeAssetId.collection.floorListing.price) {
-        makeAssetId.collection.floorListing = listing
-        await ctx.store.save(makeAssetId.collection)
-    }
+    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 }

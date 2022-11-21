@@ -1,17 +1,9 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import {
-    AuctionState,
-    Bid as BidModel,
-    FixedPriceState,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-} from '../../../model'
+import { FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { encodeId } from '../../../common/tools'
-import { Event } from '../../../event'
+import { EventService, CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
@@ -33,33 +25,6 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-async function getHighestSale(listing: Listing, ctx: EventHandlerContext): Promise<Listing> {
-    if (!listing.makeAssetId.collection.highestSale) {
-        return listing
-    }
-
-    if (listing.makeAssetId.collection.highestSale.state.listingType === ListingType.FixedPrice) {
-        return BigInt(listing.price) > listing.makeAssetId.collection.highestSale.price
-            ? listing
-            : listing.makeAssetId.collection.highestSale
-    }
-
-    const highBidId = (listing.makeAssetId.collection.highestSale.state as AuctionState).highBid
-    if (!highBidId) {
-        return listing
-    }
-
-    const highBid = await ctx.store.findOne<BidModel>(BidModel, {
-        where: { id: highBidId },
-    })
-
-    if (!highBid) {
-        return listing
-    }
-
-    return BigInt(listing.price) > BigInt(highBid.price) ? listing : listing.makeAssetId.collection.highestSale
-}
-
 export async function handleListingFilled(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
@@ -71,9 +36,7 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         relations: {
             seller: true,
             makeAssetId: {
-                collection: {
-                    floorListing: true,
-                },
+                collection: true,
             },
         },
     })
@@ -91,17 +54,13 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
             height: ctx.block.height,
             createdAt: new Date(ctx.block.timestamp),
         })
-        await ctx.store.insert(listingStatus)
+        await ctx.store.insert(ListingStatus, listingStatus as any)
     }
 
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 
-    listing.makeAssetId.collection.lastSale = listing
-    listing.makeAssetId.collection.highestSale = await getHighestSale(listing, ctx)
-    await ctx.store.save(listing.makeAssetId.collection)
-
-    new Event(ctx, listing.makeAssetId).MarketplacePurchase(
+    new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
         listing.seller,
         await getOrCreateAccount(ctx, encodeId(data.buyer)),
         listing,
@@ -109,26 +68,5 @@ export async function handleListingFilled(ctx: EventHandlerContext) {
         data.amountRemaining
     )
 
-    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.find<Listing>(Listing, {
-            where: {
-                makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
-                status: { type: ListingStatusType.Active },
-            },
-            order: {
-                highestPrice: 'ASC',
-            },
-            take: 2,
-        })
-
-        if (floorListing.length === 0) {
-            listing.makeAssetId.collection.floorListing = null
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-
-        if (floorListing.length >= 1 && data.amountRemaining === 0n && floorListing[0].id === listing.id) {
-            listing.makeAssetId.collection.floorListing = floorListing[1] ?? null
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-    }
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

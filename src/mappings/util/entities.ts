@@ -14,13 +14,13 @@ import { getMeta } from './actions'
 import { ActionData } from '../types/data'
 
 export async function getOrCreateAccount(ctx: CommonHandlerContext, id: string): Promise<Account> {
-    let account = await ctx.store.get(Account, id)
+    let account = await ctx.store.findOneBy(Account, { id })
     if (!account) {
         account = new Account({
             id,
             lastUpdateBlock: ctx.block.height - 1,
         })
-        await ctx.store.insert(account)
+        await ctx.store.insert(Account, account as any)
     }
 
     return account
@@ -94,25 +94,27 @@ export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData
         type,
     })
 
-    await ctx.store.insert(transfer)
+    await ctx.store.insert(Transfer, transfer as any)
 
     await ctx.store.insert(
+        AccountTransfer,
         new AccountTransfer({
             id: `${transfer.id}-from`,
             transfer,
             account: from,
             direction: TransferDirection.From,
-        })
+        }) as any
     )
 
     if (to) {
         await ctx.store.insert(
+            AccountTransfer,
             new AccountTransfer({
                 id: `${transfer.id}-to`,
                 transfer,
                 account: to,
                 direction: TransferDirection.To,
-            })
+            }) as any
         )
     }
 }

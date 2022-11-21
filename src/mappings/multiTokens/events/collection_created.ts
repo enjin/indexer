@@ -2,7 +2,16 @@ import { SubstrateCall } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
-import { Collection, MarketPolicy, MintPolicy, Royalty, RoyaltyCurrency, Token, TransferPolicy } from '../../../model'
+import {
+    Collection,
+    CollectionStats,
+    MarketPolicy,
+    MintPolicy,
+    Royalty,
+    RoyaltyCurrency,
+    Token,
+    TransferPolicy,
+} from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -121,16 +130,24 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
             }),
+            stats: new CollectionStats({
+                lastSale: null,
+                floorPrice: null,
+                highestSale: null,
+                tokenCount: 0,
+                salesCount: 0,
+                rank: 0,
+                marketCap: 0n,
+                volume: 0n,
+            }),
             burnPolicy: null,
             attributePolicy: null,
-            tokenCount: 0,
             attributeCount: 0,
             totalDeposit: 0n, // TODO
-            floorListing: null,
             createdAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert(collection)
+        await ctx.store.insert(Collection, collection as any)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const currency of callData.explicitRoyaltyCurrencies) {
@@ -144,7 +161,7 @@ export async function handleCollectionCreated(ctx: EventHandlerContext) {
                 token,
             })
             // eslint-disable-next-line no-await-in-loop
-            await ctx.store.insert(royaltyCurrency)
+            await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
         }
     }
 }

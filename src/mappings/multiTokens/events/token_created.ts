@@ -24,6 +24,7 @@ import {
 } from '../../../types/generated/v6'
 import { getOrCreateAccount } from '../../util/entities'
 import { encodeId } from '../../../common/tools'
+import { CollectionService } from '../../../services'
 
 interface CallData {
     recipient: Uint8Array
@@ -282,9 +283,6 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             where: { id: eventData.collectionId.toString() },
         })
 
-        collection.tokenCount += 1
-        await ctx.store.save(collection)
-
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
@@ -302,6 +300,8 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             createdAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert<Token>(token)
+        await ctx.store.insert(Token, token as any)
+
+        new CollectionService(ctx.store).sync(collection.id)
     }
 }

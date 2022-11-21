@@ -76,7 +76,7 @@ export async function handleAttributeSet(ctx: EventHandlerContext) {
             updatedAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert(attribute)
+        await ctx.store.insert(Attribute, attribute as any)
 
         if (token) {
             if (!token.metadata) {

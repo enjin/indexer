@@ -2,7 +2,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
-import { Event } from '../../../event'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -29,9 +29,7 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         relations: {
             seller: true,
             makeAssetId: {
-                collection: {
-                    floorListing: true,
-                },
+                collection: true,
             },
         },
     })
@@ -45,30 +43,9 @@ export async function handleListingCancelled(ctx: EventHandlerContext) {
         height: ctx.block.height,
         createdAt: new Date(ctx.block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
 
-    new Event(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
+    new EventService(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
 
-    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.find<Listing>(Listing, {
-            where: {
-                makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
-                status: { type: ListingStatusType.Active },
-            },
-            order: {
-                highestPrice: 'ASC',
-            },
-            take: 2,
-        })
-
-        if (floorListing.length === 0 || (floorListing.length === 1 && floorListing[0].id === listing.id)) {
-            listing.makeAssetId.collection.floorListing = null
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-
-        if (floorListing.length >= 2 && floorListing[0].id === listing.id) {
-            ;[, listing.makeAssetId.collection.floorListing] = floorListing
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-    }
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

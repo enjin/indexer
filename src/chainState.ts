@@ -53,6 +53,7 @@ export async function handleChainState(ctx: BlockHandlerContext) {
     if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
         await saveChainState(ctx)
         lastStateTimestamp = ctx.block.timestamp
+        // eslint-disable-next-line no-console
         console.log(`Chain state updated at block ${ctx.block.height}`)
     }
 }

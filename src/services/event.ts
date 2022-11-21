@@ -14,7 +14,7 @@ import {
 } from '../model'
 import { EventHandlerContext } from '../mappings/types/contexts'
 
-export class Event {
+export class EventService {
     constructor(private ctx: EventHandlerContext, private token: Token) {}
 
     get commonFields() {

@@ -1,9 +1,9 @@
 import { BlockHandlerContext } from './mappings/types/contexts'
-import { CapType, Collection, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
+import { CapType, Collection, CollectionStats, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
 import { getOrCreateAccount } from './mappings/util/entities'
 
 export async function createEfiToken(ctx: BlockHandlerContext) {
-    const efi = await ctx.store.get(Token, '0-0')
+    const efi = await ctx.store.findOneBy(Token, { id: '0-0' })
 
     if (!efi) {
         const account = await getOrCreateAccount(ctx, 'rf8YmxhSe9WGJZvCH8wtzAndweEmz6dTV6DjmSHgHvPEFNLAJ')
@@ -19,15 +19,24 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
             }),
+            stats: new CollectionStats({
+                lastSale: null,
+                floorPrice: null,
+                highestSale: null,
+                tokenCount: 1,
+                salesCount: 0,
+                rank: 0,
+                marketCap: 0n,
+                volume: 0n,
+            }),
             burnPolicy: null,
             attributePolicy: null,
-            tokenCount: 1,
             attributeCount: 0,
             totalDeposit: 0n,
             createdAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert(collection)
+        await ctx.store.insert(Collection, collection as any)
 
         const token = new Token({
             id: `0-0`,
@@ -47,6 +56,6 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             createdAt: new Date(ctx.block.timestamp),
         })
 
-        await ctx.store.insert(token)
+        await ctx.store.insert(Token, token as any)
     }
 }

@@ -2,6 +2,12 @@ import Axios from 'axios'
 import https from 'https'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
+type Media = {
+    url: string
+    type: string
+    alt: string
+}
+
 async function fetchMetadata(url: string) {
     const api = Axios.create({
         headers: {
@@ -24,11 +30,11 @@ async function fetchMetadata(url: string) {
     return null
 }
 
-function parseMedia(value: any) {
+function parseMedia(value: string | Media) {
     try {
         const media = typeof value === 'string' ? JSON.parse(value) : value
         return media.map(
-            (_media: any) =>
+            (_media: Media) =>
                 new MetadataMedia({
                     url: _media.url,
                     type: _media.type,
@@ -40,8 +46,21 @@ function parseMedia(value: any) {
     }
 }
 
-function parseArrayAttributes(attributes: any[]) {
-    const obj = {} as any
+function parseArrayAttributes(
+    attributes: {
+        key?: string
+        name?: string
+        trait_type?: string
+        value?: string
+        display_type?: string
+        type?: string
+    }[]
+) {
+    const obj: {
+        [key: string]: {
+            type: string | undefined
+        }
+    } = {}
     attributes.forEach((attr) => {
         let key = null
         if (attr.key) {
@@ -60,7 +79,18 @@ function parseArrayAttributes(attributes: any[]) {
     return obj
 }
 
-function metadataParser(metadata: Metadata, attribute: Attribute, externalMetadata: any | null) {
+function metadataParser(
+    metadata: Metadata,
+    attribute: Attribute,
+    externalMetadata: {
+        name: string | null | undefined
+        description: string | null | undefined
+        external_url: string | null | undefined
+        fallback_image: string | null | undefined
+        media: Media[]
+        attributes: unknown
+    } | null
+) {
     if (externalMetadata?.name) {
         metadata.name = externalMetadata.name
     }
@@ -74,7 +104,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute, externalMetada
         metadata.fallbackImage = externalMetadata.fallback_image
     }
     if (externalMetadata?.media) {
-        metadata.media = parseMedia(externalMetadata.media)
+        metadata.media = parseMedia(externalMetadata.media as unknown as string | Media)
     }
     if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
         metadata.attributes = externalMetadata.attributes
@@ -108,21 +138,3 @@ async function processMetadata(metadata: Metadata, attribute: Attribute) {
 export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
     return processMetadata(metadata, attribute)
 }
-
-// function fetchMetadata(url: string): Promise<string> {
-//     return new Promise((resolve, reject) => {
-//         url = url.replace('https', 'http')
-//         const cacheableRequest = CacheableRequest(http.request) as any
-//         const cacheReq = cacheableRequest(url, async (response: any) => {
-//             let rawData = ''
-//             response.on('data', (chunk: any) => { rawData += chunk })
-//             response.on('end', () => {
-//                 try {
-//                     resolve(rawData)
-//                 } catch (e) {
-//                     reject(e)
-//                 }
-//             })
-//         }).on('request', (req: any) => req.end())
-//     })
-// }

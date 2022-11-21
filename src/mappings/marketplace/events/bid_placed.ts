@@ -1,11 +1,11 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Listing, ListingStatusType, ListingType } from '../../../model'
+import { AuctionState, Bid, Listing, ListingType } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { encodeId } from '../../../common/tools'
 import { getOrCreateAccount } from '../../util/entities'
-import { Event } from '../../../event'
+import { EventService, CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -32,9 +32,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
         where: { id: listingId },
         relations: {
             makeAssetId: {
-                collection: {
-                    floorListing: true,
-                },
+                collection: true,
             },
         },
     })
@@ -62,23 +60,7 @@ export async function handleBidPlaced(ctx: EventHandlerContext) {
     listing.updatedAt = new Date(ctx.block.timestamp)
     await ctx.store.save(listing)
 
-    new Event(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
+    new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
 
-    if (listing.makeAssetId.collection.floorListing?.id === listing.id) {
-        const floorListing = await ctx.store.find<Listing>(Listing, {
-            where: {
-                makeAssetId: { collection: { id: listing.makeAssetId.collection.id } },
-                status: { type: ListingStatusType.Active },
-            },
-            order: {
-                highestPrice: 'ASC',
-            },
-            take: 2,
-        })
-
-        if (floorListing.length >= 2 && floorListing[0].id !== listing.id) {
-            ;[listing.makeAssetId.collection.floorListing] = floorListing
-            await ctx.store.save(listing.makeAssetId.collection)
-        }
-    }
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

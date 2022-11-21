@@ -12,6 +12,7 @@
     "class-methods-use-this": "off",
     "no-param-reassign": "off",
     "no-underscore-dangle": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "max-len": [
       "error",
       {
