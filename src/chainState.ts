@@ -14,7 +14,6 @@ async function saveChainState(ctx: BlockHandlerContext) {
     const api = await apiPromise
     const apiAt = await api.at(ctx.block.hash)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [runtime, marketplace] = await Promise.all<any>([
         api.rpc.state.getRuntimeVersion(ctx.block.hash),
         apiAt.query.marketplace.info(),

@@ -1,6 +1,5 @@
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
 enum HandlerParams {
