@@ -74,6 +74,13 @@ export async function handleMinted(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.recipient)
+
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+    token.supply += data.amount
+    await ctx.store.save(token)
+
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
