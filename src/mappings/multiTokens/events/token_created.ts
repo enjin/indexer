@@ -286,7 +286,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
-            supply: eventData.initialSupply,
+            supply: 0n, // Supply is updated on Mint/Burn events
             cap: callData.cap,
             behavior: callData.behavior,
             isFrozen: false,

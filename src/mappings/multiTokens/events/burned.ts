@@ -73,6 +73,13 @@ export async function handleBurned(ctx: EventHandlerContext) {
     if (!data) return
 
     const address = encodeId(data.accountId)
+
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+    token.supply -= data.amount
+    await ctx.store.save(token)
+
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
