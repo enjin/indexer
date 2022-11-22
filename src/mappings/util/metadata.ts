@@ -79,6 +79,7 @@ function parseArrayAttributes(
     return obj
 }
 
+// eslint-disable-next-line complexity
 function metadataParser(
     metadata: Metadata,
     attribute: Attribute,

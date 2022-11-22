@@ -3,8 +3,6 @@ import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { AccountInfo as AccInfo } from '@polkadot/types/interfaces'
-import { decodeAddress, encodeAddress } from '@polkadot/keyring'
-import { hexToU8a, isHex } from '@polkadot/util'
 import config from '../../config'
 import { isValidAddress } from '../../common/tools'
 
