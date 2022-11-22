@@ -3,7 +3,10 @@ import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { AccountInfo as AccInfo } from '@polkadot/types/interfaces'
+import { decodeAddress, encodeAddress } from '@polkadot/keyring'
+import { hexToU8a, isHex } from '@polkadot/util'
 import config from '../../config'
+import { isValidAddress } from '../../common/tools'
 
 @ObjectType()
 export class Balance {
@@ -41,6 +44,10 @@ export class AccountInfo {
 export class AccountInfoResolver {
     @Query(() => AccountInfo)
     async accountInfo(@Arg('address') address: string): Promise<AccountInfo> {
+        if (!isValidAddress(address)) {
+            throw new Error('Invalid substrate address')
+        }
+
         const wsProvider = new WsProvider(config.rpc)
         const api = await ApiPromise.create({ provider: wsProvider })
         const account = await api.query.system.account<AccInfo>(address)

@@ -1,7 +1,18 @@
 import * as ss58 from '@subsquid/ss58'
 import { decodeHex } from '@subsquid/util-internal-hex'
 import { CommonHandlerContext } from '@subsquid/substrate-processor'
+import { decodeAddress, encodeAddress } from '@polkadot/keyring'
+import { hexToU8a, isHex } from '@polkadot/util'
 import config from '../config'
+
+export function isValidAddress(address: any) {
+    try {
+        encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))
+        return true
+    } catch (e) {
+        return false
+    }
+}
 
 export function encodeId(id: Uint8Array) {
     return ss58.codec(config.prefix).encode(id)
