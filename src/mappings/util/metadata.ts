@@ -79,7 +79,7 @@ function parseArrayAttributes(
     return obj
 }
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function metadataParser(
     metadata: Metadata,
     attribute: Attribute,
