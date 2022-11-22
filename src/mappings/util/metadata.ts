@@ -121,6 +121,14 @@ function metadataParser(
         metadata.fallbackImage = attribute.value
     } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
+    } else if (attribute.key === 'attributes') {
+        const attributes = JSON.parse(attribute.value)
+        if (typeof attributes === 'object') {
+            metadata.attributes = attributes
+            if (Array.isArray(attributes)) {
+                metadata.attributes = parseArrayAttributes(attributes)
+            }
+        }
     }
 
     return metadata
