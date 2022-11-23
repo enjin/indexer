@@ -12,6 +12,7 @@ async function fetchMetadata(url: string) {
     const api = Axios.create({
         headers: {
             'Content-Type': 'application/json',
+            'accept-encoding': 'gzip;q=0,deflate,sdch',
         },
         withCredentials: false,
         timeout: 5000,
@@ -123,12 +124,16 @@ function metadataParser(
     } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
     } else if (attribute.key === 'attributes') {
-        const attributes = JSON.parse(attribute.value)
-        if (typeof attributes === 'object') {
-            metadata.attributes = attributes
-            if (Array.isArray(attributes)) {
-                metadata.attributes = parseArrayAttributes(attributes)
+        try {
+            const attributes = JSON.parse(attribute.value)
+            if (typeof attributes === 'object') {
+                metadata.attributes = attributes
+                if (Array.isArray(attributes)) {
+                    metadata.attributes = parseArrayAttributes(attributes)
+                }
             }
+        } catch (e) {
+            /* empty */
         }
     }
 
