@@ -23,7 +23,9 @@ async function fetchMetadata(url: string) {
         if (status < 400) {
             return data
         }
+        console.log(data)
     } catch (e) {
+        console.log(e)
         return null
     }
 
