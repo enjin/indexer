@@ -55,9 +55,17 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
             },
         })
 
+        const listingStatus = await ctx.store.find(ListingStatus, {
+            where: {
+                listing: {
+                    id: In(listings.map((l) => l.id)),
+                },
+            },
+        })
+
         await ctx.store.remove(attributes)
         await ctx.store.remove(events)
-        await ctx.store.delete(ListingStatus, { listing: { id: In(listings.map((l) => l.id)) } })
+        await ctx.store.remove(listingStatus)
         await ctx.store.remove(listings)
     }
 
