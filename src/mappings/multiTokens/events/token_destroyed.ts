@@ -1,6 +1,7 @@
+import { In } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Token, TokenEvent } from '../../../model'
+import { Attribute, Listing, ListingStatus, Token, TokenEvent } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
 
@@ -43,6 +44,19 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
                 token: {
                     id: token.id,
                 },
+            },
+        })
+
+        await ctx.store
+            .getRepository(ListingStatus)
+            .query(
+                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                [token.id]
+            )
+
+        await ctx.store.delete(Listing, {
+            makeAssetId: {
+                id: token.id,
             },
         })
 
