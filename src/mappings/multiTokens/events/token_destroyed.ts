@@ -1,6 +1,7 @@
+import { In } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Listing, Token, TokenEvent } from '../../../model'
+import { Attribute, Listing, ListingStatus, Token, TokenEvent } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
 
@@ -56,6 +57,7 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
 
         await ctx.store.remove(attributes)
         await ctx.store.remove(events)
+        await ctx.store.delete(ListingStatus, { listing: In(listings.map((l) => l.id)) })
         await ctx.store.remove(listings)
     }
 
