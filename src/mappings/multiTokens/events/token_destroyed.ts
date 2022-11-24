@@ -47,26 +47,21 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
             },
         })
 
-        const listings = await ctx.store.find(Listing, {
-            where: {
-                makeAssetId: {
-                    id: token.id,
-                },
-            },
-        })
+        await ctx.store
+            .getRepository(ListingStatus)
+            .query(
+                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                [token.id]
+            )
 
-        const listingStatus = await ctx.store.find(ListingStatus, {
-            where: {
-                listing: {
-                    id: In(listings.map((l) => l.id)),
-                },
+        await ctx.store.delete(Listing, {
+            makeAssetId: {
+                id: token.id,
             },
         })
 
         await ctx.store.remove(attributes)
         await ctx.store.remove(events)
-        await ctx.store.remove(listingStatus)
-        await ctx.store.remove(listings)
     }
 
     await ctx.store.remove(token)
