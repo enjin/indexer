@@ -47,6 +47,24 @@ function parseMedia(value: string | Media) {
     }
 }
 
+function parseEthereumProperties(value: object) {
+    const properties: any = {}
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of Object.entries(value)) {
+        const [k, v] = element
+        if (typeof v === 'object') {
+            properties[k] = v
+        } else {
+            properties[k] = {
+                value: v,
+            }
+        }
+    }
+
+    return properties
+}
+
 function parseArrayAttributes(
     attributes: {
         key?: string
@@ -88,10 +106,13 @@ function metadataParser(
         name: string | null | undefined
         description: string | null | undefined
         external_url: string | null | undefined
+        image: string | null | undefined
         fallback_image: string | null | undefined
         media: Media[]
+        properties: unknown
         attributes: unknown
-    } | null
+    } | null,
+    legacy = false
 ) {
     if (externalMetadata?.name) {
         metadata.name = externalMetadata.name
@@ -102,11 +123,17 @@ function metadataParser(
     if (externalMetadata?.external_url) {
         metadata.externalUrl = externalMetadata.external_url
     }
+    if (legacy && externalMetadata?.image) {
+        metadata.fallbackImage = externalMetadata.image
+    }
     if (externalMetadata?.fallback_image) {
         metadata.fallbackImage = externalMetadata.fallback_image
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media as unknown as string | Media)
+    }
+    if (legacy && externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
+        metadata.attributes = parseEthereumProperties(externalMetadata.properties)
     }
     if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
         metadata.attributes = externalMetadata.attributes
@@ -143,7 +170,12 @@ function metadataParser(
 async function processMetadata(metadata: Metadata, attribute: Attribute) {
     if (attribute.key === 'uri') {
         const externalMetadata = await fetchMetadata(attribute.value)
-        return metadataParser(metadata, attribute, externalMetadata)
+        return metadataParser(
+            metadata,
+            attribute,
+            externalMetadata,
+            attribute.value.includes('{id}.json') || attribute.value.includes('%7Bid%7D.json')
+        )
     }
 
     return metadataParser(metadata, attribute, null)
