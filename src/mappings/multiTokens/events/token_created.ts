@@ -305,8 +305,11 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             createdAt: new Date(ctx.block.timestamp),
         })
 
+        console.log('Finding collection attribute')
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
+        console.log(`URI: ${collectionUri}`)
         if (collectionUri && collectionUri.value.includes('{id}.json')) {
+            console.log('Inside the IF')
             token.metadata = await getMetadata(new Metadata(), collectionUri)
         }
 
