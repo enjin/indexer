@@ -88,10 +88,12 @@ function metadataParser(
         name: string | null | undefined
         description: string | null | undefined
         external_url: string | null | undefined
+        image: string | null | undefined
         fallback_image: string | null | undefined
         media: Media[]
         attributes: unknown
-    } | null
+    } | null,
+    legacy = false
 ) {
     if (externalMetadata?.name) {
         metadata.name = externalMetadata.name
@@ -101,6 +103,9 @@ function metadataParser(
     }
     if (externalMetadata?.external_url) {
         metadata.externalUrl = externalMetadata.external_url
+    }
+    if (legacy && externalMetadata?.image) {
+        metadata.fallbackImage = externalMetadata.image
     }
     if (externalMetadata?.fallback_image) {
         metadata.fallbackImage = externalMetadata.fallback_image
@@ -140,15 +145,15 @@ function metadataParser(
     return metadata
 }
 
-async function processMetadata(metadata: Metadata, attribute: Attribute) {
+async function processMetadata(metadata: Metadata, attribute: Attribute, legacy = false) {
     if (attribute.key === 'uri') {
         const externalMetadata = await fetchMetadata(attribute.value)
-        return metadataParser(metadata, attribute, externalMetadata)
+        return metadataParser(metadata, attribute, externalMetadata, legacy)
     }
 
     return metadataParser(metadata, attribute, null)
 }
 
-export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
-    return processMetadata(metadata, attribute)
+export async function getMetadata(metadata: Metadata, attribute: Attribute, legacy = false): Promise<Metadata> {
+    return processMetadata(metadata, attribute, legacy)
 }
