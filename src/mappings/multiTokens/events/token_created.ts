@@ -12,6 +12,7 @@ import {
     TokenCapSupply,
     Royalty,
     Metadata,
+    Attribute,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
@@ -307,10 +308,11 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
 
         console.log('Finding collection attribute')
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        console.log(`URI: ${collectionUri}`)
+        console.log(`URI: ${JSON.stringify(collectionUri)}`)
         if (collectionUri && collectionUri.value.includes('{id}.json')) {
             console.log('Inside the IF')
             token.metadata = await getMetadata(new Metadata(), collectionUri)
+            console.log(token.metadata.toJSON())
         }
 
         await ctx.store.insert(Token, token as any)
