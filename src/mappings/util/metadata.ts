@@ -47,6 +47,24 @@ function parseMedia(value: string | Media) {
     }
 }
 
+function parseEthereumProperties(value: object) {
+    const properties: any = {}
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of Object.entries(value)) {
+        const [k, v] = element
+        if (typeof v === 'object') {
+            properties[k] = v
+        } else {
+            properties[k] = {
+                value: v,
+            }
+        }
+    }
+
+    return properties
+}
+
 function parseArrayAttributes(
     attributes: {
         key?: string
@@ -115,10 +133,7 @@ function metadataParser(
         metadata.media = parseMedia(externalMetadata.media as unknown as string | Media)
     }
     if (legacy && externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
-        metadata.attributes = externalMetadata.properties
-        if (Array.isArray(externalMetadata.properties)) {
-            metadata.attributes = parseArrayAttributes(externalMetadata.properties)
-        }
+        metadata.attributes = parseEthereumProperties(externalMetadata.properties)
     }
     if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
         metadata.attributes = externalMetadata.attributes
