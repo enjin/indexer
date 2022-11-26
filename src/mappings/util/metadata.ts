@@ -148,7 +148,12 @@ function metadataParser(
 async function processMetadata(metadata: Metadata, attribute: Attribute) {
     if (attribute.key === 'uri') {
         const externalMetadata = await fetchMetadata(attribute.value)
-        return metadataParser(metadata, attribute, externalMetadata, attribute.value.includes('{id}.json'))
+        return metadataParser(
+            metadata,
+            attribute,
+            externalMetadata,
+            attribute.value.includes('{id}.json') || attribute.value.includes('%7Bid%7D.json')
+        )
     }
 
     return metadataParser(metadata, attribute, null)
