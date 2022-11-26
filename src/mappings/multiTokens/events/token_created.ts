@@ -285,18 +285,25 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
             relations: {
+                tokens: true,
                 attributes: true,
             },
         })
 
-        console.log('Finding collection attribute')
-        let metadata = null
+        let metadata: Metadata | null | undefined = null
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        console.log(`URI: ${collectionUri?.value}`)
         if (collectionUri && collectionUri.value.includes('{id}.json')) {
-            console.log('Inside the IF')
             metadata = await getMetadata(new Metadata(), collectionUri)
-            console.log(metadata.toJSON())
+            // TODO: Far from ideal but we will do this only until we don't have the metadata processor
+            if (metadata) {
+                const otherTokens: Token[] = collection.tokens.map((e) => {
+                    e.metadata = metadata
+                    return e
+                })
+                if (otherTokens.length > 0) {
+                    await ctx.store.save(otherTokens)
+                }
+            }
         }
 
         const token = new Token({
