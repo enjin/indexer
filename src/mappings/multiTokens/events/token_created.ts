@@ -289,6 +289,16 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             },
         })
 
+        console.log('Finding collection attribute')
+        let metadata = null
+        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
+        console.log(`URI: ${collectionUri?.value}`)
+        if (collectionUri && collectionUri.value.includes('{id}.json')) {
+            console.log('Inside the IF')
+            metadata = await getMetadata(new Metadata(), collectionUri)
+            console.log(metadata.toJSON())
+        }
+
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
@@ -301,19 +311,11 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection,
+            metadata,
             listingForbidden: callData.listingForbidden,
             // accounts: [],
             createdAt: new Date(ctx.block.timestamp),
         })
-
-        console.log('Finding collection attribute')
-        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        console.log(`URI: ${collectionUri?.value}`)
-        if (collectionUri && collectionUri.value.includes('{id}.json')) {
-            console.log('Inside the IF')
-            token.metadata = await getMetadata(new Metadata(), collectionUri)
-            console.log(token.metadata.toJSON())
-        }
 
         await ctx.store.insert(Token, token as any)
 
