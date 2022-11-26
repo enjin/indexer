@@ -11,6 +11,7 @@ import {
     TokenCapSingleMint,
     TokenCapSupply,
     Royalty,
+    Metadata,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
@@ -25,6 +26,7 @@ import {
 import { getOrCreateAccount } from '../../util/entities'
 import { encodeId } from '../../../common/tools'
 import { CollectionService } from '../../../services'
+import { getMetadata } from '../../util/metadata'
 
 interface CallData {
     recipient: Uint8Array
@@ -281,6 +283,9 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
+            relations: {
+                attributes: true,
+            },
         })
 
         const token = new Token({
@@ -299,6 +304,11 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             // accounts: [],
             createdAt: new Date(ctx.block.timestamp),
         })
+
+        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
+        if (collectionUri && collectionUri.value.includes('{id}.json')) {
+            token.metadata = await getMetadata(new Metadata(), collectionUri)
+        }
 
         await ctx.store.insert(Token, token as any)
 
