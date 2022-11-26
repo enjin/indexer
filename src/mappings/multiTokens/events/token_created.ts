@@ -293,7 +293,7 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
         let metadata: Metadata | null | undefined = null
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
         if (collectionUri && collectionUri.value.includes('{id}.json')) {
-            metadata = await getMetadata(new Metadata(), collectionUri, true)
+            metadata = await getMetadata(new Metadata(), collectionUri)
             // TODO: Far from ideal but we will do this only until we don't have the metadata processor
             if (metadata) {
                 const otherTokens: Token[] = collection.tokens.map((e) => {

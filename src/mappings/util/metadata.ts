@@ -145,15 +145,15 @@ function metadataParser(
     return metadata
 }
 
-async function processMetadata(metadata: Metadata, attribute: Attribute, legacy = false) {
+async function processMetadata(metadata: Metadata, attribute: Attribute) {
     if (attribute.key === 'uri') {
         const externalMetadata = await fetchMetadata(attribute.value)
-        return metadataParser(metadata, attribute, externalMetadata, legacy)
+        return metadataParser(metadata, attribute, externalMetadata, attribute.value.includes('{id}.json'))
     }
 
     return metadataParser(metadata, attribute, null)
 }
 
-export async function getMetadata(metadata: Metadata, attribute: Attribute, legacy = false): Promise<Metadata> {
-    return processMetadata(metadata, attribute, legacy)
+export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
+    return processMetadata(metadata, attribute)
 }
