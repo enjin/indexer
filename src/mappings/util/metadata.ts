@@ -91,6 +91,7 @@ function metadataParser(
         image: string | null | undefined
         fallback_image: string | null | undefined
         media: Media[]
+        properties: unknown
         attributes: unknown
     } | null,
     legacy = false
@@ -112,6 +113,12 @@ function metadataParser(
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media as unknown as string | Media)
+    }
+    if (legacy && externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
+        metadata.attributes = externalMetadata.properties
+        if (Array.isArray(externalMetadata.properties)) {
+            metadata.attributes = parseArrayAttributes(externalMetadata.properties)
+        }
     }
     if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
         metadata.attributes = externalMetadata.attributes
