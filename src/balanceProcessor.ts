@@ -4,6 +4,7 @@ import { decodeId, encodeId } from './common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
+    BalancesDustLostEvent,
     BalancesEndowedEvent,
     BalancesReservedEvent,
     BalancesReserveRepatriatedEvent,
@@ -14,6 +15,18 @@ import {
 } from './types/generated/events'
 import { BalancesAccountStorage, SystemAccountStorage } from './types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
+
+export function getDustLostAccount(ctx: EventHandlerContext) {
+    const data = new BalancesDustLostEvent(ctx)
+
+    if (data.isEfinityV1) {
+        return data.asEfinityV1[0]
+    }
+    if (data.isEfinityV2) {
+        return data.asEfinityV2.account
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
 
 export function getBalanceSetAccount(ctx: EventHandlerContext) {
     const data = new BalancesBalanceSetEvent(ctx)
@@ -166,6 +179,11 @@ async function getSystemAccountBalances(
 function processBalancesEventItem(ctx: EventHandlerContext) {
     const ids: Uint8Array[] = []
     switch (ctx.event.name) {
+        case 'Balances.DustLost': {
+            const account = getDustLostAccount(ctx)
+            ids.push(account)
+            break
+        }
         case 'Balances.BalanceSet': {
             const account = getBalanceSetAccount(ctx)
             ids.push(account)
