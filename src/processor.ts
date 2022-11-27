@@ -6,6 +6,7 @@ import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { createEfiToken } from './createEfiToken'
+import { processBalances } from './balanceProcessor'
 
 const database = new FullTypeormDatabase()
 const processor = new SubstrateProcessor(database)
@@ -68,6 +69,19 @@ processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.ev
 processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
 processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
 processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
+
+// Updates balances
+processor.addEventHandler('Balances.DustLost', processBalances)
+processor.addEventHandler('Balances.Endowed', processBalances)
+processor.addEventHandler('Balances.ReserveRepatriated', processBalances)
+processor.addEventHandler('Balances.Reserved', processBalances)
+processor.addEventHandler('Balances.Slashed', processBalances)
+processor.addEventHandler('Balances.Transfer', processBalances)
+processor.addEventHandler('Balances.Unreserved', processBalances)
+processor.addEventHandler('Balances.Withdraw', processBalances)
+processor.addEventHandler('Balances.BalanceSet', processBalances)
+processor.addEventHandler('Balances.Deposit', processBalances)
+processor.addCallHandler('*', processBalances)
 
 processor.addPreHook(
     {

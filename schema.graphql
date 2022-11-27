@@ -79,8 +79,18 @@ type AccountTransfer @entity {
   direction: TransferDirection
 }
 
+type Balance {
+  free: BigInt!
+  reserved: BigInt!
+  miscFrozen: BigInt!
+  feeFrozen: BigInt!
+}
+
 type Account @entity {
   id: ID!
+
+  nonce: Int!
+  balance: Balance!
 
   transfers: [AccountTransfer!] @derivedFrom(field: "account")
 
