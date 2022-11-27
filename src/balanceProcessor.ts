@@ -13,11 +13,11 @@ import {
     BalancesUnreservedEvent,
     BalancesWithdrawEvent,
 } from './types/generated/events'
-import { BalancesAccountStorage, SystemAccountStorage } from './types/generated/storage'
+import { SystemAccountStorage } from './types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
 import { AccountInfo } from './types/generated/efinityV1'
 
-export function getDustLostAccount(ctx: EventHandlerContext) {
+function getDustLostAccount(ctx: EventHandlerContext) {
     const data = new BalancesDustLostEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -29,7 +29,7 @@ export function getDustLostAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getBalanceSetAccount(ctx: EventHandlerContext) {
+function getBalanceSetAccount(ctx: EventHandlerContext) {
     const data = new BalancesBalanceSetEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -41,7 +41,7 @@ export function getBalanceSetAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getTransferAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
+function getTransferAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
     const data = new BalancesTransferEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -53,7 +53,7 @@ export function getTransferAccounts(ctx: EventHandlerContext): [Uint8Array, Uint
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getEndowedAccount(ctx: EventHandlerContext) {
+function getEndowedAccount(ctx: EventHandlerContext) {
     const data = new BalancesEndowedEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -65,7 +65,7 @@ export function getEndowedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getDepositAccount(ctx: EventHandlerContext) {
+function getDepositAccount(ctx: EventHandlerContext) {
     const data = new BalancesDepositEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -77,7 +77,7 @@ export function getDepositAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getReservedAccount(ctx: EventHandlerContext) {
+function getReservedAccount(ctx: EventHandlerContext) {
     const data = new BalancesReservedEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -89,7 +89,7 @@ export function getReservedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getUnreservedAccount(ctx: EventHandlerContext) {
+function getUnreservedAccount(ctx: EventHandlerContext) {
     const data = new BalancesUnreservedEvent(ctx)
 
     if (data.isEfinityV1) {
@@ -101,7 +101,7 @@ export function getUnreservedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getWithdrawAccount(ctx: EventHandlerContext) {
+function getWithdrawAccount(ctx: EventHandlerContext) {
     const data = new BalancesWithdrawEvent(ctx)
 
     if (data.isEfinityV2) {
@@ -110,7 +110,7 @@ export function getWithdrawAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getSlashedAccount(ctx: EventHandlerContext) {
+function getSlashedAccount(ctx: EventHandlerContext) {
     const data = new BalancesSlashedEvent(ctx)
 
     if (data.isEfinityV2) {
@@ -119,7 +119,7 @@ export function getSlashedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export function getReserveRepatriatedAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
+function getReserveRepatriatedAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
     const data = new BalancesReserveRepatriatedEvent(ctx)
 
     if (data.isEfinityV1) {
