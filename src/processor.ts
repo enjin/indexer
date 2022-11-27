@@ -6,7 +6,6 @@ import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import * as modules from './mappings'
 import { createEfiToken } from './createEfiToken'
-import { processBalances } from './balanceProcessor'
 
 const database = new FullTypeormDatabase()
 const processor = new SubstrateProcessor(database)
@@ -71,16 +70,16 @@ processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.ha
 processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
 
 // Updates balances
-processor.addEventHandler('Balances.DustLost', processBalances)
-processor.addEventHandler('Balances.Endowed', processBalances)
-processor.addEventHandler('Balances.ReserveRepatriated', processBalances)
-processor.addEventHandler('Balances.Reserved', processBalances)
-processor.addEventHandler('Balances.Slashed', processBalances)
-processor.addEventHandler('Balances.Transfer', processBalances)
-processor.addEventHandler('Balances.Unreserved', processBalances)
-processor.addEventHandler('Balances.Withdraw', processBalances)
-processor.addEventHandler('Balances.BalanceSet', processBalances)
-processor.addEventHandler('Balances.Deposit', processBalances)
+processor.addEventHandler('Balances.DustLost', modules.balances.processor.save)
+processor.addEventHandler('Balances.Endowed', modules.balances.processor.save)
+processor.addEventHandler('Balances.ReserveRepatriated', modules.balances.processor.save)
+processor.addEventHandler('Balances.Reserved', modules.balances.processor.save)
+processor.addEventHandler('Balances.Slashed', modules.balances.processor.save)
+processor.addEventHandler('Balances.Transfer', modules.balances.processor.save)
+processor.addEventHandler('Balances.Unreserved', modules.balances.processor.save)
+processor.addEventHandler('Balances.Withdraw', modules.balances.processor.save)
+processor.addEventHandler('Balances.BalanceSet', modules.balances.processor.save)
+processor.addEventHandler('Balances.Deposit', modules.balances.processor.save)
 
 processor.addPreHook(
     {

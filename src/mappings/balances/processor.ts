@@ -1,6 +1,6 @@
-import { UnknownVersionError } from './common/errors'
-import { Account, Balance } from './model'
-import { decodeId, encodeId } from './common/tools'
+import { UnknownVersionError } from '../../common/errors'
+import { Account, Balance } from '../../model'
+import { decodeId, encodeId } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
@@ -12,10 +12,10 @@ import {
     BalancesTransferEvent,
     BalancesUnreservedEvent,
     BalancesWithdrawEvent,
-} from './types/generated/events'
-import { SystemAccountStorage } from './types/generated/storage'
-import { CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
-import { AccountInfo } from './types/generated/efinityV1'
+} from '../../types/generated/events'
+import { SystemAccountStorage } from '../../types/generated/storage'
+import { CommonHandlerContext, EventHandlerContext } from '../types/contexts'
+import { AccountInfo } from '../../types/generated/efinityV1'
 
 function getDustLostAccount(ctx: EventHandlerContext) {
     const data = new BalancesDustLostEvent(ctx)
@@ -241,7 +241,7 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
     await ctx.store.save<Account>(accounts)
 }
 
-export async function processBalances(ctx: EventHandlerContext): Promise<void> {
+export async function save(ctx: EventHandlerContext): Promise<void> {
     const accountIds = new Set<string>()
     processBalancesEventItem(ctx).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, [...accountIds])
