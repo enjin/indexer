@@ -15,6 +15,7 @@ import {
 } from './types/generated/events'
 import { BalancesAccountStorage, SystemAccountStorage } from './types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
+import { AccountInfo } from './types/generated/efinityV1'
 
 export function getDustLostAccount(ctx: EventHandlerContext) {
     const data = new BalancesDustLostEvent(ctx)
@@ -130,48 +131,15 @@ export function getReserveRepatriatedAccounts(ctx: EventHandlerContext): [Uint8A
     throw new UnknownVersionError(data.constructor.name)
 }
 
-async function getBalancesAccountBalances(
-    ctx: CommonHandlerContext,
-    accounts: Uint8Array[]
-): Promise<Balance[] | undefined> {
-    const storage = new BalancesAccountStorage(ctx)
-    if (!storage.isExists) return undefined
-
-    if (storage.isEfinityV1) {
-        return storage.getManyAsEfinityV1(accounts).then((data) =>
-            data.map(
-                (a) =>
-                    new Balance({
-                        free: a.free,
-                        reserved: a.reserved,
-                        feeFrozen: a.feeFrozen,
-                        miscFrozen: a.miscFrozen,
-                    })
-            )
-        )
-    }
-    throw new UnknownVersionError(storage.constructor.name)
-}
-
 async function getSystemAccountBalances(
     ctx: CommonHandlerContext,
     accounts: Uint8Array[]
-): Promise<Balance[] | undefined> {
+): Promise<AccountInfo[] | undefined> {
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
-        return storage.getManyAsEfinityV1(accounts).then((data) =>
-            data.map(
-                (a) =>
-                    new Balance({
-                        free: a.data.free,
-                        reserved: a.data.reserved,
-                        feeFrozen: a.data.feeFrozen,
-                        miscFrozen: a.data.miscFrozen,
-                    })
-            )
-        )
+        return storage.getManyAsEfinityV1(accounts)
     }
     throw new UnknownVersionError(storage.constructor.name)
 }
@@ -236,15 +204,14 @@ function processBalancesEventItem(ctx: EventHandlerContext) {
     return ids.map((id) => encodeId(id))
 }
 
-async function getBalances(ctx: CommonHandlerContext, accountIds: string[]): Promise<Balance[] | undefined> {
+async function getBalances(ctx: CommonHandlerContext, accountIds: string[]): Promise<AccountInfo[] | undefined> {
     const accountIdsU8 = [...accountIds].map((id) => decodeId(id))
-    return (await getSystemAccountBalances(ctx, accountIdsU8)) || (await getBalancesAccountBalances(ctx, accountIdsU8))
+    return getSystemAccountBalances(ctx, accountIdsU8)
 }
 
 async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
-    const balances = await getBalances(ctx, accountIds)
-    if (!balances) {
-        ctx.log.warn('No balances')
+    const accountInfos = await getBalances(ctx, accountIds)
+    if (!accountInfos) {
         return
     }
 
@@ -252,28 +219,26 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
 
     for (let i = 0; i < accountIds.length; i += 1) {
         const id = accountIds[i]
-        const balance = balances[i]
+        const accountInfo = accountInfos[i]
 
-        if (balance) {
+        if (accountInfo) {
             accounts.push(
                 new Account({
                     id,
-                    nonce: 0,
-                    balance,
+                    nonce: accountInfo.nonce,
+                    balance: new Balance({
+                        free: accountInfo.data.free,
+                        reserved: accountInfo.data.reserved,
+                        feeFrozen: accountInfo.data.feeFrozen,
+                        miscFrozen: accountInfo.data.miscFrozen,
+                    }),
                     lastUpdateBlock: ctx.block.height,
                 })
             )
         }
     }
 
-    await ctx.store
-        .getRepository(Account)
-        .createQueryBuilder()
-        .insert()
-        .into(Account)
-        .values(accounts as any)
-        .orUpdate(['balance', 'last_update_block'], ['id'])
-        .execute()
+    await ctx.store.save<Account>(accounts)
 }
 
 export async function processBalances(ctx: EventHandlerContext): Promise<void> {
