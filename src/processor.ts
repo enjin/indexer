@@ -81,7 +81,6 @@ processor.addEventHandler('Balances.Unreserved', processBalances)
 processor.addEventHandler('Balances.Withdraw', processBalances)
 processor.addEventHandler('Balances.BalanceSet', processBalances)
 processor.addEventHandler('Balances.Deposit', processBalances)
-processor.addCallHandler('*', processBalances)
 
 processor.addPreHook(
     {

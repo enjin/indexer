@@ -90,7 +90,7 @@ type Account @entity {
   id: ID!
 
   nonce: Int!
-  balance: Balance!
+  balance: Balance
 
   transfers: [AccountTransfer!] @derivedFrom(field: "account")
 

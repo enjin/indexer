@@ -230,17 +230,17 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
         return
     }
 
-    const accounts = new Map<string, Account>()
+    const accounts: Account[] = []
 
     for (let i = 0; i < accountIds.length; i += 1) {
         const id = accountIds[i]
         const balance = balances[i]
 
         if (balance) {
-            accounts.set(
-                id,
+            accounts.push(
                 new Account({
                     id,
+                    nonce: 0,
                     balance,
                     lastUpdateBlock: ctx.block.height,
                 })
@@ -248,21 +248,19 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
         }
     }
 
-    await ctx.store.save([...accounts.values()])
-    ctx.log.child('accounts').info(`updated: ${accounts.size}`)
+    await ctx.store
+        .getRepository(Account)
+        .createQueryBuilder()
+        .insert()
+        .into(Account)
+        .values(accounts as any)
+        .orUpdate({ conflict_target: ['id'], overwrite: ['balance', 'last_update_block'] })
+        .execute()
 }
 
-export async function processBalances(ctx: EventHandlerContext | CallHandlerContext): Promise<void> {
+export async function processBalances(ctx: EventHandlerContext): Promise<void> {
     const accountIds = new Set<string>()
-
-    const isCallHandler = (x: any): x is CallHandlerContext => x.includes(x)
-    if (isCallHandler(ctx)) {
-        const id = getOriginAccountId(ctx.call.origin)
-        if (id) accountIds.add(id)
-    } else {
-        processBalancesEventItem(ctx).forEach((id) => accountIds.add(id))
-    }
-
+    processBalancesEventItem(ctx).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, [...accountIds])
     accountIds.clear()
 }

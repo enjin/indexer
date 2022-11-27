@@ -18,8 +18,8 @@ export class Account {
   @Column_("int4", {nullable: false})
   nonce!: number
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: false})
-  balance!: Balance
+  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: true})
+  balance!: Balance | undefined | null
 
   @OneToMany_(() => AccountTransfer, e => e.account)
   transfers!: AccountTransfer[]
