@@ -1,6 +1,6 @@
 import { UnknownVersionError } from './common/errors'
 import { Account, Balance } from './model'
-import { decodeId, encodeId, getOriginAccountId } from './common/tools'
+import { decodeId, encodeId } from './common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
@@ -13,7 +13,7 @@ import {
     BalancesWithdrawEvent,
 } from './types/generated/events'
 import { BalancesAccountStorage, SystemAccountStorage } from './types/generated/storage'
-import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
+import { CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
 
 export function getBalanceSetAccount(ctx: EventHandlerContext) {
     const data = new BalancesBalanceSetEvent(ctx)
@@ -254,7 +254,7 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
         .insert()
         .into(Account)
         .values(accounts as any)
-        .orUpdate({ conflict_target: ['id'], overwrite: ['balance', 'last_update_block'] })
+        .orUpdate(['balance', 'last_update_block'], ['id'])
         .execute()
 }
 
