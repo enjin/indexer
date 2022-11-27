@@ -69,6 +69,18 @@ processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.event
 processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
 processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
 
+// Updates balances
+processor.addEventHandler('Balances.DustLost', modules.balances.processor.save)
+processor.addEventHandler('Balances.Endowed', modules.balances.processor.save)
+processor.addEventHandler('Balances.ReserveRepatriated', modules.balances.processor.save)
+processor.addEventHandler('Balances.Reserved', modules.balances.processor.save)
+processor.addEventHandler('Balances.Slashed', modules.balances.processor.save)
+processor.addEventHandler('Balances.Transfer', modules.balances.processor.save)
+processor.addEventHandler('Balances.Unreserved', modules.balances.processor.save)
+processor.addEventHandler('Balances.Withdraw', modules.balances.processor.save)
+processor.addEventHandler('Balances.BalanceSet', modules.balances.processor.save)
+processor.addEventHandler('Balances.Deposit', modules.balances.processor.save)
+
 processor.addPreHook(
     {
         range: { from: 1, to: 1 },

@@ -18,6 +18,7 @@ export async function getOrCreateAccount(ctx: CommonHandlerContext, id: string):
     if (!account) {
         account = new Account({
             id,
+            nonce: 0,
             lastUpdateBlock: ctx.block.height - 1,
         })
         await ctx.store.insert(Account, account as any)

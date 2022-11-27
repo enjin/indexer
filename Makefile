@@ -16,7 +16,6 @@ build-images: build-processor-image build-query-node-image
 serve:
 	@npx squid-graphql-server --subscriptions
 
-
 migrate:
 	@npx squid-typeorm-migration apply
 
