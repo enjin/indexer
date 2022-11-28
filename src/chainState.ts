@@ -1,10 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { ChainInfo, Marketplace } from './model'
-import { PERIOD } from './common/consts'
 import config from './config'
-import { BlockHandlerContext, CommonHandlerContext } from './mappings/types/contexts'
-
-let lastStateTimestamp = 0
+import { BlockHandlerContext } from './mappings/types/contexts'
 
 const wsProvider = new WsProvider(config.dataSource.chain)
 const apiPromise = ApiPromise.create({ provider: wsProvider })
@@ -35,25 +32,6 @@ async function saveChainState(ctx: BlockHandlerContext) {
     await ctx.store.save(state)
 }
 
-function getLastChainState(ctx: CommonHandlerContext) {
-    return ctx.store.find(ChainInfo, {
-        take: 1,
-        order: {
-            timestamp: 'DESC',
-        },
-    })
-}
-
 export async function handleChainState(ctx: BlockHandlerContext) {
-    if (!lastStateTimestamp) {
-        const lastChainState = await getLastChainState(ctx)
-        if (lastChainState[0]) lastStateTimestamp = lastChainState[0].timestamp.getTime() || 0
-    }
-
-    if (ctx.block.timestamp - lastStateTimestamp >= PERIOD) {
-        await saveChainState(ctx)
-        lastStateTimestamp = ctx.block.timestamp
-        // eslint-disable-next-line no-console
-        console.log(`Chain state updated at block ${ctx.block.height}`)
-    }
+    await saveChainState(ctx)
 }
