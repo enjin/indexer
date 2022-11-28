@@ -246,6 +246,7 @@ type Token @entity {
   events: [TokenEvent] @derivedFrom(field: "token")
 
   # Extras
+  nonFungible: Boolean
   metadata: Metadata
   createdAt: DateTime!
 }

@@ -1,6 +1,5 @@
 import * as ss58 from '@subsquid/ss58'
 import { decodeHex } from '@subsquid/util-internal-hex'
-import { CommonHandlerContext } from '@subsquid/substrate-processor'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { hexToU8a, isHex } from '@polkadot/util'
 import config from '../config'
@@ -73,10 +72,4 @@ export function saturatingSumBigInt(
         return max
     }
     return sum
-}
-
-export function isStorageCorrupted(ctx: CommonHandlerContext<unknown>) {
-    if (ctx.block.height >= 1375087 && ctx.block.height <= 1500000) return null
-
-    return true
 }

@@ -6,6 +6,7 @@ import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
+import { isNonFungible } from '../utils/helpers'
 
 interface EventData {
     collectionId: bigint
@@ -79,6 +80,7 @@ export async function handleMinted(ctx: EventHandlerContext) {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
     token.supply += data.amount
+    token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
