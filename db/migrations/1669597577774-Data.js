@@ -1,5 +1,5 @@
-module.exports = class Data1669596277712 {
-  name = 'Data1669596277712'
+module.exports = class Data1669597577774 {
+  name = 'Data1669597577774'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -30,7 +30,7 @@ module.exports = class Data1669596277712 {
     await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
     await db.query(`CREATE TABLE "token_event" ("id" character varying NOT NULL, "event" jsonb NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "token_id" character varying, CONSTRAINT "PK_68c97a5f44c8d6a9280db65de17" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_1ba5bf0f9173e9a7ba0ec2f991" ON "token_event" ("token_id") `)
-    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric NOT NULL, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric NOT NULL, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "non_fungible" boolean, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
     await db.query(`CREATE TABLE "royalty_currency" ("id" character varying NOT NULL, "collection_id" character varying, "token_id" character varying, CONSTRAINT "PK_8b20fc27efc10e78ee3ac86fb17" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_e8b9ca718a67bb51d171240e0b" ON "royalty_currency" ("collection_id") `)
