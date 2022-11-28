@@ -78,6 +78,9 @@ export async function handleMinted(ctx: EventHandlerContext) {
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
     })
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
