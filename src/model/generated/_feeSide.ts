@@ -1,5 +1,5 @@
 export enum FeeSide {
-  NoFee = "NoFee",
-  Make = "Make",
-  Take = "Take",
+    NoFee = "NoFee",
+    Make = "Make",
+    Take = "Take",
 }

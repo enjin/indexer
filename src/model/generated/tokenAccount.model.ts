@@ -9,49 +9,49 @@ import {Token} from "./token.model"
 
 @Entity_()
 export class TokenAccount {
-  constructor(props?: Partial<TokenAccount>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<TokenAccount>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  balance!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    balance!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  reservedBalance!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    reservedBalance!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  lockedBalance!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    lockedBalance!: bigint
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenNamedReserve(undefined, marshal.nonNull(val)))}, nullable: true})
-  namedReserves!: (TokenNamedReserve)[] | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenNamedReserve(undefined, marshal.nonNull(val)))}, nullable: true})
+    namedReserves!: (TokenNamedReserve)[] | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenLock(undefined, marshal.nonNull(val)))}, nullable: true})
-  locks!: (TokenLock)[] | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenLock(undefined, marshal.nonNull(val)))}, nullable: true})
+    locks!: (TokenLock)[] | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenApproval(undefined, marshal.nonNull(val)))}, nullable: true})
-  approvals!: (TokenApproval)[] | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new TokenApproval(undefined, marshal.nonNull(val)))}, nullable: true})
+    approvals!: (TokenApproval)[] | undefined | null
 
-  @Column_("bool", {nullable: false})
-  isFrozen!: boolean
+    @Column_("bool", {nullable: false})
+    isFrozen!: boolean
 
-  @Index_()
-  @ManyToOne_(() => Account, {nullable: true})
-  account!: Account
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    account!: Account
 
-  @Index_()
-  @ManyToOne_(() => Collection, {nullable: true})
-  collection!: Collection
+    @Index_()
+    @ManyToOne_(() => Collection, {nullable: true})
+    collection!: Collection
 
-  @Index_()
-  @ManyToOne_(() => Token, {nullable: true})
-  token!: Token
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    token!: Token
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 
-  @Column_("timestamp with time zone", {nullable: false})
-  updatedAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    updatedAt!: Date
 }

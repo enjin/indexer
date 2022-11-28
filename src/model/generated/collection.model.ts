@@ -14,59 +14,59 @@ import {CollectionStats} from "./_collectionStats"
 
 @Entity_()
 export class Collection {
-  constructor(props?: Partial<Collection>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Collection>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Index_()
-  @ManyToOne_(() => Account, {nullable: true})
-  owner!: Account
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    owner!: Account
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: false})
-  mintPolicy!: MintPolicy
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new MintPolicy(undefined, obj)}, nullable: false})
+    mintPolicy!: MintPolicy
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
-  marketPolicy!: MarketPolicy | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MarketPolicy(undefined, obj)}, nullable: true})
+    marketPolicy!: MarketPolicy | undefined | null
 
-  @OneToMany_(() => RoyaltyCurrency, e => e.collection)
-  explicitRoyaltyCurrencies!: RoyaltyCurrency[]
+    @OneToMany_(() => RoyaltyCurrency, e => e.collection)
+    explicitRoyaltyCurrencies!: RoyaltyCurrency[]
 
-  @Column_("text", {nullable: true})
-  burnPolicy!: string | undefined | null
+    @Column_("text", {nullable: true})
+    burnPolicy!: string | undefined | null
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferPolicy(undefined, obj)}, nullable: true})
-  transferPolicy!: TransferPolicy | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferPolicy(undefined, obj)}, nullable: true})
+    transferPolicy!: TransferPolicy | undefined | null
 
-  @Column_("text", {nullable: true})
-  attributePolicy!: string | undefined | null
+    @Column_("text", {nullable: true})
+    attributePolicy!: string | undefined | null
 
-  @Column_("int4", {nullable: false})
-  attributeCount!: number
+    @Column_("int4", {nullable: false})
+    attributeCount!: number
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  totalDeposit!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    totalDeposit!: bigint
 
-  @OneToMany_(() => Token, e => e.collection)
-  tokens!: Token[]
+    @OneToMany_(() => Token, e => e.collection)
+    tokens!: Token[]
 
-  @OneToMany_(() => CollectionAccount, e => e.collection)
-  collectionAccounts!: CollectionAccount[]
+    @OneToMany_(() => CollectionAccount, e => e.collection)
+    collectionAccounts!: CollectionAccount[]
 
-  @OneToMany_(() => TokenAccount, e => e.collection)
-  tokenAccounts!: TokenAccount[]
+    @OneToMany_(() => TokenAccount, e => e.collection)
+    tokenAccounts!: TokenAccount[]
 
-  @OneToMany_(() => Attribute, e => e.collection)
-  attributes!: Attribute[]
+    @OneToMany_(() => Attribute, e => e.collection)
+    attributes!: Attribute[]
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
-  metadata!: Metadata | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
+    metadata!: Metadata | undefined | null
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})
-  stats!: CollectionStats
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})
+    stats!: CollectionStats
 }

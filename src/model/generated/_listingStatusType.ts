@@ -1,5 +1,5 @@
 export enum ListingStatusType {
-  Active = "Active",
-  Cancelled = "Cancelled",
-  Finalized = "Finalized",
+    Active = "Active",
+    Cancelled = "Cancelled",
+    Finalized = "Finalized",
 }

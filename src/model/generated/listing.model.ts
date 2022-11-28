@@ -10,64 +10,64 @@ import {ListingStatus} from "./listingStatus.model"
 
 @Entity_()
 export class Listing {
-  constructor(props?: Partial<Listing>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Listing>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Index_()
-  @ManyToOne_(() => Account, {nullable: true})
-  seller!: Account
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    seller!: Account
 
-  @Index_()
-  @ManyToOne_(() => Token, {nullable: true})
-  makeAssetId!: Token
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    makeAssetId!: Token
 
-  @Index_()
-  @ManyToOne_(() => Token, {nullable: true})
-  takeAssetId!: Token
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    takeAssetId!: Token
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  amount!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    amount!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  price!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    price!: bigint
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  minTakeValue!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    minTakeValue!: bigint
 
-  @Column_("varchar", {length: 5, nullable: false})
-  feeSide!: FeeSide
+    @Column_("varchar", {length: 5, nullable: false})
+    feeSide!: FeeSide
 
-  @Column_("int4", {nullable: false})
-  height!: number
+    @Column_("int4", {nullable: false})
+    height!: number
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  deposit!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    deposit!: bigint
 
-  @Column_("text", {nullable: false})
-  salt!: string
+    @Column_("text", {nullable: false})
+    salt!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: false})
-  data!: ListingData
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: false})
+    data!: ListingData
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: false})
-  state!: ListingState
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: false})
+    state!: ListingState
 
-  @OneToMany_(() => Bid, e => e.listing)
-  bids!: Bid[]
+    @OneToMany_(() => Bid, e => e.listing)
+    bids!: Bid[]
 
-  @OneToMany_(() => ListingStatus, e => e.listing)
-  status!: ListingStatus[]
+    @OneToMany_(() => ListingStatus, e => e.listing)
+    status!: ListingStatus[]
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  highestPrice!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    highestPrice!: bigint
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 
-  @Column_("timestamp with time zone", {nullable: false})
-  updatedAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    updatedAt!: Date
 }

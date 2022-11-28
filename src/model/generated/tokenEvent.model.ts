@@ -5,23 +5,23 @@ import {Token} from "./token.model"
 
 @Entity_()
 export class TokenEvent {
-  constructor(props?: Partial<TokenEvent>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<TokenEvent>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenEventType(obj)}, nullable: false})
-  event!: TokenEventType
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenEventType(obj)}, nullable: false})
+    event!: TokenEventType
 
-  @Index_()
-  @ManyToOne_(() => Token, {nullable: true})
-  token!: Token
+    @Index_()
+    @ManyToOne_(() => Token, {nullable: true})
+    token!: Token
 
-  @Column_("int4", {nullable: false})
-  height!: number
+    @Column_("int4", {nullable: false})
+    height!: number
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 }

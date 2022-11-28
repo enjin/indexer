@@ -1,4 +1,4 @@
 export enum CapType {
-  SingleMint = "SingleMint",
-  Supply = "Supply",
+    SingleMint = "SingleMint",
+    Supply = "Supply",
 }

@@ -4,23 +4,23 @@ import {Listing} from "./listing.model"
 
 @Entity_()
 export class ListingStatus {
-  constructor(props?: Partial<ListingStatus>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<ListingStatus>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("varchar", {length: 9, nullable: false})
-  type!: ListingStatusType
+    @Column_("varchar", {length: 9, nullable: false})
+    type!: ListingStatusType
 
-  @Index_()
-  @ManyToOne_(() => Listing, {nullable: true})
-  listing!: Listing
+    @Index_()
+    @ManyToOne_(() => Listing, {nullable: true})
+    listing!: Listing
 
-  @Column_("int4", {nullable: false})
-  height!: number
+    @Column_("int4", {nullable: false})
+    height!: number
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 }

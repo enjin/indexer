@@ -5,27 +5,27 @@ import {Listing} from "./listing.model"
 
 @Entity_()
 export class Bid {
-  constructor(props?: Partial<Bid>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Bid>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Index_()
-  @ManyToOne_(() => Account, {nullable: true})
-  bidder!: Account
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    bidder!: Account
 
-  @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-  price!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    price!: bigint
 
-  @Index_()
-  @ManyToOne_(() => Listing, {nullable: true})
-  listing!: Listing
+    @Index_()
+    @ManyToOne_(() => Listing, {nullable: true})
+    listing!: Listing
 
-  @Column_("int4", {nullable: false})
-  height!: number
+    @Column_("int4", {nullable: false})
+    height!: number
 
-  @Column_("timestamp with time zone", {nullable: false})
-  createdAt!: Date
+    @Column_("timestamp with time zone", {nullable: false})
+    createdAt!: Date
 }

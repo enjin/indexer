@@ -1,3 +1,3 @@
 export enum TransferType {
-  Native = "Native",
+    Native = "Native",
 }
