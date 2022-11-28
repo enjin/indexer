@@ -7,6 +7,7 @@ import { getOrCreateAccount } from '../../util/entities'
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
 import { ChainContext, Option } from '../../../types/generated/support'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
+import { isNonFungible } from '../utils/helpers'
 
 interface EventData {
     collectionId: bigint
@@ -58,6 +59,9 @@ export async function handleTokenMutated(ctx: EventHandlerContext) {
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
     })
 
     if (data.listingForbidden) {
@@ -72,5 +76,6 @@ export async function handleTokenMutated(ctx: EventHandlerContext) {
         }
     }
 
+    token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
 }
