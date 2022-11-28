@@ -1,13 +1,13 @@
 import { ArrayContains } from 'typeorm'
 import {
     Account,
-    AccountTransfer,
-    Fee,
-    Transfer,
-    TransferAssetToken,
-    TransferDirection,
-    TransferLocationAccount,
-    TransferType,
+    // AccountTransfer,
+    // Fee,
+    // Transfer,
+    // TransferAssetToken,
+    // TransferDirection,
+    // TransferLocationAccount,
+    // TransferType,
 } from '../../model'
 import { CommonHandlerContext } from '../types/contexts'
 import { getMeta } from './actions'
@@ -50,72 +50,72 @@ export async function getOrCreateAccounts(ctx: CommonHandlerContext, ids: string
 
     return [...accountsMap.values(), ...newAccounts]
 }
+//
+// export interface TransferData extends ActionData {
+//     fromId: string
+//     toId: string | null
+//     amount: bigint
+//     tip: bigint | undefined
+//     error: string
+//     success: boolean
+//     type: TransferType
+// }
 
-export interface TransferData extends ActionData {
-    fromId: string
-    toId: string | null
-    amount: bigint
-    tip: bigint | undefined
-    error: string
-    success: boolean
-    type: TransferType
-}
-
-export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData) {
-    const { fromId, toId, amount, success, type } = data
-
-    const from = await getOrCreateAccount(ctx, fromId)
-    const to = toId ? await getOrCreateAccount(ctx, toId) : null
-
-    const fee = await ctx.store.findOne(Fee, {
-        where: { id: data.id },
-        relations: {
-            who: true,
-        },
-    })
-
-    const transfer = new Transfer({
-        ...getMeta(data),
-        from: new TransferLocationAccount({
-            id: fromId,
-        }),
-        to: toId
-            ? new TransferLocationAccount({
-                  id: toId,
-              })
-            : null,
-        asset: new TransferAssetToken({
-            symbol: 'RFI',
-            amount,
-        }),
-        fee,
-        tip: data.tip,
-        error: data.error,
-        success,
-        type,
-    })
-
-    await ctx.store.insert(Transfer, transfer as any)
-
-    await ctx.store.insert(
-        AccountTransfer,
-        new AccountTransfer({
-            id: `${transfer.id}-from`,
-            transfer,
-            account: from,
-            direction: TransferDirection.From,
-        }) as any
-    )
-
-    if (to) {
-        await ctx.store.insert(
-            AccountTransfer,
-            new AccountTransfer({
-                id: `${transfer.id}-to`,
-                transfer,
-                account: to,
-                direction: TransferDirection.To,
-            }) as any
-        )
-    }
-}
+// export async function saveTransfer(ctx: CommonHandlerContext, data: TransferData) {
+//     const { fromId, toId, amount, success, type } = data
+//
+//     const from = await getOrCreateAccount(ctx, fromId)
+//     const to = toId ? await getOrCreateAccount(ctx, toId) : null
+//
+//     const fee = await ctx.store.findOne(Fee, {
+//         where: { id: data.id },
+//         relations: {
+//             who: true,
+//         },
+//     })
+//
+//     const transfer = new Transfer({
+//         ...getMeta(data),
+//         from: new TransferLocationAccount({
+//             id: fromId,
+//         }),
+//         to: toId
+//             ? new TransferLocationAccount({
+//                   id: toId,
+//               })
+//             : null,
+//         asset: new TransferAssetToken({
+//             symbol: 'RFI',
+//             amount,
+//         }),
+//         fee,
+//         tip: data.tip,
+//         error: data.error,
+//         success,
+//         type,
+//     })
+//
+//     await ctx.store.insert(Transfer, transfer as any)
+//
+//     await ctx.store.insert(
+//         AccountTransfer,
+//         new AccountTransfer({
+//             id: `${transfer.id}-from`,
+//             transfer,
+//             account: from,
+//             direction: TransferDirection.From,
+//         }) as any
+//     )
+//
+//     if (to) {
+//         await ctx.store.insert(
+//             AccountTransfer,
+//             new AccountTransfer({
+//                 id: `${transfer.id}-to`,
+//                 transfer,
+//                 account: to,
+//                 direction: TransferDirection.To,
+//             }) as any
+//         )
+//     }
+// }

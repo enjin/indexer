@@ -1,25 +1,17 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {Account} from "./account.model"
 
-export class TransferAssetToken {
-    public readonly isTypeOf = 'TransferAssetToken'
-    private _symbol!: string | undefined | null
+export class Fee {
     private _amount!: bigint | undefined | null
+    private _who!: string | undefined | null
 
-    constructor(props?: Partial<Omit<TransferAssetToken, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<Fee, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._symbol = json.symbol == null ? undefined : marshal.string.fromJSON(json.symbol)
             this._amount = json.amount == null ? undefined : marshal.bigint.fromJSON(json.amount)
+            this._who = json.who == null ? undefined : marshal.string.fromJSON(json.who)
         }
-    }
-
-    get symbol(): string | undefined | null {
-        return this._symbol
-    }
-
-    set symbol(value: string | undefined | null) {
-        this._symbol = value
     }
 
     get amount(): bigint | undefined | null {
@@ -30,11 +22,18 @@ export class TransferAssetToken {
         this._amount = value
     }
 
+    get who(): string | undefined | null {
+        return this._who
+    }
+
+    set who(value: string | undefined | null) {
+        this._who = value
+    }
+
     toJSON(): object {
         return {
-            isTypeOf: this.isTypeOf,
-            symbol: this.symbol,
             amount: this.amount == null ? undefined : marshal.bigint.toJSON(this.amount),
+            who: this.who,
         }
     }
 }
