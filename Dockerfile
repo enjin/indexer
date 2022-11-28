@@ -8,6 +8,7 @@ RUN apk add g++ make python3
 FROM node-with-gyp AS builder
 WORKDIR /squid
 ADD package.json .
+ADD package-lock.json .
 RUN npm install
 RUN npm ci
 ADD tsconfig.json .
@@ -18,6 +19,7 @@ RUN npm run build
 FROM node-with-gyp AS deps
 WORKDIR /squid
 ADD package.json .
+ADD package-lock.json .
 RUN npm install
 RUN npm ci --production
 
