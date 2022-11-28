@@ -3,1637 +3,1637 @@ import type {Result, Option} from './support'
 export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
 
 export interface BalanceStatus_Free {
-  __kind: 'Free'
+    __kind: 'Free'
 }
 
 export interface BalanceStatus_Reserved {
-  __kind: 'Reserved'
+    __kind: 'Reserved'
 }
 
 export type V2Outcome = V2Outcome_Complete | V2Outcome_Incomplete | V2Outcome_Error
 
 export interface V2Outcome_Complete {
-  __kind: 'Complete'
-  value: bigint
+    __kind: 'Complete'
+    value: bigint
 }
 
 export interface V2Outcome_Incomplete {
-  __kind: 'Incomplete'
-  value: [bigint, V2Error]
+    __kind: 'Incomplete'
+    value: [bigint, V2Error]
 }
 
 export interface V2Outcome_Error {
-  __kind: 'Error'
-  value: V2Error
+    __kind: 'Error'
+    value: V2Error
 }
 
 export interface Range {
-  start: number
-  end: number
+    start: number
+    end: number
 }
 
 export interface Recipient {
-  to: Uint8Array
-  value: TypedBalanceWithChunk
+    to: Uint8Array
+    value: TypedBalanceWithChunk
 }
 
 export type Expiration = Expiration_Never | Expiration_At
 
 export interface Expiration_Never {
-  __kind: 'Never'
+    __kind: 'Never'
 }
 
 export interface Expiration_At {
-  __kind: 'At'
-  value: number
+    __kind: 'At'
+    value: number
 }
 
 export interface V1MultiLocation {
-  parents: number
-  interior: V1Junctions
+    parents: number
+    interior: V1Junctions
 }
 
 export type VersionedMultiAssets = VersionedMultiAssets_V0 | VersionedMultiAssets_V1
 
 export interface VersionedMultiAssets_V0 {
-  __kind: 'V0'
-  value: V0MultiAsset[]
+    __kind: 'V0'
+    value: V0MultiAsset[]
 }
 
 export interface VersionedMultiAssets_V1 {
-  __kind: 'V1'
-  value: V1MultiAsset[]
+    __kind: 'V1'
+    value: V1MultiAsset[]
 }
 
 export type VersionedMultiLocation = VersionedMultiLocation_V0 | VersionedMultiLocation_V1
 
 export interface VersionedMultiLocation_V0 {
-  __kind: 'V0'
-  value: V0MultiLocation
+    __kind: 'V0'
+    value: V0MultiLocation
 }
 
 export interface VersionedMultiLocation_V1 {
-  __kind: 'V1'
-  value: V1MultiLocation
+    __kind: 'V1'
+    value: V1MultiLocation
 }
 
 export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_TooMuchWeightRequired | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
 
 export interface V2Error_Overflow {
-  __kind: 'Overflow'
+    __kind: 'Overflow'
 }
 
 export interface V2Error_Unimplemented {
-  __kind: 'Unimplemented'
+    __kind: 'Unimplemented'
 }
 
 export interface V2Error_UntrustedReserveLocation {
-  __kind: 'UntrustedReserveLocation'
+    __kind: 'UntrustedReserveLocation'
 }
 
 export interface V2Error_UntrustedTeleportLocation {
-  __kind: 'UntrustedTeleportLocation'
+    __kind: 'UntrustedTeleportLocation'
 }
 
 export interface V2Error_MultiLocationFull {
-  __kind: 'MultiLocationFull'
+    __kind: 'MultiLocationFull'
 }
 
 export interface V2Error_MultiLocationNotInvertible {
-  __kind: 'MultiLocationNotInvertible'
+    __kind: 'MultiLocationNotInvertible'
 }
 
 export interface V2Error_BadOrigin {
-  __kind: 'BadOrigin'
+    __kind: 'BadOrigin'
 }
 
 export interface V2Error_InvalidLocation {
-  __kind: 'InvalidLocation'
+    __kind: 'InvalidLocation'
 }
 
 export interface V2Error_AssetNotFound {
-  __kind: 'AssetNotFound'
+    __kind: 'AssetNotFound'
 }
 
 export interface V2Error_FailedToTransactAsset {
-  __kind: 'FailedToTransactAsset'
+    __kind: 'FailedToTransactAsset'
 }
 
 export interface V2Error_NotWithdrawable {
-  __kind: 'NotWithdrawable'
+    __kind: 'NotWithdrawable'
 }
 
 export interface V2Error_LocationCannotHold {
-  __kind: 'LocationCannotHold'
+    __kind: 'LocationCannotHold'
 }
 
 export interface V2Error_ExceedsMaxMessageSize {
-  __kind: 'ExceedsMaxMessageSize'
+    __kind: 'ExceedsMaxMessageSize'
 }
 
 export interface V2Error_DestinationUnsupported {
-  __kind: 'DestinationUnsupported'
+    __kind: 'DestinationUnsupported'
 }
 
 export interface V2Error_Transport {
-  __kind: 'Transport'
+    __kind: 'Transport'
 }
 
 export interface V2Error_Unroutable {
-  __kind: 'Unroutable'
+    __kind: 'Unroutable'
 }
 
 export interface V2Error_UnknownClaim {
-  __kind: 'UnknownClaim'
+    __kind: 'UnknownClaim'
 }
 
 export interface V2Error_FailedToDecode {
-  __kind: 'FailedToDecode'
+    __kind: 'FailedToDecode'
 }
 
 export interface V2Error_TooMuchWeightRequired {
-  __kind: 'TooMuchWeightRequired'
+    __kind: 'TooMuchWeightRequired'
 }
 
 export interface V2Error_NotHoldingFees {
-  __kind: 'NotHoldingFees'
+    __kind: 'NotHoldingFees'
 }
 
 export interface V2Error_TooExpensive {
-  __kind: 'TooExpensive'
+    __kind: 'TooExpensive'
 }
 
 export interface V2Error_Trap {
-  __kind: 'Trap'
-  value: bigint
+    __kind: 'Trap'
+    value: bigint
 }
 
 export interface V2Error_UnhandledXcmVersion {
-  __kind: 'UnhandledXcmVersion'
+    __kind: 'UnhandledXcmVersion'
 }
 
 export interface V2Error_WeightLimitReached {
-  __kind: 'WeightLimitReached'
-  value: bigint
+    __kind: 'WeightLimitReached'
+    value: bigint
 }
 
 export interface V2Error_Barrier {
-  __kind: 'Barrier'
+    __kind: 'Barrier'
 }
 
 export interface V2Error_WeightNotComputable {
-  __kind: 'WeightNotComputable'
+    __kind: 'WeightNotComputable'
 }
 
 export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
 
 export interface V2Response_Null {
-  __kind: 'Null'
+    __kind: 'Null'
 }
 
 export interface V2Response_Assets {
-  __kind: 'Assets'
-  value: V1MultiAsset[]
+    __kind: 'Assets'
+    value: V1MultiAsset[]
 }
 
 export interface V2Response_ExecutionResult {
-  __kind: 'ExecutionResult'
-  value: ([number, V2Error] | undefined)
+    __kind: 'ExecutionResult'
+    value: ([number, V2Error] | undefined)
 }
 
 export interface V2Response_Version {
-  __kind: 'Version'
-  value: number
+    __kind: 'Version'
+    value: number
 }
 
 export type V2Instruction = V2Instruction_WithdrawAsset | V2Instruction_ReserveAssetDeposited | V2Instruction_ReceiveTeleportedAsset | V2Instruction_QueryResponse | V2Instruction_TransferAsset | V2Instruction_TransferReserveAsset | V2Instruction_Transact | V2Instruction_HrmpNewChannelOpenRequest | V2Instruction_HrmpChannelAccepted | V2Instruction_HrmpChannelClosing | V2Instruction_ClearOrigin | V2Instruction_DescendOrigin | V2Instruction_ReportError | V2Instruction_DepositAsset | V2Instruction_DepositReserveAsset | V2Instruction_ExchangeAsset | V2Instruction_InitiateReserveWithdraw | V2Instruction_InitiateTeleport | V2Instruction_QueryHolding | V2Instruction_BuyExecution | V2Instruction_RefundSurplus | V2Instruction_SetErrorHandler | V2Instruction_SetAppendix | V2Instruction_ClearError | V2Instruction_ClaimAsset | V2Instruction_Trap | V2Instruction_SubscribeVersion | V2Instruction_UnsubscribeVersion
 
 export interface V2Instruction_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  value: V1MultiAsset[]
+    __kind: 'WithdrawAsset'
+    value: V1MultiAsset[]
 }
 
 export interface V2Instruction_ReserveAssetDeposited {
-  __kind: 'ReserveAssetDeposited'
-  value: V1MultiAsset[]
+    __kind: 'ReserveAssetDeposited'
+    value: V1MultiAsset[]
 }
 
 export interface V2Instruction_ReceiveTeleportedAsset {
-  __kind: 'ReceiveTeleportedAsset'
-  value: V1MultiAsset[]
+    __kind: 'ReceiveTeleportedAsset'
+    value: V1MultiAsset[]
 }
 
 export interface V2Instruction_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V2Response
-  maxWeight: bigint
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V2Response
+    maxWeight: bigint
 }
 
 export interface V2Instruction_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V1MultiAsset[]
-  beneficiary: V1MultiLocation
+    __kind: 'TransferAsset'
+    assets: V1MultiAsset[]
+    beneficiary: V1MultiLocation
 }
 
 export interface V2Instruction_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V1MultiAsset[]
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'TransferReserveAsset'
+    assets: V1MultiAsset[]
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface V2Instruction_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface V2Instruction_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface V2Instruction_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface V2Instruction_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface V2Instruction_ClearOrigin {
-  __kind: 'ClearOrigin'
+    __kind: 'ClearOrigin'
 }
 
 export interface V2Instruction_DescendOrigin {
-  __kind: 'DescendOrigin'
-  value: V1Junctions
+    __kind: 'DescendOrigin'
+    value: V1Junctions
 }
 
 export interface V2Instruction_ReportError {
-  __kind: 'ReportError'
-  queryId: bigint
-  dest: V1MultiLocation
-  maxResponseWeight: bigint
+    __kind: 'ReportError'
+    queryId: bigint
+    dest: V1MultiLocation
+    maxResponseWeight: bigint
 }
 
 export interface V2Instruction_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  beneficiary: V1MultiLocation
+    __kind: 'DepositAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    beneficiary: V1MultiLocation
 }
 
 export interface V2Instruction_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'DepositReserveAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface V2Instruction_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V1MultiAssetFilter
-  receive: V1MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V1MultiAssetFilter
+    receive: V1MultiAsset[]
 }
 
 export interface V2Instruction_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V1MultiAssetFilter
-  reserve: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V1MultiAssetFilter
+    reserve: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface V2Instruction_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V1MultiAssetFilter
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'InitiateTeleport'
+    assets: V1MultiAssetFilter
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface V2Instruction_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V1MultiLocation
-  assets: V1MultiAssetFilter
-  maxResponseWeight: bigint
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V1MultiLocation
+    assets: V1MultiAssetFilter
+    maxResponseWeight: bigint
 }
 
 export interface V2Instruction_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V1MultiAsset
-  weightLimit: V2WeightLimit
+    __kind: 'BuyExecution'
+    fees: V1MultiAsset
+    weightLimit: V2WeightLimit
 }
 
 export interface V2Instruction_RefundSurplus {
-  __kind: 'RefundSurplus'
+    __kind: 'RefundSurplus'
 }
 
 export interface V2Instruction_SetErrorHandler {
-  __kind: 'SetErrorHandler'
-  value: V2Instruction[]
+    __kind: 'SetErrorHandler'
+    value: V2Instruction[]
 }
 
 export interface V2Instruction_SetAppendix {
-  __kind: 'SetAppendix'
-  value: V2Instruction[]
+    __kind: 'SetAppendix'
+    value: V2Instruction[]
 }
 
 export interface V2Instruction_ClearError {
-  __kind: 'ClearError'
+    __kind: 'ClearError'
 }
 
 export interface V2Instruction_ClaimAsset {
-  __kind: 'ClaimAsset'
-  assets: V1MultiAsset[]
-  ticket: V1MultiLocation
+    __kind: 'ClaimAsset'
+    assets: V1MultiAsset[]
+    ticket: V1MultiLocation
 }
 
 export interface V2Instruction_Trap {
-  __kind: 'Trap'
-  value: bigint
+    __kind: 'Trap'
+    value: bigint
 }
 
 export interface V2Instruction_SubscribeVersion {
-  __kind: 'SubscribeVersion'
-  queryId: bigint
-  maxResponseWeight: bigint
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: bigint
 }
 
 export interface V2Instruction_UnsubscribeVersion {
-  __kind: 'UnsubscribeVersion'
+    __kind: 'UnsubscribeVersion'
 }
 
 export type PoolType = PoolType_Collator | PoolType_Fuel | PoolType_Community | PoolType_PriceDiscovery
 
 export interface PoolType_Collator {
-  __kind: 'Collator'
+    __kind: 'Collator'
 }
 
 export interface PoolType_Fuel {
-  __kind: 'Fuel'
+    __kind: 'Fuel'
 }
 
 export interface PoolType_Community {
-  __kind: 'Community'
+    __kind: 'Community'
 }
 
 export interface PoolType_PriceDiscovery {
-  __kind: 'PriceDiscovery'
+    __kind: 'PriceDiscovery'
 }
 
 export type Type_30 = Type_30_Ok | Type_30_Err
 
 export interface Type_30_Ok {
-  __kind: 'Ok'
+    __kind: 'Ok'
 }
 
 export interface Type_30_Err {
-  __kind: 'Err'
-  value: DispatchError
+    __kind: 'Err'
+    value: DispatchError
 }
 
 export type DispatchError = DispatchError_Other | DispatchError_CannotLookup | DispatchError_BadOrigin | DispatchError_Module | DispatchError_ConsumerRemaining | DispatchError_NoProviders | DispatchError_Token | DispatchError_Arithmetic
 
 export interface DispatchError_Other {
-  __kind: 'Other'
+    __kind: 'Other'
 }
 
 export interface DispatchError_CannotLookup {
-  __kind: 'CannotLookup'
+    __kind: 'CannotLookup'
 }
 
 export interface DispatchError_BadOrigin {
-  __kind: 'BadOrigin'
+    __kind: 'BadOrigin'
 }
 
 export interface DispatchError_Module {
-  __kind: 'Module'
-  index: number
-  error: number
+    __kind: 'Module'
+    index: number
+    error: number
 }
 
 export interface DispatchError_ConsumerRemaining {
-  __kind: 'ConsumerRemaining'
+    __kind: 'ConsumerRemaining'
 }
 
 export interface DispatchError_NoProviders {
-  __kind: 'NoProviders'
+    __kind: 'NoProviders'
 }
 
 export interface DispatchError_Token {
-  __kind: 'Token'
-  value: TokenError
+    __kind: 'Token'
+    value: TokenError
 }
 
 export interface DispatchError_Arithmetic {
-  __kind: 'Arithmetic'
-  value: ArithmeticError
+    __kind: 'Arithmetic'
+    value: ArithmeticError
 }
 
 export interface DispatchInfo {
-  weight: bigint
-  class: DispatchClass
-  paysFee: Pays
+    weight: bigint
+    class: DispatchClass
+    paysFee: Pays
 }
 
 export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
 
 export interface MultiAddress_Id {
-  __kind: 'Id'
-  value: Uint8Array
+    __kind: 'Id'
+    value: Uint8Array
 }
 
 export interface MultiAddress_Index {
-  __kind: 'Index'
-  value: null
+    __kind: 'Index'
+    value: null
 }
 
 export interface MultiAddress_Raw {
-  __kind: 'Raw'
-  value: Uint8Array
+    __kind: 'Raw'
+    value: Uint8Array
 }
 
 export interface MultiAddress_Address32 {
-  __kind: 'Address32'
-  value: Uint8Array
+    __kind: 'Address32'
+    value: Uint8Array
 }
 
 export interface MultiAddress_Address20 {
-  __kind: 'Address20'
-  value: Uint8Array
+    __kind: 'Address20'
+    value: Uint8Array
 }
 
 export interface RecipientWithAsset {
-  to: Uint8Array
-  value: TypedBalanceWithChunk
-  asset: bigint
+    to: Uint8Array
+    value: TypedBalanceWithChunk
+    asset: bigint
 }
 
 export interface RecipientsByChunk {
-  index: number
-  recipients: [Uint8Array, Range[]][]
+    index: number
+    recipients: [Uint8Array, Range[]][]
 }
 
 export interface AssetPolicy {
-  mint: MintPolicy
-  teleporation: TeleporationPolicy
-  fungibility: FungibilityPolicy
+    mint: MintPolicy
+    teleporation: TeleporationPolicy
+    fungibility: FungibilityPolicy
 }
 
 export interface ParachainInherentData {
-  validationData: V1PersistedValidationData
-  relayChainState: StorageProof
-  downwardMessages: InboundDownwardMessage[]
-  horizontalMessages: [number, InboundHrmpMessage[]][]
+    validationData: V1PersistedValidationData
+    relayChainState: StorageProof
+    downwardMessages: InboundDownwardMessage[]
+    horizontalMessages: [number, InboundHrmpMessage[]][]
 }
 
 export type Type_178 = Type_178_V0 | Type_178_V1 | Type_178_V2
 
 export interface Type_178_V0 {
-  __kind: 'V0'
-  value: Type_179
+    __kind: 'V0'
+    value: Type_179
 }
 
 export interface Type_178_V1 {
-  __kind: 'V1'
-  value: Type_184
+    __kind: 'V1'
+    value: Type_184
 }
 
 export interface Type_178_V2 {
-  __kind: 'V2'
-  value: Type_190[]
+    __kind: 'V2'
+    value: Type_190[]
 }
 
 export type V2WeightLimit = V2WeightLimit_Unlimited | V2WeightLimit_Limited
 
 export interface V2WeightLimit_Unlimited {
-  __kind: 'Unlimited'
+    __kind: 'Unlimited'
 }
 
 export interface V2WeightLimit_Limited {
-  __kind: 'Limited'
-  value: bigint
+    __kind: 'Limited'
+    value: bigint
 }
 
 export type VersionedXcm = VersionedXcm_V0 | VersionedXcm_V1 | VersionedXcm_V2
 
 export interface VersionedXcm_V0 {
-  __kind: 'V0'
-  value: V0Xcm
+    __kind: 'V0'
+    value: V0Xcm
 }
 
 export interface VersionedXcm_V1 {
-  __kind: 'V1'
-  value: V1Xcm
+    __kind: 'V1'
+    value: V1Xcm
 }
 
 export interface VersionedXcm_V2 {
-  __kind: 'V2'
-  value: V2Instruction[]
+    __kind: 'V2'
+    value: V2Instruction[]
 }
 
 export type Call = Call_System | Call_ParachainSystem | Call_Timestamp | Call_Sudo | Call_Balances | Call_CollatorStaking | Call_Pools | Call_XcmpQueue | Call_PolkadotXcm | Call_CumulusXcm | Call_DmpQueue | Call_MultiAssets | Call_MultiAssetsOperatorExt | Call_Tags | Call_Claims
 
 export interface Call_System {
-  __kind: 'System'
-  value: SystemCall
+    __kind: 'System'
+    value: SystemCall
 }
 
 export interface Call_ParachainSystem {
-  __kind: 'ParachainSystem'
-  value: ParachainSystemCall
+    __kind: 'ParachainSystem'
+    value: ParachainSystemCall
 }
 
 export interface Call_Timestamp {
-  __kind: 'Timestamp'
-  value: TimestampCall
+    __kind: 'Timestamp'
+    value: TimestampCall
 }
 
 export interface Call_Sudo {
-  __kind: 'Sudo'
-  value: SudoCall
+    __kind: 'Sudo'
+    value: SudoCall
 }
 
 export interface Call_Balances {
-  __kind: 'Balances'
-  value: BalancesCall
+    __kind: 'Balances'
+    value: BalancesCall
 }
 
 export interface Call_CollatorStaking {
-  __kind: 'CollatorStaking'
-  value: CollatorStakingCall
+    __kind: 'CollatorStaking'
+    value: CollatorStakingCall
 }
 
 export interface Call_Pools {
-  __kind: 'Pools'
-  value: PoolsCall
+    __kind: 'Pools'
+    value: PoolsCall
 }
 
 export interface Call_XcmpQueue {
-  __kind: 'XcmpQueue'
-  value: XcmpQueueCall
+    __kind: 'XcmpQueue'
+    value: XcmpQueueCall
 }
 
 export interface Call_PolkadotXcm {
-  __kind: 'PolkadotXcm'
-  value: PolkadotXcmCall
+    __kind: 'PolkadotXcm'
+    value: PolkadotXcmCall
 }
 
 export interface Call_CumulusXcm {
-  __kind: 'CumulusXcm'
-  value: CumulusXcmCall
+    __kind: 'CumulusXcm'
+    value: CumulusXcmCall
 }
 
 export interface Call_DmpQueue {
-  __kind: 'DmpQueue'
-  value: DmpQueueCall
+    __kind: 'DmpQueue'
+    value: DmpQueueCall
 }
 
 export interface Call_MultiAssets {
-  __kind: 'MultiAssets'
-  value: MultiAssetsCall
+    __kind: 'MultiAssets'
+    value: MultiAssetsCall
 }
 
 export interface Call_MultiAssetsOperatorExt {
-  __kind: 'MultiAssetsOperatorExt'
-  value: MultiAssetsOperatorExtCall
+    __kind: 'MultiAssetsOperatorExt'
+    value: MultiAssetsOperatorExtCall
 }
 
 export interface Call_Tags {
-  __kind: 'Tags'
-  value: TagsCall
+    __kind: 'Tags'
+    value: TagsCall
 }
 
 export interface Call_Claims {
-  __kind: 'Claims'
-  value: ClaimsCall
+    __kind: 'Claims'
+    value: ClaimsCall
 }
 
 export interface ChangesTrieConfiguration {
-  digestInterval: number
-  digestLevels: number
+    digestInterval: number
+    digestLevels: number
 }
 
 export interface AccountData {
-  free: bigint
-  reserved: bigint
-  miscFrozen: bigint
-  feeFrozen: bigint
+    free: bigint
+    reserved: bigint
+    miscFrozen: bigint
+    feeFrozen: bigint
 }
 
 export interface BalanceLock {
-  id: Uint8Array
-  amount: bigint
-  reasons: Reasons
+    id: Uint8Array
+    amount: bigint
+    reasons: Reasons
 }
 
 export interface ReserveData {
-  id: Uint8Array
-  amount: bigint
+    id: Uint8Array
+    amount: bigint
 }
 
 export type Releases = Releases_V1_0_0 | Releases_V2_0_0
 
 export interface Releases_V1_0_0 {
-  __kind: 'V1_0_0'
+    __kind: 'V1_0_0'
 }
 
 export interface Releases_V2_0_0 {
-  __kind: 'V2_0_0'
+    __kind: 'V2_0_0'
 }
 
 export interface Collator {
-  account: Uint8Array
-  amount: bigint
-  totalStake: bigint
-  nominators: Uint8Array[]
+    account: Uint8Array
+    amount: bigint
+    totalStake: bigint
+    nominators: Uint8Array[]
 }
 
 export interface Round {
-  number: number
-  startingBlock: number
-  collators: Collator[]
+    number: number
+    startingBlock: number
+    collators: Collator[]
 }
 
 export interface Nomination {
-  account: Uint8Array
-  amount: bigint
+    account: Uint8Array
+    amount: bigint
 }
 
 export interface ConfigData {
-  maxIndividual: bigint
+    maxIndividual: bigint
 }
 
 export interface PageIndexData {
-  beginUsed: number
-  endUsed: number
-  overweightCount: bigint
+    beginUsed: number
+    endUsed: number
+    overweightCount: bigint
 }
 
 export interface Asset {
-  owner: Uint8Array
-  policy: AssetPolicy
-  supply: Supply
-  nextTokenId: number
-  attributeCount: number
+    owner: Uint8Array
+    policy: AssetPolicy
+    supply: Supply
+    nextTokenId: number
+    attributeCount: number
 }
 
 export type IdleOperation = IdleOperation_DeleteBurnedZombieTokens | IdleOperation_DeleteAttributes
 
 export interface IdleOperation_DeleteBurnedZombieTokens {
-  __kind: 'DeleteBurnedZombieTokens'
-  value: bigint
+    __kind: 'DeleteBurnedZombieTokens'
+    value: bigint
 }
 
 export interface IdleOperation_DeleteAttributes {
-  __kind: 'DeleteAttributes'
-  value: bigint
+    __kind: 'DeleteAttributes'
+    value: bigint
 }
 
 export interface Approval {
-  amount: bigint
-  expiration: Expiration
+    amount: bigint
+    expiration: Expiration
 }
 
 export interface V1AbridgedHostConfiguration {
-  maxCodeSize: number
-  maxHeadDataSize: number
-  maxUpwardQueueCount: number
-  maxUpwardQueueSize: number
-  maxUpwardMessageSize: number
-  maxUpwardMessageNumPerCandidate: number
-  hrmpMaxMessageNumPerCandidate: number
-  validationUpgradeFrequency: number
-  validationUpgradeDelay: number
+    maxCodeSize: number
+    maxHeadDataSize: number
+    maxUpwardQueueCount: number
+    maxUpwardQueueSize: number
+    maxUpwardMessageSize: number
+    maxUpwardMessageNumPerCandidate: number
+    hrmpMaxMessageNumPerCandidate: number
+    validationUpgradeFrequency: number
+    validationUpgradeDelay: number
 }
 
 export interface OutboundHrmpMessage {
-  recipient: number
-  data: Uint8Array
+    recipient: number
+    data: Uint8Array
 }
 
 export interface MessagingStateSnapshot {
-  dmqMqcHead: Uint8Array
-  relayDispatchQueueSize: [number, number]
-  ingressChannels: [number, V1AbridgedHrmpChannel][]
-  egressChannels: [number, V1AbridgedHrmpChannel][]
+    dmqMqcHead: Uint8Array
+    relayDispatchQueueSize: [number, number]
+    ingressChannels: [number, V1AbridgedHrmpChannel][]
+    egressChannels: [number, V1AbridgedHrmpChannel][]
 }
 
 export interface V1PersistedValidationData {
-  parentHead: Uint8Array
-  relayParentNumber: number
-  relayParentStorageRoot: Uint8Array
-  maxPovSize: number
+    parentHead: Uint8Array
+    relayParentNumber: number
+    relayParentStorageRoot: Uint8Array
+    maxPovSize: number
 }
 
 export interface Pool {
-  id: bigint
-  poolType: PoolType
-  fundAccount: Uint8Array
-  owner: Uint8Array
+    id: bigint
+    poolType: PoolType
+    fundAccount: Uint8Array
+    owner: Uint8Array
 }
 
 export interface AccountInfo {
-  nonce: number
-  consumers: number
-  providers: number
-  sufficients: number
-  data: AccountData
+    nonce: number
+    consumers: number
+    providers: number
+    sufficients: number
+    data: AccountData
 }
 
 export interface PerDispatchClass {
-  normal: bigint
-  operational: bigint
-  mandatory: bigint
+    normal: bigint
+    operational: bigint
+    mandatory: bigint
 }
 
 export interface Digest {
-  logs: DigestItem[]
+    logs: DigestItem[]
 }
 
 export interface EventRecord {
-  phase: Phase
-  event: Event
-  topics: Uint8Array[]
+    phase: Phase
+    event: Event
+    topics: Uint8Array[]
 }
 
 export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
 
 export interface Phase_ApplyExtrinsic {
-  __kind: 'ApplyExtrinsic'
-  value: number
+    __kind: 'ApplyExtrinsic'
+    value: number
 }
 
 export interface Phase_Finalization {
-  __kind: 'Finalization'
+    __kind: 'Finalization'
 }
 
 export interface Phase_Initialization {
-  __kind: 'Initialization'
+    __kind: 'Initialization'
 }
 
 export interface LastRuntimeUpgradeInfo {
-  specVersion: number
-  specName: string
+    specVersion: number
+    specName: string
 }
 
 export interface TypedLocalAssetId {
-  inner: bigint
-  assetType: AssetType
+    inner: bigint
+    assetType: AssetType
 }
 
 export interface Tag {
-  owner: Uint8Array
+    owner: Uint8Array
 }
 
 export type Type_223 = Type_223_V1Ancient | Type_223_V2
 
 export interface Type_223_V1Ancient {
-  __kind: 'V1Ancient'
+    __kind: 'V1Ancient'
 }
 
 export interface Type_223_V2 {
-  __kind: 'V2'
+    __kind: 'V2'
 }
 
 export type InboundStatus = InboundStatus_Ok | InboundStatus_Suspended
 
 export interface InboundStatus_Ok {
-  __kind: 'Ok'
+    __kind: 'Ok'
 }
 
 export interface InboundStatus_Suspended {
-  __kind: 'Suspended'
+    __kind: 'Suspended'
 }
 
 export type XcmpMessageFormat = XcmpMessageFormat_ConcatenatedVersionedXcm | XcmpMessageFormat_ConcatenatedEncodedBlob | XcmpMessageFormat_Signals
 
 export interface XcmpMessageFormat_ConcatenatedVersionedXcm {
-  __kind: 'ConcatenatedVersionedXcm'
+    __kind: 'ConcatenatedVersionedXcm'
 }
 
 export interface XcmpMessageFormat_ConcatenatedEncodedBlob {
-  __kind: 'ConcatenatedEncodedBlob'
+    __kind: 'ConcatenatedEncodedBlob'
 }
 
 export interface XcmpMessageFormat_Signals {
-  __kind: 'Signals'
+    __kind: 'Signals'
 }
 
 export type OutboundStatus = OutboundStatus_Ok | OutboundStatus_Suspended
 
 export interface OutboundStatus_Ok {
-  __kind: 'Ok'
+    __kind: 'Ok'
 }
 
 export interface OutboundStatus_Suspended {
-  __kind: 'Suspended'
+    __kind: 'Suspended'
 }
 
 export interface QueueConfigData {
-  suspendThreshold: number
-  dropThreshold: number
-  resumeThreshold: number
-  thresholdWeight: bigint
-  weightRestrictDecay: bigint
+    suspendThreshold: number
+    dropThreshold: number
+    resumeThreshold: number
+    thresholdWeight: bigint
+    weightRestrictDecay: bigint
 }
 
 export type TypedBalanceWithChunk = TypedBalanceWithChunk_Fungible | TypedBalanceWithChunk_NonFungible
 
 export interface TypedBalanceWithChunk_Fungible {
-  __kind: 'Fungible'
-  value: bigint
+    __kind: 'Fungible'
+    value: bigint
 }
 
 export interface TypedBalanceWithChunk_NonFungible {
-  __kind: 'NonFungible'
-  value: Range[]
+    __kind: 'NonFungible'
+    value: Range[]
 }
 
 export type V1Junctions = V1Junctions_Here | V1Junctions_X1 | V1Junctions_X2 | V1Junctions_X3 | V1Junctions_X4 | V1Junctions_X5 | V1Junctions_X6 | V1Junctions_X7 | V1Junctions_X8
 
 export interface V1Junctions_Here {
-  __kind: 'Here'
+    __kind: 'Here'
 }
 
 export interface V1Junctions_X1 {
-  __kind: 'X1'
-  value: V1Junction
+    __kind: 'X1'
+    value: V1Junction
 }
 
 export interface V1Junctions_X2 {
-  __kind: 'X2'
-  value: [V1Junction, V1Junction]
+    __kind: 'X2'
+    value: [V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X3 {
-  __kind: 'X3'
-  value: [V1Junction, V1Junction, V1Junction]
+    __kind: 'X3'
+    value: [V1Junction, V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X4 {
-  __kind: 'X4'
-  value: [V1Junction, V1Junction, V1Junction, V1Junction]
+    __kind: 'X4'
+    value: [V1Junction, V1Junction, V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X5 {
-  __kind: 'X5'
-  value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
+    __kind: 'X5'
+    value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X6 {
-  __kind: 'X6'
-  value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
+    __kind: 'X6'
+    value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X7 {
-  __kind: 'X7'
-  value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
+    __kind: 'X7'
+    value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
 }
 
 export interface V1Junctions_X8 {
-  __kind: 'X8'
-  value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
+    __kind: 'X8'
+    value: [V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction, V1Junction]
 }
 
 export type V0MultiAsset = V0MultiAsset_None | V0MultiAsset_All | V0MultiAsset_AllFungible | V0MultiAsset_AllNonFungible | V0MultiAsset_AllAbstractFungible | V0MultiAsset_AllAbstractNonFungible | V0MultiAsset_AllConcreteFungible | V0MultiAsset_AllConcreteNonFungible | V0MultiAsset_AbstractFungible | V0MultiAsset_AbstractNonFungible | V0MultiAsset_ConcreteFungible | V0MultiAsset_ConcreteNonFungible
 
 export interface V0MultiAsset_None {
-  __kind: 'None'
+    __kind: 'None'
 }
 
 export interface V0MultiAsset_All {
-  __kind: 'All'
+    __kind: 'All'
 }
 
 export interface V0MultiAsset_AllFungible {
-  __kind: 'AllFungible'
+    __kind: 'AllFungible'
 }
 
 export interface V0MultiAsset_AllNonFungible {
-  __kind: 'AllNonFungible'
+    __kind: 'AllNonFungible'
 }
 
 export interface V0MultiAsset_AllAbstractFungible {
-  __kind: 'AllAbstractFungible'
-  id: Uint8Array
+    __kind: 'AllAbstractFungible'
+    id: Uint8Array
 }
 
 export interface V0MultiAsset_AllAbstractNonFungible {
-  __kind: 'AllAbstractNonFungible'
-  class: Uint8Array
+    __kind: 'AllAbstractNonFungible'
+    class: Uint8Array
 }
 
 export interface V0MultiAsset_AllConcreteFungible {
-  __kind: 'AllConcreteFungible'
-  id: V0MultiLocation
+    __kind: 'AllConcreteFungible'
+    id: V0MultiLocation
 }
 
 export interface V0MultiAsset_AllConcreteNonFungible {
-  __kind: 'AllConcreteNonFungible'
-  class: V0MultiLocation
+    __kind: 'AllConcreteNonFungible'
+    class: V0MultiLocation
 }
 
 export interface V0MultiAsset_AbstractFungible {
-  __kind: 'AbstractFungible'
-  id: Uint8Array
-  amount: bigint
+    __kind: 'AbstractFungible'
+    id: Uint8Array
+    amount: bigint
 }
 
 export interface V0MultiAsset_AbstractNonFungible {
-  __kind: 'AbstractNonFungible'
-  class: Uint8Array
-  instance: V1AssetInstance
+    __kind: 'AbstractNonFungible'
+    class: Uint8Array
+    instance: V1AssetInstance
 }
 
 export interface V0MultiAsset_ConcreteFungible {
-  __kind: 'ConcreteFungible'
-  id: V0MultiLocation
-  amount: bigint
+    __kind: 'ConcreteFungible'
+    id: V0MultiLocation
+    amount: bigint
 }
 
 export interface V0MultiAsset_ConcreteNonFungible {
-  __kind: 'ConcreteNonFungible'
-  class: V0MultiLocation
-  instance: V1AssetInstance
+    __kind: 'ConcreteNonFungible'
+    class: V0MultiLocation
+    instance: V1AssetInstance
 }
 
 export interface V1MultiAsset {
-  id: V1AssetId
-  fun: V1Fungibility
+    id: V1AssetId
+    fun: V1Fungibility
 }
 
 export type V0MultiLocation = V0MultiLocation_Null | V0MultiLocation_X1 | V0MultiLocation_X2 | V0MultiLocation_X3 | V0MultiLocation_X4 | V0MultiLocation_X5 | V0MultiLocation_X6 | V0MultiLocation_X7 | V0MultiLocation_X8
 
 export interface V0MultiLocation_Null {
-  __kind: 'Null'
+    __kind: 'Null'
 }
 
 export interface V0MultiLocation_X1 {
-  __kind: 'X1'
-  value: V0Junction
+    __kind: 'X1'
+    value: V0Junction
 }
 
 export interface V0MultiLocation_X2 {
-  __kind: 'X2'
-  value: [V0Junction, V0Junction]
+    __kind: 'X2'
+    value: [V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X3 {
-  __kind: 'X3'
-  value: [V0Junction, V0Junction, V0Junction]
+    __kind: 'X3'
+    value: [V0Junction, V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X4 {
-  __kind: 'X4'
-  value: [V0Junction, V0Junction, V0Junction, V0Junction]
+    __kind: 'X4'
+    value: [V0Junction, V0Junction, V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X5 {
-  __kind: 'X5'
-  value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
+    __kind: 'X5'
+    value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X6 {
-  __kind: 'X6'
-  value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
+    __kind: 'X6'
+    value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X7 {
-  __kind: 'X7'
-  value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
+    __kind: 'X7'
+    value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
 }
 
 export interface V0MultiLocation_X8 {
-  __kind: 'X8'
-  value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
+    __kind: 'X8'
+    value: [V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction, V0Junction]
 }
 
 export type V0OriginKind = V0OriginKind_Native | V0OriginKind_SovereignAccount | V0OriginKind_Superuser | V0OriginKind_Xcm
 
 export interface V0OriginKind_Native {
-  __kind: 'Native'
+    __kind: 'Native'
 }
 
 export interface V0OriginKind_SovereignAccount {
-  __kind: 'SovereignAccount'
+    __kind: 'SovereignAccount'
 }
 
 export interface V0OriginKind_Superuser {
-  __kind: 'Superuser'
+    __kind: 'Superuser'
 }
 
 export interface V0OriginKind_Xcm {
-  __kind: 'Xcm'
+    __kind: 'Xcm'
 }
 
 export interface DoubleEncoded {
-  encoded: Uint8Array
+    encoded: Uint8Array
 }
 
 export type V1MultiAssetFilter = V1MultiAssetFilter_Definite | V1MultiAssetFilter_Wild
 
 export interface V1MultiAssetFilter_Definite {
-  __kind: 'Definite'
-  value: V1MultiAsset[]
+    __kind: 'Definite'
+    value: V1MultiAsset[]
 }
 
 export interface V1MultiAssetFilter_Wild {
-  __kind: 'Wild'
-  value: V1WildMultiAsset
+    __kind: 'Wild'
+    value: V1WildMultiAsset
 }
 
 export type TokenError = TokenError_NoFunds | TokenError_WouldDie | TokenError_BelowMinimum | TokenError_CannotCreate | TokenError_UnknownAsset | TokenError_Frozen | TokenError_Unsupported
 
 export interface TokenError_NoFunds {
-  __kind: 'NoFunds'
+    __kind: 'NoFunds'
 }
 
 export interface TokenError_WouldDie {
-  __kind: 'WouldDie'
+    __kind: 'WouldDie'
 }
 
 export interface TokenError_BelowMinimum {
-  __kind: 'BelowMinimum'
+    __kind: 'BelowMinimum'
 }
 
 export interface TokenError_CannotCreate {
-  __kind: 'CannotCreate'
+    __kind: 'CannotCreate'
 }
 
 export interface TokenError_UnknownAsset {
-  __kind: 'UnknownAsset'
+    __kind: 'UnknownAsset'
 }
 
 export interface TokenError_Frozen {
-  __kind: 'Frozen'
+    __kind: 'Frozen'
 }
 
 export interface TokenError_Unsupported {
-  __kind: 'Unsupported'
+    __kind: 'Unsupported'
 }
 
 export type ArithmeticError = ArithmeticError_Underflow | ArithmeticError_Overflow | ArithmeticError_DivisionByZero
 
 export interface ArithmeticError_Underflow {
-  __kind: 'Underflow'
+    __kind: 'Underflow'
 }
 
 export interface ArithmeticError_Overflow {
-  __kind: 'Overflow'
+    __kind: 'Overflow'
 }
 
 export interface ArithmeticError_DivisionByZero {
-  __kind: 'DivisionByZero'
+    __kind: 'DivisionByZero'
 }
 
 export type DispatchClass = DispatchClass_Normal | DispatchClass_Operational | DispatchClass_Mandatory
 
 export interface DispatchClass_Normal {
-  __kind: 'Normal'
+    __kind: 'Normal'
 }
 
 export interface DispatchClass_Operational {
-  __kind: 'Operational'
+    __kind: 'Operational'
 }
 
 export interface DispatchClass_Mandatory {
-  __kind: 'Mandatory'
+    __kind: 'Mandatory'
 }
 
 export type Pays = Pays_Yes | Pays_No
 
 export interface Pays_Yes {
-  __kind: 'Yes'
+    __kind: 'Yes'
 }
 
 export interface Pays_No {
-  __kind: 'No'
+    __kind: 'No'
 }
 
 export interface MintPolicy {
-  issuer: Uint8Array
-  maxTokenAllowance: (bigint | undefined)
-  maxMintOperations: (bigint | undefined)
+    issuer: Uint8Array
+    maxTokenAllowance: (bigint | undefined)
+    maxMintOperations: (bigint | undefined)
 }
 
 export type TeleporationPolicy = TeleporationPolicy_NotAllowed | TeleporationPolicy_Drain | TeleporationPolicy_ADeedOf
 
 export interface TeleporationPolicy_NotAllowed {
-  __kind: 'NotAllowed'
+    __kind: 'NotAllowed'
 }
 
 export interface TeleporationPolicy_Drain {
-  __kind: 'Drain'
+    __kind: 'Drain'
 }
 
 export interface TeleporationPolicy_ADeedOf {
-  __kind: 'ADeedOf'
+    __kind: 'ADeedOf'
 }
 
 export type FungibilityPolicy = FungibilityPolicy_Fungible | FungibilityPolicy_NonFungible
 
 export interface FungibilityPolicy_Fungible {
-  __kind: 'Fungible'
+    __kind: 'Fungible'
 }
 
 export interface FungibilityPolicy_NonFungible {
-  __kind: 'NonFungible'
+    __kind: 'NonFungible'
 }
 
 export interface StorageProof {
-  trieNodes: Uint8Array[]
+    trieNodes: Uint8Array[]
 }
 
 export interface InboundDownwardMessage {
-  sentAt: number
-  msg: Uint8Array
+    sentAt: number
+    msg: Uint8Array
 }
 
 export interface InboundHrmpMessage {
-  sentAt: number
-  data: Uint8Array
+    sentAt: number
+    data: Uint8Array
 }
 
 export type Type_179 = Type_179_WithdrawAsset | Type_179_ReserveAssetDeposit | Type_179_TeleportAsset | Type_179_QueryResponse | Type_179_TransferAsset | Type_179_TransferReserveAsset | Type_179_Transact | Type_179_HrmpNewChannelOpenRequest | Type_179_HrmpChannelAccepted | Type_179_HrmpChannelClosing | Type_179_RelayedFrom
 
 export interface Type_179_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  assets: V0MultiAsset[]
-  effects: Type_181[]
+    __kind: 'WithdrawAsset'
+    assets: V0MultiAsset[]
+    effects: Type_181[]
 }
 
 export interface Type_179_ReserveAssetDeposit {
-  __kind: 'ReserveAssetDeposit'
-  assets: V0MultiAsset[]
-  effects: Type_181[]
+    __kind: 'ReserveAssetDeposit'
+    assets: V0MultiAsset[]
+    effects: Type_181[]
 }
 
 export interface Type_179_TeleportAsset {
-  __kind: 'TeleportAsset'
-  assets: V0MultiAsset[]
-  effects: Type_181[]
+    __kind: 'TeleportAsset'
+    assets: V0MultiAsset[]
+    effects: Type_181[]
 }
 
 export interface Type_179_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V0Response
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V0Response
 }
 
 export interface Type_179_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
+    __kind: 'TransferAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
 }
 
 export interface Type_179_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'TransferReserveAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface Type_179_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface Type_179_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface Type_179_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface Type_179_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface Type_179_RelayedFrom {
-  __kind: 'RelayedFrom'
-  who: V0MultiLocation
-  message: Type_179
+    __kind: 'RelayedFrom'
+    who: V0MultiLocation
+    message: Type_179
 }
 
 export type Type_184 = Type_184_WithdrawAsset | Type_184_ReserveAssetDeposited | Type_184_ReceiveTeleportedAsset | Type_184_QueryResponse | Type_184_TransferAsset | Type_184_TransferReserveAsset | Type_184_Transact | Type_184_HrmpNewChannelOpenRequest | Type_184_HrmpChannelAccepted | Type_184_HrmpChannelClosing | Type_184_RelayedFrom | Type_184_SubscribeVersion | Type_184_UnsubscribeVersion
 
 export interface Type_184_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  assets: V1MultiAsset[]
-  effects: Type_186[]
+    __kind: 'WithdrawAsset'
+    assets: V1MultiAsset[]
+    effects: Type_186[]
 }
 
 export interface Type_184_ReserveAssetDeposited {
-  __kind: 'ReserveAssetDeposited'
-  assets: V1MultiAsset[]
-  effects: Type_186[]
+    __kind: 'ReserveAssetDeposited'
+    assets: V1MultiAsset[]
+    effects: Type_186[]
 }
 
 export interface Type_184_ReceiveTeleportedAsset {
-  __kind: 'ReceiveTeleportedAsset'
-  assets: V1MultiAsset[]
-  effects: Type_186[]
+    __kind: 'ReceiveTeleportedAsset'
+    assets: V1MultiAsset[]
+    effects: Type_186[]
 }
 
 export interface Type_184_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V1Response
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V1Response
 }
 
 export interface Type_184_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V1MultiAsset[]
-  beneficiary: V1MultiLocation
+    __kind: 'TransferAsset'
+    assets: V1MultiAsset[]
+    beneficiary: V1MultiLocation
 }
 
 export interface Type_184_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V1MultiAsset[]
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'TransferReserveAsset'
+    assets: V1MultiAsset[]
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface Type_184_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface Type_184_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface Type_184_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface Type_184_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface Type_184_RelayedFrom {
-  __kind: 'RelayedFrom'
-  who: V1Junctions
-  message: Type_184
+    __kind: 'RelayedFrom'
+    who: V1Junctions
+    message: Type_184
 }
 
 export interface Type_184_SubscribeVersion {
-  __kind: 'SubscribeVersion'
-  queryId: bigint
-  maxResponseWeight: bigint
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: bigint
 }
 
 export interface Type_184_UnsubscribeVersion {
-  __kind: 'UnsubscribeVersion'
+    __kind: 'UnsubscribeVersion'
 }
 
 export type Type_190 = Type_190_WithdrawAsset | Type_190_ReserveAssetDeposited | Type_190_ReceiveTeleportedAsset | Type_190_QueryResponse | Type_190_TransferAsset | Type_190_TransferReserveAsset | Type_190_Transact | Type_190_HrmpNewChannelOpenRequest | Type_190_HrmpChannelAccepted | Type_190_HrmpChannelClosing | Type_190_ClearOrigin | Type_190_DescendOrigin | Type_190_ReportError | Type_190_DepositAsset | Type_190_DepositReserveAsset | Type_190_ExchangeAsset | Type_190_InitiateReserveWithdraw | Type_190_InitiateTeleport | Type_190_QueryHolding | Type_190_BuyExecution | Type_190_RefundSurplus | Type_190_SetErrorHandler | Type_190_SetAppendix | Type_190_ClearError | Type_190_ClaimAsset | Type_190_Trap | Type_190_SubscribeVersion | Type_190_UnsubscribeVersion
 
 export interface Type_190_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  value: V1MultiAsset[]
+    __kind: 'WithdrawAsset'
+    value: V1MultiAsset[]
 }
 
 export interface Type_190_ReserveAssetDeposited {
-  __kind: 'ReserveAssetDeposited'
-  value: V1MultiAsset[]
+    __kind: 'ReserveAssetDeposited'
+    value: V1MultiAsset[]
 }
 
 export interface Type_190_ReceiveTeleportedAsset {
-  __kind: 'ReceiveTeleportedAsset'
-  value: V1MultiAsset[]
+    __kind: 'ReceiveTeleportedAsset'
+    value: V1MultiAsset[]
 }
 
 export interface Type_190_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V2Response
-  maxWeight: bigint
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V2Response
+    maxWeight: bigint
 }
 
 export interface Type_190_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V1MultiAsset[]
-  beneficiary: V1MultiLocation
+    __kind: 'TransferAsset'
+    assets: V1MultiAsset[]
+    beneficiary: V1MultiLocation
 }
 
 export interface Type_190_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V1MultiAsset[]
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'TransferReserveAsset'
+    assets: V1MultiAsset[]
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface Type_190_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface Type_190_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface Type_190_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface Type_190_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface Type_190_ClearOrigin {
-  __kind: 'ClearOrigin'
+    __kind: 'ClearOrigin'
 }
 
 export interface Type_190_DescendOrigin {
-  __kind: 'DescendOrigin'
-  value: V1Junctions
+    __kind: 'DescendOrigin'
+    value: V1Junctions
 }
 
 export interface Type_190_ReportError {
-  __kind: 'ReportError'
-  queryId: bigint
-  dest: V1MultiLocation
-  maxResponseWeight: bigint
+    __kind: 'ReportError'
+    queryId: bigint
+    dest: V1MultiLocation
+    maxResponseWeight: bigint
 }
 
 export interface Type_190_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  beneficiary: V1MultiLocation
+    __kind: 'DepositAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    beneficiary: V1MultiLocation
 }
 
 export interface Type_190_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'DepositReserveAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface Type_190_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V1MultiAssetFilter
-  receive: V1MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V1MultiAssetFilter
+    receive: V1MultiAsset[]
 }
 
 export interface Type_190_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V1MultiAssetFilter
-  reserve: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V1MultiAssetFilter
+    reserve: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface Type_190_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V1MultiAssetFilter
-  dest: V1MultiLocation
-  xcm: V2Instruction[]
+    __kind: 'InitiateTeleport'
+    assets: V1MultiAssetFilter
+    dest: V1MultiLocation
+    xcm: V2Instruction[]
 }
 
 export interface Type_190_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V1MultiLocation
-  assets: V1MultiAssetFilter
-  maxResponseWeight: bigint
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V1MultiLocation
+    assets: V1MultiAssetFilter
+    maxResponseWeight: bigint
 }
 
 export interface Type_190_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V1MultiAsset
-  weightLimit: V2WeightLimit
+    __kind: 'BuyExecution'
+    fees: V1MultiAsset
+    weightLimit: V2WeightLimit
 }
 
 export interface Type_190_RefundSurplus {
-  __kind: 'RefundSurplus'
+    __kind: 'RefundSurplus'
 }
 
 export interface Type_190_SetErrorHandler {
-  __kind: 'SetErrorHandler'
-  value: Type_190[]
+    __kind: 'SetErrorHandler'
+    value: Type_190[]
 }
 
 export interface Type_190_SetAppendix {
-  __kind: 'SetAppendix'
-  value: Type_190[]
+    __kind: 'SetAppendix'
+    value: Type_190[]
 }
 
 export interface Type_190_ClearError {
-  __kind: 'ClearError'
+    __kind: 'ClearError'
 }
 
 export interface Type_190_ClaimAsset {
-  __kind: 'ClaimAsset'
-  assets: V1MultiAsset[]
-  ticket: V1MultiLocation
+    __kind: 'ClaimAsset'
+    assets: V1MultiAsset[]
+    ticket: V1MultiLocation
 }
 
 export interface Type_190_Trap {
-  __kind: 'Trap'
-  value: bigint
+    __kind: 'Trap'
+    value: bigint
 }
 
 export interface Type_190_SubscribeVersion {
-  __kind: 'SubscribeVersion'
-  queryId: bigint
-  maxResponseWeight: bigint
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: bigint
 }
 
 export interface Type_190_UnsubscribeVersion {
-  __kind: 'UnsubscribeVersion'
+    __kind: 'UnsubscribeVersion'
 }
 
 export type V0Xcm = V0Xcm_WithdrawAsset | V0Xcm_ReserveAssetDeposit | V0Xcm_TeleportAsset | V0Xcm_QueryResponse | V0Xcm_TransferAsset | V0Xcm_TransferReserveAsset | V0Xcm_Transact | V0Xcm_HrmpNewChannelOpenRequest | V0Xcm_HrmpChannelAccepted | V0Xcm_HrmpChannelClosing | V0Xcm_RelayedFrom
 
 export interface V0Xcm_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  assets: V0MultiAsset[]
-  effects: V0Order[]
+    __kind: 'WithdrawAsset'
+    assets: V0MultiAsset[]
+    effects: V0Order[]
 }
 
 export interface V0Xcm_ReserveAssetDeposit {
-  __kind: 'ReserveAssetDeposit'
-  assets: V0MultiAsset[]
-  effects: V0Order[]
+    __kind: 'ReserveAssetDeposit'
+    assets: V0MultiAsset[]
+    effects: V0Order[]
 }
 
 export interface V0Xcm_TeleportAsset {
-  __kind: 'TeleportAsset'
-  assets: V0MultiAsset[]
-  effects: V0Order[]
+    __kind: 'TeleportAsset'
+    assets: V0MultiAsset[]
+    effects: V0Order[]
 }
 
 export interface V0Xcm_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V0Response
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V0Response
 }
 
 export interface V0Xcm_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
+    __kind: 'TransferAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
 }
 
 export interface V0Xcm_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'TransferReserveAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface V0Xcm_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface V0Xcm_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface V0Xcm_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface V0Xcm_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface V0Xcm_RelayedFrom {
-  __kind: 'RelayedFrom'
-  who: V0MultiLocation
-  message: V0Xcm
+    __kind: 'RelayedFrom'
+    who: V0MultiLocation
+    message: V0Xcm
 }
 
 export type V1Xcm = V1Xcm_WithdrawAsset | V1Xcm_ReserveAssetDeposited | V1Xcm_ReceiveTeleportedAsset | V1Xcm_QueryResponse | V1Xcm_TransferAsset | V1Xcm_TransferReserveAsset | V1Xcm_Transact | V1Xcm_HrmpNewChannelOpenRequest | V1Xcm_HrmpChannelAccepted | V1Xcm_HrmpChannelClosing | V1Xcm_RelayedFrom | V1Xcm_SubscribeVersion | V1Xcm_UnsubscribeVersion
 
 export interface V1Xcm_WithdrawAsset {
-  __kind: 'WithdrawAsset'
-  assets: V1MultiAsset[]
-  effects: V1Order[]
+    __kind: 'WithdrawAsset'
+    assets: V1MultiAsset[]
+    effects: V1Order[]
 }
 
 export interface V1Xcm_ReserveAssetDeposited {
-  __kind: 'ReserveAssetDeposited'
-  assets: V1MultiAsset[]
-  effects: V1Order[]
+    __kind: 'ReserveAssetDeposited'
+    assets: V1MultiAsset[]
+    effects: V1Order[]
 }
 
 export interface V1Xcm_ReceiveTeleportedAsset {
-  __kind: 'ReceiveTeleportedAsset'
-  assets: V1MultiAsset[]
-  effects: V1Order[]
+    __kind: 'ReceiveTeleportedAsset'
+    assets: V1MultiAsset[]
+    effects: V1Order[]
 }
 
 export interface V1Xcm_QueryResponse {
-  __kind: 'QueryResponse'
-  queryId: bigint
-  response: V1Response
+    __kind: 'QueryResponse'
+    queryId: bigint
+    response: V1Response
 }
 
 export interface V1Xcm_TransferAsset {
-  __kind: 'TransferAsset'
-  assets: V1MultiAsset[]
-  beneficiary: V1MultiLocation
+    __kind: 'TransferAsset'
+    assets: V1MultiAsset[]
+    beneficiary: V1MultiLocation
 }
 
 export interface V1Xcm_TransferReserveAsset {
-  __kind: 'TransferReserveAsset'
-  assets: V1MultiAsset[]
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'TransferReserveAsset'
+    assets: V1MultiAsset[]
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface V1Xcm_Transact {
-  __kind: 'Transact'
-  originType: V0OriginKind
-  requireWeightAtMost: bigint
-  call: DoubleEncoded
+    __kind: 'Transact'
+    originType: V0OriginKind
+    requireWeightAtMost: bigint
+    call: DoubleEncoded
 }
 
 export interface V1Xcm_HrmpNewChannelOpenRequest {
-  __kind: 'HrmpNewChannelOpenRequest'
-  sender: number
-  maxMessageSize: number
-  maxCapacity: number
+    __kind: 'HrmpNewChannelOpenRequest'
+    sender: number
+    maxMessageSize: number
+    maxCapacity: number
 }
 
 export interface V1Xcm_HrmpChannelAccepted {
-  __kind: 'HrmpChannelAccepted'
-  recipient: number
+    __kind: 'HrmpChannelAccepted'
+    recipient: number
 }
 
 export interface V1Xcm_HrmpChannelClosing {
-  __kind: 'HrmpChannelClosing'
-  initiator: number
-  sender: number
-  recipient: number
+    __kind: 'HrmpChannelClosing'
+    initiator: number
+    sender: number
+    recipient: number
 }
 
 export interface V1Xcm_RelayedFrom {
-  __kind: 'RelayedFrom'
-  who: V1Junctions
-  message: V1Xcm
+    __kind: 'RelayedFrom'
+    who: V1Junctions
+    message: V1Xcm
 }
 
 export interface V1Xcm_SubscribeVersion {
-  __kind: 'SubscribeVersion'
-  queryId: bigint
-  maxResponseWeight: bigint
+    __kind: 'SubscribeVersion'
+    queryId: bigint
+    maxResponseWeight: bigint
 }
 
 export interface V1Xcm_UnsubscribeVersion {
-  __kind: 'UnsubscribeVersion'
+    __kind: 'UnsubscribeVersion'
 }
 
 /**
@@ -1645,8 +1645,8 @@ export type SystemCall = SystemCall_fill_block | SystemCall_remark | SystemCall_
  * A dispatch that will fill the block weight up to the given ratio.
  */
 export interface SystemCall_fill_block {
-  __kind: 'fill_block'
-  ratio: number
+    __kind: 'fill_block'
+    ratio: number
 }
 
 /**
@@ -1657,8 +1657,8 @@ export interface SystemCall_fill_block {
  * # </weight>
  */
 export interface SystemCall_remark {
-  __kind: 'remark'
-  remark: Uint8Array
+    __kind: 'remark'
+    remark: Uint8Array
 }
 
 /**
@@ -1673,8 +1673,8 @@ export interface SystemCall_remark {
  * # </weight>
  */
 export interface SystemCall_set_heap_pages {
-  __kind: 'set_heap_pages'
-  pages: bigint
+    __kind: 'set_heap_pages'
+    pages: bigint
 }
 
 /**
@@ -1692,8 +1692,8 @@ export interface SystemCall_set_heap_pages {
  * # </weight>
  */
 export interface SystemCall_set_code {
-  __kind: 'set_code'
-  code: Uint8Array
+    __kind: 'set_code'
+    code: Uint8Array
 }
 
 /**
@@ -1708,8 +1708,8 @@ export interface SystemCall_set_code {
  * block. # </weight>
  */
 export interface SystemCall_set_code_without_checks {
-  __kind: 'set_code_without_checks'
-  code: Uint8Array
+    __kind: 'set_code_without_checks'
+    code: Uint8Array
 }
 
 /**
@@ -1725,8 +1725,8 @@ export interface SystemCall_set_code_without_checks {
  * # </weight>
  */
 export interface SystemCall_set_changes_trie_config {
-  __kind: 'set_changes_trie_config'
-  changesTrieConfig: (ChangesTrieConfiguration | undefined)
+    __kind: 'set_changes_trie_config'
+    changesTrieConfig: (ChangesTrieConfiguration | undefined)
 }
 
 /**
@@ -1740,8 +1740,8 @@ export interface SystemCall_set_changes_trie_config {
  * # </weight>
  */
 export interface SystemCall_set_storage {
-  __kind: 'set_storage'
-  items: [Uint8Array, Uint8Array][]
+    __kind: 'set_storage'
+    items: [Uint8Array, Uint8Array][]
 }
 
 /**
@@ -1755,8 +1755,8 @@ export interface SystemCall_set_storage {
  * # </weight>
  */
 export interface SystemCall_kill_storage {
-  __kind: 'kill_storage'
-  keys: Uint8Array[]
+    __kind: 'kill_storage'
+    keys: Uint8Array[]
 }
 
 /**
@@ -1773,9 +1773,9 @@ export interface SystemCall_kill_storage {
  * # </weight>
  */
 export interface SystemCall_kill_prefix {
-  __kind: 'kill_prefix'
-  prefix: Uint8Array
-  subkeys: number
+    __kind: 'kill_prefix'
+    prefix: Uint8Array
+    subkeys: number
 }
 
 /**
@@ -1787,8 +1787,8 @@ export interface SystemCall_kill_prefix {
  * # </weight>
  */
 export interface SystemCall_remark_with_event {
-  __kind: 'remark_with_event'
-  remark: Uint8Array
+    __kind: 'remark_with_event'
+    remark: Uint8Array
 }
 
 /**
@@ -1805,8 +1805,8 @@ export type ParachainSystemCall = ParachainSystemCall_set_upgrade_block | Parach
  * if done wrong.
  */
 export interface ParachainSystemCall_set_upgrade_block {
-  __kind: 'set_upgrade_block'
-  relayChainBlock: number
+    __kind: 'set_upgrade_block'
+    relayChainBlock: number
 }
 
 /**
@@ -1821,23 +1821,23 @@ export interface ParachainSystemCall_set_upgrade_block {
  * if the appropriate time has come.
  */
 export interface ParachainSystemCall_set_validation_data {
-  __kind: 'set_validation_data'
-  data: ParachainInherentData
+    __kind: 'set_validation_data'
+    data: ParachainInherentData
 }
 
 export interface ParachainSystemCall_sudo_send_upward_message {
-  __kind: 'sudo_send_upward_message'
-  message: Uint8Array
+    __kind: 'sudo_send_upward_message'
+    message: Uint8Array
 }
 
 export interface ParachainSystemCall_authorize_upgrade {
-  __kind: 'authorize_upgrade'
-  codeHash: Uint8Array
+    __kind: 'authorize_upgrade'
+    codeHash: Uint8Array
 }
 
 export interface ParachainSystemCall_enact_authorized_upgrade {
-  __kind: 'enact_authorized_upgrade'
-  code: Uint8Array
+    __kind: 'enact_authorized_upgrade'
+    code: Uint8Array
 }
 
 /**
@@ -1864,8 +1864,8 @@ export type TimestampCall = TimestampCall_set
  * # </weight>
  */
 export interface TimestampCall_set {
-  __kind: 'set'
-  now: bigint
+    __kind: 'set'
+    now: bigint
 }
 
 /**
@@ -1886,8 +1886,8 @@ export type SudoCall = SudoCall_sudo | SudoCall_sudo_unchecked_weight | SudoCall
  * # </weight>
  */
 export interface SudoCall_sudo {
-  __kind: 'sudo'
-  call: Call
+    __kind: 'sudo'
+    call: Call
 }
 
 /**
@@ -1903,9 +1903,9 @@ export interface SudoCall_sudo {
  * # </weight>
  */
 export interface SudoCall_sudo_unchecked_weight {
-  __kind: 'sudo_unchecked_weight'
-  call: Call
-  weight: bigint
+    __kind: 'sudo_unchecked_weight'
+    call: Call
+    weight: bigint
 }
 
 /**
@@ -1921,8 +1921,8 @@ export interface SudoCall_sudo_unchecked_weight {
  * # </weight>
  */
 export interface SudoCall_set_key {
-  __kind: 'set_key'
-  new: MultiAddress
+    __kind: 'set_key'
+    new: MultiAddress
 }
 
 /**
@@ -1939,9 +1939,9 @@ export interface SudoCall_set_key {
  * # </weight>
  */
 export interface SudoCall_sudo_as {
-  __kind: 'sudo_as'
-  who: MultiAddress
-  call: Call
+    __kind: 'sudo_as'
+    who: MultiAddress
+    call: Call
 }
 
 /**
@@ -1980,9 +1980,9 @@ export type BalancesCall = BalancesCall_transfer | BalancesCall_set_balance | Ba
  * # </weight>
  */
 export interface BalancesCall_transfer {
-  __kind: 'transfer'
-  dest: MultiAddress
-  value: bigint
+    __kind: 'transfer'
+    dest: MultiAddress
+    value: bigint
 }
 
 /**
@@ -2006,10 +2006,10 @@ export interface BalancesCall_transfer {
  * # </weight>
  */
 export interface BalancesCall_set_balance {
-  __kind: 'set_balance'
-  who: MultiAddress
-  newFree: bigint
-  newReserved: bigint
+    __kind: 'set_balance'
+    who: MultiAddress
+    newFree: bigint
+    newReserved: bigint
 }
 
 /**
@@ -2021,10 +2021,10 @@ export interface BalancesCall_set_balance {
  * # </weight>
  */
 export interface BalancesCall_force_transfer {
-  __kind: 'force_transfer'
-  source: MultiAddress
-  dest: MultiAddress
-  value: bigint
+    __kind: 'force_transfer'
+    source: MultiAddress
+    dest: MultiAddress
+    value: bigint
 }
 
 /**
@@ -2041,9 +2041,9 @@ export interface BalancesCall_force_transfer {
  * #</weight>
  */
 export interface BalancesCall_transfer_keep_alive {
-  __kind: 'transfer_keep_alive'
-  dest: MultiAddress
-  value: bigint
+    __kind: 'transfer_keep_alive'
+    dest: MultiAddress
+    value: bigint
 }
 
 /**
@@ -2066,9 +2066,9 @@ export interface BalancesCall_transfer_keep_alive {
  *   #</weight>
  */
 export interface BalancesCall_transfer_all {
-  __kind: 'transfer_all'
-  dest: MultiAddress
-  keepAlive: boolean
+    __kind: 'transfer_all'
+    dest: MultiAddress
+    keepAlive: boolean
 }
 
 /**
@@ -2077,9 +2077,9 @@ export interface BalancesCall_transfer_all {
  * Can only be called by ROOT.
  */
 export interface BalancesCall_force_unreserve {
-  __kind: 'force_unreserve'
-  who: MultiAddress
-  amount: bigint
+    __kind: 'force_unreserve'
+    who: MultiAddress
+    amount: bigint
 }
 
 /**
@@ -2091,8 +2091,8 @@ export type CollatorStakingCall = CollatorStakingCall_join_candidates | Collator
  * Join the list of candidates for collation.
  */
 export interface CollatorStakingCall_join_candidates {
-  __kind: 'join_candidates'
-  amount: bigint
+    __kind: 'join_candidates'
+    amount: bigint
 }
 
 /**
@@ -2104,29 +2104,29 @@ export interface CollatorStakingCall_join_candidates {
  * and the nominations would be freed up.
  */
 export interface CollatorStakingCall_unbond {
-  __kind: 'unbond'
+    __kind: 'unbond'
 }
 
 /**
  * Nominate a specific candidate to be selected for collation and block production.
  */
 export interface CollatorStakingCall_nominate {
-  __kind: 'nominate'
-  collatorId: Uint8Array
-  amount: bigint
+    __kind: 'nominate'
+    collatorId: Uint8Array
+    amount: bigint
 }
 
 /**
  * Remove a nomination previously registered for a specific collator candidate.
  */
 export interface CollatorStakingCall_remove_nomination {
-  __kind: 'remove_nomination'
-  collatorId: Uint8Array
+    __kind: 'remove_nomination'
+    collatorId: Uint8Array
 }
 
 export interface CollatorStakingCall_set_block_producer {
-  __kind: 'set_block_producer'
-  producer: Uint8Array
+    __kind: 'set_block_producer'
+    producer: Uint8Array
 }
 
 /**
@@ -2141,26 +2141,26 @@ export type PoolsCall = PoolsCall_create_fuel_tank | PoolsCall_transfer_ownershi
  * funds so that these fuel tanks can be used for their own purposes.
  */
 export interface PoolsCall_create_fuel_tank {
-  __kind: 'create_fuel_tank'
-  fundAccount: MultiAddress
+    __kind: 'create_fuel_tank'
+    fundAccount: MultiAddress
 }
 
 /**
  * Transfer ownership of a pool to new account.
  */
 export interface PoolsCall_transfer_ownership {
-  __kind: 'transfer_ownership'
-  poolId: bigint
-  newOwner: MultiAddress
+    __kind: 'transfer_ownership'
+    poolId: bigint
+    newOwner: MultiAddress
 }
 
 /**
  * Withdraw funds from pool to the pool owner's account.
  */
 export interface PoolsCall_withdraw_from_pool {
-  __kind: 'withdraw_from_pool'
-  poolId: bigint
-  amount: bigint
+    __kind: 'withdraw_from_pool'
+    poolId: bigint
+    amount: bigint
 }
 
 /**
@@ -2174,9 +2174,9 @@ export type XcmpQueueCall = never
 export type PolkadotXcmCall = PolkadotXcmCall_send | PolkadotXcmCall_teleport_assets | PolkadotXcmCall_reserve_transfer_assets | PolkadotXcmCall_execute | PolkadotXcmCall_force_xcm_version | PolkadotXcmCall_force_default_xcm_version | PolkadotXcmCall_force_subscribe_version_notify | PolkadotXcmCall_force_unsubscribe_version_notify | PolkadotXcmCall_limited_reserve_transfer_assets | PolkadotXcmCall_limited_teleport_assets
 
 export interface PolkadotXcmCall_send {
-  __kind: 'send'
-  dest: VersionedMultiLocation
-  message: VersionedXcm
+    __kind: 'send'
+    dest: VersionedMultiLocation
+    message: VersionedXcm
 }
 
 /**
@@ -2197,11 +2197,11 @@ export interface PolkadotXcmCall_send {
  *   `Teleport { assets, effects: [ BuyExecution{..}, DepositAsset{..} ] }`.
  */
 export interface PolkadotXcmCall_teleport_assets {
-  __kind: 'teleport_assets'
-  dest: VersionedMultiLocation
-  beneficiary: VersionedMultiLocation
-  assets: VersionedMultiAssets
-  feeAssetItem: number
+    __kind: 'teleport_assets'
+    dest: VersionedMultiLocation
+    beneficiary: VersionedMultiLocation
+    assets: VersionedMultiAssets
+    feeAssetItem: number
 }
 
 /**
@@ -2223,11 +2223,11 @@ export interface PolkadotXcmCall_teleport_assets {
  *   fees.
  */
 export interface PolkadotXcmCall_reserve_transfer_assets {
-  __kind: 'reserve_transfer_assets'
-  dest: VersionedMultiLocation
-  beneficiary: VersionedMultiLocation
-  assets: VersionedMultiAssets
-  feeAssetItem: number
+    __kind: 'reserve_transfer_assets'
+    dest: VersionedMultiLocation
+    beneficiary: VersionedMultiLocation
+    assets: VersionedMultiAssets
+    feeAssetItem: number
 }
 
 /**
@@ -2244,9 +2244,9 @@ export interface PolkadotXcmCall_reserve_transfer_assets {
  * to completion; only that *some* of it was executed.
  */
 export interface PolkadotXcmCall_execute {
-  __kind: 'execute'
-  message: Type_178
-  maxWeight: bigint
+    __kind: 'execute'
+    message: Type_178
+    maxWeight: bigint
 }
 
 /**
@@ -2258,9 +2258,9 @@ export interface PolkadotXcmCall_execute {
  * - `xcm_version`: The latest version of XCM that `location` supports.
  */
 export interface PolkadotXcmCall_force_xcm_version {
-  __kind: 'force_xcm_version'
-  location: V1MultiLocation
-  xcmVersion: number
+    __kind: 'force_xcm_version'
+    location: V1MultiLocation
+    xcmVersion: number
 }
 
 /**
@@ -2271,8 +2271,8 @@ export interface PolkadotXcmCall_force_xcm_version {
  * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
  */
 export interface PolkadotXcmCall_force_default_xcm_version {
-  __kind: 'force_default_xcm_version'
-  maybeXcmVersion: (number | undefined)
+    __kind: 'force_default_xcm_version'
+    maybeXcmVersion: (number | undefined)
 }
 
 /**
@@ -2282,8 +2282,8 @@ export interface PolkadotXcmCall_force_default_xcm_version {
  * - `location`: The location to which we should subscribe for XCM version notifications.
  */
 export interface PolkadotXcmCall_force_subscribe_version_notify {
-  __kind: 'force_subscribe_version_notify'
-  location: VersionedMultiLocation
+    __kind: 'force_subscribe_version_notify'
+    location: VersionedMultiLocation
 }
 
 /**
@@ -2295,8 +2295,8 @@ export interface PolkadotXcmCall_force_subscribe_version_notify {
  *   notifications which we no longer desire.
  */
 export interface PolkadotXcmCall_force_unsubscribe_version_notify {
-  __kind: 'force_unsubscribe_version_notify'
-  location: VersionedMultiLocation
+    __kind: 'force_unsubscribe_version_notify'
+    location: VersionedMultiLocation
 }
 
 /**
@@ -2317,12 +2317,12 @@ export interface PolkadotXcmCall_force_unsubscribe_version_notify {
  * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
  */
 export interface PolkadotXcmCall_limited_reserve_transfer_assets {
-  __kind: 'limited_reserve_transfer_assets'
-  dest: VersionedMultiLocation
-  beneficiary: VersionedMultiLocation
-  assets: VersionedMultiAssets
-  feeAssetItem: number
-  weightLimit: V2WeightLimit
+    __kind: 'limited_reserve_transfer_assets'
+    dest: VersionedMultiLocation
+    beneficiary: VersionedMultiLocation
+    assets: VersionedMultiAssets
+    feeAssetItem: number
+    weightLimit: V2WeightLimit
 }
 
 /**
@@ -2342,12 +2342,12 @@ export interface PolkadotXcmCall_limited_reserve_transfer_assets {
  * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
  */
 export interface PolkadotXcmCall_limited_teleport_assets {
-  __kind: 'limited_teleport_assets'
-  dest: VersionedMultiLocation
-  beneficiary: VersionedMultiLocation
-  assets: VersionedMultiAssets
-  feeAssetItem: number
-  weightLimit: V2WeightLimit
+    __kind: 'limited_teleport_assets'
+    dest: VersionedMultiLocation
+    beneficiary: VersionedMultiLocation
+    assets: VersionedMultiAssets
+    feeAssetItem: number
+    weightLimit: V2WeightLimit
 }
 
 /**
@@ -2375,9 +2375,9 @@ export type DmpQueueCall = DmpQueueCall_service_overweight
  * - `OverweightServiced`: On success.
  */
 export interface DmpQueueCall_service_overweight {
-  __kind: 'service_overweight'
-  index: bigint
-  weightLimit: bigint
+    __kind: 'service_overweight'
+    index: bigint
+    weightLimit: bigint
 }
 
 /**
@@ -2392,9 +2392,9 @@ export type MultiAssetsCall = MultiAssetsCall_transfer_ownership | MultiAssetsCa
  * - Weight based on number of chunks instead of number or elements of tokens.
  */
 export interface MultiAssetsCall_transfer_ownership {
-  __kind: 'transfer_ownership'
-  target: MultiAddress
-  asset: bigint
+    __kind: 'transfer_ownership'
+    target: MultiAddress
+    asset: bigint
 }
 
 /**
@@ -2402,21 +2402,21 @@ export interface MultiAssetsCall_transfer_ownership {
  * See `chunks::do_transfer`.
  */
 export interface MultiAssetsCall_transfer {
-  __kind: 'transfer'
-  target: MultiAddress
-  asset: bigint
-  token: number
-  amount: bigint
+    __kind: 'transfer'
+    target: MultiAddress
+    asset: bigint
+    token: number
+    amount: bigint
 }
 
 /**
  * Transfers the `tokens` of `asset` from `origin` to `target`.
  */
 export interface MultiAssetsCall_transfer_by_chunk {
-  __kind: 'transfer_by_chunk'
-  target: MultiAddress
-  asset: bigint
-  tokens: Range[]
+    __kind: 'transfer_by_chunk'
+    target: MultiAddress
+    asset: bigint
+    tokens: Range[]
 }
 
 /**
@@ -2424,17 +2424,17 @@ export interface MultiAssetsCall_transfer_by_chunk {
  * `source` account.
  */
 export interface MultiAssetsCall_batch_transfer {
-  __kind: 'batch_transfer'
-  asset: bigint
-  recipients: Recipient[]
+    __kind: 'batch_transfer'
+    asset: bigint
+    recipients: Recipient[]
 }
 
 /**
  * Transfers an amount of tokens for a specific Asset to a given `recipient` from `source` account
  */
 export interface MultiAssetsCall_batch_multi_transfer {
-  __kind: 'batch_multi_transfer'
-  recipients: RecipientWithAsset[]
+    __kind: 'batch_multi_transfer'
+    recipients: RecipientWithAsset[]
 }
 
 /**
@@ -2442,9 +2442,9 @@ export interface MultiAssetsCall_batch_multi_transfer {
  * - `recipients_by_chunk` must be bounded.
  */
 export interface MultiAssetsCall_batch_transfer_by_chunk {
-  __kind: 'batch_transfer_by_chunk'
-  asset: bigint
-  recipientsByChunk: RecipientsByChunk[]
+    __kind: 'batch_transfer_by_chunk'
+    asset: bigint
+    recipientsByChunk: RecipientsByChunk[]
 }
 
 /**
@@ -2452,17 +2452,17 @@ export interface MultiAssetsCall_batch_transfer_by_chunk {
  * owner.
  */
 export interface MultiAssetsCall_create_asset {
-  __kind: 'create_asset'
-  policy: AssetPolicy
+    __kind: 'create_asset'
+    policy: AssetPolicy
 }
 
 /**
  * Mints new `amount` of `asset` and transfer to `origin` account.
  */
 export interface MultiAssetsCall_mint {
-  __kind: 'mint'
-  asset: bigint
-  amount: bigint
+    __kind: 'mint'
+    asset: bigint
+    amount: bigint
 }
 
 /**
@@ -2471,10 +2471,10 @@ export interface MultiAssetsCall_mint {
  * See `Pallet::do_burn_by_chunk`.
  */
 export interface MultiAssetsCall_burn {
-  __kind: 'burn'
-  asset: bigint
-  token: number
-  amount: bigint
+    __kind: 'burn'
+    asset: bigint
+    token: number
+    amount: bigint
 }
 
 /**
@@ -2483,9 +2483,9 @@ export interface MultiAssetsCall_burn {
  * See `Pallet::do_burn_by_chunk`.
  */
 export interface MultiAssetsCall_burn_by_chunk {
-  __kind: 'burn_by_chunk'
-  asset: bigint
-  tokens: Range[]
+    __kind: 'burn_by_chunk'
+    asset: bigint
+    tokens: Range[]
 }
 
 /**
@@ -2494,10 +2494,10 @@ export interface MultiAssetsCall_burn_by_chunk {
  * See `Pallet::do_set_asset_attribute`.
  */
 export interface MultiAssetsCall_set_asset_attribute {
-  __kind: 'set_asset_attribute'
-  asset: bigint
-  key: Uint8Array
-  value: Uint8Array
+    __kind: 'set_asset_attribute'
+    asset: bigint
+    key: Uint8Array
+    value: Uint8Array
 }
 
 /**
@@ -2506,9 +2506,9 @@ export interface MultiAssetsCall_set_asset_attribute {
  * See `Pallet::do_set_asset_attribute`.
  */
 export interface MultiAssetsCall_clear_asset_attribute {
-  __kind: 'clear_asset_attribute'
-  asset: bigint
-  key: Uint8Array
+    __kind: 'clear_asset_attribute'
+    asset: bigint
+    key: Uint8Array
 }
 
 /**
@@ -2517,11 +2517,11 @@ export interface MultiAssetsCall_clear_asset_attribute {
  * See `Pallet::do_set_token_attribute`.
  */
 export interface MultiAssetsCall_set_token_attribute {
-  __kind: 'set_token_attribute'
-  asset: bigint
-  token: number
-  key: Uint8Array
-  value: Uint8Array
+    __kind: 'set_token_attribute'
+    asset: bigint
+    token: number
+    key: Uint8Array
+    value: Uint8Array
 }
 
 /**
@@ -2530,10 +2530,10 @@ export interface MultiAssetsCall_set_token_attribute {
  * See `Pallet::do_set_token_attribute`.
  */
 export interface MultiAssetsCall_clear_token_attribute {
-  __kind: 'clear_token_attribute'
-  asset: bigint
-  token: number
-  key: Uint8Array
+    __kind: 'clear_token_attribute'
+    asset: bigint
+    token: number
+    key: Uint8Array
 }
 
 /**
@@ -2542,10 +2542,10 @@ export interface MultiAssetsCall_clear_token_attribute {
  * See `Pallet::do_burn_asset`.
  */
 export interface MultiAssetsCall_burn_asset {
-  __kind: 'burn_asset'
-  asset: bigint
-  assetAttributeCount: number
-  nextTokenId: number
+    __kind: 'burn_asset'
+    asset: bigint
+    assetAttributeCount: number
+    nextTokenId: number
 }
 
 /**
@@ -2557,70 +2557,70 @@ export type MultiAssetsOperatorExtCall = MultiAssetsOperatorExtCall_approve_for_
  * Approve `operator` to manage all the `origin`'s assets.
  */
 export interface MultiAssetsOperatorExtCall_approve_for_all {
-  __kind: 'approve_for_all'
-  operator: Uint8Array
-  expiration: Expiration
+    __kind: 'approve_for_all'
+    operator: Uint8Array
+    expiration: Expiration
 }
 
 /**
  * Unapprove `operator` to manage `origin's` assets
  */
 export interface MultiAssetsOperatorExtCall_unapprove_for_all {
-  __kind: 'unapprove_for_all'
-  operator: Uint8Array
+    __kind: 'unapprove_for_all'
+    operator: Uint8Array
 }
 
 /**
  * Approve the `operator` to manage all of `origin`'s tokens belonging to `asset`
  */
 export interface MultiAssetsOperatorExtCall_approve_asset {
-  __kind: 'approve_asset'
-  operator: Uint8Array
-  asset: bigint
-  expiration: Expiration
+    __kind: 'approve_asset'
+    operator: Uint8Array
+    asset: bigint
+    expiration: Expiration
 }
 
 /**
  * Unapprove the `operator` to manage all of `origin`'s tokens belonging to `asset`
  */
 export interface MultiAssetsOperatorExtCall_unapprove_asset {
-  __kind: 'unapprove_asset'
-  operator: Uint8Array
-  asset: bigint
+    __kind: 'unapprove_asset'
+    operator: Uint8Array
+    asset: bigint
 }
 
 /**
  * Approve the `operator` to transfer up to `amount` of `origin`'s `token`s
  */
 export interface MultiAssetsOperatorExtCall_approve_token {
-  __kind: 'approve_token'
-  operator: Uint8Array
-  asset: bigint
-  token: number
-  amount: bigint
-  expiration: Expiration
+    __kind: 'approve_token'
+    operator: Uint8Array
+    asset: bigint
+    token: number
+    amount: bigint
+    expiration: Expiration
 }
 
 /**
  * Unapprove `operator` to transfer `origin`'s `token`s
  */
 export interface MultiAssetsOperatorExtCall_unapprove_token {
-  __kind: 'unapprove_token'
-  operator: Uint8Array
-  asset: bigint
-  token: number
+    __kind: 'unapprove_token'
+    operator: Uint8Array
+    asset: bigint
+    token: number
 }
 
 /**
  * Transfers `amount` of `tokens` from account `from` to address `to` if `origin` has enough allowance
  */
 export interface MultiAssetsOperatorExtCall_transfer_from {
-  __kind: 'transfer_from'
-  from: Uint8Array
-  to: Uint8Array
-  asset: bigint
-  token: number
-  amount: bigint
+    __kind: 'transfer_from'
+    from: Uint8Array
+    to: Uint8Array
+    asset: bigint
+    token: number
+    amount: bigint
 }
 
 /**
@@ -2632,25 +2632,25 @@ export type TagsCall = TagsCall_create_tag | TagsCall_tag_asset | TagsCall_untag
  * Create a tag
  */
 export interface TagsCall_create_tag {
-  __kind: 'create_tag'
+    __kind: 'create_tag'
 }
 
 /**
  * Adds `tag_id` to `asset_id`. `origin` must own the asset and tag.
  */
 export interface TagsCall_tag_asset {
-  __kind: 'tag_asset'
-  assetId: bigint
-  tagId: bigint
+    __kind: 'tag_asset'
+    assetId: bigint
+    tagId: bigint
 }
 
 /**
  * Removes `tag_id` from `asset_id`. `origin` must own the asset and tag.
  */
 export interface TagsCall_untag_asset {
-  __kind: 'untag_asset'
-  assetId: bigint
-  tagId: bigint
+    __kind: 'untag_asset'
+    assetId: bigint
+    tagId: bigint
 }
 
 /**
@@ -2685,9 +2685,9 @@ export type ClaimsCall = ClaimsCall_claim | ClaimsCall_mint_claim | ClaimsCall_m
  * </weight>
  */
 export interface ClaimsCall_claim {
-  __kind: 'claim'
-  dest: Uint8Array
-  ethereumSignature: Uint8Array
+    __kind: 'claim'
+    dest: Uint8Array
+    ethereumSignature: Uint8Array
 }
 
 /**
@@ -2706,603 +2706,603 @@ export interface ClaimsCall_claim {
  * </weight>
  */
 export interface ClaimsCall_mint_claim {
-  __kind: 'mint_claim'
-  who: Uint8Array
-  value: bigint
+    __kind: 'mint_claim'
+    who: Uint8Array
+    value: bigint
 }
 
 export interface ClaimsCall_move_claim {
-  __kind: 'move_claim'
-  old: Uint8Array
-  new: Uint8Array
-  maybePreclaim: (Uint8Array | undefined)
+    __kind: 'move_claim'
+    old: Uint8Array
+    new: Uint8Array
+    maybePreclaim: (Uint8Array | undefined)
 }
 
 export type Reasons = Reasons_Fee | Reasons_Misc | Reasons_All
 
 export interface Reasons_Fee {
-  __kind: 'Fee'
+    __kind: 'Fee'
 }
 
 export interface Reasons_Misc {
-  __kind: 'Misc'
+    __kind: 'Misc'
 }
 
 export interface Reasons_All {
-  __kind: 'All'
+    __kind: 'All'
 }
 
 export type Supply = Supply_CirculatingSupply | Supply_TokenCount
 
 export interface Supply_CirculatingSupply {
-  __kind: 'CirculatingSupply'
-  value: bigint
+    __kind: 'CirculatingSupply'
+    value: bigint
 }
 
 export interface Supply_TokenCount {
-  __kind: 'TokenCount'
-  value: bigint
+    __kind: 'TokenCount'
+    value: bigint
 }
 
 export interface V1AbridgedHrmpChannel {
-  maxCapacity: number
-  maxTotalSize: number
-  maxMessageSize: number
-  msgCount: number
-  totalSize: number
-  mqcHead: (Uint8Array | undefined)
+    maxCapacity: number
+    maxTotalSize: number
+    maxMessageSize: number
+    msgCount: number
+    totalSize: number
+    mqcHead: (Uint8Array | undefined)
 }
 
 export type DigestItem = DigestItem_ChangesTrieRoot | DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_ChangesTrieSignal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
 
 export interface DigestItem_ChangesTrieRoot {
-  __kind: 'ChangesTrieRoot'
-  value: Uint8Array
+    __kind: 'ChangesTrieRoot'
+    value: Uint8Array
 }
 
 export interface DigestItem_PreRuntime {
-  __kind: 'PreRuntime'
-  value: [Uint8Array, Uint8Array]
+    __kind: 'PreRuntime'
+    value: [Uint8Array, Uint8Array]
 }
 
 export interface DigestItem_Consensus {
-  __kind: 'Consensus'
-  value: [Uint8Array, Uint8Array]
+    __kind: 'Consensus'
+    value: [Uint8Array, Uint8Array]
 }
 
 export interface DigestItem_Seal {
-  __kind: 'Seal'
-  value: [Uint8Array, Uint8Array]
+    __kind: 'Seal'
+    value: [Uint8Array, Uint8Array]
 }
 
 export interface DigestItem_ChangesTrieSignal {
-  __kind: 'ChangesTrieSignal'
-  value: ChangesTrieSignal
+    __kind: 'ChangesTrieSignal'
+    value: ChangesTrieSignal
 }
 
 export interface DigestItem_Other {
-  __kind: 'Other'
-  value: Uint8Array
+    __kind: 'Other'
+    value: Uint8Array
 }
 
 export interface DigestItem_RuntimeEnvironmentUpdated {
-  __kind: 'RuntimeEnvironmentUpdated'
+    __kind: 'RuntimeEnvironmentUpdated'
 }
 
 export type Event = Event_System | Event_ParachainSystem | Event_Sudo | Event_Balances | Event_CollatorStaking | Event_Pools | Event_XcmpQueue | Event_PolkadotXcm | Event_CumulusXcm | Event_DmpQueue | Event_MultiAssets | Event_MultiAssetsOperatorExt | Event_Tags | Event_Claims
 
 export interface Event_System {
-  __kind: 'System'
-  value: SystemEvent
+    __kind: 'System'
+    value: SystemEvent
 }
 
 export interface Event_ParachainSystem {
-  __kind: 'ParachainSystem'
-  value: ParachainSystemEvent
+    __kind: 'ParachainSystem'
+    value: ParachainSystemEvent
 }
 
 export interface Event_Sudo {
-  __kind: 'Sudo'
-  value: SudoEvent
+    __kind: 'Sudo'
+    value: SudoEvent
 }
 
 export interface Event_Balances {
-  __kind: 'Balances'
-  value: BalancesEvent
+    __kind: 'Balances'
+    value: BalancesEvent
 }
 
 export interface Event_CollatorStaking {
-  __kind: 'CollatorStaking'
-  value: CollatorStakingEvent
+    __kind: 'CollatorStaking'
+    value: CollatorStakingEvent
 }
 
 export interface Event_Pools {
-  __kind: 'Pools'
-  value: PoolsEvent
+    __kind: 'Pools'
+    value: PoolsEvent
 }
 
 export interface Event_XcmpQueue {
-  __kind: 'XcmpQueue'
-  value: XcmpQueueEvent
+    __kind: 'XcmpQueue'
+    value: XcmpQueueEvent
 }
 
 export interface Event_PolkadotXcm {
-  __kind: 'PolkadotXcm'
-  value: PolkadotXcmEvent
+    __kind: 'PolkadotXcm'
+    value: PolkadotXcmEvent
 }
 
 export interface Event_CumulusXcm {
-  __kind: 'CumulusXcm'
-  value: CumulusXcmEvent
+    __kind: 'CumulusXcm'
+    value: CumulusXcmEvent
 }
 
 export interface Event_DmpQueue {
-  __kind: 'DmpQueue'
-  value: DmpQueueEvent
+    __kind: 'DmpQueue'
+    value: DmpQueueEvent
 }
 
 export interface Event_MultiAssets {
-  __kind: 'MultiAssets'
-  value: MultiAssetsEvent
+    __kind: 'MultiAssets'
+    value: MultiAssetsEvent
 }
 
 export interface Event_MultiAssetsOperatorExt {
-  __kind: 'MultiAssetsOperatorExt'
-  value: MultiAssetsOperatorExtEvent
+    __kind: 'MultiAssetsOperatorExt'
+    value: MultiAssetsOperatorExtEvent
 }
 
 export interface Event_Tags {
-  __kind: 'Tags'
-  value: TagsEvent
+    __kind: 'Tags'
+    value: TagsEvent
 }
 
 export interface Event_Claims {
-  __kind: 'Claims'
-  value: ClaimsEvent
+    __kind: 'Claims'
+    value: ClaimsEvent
 }
 
 export type AssetType = AssetType_Fungible | AssetType_NonFungible | AssetType_IOUToken | AssetType_Unknown
 
 export interface AssetType_Fungible {
-  __kind: 'Fungible'
+    __kind: 'Fungible'
 }
 
 export interface AssetType_NonFungible {
-  __kind: 'NonFungible'
+    __kind: 'NonFungible'
 }
 
 export interface AssetType_IOUToken {
-  __kind: 'IOUToken'
+    __kind: 'IOUToken'
 }
 
 export interface AssetType_Unknown {
-  __kind: 'Unknown'
+    __kind: 'Unknown'
 }
 
 export type V1Junction = V1Junction_Parachain | V1Junction_AccountId32 | V1Junction_AccountIndex64 | V1Junction_AccountKey20 | V1Junction_PalletInstance | V1Junction_GeneralIndex | V1Junction_GeneralKey | V1Junction_OnlyChild | V1Junction_Plurality
 
 export interface V1Junction_Parachain {
-  __kind: 'Parachain'
-  value: number
+    __kind: 'Parachain'
+    value: number
 }
 
 export interface V1Junction_AccountId32 {
-  __kind: 'AccountId32'
-  network: V0NetworkId
-  id: Uint8Array
+    __kind: 'AccountId32'
+    network: V0NetworkId
+    id: Uint8Array
 }
 
 export interface V1Junction_AccountIndex64 {
-  __kind: 'AccountIndex64'
-  network: V0NetworkId
-  index: bigint
+    __kind: 'AccountIndex64'
+    network: V0NetworkId
+    index: bigint
 }
 
 export interface V1Junction_AccountKey20 {
-  __kind: 'AccountKey20'
-  network: V0NetworkId
-  key: Uint8Array
+    __kind: 'AccountKey20'
+    network: V0NetworkId
+    key: Uint8Array
 }
 
 export interface V1Junction_PalletInstance {
-  __kind: 'PalletInstance'
-  value: number
+    __kind: 'PalletInstance'
+    value: number
 }
 
 export interface V1Junction_GeneralIndex {
-  __kind: 'GeneralIndex'
-  value: bigint
+    __kind: 'GeneralIndex'
+    value: bigint
 }
 
 export interface V1Junction_GeneralKey {
-  __kind: 'GeneralKey'
-  value: Uint8Array
+    __kind: 'GeneralKey'
+    value: Uint8Array
 }
 
 export interface V1Junction_OnlyChild {
-  __kind: 'OnlyChild'
+    __kind: 'OnlyChild'
 }
 
 export interface V1Junction_Plurality {
-  __kind: 'Plurality'
-  id: V0BodyId
-  part: V0BodyPart
+    __kind: 'Plurality'
+    id: V0BodyId
+    part: V0BodyPart
 }
 
 export type V1AssetInstance = V1AssetInstance_Undefined | V1AssetInstance_Index | V1AssetInstance_Array4 | V1AssetInstance_Array8 | V1AssetInstance_Array16 | V1AssetInstance_Array32 | V1AssetInstance_Blob
 
 export interface V1AssetInstance_Undefined {
-  __kind: 'Undefined'
+    __kind: 'Undefined'
 }
 
 export interface V1AssetInstance_Index {
-  __kind: 'Index'
-  value: bigint
+    __kind: 'Index'
+    value: bigint
 }
 
 export interface V1AssetInstance_Array4 {
-  __kind: 'Array4'
-  value: Uint8Array
+    __kind: 'Array4'
+    value: Uint8Array
 }
 
 export interface V1AssetInstance_Array8 {
-  __kind: 'Array8'
-  value: Uint8Array
+    __kind: 'Array8'
+    value: Uint8Array
 }
 
 export interface V1AssetInstance_Array16 {
-  __kind: 'Array16'
-  value: Uint8Array
+    __kind: 'Array16'
+    value: Uint8Array
 }
 
 export interface V1AssetInstance_Array32 {
-  __kind: 'Array32'
-  value: Uint8Array
+    __kind: 'Array32'
+    value: Uint8Array
 }
 
 export interface V1AssetInstance_Blob {
-  __kind: 'Blob'
-  value: Uint8Array
+    __kind: 'Blob'
+    value: Uint8Array
 }
 
 export type V1AssetId = V1AssetId_Concrete | V1AssetId_Abstract
 
 export interface V1AssetId_Concrete {
-  __kind: 'Concrete'
-  value: V1MultiLocation
+    __kind: 'Concrete'
+    value: V1MultiLocation
 }
 
 export interface V1AssetId_Abstract {
-  __kind: 'Abstract'
-  value: Uint8Array
+    __kind: 'Abstract'
+    value: Uint8Array
 }
 
 export type V1Fungibility = V1Fungibility_Fungible | V1Fungibility_NonFungible
 
 export interface V1Fungibility_Fungible {
-  __kind: 'Fungible'
-  value: bigint
+    __kind: 'Fungible'
+    value: bigint
 }
 
 export interface V1Fungibility_NonFungible {
-  __kind: 'NonFungible'
-  value: V1AssetInstance
+    __kind: 'NonFungible'
+    value: V1AssetInstance
 }
 
 export type V0Junction = V0Junction_Parent | V0Junction_Parachain | V0Junction_AccountId32 | V0Junction_AccountIndex64 | V0Junction_AccountKey20 | V0Junction_PalletInstance | V0Junction_GeneralIndex | V0Junction_GeneralKey | V0Junction_OnlyChild | V0Junction_Plurality
 
 export interface V0Junction_Parent {
-  __kind: 'Parent'
+    __kind: 'Parent'
 }
 
 export interface V0Junction_Parachain {
-  __kind: 'Parachain'
-  value: number
+    __kind: 'Parachain'
+    value: number
 }
 
 export interface V0Junction_AccountId32 {
-  __kind: 'AccountId32'
-  network: V0NetworkId
-  id: Uint8Array
+    __kind: 'AccountId32'
+    network: V0NetworkId
+    id: Uint8Array
 }
 
 export interface V0Junction_AccountIndex64 {
-  __kind: 'AccountIndex64'
-  network: V0NetworkId
-  index: bigint
+    __kind: 'AccountIndex64'
+    network: V0NetworkId
+    index: bigint
 }
 
 export interface V0Junction_AccountKey20 {
-  __kind: 'AccountKey20'
-  network: V0NetworkId
-  key: Uint8Array
+    __kind: 'AccountKey20'
+    network: V0NetworkId
+    key: Uint8Array
 }
 
 export interface V0Junction_PalletInstance {
-  __kind: 'PalletInstance'
-  value: number
+    __kind: 'PalletInstance'
+    value: number
 }
 
 export interface V0Junction_GeneralIndex {
-  __kind: 'GeneralIndex'
-  value: bigint
+    __kind: 'GeneralIndex'
+    value: bigint
 }
 
 export interface V0Junction_GeneralKey {
-  __kind: 'GeneralKey'
-  value: Uint8Array
+    __kind: 'GeneralKey'
+    value: Uint8Array
 }
 
 export interface V0Junction_OnlyChild {
-  __kind: 'OnlyChild'
+    __kind: 'OnlyChild'
 }
 
 export interface V0Junction_Plurality {
-  __kind: 'Plurality'
-  id: V0BodyId
-  part: V0BodyPart
+    __kind: 'Plurality'
+    id: V0BodyId
+    part: V0BodyPart
 }
 
 export type V1WildMultiAsset = V1WildMultiAsset_All | V1WildMultiAsset_AllOf
 
 export interface V1WildMultiAsset_All {
-  __kind: 'All'
+    __kind: 'All'
 }
 
 export interface V1WildMultiAsset_AllOf {
-  __kind: 'AllOf'
-  id: V1AssetId
-  fun: V1WildFungibility
+    __kind: 'AllOf'
+    id: V1AssetId
+    fun: V1WildFungibility
 }
 
 export type Type_181 = Type_181_Null | Type_181_DepositAsset | Type_181_DepositReserveAsset | Type_181_ExchangeAsset | Type_181_InitiateReserveWithdraw | Type_181_InitiateTeleport | Type_181_QueryHolding | Type_181_BuyExecution
 
 export interface Type_181_Null {
-  __kind: 'Null'
+    __kind: 'Null'
 }
 
 export interface Type_181_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
+    __kind: 'DepositAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
 }
 
 export interface Type_181_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'DepositReserveAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface Type_181_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V0MultiAsset[]
-  receive: V0MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V0MultiAsset[]
+    receive: V0MultiAsset[]
 }
 
 export interface Type_181_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V0MultiAsset[]
-  reserve: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V0MultiAsset[]
+    reserve: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface Type_181_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'InitiateTeleport'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface Type_181_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V0MultiLocation
-  assets: V0MultiAsset[]
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V0MultiLocation
+    assets: V0MultiAsset[]
 }
 
 export interface Type_181_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V0MultiAsset
-  weight: bigint
-  debt: bigint
-  haltOnError: boolean
-  xcm: Type_179[]
+    __kind: 'BuyExecution'
+    fees: V0MultiAsset
+    weight: bigint
+    debt: bigint
+    haltOnError: boolean
+    xcm: Type_179[]
 }
 
 export type V0Response = V0Response_Assets
 
 export interface V0Response_Assets {
-  __kind: 'Assets'
-  value: V0MultiAsset[]
+    __kind: 'Assets'
+    value: V0MultiAsset[]
 }
 
 export type V0Order = V0Order_Null | V0Order_DepositAsset | V0Order_DepositReserveAsset | V0Order_ExchangeAsset | V0Order_InitiateReserveWithdraw | V0Order_InitiateTeleport | V0Order_QueryHolding | V0Order_BuyExecution
 
 export interface V0Order_Null {
-  __kind: 'Null'
+    __kind: 'Null'
 }
 
 export interface V0Order_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
+    __kind: 'DepositAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
 }
 
 export interface V0Order_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'DepositReserveAsset'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface V0Order_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V0MultiAsset[]
-  receive: V0MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V0MultiAsset[]
+    receive: V0MultiAsset[]
 }
 
 export interface V0Order_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V0MultiAsset[]
-  reserve: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V0MultiAsset[]
+    reserve: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface V0Order_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V0MultiAsset[]
-  dest: V0MultiLocation
-  effects: V0Order[]
+    __kind: 'InitiateTeleport'
+    assets: V0MultiAsset[]
+    dest: V0MultiLocation
+    effects: V0Order[]
 }
 
 export interface V0Order_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V0MultiLocation
-  assets: V0MultiAsset[]
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V0MultiLocation
+    assets: V0MultiAsset[]
 }
 
 export interface V0Order_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V0MultiAsset
-  weight: bigint
-  debt: bigint
-  haltOnError: boolean
-  xcm: V0Xcm[]
+    __kind: 'BuyExecution'
+    fees: V0MultiAsset
+    weight: bigint
+    debt: bigint
+    haltOnError: boolean
+    xcm: V0Xcm[]
 }
 
 export type Type_186 = Type_186_Noop | Type_186_DepositAsset | Type_186_DepositReserveAsset | Type_186_ExchangeAsset | Type_186_InitiateReserveWithdraw | Type_186_InitiateTeleport | Type_186_QueryHolding | Type_186_BuyExecution
 
 export interface Type_186_Noop {
-  __kind: 'Noop'
+    __kind: 'Noop'
 }
 
 export interface Type_186_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  beneficiary: V1MultiLocation
+    __kind: 'DepositAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    beneficiary: V1MultiLocation
 }
 
 export interface Type_186_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'DepositReserveAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface Type_186_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V1MultiAssetFilter
-  receive: V1MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V1MultiAssetFilter
+    receive: V1MultiAsset[]
 }
 
 export interface Type_186_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V1MultiAssetFilter
-  reserve: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V1MultiAssetFilter
+    reserve: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface Type_186_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V1MultiAssetFilter
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'InitiateTeleport'
+    assets: V1MultiAssetFilter
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface Type_186_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V1MultiLocation
-  assets: V1MultiAssetFilter
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V1MultiLocation
+    assets: V1MultiAssetFilter
 }
 
 export interface Type_186_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V1MultiAsset
-  weight: bigint
-  debt: bigint
-  haltOnError: boolean
-  instructions: Type_184[]
+    __kind: 'BuyExecution'
+    fees: V1MultiAsset
+    weight: bigint
+    debt: bigint
+    haltOnError: boolean
+    instructions: Type_184[]
 }
 
 export type V1Response = V1Response_Assets | V1Response_Version
 
 export interface V1Response_Assets {
-  __kind: 'Assets'
-  value: V1MultiAsset[]
+    __kind: 'Assets'
+    value: V1MultiAsset[]
 }
 
 export interface V1Response_Version {
-  __kind: 'Version'
-  value: number
+    __kind: 'Version'
+    value: number
 }
 
 export type V1Order = V1Order_Noop | V1Order_DepositAsset | V1Order_DepositReserveAsset | V1Order_ExchangeAsset | V1Order_InitiateReserveWithdraw | V1Order_InitiateTeleport | V1Order_QueryHolding | V1Order_BuyExecution
 
 export interface V1Order_Noop {
-  __kind: 'Noop'
+    __kind: 'Noop'
 }
 
 export interface V1Order_DepositAsset {
-  __kind: 'DepositAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  beneficiary: V1MultiLocation
+    __kind: 'DepositAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    beneficiary: V1MultiLocation
 }
 
 export interface V1Order_DepositReserveAsset {
-  __kind: 'DepositReserveAsset'
-  assets: V1MultiAssetFilter
-  maxAssets: number
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'DepositReserveAsset'
+    assets: V1MultiAssetFilter
+    maxAssets: number
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface V1Order_ExchangeAsset {
-  __kind: 'ExchangeAsset'
-  give: V1MultiAssetFilter
-  receive: V1MultiAsset[]
+    __kind: 'ExchangeAsset'
+    give: V1MultiAssetFilter
+    receive: V1MultiAsset[]
 }
 
 export interface V1Order_InitiateReserveWithdraw {
-  __kind: 'InitiateReserveWithdraw'
-  assets: V1MultiAssetFilter
-  reserve: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'InitiateReserveWithdraw'
+    assets: V1MultiAssetFilter
+    reserve: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface V1Order_InitiateTeleport {
-  __kind: 'InitiateTeleport'
-  assets: V1MultiAssetFilter
-  dest: V1MultiLocation
-  effects: V1Order[]
+    __kind: 'InitiateTeleport'
+    assets: V1MultiAssetFilter
+    dest: V1MultiLocation
+    effects: V1Order[]
 }
 
 export interface V1Order_QueryHolding {
-  __kind: 'QueryHolding'
-  queryId: bigint
-  dest: V1MultiLocation
-  assets: V1MultiAssetFilter
+    __kind: 'QueryHolding'
+    queryId: bigint
+    dest: V1MultiLocation
+    assets: V1MultiAssetFilter
 }
 
 export interface V1Order_BuyExecution {
-  __kind: 'BuyExecution'
-  fees: V1MultiAsset
-  weight: bigint
-  debt: bigint
-  haltOnError: boolean
-  instructions: V1Xcm[]
+    __kind: 'BuyExecution'
+    fees: V1MultiAsset
+    weight: bigint
+    debt: bigint
+    haltOnError: boolean
+    instructions: V1Xcm[]
 }
 
 export type ChangesTrieSignal = ChangesTrieSignal_NewConfiguration
 
 export interface ChangesTrieSignal_NewConfiguration {
-  __kind: 'NewConfiguration'
-  value: (ChangesTrieConfiguration | undefined)
+    __kind: 'NewConfiguration'
+    value: (ChangesTrieConfiguration | undefined)
 }
 
 /**
@@ -3314,47 +3314,47 @@ export type SystemEvent = SystemEvent_ExtrinsicSuccess | SystemEvent_ExtrinsicFa
  * An extrinsic completed successfully. \[info\]
  */
 export interface SystemEvent_ExtrinsicSuccess {
-  __kind: 'ExtrinsicSuccess'
-  value: DispatchInfo
+    __kind: 'ExtrinsicSuccess'
+    value: DispatchInfo
 }
 
 /**
  * An extrinsic failed. \[error, info\]
  */
 export interface SystemEvent_ExtrinsicFailed {
-  __kind: 'ExtrinsicFailed'
-  value: [DispatchError, DispatchInfo]
+    __kind: 'ExtrinsicFailed'
+    value: [DispatchError, DispatchInfo]
 }
 
 /**
  * `:code` was updated.
  */
 export interface SystemEvent_CodeUpdated {
-  __kind: 'CodeUpdated'
+    __kind: 'CodeUpdated'
 }
 
 /**
  * A new \[account\] was created.
  */
 export interface SystemEvent_NewAccount {
-  __kind: 'NewAccount'
-  value: Uint8Array
+    __kind: 'NewAccount'
+    value: Uint8Array
 }
 
 /**
  * An \[account\] was reaped.
  */
 export interface SystemEvent_KilledAccount {
-  __kind: 'KilledAccount'
-  value: Uint8Array
+    __kind: 'KilledAccount'
+    value: Uint8Array
 }
 
 /**
  * On on-chain remark happened. \[origin, remark_hash\]
  */
 export interface SystemEvent_Remarked {
-  __kind: 'Remarked'
-  value: [Uint8Array, Uint8Array]
+    __kind: 'Remarked'
+    value: [Uint8Array, Uint8Array]
 }
 
 /**
@@ -3370,24 +3370,24 @@ export type ParachainSystemEvent = ParachainSystemEvent_ValidationFunctionStored
  * block number.
  */
 export interface ParachainSystemEvent_ValidationFunctionStored {
-  __kind: 'ValidationFunctionStored'
-  value: number
+    __kind: 'ValidationFunctionStored'
+    value: number
 }
 
 /**
  * The validation function was applied as of the contained relay chain block number.
  */
 export interface ParachainSystemEvent_ValidationFunctionApplied {
-  __kind: 'ValidationFunctionApplied'
-  value: number
+    __kind: 'ValidationFunctionApplied'
+    value: number
 }
 
 /**
  * An upgrade has been authorized.
  */
 export interface ParachainSystemEvent_UpgradeAuthorized {
-  __kind: 'UpgradeAuthorized'
-  value: Uint8Array
+    __kind: 'UpgradeAuthorized'
+    value: Uint8Array
 }
 
 /**
@@ -3395,8 +3395,8 @@ export interface ParachainSystemEvent_UpgradeAuthorized {
  * \[ count \]
  */
 export interface ParachainSystemEvent_DownwardMessagesReceived {
-  __kind: 'DownwardMessagesReceived'
-  value: number
+    __kind: 'DownwardMessagesReceived'
+    value: number
 }
 
 /**
@@ -3404,8 +3404,8 @@ export interface ParachainSystemEvent_DownwardMessagesReceived {
  * \[ weight_used, result_mqc_head \]
  */
 export interface ParachainSystemEvent_DownwardMessagesProcessed {
-  __kind: 'DownwardMessagesProcessed'
-  value: [bigint, Uint8Array]
+    __kind: 'DownwardMessagesProcessed'
+    value: [bigint, Uint8Array]
 }
 
 /**
@@ -3420,24 +3420,24 @@ export type SudoEvent = SudoEvent_Sudid | SudoEvent_KeyChanged | SudoEvent_SudoA
  * A sudo just took place. \[result\]
  */
 export interface SudoEvent_Sudid {
-  __kind: 'Sudid'
-  value: Type_30
+    __kind: 'Sudid'
+    value: Type_30
 }
 
 /**
  * The \[sudoer\] just switched identity; the old key is supplied.
  */
 export interface SudoEvent_KeyChanged {
-  __kind: 'KeyChanged'
-  value: Uint8Array
+    __kind: 'KeyChanged'
+    value: Uint8Array
 }
 
 /**
  * A sudo just took place. \[result\]
  */
 export interface SudoEvent_SudoAsDone {
-  __kind: 'SudoAsDone'
-  value: Type_30
+    __kind: 'SudoAsDone'
+    value: Type_30
 }
 
 /**
@@ -3452,8 +3452,8 @@ export type BalancesEvent = BalancesEvent_Endowed | BalancesEvent_DustLost | Bal
  * An account was created with some free balance. \[account, free_balance\]
  */
 export interface BalancesEvent_Endowed {
-  __kind: 'Endowed'
-  value: [Uint8Array, bigint]
+    __kind: 'Endowed'
+    value: [Uint8Array, bigint]
 }
 
 /**
@@ -3461,48 +3461,48 @@ export interface BalancesEvent_Endowed {
  * resulting in an outright loss. \[account, balance\]
  */
 export interface BalancesEvent_DustLost {
-  __kind: 'DustLost'
-  value: [Uint8Array, bigint]
+    __kind: 'DustLost'
+    value: [Uint8Array, bigint]
 }
 
 /**
  * Transfer succeeded. \[from, to, value\]
  */
 export interface BalancesEvent_Transfer {
-  __kind: 'Transfer'
-  value: [Uint8Array, Uint8Array, bigint]
+    __kind: 'Transfer'
+    value: [Uint8Array, Uint8Array, bigint]
 }
 
 /**
  * A balance was set by root. \[who, free, reserved\]
  */
 export interface BalancesEvent_BalanceSet {
-  __kind: 'BalanceSet'
-  value: [Uint8Array, bigint, bigint]
+    __kind: 'BalanceSet'
+    value: [Uint8Array, bigint, bigint]
 }
 
 /**
  * Some amount was deposited (e.g. for transaction fees). \[who, deposit\]
  */
 export interface BalancesEvent_Deposit {
-  __kind: 'Deposit'
-  value: [Uint8Array, bigint]
+    __kind: 'Deposit'
+    value: [Uint8Array, bigint]
 }
 
 /**
  * Some balance was reserved (moved from free to reserved). \[who, value\]
  */
 export interface BalancesEvent_Reserved {
-  __kind: 'Reserved'
-  value: [Uint8Array, bigint]
+    __kind: 'Reserved'
+    value: [Uint8Array, bigint]
 }
 
 /**
  * Some balance was unreserved (moved from reserved to free). \[who, value\]
  */
 export interface BalancesEvent_Unreserved {
-  __kind: 'Unreserved'
-  value: [Uint8Array, bigint]
+    __kind: 'Unreserved'
+    value: [Uint8Array, bigint]
 }
 
 /**
@@ -3511,8 +3511,8 @@ export interface BalancesEvent_Unreserved {
  * \[from, to, balance, destination_status\]
  */
 export interface BalancesEvent_ReserveRepatriated {
-  __kind: 'ReserveRepatriated'
-  value: [Uint8Array, Uint8Array, bigint, BalanceStatus]
+    __kind: 'ReserveRepatriated'
+    value: [Uint8Array, Uint8Array, bigint, BalanceStatus]
 }
 
 /**
@@ -3527,48 +3527,48 @@ export type CollatorStakingEvent = CollatorStakingEvent_RoundFinalized | Collato
  * A new round was finalized
  */
 export interface CollatorStakingEvent_RoundFinalized {
-  __kind: 'RoundFinalized'
-  value: number
+    __kind: 'RoundFinalized'
+    value: number
 }
 
 /**
  * A new candidate joined the list of candidates.
  */
 export interface CollatorStakingEvent_CandidateJoined {
-  __kind: 'CandidateJoined'
-  value: [Uint8Array, bigint]
+    __kind: 'CandidateJoined'
+    value: [Uint8Array, bigint]
 }
 
 /**
  * Candidate was removed.
  */
 export interface CollatorStakingEvent_CandidateRemoved {
-  __kind: 'CandidateRemoved'
-  value: Uint8Array
+    __kind: 'CandidateRemoved'
+    value: Uint8Array
 }
 
 /**
  * A new nomination was registered for a specific candidate.
  */
 export interface CollatorStakingEvent_Nominated {
-  __kind: 'Nominated'
-  value: [Uint8Array, Uint8Array, bigint]
+    __kind: 'Nominated'
+    value: [Uint8Array, Uint8Array, bigint]
 }
 
 /**
  * Nomination was removed.
  */
 export interface CollatorStakingEvent_NominationRemoved {
-  __kind: 'NominationRemoved'
-  value: [Uint8Array, Uint8Array, bigint]
+    __kind: 'NominationRemoved'
+    value: [Uint8Array, Uint8Array, bigint]
 }
 
 /**
  * A candidate has been selected to become a collator for the current round.
  */
 export interface CollatorStakingEvent_CollatorSelected {
-  __kind: 'CollatorSelected'
-  value: Uint8Array
+    __kind: 'CollatorSelected'
+    value: Uint8Array
 }
 
 /**
@@ -3583,24 +3583,24 @@ export type PoolsEvent = PoolsEvent_PoolCreated | PoolsEvent_PoolOwnershipChange
  * A pool has been created.
  */
 export interface PoolsEvent_PoolCreated {
-  __kind: 'PoolCreated'
-  value: [bigint, PoolType]
+    __kind: 'PoolCreated'
+    value: [bigint, PoolType]
 }
 
 /**
  * A new owner has been assigned to an existing pool.
  */
 export interface PoolsEvent_PoolOwnershipChanged {
-  __kind: 'PoolOwnershipChanged'
-  value: [bigint, PoolType, Uint8Array, Uint8Array]
+    __kind: 'PoolOwnershipChanged'
+    value: [bigint, PoolType, Uint8Array, Uint8Array]
 }
 
 /**
  * Funds have been transferred from pool.
  */
 export interface PoolsEvent_PoolFundTransferred {
-  __kind: 'PoolFundTransferred'
-  value: [bigint, PoolType, Uint8Array, bigint]
+    __kind: 'PoolFundTransferred'
+    value: [bigint, PoolType, Uint8Array, bigint]
 }
 
 /**
@@ -3615,48 +3615,48 @@ export type XcmpQueueEvent = XcmpQueueEvent_Success | XcmpQueueEvent_Fail | Xcmp
  * Some XCM was executed ok.
  */
 export interface XcmpQueueEvent_Success {
-  __kind: 'Success'
-  value: (Uint8Array | undefined)
+    __kind: 'Success'
+    value: (Uint8Array | undefined)
 }
 
 /**
  * Some XCM failed.
  */
 export interface XcmpQueueEvent_Fail {
-  __kind: 'Fail'
-  value: [(Uint8Array | undefined), V2Error]
+    __kind: 'Fail'
+    value: [(Uint8Array | undefined), V2Error]
 }
 
 /**
  * Bad XCM version used.
  */
 export interface XcmpQueueEvent_BadVersion {
-  __kind: 'BadVersion'
-  value: (Uint8Array | undefined)
+    __kind: 'BadVersion'
+    value: (Uint8Array | undefined)
 }
 
 /**
  * Bad XCM format used.
  */
 export interface XcmpQueueEvent_BadFormat {
-  __kind: 'BadFormat'
-  value: (Uint8Array | undefined)
+    __kind: 'BadFormat'
+    value: (Uint8Array | undefined)
 }
 
 /**
  * An upward message was sent to the relay chain.
  */
 export interface XcmpQueueEvent_UpwardMessageSent {
-  __kind: 'UpwardMessageSent'
-  value: (Uint8Array | undefined)
+    __kind: 'UpwardMessageSent'
+    value: (Uint8Array | undefined)
 }
 
 /**
  * An HRMP message was sent to a sibling parachain.
  */
 export interface XcmpQueueEvent_XcmpMessageSent {
-  __kind: 'XcmpMessageSent'
-  value: (Uint8Array | undefined)
+    __kind: 'XcmpMessageSent'
+    value: (Uint8Array | undefined)
 }
 
 /**
@@ -3673,8 +3673,8 @@ export type PolkadotXcmEvent = PolkadotXcmEvent_Attempted | PolkadotXcmEvent_Sen
  * \[ outcome \]
  */
 export interface PolkadotXcmEvent_Attempted {
-  __kind: 'Attempted'
-  value: V2Outcome
+    __kind: 'Attempted'
+    value: V2Outcome
 }
 
 /**
@@ -3683,8 +3683,8 @@ export interface PolkadotXcmEvent_Attempted {
  * \[ origin, destination, message \]
  */
 export interface PolkadotXcmEvent_Sent {
-  __kind: 'Sent'
-  value: [V1MultiLocation, V1MultiLocation, V2Instruction[]]
+    __kind: 'Sent'
+    value: [V1MultiLocation, V1MultiLocation, V2Instruction[]]
 }
 
 /**
@@ -3695,8 +3695,8 @@ export interface PolkadotXcmEvent_Sent {
  * \[ origin location, id \]
  */
 export interface PolkadotXcmEvent_UnexpectedResponse {
-  __kind: 'UnexpectedResponse'
-  value: [V1MultiLocation, bigint]
+    __kind: 'UnexpectedResponse'
+    value: [V1MultiLocation, bigint]
 }
 
 /**
@@ -3706,8 +3706,8 @@ export interface PolkadotXcmEvent_UnexpectedResponse {
  * \[ id, response \]
  */
 export interface PolkadotXcmEvent_ResponseReady {
-  __kind: 'ResponseReady'
-  value: [bigint, V2Response]
+    __kind: 'ResponseReady'
+    value: [bigint, V2Response]
 }
 
 /**
@@ -3717,8 +3717,8 @@ export interface PolkadotXcmEvent_ResponseReady {
  * \[ id, pallet index, call index \]
  */
 export interface PolkadotXcmEvent_Notified {
-  __kind: 'Notified'
-  value: [bigint, number, number]
+    __kind: 'Notified'
+    value: [bigint, number, number]
 }
 
 /**
@@ -3729,8 +3729,8 @@ export interface PolkadotXcmEvent_Notified {
  * \[ id, pallet index, call index, actual weight, max budgeted weight \]
  */
 export interface PolkadotXcmEvent_NotifyOverweight {
-  __kind: 'NotifyOverweight'
-  value: [bigint, number, number, bigint, bigint]
+    __kind: 'NotifyOverweight'
+    value: [bigint, number, number, bigint, bigint]
 }
 
 /**
@@ -3740,8 +3740,8 @@ export interface PolkadotXcmEvent_NotifyOverweight {
  * \[ id, pallet index, call index \]
  */
 export interface PolkadotXcmEvent_NotifyDispatchError {
-  __kind: 'NotifyDispatchError'
-  value: [bigint, number, number]
+    __kind: 'NotifyDispatchError'
+    value: [bigint, number, number]
 }
 
 /**
@@ -3752,8 +3752,8 @@ export interface PolkadotXcmEvent_NotifyDispatchError {
  * \[ id, pallet index, call index \]
  */
 export interface PolkadotXcmEvent_NotifyDecodeFailed {
-  __kind: 'NotifyDecodeFailed'
-  value: [bigint, number, number]
+    __kind: 'NotifyDecodeFailed'
+    value: [bigint, number, number]
 }
 
 /**
@@ -3764,8 +3764,8 @@ export interface PolkadotXcmEvent_NotifyDecodeFailed {
  * \[ origin location, id, expected location \]
  */
 export interface PolkadotXcmEvent_InvalidResponder {
-  __kind: 'InvalidResponder'
-  value: [V1MultiLocation, bigint, (V1MultiLocation | undefined)]
+    __kind: 'InvalidResponder'
+    value: [V1MultiLocation, bigint, (V1MultiLocation | undefined)]
 }
 
 /**
@@ -3780,8 +3780,8 @@ export interface PolkadotXcmEvent_InvalidResponder {
  * \[ origin location, id \]
  */
 export interface PolkadotXcmEvent_InvalidResponderVersion {
-  __kind: 'InvalidResponderVersion'
-  value: [V1MultiLocation, bigint]
+    __kind: 'InvalidResponderVersion'
+    value: [V1MultiLocation, bigint]
 }
 
 /**
@@ -3790,8 +3790,8 @@ export interface PolkadotXcmEvent_InvalidResponderVersion {
  * \[ id \]
  */
 export interface PolkadotXcmEvent_ResponseTaken {
-  __kind: 'ResponseTaken'
-  value: bigint
+    __kind: 'ResponseTaken'
+    value: bigint
 }
 
 /**
@@ -3800,8 +3800,8 @@ export interface PolkadotXcmEvent_ResponseTaken {
  * \[ hash, origin, assets \]
  */
 export interface PolkadotXcmEvent_AssetsTrapped {
-  __kind: 'AssetsTrapped'
-  value: [Uint8Array, V1MultiLocation, VersionedMultiAssets]
+    __kind: 'AssetsTrapped'
+    value: [Uint8Array, V1MultiLocation, VersionedMultiAssets]
 }
 
 /**
@@ -3810,8 +3810,8 @@ export interface PolkadotXcmEvent_AssetsTrapped {
  * \[ destination, result \]
  */
 export interface PolkadotXcmEvent_VersionChangeNotified {
-  __kind: 'VersionChangeNotified'
-  value: [V1MultiLocation, number]
+    __kind: 'VersionChangeNotified'
+    value: [V1MultiLocation, number]
 }
 
 /**
@@ -3821,8 +3821,8 @@ export interface PolkadotXcmEvent_VersionChangeNotified {
  * \[ location, XCM version \]
  */
 export interface PolkadotXcmEvent_SupportedVersionChanged {
-  __kind: 'SupportedVersionChanged'
-  value: [V1MultiLocation, number]
+    __kind: 'SupportedVersionChanged'
+    value: [V1MultiLocation, number]
 }
 
 /**
@@ -3832,8 +3832,8 @@ export interface PolkadotXcmEvent_SupportedVersionChanged {
  * \[ location, query ID, error \]
  */
 export interface PolkadotXcmEvent_NotifyTargetSendFail {
-  __kind: 'NotifyTargetSendFail'
-  value: [V1MultiLocation, bigint, V2Error]
+    __kind: 'NotifyTargetSendFail'
+    value: [V1MultiLocation, bigint, V2Error]
 }
 
 /**
@@ -3843,8 +3843,8 @@ export interface PolkadotXcmEvent_NotifyTargetSendFail {
  * \[ location, query ID \]
  */
 export interface PolkadotXcmEvent_NotifyTargetMigrationFail {
-  __kind: 'NotifyTargetMigrationFail'
-  value: [VersionedMultiLocation, bigint]
+    __kind: 'NotifyTargetMigrationFail'
+    value: [VersionedMultiLocation, bigint]
 }
 
 /**
@@ -3860,8 +3860,8 @@ export type CumulusXcmEvent = CumulusXcmEvent_InvalidFormat | CumulusXcmEvent_Un
  * \[ id \]
  */
 export interface CumulusXcmEvent_InvalidFormat {
-  __kind: 'InvalidFormat'
-  value: Uint8Array
+    __kind: 'InvalidFormat'
+    value: Uint8Array
 }
 
 /**
@@ -3869,8 +3869,8 @@ export interface CumulusXcmEvent_InvalidFormat {
  * \[ id \]
  */
 export interface CumulusXcmEvent_UnsupportedVersion {
-  __kind: 'UnsupportedVersion'
-  value: Uint8Array
+    __kind: 'UnsupportedVersion'
+    value: Uint8Array
 }
 
 /**
@@ -3878,8 +3878,8 @@ export interface CumulusXcmEvent_UnsupportedVersion {
  * \[ id, outcome \]
  */
 export interface CumulusXcmEvent_ExecutedDownward {
-  __kind: 'ExecutedDownward'
-  value: [Uint8Array, V2Outcome]
+    __kind: 'ExecutedDownward'
+    value: [Uint8Array, V2Outcome]
 }
 
 /**
@@ -3895,8 +3895,8 @@ export type DmpQueueEvent = DmpQueueEvent_InvalidFormat | DmpQueueEvent_Unsuppor
  * \[ id \]
  */
 export interface DmpQueueEvent_InvalidFormat {
-  __kind: 'InvalidFormat'
-  value: Uint8Array
+    __kind: 'InvalidFormat'
+    value: Uint8Array
 }
 
 /**
@@ -3904,8 +3904,8 @@ export interface DmpQueueEvent_InvalidFormat {
  * \[ id \]
  */
 export interface DmpQueueEvent_UnsupportedVersion {
-  __kind: 'UnsupportedVersion'
-  value: Uint8Array
+    __kind: 'UnsupportedVersion'
+    value: Uint8Array
 }
 
 /**
@@ -3913,8 +3913,8 @@ export interface DmpQueueEvent_UnsupportedVersion {
  * \[ id, outcome \]
  */
 export interface DmpQueueEvent_ExecutedDownward {
-  __kind: 'ExecutedDownward'
-  value: [Uint8Array, V2Outcome]
+    __kind: 'ExecutedDownward'
+    value: [Uint8Array, V2Outcome]
 }
 
 /**
@@ -3922,8 +3922,8 @@ export interface DmpQueueEvent_ExecutedDownward {
  * \[ id, remaining, required \]
  */
 export interface DmpQueueEvent_WeightExhausted {
-  __kind: 'WeightExhausted'
-  value: [Uint8Array, bigint, bigint]
+    __kind: 'WeightExhausted'
+    value: [Uint8Array, bigint, bigint]
 }
 
 /**
@@ -3931,8 +3931,8 @@ export interface DmpQueueEvent_WeightExhausted {
  * \[ id, index, required \]
  */
 export interface DmpQueueEvent_OverweightEnqueued {
-  __kind: 'OverweightEnqueued'
-  value: [Uint8Array, bigint, bigint]
+    __kind: 'OverweightEnqueued'
+    value: [Uint8Array, bigint, bigint]
 }
 
 /**
@@ -3940,8 +3940,8 @@ export interface DmpQueueEvent_OverweightEnqueued {
  * \[ index, used \]
  */
 export interface DmpQueueEvent_OverweightServiced {
-  __kind: 'OverweightServiced'
-  value: [bigint, bigint]
+    __kind: 'OverweightServiced'
+    value: [bigint, bigint]
 }
 
 /**
@@ -3956,32 +3956,32 @@ export type MultiAssetsEvent = MultiAssetsEvent_AssetCreated | MultiAssetsEvent_
  * A new asset was created by `owner`. \[class_id, owner\]
  */
 export interface MultiAssetsEvent_AssetCreated {
-  __kind: 'AssetCreated'
-  value: [bigint, Uint8Array]
+    __kind: 'AssetCreated'
+    value: [bigint, Uint8Array]
 }
 
 /**
  * The balance of the asset was minted by owner. \[owner, asset, amount\]
  */
 export interface MultiAssetsEvent_Minted {
-  __kind: 'Minted'
-  value: [Uint8Array, bigint, bigint]
+    __kind: 'Minted'
+    value: [Uint8Array, bigint, bigint]
 }
 
 /**
  * New tokens were minted on asset. \[owner, asset, from_token, to_token \]
  */
 export interface MultiAssetsEvent_TokensMinted {
-  __kind: 'TokensMinted'
-  value: [Uint8Array, bigint, number, number]
+    __kind: 'TokensMinted'
+    value: [Uint8Array, bigint, number, number]
 }
 
 /**
  * The given amount of `token` from `asset` was transferred. \[from, to, asset, token, amount\]
  */
 export interface MultiAssetsEvent_TransferredSingle {
-  __kind: 'TransferredSingle'
-  value: [Uint8Array, Uint8Array, bigint, (number | undefined), bigint]
+    __kind: 'TransferredSingle'
+    value: [Uint8Array, Uint8Array, bigint, (number | undefined), bigint]
 }
 
 /**
@@ -3989,72 +3989,72 @@ export interface MultiAssetsEvent_TransferredSingle {
  * \[source, destination, asset, chunk\]
  */
 export interface MultiAssetsEvent_TransferredSingleChunk {
-  __kind: 'TransferredSingleChunk'
-  value: [Uint8Array, Uint8Array, bigint, Range[]]
+    __kind: 'TransferredSingleChunk'
+    value: [Uint8Array, Uint8Array, bigint, Range[]]
 }
 
 /**
  * The given `recipients` were transfer from `from` account. \[from, asset, recipients\]
  */
 export interface MultiAssetsEvent_TransferredBatch {
-  __kind: 'TransferredBatch'
-  value: [Uint8Array, bigint, Recipient[]]
+    __kind: 'TransferredBatch'
+    value: [Uint8Array, bigint, Recipient[]]
 }
 
 /**
  * An `asset` was destroyed. \[ asset, amount, owner \]
  */
 export interface MultiAssetsEvent_Burned {
-  __kind: 'Burned'
-  value: [Uint8Array, bigint, bigint]
+    __kind: 'Burned'
+    value: [Uint8Array, bigint, bigint]
 }
 
 /**
  * `tokens` of `asset` from `account` were burned. \[ account, asset, tokens \]
  */
 export interface MultiAssetsEvent_TokensBurned {
-  __kind: 'TokensBurned'
-  value: [Uint8Array, bigint, Range[]]
+    __kind: 'TokensBurned'
+    value: [Uint8Array, bigint, Range[]]
 }
 
 /**
  * New asset attribute has been set for an asset. \[asset_id, key, value\]
  */
 export interface MultiAssetsEvent_AssetAttributeSet {
-  __kind: 'AssetAttributeSet'
-  value: [bigint, Uint8Array, Uint8Array]
+    __kind: 'AssetAttributeSet'
+    value: [bigint, Uint8Array, Uint8Array]
 }
 
 /**
  * Asset attribute has been cleared for an asset. \[asset_id, key\]
  */
 export interface MultiAssetsEvent_AssetAttributeCleared {
-  __kind: 'AssetAttributeCleared'
-  value: [bigint, Uint8Array]
+    __kind: 'AssetAttributeCleared'
+    value: [bigint, Uint8Array]
 }
 
 /**
  * New token attribute has been set for an asset. \[asset_id, token, key, value\]
  */
 export interface MultiAssetsEvent_TokenAttributeSet {
-  __kind: 'TokenAttributeSet'
-  value: [bigint, number, Uint8Array, Uint8Array]
+    __kind: 'TokenAttributeSet'
+    value: [bigint, number, Uint8Array, Uint8Array]
 }
 
 /**
  * Token attribute has been cleared for an asset. \[asset_id, token, key\]
  */
 export interface MultiAssetsEvent_TokenAttributeCleared {
-  __kind: 'TokenAttributeCleared'
-  value: [bigint, number, Uint8Array]
+    __kind: 'TokenAttributeCleared'
+    value: [bigint, number, Uint8Array]
 }
 
 /**
  * Ownership of the given `asset` was transferred. \[from, to, asset\]
  */
 export interface MultiAssetsEvent_OwnershipTransferred {
-  __kind: 'OwnershipTransferred'
-  value: [Uint8Array, Uint8Array, bigint]
+    __kind: 'OwnershipTransferred'
+    value: [Uint8Array, Uint8Array, bigint]
 }
 
 /**
@@ -4066,54 +4066,54 @@ export type MultiAssetsOperatorExtEvent = MultiAssetsOperatorExtEvent_Approved |
  * Asset(s) were approved. If `asset` and `token` are None, it applies to all.
  */
 export interface MultiAssetsOperatorExtEvent_Approved {
-  __kind: 'Approved'
-  /**
-   * The account that owns the asset(s)
-   */
-  owner: Uint8Array
-  /**
-   * The account that was approved to operate
-   */
-  operator: Uint8Array
-  /**
-   * The asset that was approved
-   */
-  asset: (bigint | undefined)
-  /**
-   * The token that was approved
-   */
-  token: (number | undefined)
-  /**
-   * The amount approved for
-   */
-  amount: (bigint | undefined)
-  /**
-   * The expiration of the approval
-   */
-  expiration: Expiration
+    __kind: 'Approved'
+    /**
+     * The account that owns the asset(s)
+     */
+    owner: Uint8Array
+    /**
+     * The account that was approved to operate
+     */
+    operator: Uint8Array
+    /**
+     * The asset that was approved
+     */
+    asset: (bigint | undefined)
+    /**
+     * The token that was approved
+     */
+    token: (number | undefined)
+    /**
+     * The amount approved for
+     */
+    amount: (bigint | undefined)
+    /**
+     * The expiration of the approval
+     */
+    expiration: Expiration
 }
 
 /**
  * Asset(s) were unapproved. If `asset` and `token` are None, it applies to all.
  */
 export interface MultiAssetsOperatorExtEvent_Unapproved {
-  __kind: 'Unapproved'
-  /**
-   * The account that owns the asset(s)
-   */
-  owner: Uint8Array
-  /**
-   * The account that was unapproved to operate
-   */
-  operator: Uint8Array
-  /**
-   * The asset that was unapproved
-   */
-  asset: (bigint | undefined)
-  /**
-   * The token that was unapproved
-   */
-  token: (number | undefined)
+    __kind: 'Unapproved'
+    /**
+     * The account that owns the asset(s)
+     */
+    owner: Uint8Array
+    /**
+     * The account that was unapproved to operate
+     */
+    operator: Uint8Array
+    /**
+     * The asset that was unapproved
+     */
+    asset: (bigint | undefined)
+    /**
+     * The token that was unapproved
+     */
+    token: (number | undefined)
 }
 
 /**
@@ -4125,27 +4125,27 @@ export type TagsEvent = TagsEvent_TagCreated | TagsEvent_AssetTagged | TagsEvent
  * A new `Tag` with `id` was created by `owner`
  */
 export interface TagsEvent_TagCreated {
-  __kind: 'TagCreated'
-  id: bigint
-  owner: Uint8Array
+    __kind: 'TagCreated'
+    id: bigint
+    owner: Uint8Array
 }
 
 /**
  * `asset_id` was tagged with `tag_id`
  */
 export interface TagsEvent_AssetTagged {
-  __kind: 'AssetTagged'
-  assetId: bigint
-  tagId: bigint
+    __kind: 'AssetTagged'
+    assetId: bigint
+    tagId: bigint
 }
 
 /**
  * `asset_id` was untagged with `tag_id`
  */
 export interface TagsEvent_AssetUntagged {
-  __kind: 'AssetUntagged'
-  assetId: bigint
-  tagId: bigint
+    __kind: 'AssetUntagged'
+    assetId: bigint
+    tagId: bigint
 }
 
 /**
@@ -4160,96 +4160,96 @@ export type ClaimsEvent = ClaimsEvent_Claimed
  * Someone claimed some EFIs. `[who, ethereum_address, amount]`
  */
 export interface ClaimsEvent_Claimed {
-  __kind: 'Claimed'
-  value: [Uint8Array, Uint8Array, bigint]
+    __kind: 'Claimed'
+    value: [Uint8Array, Uint8Array, bigint]
 }
 
 export type V0NetworkId = V0NetworkId_Any | V0NetworkId_Named | V0NetworkId_Polkadot | V0NetworkId_Kusama
 
 export interface V0NetworkId_Any {
-  __kind: 'Any'
+    __kind: 'Any'
 }
 
 export interface V0NetworkId_Named {
-  __kind: 'Named'
-  value: Uint8Array
+    __kind: 'Named'
+    value: Uint8Array
 }
 
 export interface V0NetworkId_Polkadot {
-  __kind: 'Polkadot'
+    __kind: 'Polkadot'
 }
 
 export interface V0NetworkId_Kusama {
-  __kind: 'Kusama'
+    __kind: 'Kusama'
 }
 
 export type V0BodyId = V0BodyId_Unit | V0BodyId_Named | V0BodyId_Index | V0BodyId_Executive | V0BodyId_Technical | V0BodyId_Legislative | V0BodyId_Judicial
 
 export interface V0BodyId_Unit {
-  __kind: 'Unit'
+    __kind: 'Unit'
 }
 
 export interface V0BodyId_Named {
-  __kind: 'Named'
-  value: Uint8Array
+    __kind: 'Named'
+    value: Uint8Array
 }
 
 export interface V0BodyId_Index {
-  __kind: 'Index'
-  value: number
+    __kind: 'Index'
+    value: number
 }
 
 export interface V0BodyId_Executive {
-  __kind: 'Executive'
+    __kind: 'Executive'
 }
 
 export interface V0BodyId_Technical {
-  __kind: 'Technical'
+    __kind: 'Technical'
 }
 
 export interface V0BodyId_Legislative {
-  __kind: 'Legislative'
+    __kind: 'Legislative'
 }
 
 export interface V0BodyId_Judicial {
-  __kind: 'Judicial'
+    __kind: 'Judicial'
 }
 
 export type V0BodyPart = V0BodyPart_Voice | V0BodyPart_Members | V0BodyPart_Fraction | V0BodyPart_AtLeastProportion | V0BodyPart_MoreThanProportion
 
 export interface V0BodyPart_Voice {
-  __kind: 'Voice'
+    __kind: 'Voice'
 }
 
 export interface V0BodyPart_Members {
-  __kind: 'Members'
-  count: number
+    __kind: 'Members'
+    count: number
 }
 
 export interface V0BodyPart_Fraction {
-  __kind: 'Fraction'
-  nom: number
-  denom: number
+    __kind: 'Fraction'
+    nom: number
+    denom: number
 }
 
 export interface V0BodyPart_AtLeastProportion {
-  __kind: 'AtLeastProportion'
-  nom: number
-  denom: number
+    __kind: 'AtLeastProportion'
+    nom: number
+    denom: number
 }
 
 export interface V0BodyPart_MoreThanProportion {
-  __kind: 'MoreThanProportion'
-  nom: number
-  denom: number
+    __kind: 'MoreThanProportion'
+    nom: number
+    denom: number
 }
 
 export type V1WildFungibility = V1WildFungibility_Fungible | V1WildFungibility_NonFungible
 
 export interface V1WildFungibility_Fungible {
-  __kind: 'Fungible'
+    __kind: 'Fungible'
 }
 
 export interface V1WildFungibility_NonFungible {
-  __kind: 'NonFungible'
+    __kind: 'NonFungible'
 }

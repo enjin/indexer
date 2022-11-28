@@ -1,4 +1,4 @@
 export enum TokenBehaviorType {
-  HasRoyalty = "HasRoyalty",
-  IsCurrency = "IsCurrency",
+    HasRoyalty = "HasRoyalty",
+    IsCurrency = "IsCurrency",
 }

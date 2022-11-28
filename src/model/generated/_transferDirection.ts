@@ -1,4 +1,4 @@
 export enum TransferDirection {
-  From = "From",
-  To = "To",
+    From = "From",
+    To = "To",
 }

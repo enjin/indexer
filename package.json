@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@keyv/redis": "^2.5",
-    "@polkadot/api": "^9.7",
-    "@polkadot/keyring": "^10.1.13",
-    "@polkadot/util": "^10.1.13",
+    "@polkadot/api": "^9.9",
+    "@polkadot/keyring": "^10.1",
+    "@polkadot/util": "^10.1",
     "@subsquid/archive-registry": "^1.0",
     "@subsquid/cli": "^0.7",
     "@subsquid/graphql-server": "^3.2",
@@ -35,8 +35,8 @@
   "devDependencies": {
     "@subsquid/substrate-metadata-explorer": "^1.0",
     "@subsquid/substrate-typegen": "^1.5",
-    "@subsquid/typeorm-codegen": "^0.2",
-    "@types/node": "^16.11",
+    "@subsquid/typeorm-codegen": "^0.3",
+    "@types/node": "^16.18",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",
     "eslint": "^8.27.0",
@@ -45,12 +45,12 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-sonarjs": "^0.16.0",
-    "eslint-plugin-unicorn": "^44.0.2",
-    "prettier": "2.7.1",
+    "eslint-plugin-unicorn": "^45.0",
+    "prettier": "^2.8",
     "typescript": "^4.8"
   },
   "peerDependencies": {
-    "@polkadot/types": "9.9.1",
+    "@polkadot/types": "9.9.2",
     "@subsquid/util-internal-hex": "0.0.1",
     "reflect-metadata": "0.1.13",
     "typeorm": "0.3.10"

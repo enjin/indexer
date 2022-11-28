@@ -8,31 +8,31 @@ import {TokenAccount} from "./tokenAccount.model"
 
 @Entity_()
 export class Account {
-  constructor(props?: Partial<Account>) {
-    Object.assign(this, props)
-  }
+    constructor(props?: Partial<Account>) {
+        Object.assign(this, props)
+    }
 
-  @PrimaryColumn_()
-  id!: string
+    @PrimaryColumn_()
+    id!: string
 
-  @Column_("int4", {nullable: false})
-  nonce!: number
+    @Column_("int4", {nullable: false})
+    nonce!: number
 
-  @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: true})
-  balance!: Balance | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: true})
+    balance!: Balance | undefined | null
 
-  @OneToMany_(() => AccountTransfer, e => e.account)
-  transfers!: AccountTransfer[]
+    @OneToMany_(() => AccountTransfer, e => e.account)
+    transfers!: AccountTransfer[]
 
-  @OneToMany_(() => Collection, e => e.owner)
-  collectionsOwned!: Collection[]
+    @OneToMany_(() => Collection, e => e.owner)
+    collectionsOwned!: Collection[]
 
-  @OneToMany_(() => CollectionAccount, e => e.account)
-  collectionAccounts!: CollectionAccount[]
+    @OneToMany_(() => CollectionAccount, e => e.account)
+    collectionAccounts!: CollectionAccount[]
 
-  @OneToMany_(() => TokenAccount, e => e.account)
-  tokenAccounts!: TokenAccount[]
+    @OneToMany_(() => TokenAccount, e => e.account)
+    tokenAccounts!: TokenAccount[]
 
-  @Column_("int4", {nullable: false})
-  lastUpdateBlock!: number
+    @Column_("int4", {nullable: false})
+    lastUpdateBlock!: number
 }

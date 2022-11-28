@@ -7,41 +7,41 @@ import {Listing} from "./listing.model"
  *  asset events, added Event as suffix to prevent name collision 
  */
 export class MarketplaceListEvent {
-  public readonly isTypeOf = 'MarketplaceListEvent'
-  private _from!: string
-  private _listing!: string
+    public readonly isTypeOf = 'MarketplaceListEvent'
+    private _from!: string
+    private _listing!: string
 
-  constructor(props?: Partial<Omit<MarketplaceListEvent, 'toJSON'>>, json?: any) {
-    Object.assign(this, props)
-    if (json != null) {
-      this._from = marshal.string.fromJSON(json.from)
-      this._listing = marshal.string.fromJSON(json.listing)
+    constructor(props?: Partial<Omit<MarketplaceListEvent, 'toJSON'>>, json?: any) {
+        Object.assign(this, props)
+        if (json != null) {
+            this._from = marshal.string.fromJSON(json.from)
+            this._listing = marshal.string.fromJSON(json.listing)
+        }
     }
-  }
 
-  get from(): string {
-    assert(this._from != null, 'uninitialized access')
-    return this._from
-  }
-
-  set from(value: string) {
-    this._from = value
-  }
-
-  get listing(): string {
-    assert(this._listing != null, 'uninitialized access')
-    return this._listing
-  }
-
-  set listing(value: string) {
-    this._listing = value
-  }
-
-  toJSON(): object {
-    return {
-      isTypeOf: this.isTypeOf,
-      from: this.from,
-      listing: this.listing,
+    get from(): string {
+        assert(this._from != null, 'uninitialized access')
+        return this._from
     }
-  }
+
+    set from(value: string) {
+        this._from = value
+    }
+
+    get listing(): string {
+        assert(this._listing != null, 'uninitialized access')
+        return this._listing
+    }
+
+    set listing(value: string) {
+        this._listing = value
+    }
+
+    toJSON(): object {
+        return {
+            isTypeOf: this.isTypeOf,
+            from: this.from,
+            listing: this.listing,
+        }
+    }
 }

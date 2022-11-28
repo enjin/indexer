@@ -1,4 +1,4 @@
 export enum ListingType {
-  FixedPrice = "FixedPrice",
-  Auction = "Auction",
+    FixedPrice = "FixedPrice",
+    Auction = "Auction",
 }
