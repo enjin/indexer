@@ -67,6 +67,9 @@ export class Token {
   @OneToMany_(() => TokenEvent, e => e.token)
   events!: TokenEvent[]
 
+  @Column_("bool", {nullable: true})
+  nonFungible!: boolean | undefined | null
+
   @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
   metadata!: Metadata | undefined | null
 

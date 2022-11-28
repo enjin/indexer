@@ -323,7 +323,6 @@ export async function handleTokenCreated(ctx: EventHandlerContext) {
             collection,
             metadata,
             listingForbidden: callData.listingForbidden,
-            // accounts: [],
             createdAt: new Date(ctx.block.timestamp),
         })
 
