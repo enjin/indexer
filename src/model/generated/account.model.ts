@@ -1,7 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Balance} from "./_balance"
-import {AccountTransfer} from "./accountTransfer.model"
+import {Extrinsic} from "./extrinsic.model"
 import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
@@ -21,8 +21,8 @@ export class Account {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: true})
     balance!: Balance | undefined | null
 
-    @OneToMany_(() => AccountTransfer, e => e.account)
-    transfers!: AccountTransfer[]
+    @OneToMany_(() => Extrinsic, e => e.signer)
+    extrinsics!: Extrinsic[]
 
     @OneToMany_(() => Collection, e => e.owner)
     collectionsOwned!: Collection[]

@@ -14,70 +14,83 @@ type Marketplace {
   protocolFee: Float!
   fixedPriceListingCount: Int!
   auctionListingCount: Int!
+  listingActiveDelay: Int!
+  listingDeposit: BigInt!
+  maxRoundingError: BigInt!
+  maxSaltLength: Int!
+  minimumBidIncreasePercentage: Float!
 }
 
-interface Action {
-  timestamp: DateTime
-  blockNumber: Int
-  extrinsicHash: String
-}
+#enum TransferDirection {
+#  From
+#  To
+#}
 
-interface CanFail {
-  success: Boolean
-}
-
-enum TransferDirection {
-  From
-  To
-}
-
-type Fee @entity {
-  id: ID!
+type Fee {
   amount: BigInt
-  who: Account!
+  who: Account
 }
 
-type Transfer implements Action & CanFail @entity {
+type Extrinsic @entity {
   id: ID!
-  timestamp: DateTime!
-  blockNumber: Int! @index
-  extrinsicHash: String! @index
-  to: TransferLocationAccount
-  from: TransferLocationAccount!
-  asset: TransferAsset!
-  fee: Fee
+  extrinsicIndex: String!
+  extrinsicHash: String!
+  blockNumber: Int!
+  blockHash: String!
+  success: Boolean!
+  pallet: String!
+  method: String!
+  args: JSON
+  signature: JSON!
+  signer: Account!
+  nonce: Int!
   tip: BigInt
+  fee: Fee
   error: String
-  success: Boolean! @index
-  type: TransferType!
+  createdAt: DateTime!
 }
 
-type TransferLocationAccount {
-  id: String!
-}
-
-union TransferAsset = TransferAssetToken | TransferAssetMultiToken
-
-enum TransferType {
-  Native
-}
-
-type TransferAssetToken {
-  symbol: String
-  amount: BigInt
-}
-
-type TransferAssetMultiToken {
-  tokens: [TransferAssetToken]
-}
-
-# entity for linking account and transfer
-type AccountTransfer @entity {
-  id: ID!
-  transfer: Transfer
-  account: Account!
-  direction: TransferDirection
-}
+#type Transfer @entity {
+#  id: ID!
+#  timestamp: DateTime!
+#  blockNumber: Int! @index
+#  extrinsicHash: String! @index
+#  to: TransferLocationAccount
+#  from: TransferLocationAccount!
+#  asset: TransferAsset!
+#  fee: Fee
+#  tip: BigInt
+#  error: String
+#  success: Boolean! @index
+#  type: TransferType!
+#}
+#
+#type TransferLocationAccount {
+#  id: String!
+#}
+#
+#union TransferAsset = TransferAssetToken | TransferAssetMultiToken
+#
+#enum TransferType {
+#  Native
+#}
+#
+#type TransferAssetToken {
+#  symbol: String
+#  amount: BigInt
+#}
+#
+#type TransferAssetMultiToken {
+#  tokens: [TransferAssetToken]
+#}
+#
+## entity for linking account and transfer
+#type AccountTransfer @entity {
+#  id: ID!
+#  transfer: Transfer
+#  account: Account!
+#  direction: TransferDirection
+#}
 
 type Balance {
   free: BigInt!
@@ -89,15 +102,17 @@ type Balance {
 type Account @entity {
   id: ID!
 
+  # Storage defaults
   nonce: Int!
   balance: Balance
 
-  transfers: [AccountTransfer!] @derivedFrom(field: "account")
-
+  # Relations
+  extrinsics: [Extrinsic] @derivedFrom(field: "signer")
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
 
+  # Extras
   lastUpdateBlock: Int!
 }
 

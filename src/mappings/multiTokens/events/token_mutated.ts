@@ -69,8 +69,8 @@ export async function handleTokenMutated(ctx: EventHandlerContext) {
     }
 
     if (data.behavior.__kind !== 'None') {
-        if (data.behavior.value === undefined) {
-            token.behavior = undefined
+        if (!data.behavior.value) {
+            token.behavior = null
         } else {
             token.behavior = await getBehavior(data.behavior.value, ctx)
         }
