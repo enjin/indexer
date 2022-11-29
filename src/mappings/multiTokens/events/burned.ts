@@ -67,7 +67,7 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function handleBurned(ctx: EventHandlerContext) {
+export async function burned(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

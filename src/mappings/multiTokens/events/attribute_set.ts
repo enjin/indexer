@@ -22,7 +22,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export async function handleAttributeSet(ctx: EventHandlerContext) {
+export async function attributeSet(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

@@ -22,7 +22,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleTokenAccountCreated(ctx: EventHandlerContext) {
+export async function tokenAccountCreated(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

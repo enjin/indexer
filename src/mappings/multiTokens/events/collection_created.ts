@@ -109,7 +109,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleCollectionCreated(ctx: EventHandlerContext) {
+export async function collectionCreated(ctx: EventHandlerContext) {
     const eventData = getEventData(ctx)
 
     if (ctx.event.call) {

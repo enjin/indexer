@@ -60,7 +60,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleFrozen(ctx: EventHandlerContext) {
+export async function frozen(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

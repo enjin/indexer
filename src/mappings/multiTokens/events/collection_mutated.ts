@@ -70,7 +70,7 @@ async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<Ma
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export async function handleCollectionMutated(ctx: EventHandlerContext) {
+export async function collectionMutated(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

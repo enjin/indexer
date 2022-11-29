@@ -25,7 +25,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleListingFilled(ctx: EventHandlerContext) {
+export async function listingFilled(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

@@ -69,7 +69,7 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function handleMinted(ctx: EventHandlerContext) {
+export async function minted(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return
