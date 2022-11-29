@@ -2,7 +2,7 @@
 import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Listing } from '../../model'
+import { TokenEvent, Listing } from '../../model'
 
 @ObjectType()
 export class TokenSale {
@@ -32,7 +32,7 @@ export class TokenSalesHistoryResolver {
         const manager = await this.tx()
 
         const builder = manager
-            .getRepository(Listing)
+            .getRepository(TokenEvent)
             .createQueryBuilder('token_event')
             .leftJoinAndMapOne(`token_event.listing`, Listing, 'listing', `listing.id = token_event.event->>'listing'`)
             .select('DATE(token_event.created_at) AS day')

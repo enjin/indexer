@@ -21,6 +21,11 @@ type Marketplace {
   minimumBidIncreasePercentage: Float!
 }
 
+#enum TransferDirection {
+#  From
+#  To
+#}
+
 type Fee {
   amount: BigInt
   who: Account
@@ -43,171 +48,49 @@ type Extrinsic @entity {
   fee: Fee
   error: String
   createdAt: DateTime!
-
-  events: [Event] @derivedFrom(field: "extrinsic")
 }
 
-type Event @entity {
-  id: ID!
-
-  extrinsic: Extrinsic!
-  collection: Collection
-  token: Token
-
-  data: EventData
-}
-
-union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
-  | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
-  | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
-  | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
-  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
-  | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled
-
-type MarketplaceAuctionFinalized {
-  listing: Listing!
-  winningBid: Bid
-  protocolFee: Float!
-  royalty: BigInt!
-}
-
-type MarketplaceBidPlaced {
-  listing: Listing!
-  bid: Bid!
-}
-
-type MarketplaceListingCancelled {
-  listing: Listing!
-}
-
-type MarketplaceListingCreated {
-  listing: Listing!
-}
-
-type MarketplaceListingFilled {
-  listing: Listing!
-  buyer: Account!
-  amountFilled: BigInt!
-  amountRemaining: BigInt!
-  protocolFee: Float!
-  royalty: BigInt!
-}
-
-type MultiTokensApproved {
-  collectionId: BigInt!
-  tokenId: BigInt
-  owner: Account!
-  operator: Account!
-  amount: BigInt
-  expiration: BigInt
-}
-
-type MultiTokensAttributeRemoved {
-  collectionId: BigInt!
-  tokenId: BigInt
-  key: String!
-}
-
-type MultiTokensAttributeSet {
-  collectionId: BigInt!
-  tokenId: BigInt
-  key: String!
-  value: String!
-}
-
-type MultiTokensBurned {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  account: Account!
-  amount: BigInt!
-}
-
-type MultiTokensCollectionAccountCreated {
-  collectionId: BigInt!
-  account: Account!
-}
-
-type MultiTokensCollectionAccountDestroyed {
-  collectionId: BigInt!
-  account: Account!
-}
-
-type MultiTokensCollectionCreated {
-  collectionId: BigInt!
-  owner: Account!
-}
-
-type MultiTokensCollectionDestroyed {
-  collectionId: BigInt!
-  called: Account!
-}
-
-type MultiTokensCollectionMutated {
-  extrinsic: Extrinsic!
-}
-
-type MultiTokensFrozen {
-  extrinsic: Extrinsic!
-}
-
-type MultiTokensMinted {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  issuer: Account!
-  recipient: Account!
-  amount: BigInt!
-}
-
-type MultiTokensThawed {
-  extrinsic: Extrinsic!
-}
-
-type MultiTokensTokenAccountCreated {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  account: Account!
-  balance: BigInt!
-}
-
-type MultiTokensTokenAccountDestroyed {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  accountId: Account!
-}
-
-type MultiTokensTokenCreated {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  issuer: Account!
-  initialSupply: BigInt!
-}
-
-type MultiTokensTokenDestroyed {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  caller: Account!
-}
-
-type MultiTokensTokenMutated {
-  extrinsic: Extrinsic!
-}
-
-type MultiTokensTransferred {
-  collectionId: BigInt!
-  tokenId: BigInt!
-  operator: Account!
-  from: Account!
-  to: Account!
-  amount: BigInt!
-}
-
-type MultiTokensUnapproved {
-  collectionId: BigInt!
-  tokenId: BigInt
-  owner: Account!
-  operator: Account!
-}
+#type Transfer @entity {
+#  id: ID!
+#  timestamp: DateTime!
+#  blockNumber: Int! @index
+#  extrinsicHash: String! @index
+#  to: TransferLocationAccount
+#  from: TransferLocationAccount!
+#  asset: TransferAsset!
+#  fee: Fee
+#  tip: BigInt
+#  error: String
+#  success: Boolean! @index
+#  type: TransferType!
+#}
+#
+#type TransferLocationAccount {
+#  id: String!
+#}
+#
+#union TransferAsset = TransferAssetToken | TransferAssetMultiToken
+#
+#enum TransferType {
+#  Native
+#}
+#
+#type TransferAssetToken {
+#  symbol: String
+#  amount: BigInt
+#}
+#
+#type TransferAssetMultiToken {
+#  tokens: [TransferAssetToken]
+#}
+#
+## entity for linking account and transfer
+#type AccountTransfer @entity {
+#  id: ID!
+#  transfer: Transfer
+#  account: Account!
+#  direction: TransferDirection
+#}
 
 type Balance {
   free: BigInt!
@@ -375,7 +258,7 @@ type Token @entity {
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
-  events: [Event] @derivedFrom(field: "token")
+  events: [TokenEvent] @derivedFrom(field: "token")
 
   # Extras
   nonFungible: Boolean
@@ -550,4 +433,58 @@ type Listing @entity {
 
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+
+
+""" asset events, added Event as suffix to prevent name collision """
+
+type  MarketplaceListEvent {
+  from: Account! # this field makes it easier to query user activities
+  listing: Listing!
+}
+
+type MarketplacePurchaseEvent {
+  from: Account!
+  to:  Account!
+  amount: BigInt!
+  listing: Listing!
+}
+
+type MarketplaceListingCancelEvent {
+  from: Account!
+  listing: Listing!
+}
+
+type MarketplaceBidEvent {
+  from: Account!
+  bid: Bid!
+}
+
+type TransferEvent {
+  from: Account!
+  to:  Account!
+  amount: BigInt!
+}
+
+type MintEvent {
+  to: Account!
+  amount: BigInt!
+}
+
+type BurnEvent {
+  from: Account!
+  amount: BigInt!
+}
+
+union TokenEventType = MarketplaceListEvent | MarketplacePurchaseEvent | MarketplaceListingCancelEvent | MarketplaceBidEvent | TransferEvent | MintEvent | BurnEvent
+
+type TokenEvent @entity {
+  id: ID!
+
+  event: TokenEventType!
+  token: Token!
+  height: Int!
+
+  createdAt: DateTime!
 }

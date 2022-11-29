@@ -1,8 +1,7 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Fee} from "./_fee"
-import {Event} from "./event.model"
 
 @Entity_()
 export class Extrinsic {
@@ -58,7 +57,4 @@ export class Extrinsic {
 
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
-
-    @OneToMany_(() => Event, e => e.extrinsic)
-    events!: Event[]
 }
