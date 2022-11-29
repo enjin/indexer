@@ -14,29 +14,17 @@ processor.setDataSource(config.dataSource)
 processor.setPrometheusPort(config.port || DEFAULT_PORT)
 processor.setBlockRange(config.blockRange || { from: 0 })
 
-// processor.addCallHandler(
-//     'Balances.transfer',
-//     { triggerForFailedCalls: true },
-//     modules.balances.extrinsics.handleTransfer
-// )
-// processor.addCallHandler(
-//     'Balances.transfer_keep_alive',
-//     { triggerForFailedCalls: true },
-//     modules.balances.extrinsics.handleTransferKeepAlive
-// )
-// processor.addCallHandler(
-//     'Balances.force_transfer',
-//     { triggerForFailedCalls: true },
-//     modules.balances.extrinsics.handleForceTransfer
-// )
-// processor.addCallHandler(
-//     'Balances.transfer_all',
-//     { triggerForFailedCalls: true },
-//     modules.balances.extrinsics.handleTransferAll
-// )
+processor.addPreHook(
+    {
+        range: { from: 1, to: 1 },
+    },
+    createEfiToken
+)
 
-// processor.addEventHandler('Balances.Transfer', modules.balances.events.handleTransfer)
-// processor.addEventHandler('Balances.Withdraw', modules.balances.events.handleWithdraw)
+// Saves all extrinsics to user account
+processor.addCallHandler('*', { triggerForFailedCalls: true }, modules.extrinsics.processor.save)
+
+// Saves MultiTokens information
 processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
 processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
 processor.addEventHandler('MultiTokens.CollectionMutated', modules.multiTokens.events.handleCollectionMutated)
@@ -63,6 +51,7 @@ processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.han
 processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
 processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
 
+// Saves Marketplace information
 processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
 processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.events.handleListingCancelled)
 processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
@@ -80,16 +69,6 @@ processor.addEventHandler('Balances.Unreserved', modules.balances.processor.save
 processor.addEventHandler('Balances.Withdraw', modules.balances.processor.save)
 processor.addEventHandler('Balances.BalanceSet', modules.balances.processor.save)
 processor.addEventHandler('Balances.Deposit', modules.balances.processor.save)
-
-// Saves all extrinsics to user account
-processor.addCallHandler('*', { triggerForFailedCalls: true }, modules.extrinsics.processor.save)
-
-processor.addPreHook(
-    {
-        range: { from: 1, to: 1 },
-    },
-    createEfiToken
-)
 
 processor.addPostHook(
     {
