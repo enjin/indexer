@@ -1,31 +1,16 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {Account} from "./account.model"
 import {Listing} from "./listing.model"
 
-/**
- *  asset events, added Event as suffix to prevent name collision 
- */
-export class MarketplaceListEvent {
-    public readonly isTypeOf = 'MarketplaceListEvent'
-    private _from!: string
+export class MarketplaceListingCancelled {
+    public readonly isTypeOf = 'MarketplaceListingCancelled'
     private _listing!: string
 
-    constructor(props?: Partial<Omit<MarketplaceListEvent, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<MarketplaceListingCancelled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._from = marshal.string.fromJSON(json.from)
             this._listing = marshal.string.fromJSON(json.listing)
         }
-    }
-
-    get from(): string {
-        assert(this._from != null, 'uninitialized access')
-        return this._from
-    }
-
-    set from(value: string) {
-        this._from = value
     }
 
     get listing(): string {
@@ -40,7 +25,6 @@ export class MarketplaceListEvent {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            from: this.from,
             listing: this.listing,
         }
     }

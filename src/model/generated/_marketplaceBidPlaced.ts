@@ -1,28 +1,28 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {Account} from "./account.model"
+import {Listing} from "./listing.model"
 import {Bid} from "./bid.model"
 
-export class MarketplaceBidEvent {
-    public readonly isTypeOf = 'MarketplaceBidEvent'
-    private _from!: string
+export class MarketplaceBidPlaced {
+    public readonly isTypeOf = 'MarketplaceBidPlaced'
+    private _listing!: string
     private _bid!: string
 
-    constructor(props?: Partial<Omit<MarketplaceBidEvent, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<MarketplaceBidPlaced, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._from = marshal.string.fromJSON(json.from)
+            this._listing = marshal.string.fromJSON(json.listing)
             this._bid = marshal.string.fromJSON(json.bid)
         }
     }
 
-    get from(): string {
-        assert(this._from != null, 'uninitialized access')
-        return this._from
+    get listing(): string {
+        assert(this._listing != null, 'uninitialized access')
+        return this._listing
     }
 
-    set from(value: string) {
-        this._from = value
+    set listing(value: string) {
+        this._listing = value
     }
 
     get bid(): string {
@@ -37,7 +37,7 @@ export class MarketplaceBidEvent {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            from: this.from,
+            listing: this.listing,
             bid: this.bid,
         }
     }

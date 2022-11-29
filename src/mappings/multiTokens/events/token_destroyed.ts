@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Listing, ListingStatus, Token, TokenEvent } from '../../../model'
+import { Attribute, Listing, ListingStatus, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
 
@@ -38,13 +38,13 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
             },
         })
 
-        const events = await ctx.store.find(TokenEvent, {
-            where: {
-                token: {
-                    id: token.id,
-                },
-            },
-        })
+        // const events = await ctx.store.find(TokenEvent, {
+        //     where: {
+        //         token: {
+        //             id: token.id,
+        //         },
+        //     },
+        // })
 
         await ctx.store
             .getRepository(ListingStatus)
@@ -60,7 +60,7 @@ export async function handleTokenDestroyed(ctx: EventHandlerContext) {
         })
 
         await ctx.store.remove(attributes)
-        await ctx.store.remove(events)
+        // await ctx.store.remove(events)
     }
 
     await ctx.store.remove(token)
