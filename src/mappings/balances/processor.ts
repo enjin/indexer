@@ -238,7 +238,7 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
         }
     }
 
-    await ctx.store.save<Account>(accounts)
+    await ctx.store.save(accounts)
 }
 
 export async function save(ctx: EventHandlerContext): Promise<void> {

@@ -1,4 +1,3 @@
-import { In } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import { Attribute, Listing, ListingStatus, Token, TokenEvent } from '../../../model'
