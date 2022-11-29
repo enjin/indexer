@@ -22,7 +22,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleBidPlaced(ctx: EventHandlerContext) {
+export async function bidPlaced(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

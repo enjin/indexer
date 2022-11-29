@@ -30,7 +30,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleApproved(ctx: EventHandlerContext) {
+export async function approved(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

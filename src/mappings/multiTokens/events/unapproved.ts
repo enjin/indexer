@@ -26,7 +26,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleUnapproved(ctx: EventHandlerContext) {
+export async function unapproved(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

@@ -20,7 +20,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleCollectionAccountCreated(ctx: EventHandlerContext) {
+export async function collectionAccountCreated(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

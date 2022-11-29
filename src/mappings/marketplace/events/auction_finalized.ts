@@ -24,7 +24,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleAuctionFinalized(ctx: EventHandlerContext) {
+export async function auctionFinalized(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

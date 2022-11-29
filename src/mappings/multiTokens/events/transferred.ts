@@ -69,7 +69,7 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function handleTransferred(ctx: EventHandlerContext) {
+export async function transferred(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

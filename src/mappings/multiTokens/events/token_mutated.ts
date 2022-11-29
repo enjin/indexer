@@ -52,7 +52,7 @@ async function getBehavior(
     })
 }
 
-export async function handleTokenMutated(ctx: EventHandlerContext) {
+export async function tokenMutated(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

@@ -34,7 +34,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleAttributeRemoved(ctx: EventHandlerContext) {
+export async function attributeRemoved(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

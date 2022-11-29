@@ -18,7 +18,7 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-export async function handleListingCancelled(ctx: EventHandlerContext) {
+export async function listingCancelled(ctx: EventHandlerContext) {
     const data = getEventData(ctx)
 
     if (!data) return

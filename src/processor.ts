@@ -4,7 +4,7 @@ import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import config from './config'
 import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
-import * as modules from './mappings'
+import * as map from './mappings'
 import { createEfiToken } from './createEfiToken'
 
 const database = new FullTypeormDatabase()
@@ -22,53 +22,47 @@ processor.addPreHook(
 )
 
 // Saves all extrinsics to user account
-processor.addCallHandler('*', { triggerForFailedCalls: true }, modules.extrinsics.processor.save)
+processor.addCallHandler('*', { triggerForFailedCalls: true }, map.extrinsics.processor.save)
 
 // Saves MultiTokens information
-processor.addEventHandler('MultiTokens.CollectionCreated', modules.multiTokens.events.handleCollectionCreated)
-processor.addEventHandler('MultiTokens.CollectionDestroyed', modules.multiTokens.events.handleCollectionDestroyed)
-processor.addEventHandler('MultiTokens.CollectionMutated', modules.multiTokens.events.handleCollectionMutated)
-processor.addEventHandler(
-    'MultiTokens.CollectionAccountCreated',
-    modules.multiTokens.events.handleCollectionAccountCreated
-)
-processor.addEventHandler(
-    'MultiTokens.CollectionAccountDestroyed',
-    modules.multiTokens.events.handleCollectionAccountDestroyed
-)
-processor.addEventHandler('MultiTokens.TokenCreated', modules.multiTokens.events.handleTokenCreated)
-processor.addEventHandler('MultiTokens.TokenDestroyed', modules.multiTokens.events.handleTokenDestroyed)
-processor.addEventHandler('MultiTokens.TokenMutated', modules.multiTokens.events.handleTokenMutated)
-processor.addEventHandler('MultiTokens.TokenAccountCreated', modules.multiTokens.events.handleTokenAccountCreated)
-processor.addEventHandler('MultiTokens.TokenAccountDestroyed', modules.multiTokens.events.handleTokenAccountDestroyed)
-processor.addEventHandler('MultiTokens.Minted', modules.multiTokens.events.handleMinted)
-processor.addEventHandler('MultiTokens.Burned', modules.multiTokens.events.handleBurned)
-processor.addEventHandler('MultiTokens.AttributeSet', modules.multiTokens.events.handleAttributeSet)
-processor.addEventHandler('MultiTokens.AttributeRemoved', modules.multiTokens.events.handleAttributeRemoved)
-processor.addEventHandler('MultiTokens.Frozen', modules.multiTokens.events.handleFrozen)
-processor.addEventHandler('MultiTokens.Thawed', modules.multiTokens.events.handleThawed)
-processor.addEventHandler('MultiTokens.Approved', modules.multiTokens.events.handleApproved)
-processor.addEventHandler('MultiTokens.Unapproved', modules.multiTokens.events.handleUnapproved)
-processor.addEventHandler('MultiTokens.Transferred', modules.multiTokens.events.handleTransferred)
+processor.addEventHandler('MultiTokens.CollectionCreated', map.multiTokens.events.collectionCreated)
+processor.addEventHandler('MultiTokens.CollectionDestroyed', map.multiTokens.events.collectionDestroyed)
+processor.addEventHandler('MultiTokens.CollectionMutated', map.multiTokens.events.collectionMutated)
+processor.addEventHandler('MultiTokens.CollectionAccountCreated', map.multiTokens.events.collectionAccountCreated)
+processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', map.multiTokens.events.collectionAccountDestroyed)
+processor.addEventHandler('MultiTokens.TokenCreated', map.multiTokens.events.tokenCreated)
+processor.addEventHandler('MultiTokens.TokenDestroyed', map.multiTokens.events.tokenDestroyed)
+processor.addEventHandler('MultiTokens.TokenMutated', map.multiTokens.events.tokenMutated)
+processor.addEventHandler('MultiTokens.TokenAccountCreated', map.multiTokens.events.tokenAccountCreated)
+processor.addEventHandler('MultiTokens.TokenAccountDestroyed', map.multiTokens.events.tokenAccountDestroyed)
+processor.addEventHandler('MultiTokens.Minted', map.multiTokens.events.minted)
+processor.addEventHandler('MultiTokens.Burned', map.multiTokens.events.burned)
+processor.addEventHandler('MultiTokens.AttributeSet', map.multiTokens.events.attributeSet)
+processor.addEventHandler('MultiTokens.AttributeRemoved', map.multiTokens.events.attributeRemoved)
+processor.addEventHandler('MultiTokens.Frozen', map.multiTokens.events.frozen)
+processor.addEventHandler('MultiTokens.Thawed', map.multiTokens.events.thawed)
+processor.addEventHandler('MultiTokens.Approved', map.multiTokens.events.approved)
+processor.addEventHandler('MultiTokens.Unapproved', map.multiTokens.events.unapproved)
+processor.addEventHandler('MultiTokens.Transferred', map.multiTokens.events.transferred)
 
 // Saves Marketplace information
-processor.addEventHandler('Marketplace.ListingCreated', modules.marketplace.events.handleListingCreated)
-processor.addEventHandler('Marketplace.ListingCancelled', modules.marketplace.events.handleListingCancelled)
-processor.addEventHandler('Marketplace.ListingFilled', modules.marketplace.events.handleListingFilled)
-processor.addEventHandler('Marketplace.BidPlaced', modules.marketplace.events.handleBidPlaced)
-processor.addEventHandler('Marketplace.AuctionFinalized', modules.marketplace.events.handleAuctionFinalized)
+processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
+processor.addEventHandler('Marketplace.ListingCancelled', map.marketplace.events.listingCancelled)
+processor.addEventHandler('Marketplace.ListingFilled', map.marketplace.events.listingFilled)
+processor.addEventHandler('Marketplace.BidPlaced', map.marketplace.events.bidPlaced)
+processor.addEventHandler('Marketplace.AuctionFinalized', map.marketplace.events.auctionFinalized)
 
 // Updates balances
-processor.addEventHandler('Balances.DustLost', modules.balances.processor.save)
-processor.addEventHandler('Balances.Endowed', modules.balances.processor.save)
-processor.addEventHandler('Balances.ReserveRepatriated', modules.balances.processor.save)
-processor.addEventHandler('Balances.Reserved', modules.balances.processor.save)
-processor.addEventHandler('Balances.Slashed', modules.balances.processor.save)
-processor.addEventHandler('Balances.Transfer', modules.balances.processor.save)
-processor.addEventHandler('Balances.Unreserved', modules.balances.processor.save)
-processor.addEventHandler('Balances.Withdraw', modules.balances.processor.save)
-processor.addEventHandler('Balances.BalanceSet', modules.balances.processor.save)
-processor.addEventHandler('Balances.Deposit', modules.balances.processor.save)
+processor.addEventHandler('Balances.DustLost', map.balances.processor.save)
+processor.addEventHandler('Balances.Endowed', map.balances.processor.save)
+processor.addEventHandler('Balances.ReserveRepatriated', map.balances.processor.save)
+processor.addEventHandler('Balances.Reserved', map.balances.processor.save)
+processor.addEventHandler('Balances.Slashed', map.balances.processor.save)
+processor.addEventHandler('Balances.Transfer', map.balances.processor.save)
+processor.addEventHandler('Balances.Unreserved', map.balances.processor.save)
+processor.addEventHandler('Balances.Withdraw', map.balances.processor.save)
+processor.addEventHandler('Balances.BalanceSet', map.balances.processor.save)
+processor.addEventHandler('Balances.Deposit', map.balances.processor.save)
 
 processor.addPostHook(
     {
