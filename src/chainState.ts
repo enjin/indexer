@@ -21,12 +21,17 @@ async function saveChainState(ctx: BlockHandlerContext) {
     state.specVersion = Number(ctx.block.specId.split('@')[1])
     state.blockNumber = ctx.block.height
     state.blockHash = ctx.block.hash
-    state.existentialDeposit = 1n
+    state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
     state.timestamp = new Date(ctx.block.timestamp)
     state.marketplace = new Marketplace({
         protocolFee: marketplace.protocolFee,
         fixedPriceListingCount: marketplace.fixedPriceListingCount,
         auctionListingCount: marketplace.auctionListingCount,
+        listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
+        listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
+        maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
+        maxSaltLength: Number(api.consts.marketplace.maxSaltLength.toString()),
+        minimumBidIncreasePercentage: Number(api.consts.marketplace.minimumBidIncreasePercentage.toString()),
     })
 
     await ctx.store.save(state)

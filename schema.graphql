@@ -14,6 +14,11 @@ type Marketplace {
   protocolFee: Float!
   fixedPriceListingCount: Int!
   auctionListingCount: Int!
+  listingActiveDelay: Int!
+  listingDeposit: BigInt!
+  maxRoundingError: BigInt!
+  maxSaltLength: Int!
+  minimumBidIncreasePercentage: Float!
 }
 
 #enum TransferDirection {
