@@ -12,7 +12,6 @@ import {
     TokenCapSupply,
     Royalty,
     Metadata,
-    Attribute,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
