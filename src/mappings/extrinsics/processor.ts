@@ -27,7 +27,7 @@ export async function save(ctx: CallHandlerContext): Promise<void> {
         pallet: call[0],
         method: call[1],
         args: ctx.extrinsic.call.args,
-        signature: JSON.stringify(ctx.extrinsic.signature.signature),
+        signature: ctx.extrinsic.signature.signature,
         signer,
         nonce: signer.nonce,
         tip: ctx.extrinsic.tip,

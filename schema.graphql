@@ -35,8 +35,8 @@ type Extrinsic @entity {
   success: Boolean!
   pallet: String!
   method: String!
-  args: String
-  signature: String!
+  args: JSON
+  signature: JSON!
   signer: Account!
   nonce: Int!
   tip: BigInt
@@ -97,16 +97,17 @@ type Balance {
 type Account @entity {
   id: ID!
 
+  # Storage defaults
   nonce: Int!
   balance: Balance
 
+  # Relations
   extrinsics: [Extrinsic] @derivedFrom(field: "signer")
-#  transfers: [AccountTransfer!] @derivedFrom(field: "account")
-
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
 
+  # Extras
   lastUpdateBlock: Int!
 }
 

@@ -33,11 +33,11 @@ export class Extrinsic {
     @Column_("text", {nullable: false})
     method!: string
 
-    @Column_("text", {nullable: true})
-    args!: string | undefined | null
+    @Column_("jsonb", {nullable: true})
+    args!: unknown | undefined | null
 
-    @Column_("text", {nullable: false})
-    signature!: string
+    @Column_("jsonb", {nullable: false})
+    signature!: unknown
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
