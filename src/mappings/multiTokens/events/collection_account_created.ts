@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount } from '../../../model'
@@ -28,11 +29,10 @@ export async function collectionAccountCreated(ctx: EventHandlerContext) {
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
-    const address = encodeId(data.accountId)
-    const account = await getOrCreateAccount(ctx, address)
 
+    const account = await getOrCreateAccount(ctx, data.accountId)
     const collectionAccount = new CollectionAccount({
-        id: `${data.collectionId}-${address}`,
+        id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
         isFrozen: false,
         approvals: null,
         accountCount: 0, // TODO: Change fixed for now

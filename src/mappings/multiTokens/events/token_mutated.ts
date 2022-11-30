@@ -1,11 +1,10 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
 import { Royalty, Token, TokenBehaviorHasRoyalty, TokenBehaviorIsCurrency, TokenBehaviorType } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
-import { ChainContext, Option } from '../../../types/generated/support'
+import { Option } from '../../../types/generated/support'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
 
@@ -33,16 +32,15 @@ function getEventData(ctx: EventHandlerContext): EventData {
 
 async function getBehavior(
     behavior: TokenMarketBehavior,
-    ctx: ChainContext
+    ctx: EventHandlerContext
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })
     }
-    const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
-    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
 
+    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({

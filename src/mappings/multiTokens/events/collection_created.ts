@@ -13,7 +13,7 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { ChainContext } from '../../../types/generated/support'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
@@ -31,10 +31,11 @@ interface EventData {
     owner: Uint8Array
 }
 
-async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
-    const address = encodeId(royalty.beneficiary)
-    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
-
+async function getMarket(
+    royalty: DefaultRoyalty,
+    ctx: EventHandlerContext | CommonHandlerContext
+): Promise<MarketPolicy> {
+    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
@@ -43,7 +44,7 @@ async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<Ma
     })
 }
 
-async function getCallData(ctx: ChainContext, subcall: SubstrateCall): Promise<CallData> {
+async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall): Promise<CallData> {
     const call = new MultiTokensCreateCollectionCall(ctx, subcall)
 
     if (call.isEfinityV2) {
@@ -117,7 +118,7 @@ export async function collectionCreated(ctx: EventHandlerContext) {
 
         if (!eventData || !callData) return
 
-        const account = await getOrCreateAccount(ctx, encodeId(eventData.owner))
+        const account = await getOrCreateAccount(ctx, eventData.owner)
         const collection = new Collection({
             id: eventData.collectionId.toString(),
             owner: account,

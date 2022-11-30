@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, TokenAccount } from '../../../model'
@@ -31,7 +32,7 @@ export async function unapproved(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const address = encodeId(data.owner)
+    const address = u8aToHex(data.owner)
 
     if (data.tokenId) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {

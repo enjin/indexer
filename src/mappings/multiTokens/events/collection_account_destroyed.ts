@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountDestroyedEvent } from '../../../types/generated/events'
 import { CollectionAccount } from '../../../model'
@@ -24,7 +25,7 @@ export async function collectionAccountDestroyed(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const address = encodeId(data.accountId)
+    const address = u8aToHex(data.accountId)
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${address}` },
     })
