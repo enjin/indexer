@@ -1,7 +1,7 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -33,17 +33,15 @@ export async function tokenAccountCreated(ctx: EventHandlerContext) {
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
-    const address = encodeId(data.accountId)
-    const account = await getOrCreateAccount(ctx, address)
-
+    const account = await getOrCreateAccount(ctx, data.accountId)
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${address}` },
+        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
     })
     collectionAccount.accountCount += 1
     await ctx.store.save(collectionAccount)
 
     const tokenAccount = new TokenAccount({
-        id: `${address}-${data.collectionId}-${data.tokenId}`,
+        id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
         balance: data.balance,
         reservedBalance: 0n,
         lockedBalance: 0n,

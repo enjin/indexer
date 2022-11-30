@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import { AuctionState, Bid, Listing, ListingType } from '../../../model'
@@ -37,11 +38,9 @@ export async function bidPlaced(ctx: EventHandlerContext) {
         },
     })
 
-    const address = encodeId(data.bid.bidder)
-    const account = await getOrCreateAccount(ctx, address)
-
+    const account = await getOrCreateAccount(ctx, data.bid.bidder)
     const bid = new Bid({
-        id: `${listingId}-${address}-${data.bid.price}`,
+        id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
         bidder: account,
         price: data.bid.price,
         listing,
@@ -61,6 +60,5 @@ export async function bidPlaced(ctx: EventHandlerContext) {
     await ctx.store.save(listing)
 
     new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
-
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

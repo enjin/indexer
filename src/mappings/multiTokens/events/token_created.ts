@@ -61,16 +61,15 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
 
 async function getBehavior(
     behavior: TokenMarketBehavior,
-    ctx: ChainContext
+    ctx: EventHandlerContext | CommonHandlerContext
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })
     }
-    const address = encodeId((behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
-    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
 
+    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -81,7 +80,7 @@ async function getBehavior(
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function getCallData(ctx: ChainContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
+async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
     if (subcall.name === 'MultiTokens.batch_mint') {
         const call = new MultiTokensBatchMintCall(ctx, subcall)
 

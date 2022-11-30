@@ -57,10 +57,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
-async function getMarket(royalty: DefaultRoyalty, ctx: ChainContext): Promise<MarketPolicy> {
-    const address = encodeId(royalty.beneficiary)
-    const account = await getOrCreateAccount(ctx as CommonHandlerContext, address)
-
+async function getMarket(royalty: DefaultRoyalty, ctx: EventHandlerContext): Promise<MarketPolicy> {
+    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
@@ -80,7 +78,7 @@ export async function collectionMutated(ctx: EventHandlerContext) {
     })
 
     if (data.owner) {
-        collection.owner = await getOrCreateAccount(ctx, encodeId(data.owner))
+        collection.owner = await getOrCreateAccount(ctx, data.owner)
     }
 
     if (data.royalty.__kind !== 'None') {

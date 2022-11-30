@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
@@ -72,7 +73,7 @@ export async function burned(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const address = encodeId(data.accountId)
+    const address = u8aToHex(data.accountId)
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },

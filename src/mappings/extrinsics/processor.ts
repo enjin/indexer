@@ -1,16 +1,14 @@
+import { hexToU8a } from '@polkadot/util'
 import { CallHandlerContext } from '../types/contexts'
 import { Extrinsic, Fee } from '../../model'
 import { getOrCreateAccount } from '../util/entities'
-import { encodeId } from '../../common/tools'
 
 export async function save(ctx: CallHandlerContext): Promise<void> {
     if (!ctx.extrinsic.signature?.address) {
         return
     }
-    const address = Uint8Array.from(
-        Buffer.from(ctx.extrinsic.signature.address.value.toString().replace('0x', ''), 'hex')
-    )
-    const signer = await getOrCreateAccount(ctx, encodeId(address))
+
+    const signer = await getOrCreateAccount(ctx, hexToU8a(ctx.extrinsic.signature.address.value))
     const fee = new Fee({
         amount: ctx.extrinsic.fee,
         who: signer.id,

@@ -55,7 +55,7 @@ export async function auctionFinalized(ctx: EventHandlerContext) {
     if (data.winningBid) {
         new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
             listing.seller,
-            await getOrCreateAccount(ctx, encodeId(data.winningBid.bidder)),
+            await getOrCreateAccount(ctx, data.winningBid.bidder),
             listing,
             1n
         )

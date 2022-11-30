@@ -62,7 +62,7 @@ export async function listingFilled(ctx: EventHandlerContext) {
 
     new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
         listing.seller,
-        await getOrCreateAccount(ctx, encodeId(data.buyer)),
+        await getOrCreateAccount(ctx, data.buyer),
         listing,
         data.amountFilled,
         data.amountRemaining

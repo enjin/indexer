@@ -15,6 +15,9 @@ export class Account {
     @PrimaryColumn_()
     id!: string
 
+    @Column_("text", {nullable: false})
+    address!: string
+
     @Column_("int4", {nullable: false})
     nonce!: number
 

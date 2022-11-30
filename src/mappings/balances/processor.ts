@@ -1,6 +1,7 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance } from '../../model'
-import { decodeId, encodeId } from '../../common/tools'
+import { decodeId, encodeId, isAdressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
@@ -201,15 +202,14 @@ function processBalancesEventItem(ctx: EventHandlerContext) {
             break
         }
     }
-    return ids.map((id) => encodeId(id))
+    return ids
 }
 
-async function getBalances(ctx: CommonHandlerContext, accountIds: string[]): Promise<AccountInfo[] | undefined> {
-    const accountIdsU8 = [...accountIds].map((id) => decodeId(id))
-    return getSystemAccountBalances(ctx, accountIdsU8)
+async function getBalances(ctx: CommonHandlerContext, accountIds: Uint8Array[]): Promise<AccountInfo[] | undefined> {
+    return getSystemAccountBalances(ctx, accountIds)
 }
 
-async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
+async function saveAccounts(ctx: CommonHandlerContext, accountIds: Uint8Array[]) {
     const accountInfos = await getBalances(ctx, accountIds)
     if (!accountInfos) {
         return
@@ -218,13 +218,14 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
     const accounts: Account[] = []
 
     for (let i = 0; i < accountIds.length; i += 1) {
-        const id = accountIds[i]
+        const id = u8aToHex(accountIds[i])
         const accountInfo = accountInfos[i]
 
         if (accountInfo) {
             accounts.push(
                 new Account({
                     id,
+                    address: isAdressSS58(accountIds[i]) ? encodeId(accountIds[i]) : u8aToHex(accountIds[i]),
                     nonce: accountInfo.nonce,
                     balance: new Balance({
                         free: accountInfo.data.free,
@@ -242,7 +243,7 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: string[]) {
 }
 
 export async function save(ctx: EventHandlerContext): Promise<void> {
-    const accountIds = new Set<string>()
+    const accountIds = new Set<Uint8Array>()
     processBalancesEventItem(ctx).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, [...accountIds])
     accountIds.clear()

@@ -1,3 +1,4 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensFrozenEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
@@ -66,7 +67,7 @@ export async function frozen(ctx: EventHandlerContext) {
     if (!data) return
 
     if (data.tokenAccount) {
-        const address = encodeId(data.tokenAccount)
+        const address = u8aToHex(data.tokenAccount)
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })
@@ -75,7 +76,7 @@ export async function frozen(ctx: EventHandlerContext) {
         tokenAccount.updatedAt = new Date(ctx.block.timestamp)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
-        const address = encodeId(data.collectionAccount)
+        const address = u8aToHex(data.collectionAccount)
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })

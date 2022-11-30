@@ -226,8 +226,9 @@ type Account @entity {
   id: ID!
 
   # Storage defaults
+  address: String!
   nonce: Int!
-  balance: Balance
+  balance: Balance!
 
   # Relations
   extrinsics: [Extrinsic] @derivedFrom(field: "signer")

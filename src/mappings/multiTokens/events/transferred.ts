@@ -1,7 +1,7 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/tools'
 import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
@@ -74,7 +74,7 @@ export async function transferred(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const fromAddress = encodeId(data.from)
+    const fromAddress = u8aToHex(data.from)
     const fromTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
@@ -92,7 +92,7 @@ export async function transferred(ctx: EventHandlerContext) {
         }
     }
 
-    const toAddress = encodeId(data.to)
+    const toAddress = u8aToHex(data.to)
     const toTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },

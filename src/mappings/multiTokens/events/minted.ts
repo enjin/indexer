@@ -1,7 +1,7 @@
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/tools'
 import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
@@ -74,8 +74,6 @@ export async function minted(ctx: EventHandlerContext) {
 
     if (!data) return
 
-    const address = encodeId(data.recipient)
-
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
@@ -87,7 +85,7 @@ export async function minted(ctx: EventHandlerContext) {
     await ctx.store.save(token)
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
-        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
 

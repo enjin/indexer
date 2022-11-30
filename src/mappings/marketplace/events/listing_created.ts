@@ -50,9 +50,7 @@ export async function listingCreated(ctx: EventHandlerContext) {
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
     })
 
-    const address = encodeId(data.listing.seller)
-    const account = await getOrCreateAccount(ctx, address)
-
+    const account = await getOrCreateAccount(ctx, data.listing.seller)
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
         data.listing.data.__kind === ListingType.FixedPrice.toString()

@@ -6,8 +6,7 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
     const efi = await ctx.store.findOneBy(Token, { id: '0-0' })
 
     if (!efi) {
-        const account = await getOrCreateAccount(ctx, 'rf8YmxhSe9WGJZvCH8wtzAndweEmz6dTV6DjmSHgHvPEFNLAJ')
-
+        const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
         const collection = new Collection({
             id: '0',
             owner: account,
