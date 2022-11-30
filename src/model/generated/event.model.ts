@@ -16,7 +16,7 @@ export class Event {
 
     @Index_()
     @ManyToOne_(() => Extrinsic, {nullable: true})
-    extrinsic!: Extrinsic
+    extrinsic!: Extrinsic | undefined | null
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})

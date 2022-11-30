@@ -5,6 +5,9 @@ import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import {
     Collection,
     CollectionStats,
+    Event,
+    MultiTokensCollectionCreated,
+    Extrinsic,
     MarketPolicy,
     MintPolicy,
     Royalty,
@@ -12,10 +15,8 @@ import {
     Token,
     TransferPolicy,
 } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
+import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { ChainContext } from '../../../types/generated/support'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
 
 interface CallData {
@@ -149,6 +150,19 @@ export async function collectionCreated(ctx: EventHandlerContext) {
         })
 
         await ctx.store.insert(Collection, collection as any)
+
+        const extrinsic = await ctx.store.findOneBy(Extrinsic, { id: ctx.event.call.id })
+        const event = new Event({
+            id: ctx.event.id,
+            extrinsic,
+            collection,
+            token: null,
+            data: new MultiTokensCollectionCreated({
+                collectionId: eventData.collectionId,
+                owner: account.id,
+            }),
+        })
+        await ctx.store.insert(Event, event as any)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const currency of callData.explicitRoyaltyCurrencies) {

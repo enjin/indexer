@@ -21,8 +21,8 @@ export class Account {
     @Column_("int4", {nullable: false})
     nonce!: number
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: true})
-    balance!: Balance | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: false})
+    balance!: Balance
 
     @OneToMany_(() => Extrinsic, e => e.signer)
     extrinsics!: Extrinsic[]
@@ -35,7 +35,4 @@ export class Account {
 
     @OneToMany_(() => TokenAccount, e => e.account)
     tokenAccounts!: TokenAccount[]
-
-    @Column_("int4", {nullable: false})
-    lastUpdateBlock!: number
 }

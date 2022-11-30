@@ -233,7 +233,6 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: Uint8Array[])
                         feeFrozen: accountInfo.data.feeFrozen,
                         miscFrozen: accountInfo.data.miscFrozen,
                     }),
-                    lastUpdateBlock: ctx.block.height,
                 })
             )
         }
