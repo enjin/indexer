@@ -1,9 +1,13 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { Context, getAccount } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -12,19 +16,22 @@ interface EventData {
     balance: bigint
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenAccountCreatedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenAccountCreatedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, accountId, balance } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, accountId, balance } = data.asEfinityV2
         return { collectionId, tokenId, accountId, balance }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function tokenAccountCreated(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function tokenAccountCreated(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
@@ -33,7 +40,7 @@ export async function tokenAccountCreated(ctx: EventHandlerContext) {
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
-    const account = await getOrCreateAccount(ctx, data.accountId)
+    const account = await getAccount(ctx, data.accountId)
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
     })
@@ -52,9 +59,9 @@ export async function tokenAccountCreated(ctx: EventHandlerContext) {
         account,
         collection,
         token,
-        createdAt: new Date(ctx.block.timestamp),
-        updatedAt: new Date(ctx.block.timestamp),
+        createdAt: new Date(block.timestamp),
+        updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(TokenAccount, tokenAccount as any)
+    await ctx.store.insert(tokenAccount)
 }

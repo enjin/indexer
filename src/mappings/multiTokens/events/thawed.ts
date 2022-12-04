@@ -1,10 +1,14 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -14,11 +18,11 @@ interface EventData {
     tokenAccount: Uint8Array | undefined
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensThawedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensThawedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, freezeType } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, freezeType } = data.asEfinityV2
 
         if (freezeType.__kind === 'Collection') {
             return {
@@ -58,12 +62,15 @@ function getEventData(ctx: EventHandlerContext): EventData {
             collectionAccount: undefined,
         }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function thawed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function thawed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     if (data.tokenAccount) {
@@ -72,7 +79,7 @@ export async function thawed(ctx: EventHandlerContext) {
         })
 
         tokenAccount.isFrozen = false
-        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = u8aToHex(data.collectionAccount)
@@ -81,7 +88,7 @@ export async function thawed(ctx: EventHandlerContext) {
         })
 
         collectionAccount.isFrozen = false
-        collectionAccount.updatedAt = new Date(ctx.block.timestamp)
+        collectionAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId) {
         const token = await ctx.store.findOneOrFail<Token>(Token, {

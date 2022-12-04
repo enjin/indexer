@@ -1,4 +1,6 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
@@ -7,6 +9,8 @@ import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storag
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -26,23 +30,24 @@ interface StorageData {
     isFrozen: boolean
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensMintedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensMintedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, issuer, recipient, amount } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, issuer, recipient, amount } = data.asEfinityV2
         return { collectionId, tokenId, issuer, recipient, amount }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function getStorageData(
-    ctx: CommonHandlerContext,
+    ctx: Context,
+    block: SubstrateBlock,
     account: Uint8Array,
     collectionId: bigint,
     tokenId: bigint
 ): Promise<StorageData | undefined> {
-    const storage = new MultiTokensTokenAccountsStorage(ctx)
+    const storage = new MultiTokensTokenAccountsStorage(ctx, block)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV2) {
@@ -69,9 +74,12 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function minted(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function minted(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
@@ -89,18 +97,18 @@ export async function minted(ctx: EventHandlerContext) {
         relations: { account: true },
     })
 
-    const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
+    const storage = await getStorageData(ctx, block, data.recipient, data.collectionId, data.tokenId)
     if (storage) {
         tokenAccount.balance = storage.balance
         tokenAccount.reservedBalance = storage.reservedBalance
         tokenAccount.lockedBalance = storage.lockedBalance
-        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp)
 
         await ctx.store.save(tokenAccount)
     }
 
-    new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
-        tokenAccount.account,
-        data.amount
-    )
+    // new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
+    //     tokenAccount.account,
+    //     data.amount
+    // )
 }

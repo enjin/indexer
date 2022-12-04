@@ -1,9 +1,13 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensApprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, TokenAccount, TokenApproval, CollectionApproval } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { EventHandlerContext } from '../../types/contexts'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -14,11 +18,11 @@ interface EventData {
     expiration: number | undefined
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensApprovedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensApprovedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, owner, operator, amount, expiration } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, owner, operator, amount, expiration } = data.asEfinityV2
         return {
             collectionId,
             tokenId,
@@ -28,12 +32,15 @@ function getEventData(ctx: EventHandlerContext): EventData {
             expiration,
         }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function approved(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function approved(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Approved', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const address = u8aToHex(data.owner)
@@ -53,7 +60,7 @@ export async function approved(ctx: EventHandlerContext) {
         )
 
         tokenAccount.approvals = approvals
-        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
@@ -69,7 +76,7 @@ export async function approved(ctx: EventHandlerContext) {
         )
 
         collectionAccount.approvals = approvals
-        collectionAccount.updatedAt = new Date(ctx.block.timestamp)
+        collectionAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(collectionAccount)
     }
 }

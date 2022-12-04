@@ -1,4 +1,6 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { Token, TokenAccount } from '../../../model'
@@ -6,6 +8,8 @@ import { EventService } from '../../../services'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -26,23 +30,24 @@ interface StorageData {
     isFrozen: boolean
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTransferredEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTransferredEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, operator, from, to, amount } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, operator, from, to, amount } = data.asEfinityV2
         return { collectionId, tokenId, operator, from, to, amount }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function getStorageData(
-    ctx: CommonHandlerContext,
+    ctx: Context,
+    block: SubstrateBlock,
     account: Uint8Array,
     collectionId: bigint,
     tokenId: bigint
 ): Promise<StorageData | undefined> {
-    const storage = new MultiTokensTokenAccountsStorage(ctx)
+    const storage = new MultiTokensTokenAccountsStorage(ctx, block)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV2) {
@@ -69,9 +74,12 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function transferred(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function transferred(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const fromAddress = u8aToHex(data.from)
@@ -81,12 +89,12 @@ export async function transferred(ctx: EventHandlerContext) {
     })
 
     if (fromTokenAccount) {
-        const fromStorage = await getStorageData(ctx, data.from, data.collectionId, data.tokenId)
+        const fromStorage = await getStorageData(ctx, block, data.from, data.collectionId, data.tokenId)
         if (fromStorage) {
             fromTokenAccount.balance = fromStorage.balance
             fromTokenAccount.reservedBalance = fromStorage.reservedBalance
             fromTokenAccount.lockedBalance = fromStorage.lockedBalance
-            fromTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+            fromTokenAccount.updatedAt = new Date(block.timestamp)
 
             await ctx.store.save(fromTokenAccount)
         }
@@ -99,22 +107,22 @@ export async function transferred(ctx: EventHandlerContext) {
     })
 
     if (toTokenAccount) {
-        const toStorage = await getStorageData(ctx, data.to, data.collectionId, data.tokenId)
+        const toStorage = await getStorageData(ctx, block, data.to, data.collectionId, data.tokenId)
         if (toStorage) {
             toTokenAccount.balance = toStorage.balance
             toTokenAccount.reservedBalance = toStorage.reservedBalance
             toTokenAccount.lockedBalance = toStorage.lockedBalance
-            toTokenAccount.updatedAt = new Date(ctx.block.timestamp)
+            toTokenAccount.updatedAt = new Date(block.timestamp)
 
             await ctx.store.save(toTokenAccount)
         }
     }
 
-    if (fromTokenAccount && toTokenAccount) {
-        new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenTransfer(
-            fromTokenAccount.account,
-            toTokenAccount.account,
-            data.amount
-        )
-    }
+    // if (fromTokenAccount && toTokenAccount) {
+    //     new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenTransfer(
+    //         fromTokenAccount.account,
+    //         toTokenAccount.account,
+    //         data.amount
+    //     )
+    // }
 }

@@ -1,26 +1,33 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
 import { Collection, RoyaltyCurrency } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
+// eslint-disable-next-line import/no-cycle
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
     caller: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensCollectionDestroyedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensCollectionDestroyedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, caller } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, caller } = data.asEfinityV2
         return { collectionId, caller }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function collectionDestroyed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function collectionDestroyed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {

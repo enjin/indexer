@@ -1,8 +1,12 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import { Attribute, Listing, ListingStatus, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -10,19 +14,22 @@ interface EventData {
     caller: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenDestroyedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenDestroyedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, caller } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, caller } = data.asEfinityV2
         return { collectionId, tokenId, caller }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function tokenDestroyed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function tokenDestroyed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
@@ -46,23 +53,23 @@ export async function tokenDestroyed(ctx: EventHandlerContext) {
         //     },
         // })
 
-        await ctx.store
-            .getRepository(ListingStatus)
-            .query(
-                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                [token.id]
-            )
-
-        await ctx.store.delete(Listing, {
-            makeAssetId: {
-                id: token.id,
-            },
-        })
+        // await ctx.store
+        //     .getRepository(ListingStatus)
+        //     .query(
+        //         'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+        //         [token.id]
+        //     )
+        //
+        // await ctx.store.remove(Listing, {
+        //     makeAssetId: {
+        //         id: token.id,
+        //     },
+        // })
 
         await ctx.store.remove(attributes)
         // await ctx.store.remove(events)
     }
 
     await ctx.store.remove(token)
-    new CollectionService(ctx.store).sync(data.collectionId.toString())
+    // new CollectionService(ctx.store).sync(data.collectionId.toString())
 }

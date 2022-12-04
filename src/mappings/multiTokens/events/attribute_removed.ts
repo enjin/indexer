@@ -1,7 +1,11 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Metadata, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -24,19 +28,22 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
     return metadata
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensAttributeRemovedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensAttributeRemovedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, key } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, key } = data.asEfinityV2
         return { collectionId, tokenId, key }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function attributeRemoved(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function attributeRemoved(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()

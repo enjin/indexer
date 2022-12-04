@@ -1,8 +1,12 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Metadata, Token } from '../../../model'
 import { EventHandlerContext } from '../../types/contexts'
 import { getMetadata } from '../../util/metadata'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -11,20 +15,23 @@ interface EventData {
     value: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensAttributeSetEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensAttributeSetEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, key, value } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, key, value } = data.asEfinityV2
         return { collectionId, tokenId, key, value }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export async function attributeSet(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function attributeSet(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
@@ -49,7 +56,7 @@ export async function attributeSet(ctx: EventHandlerContext) {
 
     if (attribute) {
         attribute.value = value
-        attribute.updatedAt = new Date(ctx.block.timestamp)
+        attribute.updatedAt = new Date(block.timestamp)
         if (token) {
             if (!token.metadata) {
                 token.metadata = new Metadata()
@@ -72,11 +79,11 @@ export async function attributeSet(ctx: EventHandlerContext) {
             deposit: 0n, // TODO: Change fixed for now
             collection,
             token,
-            createdAt: new Date(ctx.block.timestamp),
-            updatedAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(block.timestamp),
+            updatedAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Attribute, attribute as any)
+        await ctx.store.insert(attribute)
 
         if (token) {
             if (!token.metadata) {

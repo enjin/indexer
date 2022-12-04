@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 import {
+    BatchBlock,
     BatchContext,
     BatchProcessorCallItem,
     BatchProcessorEventItem,
     BatchProcessorItem,
     SubstrateBatchProcessor,
+    SubstrateBlock,
 } from '@subsquid/substrate-processor'
 import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexToU8a, u8aToHex } from '@polkadot/util'
@@ -12,16 +14,28 @@ import config from './config'
 // import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { Account, Balance, Extrinsic, Fee } from './model'
-import {
-    BlockHandlerContext,
-    CallHandlerContext,
-    CommonHandlerContext,
-    EventHandlerContext,
-} from './mappings/types/contexts'
+import { Account, Balance, Extrinsic, Fee, Event } from './model'
+import { BlockHandlerContext, CallHandlerContext, CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
 import { encodeId, isAdressSS58 } from './common/tools'
+// eslint-disable-next-line import/no-cycle
+import {
+    collectionAccountCreated,
+    collectionAccountDestroyed,
+    collectionCreated,
+    collectionDestroyed,
+} from './mappings/multiTokens/events'
 // import * as map from './mappings'
 // import { createEfiToken } from './createEfiToken'
+
+const eventOptions = {
+    data: {
+        event: {
+            args: true,
+            extrinsic: true,
+            call: true,
+        },
+    } as const,
+} as const
 
 const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
@@ -33,13 +47,30 @@ const processor = new SubstrateBatchProcessor()
             extrinsic: true,
         } as const,
     } as const)
+    .addEvent('MultiTokens.CollectionCreated', eventOptions)
+    .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
+    .addEvent('MultiTokens.CollectionMutated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenCreated', eventOptions)
+    .addEvent('MultiTokens.TokenDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenMutated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.Minted', eventOptions)
+    .addEvent('MultiTokens.Burned', eventOptions)
+    .addEvent('MultiTokens.AttributeSet', eventOptions)
+    .addEvent('MultiTokens.AttributeRemoved', eventOptions)
+    .addEvent('MultiTokens.Frozen', eventOptions)
+    .addEvent('MultiTokens.Thawed', eventOptions)
+    .addEvent('MultiTokens.Approved', eventOptions)
+    .addEvent('MultiTokens.Unapproved', eventOptions)
+    .addEvent('MultiTokens.Transferred', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
-export type EventItem = BatchProcessorEventItem<typeof processor>
-export type CallItem = BatchProcessorCallItem<typeof processor>
 export type Context = BatchContext<Store, Item>
 
-async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account> {
+export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account> {
     const pkHex = u8aToHex(publicKey)
     let account = await ctx.store.findOneBy(Account, {
         id: pkHex,
@@ -63,19 +94,52 @@ async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account>
     return account
 }
 
+async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item) {
+    switch (item.name) {
+        case 'MultiTokens.CollectionCreated':
+            await collectionCreated(ctx, block, item)
+            break
+        case 'MultiTokens.CollectionDestroyed':
+            await collectionDestroyed(ctx, block, item)
+            break
+        case 'MultiTokens.CollectionAccountCreated':
+            await collectionAccountCreated(ctx, block, item)
+            break
+        case 'MultiTokens.CollectionAccountDestroyed':
+            await collectionAccountDestroyed(ctx, block, item)
+            break
+        default: {
+            console.log('event not handled', item.name)
+        }
+    }
+}
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(new TypeormDatabase(), async (ctx) => {
     const extrinsics: Extrinsic[] = []
+    const events: Event[] = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
         // eslint-disable-next-line no-restricted-syntax
         for (const item of block.items) {
-            if (item.kind === 'call') {
+            if (item.kind === 'event') {
+                // eslint-disable-next-line no-await-in-loop
+                await handleEvents(ctx, block.header, item)
+
+                // if (!item.event.name || !item.event.extrinsic) continue
+                //
+                // events.push(
+                //     new Event({
+                //         id: item.event.id,
+                //         extrinsic: new Extrinsic({ id: item.event.extrinsic.id }),
+                //     })
+                // )
+            } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
                 if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
 
-                const { id, fee, hash, call, signature, success, tip } = item.extrinsic
+                const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
 
                 const publicKey = (
                     signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
@@ -84,7 +148,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
                 ) as string
 
                 // eslint-disable-next-line no-await-in-loop
-                const signer = await getAccount(ctx, hexToU8a(publicKey))
+                const signer = await getAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                 const callName = call.name.split('.')
                 const extrinsic = new Extrinsic({
                     id,
@@ -99,18 +163,22 @@ processor.run(new TypeormDatabase(), async (ctx) => {
                     signer,
                     nonce: signer.nonce,
                     tip,
+                    error,
                     fee: new Fee({
                         amount: fee,
                         who: signer.id,
                     }),
                     createdAt: new Date(block.header.timestamp),
                 })
+                extrinsics.push(extrinsic)
             }
         }
     }
 
     await ctx.store.insert(extrinsics)
+    await ctx.store.insert(events)
 })
+
 //
 //
 // processor.addPreHook(
