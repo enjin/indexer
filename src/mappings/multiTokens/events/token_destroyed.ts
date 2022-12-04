@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Event as EventModel, Listing, MultiTokensTokenDestroyed, Token } from '../../../model'
+import { Attribute, Event as EventModel, Listing, ListingStatus, MultiTokensTokenDestroyed, Token } from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 import { u8aToHex } from '@polkadot/util'
@@ -52,19 +52,32 @@ export async function tokenDestroyed(
         //     )
         //
 
+        // TODO: Refactor this
         const makeListings = await ctx.store.findBy(Listing, {
             makeAssetId: {
                 id: token.id,
             },
         })
-        await ctx.store.remove(makeListings)
-
         const takeListings = await ctx.store.findBy(Listing, {
             takeAssetId: {
                 id: token.id,
             },
         })
-        await ctx.store.remove(takeListings)
+        const listings = [...makeListings, ...takeListings]
+        const listingStatus = []
+        for (const listing of listings) {
+            const status = await ctx.store.findBy(ListingStatus, {
+                listing: {
+                    id: listing.id,
+                },
+            })
+            if (status) {
+                listingStatus.push(...status)
+            }
+        }
+
+        await ctx.store.remove(listingStatus)
+        await ctx.store.remove(listings)
         await ctx.store.remove(attributes)
     }
 
