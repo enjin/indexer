@@ -133,17 +133,17 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
             return map.multiTokens.events.transferred(ctx, block, item)
         case 'MultiTokens.Unapproved':
             return map.multiTokens.events.unapproved(ctx, block, item)
-        case 'Balances.BalanceSet':
-        case 'Balances.Deposit':
-        case 'Balances.Endowed':
-        case 'Balances.Reserved':
-        case 'Balances.Transfer':
-        case 'Balances.Unreserved':
-        case 'Balances.DustLost':
-        case 'Balances.ReserveRepatriated':
-        case 'Balances.Slashed':
-        case 'Balances.Withdraw':
-            return map.balances.processor.save(ctx, block, item.event)
+        // case 'Balances.BalanceSet':
+        // case 'Balances.Deposit':
+        // case 'Balances.Endowed':
+        // case 'Balances.Reserved':
+        // case 'Balances.Transfer':
+        // case 'Balances.Unreserved':
+        // case 'Balances.DustLost':
+        // case 'Balances.ReserveRepatriated':
+        // case 'Balances.Slashed':
+        // case 'Balances.Withdraw':
+        //     return map.balances.processor.save(ctx, block, item.event)
         case 'Marketplace.ListingCreated':
             return map.marketplace.events.listingCreated(ctx, block, item)
         case 'Marketplace.ListingCancelled':
