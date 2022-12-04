@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Event as EventModel, Token } from '../../../model'
+import { Attribute, Event as EventModel, Listing, Token } from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -58,14 +58,14 @@ export async function tokenDestroyed(
         //         [token.id]
         //     )
         //
-        // await ctx.store.remove(Listing, {
-        //     makeAssetId: {
-        //         id: token.id,
-        //     },
-        // })
 
+        const listings = await ctx.store.findBy(Listing, {
+            makeAssetId: {
+                id: token.id,
+            },
+        })
+        await ctx.store.remove(listings)
         await ctx.store.remove(attributes)
-        // await ctx.store.remove(events)
     }
 
     await ctx.store.remove(token)
