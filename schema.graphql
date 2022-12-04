@@ -149,11 +149,11 @@ type MultiTokensCollectionDestroyed {
 }
 
 type MultiTokensCollectionMutated {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensFrozen {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensMinted {
@@ -165,7 +165,7 @@ type MultiTokensMinted {
 }
 
 type MultiTokensThawed {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensTokenAccountCreated {
@@ -195,7 +195,7 @@ type MultiTokensTokenDestroyed {
 }
 
 type MultiTokensTokenMutated {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensTransferred {
