@@ -76,6 +76,7 @@ export async function tokenAccountCreated(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             account: u8aToHex(data.accountId),
+            balance: data.balance,
         }),
     })
 }
