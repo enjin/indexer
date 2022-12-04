@@ -44,14 +44,6 @@ export async function tokenDestroyed(
             },
         })
 
-        // const events = await ctx.store.find(TokenEvent, {
-        //     where: {
-        //         token: {
-        //             id: token.id,
-        //         },
-        //     },
-        // })
-
         // await ctx.store
         //     .getRepository(ListingStatus)
         //     .query(
@@ -60,12 +52,19 @@ export async function tokenDestroyed(
         //     )
         //
 
-        const listings = await ctx.store.findBy(Listing, {
+        const makeListings = await ctx.store.findBy(Listing, {
             makeAssetId: {
                 id: token.id,
             },
         })
-        await ctx.store.remove(listings)
+        await ctx.store.remove(makeListings)
+
+        const takeListings = await ctx.store.findBy(Listing, {
+            takeAssetId: {
+                id: token.id,
+            },
+        })
+        await ctx.store.remove(takeListings)
         await ctx.store.remove(attributes)
     }
 
