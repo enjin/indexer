@@ -28,6 +28,8 @@ type Fee {
 
 type Extrinsic @entity {
   id: ID!
+  extrinsicIndex: String
+  extrinsicHash: String
   hash: String!
   blockNumber: Int!
   blockHash: String!
@@ -234,6 +236,9 @@ type Account @entity {
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
+
+  # Extras
+  lastUpdateBlock: Int
 }
 
 type MintPolicy {

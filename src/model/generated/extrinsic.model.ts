@@ -14,6 +14,12 @@ export class Extrinsic {
     id!: string
 
     @Column_("text", {nullable: false})
+    extrinsicIndex!: string
+
+    @Column_("text", {nullable: false})
+    extrinsicHash!: string
+
+    @Column_("text", {nullable: false})
     hash!: string
 
     @Column_("int4", {nullable: false})
