@@ -239,10 +239,11 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
             await map.balances.processor.save(ctx, block, item.event)
-            return new Event({
-                id: item.event.id,
-                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
-            })
+            return undefined
+            // return new Event({
+            //     id: item.event.id,
+            //     extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            // })
             break
         case 'Marketplace.ListingCreated':
             await map.marketplace.events.listingCreated(ctx, block, item)
