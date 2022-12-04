@@ -1,26 +1,31 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import { Listing, ListingStatus, ListingStatusType } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { EventService, CollectionService } from '../../../services'
+import { Context } from '../../../processor'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     listingId: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MarketplaceListingCancelledEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MarketplaceListingCancelledEvent(ctx, event)
 
-    if (event.isEfinityV3000) {
-        const { listingId } = event.asEfinityV3000
+    if (data.isEfinityV3000) {
+        const { listingId } = data.asEfinityV3000
         return { listingId }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function listingCancelled(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function listingCancelled(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const listingId = Buffer.from(data.listingId).toString('hex')
@@ -33,19 +38,18 @@ export async function listingCancelled(ctx: EventHandlerContext) {
             },
         },
     })
-    listing.updatedAt = new Date(ctx.block.timestamp)
+    listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
 
     const listingStatus = new ListingStatus({
-        id: `${listingId}-${ctx.block.height}`,
+        id: `${listingId}-${block.height}`,
         type: ListingStatusType.Cancelled,
         listing,
-        height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp),
+        height: block.height,
+        createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
+    await ctx.store.insert(listingStatus)
 
-    new EventService(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
-
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    // new EventService(ctx, listing.makeAssetId).MarketplaceListingCancel(listing.seller, listing)
+    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 }

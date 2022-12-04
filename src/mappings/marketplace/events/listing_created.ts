@@ -1,4 +1,6 @@
 import { Buffer } from 'buffer'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
@@ -13,30 +15,31 @@ import {
     ListingType,
     Token,
 } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
-import { EventService, CollectionService } from '../../../services'
+import { Event } from '../../../types/generated/support'
+import { Context, getAccount } from '../../../processor'
 
 interface EventData {
     listingId: Uint8Array
     listing: EventListing
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MarketplaceListingCreatedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MarketplaceListingCreatedEvent(ctx, event)
 
-    if (event.isEfinityV3000) {
-        const { listingId, listing } = event.asEfinityV3000
+    if (data.isEfinityV3000) {
+        const { listingId, listing } = data.asEfinityV3000
         return { listingId, listing }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function listingCreated(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
+export async function listingCreated(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true; call: true } }>
+) {
+    const data = getEventData(ctx, item.event)
     if (!data) return
 
     const listingId = Buffer.from(data.listingId).toString('hex')
@@ -50,7 +53,7 @@ export async function listingCreated(ctx: EventHandlerContext) {
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
     })
 
-    const account = await getOrCreateAccount(ctx, data.listing.seller)
+    const account = await getAccount(ctx, data.listing.seller)
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
         data.listing.data.__kind === ListingType.FixedPrice.toString()
@@ -80,22 +83,21 @@ export async function listingCreated(ctx: EventHandlerContext) {
         salt: Buffer.from(data.listing.salt).toString('hex'),
         data: listingData,
         state: listingState,
-        createdAt: new Date(ctx.block.timestamp),
-        updatedAt: new Date(ctx.block.timestamp),
+        createdAt: new Date(block.timestamp),
+        updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(Listing, listing as any)
+    await ctx.store.insert(listing)
 
     const listingStatus = new ListingStatus({
-        id: `${listingId}-${ctx.block.height}`,
+        id: `${listingId}-${block.height}`,
         type: ListingStatusType.Active,
         listing,
-        height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp),
+        height: block.height,
+        createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
+    await ctx.store.insert(listingStatus)
 
-    new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
-
-    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
+    // new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
+    // new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 }

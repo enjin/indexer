@@ -3,7 +3,6 @@ import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlo
 import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexToU8a, u8aToHex } from '@polkadot/util'
 import config from './config'
-// import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import { Account, Balance, Extrinsic, Fee, Event } from './model'
 import { encodeId, isAdressSS58 } from './common/tools'
@@ -11,7 +10,6 @@ import { encodeId, isAdressSS58 } from './common/tools'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
-// import { createEfiToken } from './createEfiToken'
 
 const eventOptions = {
     data: {
@@ -62,11 +60,11 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Balances.BalanceSet', eventOptions)
     .addEvent('Balances.Deposit', eventOptions)
-// processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
-// processor.addEventHandler('Marketplace.ListingCancelled', map.marketplace.events.listingCancelled)
-// processor.addEventHandler('Marketplace.ListingFilled', map.marketplace.events.listingFilled)
-// processor.addEventHandler('Marketplace.BidPlaced', map.marketplace.events.bidPlaced)
-// processor.addEventHandler('Marketplace.AuctionFinalized', map.marketplace.events.auctionFinalized)
+    .addEvent('Marketplace.ListingCreated', eventOptions)
+    .addEvent('Marketplace.ListingCancelled', eventOptions)
+    .addEvent('Marketplace.ListingFilled', eventOptions)
+    .addEvent('Marketplace.BidPlaced', eventOptions)
+    .addEvent('Marketplace.AuctionFinalized', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<Store, Item>
@@ -241,6 +239,41 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
             await map.balances.processor.save(ctx, block, item.event)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Marketplace.ListingCreated':
+            await map.marketplace.events.listingCreated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Marketplace.ListingCancelled':
+            await map.marketplace.events.listingCancelled(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Marketplace.ListingFilled':
+            await map.marketplace.events.listingFilled(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Marketplace.BidPlaced':
+            await map.marketplace.events.bidPlaced(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Marketplace.AuctionFinalized':
+            await map.marketplace.events.auctionFinalized(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
