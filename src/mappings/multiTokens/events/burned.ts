@@ -94,16 +94,9 @@ export async function burned(
     })
 
     if (tokenAccount) {
-        const storage = await getStorageData(ctx, block, data.accountId, data.collectionId, data.tokenId)
-        if (storage) {
-            tokenAccount.balance = storage.balance
-            tokenAccount.reservedBalance = storage.reservedBalance
-            tokenAccount.lockedBalance = storage.lockedBalance
-            tokenAccount.updatedAt = new Date(block.timestamp)
-
-            await ctx.store.save(tokenAccount)
-        }
-
+        tokenAccount.balance -= data.amount
+        tokenAccount.updatedAt = new Date(block.timestamp)
+        await ctx.store.save(tokenAccount)
         // new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenBurn(
         //     tokenAccount.account,
         //     data.amount

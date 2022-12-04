@@ -95,15 +95,9 @@ export async function minted(
         relations: { account: true },
     })
 
-    const storage = await getStorageData(ctx, block, data.recipient, data.collectionId, data.tokenId)
-    if (storage) {
-        tokenAccount.balance = storage.balance
-        tokenAccount.reservedBalance = storage.reservedBalance
-        tokenAccount.lockedBalance = storage.lockedBalance
-        tokenAccount.updatedAt = new Date(block.timestamp)
-
-        await ctx.store.save(tokenAccount)
-    }
+    tokenAccount.balance += data.amount
+    tokenAccount.updatedAt = new Date(block.timestamp)
+    await ctx.store.save(tokenAccount)
 
     return new EventModel({
         id: item.event.id,

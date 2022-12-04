@@ -87,15 +87,9 @@ export async function transferred(
     })
 
     if (fromTokenAccount) {
-        const fromStorage = await getStorageData(ctx, block, data.from, data.collectionId, data.tokenId)
-        if (fromStorage) {
-            fromTokenAccount.balance = fromStorage.balance
-            fromTokenAccount.reservedBalance = fromStorage.reservedBalance
-            fromTokenAccount.lockedBalance = fromStorage.lockedBalance
-            fromTokenAccount.updatedAt = new Date(block.timestamp)
-
-            await ctx.store.save(fromTokenAccount)
-        }
+        fromTokenAccount.balance -= data.amount
+        fromTokenAccount.updatedAt = new Date(block.timestamp)
+        await ctx.store.save(fromTokenAccount)
     }
 
     const toAddress = u8aToHex(data.to)
@@ -105,15 +99,9 @@ export async function transferred(
     })
 
     if (toTokenAccount) {
-        const toStorage = await getStorageData(ctx, block, data.to, data.collectionId, data.tokenId)
-        if (toStorage) {
-            toTokenAccount.balance = toStorage.balance
-            toTokenAccount.reservedBalance = toStorage.reservedBalance
-            toTokenAccount.lockedBalance = toStorage.lockedBalance
-            toTokenAccount.updatedAt = new Date(block.timestamp)
-
-            await ctx.store.save(toTokenAccount)
-        }
+        toTokenAccount.balance += data.amount
+        toTokenAccount.updatedAt = new Date(block.timestamp)
+        await ctx.store.save(toTokenAccount)
     }
 
     // if (fromTokenAccount && toTokenAccount) {
