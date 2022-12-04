@@ -2,8 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Metadata, Token } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
+import { Attribute, Collection, Event as EventModel, Metadata, Token } from '../../../model'
 import { getMetadata } from '../../util/metadata'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -30,7 +29,7 @@ export async function attributeSet(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

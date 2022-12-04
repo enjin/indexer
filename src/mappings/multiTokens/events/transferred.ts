@@ -3,10 +3,8 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
-import { Token, TokenAccount } from '../../../model'
-import { EventService } from '../../../services'
+import { Event as EventModel, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -78,7 +76,7 @@ export async function transferred(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

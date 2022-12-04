@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../common/errors'
-import { Account, Balance } from '../../model'
+import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId, isAdressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
@@ -245,7 +244,7 @@ async function saveAccounts(ctx: Context, block: SubstrateBlock, accountIds: Uin
     await ctx.store.save(accounts)
 }
 
-export async function save(ctx: Context, block: SubstrateBlock, event: Event): Promise<void> {
+export async function save(ctx: Context, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
     const accountIds = new Set<Uint8Array>()
     processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, block, [...accountIds])

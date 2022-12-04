@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountDestroyedEvent } from '../../../types/generated/events'
-import { CollectionAccount } from '../../../model'
+import { CollectionAccount, Event as EventModel } from '../../../model'
 // eslint-disable-next-line import/no-cycle
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -27,7 +27,7 @@ export async function collectionAccountDestroyed(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionAccountDestroyed', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

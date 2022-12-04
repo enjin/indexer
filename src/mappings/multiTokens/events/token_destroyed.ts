@@ -2,9 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Listing, ListingStatus, Token } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { CollectionService } from '../../../services'
+import { Attribute, Event as EventModel, Token } from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -28,7 +26,7 @@ export async function tokenDestroyed(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

@@ -3,10 +3,8 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Token, TokenAccount } from '../../../model'
-import { EventService } from '../../../services'
+import { Event as EventModel, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
 import { Context } from '../../../processor'
@@ -78,7 +76,7 @@ export async function minted(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

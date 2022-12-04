@@ -2,9 +2,14 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
-import { Royalty, Token, TokenBehaviorHasRoyalty, TokenBehaviorIsCurrency, TokenBehaviorType } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
+import {
+    Event as EventModel,
+    Royalty,
+    Token,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+} from '../../../model'
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
@@ -57,7 +62,7 @@ export async function tokenMutated(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

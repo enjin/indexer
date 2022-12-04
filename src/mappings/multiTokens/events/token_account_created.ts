@@ -3,9 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Token, TokenAccount } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
+import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../../model'
 import { Context, getAccount } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -30,7 +28,7 @@ export async function tokenAccountCreated(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

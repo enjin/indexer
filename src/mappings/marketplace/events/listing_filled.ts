@@ -1,6 +1,13 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import { FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
+import {
+    Event as EventModel,
+    FixedPriceState,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+} from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -29,7 +36,7 @@ export async function listingFilled(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

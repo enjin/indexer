@@ -8,8 +8,6 @@ const wsProvider = new WsProvider(config.dataSource.chain)
 const apiPromise = ApiPromise.create({ provider: wsProvider })
 
 export async function chainState(ctx: Context, block: SubstrateBlock) {
-    if (block.height < config.chainStateHeight) return
-
     const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
     const apiAt = await api.at(block.hash)

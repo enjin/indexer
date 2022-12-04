@@ -1,24 +1,19 @@
-import { BatchProcessorEventItem, SubstrateBlock, SubstrateCall } from '@subsquid/substrate-processor'
-import { CallItem, EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
 import {
     Collection,
     CollectionStats,
-    MultiTokensCollectionCreated,
-    Extrinsic,
+    Event as EventModel,
     MarketPolicy,
     MintPolicy,
     Royalty,
-    RoyaltyCurrency,
-    Token,
     TransferPolicy,
 } from '../../../model'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
-import { ChainContext, Event, Call } from '../../../types/generated/support'
+import { Call, Event } from '../../../types/generated/support'
 // eslint-disable-next-line import/no-cycle
 import { Context, getAccount } from '../../../processor'
 
@@ -115,7 +110,7 @@ export async function collectionCreated(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     if (!item.event.call) return
 
     const eventData = getEventData(ctx, item.event)

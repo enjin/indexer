@@ -1,7 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Listing, ListingType } from '../../../model'
+import { AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../../model'
 import { Bid as BidEvent } from '../../../types/generated/v6'
 import { Context, getAccount } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
@@ -27,7 +27,7 @@ export async function bidPlaced(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return
 

@@ -5,17 +5,17 @@ import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
     CapType,
     Collection,
+    Event as EventModel,
+    Metadata,
+    Royalty,
     Token,
-    TokenBehaviorType,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
+    TokenBehaviorType,
     TokenCapSingleMint,
     TokenCapSupply,
-    Royalty,
-    Metadata,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
@@ -24,9 +24,6 @@ import {
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/v6'
-import { getOrCreateAccount } from '../../util/entities'
-import { encodeId } from '../../../common/tools'
-import { CollectionService } from '../../../services'
 import { getMetadata } from '../../util/metadata'
 import { Context, getAccount } from '../../../processor'
 
@@ -270,7 +267,7 @@ export async function tokenCreated(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
     if (item.event.call) {

@@ -3,9 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensFrozenEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Token, TokenAccount, TransferPolicy } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { EventHandlerContext } from '../../types/contexts'
+import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -69,7 +67,7 @@ export async function frozen(
     ctx: Context,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true; call: true } }>
-) {
+): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
 
     if (!data) return
