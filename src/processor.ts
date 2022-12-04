@@ -101,67 +101,144 @@ export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<A
     return account
 }
 
-async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item) {
+async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             await approved(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.AttributeRemoved':
             await attributeRemoved(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.AttributeSet':
             await attributeSet(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Burned':
             await burned(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.CollectionAccountCreated':
             await collectionAccountCreated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.CollectionAccountDestroyed':
             await collectionAccountDestroyed(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.CollectionCreated':
             await collectionCreated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.CollectionDestroyed':
             await collectionDestroyed(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.CollectionMutated':
             await collectionMutated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Frozen':
             await frozen(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Minted':
             await minted(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Thawed':
             await thawed(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.TokenAccountCreated':
             await tokenAccountCreated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.TokenAccountDestroyed':
             await tokenAccountDestroyed(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.TokenCreated':
             await tokenCreated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.TokenDestroyed':
             await tokenDestroyed(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.TokenMutated':
             await tokenMutated(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Transferred':
             await transferred(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         case 'MultiTokens.Unapproved':
             await unapproved(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
             break
         default: {
             console.log('Event not handled', item.name)
+            return undefined
         }
     }
 }
@@ -182,16 +259,10 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
-                await handleEvents(ctx, block.header, item)
-
-                // if (!item.event.name || !item.event.extrinsic) continue
-                //
-                // events.push(
-                //     new Event({
-                //         id: item.event.id,
-                //         extrinsic: new Extrinsic({ id: item.event.extrinsic.id }),
-                //     })
-                // )
+                const event = await handleEvents(ctx, block.header, item)
+                if (event) {
+                    events.push(event)
+                }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
                 if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
