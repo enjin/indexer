@@ -104,9 +104,4 @@ export async function minted(
 
         await ctx.store.save(tokenAccount)
     }
-
-    // new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
-    //     tokenAccount.account,
-    //     data.amount
-    // )
 }

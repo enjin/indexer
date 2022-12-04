@@ -10,6 +10,8 @@ import {
     MarketPolicy,
     MintPolicy,
     Royalty,
+    RoyaltyCurrency,
+    Token,
     TransferPolicy,
 } from '../../../model'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
@@ -150,31 +152,18 @@ export async function collectionCreated(
 
     await ctx.store.insert(collection)
 
-    // const extrinsic = await ctx.store.findOneBy(Extrinsic, { id: event.event })
-    // const event = new Event({
-    //     id: ctx.event.id,
-    //     extrinsic,
-    //     collection,
-    //     token: null,
-    //     data: new MultiTokensCollectionCreated({
-    //         collectionId: eventData.collectionId,
-    //         owner: account.id,
-    //     }),
-    // })
-    // await ctx.store.insert(Event, event as any)
-    //
-    // // eslint-disable-next-line no-restricted-syntax
-    // for (const currency of callData.explicitRoyaltyCurrencies) {
-    //     // eslint-disable-next-line no-await-in-loop
-    //     const token = await ctx.store.findOneOrFail<Token>(Token, {
-    //         where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
-    //     })
-    //     const royaltyCurrency = new RoyaltyCurrency({
-    //         id: `${collection.id}-${token.id}`,
-    //         collection,
-    //         token,
-    //     })
-    //     // eslint-disable-next-line no-await-in-loop
-    //     await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
-    // }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const currency of callData.explicitRoyaltyCurrencies) {
+        // eslint-disable-next-line no-await-in-loop
+        const token = await ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
+        })
+        const royaltyCurrency = new RoyaltyCurrency({
+            id: `${collection.id}-${token.id}`,
+            collection,
+            token,
+        })
+        // eslint-disable-next-line no-await-in-loop
+        await ctx.store.insert(royaltyCurrency)
+    }
 }

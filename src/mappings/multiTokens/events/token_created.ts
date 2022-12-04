@@ -317,6 +317,5 @@ export async function tokenCreated(
         })
 
         await ctx.store.insert(token)
-        // new CollectionService(ctx.store).sync(collection.id)
     }
 }

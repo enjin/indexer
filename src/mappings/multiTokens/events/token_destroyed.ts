@@ -69,5 +69,4 @@ export async function tokenDestroyed(
     }
 
     await ctx.store.remove(token)
-    // new CollectionService(ctx.store).sync(data.collectionId.toString())
 }
