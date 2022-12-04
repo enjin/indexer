@@ -15,7 +15,14 @@ const eventOptions = {
     data: {
         event: {
             args: true,
-            extrinsic: true,
+        },
+    } as const,
+} as const
+
+const eventOptionsWithCall = {
+    data: {
+        event: {
+            args: true,
             call: true,
         },
     } as const,
@@ -31,12 +38,12 @@ const processor = new SubstrateBatchProcessor()
             extrinsic: true,
         } as const,
     } as const)
-    .addEvent('MultiTokens.CollectionCreated', eventOptions)
+    .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
     .addEvent('MultiTokens.CollectionMutated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
-    .addEvent('MultiTokens.TokenCreated', eventOptions)
+    .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.TokenDestroyed', eventOptions)
     .addEvent('MultiTokens.TokenMutated', eventOptions)
     .addEvent('MultiTokens.TokenAccountCreated', eventOptions)

@@ -75,7 +75,7 @@ async function getStorageData(
 export async function transferred(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'MultiTokens.Transferred', { event: { args: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined

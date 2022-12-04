@@ -112,7 +112,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function collectionCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 

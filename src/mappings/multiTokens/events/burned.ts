@@ -73,7 +73,7 @@ async function getStorageData(
 export async function burned(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'MultiTokens.Burned', { event: { args: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined

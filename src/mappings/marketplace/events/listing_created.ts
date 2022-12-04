@@ -38,7 +38,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function listingCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'Marketplace.ListingCreated', { event: { args: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined

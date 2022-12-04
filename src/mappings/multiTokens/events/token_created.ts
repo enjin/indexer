@@ -268,7 +268,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function tokenCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
