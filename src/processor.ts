@@ -8,30 +8,9 @@ import { DEFAULT_PORT } from './common/consts'
 import { Account, Balance, Extrinsic, Fee, Event } from './model'
 import { encodeId, isAdressSS58 } from './common/tools'
 // eslint-disable-next-line import/no-cycle
-import {
-    approved,
-    attributeRemoved,
-    attributeSet,
-    burned,
-    collectionAccountCreated,
-    collectionAccountDestroyed,
-    collectionCreated,
-    collectionDestroyed,
-    collectionMutated,
-    frozen,
-    minted,
-    thawed,
-    tokenAccountCreated,
-    tokenAccountDestroyed,
-    tokenCreated,
-    tokenDestroyed,
-    tokenMutated,
-    transferred,
-    unapproved,
-} from './mappings/multiTokens/events'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
-// import * as map from './mappings'
+import * as map from './mappings'
 // import { createEfiToken } from './createEfiToken'
 
 const eventOptions = {
@@ -73,6 +52,21 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Approved', eventOptions)
     .addEvent('MultiTokens.Unapproved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
+    .addEvent('Balances.DustLost', eventOptions)
+    .addEvent('Balances.Endowed', eventOptions)
+    .addEvent('Balances.ReserveRepatriated', eventOptions)
+    .addEvent('Balances.Reserved', eventOptions)
+    .addEvent('Balances.Slashed', eventOptions)
+    .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Balances.Withdraw', eventOptions)
+    .addEvent('Balances.BalanceSet', eventOptions)
+    .addEvent('Balances.Deposit', eventOptions)
+// processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
+// processor.addEventHandler('Marketplace.ListingCancelled', map.marketplace.events.listingCancelled)
+// processor.addEventHandler('Marketplace.ListingFilled', map.marketplace.events.listingFilled)
+// processor.addEventHandler('Marketplace.BidPlaced', map.marketplace.events.bidPlaced)
+// processor.addEventHandler('Marketplace.AuctionFinalized', map.marketplace.events.auctionFinalized)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<Store, Item>
@@ -104,133 +98,149 @@ export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<A
 async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
-            await approved(ctx, block, item)
+            await map.multiTokens.events.approved(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.AttributeRemoved':
-            await attributeRemoved(ctx, block, item)
+            await map.multiTokens.events.attributeRemoved(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.AttributeSet':
-            await attributeSet(ctx, block, item)
+            await map.multiTokens.events.attributeSet(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Burned':
-            await burned(ctx, block, item)
+            await map.multiTokens.events.burned(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.CollectionAccountCreated':
-            await collectionAccountCreated(ctx, block, item)
+            await map.multiTokens.events.collectionAccountCreated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.CollectionAccountDestroyed':
-            await collectionAccountDestroyed(ctx, block, item)
+            await map.multiTokens.events.collectionAccountDestroyed(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.CollectionCreated':
-            await collectionCreated(ctx, block, item)
+            await map.multiTokens.events.collectionCreated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.CollectionDestroyed':
-            await collectionDestroyed(ctx, block, item)
+            await map.multiTokens.events.collectionDestroyed(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.CollectionMutated':
-            await collectionMutated(ctx, block, item)
+            await map.multiTokens.events.collectionMutated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Frozen':
-            await frozen(ctx, block, item)
+            await map.multiTokens.events.frozen(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Minted':
-            await minted(ctx, block, item)
+            await map.multiTokens.events.minted(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Thawed':
-            await thawed(ctx, block, item)
+            await map.multiTokens.events.thawed(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.TokenAccountCreated':
-            await tokenAccountCreated(ctx, block, item)
+            await map.multiTokens.events.tokenAccountCreated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.TokenAccountDestroyed':
-            await tokenAccountDestroyed(ctx, block, item)
+            await map.multiTokens.events.tokenAccountDestroyed(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.TokenCreated':
-            await tokenCreated(ctx, block, item)
+            await map.multiTokens.events.tokenCreated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.TokenDestroyed':
-            await tokenDestroyed(ctx, block, item)
+            await map.multiTokens.events.tokenDestroyed(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.TokenMutated':
-            await tokenMutated(ctx, block, item)
+            await map.multiTokens.events.tokenMutated(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Transferred':
-            await transferred(ctx, block, item)
+            await map.multiTokens.events.transferred(ctx, block, item)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
             })
             break
         case 'MultiTokens.Unapproved':
-            await unapproved(ctx, block, item)
+            await map.multiTokens.events.unapproved(ctx, block, item)
+            return new Event({
+                id: item.event.id,
+                extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
+            })
+            break
+        case 'Balances.BalanceSet':
+        case 'Balances.Deposit':
+        case 'Balances.Endowed':
+        case 'Balances.Reserved':
+        case 'Balances.Transfer':
+        case 'Balances.Unreserved':
+        case 'Balances.DustLost':
+        case 'Balances.ReserveRepatriated':
+        case 'Balances.Slashed':
+        case 'Balances.Withdraw':
+            await map.balances.processor.save(ctx, block, item.event)
             return new Event({
                 id: item.event.id,
                 extrinsic: new Extrinsic({ id: item.event.extrinsic!.id }),
@@ -307,36 +317,3 @@ processor.run(new TypeormDatabase(), async (ctx) => {
     await ctx.store.insert(events)
     await chainState(ctx, ctx.blocks[ctx.blocks.length - 1].header)
 })
-
-// // Saves all extrinsics to user account
-// processor.addCallHandler('*', { triggerForFailedCalls: true }, map.extrinsics.processor.save)
-//
-// // Saves Marketplace information
-// processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
-// processor.addEventHandler('Marketplace.ListingCancelled', map.marketplace.events.listingCancelled)
-// processor.addEventHandler('Marketplace.ListingFilled', map.marketplace.events.listingFilled)
-// processor.addEventHandler('Marketplace.BidPlaced', map.marketplace.events.bidPlaced)
-// processor.addEventHandler('Marketplace.AuctionFinalized', map.marketplace.events.auctionFinalized)
-//
-// // Updates balances
-// processor.addEventHandler('Balances.DustLost', map.balances.processor.save)
-// processor.addEventHandler('Balances.Endowed', map.balances.processor.save)
-// processor.addEventHandler('Balances.ReserveRepatriated', map.balances.processor.save)
-// processor.addEventHandler('Balances.Reserved', map.balances.processor.save)
-// processor.addEventHandler('Balances.Slashed', map.balances.processor.save)
-// processor.addEventHandler('Balances.Transfer', map.balances.processor.save)
-// processor.addEventHandler('Balances.Unreserved', map.balances.processor.save)
-// processor.addEventHandler('Balances.Withdraw', map.balances.processor.save)
-// processor.addEventHandler('Balances.BalanceSet', map.balances.processor.save)
-// processor.addEventHandler('Balances.Deposit', map.balances.processor.save)
-//
-// processor.addPostHook(
-//     {
-//         range: {
-//             from: config.chainStateHeight,
-//         },
-//     },
-//     handleChainState
-// )
-//
-// processor.run()

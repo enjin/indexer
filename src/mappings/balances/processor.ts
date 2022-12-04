@@ -1,7 +1,9 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance } from '../../model'
-import { decodeId, encodeId, isAdressSS58 } from '../../common/tools'
+import { encodeId, isAdressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
@@ -15,11 +17,12 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { CommonHandlerContext, EventHandlerContext } from '../types/contexts'
 import { AccountInfo } from '../../types/generated/efinityV1'
+import { Context } from '../../processor'
+import { Event } from '../../types/generated/support'
 
-function getDustLostAccount(ctx: EventHandlerContext) {
-    const data = new BalancesDustLostEvent(ctx)
+function getDustLostAccount(ctx: Context, event: Event) {
+    const data = new BalancesDustLostEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -30,8 +33,8 @@ function getDustLostAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getBalanceSetAccount(ctx: EventHandlerContext) {
-    const data = new BalancesBalanceSetEvent(ctx)
+function getBalanceSetAccount(ctx: Context, event: Event) {
+    const data = new BalancesBalanceSetEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -42,8 +45,8 @@ function getBalanceSetAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTransferAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
-    const data = new BalancesTransferEvent(ctx)
+function getTransferAccounts(ctx: Context, event: Event): [Uint8Array, Uint8Array] {
+    const data = new BalancesTransferEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return [data.asEfinityV1[0], data.asEfinityV1[1]]
@@ -54,8 +57,8 @@ function getTransferAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array]
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEndowedAccount(ctx: EventHandlerContext) {
-    const data = new BalancesEndowedEvent(ctx)
+function getEndowedAccount(ctx: Context, event: Event) {
+    const data = new BalancesEndowedEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -66,8 +69,8 @@ function getEndowedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getDepositAccount(ctx: EventHandlerContext) {
-    const data = new BalancesDepositEvent(ctx)
+function getDepositAccount(ctx: Context, event: Event) {
+    const data = new BalancesDepositEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -78,8 +81,8 @@ function getDepositAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReservedAccount(ctx: EventHandlerContext) {
-    const data = new BalancesReservedEvent(ctx)
+function getReservedAccount(ctx: Context, event: Event) {
+    const data = new BalancesReservedEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -90,8 +93,8 @@ function getReservedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getUnreservedAccount(ctx: EventHandlerContext) {
-    const data = new BalancesUnreservedEvent(ctx)
+function getUnreservedAccount(ctx: Context, event: Event) {
+    const data = new BalancesUnreservedEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return data.asEfinityV1[0]
@@ -102,8 +105,8 @@ function getUnreservedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getWithdrawAccount(ctx: EventHandlerContext) {
-    const data = new BalancesWithdrawEvent(ctx)
+function getWithdrawAccount(ctx: Context, event: Event) {
+    const data = new BalancesWithdrawEvent(ctx, event)
 
     if (data.isEfinityV2) {
         return data.asEfinityV2.who
@@ -111,8 +114,8 @@ function getWithdrawAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getSlashedAccount(ctx: EventHandlerContext) {
-    const data = new BalancesSlashedEvent(ctx)
+function getSlashedAccount(ctx: Context, event: Event) {
+    const data = new BalancesSlashedEvent(ctx, event)
 
     if (data.isEfinityV2) {
         return data.asEfinityV2.who
@@ -120,8 +123,8 @@ function getSlashedAccount(ctx: EventHandlerContext) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReserveRepatriatedAccounts(ctx: EventHandlerContext): [Uint8Array, Uint8Array] {
-    const data = new BalancesReserveRepatriatedEvent(ctx)
+function getReserveRepatriatedAccounts(ctx: Context, event: Event): [Uint8Array, Uint8Array] {
+    const data = new BalancesReserveRepatriatedEvent(ctx, event)
 
     if (data.isEfinityV1) {
         return [data.asEfinityV1[0], data.asEfinityV1[1]]
@@ -133,10 +136,11 @@ function getReserveRepatriatedAccounts(ctx: EventHandlerContext): [Uint8Array, U
 }
 
 async function getSystemAccountBalances(
-    ctx: CommonHandlerContext,
+    ctx: Context,
+    block: SubstrateBlock,
     accounts: Uint8Array[]
 ): Promise<AccountInfo[] | undefined> {
-    const storage = new SystemAccountStorage(ctx)
+    const storage = new SystemAccountStorage(ctx, block)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
@@ -145,56 +149,56 @@ async function getSystemAccountBalances(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-function processBalancesEventItem(ctx: EventHandlerContext) {
+function processBalancesEventItem(ctx: Context, event: Event) {
     const ids: Uint8Array[] = []
-    switch (ctx.event.name) {
+    switch (event.name) {
         case 'Balances.DustLost': {
-            const account = getDustLostAccount(ctx)
+            const account = getDustLostAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.BalanceSet': {
-            const account = getBalanceSetAccount(ctx)
+            const account = getBalanceSetAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Endowed': {
-            const account = getEndowedAccount(ctx)
+            const account = getEndowedAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Deposit': {
-            const account = getDepositAccount(ctx)
+            const account = getDepositAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Reserved': {
-            const account = getReservedAccount(ctx)
+            const account = getReservedAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Unreserved': {
-            const account = getUnreservedAccount(ctx)
+            const account = getUnreservedAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Withdraw': {
-            const account = getWithdrawAccount(ctx)
+            const account = getWithdrawAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Slashed': {
-            const account = getSlashedAccount(ctx)
+            const account = getSlashedAccount(ctx, event)
             ids.push(account)
             break
         }
         case 'Balances.Transfer': {
-            const accounts = getTransferAccounts(ctx)
+            const accounts = getTransferAccounts(ctx, event)
             ids.push(...accounts)
             break
         }
         case 'Balances.ReserveRepatriated': {
-            const accounts = getReserveRepatriatedAccounts(ctx)
+            const accounts = getReserveRepatriatedAccounts(ctx, event)
             ids.push(...accounts)
             break
         }
@@ -205,12 +209,12 @@ function processBalancesEventItem(ctx: EventHandlerContext) {
     return ids
 }
 
-async function getBalances(ctx: CommonHandlerContext, accountIds: Uint8Array[]): Promise<AccountInfo[] | undefined> {
-    return getSystemAccountBalances(ctx, accountIds)
+async function getBalances(ctx: Context, block: SubstrateBlock, accountIds: Uint8Array[]): Promise<AccountInfo[] | undefined> {
+    return getSystemAccountBalances(ctx, block, accountIds)
 }
 
-async function saveAccounts(ctx: CommonHandlerContext, accountIds: Uint8Array[]) {
-    const accountInfos = await getBalances(ctx, accountIds)
+async function saveAccounts(ctx: Context, block: SubstrateBlock, accountIds: Uint8Array[]) {
+    const accountInfos = await getBalances(ctx, block, accountIds)
     if (!accountInfos) {
         return
     }
@@ -241,9 +245,9 @@ async function saveAccounts(ctx: CommonHandlerContext, accountIds: Uint8Array[])
     await ctx.store.save(accounts)
 }
 
-export async function save(ctx: EventHandlerContext): Promise<void> {
+export async function save(ctx: Context, block: SubstrateBlock, event: Event): Promise<void> {
     const accountIds = new Set<Uint8Array>()
-    processBalancesEventItem(ctx).forEach((id) => accountIds.add(id))
-    await saveAccounts(ctx, [...accountIds])
+    processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
+    await saveAccounts(ctx, block, [...accountIds])
     accountIds.clear()
 }
