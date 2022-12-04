@@ -32,12 +32,12 @@ const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
     .setPrometheusPort(config.port || DEFAULT_PORT)
     .setBlockRange(config.blockRange || { from: 0 })
-    .addCall('*', {
-        data: {
-            call: true,
-            extrinsic: true,
-        } as const,
-    } as const)
+    // .addCall('*', {
+    //     data: {
+    //         call: true,
+    //         extrinsic: true,
+    //     } as const,
+    // } as const)
     .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
     .addEvent('MultiTokens.CollectionMutated', eventOptions)
@@ -192,40 +192,40 @@ processor.run(new TypeormDatabase(), async (ctx) => {
                 }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
-                if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
-
-                const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
-
-                const publicKey = (
-                    signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                        ? signature.address.value
-                        : signature.address
-                ) as string
-
-                // eslint-disable-next-line no-await-in-loop
-                const signer = await getAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
-                const callName = call.name.split('.')
-                const extrinsic = new Extrinsic({
-                    id,
-                    hash,
-                    blockNumber: block.header.height,
-                    blockHash: block.header.hash,
-                    success,
-                    pallet: callName[0],
-                    method: callName[1],
-                    args: call.args,
-                    signature,
-                    signer,
-                    nonce: signer.nonce,
-                    tip,
-                    error,
-                    fee: new Fee({
-                        amount: fee,
-                        who: signer.id,
-                    }),
-                    createdAt: new Date(block.header.timestamp),
-                })
-                extrinsics.push(extrinsic)
+                // if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
+                //
+                // const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+                //
+                // const publicKey = (
+                //     signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                //         ? signature.address.value
+                //         : signature.address
+                // ) as string
+                //
+                // // eslint-disable-next-line no-await-in-loop
+                // const signer = await getAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                // const callName = call.name.split('.')
+                // const extrinsic = new Extrinsic({
+                //     id,
+                //     hash,
+                //     blockNumber: block.header.height,
+                //     blockHash: block.header.hash,
+                //     success,
+                //     pallet: callName[0],
+                //     method: callName[1],
+                //     args: call.args,
+                //     signature,
+                //     signer,
+                //     nonce: signer.nonce,
+                //     tip,
+                //     error,
+                //     fee: new Fee({
+                //         amount: fee,
+                //         who: signer.id,
+                //     }),
+                //     createdAt: new Date(block.header.timestamp),
+                // })
+                // extrinsics.push(extrinsic)
             }
         }
     }
