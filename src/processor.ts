@@ -1,19 +1,10 @@
 /* eslint-disable no-console */
-import {
-    BatchBlock,
-    BatchContext,
-    BatchProcessorCallItem,
-    BatchProcessorEventItem,
-    BatchProcessorItem,
-    SubstrateBatchProcessor,
-    SubstrateBlock,
-} from '@subsquid/substrate-processor'
+import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexToU8a, u8aToHex } from '@polkadot/util'
 import config from './config'
 // import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
-import { getOrCreateAccount } from './mappings/util/entities'
 import { Account, Balance, Extrinsic, Fee, Event } from './model'
 import { BlockHandlerContext, CallHandlerContext, CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
 import { encodeId, isAdressSS58 } from './common/tools'
@@ -39,6 +30,7 @@ import {
     transferred,
     unapproved,
 } from './mappings/multiTokens/events'
+import { createEfiToken } from './createEfiToken'
 // import * as map from './mappings'
 // import { createEfiToken } from './createEfiToken'
 
@@ -181,6 +173,10 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
+        if (block.header.height === 0) {
+            createEfiToken(ctx, block.header)
+        }
+
         // eslint-disable-next-line no-restricted-syntax
         for (const item of block.items) {
             if (item.kind === 'event') {
@@ -239,38 +235,8 @@ processor.run(new TypeormDatabase(), async (ctx) => {
     await ctx.store.insert(events)
 })
 
-//
-//
-// processor.addPreHook(
-//     {
-//         range: { from: 1, to: 1 },
-//     },
-//     createEfiToken
-// )
-//
 // // Saves all extrinsics to user account
 // processor.addCallHandler('*', { triggerForFailedCalls: true }, map.extrinsics.processor.save)
-//
-// // Saves MultiTokens information
-// processor.addEventHandler('MultiTokens.CollectionCreated', map.multiTokens.events.collectionCreated)
-// processor.addEventHandler('MultiTokens.CollectionDestroyed', map.multiTokens.events.collectionDestroyed)
-// processor.addEventHandler('MultiTokens.CollectionMutated', map.multiTokens.events.collectionMutated)
-// processor.addEventHandler('MultiTokens.CollectionAccountCreated', map.multiTokens.events.collectionAccountCreated)
-// processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', map.multiTokens.events.collectionAccountDestroyed)
-// processor.addEventHandler('MultiTokens.TokenCreated', map.multiTokens.events.tokenCreated)
-// processor.addEventHandler('MultiTokens.TokenDestroyed', map.multiTokens.events.tokenDestroyed)
-// processor.addEventHandler('MultiTokens.TokenMutated', map.multiTokens.events.tokenMutated)
-// processor.addEventHandler('MultiTokens.TokenAccountCreated', map.multiTokens.events.tokenAccountCreated)
-// processor.addEventHandler('MultiTokens.TokenAccountDestroyed', map.multiTokens.events.tokenAccountDestroyed)
-// processor.addEventHandler('MultiTokens.Minted', map.multiTokens.events.minted)
-// processor.addEventHandler('MultiTokens.Burned', map.multiTokens.events.burned)
-// processor.addEventHandler('MultiTokens.AttributeSet', map.multiTokens.events.attributeSet)
-// processor.addEventHandler('MultiTokens.AttributeRemoved', map.multiTokens.events.attributeRemoved)
-// processor.addEventHandler('MultiTokens.Frozen', map.multiTokens.events.frozen)
-// processor.addEventHandler('MultiTokens.Thawed', map.multiTokens.events.thawed)
-// processor.addEventHandler('MultiTokens.Approved', map.multiTokens.events.approved)
-// processor.addEventHandler('MultiTokens.Unapproved', map.multiTokens.events.unapproved)
-// processor.addEventHandler('MultiTokens.Transferred', map.multiTokens.events.transferred)
 //
 // // Saves Marketplace information
 // processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
