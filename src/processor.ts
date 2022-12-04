@@ -227,7 +227,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
     await ctx.store.insert(events)
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-    if (lastBlock > config.chainStateHeight) {
+    if (lastBlock.height > config.chainStateHeight) {
         await chainState(ctx, lastBlock)
     }
 })
