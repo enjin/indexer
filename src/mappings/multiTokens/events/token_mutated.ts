@@ -4,6 +4,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
+    MultiTokensTokenMutated,
     Royalty,
     Token,
     TokenBehaviorHasRoyalty,
@@ -64,7 +65,7 @@ export async function tokenMutated(
     item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -87,4 +88,9 @@ export async function tokenMutated(
 
     token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensTokenMutated(),
+    })
 }

@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Token, TokenAccount } from '../../../model'
+import { Event as EventModel, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
@@ -78,7 +78,7 @@ export async function minted(
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -104,4 +104,15 @@ export async function minted(
 
         await ctx.store.save(tokenAccount)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensMinted({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            issuer: u8aToHex(data.issuer),
+            recipient: u8aToHex(data.recipient),
+            amount: data.amount,
+        }),
+    })
 }

@@ -249,4 +249,6 @@ export async function save(ctx: Context, block: SubstrateBlock, event: Event): P
     processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, block, [...accountIds])
     accountIds.clear()
+
+    return undefined
 }

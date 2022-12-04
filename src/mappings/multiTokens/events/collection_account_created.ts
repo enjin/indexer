@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountCreatedEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Event as EventModel } from '../../../model'
+import { Collection, CollectionAccount, Event as EventModel, MultiTokensCollectionAccountCreated } from '../../../model'
 // eslint-disable-next-line import/no-cycle
 import { Context, getAccount } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -29,7 +29,7 @@ export async function collectionAccountCreated(
     item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -48,4 +48,12 @@ export async function collectionAccountCreated(
     })
 
     await ctx.store.insert(collectionAccount)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensCollectionAccountCreated({
+            collectionId: data.collectionId,
+            account: account.id,
+        }),
+    })
 }

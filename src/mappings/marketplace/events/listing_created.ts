@@ -41,7 +41,7 @@ export async function listingCreated(
     item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
     const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -101,4 +101,9 @@ export async function listingCreated(
 
     // new EventService(ctx, listing.makeAssetId).MarketplaceList(listing.seller, listing)
     // new CollectionService(ctx.store).sync(makeAssetId.collection.id)
+
+    return new EventModel({
+        id: item.event.id,
+        data: null,
+    })
 }

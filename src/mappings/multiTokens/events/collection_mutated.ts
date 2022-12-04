@@ -3,7 +3,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
-import { Collection, Event as EventModel, MarketPolicy, Royalty, RoyaltyCurrency, Token } from '../../../model'
+import {
+    Collection,
+    Event as EventModel,
+    MarketPolicy,
+    MultiTokensCollectionMutated,
+    Royalty,
+    RoyaltyCurrency,
+    Token,
+} from '../../../model'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
 import { Context, getAccount } from '../../../processor'
@@ -74,7 +82,7 @@ export async function collectionMutated(
     item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -129,4 +137,9 @@ export async function collectionMutated(
     }
 
     await ctx.store.save(collection)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensCollectionMutated(),
+    })
 }

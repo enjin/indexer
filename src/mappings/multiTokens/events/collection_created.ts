@@ -9,6 +9,7 @@ import {
     Event as EventModel,
     MarketPolicy,
     MintPolicy,
+    MultiTokensCollectionCreated,
     Royalty,
     RoyaltyCurrency,
     Token,
@@ -113,12 +114,11 @@ export async function collectionCreated(
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.call) return
+    if (!item.event.call) return undefined
 
     const eventData = getEventData(ctx, item.event)
     const callData = await getCallData(ctx, item.event.call)
-
-    if (!eventData || !callData) return
+    if (!eventData || !callData) return undefined
 
     const account = await getAccount(ctx, eventData.owner)
     const collection = new Collection({
@@ -166,4 +166,12 @@ export async function collectionCreated(
         // eslint-disable-next-line no-await-in-loop
         await ctx.store.insert(royaltyCurrency)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensCollectionCreated({
+            collectionId: eventData.collectionId,
+            owner: account.id,
+        }),
+    })
 }

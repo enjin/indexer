@@ -30,7 +30,7 @@ export async function auctionFinalized(
     item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
@@ -65,4 +65,9 @@ export async function auctionFinalized(
     //
     //     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
     // }
+
+    return new EventModel({
+        id: item.event.id,
+        data: null,
+    })
 }

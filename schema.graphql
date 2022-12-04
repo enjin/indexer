@@ -28,8 +28,6 @@ type Fee {
 
 type Extrinsic @entity {
   id: ID!
-  extrinsicIndex: String
-  extrinsicHash: String
   hash: String!
   blockNumber: Int!
   blockHash: String!
@@ -107,7 +105,7 @@ type MultiTokensApproved {
   owner: Account!
   operator: Account!
   amount: BigInt
-  expiration: BigInt
+  expiration: Int
 }
 
 type MultiTokensAttributeRemoved {
@@ -147,7 +145,7 @@ type MultiTokensCollectionCreated {
 
 type MultiTokensCollectionDestroyed {
   collectionId: BigInt!
-  called: Account!
+  caller: Account!
 }
 
 type MultiTokensCollectionMutated {

@@ -7,6 +7,7 @@ import {
     Collection,
     Event as EventModel,
     Metadata,
+    MultiTokensTokenCreated,
     Royalty,
     Token,
     TokenBehaviorHasRoyalty,
@@ -26,6 +27,7 @@ import {
 } from '../../../types/generated/v6'
 import { getMetadata } from '../../util/metadata'
 import { Context, getAccount } from '../../../processor'
+import { u8aToHex } from '@polkadot/util'
 
 interface CallData {
     recipient: Uint8Array
@@ -272,8 +274,7 @@ export async function tokenCreated(
 
     if (item.event.call) {
         const callData = await getCallData(ctx, item.event.call, eventData)
-
-        if (!eventData || !callData) return
+        if (!eventData || !callData) return undefined
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
@@ -318,4 +319,14 @@ export async function tokenCreated(
 
         await ctx.store.insert(token)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensTokenCreated({
+            collectionId: eventData.collectionId,
+            tokenId: eventData.tokenId,
+            issuer: u8aToHex(eventData.issuer),
+            initialSupply: eventData.initialSupply,
+        }),
+    })
 }

@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
-import { CollectionAccount, Event as EventModel, TokenAccount } from '../../../model'
+import { CollectionAccount, Event as EventModel, MultiTokensTokenAccountDestroyed, TokenAccount } from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -29,7 +29,7 @@ export async function tokenAccountDestroyed(
     item: EventItem<'MultiTokens.TokenAccountDestroyed', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
@@ -42,4 +42,13 @@ export async function tokenAccountDestroyed(
     })
 
     await ctx.store.remove(tokenAccount)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensTokenAccountDestroyed({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            accountId: u8aToHex(data.accountId),
+        }),
+    })
 }

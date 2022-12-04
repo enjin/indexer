@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
-import { CollectionAccount, Event as EventModel, TokenAccount } from '../../../model'
+import { CollectionAccount, Event as EventModel, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -36,7 +36,7 @@ export async function unapproved(
     item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const address = u8aToHex(data.owner)
 
@@ -61,4 +61,14 @@ export async function unapproved(
 
         await ctx.store.save(collectionAccount)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensUnapproved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            owner: address,
+            operator: u8aToHex(data.operator),
+        }),
+    })
 }

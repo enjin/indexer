@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Event as EventModel, Metadata, Token } from '../../../model'
+import { Attribute, Collection, Event as EventModel, Metadata, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -43,7 +43,7 @@ export async function attributeRemoved(
     item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
@@ -82,4 +82,13 @@ export async function attributeRemoved(
 
         await ctx.store.remove(attribute)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensAttributeRemoved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: Buffer.from(data.key).toString(),
+        }),
+    })
 }

@@ -2,11 +2,18 @@ import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { MultiTokensApprovedEvent } from '../../../types/generated/events'
-import { CollectionAccount, TokenAccount, TokenApproval, CollectionApproval, Event as EventModel } from '../../../model'
+import {
+    CollectionAccount,
+    TokenAccount,
+    TokenApproval,
+    CollectionApproval,
+    Event as EventModel,
+    MultiTokensApproved,
+} from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { MultiTokensApprovedEvent } from '../../../types/generated/events'
 
 interface EventData {
     collectionId: bigint
@@ -78,4 +85,16 @@ export async function approved(
         collectionAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(collectionAccount)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensApproved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            owner: address,
+            operator: u8aToHex(data.operator),
+            amount: data.amount,
+            expiration: data.expiration,
+        }),
+    })
 }

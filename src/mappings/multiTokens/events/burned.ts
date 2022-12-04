@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Token, TokenAccount } from '../../../model'
+import { Event as EventModel, MultiTokensBurned, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { Approval } from '../../../types/generated/efinityV3'
 import { Context } from '../../../processor'
@@ -76,7 +76,7 @@ export async function burned(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const address = u8aToHex(data.accountId)
 
@@ -109,4 +109,14 @@ export async function burned(
         //     data.amount
         // )
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensBurned({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            account: address,
+            amount: data.amount,
+        }),
+    })
 }

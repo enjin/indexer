@@ -1,13 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import {
-    Event as EventModel,
-    FixedPriceState,
-    Listing,
-    ListingStatus,
-    ListingStatusType,
-    ListingType,
-} from '../../../model'
+import { Event as EventModel, FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -38,7 +31,7 @@ export async function listingFilled(
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
@@ -79,4 +72,9 @@ export async function listingFilled(
     // )
     //
     // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+
+    return new EventModel({
+        id: item.event.id,
+        data: null,
+    })
 }

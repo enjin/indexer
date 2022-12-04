@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Event as EventModel, Metadata, Token } from '../../../model'
+import { Attribute, Collection, Event as EventModel, Metadata, MultiTokensAttributeSet, Token } from '../../../model'
 import { getMetadata } from '../../util/metadata'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -31,7 +31,7 @@ export async function attributeSet(
     item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -100,4 +100,14 @@ export async function attributeSet(
             await ctx.store.save(collection)
         }
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensAttributeSet({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key,
+            value,
+        }),
+    })
 }

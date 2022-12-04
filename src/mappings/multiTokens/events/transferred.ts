@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
-import { Event as EventModel, TokenAccount } from '../../../model'
+import { Event as EventModel, MultiTokensTransferred, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { Approval } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
@@ -78,7 +78,7 @@ export async function transferred(
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const fromAddress = u8aToHex(data.from)
     const fromTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -123,4 +123,16 @@ export async function transferred(
     //         data.amount
     //     )
     // }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensTransferred({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            operator: u8aToHex(data.operator),
+            from: fromAddress,
+            to: toAddress,
+            amount: data.amount,
+        }),
+    })
 }

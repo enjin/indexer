@@ -3,7 +3,14 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../../model'
+import {
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    MultiTokensTokenAccountCreated,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { Context, getAccount } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -30,7 +37,7 @@ export async function tokenAccountCreated(
     item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -62,4 +69,13 @@ export async function tokenAccountCreated(
     })
 
     await ctx.store.insert(tokenAccount)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensTokenAccountCreated({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            account: u8aToHex(data.accountId),
+        }),
+    })
 }

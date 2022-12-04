@@ -2,10 +2,11 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
-import { Collection, Event as EventModel, RoyaltyCurrency } from '../../../model'
+import { Collection, Event as EventModel, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
 // eslint-disable-next-line import/no-cycle
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { u8aToHex } from '@polkadot/util'
 
 interface EventData {
     collectionId: bigint
@@ -28,7 +29,7 @@ export async function collectionDestroyed(
     item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -39,4 +40,12 @@ export async function collectionDestroyed(
 
     await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(collection)
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensCollectionDestroyed({
+            collectionId: data.collectionId,
+            caller: u8aToHex(data.caller),
+        }),
+    })
 }

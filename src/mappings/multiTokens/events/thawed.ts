@@ -3,7 +3,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
-import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../../model'
+import {
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    MultiTokensThawed,
+    Token,
+    TokenAccount,
+    TransferPolicy,
+} from '../../../model'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -69,7 +77,7 @@ export async function thawed(
     item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true; call: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return
+    if (!data) return undefined
 
     if (data.tokenAccount) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
@@ -103,4 +111,9 @@ export async function thawed(
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
         await ctx.store.save(collection)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        data: new MultiTokensThawed(),
+    })
 }

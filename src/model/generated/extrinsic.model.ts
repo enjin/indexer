@@ -13,12 +13,6 @@ export class Extrinsic {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("text", {nullable: true})
-    extrinsicIndex!: string | undefined | null
-
-    @Column_("text", {nullable: true})
-    extrinsicHash!: string | undefined | null
-
     @Column_("text", {nullable: false})
     hash!: string
 
