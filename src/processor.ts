@@ -6,7 +6,6 @@ import config from './config'
 // import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
 import { Account, Balance, Extrinsic, Fee, Event } from './model'
-import { BlockHandlerContext, CallHandlerContext, CommonHandlerContext, EventHandlerContext } from './mappings/types/contexts'
 import { encodeId, isAdressSS58 } from './common/tools'
 // eslint-disable-next-line import/no-cycle
 import {
@@ -31,6 +30,7 @@ import {
     unapproved,
 } from './mappings/multiTokens/events'
 import { createEfiToken } from './createEfiToken'
+import { chainState } from './chainState'
 // import * as map from './mappings'
 // import { createEfiToken } from './createEfiToken'
 
@@ -173,8 +173,9 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
-        if (block.header.height === 0) {
-            createEfiToken(ctx, block.header)
+        if (block.header.height === 1) {
+            // eslint-disable-next-line no-await-in-loop
+            await createEfiToken(ctx, block.header)
         }
 
         // eslint-disable-next-line no-restricted-syntax
@@ -233,6 +234,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     await ctx.store.insert(extrinsics)
     await ctx.store.insert(events)
+    await chainState(ctx, ctx.blocks[ctx.blocks.length - 1].header)
 })
 
 // // Saves all extrinsics to user account

@@ -1,28 +1,29 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { ChainInfo, Marketplace } from './model'
 import config from './config'
-import { BlockHandlerContext } from './mappings/types/contexts'
+import { Context } from './processor'
 
 const wsProvider = new WsProvider(config.dataSource.chain)
 const apiPromise = ApiPromise.create({ provider: wsProvider })
 
-async function saveChainState(ctx: BlockHandlerContext) {
-    const state = new ChainInfo({ id: ctx.block.hash })
+export async function chainState(ctx: Context, block: SubstrateBlock) {
+    const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
-    const apiAt = await api.at(ctx.block.hash)
+    const apiAt = await api.at(block.hash)
 
     const [runtime, marketplace] = await Promise.all<any>([
-        api.rpc.state.getRuntimeVersion(ctx.block.hash),
+        api.rpc.state.getRuntimeVersion(block.hash),
         apiAt.query.marketplace.info(),
     ])
 
     state.genesisHash = config.genesisHash
     state.transactionVersion = runtime.transactionVersion
-    state.specVersion = Number(ctx.block.specId.split('@')[1])
-    state.blockNumber = ctx.block.height
-    state.blockHash = ctx.block.hash
+    state.specVersion = Number(block.specId.split('@')[1])
+    state.blockNumber = block.height
+    state.blockHash = block.hash
     state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
-    state.timestamp = new Date(ctx.block.timestamp)
+    state.timestamp = new Date(block.timestamp)
     state.marketplace = new Marketplace({
         protocolFee: marketplace.protocolFee,
         fixedPriceListingCount: marketplace.fixedPriceListingCount,
@@ -35,8 +36,4 @@ async function saveChainState(ctx: BlockHandlerContext) {
     })
 
     await ctx.store.save(state)
-}
-
-export async function handleChainState(ctx: BlockHandlerContext) {
-    await saveChainState(ctx)
 }
