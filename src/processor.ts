@@ -19,10 +19,25 @@ import { BlockHandlerContext, CallHandlerContext, CommonHandlerContext, EventHan
 import { encodeId, isAdressSS58 } from './common/tools'
 // eslint-disable-next-line import/no-cycle
 import {
+    approved,
+    attributeRemoved,
+    attributeSet,
+    burned,
     collectionAccountCreated,
     collectionAccountDestroyed,
     collectionCreated,
     collectionDestroyed,
+    collectionMutated,
+    frozen,
+    minted,
+    thawed,
+    tokenAccountCreated,
+    tokenAccountDestroyed,
+    tokenCreated,
+    tokenDestroyed,
+    tokenMutated,
+    transferred,
+    unapproved,
 } from './mappings/multiTokens/events'
 // import * as map from './mappings'
 // import { createEfiToken } from './createEfiToken'
@@ -96,11 +111,17 @@ export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<A
 
 async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item) {
     switch (item.name) {
-        case 'MultiTokens.CollectionCreated':
-            await collectionCreated(ctx, block, item)
+        case 'MultiTokens.Approved':
+            await approved(ctx, block, item)
             break
-        case 'MultiTokens.CollectionDestroyed':
-            await collectionDestroyed(ctx, block, item)
+        case 'MultiTokens.AttributeRemoved':
+            await attributeRemoved(ctx, block, item)
+            break
+        case 'MultiTokens.AttributeSet':
+            await attributeSet(ctx, block, item)
+            break
+        case 'MultiTokens.Burned':
+            await burned(ctx, block, item)
             break
         case 'MultiTokens.CollectionAccountCreated':
             await collectionAccountCreated(ctx, block, item)
@@ -108,8 +129,47 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item) {
         case 'MultiTokens.CollectionAccountDestroyed':
             await collectionAccountDestroyed(ctx, block, item)
             break
+        case 'MultiTokens.CollectionCreated':
+            await collectionCreated(ctx, block, item)
+            break
+        case 'MultiTokens.CollectionDestroyed':
+            await collectionDestroyed(ctx, block, item)
+            break
+        case 'MultiTokens.CollectionMutated':
+            await collectionMutated(ctx, block, item)
+            break
+        case 'MultiTokens.Frozen':
+            await frozen(ctx, block, item)
+            break
+        case 'MultiTokens.Minted':
+            await minted(ctx, block, item)
+            break
+        case 'MultiTokens.Thawed':
+            await thawed(ctx, block, item)
+            break
+        case 'MultiTokens.TokenAccountCreated':
+            await tokenAccountCreated(ctx, block, item)
+            break
+        case 'MultiTokens.TokenAccountDestroyed':
+            await tokenAccountDestroyed(ctx, block, item)
+            break
+        case 'MultiTokens.TokenCreated':
+            await tokenCreated(ctx, block, item)
+            break
+        case 'MultiTokens.TokenDestroyed':
+            await tokenDestroyed(ctx, block, item)
+            break
+        case 'MultiTokens.TokenMutated':
+            await tokenMutated(ctx, block, item)
+            break
+        case 'MultiTokens.Transferred':
+            await transferred(ctx, block, item)
+            break
+        case 'MultiTokens.Unapproved':
+            await unapproved(ctx, block, item)
+            break
         default: {
-            console.log('event not handled', item.name)
+            console.log('Event not handled', item.name)
         }
     }
 }

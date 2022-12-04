@@ -27,7 +27,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function tokenDestroyed(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true; call: true } }>
+    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true; call: true } }>
 ) {
     const data = getEventData(ctx, item.event)
     if (!data) return
