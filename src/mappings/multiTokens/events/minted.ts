@@ -83,9 +83,7 @@ export async function minted(
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
-            collection: {
-                mintPolicy: true,
-            },
+            collection: true,
         },
     })
     token.supply += data.amount
