@@ -175,6 +175,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
+        console.log(`Processing block ${block.header.height}`)
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
             await createEfiToken(ctx, block.header)
