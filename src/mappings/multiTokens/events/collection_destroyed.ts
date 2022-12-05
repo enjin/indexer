@@ -1,12 +1,12 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
 // eslint-disable-next-line import/no-cycle
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
-import { u8aToHex } from '@polkadot/util'
 
 interface EventData {
     collectionId: bigint

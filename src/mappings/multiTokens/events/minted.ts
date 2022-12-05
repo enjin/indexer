@@ -82,12 +82,12 @@ export async function minted(
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        // relations: {
-        //     collection: true,
-        // },
+        relations: {
+            collection: true,
+        },
     })
     token.supply += data.amount
-    // token.nonFungible = isNonFungible(token)
+    token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
