@@ -187,12 +187,14 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
+                console.log(`Handling event ${item.name}`)
                 const event = await handleEvents(ctx, block.header, item)
                 if (event) {
                     events.push(event)
                 }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
+                console.log(`Handling call ${item.name}`)
                 if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
 
                 const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
