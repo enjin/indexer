@@ -82,7 +82,7 @@ export async function auctionFinalized(
         data: new MarketplaceAuctionFinalized({
             listing: listing.id,
             winningBid: data.winningBid ? `${listing.id}-${u8aToHex(data.winningBid.bidder)}-${data.winningBid.price}` : null,
-            protocolFee: Number(data.protocolFee),
+            protocolFee: data.protocolFee,
             royalty: data.royalty,
         }),
     })

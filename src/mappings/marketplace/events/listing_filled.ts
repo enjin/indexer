@@ -92,7 +92,7 @@ export async function listingFilled(
             buyer: listing.seller.id,
             amountFilled: data.amountFilled,
             amountRemaining: data.amountRemaining,
-            protocolFee: Number(data.protocolFee),
+            protocolFee: data.protocolFee,
             royalty: data.royalty,
         }),
     })

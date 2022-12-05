@@ -73,7 +73,7 @@ type BalancesTransfer {
 type MarketplaceAuctionFinalized {
   listing: Listing!
   winningBid: Bid
-  protocolFee: Float!
+  protocolFee: BigInt!
   royalty: BigInt!
 }
 
@@ -95,7 +95,7 @@ type MarketplaceListingFilled {
   buyer: Account!
   amountFilled: BigInt!
   amountRemaining: BigInt!
-  protocolFee: Float!
+  protocolFee: BigInt!
   royalty: BigInt!
 }
 
