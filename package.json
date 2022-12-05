@@ -25,7 +25,7 @@
     "@subsquid/substrate-processor": "^2.0",
     "@subsquid/typeorm-migration": "^0.1",
     "@subsquid/typeorm-store": "^0.1",
-    "axios": "^1.1",
+    "axios": "^1.2",
     "cacheable-request": "^8.3",
     "dotenv": "^16.0",
     "lodash": "^4.17.21",
