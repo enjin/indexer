@@ -4,6 +4,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
+    Extrinsic,
     MultiTokensTokenMutated,
     Royalty,
     Token,
@@ -62,7 +63,7 @@ async function getBehavior(
 export async function tokenMutated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenMutated', { event: { args: true } }>
+    item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -91,6 +92,7 @@ export async function tokenMutated(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensTokenMutated(),
     })
 }

@@ -7,6 +7,7 @@ import {
     Collection,
     CollectionAccount,
     Event as EventModel,
+    Extrinsic,
     MultiTokensTokenAccountCreated,
     Token,
     TokenAccount,
@@ -34,7 +35,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function tokenAccountCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true } }>
+    item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -72,6 +73,7 @@ export async function tokenAccountCreated(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensTokenAccountCreated({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

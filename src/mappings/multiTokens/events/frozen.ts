@@ -7,6 +7,7 @@ import {
     Collection,
     CollectionAccount,
     Event as EventModel,
+    Extrinsic,
     MultiTokensFrozen,
     Token,
     TokenAccount,
@@ -74,7 +75,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function frozen(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Frozen', { event: { args: true } }>
+    item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -115,6 +116,7 @@ export async function frozen(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensFrozen(),
     })
 }

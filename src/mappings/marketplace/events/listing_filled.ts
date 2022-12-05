@@ -1,6 +1,14 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
-import { Event as EventModel, FixedPriceState, Listing, ListingStatus, ListingStatusType, ListingType } from '../../../model'
+import {
+    Event as EventModel,
+    Extrinsic,
+    FixedPriceState,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+} from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -28,7 +36,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function listingFilled(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true } }>
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -75,6 +83,7 @@ export async function listingFilled(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: null,
     })
 }

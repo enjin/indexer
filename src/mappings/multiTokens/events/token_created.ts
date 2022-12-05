@@ -6,6 +6,7 @@ import {
     CapType,
     Collection,
     Event as EventModel,
+    Extrinsic,
     Metadata,
     MultiTokensTokenCreated,
     Royalty,
@@ -268,7 +269,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function tokenCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true } }>
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
@@ -322,6 +323,7 @@ export async function tokenCreated(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensTokenCreated({
             collectionId: eventData.collectionId,
             tokenId: eventData.tokenId,

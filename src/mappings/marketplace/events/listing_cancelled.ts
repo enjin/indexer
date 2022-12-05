@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
-import { Event as EventModel, Listing, ListingStatus, ListingStatusType } from '../../../model'
+import { Event as EventModel, Extrinsic, Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -23,7 +23,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function listingCancelled(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true } }>
+    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -55,6 +55,7 @@ export async function listingCancelled(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: null,
     })
 }

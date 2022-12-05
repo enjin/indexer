@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
-import { Collection, Event as EventModel, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
+import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
 // eslint-disable-next-line import/no-cycle
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -26,7 +26,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function collectionDestroyed(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true } }>
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -43,6 +43,7 @@ export async function collectionDestroyed(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensCollectionDestroyed({
             collectionId: data.collectionId,
             caller: u8aToHex(data.caller),

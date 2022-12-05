@@ -15,6 +15,7 @@ const eventOptions = {
     data: {
         event: {
             args: true,
+            extrinsic: true,
         },
     } as const,
 } as const
@@ -24,6 +25,7 @@ const eventOptionsWithCall = {
         event: {
             args: true,
             call: true,
+            extrinsic: true,
         },
     } as const,
 } as const

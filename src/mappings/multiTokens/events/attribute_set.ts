@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Event as EventModel, Metadata, MultiTokensAttributeSet, Token } from '../../../model'
+import { Attribute, Collection, Event as EventModel, Extrinsic, Metadata, MultiTokensAttributeSet, Token } from '../../../model'
 import { getMetadata } from '../../util/metadata'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -28,7 +28,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function attributeSet(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true } }>
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -103,6 +103,7 @@ export async function attributeSet(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensAttributeSet({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

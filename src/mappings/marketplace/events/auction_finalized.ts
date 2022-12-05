@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Listing, ListingStatus, ListingStatusType } from '../../../model'
+import { Event as EventModel, Extrinsic, Listing, ListingStatus, ListingStatusType } from '../../../model'
 import { Bid } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
@@ -27,7 +27,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function auctionFinalized(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true } }>
+    item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -68,6 +68,7 @@ export async function auctionFinalized(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: null,
     })
 }

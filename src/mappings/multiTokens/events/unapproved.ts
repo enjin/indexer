@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
-import { CollectionAccount, Event as EventModel, MultiTokensUnapproved, TokenAccount } from '../../../model'
+import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
@@ -33,7 +33,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function unapproved(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Unapproved', { event: { args: true } }>
+    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -64,6 +64,7 @@ export async function unapproved(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensUnapproved({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

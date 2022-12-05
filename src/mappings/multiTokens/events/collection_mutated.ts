@@ -6,6 +6,7 @@ import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/even
 import {
     Collection,
     Event as EventModel,
+    Extrinsic,
     MarketPolicy,
     MultiTokensCollectionMutated,
     Royalty,
@@ -79,7 +80,7 @@ async function getMarket(ctx: Context, royalty: DefaultRoyalty): Promise<MarketP
 export async function collectionMutated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true } }>
+    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -140,6 +141,7 @@ export async function collectionMutated(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensCollectionMutated(),
     })
 }

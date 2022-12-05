@@ -2,7 +2,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Event as EventModel, Listing, ListingStatus, MultiTokensTokenDestroyed, Token } from '../../../model'
+import {
+    Attribute,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingStatus,
+    MultiTokensTokenDestroyed,
+    Token,
+} from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 import { u8aToHex } from '@polkadot/util'
@@ -26,7 +34,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function tokenDestroyed(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true } }>
+    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -85,6 +93,7 @@ export async function tokenDestroyed(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensTokenDestroyed({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

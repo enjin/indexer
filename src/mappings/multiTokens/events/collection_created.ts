@@ -7,6 +7,7 @@ import {
     Collection,
     CollectionStats,
     Event as EventModel,
+    Extrinsic,
     MarketPolicy,
     MintPolicy,
     MultiTokensCollectionCreated,
@@ -112,7 +113,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function collectionCreated(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true } }>
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 
@@ -169,6 +170,7 @@ export async function collectionCreated(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensCollectionCreated({
             collectionId: eventData.collectionId,
             owner: account.id,

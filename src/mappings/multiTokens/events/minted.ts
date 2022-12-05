@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Event as EventModel, MultiTokensMinted, Token, TokenAccount } from '../../../model'
+import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
@@ -75,7 +75,7 @@ async function getStorageData(
 export async function minted(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Minted', { event: { args: true } }>
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -100,6 +100,7 @@ export async function minted(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

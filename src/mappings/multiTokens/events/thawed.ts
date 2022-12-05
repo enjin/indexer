@@ -7,6 +7,7 @@ import {
     Collection,
     CollectionAccount,
     Event as EventModel,
+    Extrinsic,
     MultiTokensThawed,
     Token,
     TokenAccount,
@@ -74,7 +75,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 export async function thawed(
     ctx: Context,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Thawed', { event: { args: true } }>
+    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -114,6 +115,7 @@ export async function thawed(
 
     return new EventModel({
         id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new MultiTokensThawed(),
     })
 }
