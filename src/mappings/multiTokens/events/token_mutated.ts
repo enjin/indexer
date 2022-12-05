@@ -70,9 +70,9 @@ export async function tokenMutated(
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
-        // relations: {
-        //     collection: true,
-        // },
+        relations: {
+            collection: true,
+        },
     })
 
     if (data.listingForbidden) {
@@ -87,7 +87,7 @@ export async function tokenMutated(
         }
     }
 
-    // token.nonFungible = isNonFungible(token)
+    token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
 
     return new EventModel({

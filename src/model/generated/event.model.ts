@@ -19,9 +19,11 @@ export class Event {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonEventData(obj)}, nullable: true})
     data!: EventData | undefined | null
 
+    @Index_()
     @Column_("text", {nullable: true})
     collectionId!: string | undefined | null
 
+    @Index_()
     @Column_("text", {nullable: true})
     tokenId!: string | undefined | null
 }

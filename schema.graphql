@@ -52,8 +52,8 @@ type Event @entity {
   data: EventData
 
   # Filters
-  collectionId: String
-  tokenId: String
+  collectionId: String @index
+  tokenId: String @index
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
@@ -225,7 +225,7 @@ type Account @entity {
   id: ID!
 
   # Storage defaults
-  address: String!
+  address: String! @index
   nonce: Int!
   balance: Balance!
 
@@ -313,8 +313,8 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
-  account: Account!
-  collection: Collection!
+  account: Account! @index
+  collection: Collection! @index
 
   # Extras
   createdAt: DateTime!
@@ -362,7 +362,7 @@ type Token @entity {
   id: ID!
 
   # Extrinsic defaults
-  tokenId: BigInt!
+  tokenId: BigInt! @index
   supply: BigInt!
   isFrozen: Boolean!
   cap: TokenCap
@@ -376,7 +376,7 @@ type Token @entity {
   attributeCount: Int!
 
   # Relations
-  collection: Collection!
+  collection: Collection! @index
   tokenAccounts: [TokenAccount] @derivedFrom(field: "token")
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
@@ -417,9 +417,9 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
-  account: Account!
-  collection: Collection!
-  token: Token!
+  account: Account! @index
+  collection: Collection! @index
+  token: Token! @index
 
   # Extras
   createdAt: DateTime!
@@ -453,13 +453,13 @@ type Attribute @entity {
   id: ID!
 
   # Storage defaults
-  key: String!
+  key: String! @index
   value: String!
   deposit: BigInt!
 
   # Relations
-  collection: Collection!
-  token: Token
+  collection: Collection! @index
+  token: Token @index
 
   # Extras
   createdAt: DateTime!
@@ -534,8 +534,8 @@ type Listing @entity {
 
   # Storage defaults
   seller: Account!
-  makeAssetId: Token!
-  takeAssetId: Token!
+  makeAssetId: Token! @index
+  takeAssetId: Token! @index
   amount: BigInt!
   price: BigInt!
   minTakeValue: BigInt!

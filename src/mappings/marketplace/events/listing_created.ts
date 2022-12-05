@@ -21,6 +21,7 @@ import {
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
 import { Event } from '../../../types/generated/support'
 import { Context, getAccount } from '../../../processor'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
