@@ -9,7 +9,7 @@ export class MarketplaceListingFilled {
     private _buyer!: string
     private _amountFilled!: bigint
     private _amountRemaining!: bigint
-    private _protocolFee!: number
+    private _protocolFee!: bigint
     private _royalty!: bigint
 
     constructor(props?: Partial<Omit<MarketplaceListingFilled, 'toJSON'>>, json?: any) {
@@ -19,7 +19,7 @@ export class MarketplaceListingFilled {
             this._buyer = marshal.string.fromJSON(json.buyer)
             this._amountFilled = marshal.bigint.fromJSON(json.amountFilled)
             this._amountRemaining = marshal.bigint.fromJSON(json.amountRemaining)
-            this._protocolFee = marshal.float.fromJSON(json.protocolFee)
+            this._protocolFee = marshal.bigint.fromJSON(json.protocolFee)
             this._royalty = marshal.bigint.fromJSON(json.royalty)
         }
     }
@@ -60,12 +60,12 @@ export class MarketplaceListingFilled {
         this._amountRemaining = value
     }
 
-    get protocolFee(): number {
+    get protocolFee(): bigint {
         assert(this._protocolFee != null, 'uninitialized access')
         return this._protocolFee
     }
 
-    set protocolFee(value: number) {
+    set protocolFee(value: bigint) {
         this._protocolFee = value
     }
 
@@ -85,7 +85,7 @@ export class MarketplaceListingFilled {
             buyer: this.buyer,
             amountFilled: marshal.bigint.toJSON(this.amountFilled),
             amountRemaining: marshal.bigint.toJSON(this.amountRemaining),
-            protocolFee: this.protocolFee,
+            protocolFee: marshal.bigint.toJSON(this.protocolFee),
             royalty: marshal.bigint.toJSON(this.royalty),
         }
     }

@@ -1,76 +1,247 @@
 /* eslint-disable no-console */
-import { SubstrateProcessor } from '@subsquid/substrate-processor'
-import { FullTypeormDatabase } from '@subsquid/typeorm-store'
+import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
+import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
+import { hexToU8a, u8aToHex } from '@polkadot/util'
 import config from './config'
-import { handleChainState } from './chainState'
 import { DEFAULT_PORT } from './common/consts'
-import * as map from './mappings'
+import { Account, Balance, Event, Extrinsic, Fee } from './model'
+import { encodeId, isAdressSS58 } from './common/tools'
+// eslint-disable-next-line import/no-cycle
 import { createEfiToken } from './createEfiToken'
+import { chainState } from './chainState'
+import * as map from './mappings'
 
-const database = new FullTypeormDatabase()
-const processor = new SubstrateProcessor(database)
-
-processor.setDataSource(config.dataSource)
-processor.setPrometheusPort(config.port || DEFAULT_PORT)
-processor.setBlockRange(config.blockRange || { from: 0 })
-
-processor.addPreHook(
-    {
-        range: { from: 1, to: 1 },
-    },
-    createEfiToken
-)
-
-// Saves all extrinsics to user account
-processor.addCallHandler('*', { triggerForFailedCalls: true }, map.extrinsics.processor.save)
-
-// Saves MultiTokens information
-processor.addEventHandler('MultiTokens.CollectionCreated', map.multiTokens.events.collectionCreated)
-processor.addEventHandler('MultiTokens.CollectionDestroyed', map.multiTokens.events.collectionDestroyed)
-processor.addEventHandler('MultiTokens.CollectionMutated', map.multiTokens.events.collectionMutated)
-processor.addEventHandler('MultiTokens.CollectionAccountCreated', map.multiTokens.events.collectionAccountCreated)
-processor.addEventHandler('MultiTokens.CollectionAccountDestroyed', map.multiTokens.events.collectionAccountDestroyed)
-processor.addEventHandler('MultiTokens.TokenCreated', map.multiTokens.events.tokenCreated)
-processor.addEventHandler('MultiTokens.TokenDestroyed', map.multiTokens.events.tokenDestroyed)
-processor.addEventHandler('MultiTokens.TokenMutated', map.multiTokens.events.tokenMutated)
-processor.addEventHandler('MultiTokens.TokenAccountCreated', map.multiTokens.events.tokenAccountCreated)
-processor.addEventHandler('MultiTokens.TokenAccountDestroyed', map.multiTokens.events.tokenAccountDestroyed)
-processor.addEventHandler('MultiTokens.Minted', map.multiTokens.events.minted)
-processor.addEventHandler('MultiTokens.Burned', map.multiTokens.events.burned)
-processor.addEventHandler('MultiTokens.AttributeSet', map.multiTokens.events.attributeSet)
-processor.addEventHandler('MultiTokens.AttributeRemoved', map.multiTokens.events.attributeRemoved)
-processor.addEventHandler('MultiTokens.Frozen', map.multiTokens.events.frozen)
-processor.addEventHandler('MultiTokens.Thawed', map.multiTokens.events.thawed)
-processor.addEventHandler('MultiTokens.Approved', map.multiTokens.events.approved)
-processor.addEventHandler('MultiTokens.Unapproved', map.multiTokens.events.unapproved)
-processor.addEventHandler('MultiTokens.Transferred', map.multiTokens.events.transferred)
-
-// Saves Marketplace information
-processor.addEventHandler('Marketplace.ListingCreated', map.marketplace.events.listingCreated)
-processor.addEventHandler('Marketplace.ListingCancelled', map.marketplace.events.listingCancelled)
-processor.addEventHandler('Marketplace.ListingFilled', map.marketplace.events.listingFilled)
-processor.addEventHandler('Marketplace.BidPlaced', map.marketplace.events.bidPlaced)
-processor.addEventHandler('Marketplace.AuctionFinalized', map.marketplace.events.auctionFinalized)
-
-// Updates balances
-processor.addEventHandler('Balances.DustLost', map.balances.processor.save)
-processor.addEventHandler('Balances.Endowed', map.balances.processor.save)
-processor.addEventHandler('Balances.ReserveRepatriated', map.balances.processor.save)
-processor.addEventHandler('Balances.Reserved', map.balances.processor.save)
-processor.addEventHandler('Balances.Slashed', map.balances.processor.save)
-processor.addEventHandler('Balances.Transfer', map.balances.processor.save)
-processor.addEventHandler('Balances.Unreserved', map.balances.processor.save)
-processor.addEventHandler('Balances.Withdraw', map.balances.processor.save)
-processor.addEventHandler('Balances.BalanceSet', map.balances.processor.save)
-processor.addEventHandler('Balances.Deposit', map.balances.processor.save)
-
-processor.addPostHook(
-    {
-        range: {
-            from: config.chainStateHeight,
+const eventOptions = {
+    data: {
+        event: {
+            args: true,
+            extrinsic: true,
         },
-    },
-    handleChainState
-)
+    } as const,
+} as const
 
-processor.run()
+const eventOptionsWithCall = {
+    data: {
+        event: {
+            args: true,
+            call: true,
+            extrinsic: true,
+        },
+    } as const,
+} as const
+
+const processor = new SubstrateBatchProcessor()
+    .setDataSource(config.dataSource)
+    .setPrometheusPort(config.port || DEFAULT_PORT)
+    .setBlockRange(config.blockRange || { from: 0 })
+    .addCall('*', {
+        data: {
+            call: true,
+            extrinsic: true,
+        } as const,
+    } as const)
+    .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
+    .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
+    .addEvent('MultiTokens.CollectionMutated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
+    .addEvent('MultiTokens.TokenDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenMutated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.Minted', eventOptions)
+    .addEvent('MultiTokens.Burned', eventOptions)
+    .addEvent('MultiTokens.AttributeSet', eventOptions)
+    .addEvent('MultiTokens.AttributeRemoved', eventOptions)
+    .addEvent('MultiTokens.Frozen', eventOptions)
+    .addEvent('MultiTokens.Thawed', eventOptions)
+    .addEvent('MultiTokens.Approved', eventOptions)
+    .addEvent('MultiTokens.Unapproved', eventOptions)
+    .addEvent('MultiTokens.Transferred', eventOptions)
+    .addEvent('Balances.DustLost', eventOptions)
+    .addEvent('Balances.Endowed', eventOptions)
+    .addEvent('Balances.ReserveRepatriated', eventOptions)
+    .addEvent('Balances.Reserved', eventOptions)
+    .addEvent('Balances.Slashed', eventOptions)
+    .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Balances.Withdraw', eventOptions)
+    .addEvent('Balances.BalanceSet', eventOptions)
+    .addEvent('Balances.Deposit', eventOptions)
+    .addEvent('Marketplace.ListingCreated', eventOptions)
+    .addEvent('Marketplace.ListingCancelled', eventOptions)
+    .addEvent('Marketplace.ListingFilled', eventOptions)
+    .addEvent('Marketplace.BidPlaced', eventOptions)
+    .addEvent('Marketplace.AuctionFinalized', eventOptions)
+
+export type Item = BatchProcessorItem<typeof processor>
+export type Context = BatchContext<Store, Item>
+
+export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account> {
+    const pkHex = u8aToHex(publicKey)
+    let account = await ctx.store.findOneBy(Account, {
+        id: pkHex,
+    })
+
+    if (!account) {
+        account = new Account({
+            id: pkHex,
+            address: isAdressSS58(publicKey) ? encodeId(publicKey) : pkHex,
+            balance: new Balance({
+                free: 0n,
+                reserved: 0n,
+                miscFrozen: 0n,
+                feeFrozen: 0n,
+            }),
+            nonce: 0,
+        })
+        await ctx.store.insert(account)
+    }
+
+    return account
+}
+
+async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
+    switch (item.name) {
+        case 'MultiTokens.Approved':
+            return map.multiTokens.events.approved(ctx, block, item)
+        case 'MultiTokens.AttributeRemoved':
+            return map.multiTokens.events.attributeRemoved(ctx, block, item)
+        case 'MultiTokens.AttributeSet':
+            return map.multiTokens.events.attributeSet(ctx, block, item)
+        case 'MultiTokens.Burned':
+            return map.multiTokens.events.burned(ctx, block, item)
+        case 'MultiTokens.CollectionAccountCreated':
+            return map.multiTokens.events.collectionAccountCreated(ctx, block, item)
+        case 'MultiTokens.CollectionAccountDestroyed':
+            return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item)
+        case 'MultiTokens.CollectionCreated':
+            return map.multiTokens.events.collectionCreated(ctx, block, item)
+        case 'MultiTokens.CollectionDestroyed':
+            return map.multiTokens.events.collectionDestroyed(ctx, block, item)
+        case 'MultiTokens.CollectionMutated':
+            return map.multiTokens.events.collectionMutated(ctx, block, item)
+        case 'MultiTokens.Frozen':
+            return map.multiTokens.events.frozen(ctx, block, item)
+        case 'MultiTokens.Minted':
+            return map.multiTokens.events.minted(ctx, block, item)
+        case 'MultiTokens.Thawed':
+            return map.multiTokens.events.thawed(ctx, block, item)
+        case 'MultiTokens.TokenAccountCreated':
+            return map.multiTokens.events.tokenAccountCreated(ctx, block, item)
+        case 'MultiTokens.TokenAccountDestroyed':
+            return map.multiTokens.events.tokenAccountDestroyed(ctx, block, item)
+        case 'MultiTokens.TokenCreated':
+            return map.multiTokens.events.tokenCreated(ctx, block, item)
+        case 'MultiTokens.TokenDestroyed':
+            return map.multiTokens.events.tokenDestroyed(ctx, block, item)
+        case 'MultiTokens.TokenMutated':
+            return map.multiTokens.events.tokenMutated(ctx, block, item)
+        case 'MultiTokens.Transferred':
+            return map.multiTokens.events.transferred(ctx, block, item)
+        case 'MultiTokens.Unapproved':
+            return map.multiTokens.events.unapproved(ctx, block, item)
+        case 'Balances.Transfer':
+            await map.balances.processor.save(ctx, block, item.event)
+            return map.balances.events.transfer(ctx, block, item)
+        case 'Balances.BalanceSet':
+        case 'Balances.Deposit':
+        case 'Balances.Endowed':
+        case 'Balances.Reserved':
+        case 'Balances.Unreserved':
+        case 'Balances.DustLost':
+        case 'Balances.ReserveRepatriated':
+        case 'Balances.Slashed':
+        case 'Balances.Withdraw':
+            return map.balances.processor.save(ctx, block, item.event)
+        case 'Marketplace.ListingCreated':
+            return map.marketplace.events.listingCreated(ctx, block, item)
+        case 'Marketplace.ListingCancelled':
+            return map.marketplace.events.listingCancelled(ctx, block, item)
+        case 'Marketplace.ListingFilled':
+            return map.marketplace.events.listingFilled(ctx, block, item)
+        case 'Marketplace.BidPlaced':
+            return map.marketplace.events.bidPlaced(ctx, block, item)
+        case 'Marketplace.AuctionFinalized':
+            return map.marketplace.events.auctionFinalized(ctx, block, item)
+        default: {
+            console.log('Event not handled', item.name)
+            return undefined
+        }
+    }
+}
+
+// eslint-disable-next-line sonarjs/cognitive-complexity
+processor.run(new TypeormDatabase(), async (ctx) => {
+    const extrinsics: Extrinsic[] = []
+    const events: Event[] = []
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const block of ctx.blocks) {
+        // console.log(`Processing block ${block.header.height}`)
+        if (block.header.height === 1) {
+            // eslint-disable-next-line no-await-in-loop
+            await createEfiToken(ctx, block.header)
+            // eslint-disable-next-line no-await-in-loop
+            await chainState(ctx, block.header)
+        }
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of block.items) {
+            if (item.kind === 'event') {
+                // eslint-disable-next-line no-await-in-loop
+                // console.log(`Handling event ${item.name}`)
+                const event = await handleEvents(ctx, block.header, item)
+                if (event) {
+                    events.push(event)
+                }
+            } else if (item.kind === 'call') {
+                // eslint-disable-next-line no-continue
+                // console.log(`Handling call ${item.name}`)
+                if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
+
+                const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+
+                const publicKey = (
+                    signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                        ? signature.address.value
+                        : signature.address
+                ) as string
+
+                // eslint-disable-next-line no-await-in-loop
+                const signer = await getAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                const callName = call.name.split('.')
+                const extrinsic = new Extrinsic({
+                    id,
+                    hash,
+                    blockNumber: block.header.height,
+                    blockHash: block.header.hash,
+                    success,
+                    pallet: callName[0],
+                    method: callName[1],
+                    args: call.args,
+                    signature,
+                    signer,
+                    nonce: signer.nonce,
+                    tip,
+                    error,
+                    fee: new Fee({
+                        amount: fee,
+                        who: signer.id,
+                    }),
+                    createdAt: new Date(block.header.timestamp),
+                })
+                extrinsics.push(extrinsic)
+            }
+        }
+    }
+
+    await ctx.store.insert(extrinsics)
+    await ctx.store.insert(events)
+
+    const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+    if (lastBlock.height > config.chainStateHeight) {
+        await chainState(ctx, lastBlock)
+    }
+})

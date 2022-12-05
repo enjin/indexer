@@ -1,12 +1,21 @@
 /* eslint-disable no-restricted-syntax */
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
-import { Collection, MarketPolicy, Royalty, RoyaltyCurrency, Token } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
+import {
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MarketPolicy,
+    MultiTokensCollectionMutated,
+    Royalty,
+    RoyaltyCurrency,
+    Token,
+} from '../../../model'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
-import { ChainContext, Option } from '../../../types/generated/support'
+import { Event, Option } from '../../../types/generated/support'
+import { Context, getAccount } from '../../../processor'
 
 interface EventData {
     collectionId: bigint
@@ -15,11 +24,11 @@ interface EventData {
     explicitRoyaltyCurrencies: AssetId[] | undefined
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensCollectionMutatedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, mutation } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, mutation } = data.asEfinityV2
         return {
             collectionId,
             owner: mutation.owner,
@@ -27,8 +36,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             explicitRoyaltyCurrencies: undefined,
         }
     }
-    if (event.isEfinityV3000) {
-        const { collectionId, mutation } = event.asEfinityV3000
+    if (data.isEfinityV3000) {
+        const { collectionId, mutation } = data.asEfinityV3000
         return {
             collectionId,
             owner: mutation.owner,
@@ -36,8 +45,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
     }
-    if (event.isV6) {
-        const { collectionId, mutation } = event.asV6
+    if (data.isV6) {
+        const { collectionId, mutation } = data.asV6
         return {
             collectionId,
             owner: mutation.owner,
@@ -45,8 +54,8 @@ function getEventData(ctx: EventHandlerContext): EventData {
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
     }
-    if (event.isV5) {
-        const { collectionId, mutation } = event.asV5
+    if (data.isV5) {
+        const { collectionId, mutation } = data.asV5
         return {
             collectionId,
             owner: mutation.owner,
@@ -54,11 +63,11 @@ function getEventData(ctx: EventHandlerContext): EventData {
             explicitRoyaltyCurrencies: undefined,
         }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-async function getMarket(royalty: DefaultRoyalty, ctx: EventHandlerContext): Promise<MarketPolicy> {
-    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
+async function getMarket(ctx: Context, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+    const account = await getAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
@@ -68,24 +77,27 @@ async function getMarket(royalty: DefaultRoyalty, ctx: EventHandlerContext): Pro
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export async function collectionMutated(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function collectionMutated(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
 
     if (data.owner) {
-        collection.owner = await getOrCreateAccount(ctx, data.owner)
+        collection.owner = await getAccount(ctx, data.owner)
     }
 
     if (data.royalty.__kind !== 'None') {
         if (data.royalty.value === undefined) {
             collection.marketPolicy = undefined
         } else {
-            collection.marketPolicy = await getMarket(data.royalty.value, ctx)
+            collection.marketPolicy = await getMarket(ctx, data.royalty.value)
         }
     }
 
@@ -119,11 +131,17 @@ export async function collectionMutated(ctx: EventHandlerContext) {
                 })
 
                 // eslint-disable-next-line no-await-in-loop
-                await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+                await ctx.store.insert(royaltyCurrency)
             }
             await ctx.store.remove(royaltyCurrencies)
         }
     }
 
     await ctx.store.save(collection)
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionMutated(),
+    })
 }

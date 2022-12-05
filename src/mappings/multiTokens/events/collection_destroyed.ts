@@ -1,27 +1,35 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
-import { Collection, RoyaltyCurrency } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
+import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
+// eslint-disable-next-line import/no-cycle
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
     caller: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensCollectionDestroyedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensCollectionDestroyedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, caller } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, caller } = data.asEfinityV2
         return { collectionId, caller }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function collectionDestroyed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function collectionDestroyed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -32,4 +40,13 @@ export async function collectionDestroyed(ctx: EventHandlerContext) {
 
     await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(collection)
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionDestroyed({
+            collectionId: data.collectionId,
+            caller: u8aToHex(data.caller),
+        }),
+    })
 }

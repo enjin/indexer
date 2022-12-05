@@ -1,9 +1,18 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
-import { CollectionAccount, TokenAccount } from '../../../model'
-import { encodeId } from '../../../common/tools'
-import { EventHandlerContext } from '../../types/contexts'
+import {
+    CollectionAccount,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTokenAccountDestroyed,
+    Token,
+    TokenAccount,
+} from '../../../model'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -11,20 +20,23 @@ interface EventData {
     accountId: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenAccountDestroyedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenAccountDestroyedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, accountId } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, accountId } = data.asEfinityV2
         return { collectionId, tokenId, accountId }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function tokenAccountDestroyed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function tokenAccountDestroyed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.TokenAccountDestroyed', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
@@ -37,4 +49,16 @@ export async function tokenAccountDestroyed(ctx: EventHandlerContext) {
     })
 
     await ctx.store.remove(tokenAccount)
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensTokenAccountDestroyed({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            accountId: u8aToHex(data.accountId),
+        }),
+    })
 }

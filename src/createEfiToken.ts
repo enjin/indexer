@@ -1,12 +1,12 @@
-import { BlockHandlerContext } from './mappings/types/contexts'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { CapType, Collection, CollectionStats, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
-import { getOrCreateAccount } from './mappings/util/entities'
+import { Context, getAccount } from './processor'
 
-export async function createEfiToken(ctx: BlockHandlerContext) {
+export async function createEfiToken(ctx: Context, block: SubstrateBlock) {
     const efi = await ctx.store.findOneBy(Token, { id: '0-0' })
 
     if (!efi) {
-        const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
+        const account = await getAccount(ctx, new Uint8Array(32).fill(0))
         const collection = new Collection({
             id: '0',
             owner: account,
@@ -32,10 +32,10 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             attributePolicy: null,
             attributeCount: 0,
             totalDeposit: 0n,
-            createdAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Collection, collection as any)
+        await ctx.store.insert(collection)
 
         const token = new Token({
             id: `0-0`,
@@ -53,9 +53,9 @@ export async function createEfiToken(ctx: BlockHandlerContext) {
             attributeCount: 0,
             collection,
             nonFungible: false,
-            createdAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
+        await ctx.store.insert(token)
     }
 }

@@ -1,12 +1,14 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Token, TokenAccount } from '../../../model'
-import { EventService } from '../../../services'
+import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
 import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -26,23 +28,24 @@ interface StorageData {
     isFrozen: boolean
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensMintedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensMintedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, issuer, recipient, amount } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, issuer, recipient, amount } = data.asEfinityV2
         return { collectionId, tokenId, issuer, recipient, amount }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function getStorageData(
-    ctx: CommonHandlerContext,
+    ctx: Context,
+    block: SubstrateBlock,
     account: Uint8Array,
     collectionId: bigint,
     tokenId: bigint
 ): Promise<StorageData | undefined> {
-    const storage = new MultiTokensTokenAccountsStorage(ctx)
+    const storage = new MultiTokensTokenAccountsStorage(ctx, block)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV2) {
@@ -69,10 +72,13 @@ async function getStorageData(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-export async function minted(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function minted(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -86,21 +92,23 @@ export async function minted(ctx: EventHandlerContext) {
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
     })
 
-    const storage = await getStorageData(ctx, data.recipient, data.collectionId, data.tokenId)
-    if (storage) {
-        tokenAccount.balance = storage.balance
-        tokenAccount.reservedBalance = storage.reservedBalance
-        tokenAccount.lockedBalance = storage.lockedBalance
-        tokenAccount.updatedAt = new Date(ctx.block.timestamp)
+    tokenAccount.balance += data.amount
+    tokenAccount.updatedAt = new Date(block.timestamp)
+    await ctx.store.save(tokenAccount)
 
-        await ctx.store.save(tokenAccount)
-    }
-
-    new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenMint(
-        tokenAccount.account,
-        data.amount
-    )
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: token.id,
+        data: new MultiTokensMinted({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            issuer: u8aToHex(data.issuer),
+            recipient: u8aToHex(data.recipient),
+            amount: data.amount,
+        }),
+    })
 }

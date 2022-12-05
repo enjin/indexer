@@ -1,12 +1,22 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
-import { Royalty, Token, TokenBehaviorHasRoyalty, TokenBehaviorIsCurrency, TokenBehaviorType } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
+import {
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTokenMutated,
+    Royalty,
+    Token,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+} from '../../../model'
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
-import { Option } from '../../../types/generated/support'
+import { Event, Option } from '../../../types/generated/support'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
+import { Context, getAccount } from '../../../processor'
 
 interface EventData {
     collectionId: bigint
@@ -15,11 +25,11 @@ interface EventData {
     listingForbidden: boolean | undefined
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenMutatedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
-    if (event.isEfinityV3000) {
-        const { collectionId, tokenId, mutation } = event.asEfinityV3000
+    if (data.isEfinityV3000) {
+        const { collectionId, tokenId, mutation } = data.asEfinityV3000
         return {
             collectionId,
             tokenId,
@@ -27,12 +37,12 @@ function getEventData(ctx: EventHandlerContext): EventData {
             listingForbidden: mutation.listingForbidden,
         }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function getBehavior(
-    behavior: TokenMarketBehavior,
-    ctx: EventHandlerContext
+    ctx: Context,
+    behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
         return new TokenBehaviorIsCurrency({
@@ -40,7 +50,7 @@ async function getBehavior(
         })
     }
 
-    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -50,10 +60,13 @@ async function getBehavior(
     })
 }
 
-export async function tokenMutated(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function tokenMutated(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -70,10 +83,18 @@ export async function tokenMutated(ctx: EventHandlerContext) {
         if (!data.behavior.value) {
             token.behavior = null
         } else {
-            token.behavior = await getBehavior(data.behavior.value, ctx)
+            token.behavior = await getBehavior(ctx, data.behavior.value)
         }
     }
 
     token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: token.id,
+        data: new MultiTokensTokenMutated(),
+    })
 }

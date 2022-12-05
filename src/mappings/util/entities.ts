@@ -23,7 +23,6 @@ export async function getOrCreateAccount(
                 feeFrozen: 0n,
             }),
             nonce: 0,
-            lastUpdateBlock: ctx.block.height,
         })
         await ctx.store.insert(Account, account as any)
     }

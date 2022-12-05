@@ -1,21 +1,25 @@
-import { SubstrateCall } from '@subsquid/substrate-processor'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
     CapType,
     Collection,
+    Event as EventModel,
+    Extrinsic,
+    Metadata,
+    MultiTokensTokenCreated,
+    Royalty,
     Token,
-    TokenBehaviorType,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
+    TokenBehaviorType,
     TokenCapSingleMint,
     TokenCapSupply,
-    Royalty,
-    Metadata,
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
-import { CommonHandlerContext, EventHandlerContext } from '../../types/contexts'
-import { ChainContext } from '../../../types/generated/support'
+import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
     TokenCap,
@@ -23,10 +27,8 @@ import {
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/v6'
-import { getOrCreateAccount } from '../../util/entities'
-import { encodeId } from '../../../common/tools'
-import { CollectionService } from '../../../services'
 import { getMetadata } from '../../util/metadata'
+import { Context, getAccount } from '../../../processor'
 
 interface CallData {
     recipient: Uint8Array
@@ -60,8 +62,8 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
 }
 
 async function getBehavior(
-    behavior: TokenMarketBehavior,
-    ctx: EventHandlerContext | CommonHandlerContext
+    ctx: Context,
+    behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
         return new TokenBehaviorIsCurrency({
@@ -69,7 +71,7 @@ async function getBehavior(
         })
     }
 
-    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -80,22 +82,20 @@ async function getBehavior(
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, event: EventData): Promise<CallData> {
-    if (subcall.name === 'MultiTokens.batch_mint') {
-        const call = new MultiTokensBatchMintCall(ctx, subcall)
+async function getCallData(ctx: Context, call: Call, event: EventData): Promise<CallData> {
+    if (call.name === 'MultiTokens.batch_mint') {
+        const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (call.isEfinityV2) {
-            const { collectionId } = call.asEfinityV2
-            const { recipients } = call.asEfinityV2
-            const recipientCall = recipients.find(
-                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            )
+        if (data.isEfinityV2) {
+            const { collectionId } = data.asEfinityV2
+            const { recipients } = data.asEfinityV2
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
                 return {
                     recipient,
@@ -108,18 +108,16 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
-        } else if (call.isV6) {
-            const { collectionId } = call.asV6
-            const { recipients } = call.asV6
-            const recipientCall = recipients.find(
-                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            )
+        } else if (data.isV6) {
+            const { collectionId } = data.asV6
+            const { recipients } = data.asV6
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
                 return {
                     recipient,
@@ -132,18 +130,16 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
-        } else if (call.isV5) {
-            const { collectionId } = call.asV5
-            const { recipients } = call.asV5
-            const recipientCall = recipients.find(
-                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            )
+        } else if (data.isV5) {
+            const { collectionId } = data.asV5
+            const { recipients } = data.asV5
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
                 return {
                     recipient,
@@ -156,18 +152,16 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
-        } else if (call.isEfinityV3000) {
-            const { collectionId } = call.asEfinityV3000
-            const { recipients } = call.asEfinityV3000
-            const recipientCall = recipients.find(
-                (r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken'
-            )
+        } else if (data.isEfinityV3000) {
+            const { collectionId } = data.asEfinityV3000
+            const { recipients } = data.asEfinityV3000
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParams_CreateToken
                 const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
                 return {
                     recipient,
@@ -181,18 +175,18 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
                 }
             }
         } else {
-            throw new UnknownVersionError(call.constructor.name)
+            throw new UnknownVersionError(data.constructor.name)
         }
     }
 
-    const call = new MultiTokensMintCall(ctx, subcall)
+    const data = new MultiTokensMintCall(ctx, call)
 
-    if (call.isEfinityV2) {
-        const { collectionId } = call.asEfinityV2
-        const recipient = call.asEfinityV2.recipient.value as Uint8Array
-        const params = call.asEfinityV2.params as DefaultMintParams_CreateToken
+    if (data.isEfinityV2) {
+        const { collectionId } = data.asEfinityV2
+        const recipient = data.asEfinityV2.recipient.value as Uint8Array
+        const params = data.asEfinityV2.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
         return {
             recipient,
@@ -205,12 +199,12 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
             listingForbidden: params.listingForbidden ?? false,
         }
     }
-    if (call.isV6) {
-        const { collectionId } = call.asV6
-        const recipient = call.asV6.recipient.value as Uint8Array
-        const params = call.asV6.params as DefaultMintParams_CreateToken
+    if (data.isV6) {
+        const { collectionId } = data.asV6
+        const recipient = data.asV6.recipient.value as Uint8Array
+        const params = data.asV6.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
         return {
             recipient,
@@ -223,12 +217,12 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
             listingForbidden: params.listingForbidden ?? false,
         }
     }
-    if (call.isV5) {
-        const { collectionId } = call.asV5
-        const recipient = call.asV5.recipient.value as Uint8Array
-        const params = call.asV5.params as DefaultMintParams_CreateToken
+    if (data.isV5) {
+        const { collectionId } = data.asV5
+        const recipient = data.asV5.recipient.value as Uint8Array
+        const params = data.asV5.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
         return {
             recipient,
@@ -241,12 +235,12 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
             listingForbidden: params.listingForbidden ?? false,
         }
     }
-    if (call.isEfinityV3000) {
-        const { collectionId } = call.asEfinityV3000
-        const recipient = call.asEfinityV3000.recipient.value as Uint8Array
-        const params = call.asEfinityV3000.params as DefaultMintParams_CreateToken
+    if (data.isEfinityV3000) {
+        const { collectionId } = data.asEfinityV3000
+        const recipient = data.asEfinityV3000.recipient.value as Uint8Array
+        const params = data.asEfinityV3000.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(params.behavior, ctx) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
         return {
             recipient,
@@ -259,48 +253,56 @@ async function getCallData(ctx: CommonHandlerContext, subcall: SubstrateCall, ev
             listingForbidden: params.listingForbidden ?? false,
         }
     }
-    throw new UnknownVersionError(call.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenCreatedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenCreatedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, issuer, initialSupply } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, issuer, initialSupply } = data.asEfinityV2
         return { collectionId, tokenId, issuer, initialSupply }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function tokenCreated(ctx: EventHandlerContext) {
-    const eventData = getEventData(ctx)
+// eslint-disable-next-line sonarjs/cognitive-complexity
+export async function tokenCreated(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const eventData = getEventData(ctx, item.event)
 
-    if (ctx.event.call) {
-        const callData = await getCallData(ctx, ctx.event.call, eventData)
-
-        if (!eventData || !callData) return
+    if (item.event.call) {
+        const callData = await getCallData(ctx, item.event.call, eventData)
+        if (!eventData || !callData) return undefined
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
             relations: {
-                tokens: true,
                 attributes: true,
             },
         })
 
+        // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        if (
-            collectionUri &&
-            (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))
-        ) {
+        if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
             metadata = await getMetadata(new Metadata(), collectionUri)
-            // TODO: Far from ideal but we will do this only until we don't have the metadata processor
             if (metadata) {
-                const otherTokens: Token[] = collection.tokens.map((e) => {
+                const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
+                    where: { id: eventData.collectionId.toString() },
+                    relations: {
+                        tokens: true,
+                    },
+                })
+
+                const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
                     e.metadata = metadata
                     return e
                 })
+
                 if (otherTokens.length > 0) {
                     await ctx.store.save(otherTokens)
                 }
@@ -319,13 +321,26 @@ export async function tokenCreated(ctx: EventHandlerContext) {
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection,
-            metadata,
+            metadata: null,
             listingForbidden: callData.listingForbidden,
-            createdAt: new Date(ctx.block.timestamp),
+            createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
+        await ctx.store.insert(token)
 
-        new CollectionService(ctx.store).sync(collection.id)
+        return new EventModel({
+            id: item.event.id,
+            extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+            collectionId: eventData.collectionId.toString(),
+            tokenId: token.id,
+            data: new MultiTokensTokenCreated({
+                collectionId: eventData.collectionId,
+                tokenId: eventData.tokenId,
+                issuer: u8aToHex(eventData.issuer),
+                initialSupply: eventData.initialSupply,
+            }),
+        })
     }
+
+    return undefined
 }

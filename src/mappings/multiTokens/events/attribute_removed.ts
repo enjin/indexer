@@ -1,7 +1,18 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Metadata, Token } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
+import {
+    Attribute,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    Metadata,
+    MultiTokensAttributeRemoved,
+    Token,
+} from '../../../model'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     collectionId: bigint
@@ -24,20 +35,23 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
     return metadata
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensAttributeRemovedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensAttributeRemovedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, key } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, key } = data.asEfinityV2
         return { collectionId, tokenId, key }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function attributeRemoved(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function attributeRemoved(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
@@ -76,4 +90,16 @@ export async function attributeRemoved(ctx: EventHandlerContext) {
 
         await ctx.store.remove(attribute)
     }
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensAttributeRemoved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: Buffer.from(data.key).toString(),
+        }),
+    })
 }

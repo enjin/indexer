@@ -14,10 +14,7 @@ export class Extrinsic {
     id!: string
 
     @Column_("text", {nullable: false})
-    extrinsicIndex!: string
-
-    @Column_("text", {nullable: false})
-    extrinsicHash!: string
+    hash!: string
 
     @Column_("int4", {nullable: false})
     blockNumber!: number

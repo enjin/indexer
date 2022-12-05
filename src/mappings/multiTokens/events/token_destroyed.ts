@@ -1,8 +1,19 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
-import { Attribute, Listing, ListingStatus, Token } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
-import { CollectionService } from '../../../services'
+import {
+    Attribute,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingStatus,
+    MultiTokensTokenDestroyed,
+    Token,
+} from '../../../model'
+import { Context } from '../../../processor'
+import { Event } from '../../../types/generated/support'
+import { u8aToHex } from '@polkadot/util'
 
 interface EventData {
     collectionId: bigint
@@ -10,20 +21,23 @@ interface EventData {
     caller: Uint8Array
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MultiTokensTokenDestroyedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MultiTokensTokenDestroyedEvent(ctx, event)
 
-    if (event.isEfinityV2) {
-        const { collectionId, tokenId, caller } = event.asEfinityV2
+    if (data.isEfinityV2) {
+        const { collectionId, tokenId, caller } = data.asEfinityV2
         return { collectionId, tokenId, caller }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function tokenDestroyed(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function tokenDestroyed(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -38,31 +52,54 @@ export async function tokenDestroyed(ctx: EventHandlerContext) {
             },
         })
 
-        // const events = await ctx.store.find(TokenEvent, {
-        //     where: {
-        //         token: {
-        //             id: token.id,
-        //         },
-        //     },
-        // })
+        // await ctx.store
+        //     .getRepository(ListingStatus)
+        //     .query(
+        //         'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+        //         [token.id]
+        //     )
+        //
 
-        await ctx.store
-            .getRepository(ListingStatus)
-            .query(
-                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                [token.id]
-            )
-
-        await ctx.store.delete(Listing, {
+        // TODO: Refactor this
+        const makeListings = await ctx.store.findBy(Listing, {
             makeAssetId: {
                 id: token.id,
             },
         })
+        const takeListings = await ctx.store.findBy(Listing, {
+            takeAssetId: {
+                id: token.id,
+            },
+        })
+        const listings = [...makeListings, ...takeListings]
+        const listingStatus = []
+        for (const listing of listings) {
+            const status = await ctx.store.findBy(ListingStatus, {
+                listing: {
+                    id: listing.id,
+                },
+            })
+            if (status) {
+                listingStatus.push(...status)
+            }
+        }
 
+        await ctx.store.remove(listingStatus)
+        await ctx.store.remove(listings)
         await ctx.store.remove(attributes)
-        // await ctx.store.remove(events)
     }
 
     await ctx.store.remove(token)
-    new CollectionService(ctx.store).sync(data.collectionId.toString())
+
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: token.id,
+        data: new MultiTokensTokenDestroyed({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            caller: u8aToHex(data.caller),
+        }),
+    })
 }

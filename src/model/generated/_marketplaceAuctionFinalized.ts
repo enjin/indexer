@@ -7,7 +7,7 @@ export class MarketplaceAuctionFinalized {
     public readonly isTypeOf = 'MarketplaceAuctionFinalized'
     private _listing!: string
     private _winningBid!: string | undefined | null
-    private _protocolFee!: number
+    private _protocolFee!: bigint
     private _royalty!: bigint
 
     constructor(props?: Partial<Omit<MarketplaceAuctionFinalized, 'toJSON'>>, json?: any) {
@@ -15,7 +15,7 @@ export class MarketplaceAuctionFinalized {
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)
             this._winningBid = json.winningBid == null ? undefined : marshal.string.fromJSON(json.winningBid)
-            this._protocolFee = marshal.float.fromJSON(json.protocolFee)
+            this._protocolFee = marshal.bigint.fromJSON(json.protocolFee)
             this._royalty = marshal.bigint.fromJSON(json.royalty)
         }
     }
@@ -37,12 +37,12 @@ export class MarketplaceAuctionFinalized {
         this._winningBid = value
     }
 
-    get protocolFee(): number {
+    get protocolFee(): bigint {
         assert(this._protocolFee != null, 'uninitialized access')
         return this._protocolFee
     }
 
-    set protocolFee(value: number) {
+    set protocolFee(value: bigint) {
         this._protocolFee = value
     }
 
@@ -60,7 +60,7 @@ export class MarketplaceAuctionFinalized {
             isTypeOf: this.isTypeOf,
             listing: this.listing,
             winningBid: this.winningBid,
-            protocolFee: this.protocolFee,
+            protocolFee: marshal.bigint.toJSON(this.protocolFee),
             royalty: marshal.bigint.toJSON(this.royalty),
         }
     }

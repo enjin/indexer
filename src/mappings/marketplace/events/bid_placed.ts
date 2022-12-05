@@ -1,32 +1,35 @@
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Listing, ListingType } from '../../../model'
-import { EventHandlerContext } from '../../types/contexts'
+import { AuctionState, Bid, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceBidPlaced } from '../../../model'
 import { Bid as BidEvent } from '../../../types/generated/v6'
-import { encodeId } from '../../../common/tools'
-import { getOrCreateAccount } from '../../util/entities'
-import { EventService, CollectionService } from '../../../services'
+import { Context, getAccount } from '../../../processor'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { Event } from '../../../types/generated/support'
 
 interface EventData {
     listingId: Uint8Array
     bid: BidEvent
 }
 
-function getEventData(ctx: EventHandlerContext): EventData {
-    const event = new MarketplaceBidPlacedEvent(ctx)
+function getEventData(ctx: Context, event: Event): EventData {
+    const data = new MarketplaceBidPlacedEvent(ctx, event)
 
-    if (event.isEfinityV3000) {
-        const { listingId, bid } = event.asEfinityV3000
+    if (data.isEfinityV3000) {
+        const { listingId, bid } = data.asEfinityV3000
         return { listingId, bid }
     }
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function bidPlaced(ctx: EventHandlerContext) {
-    const data = getEventData(ctx)
-
-    if (!data) return
+export async function bidPlaced(
+    ctx: Context,
+    block: SubstrateBlock,
+    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
@@ -38,14 +41,14 @@ export async function bidPlaced(ctx: EventHandlerContext) {
         },
     })
 
-    const account = await getOrCreateAccount(ctx, data.bid.bidder)
+    const account = await getAccount(ctx, data.bid.bidder)
     const bid = new Bid({
         id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
         bidder: account,
         price: data.bid.price,
         listing,
-        height: ctx.block.height,
-        createdAt: new Date(ctx.block.timestamp),
+        height: block.height,
+        createdAt: new Date(block.timestamp),
     })
 
     listing.highestPrice = data.bid.price
@@ -56,9 +59,18 @@ export async function bidPlaced(ctx: EventHandlerContext) {
 
     await ctx.store.save(bid)
 
-    listing.updatedAt = new Date(ctx.block.timestamp)
+    listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
+    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
-    new EventService(ctx, listing.makeAssetId).MarketplaceBid(account, bid)
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceBidPlaced({
+            listing: listing.id,
+            bid: bid.id,
+        }),
+    })
 }

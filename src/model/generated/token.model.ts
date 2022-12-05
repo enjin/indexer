@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
 import {TokenBehavior, fromJsonTokenBehavior} from "./_tokenBehavior"
@@ -6,7 +6,6 @@ import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
-import {Event} from "./event.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -18,6 +17,7 @@ export class Token {
     @PrimaryColumn_()
     id!: string
 
+    @Index_()
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     tokenId!: bigint
 
@@ -63,9 +63,6 @@ export class Token {
 
     @OneToMany_(() => Listing, e => e.takeAssetId)
     offers!: Listing[]
-
-    @OneToMany_(() => Event, e => e.token)
-    events!: Event[]
 
     @Column_("bool", {nullable: true})
     nonFungible!: boolean | undefined | null

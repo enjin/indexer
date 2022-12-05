@@ -28,8 +28,7 @@ type Fee {
 
 type Extrinsic @entity {
   id: ID!
-  extrinsicIndex: String!
-  extrinsicHash: String!
+  hash: String!
   blockNumber: Int!
   blockHash: String!
   success: Boolean!
@@ -49,12 +48,12 @@ type Extrinsic @entity {
 
 type Event @entity {
   id: ID!
-
-  extrinsic: Extrinsic!
-  collection: Collection
-  token: Token
-
+  extrinsic: Extrinsic
   data: EventData
+
+  # Filters
+  collectionId: String @index
+  tokenId: String @index
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
@@ -68,13 +67,13 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
 type BalancesTransfer {
   from: Account!
   to: Account!
-  amount: BigInt
+  amount: BigInt!
 }
 
 type MarketplaceAuctionFinalized {
   listing: Listing!
   winningBid: Bid
-  protocolFee: Float!
+  protocolFee: BigInt!
   royalty: BigInt!
 }
 
@@ -96,7 +95,7 @@ type MarketplaceListingFilled {
   buyer: Account!
   amountFilled: BigInt!
   amountRemaining: BigInt!
-  protocolFee: Float!
+  protocolFee: BigInt!
   royalty: BigInt!
 }
 
@@ -106,7 +105,7 @@ type MultiTokensApproved {
   owner: Account!
   operator: Account!
   amount: BigInt
-  expiration: BigInt
+  expiration: Int
 }
 
 type MultiTokensAttributeRemoved {
@@ -146,15 +145,15 @@ type MultiTokensCollectionCreated {
 
 type MultiTokensCollectionDestroyed {
   collectionId: BigInt!
-  called: Account!
+  caller: Account!
 }
 
 type MultiTokensCollectionMutated {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensFrozen {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensMinted {
@@ -166,7 +165,7 @@ type MultiTokensMinted {
 }
 
 type MultiTokensThawed {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensTokenAccountCreated {
@@ -196,7 +195,7 @@ type MultiTokensTokenDestroyed {
 }
 
 type MultiTokensTokenMutated {
-  extrinsic: Extrinsic!
+  extrinsic: Extrinsic
 }
 
 type MultiTokensTransferred {
@@ -226,7 +225,7 @@ type Account @entity {
   id: ID!
 
   # Storage defaults
-  address: String!
+  address: String! @index
   nonce: Int!
   balance: Balance!
 
@@ -237,7 +236,7 @@ type Account @entity {
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
 
   # Extras
-  lastUpdateBlock: Int!
+  lastUpdateBlock: Int
 }
 
 type MintPolicy {
@@ -314,8 +313,8 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
-  account: Account!
-  collection: Collection!
+  account: Account! @index
+  collection: Collection! @index
 
   # Extras
   createdAt: DateTime!
@@ -363,7 +362,7 @@ type Token @entity {
   id: ID!
 
   # Extrinsic defaults
-  tokenId: BigInt!
+  tokenId: BigInt! @index
   supply: BigInt!
   isFrozen: Boolean!
   cap: TokenCap
@@ -377,12 +376,11 @@ type Token @entity {
   attributeCount: Int!
 
   # Relations
-  collection: Collection!
+  collection: Collection! @index
   tokenAccounts: [TokenAccount] @derivedFrom(field: "token")
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
-  events: [Event] @derivedFrom(field: "token")
 
   # Extras
   nonFungible: Boolean
@@ -419,9 +417,9 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
-  account: Account!
-  collection: Collection!
-  token: Token!
+  account: Account! @index
+  collection: Collection! @index
+  token: Token! @index
 
   # Extras
   createdAt: DateTime!
@@ -455,13 +453,13 @@ type Attribute @entity {
   id: ID!
 
   # Storage defaults
-  key: String!
+  key: String! @index
   value: String!
   deposit: BigInt!
 
   # Relations
-  collection: Collection!
-  token: Token
+  collection: Collection! @index
+  token: Token @index
 
   # Extras
   createdAt: DateTime!
@@ -536,8 +534,8 @@ type Listing @entity {
 
   # Storage defaults
   seller: Account!
-  makeAssetId: Token!
-  takeAssetId: Token!
+  makeAssetId: Token! @index
+  takeAssetId: Token! @index
   amount: BigInt!
   price: BigInt!
   minTakeValue: BigInt!

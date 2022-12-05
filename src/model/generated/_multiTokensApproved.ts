@@ -9,7 +9,7 @@ export class MultiTokensApproved {
     private _owner!: string
     private _operator!: string
     private _amount!: bigint | undefined | null
-    private _expiration!: bigint | undefined | null
+    private _expiration!: number | undefined | null
 
     constructor(props?: Partial<Omit<MultiTokensApproved, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -19,7 +19,7 @@ export class MultiTokensApproved {
             this._owner = marshal.string.fromJSON(json.owner)
             this._operator = marshal.string.fromJSON(json.operator)
             this._amount = json.amount == null ? undefined : marshal.bigint.fromJSON(json.amount)
-            this._expiration = json.expiration == null ? undefined : marshal.bigint.fromJSON(json.expiration)
+            this._expiration = json.expiration == null ? undefined : marshal.int.fromJSON(json.expiration)
         }
     }
 
@@ -66,11 +66,11 @@ export class MultiTokensApproved {
         this._amount = value
     }
 
-    get expiration(): bigint | undefined | null {
+    get expiration(): number | undefined | null {
         return this._expiration
     }
 
-    set expiration(value: bigint | undefined | null) {
+    set expiration(value: number | undefined | null) {
         this._expiration = value
     }
 
@@ -82,7 +82,7 @@ export class MultiTokensApproved {
             owner: this.owner,
             operator: this.operator,
             amount: this.amount == null ? undefined : marshal.bigint.toJSON(this.amount),
-            expiration: this.expiration == null ? undefined : marshal.bigint.toJSON(this.expiration),
+            expiration: this.expiration,
         }
     }
 }
