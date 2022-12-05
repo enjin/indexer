@@ -8,6 +8,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    MarketplaceListingFilled,
 } from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
@@ -84,6 +85,15 @@ export async function listingFilled(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceListingFilled({
+            listing: listing.id,
+            buyer: listing.seller.id,
+            amountFilled: data.amountFilled,
+            amountRemaining: data.amountRemaining,
+            protocolFee: Number(data.protocolFee),
+            royalty: data.royalty,
+        }),
     })
 }

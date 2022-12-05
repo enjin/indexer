@@ -67,7 +67,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
 type BalancesTransfer {
   from: Account!
   to: Account!
-  amount: BigInt
+  amount: BigInt!
 }
 
 type MarketplaceAuctionFinalized {

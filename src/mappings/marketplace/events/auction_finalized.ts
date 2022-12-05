@@ -1,11 +1,19 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Extrinsic, Listing, ListingStatus, ListingStatusType } from '../../../model'
+import {
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    MarketplaceAuctionFinalized,
+} from '../../../model'
 import { Bid } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
+import { u8aToHex } from '@polkadot/util'
 
 interface EventData {
     listingId: Uint8Array
@@ -69,6 +77,13 @@ export async function auctionFinalized(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceAuctionFinalized({
+            listing: listing.id,
+            winningBid: data.winningBid ? `${listing.id}-${u8aToHex(data.winningBid.bidder)}-${data.winningBid.price}` : null,
+            protocolFee: Number(data.protocolFee),
+            royalty: data.royalty,
+        }),
     })
 }

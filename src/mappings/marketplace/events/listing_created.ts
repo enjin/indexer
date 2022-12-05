@@ -15,6 +15,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    MarketplaceListingCreated,
     Token,
 } from '../../../model'
 import { Listing as EventListing, ListingData_Auction } from '../../../types/generated/v6'
@@ -106,6 +107,10 @@ export async function listingCreated(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: null,
+        collectionId: makeAssetId.collection.id,
+        tokenId: makeAssetId.id,
+        data: new MarketplaceListingCreated({
+            listing: listing.id,
+        }),
     })
 }

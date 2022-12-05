@@ -1,6 +1,13 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
-import { Event as EventModel, Extrinsic, Listing, ListingStatus, ListingStatusType } from '../../../model'
+import {
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    MarketplaceListingCancelled,
+} from '../../../model'
 import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
@@ -56,6 +63,10 @@ export async function listingCancelled(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceListingCancelled({
+            listing: listing.id,
+        }),
     })
 }
