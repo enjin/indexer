@@ -62,7 +62,7 @@ export async function auctionFinalized(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(listingStatus)
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

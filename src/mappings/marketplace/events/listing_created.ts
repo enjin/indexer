@@ -100,7 +100,7 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(listingStatus)
-    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
+    // new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

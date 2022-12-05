@@ -71,7 +71,7 @@ export async function listingFilled(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,
