@@ -3,7 +3,14 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
-import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensTokenAccountDestroyed, TokenAccount } from '../../../model'
+import {
+    CollectionAccount,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTokenAccountDestroyed,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 
@@ -46,6 +53,8 @@ export async function tokenAccountDestroyed(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensTokenAccountDestroyed({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

@@ -6,7 +6,6 @@ import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
-import {Event} from "./event.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -63,9 +62,6 @@ export class Token {
 
     @OneToMany_(() => Listing, e => e.takeAssetId)
     offers!: Listing[]
-
-    @OneToMany_(() => Event, e => e.token)
-    events!: Event[]
 
     @Column_("bool", {nullable: true})
     nonFungible!: boolean | undefined | null

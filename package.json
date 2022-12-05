@@ -28,6 +28,7 @@
     "axios": "^1.1",
     "cacheable-request": "^8.3",
     "dotenv": "^16.0",
+    "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "pg": "^8.8",
     "type-graphql": "^1.2.0-rc.1"
@@ -36,6 +37,7 @@
     "@subsquid/substrate-metadata-explorer": "^1.0",
     "@subsquid/substrate-typegen": "^1.5",
     "@subsquid/typeorm-codegen": "^0.3",
+    "@types/lodash": "^4.14.191",
     "@types/node": "^16.18",
     "@typescript-eslint/eslint-plugin": "^5.42.1",
     "@typescript-eslint/parser": "^5.42.1",

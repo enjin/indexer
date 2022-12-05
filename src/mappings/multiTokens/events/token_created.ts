@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
@@ -28,7 +29,6 @@ import {
 } from '../../../types/generated/v6'
 import { getMetadata } from '../../util/metadata'
 import { Context, getAccount } from '../../../processor'
-import { u8aToHex } from '@polkadot/util'
 
 interface CallData {
     recipient: Uint8Array
@@ -319,16 +319,20 @@ export async function tokenCreated(
         })
 
         await ctx.store.insert(token)
+
+        return new EventModel({
+            id: item.event.id,
+            extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+            collectionId: eventData.collectionId.toString(),
+            tokenId: token.id,
+            data: new MultiTokensTokenCreated({
+                collectionId: eventData.collectionId,
+                tokenId: eventData.tokenId,
+                issuer: u8aToHex(eventData.issuer),
+                initialSupply: eventData.initialSupply,
+            }),
+        })
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensTokenCreated({
-            collectionId: eventData.collectionId,
-            tokenId: eventData.tokenId,
-            issuer: u8aToHex(eventData.issuer),
-            initialSupply: eventData.initialSupply,
-        }),
-    })
+    return undefined
 }

@@ -104,6 +104,8 @@ export async function attributeSet(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensAttributeSet({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

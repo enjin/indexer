@@ -10,6 +10,7 @@ import { encodeId, isAdressSS58 } from './common/tools'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
+import _ from 'lodash'
 
 const eventOptions = {
     data: {

@@ -1,5 +1,5 @@
-module.exports = class Data1670188850120 {
-  name = 'Data1670188850120'
+module.exports = class Data1670244632299 {
+  name = 'Data1670244632299'
 
   async up(db) {
     await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -20,10 +20,6 @@ module.exports = class Data1670188850120 {
     await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
     await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
     await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
-    await db.query(`CREATE TABLE "event" ("id" character varying NOT NULL, "data" jsonb, "extrinsic_id" character varying, "collection_id" character varying, "token_id" character varying, CONSTRAINT "PK_30c2f3bbaf6d34a55f8ae6e4614" PRIMARY KEY ("id"))`)
-    await db.query(`CREATE INDEX "IDX_129efedcb305c80256db2d57a5" ON "event" ("extrinsic_id") `)
-    await db.query(`CREATE INDEX "IDX_d70aaf185af2624511a80ff879" ON "event" ("collection_id") `)
-    await db.query(`CREATE INDEX "IDX_d201bf824cd72132b9e72785c9" ON "event" ("token_id") `)
     await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric NOT NULL, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "non_fungible" boolean, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
     await db.query(`CREATE TABLE "royalty_currency" ("id" character varying NOT NULL, "collection_id" character varying, "token_id" character varying, CONSTRAINT "PK_8b20fc27efc10e78ee3ac86fb17" PRIMARY KEY ("id"))`)
@@ -35,6 +31,8 @@ module.exports = class Data1670188850120 {
     await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "mint_policy" jsonb NOT NULL, "market_policy" jsonb, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "stats" jsonb NOT NULL, "owner_id" character varying, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_01d689ecc7eba32eaf962ad9d9" ON "collection" ("owner_id") `)
     await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "address" text NOT NULL, "nonce" integer NOT NULL, "balance" jsonb NOT NULL, "last_update_block" integer, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE TABLE "event" ("id" character varying NOT NULL, "data" jsonb, "collection_id" text, "token_id" text, "extrinsic_id" character varying, CONSTRAINT "PK_30c2f3bbaf6d34a55f8ae6e4614" PRIMARY KEY ("id"))`)
+    await db.query(`CREATE INDEX "IDX_129efedcb305c80256db2d57a5" ON "event" ("extrinsic_id") `)
     await db.query(`CREATE TABLE "extrinsic" ("id" character varying NOT NULL, "hash" text NOT NULL, "block_number" integer NOT NULL, "block_hash" text NOT NULL, "success" boolean NOT NULL, "pallet" text NOT NULL, "method" text NOT NULL, "args" jsonb, "signature" jsonb NOT NULL, "nonce" integer NOT NULL, "tip" numeric, "fee" jsonb, "error" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "signer_id" character varying, CONSTRAINT "PK_80d7db0e4b1e83e30336bc76755" PRIMARY KEY ("id"))`)
     await db.query(`CREATE INDEX "IDX_886be421c92f221ac8234c6624" ON "extrinsic" ("signer_id") `)
     await db.query(`ALTER TABLE "token_account" ADD CONSTRAINT "FK_7921fb23203316a5371f2be4777" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -48,15 +46,13 @@ module.exports = class Data1670188850120 {
     await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00e1e709436862a20ae074f111b" FOREIGN KEY ("seller_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b" FOREIGN KEY ("make_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00656ee0f326da82878ddc91be8" FOREIGN KEY ("take_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_129efedcb305c80256db2d57a59" FOREIGN KEY ("extrinsic_id") REFERENCES "extrinsic"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_d70aaf185af2624511a80ff8796" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-    await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_d201bf824cd72132b9e72785c9d" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "token" ADD CONSTRAINT "FK_65f74edd41f667e4645e59b61df" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_861e21e7c2777c9ef09bea27245" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_2b2b641fd385385ba996c66098f" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_a0ca7fffb7ae953536712abef23" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "collection" ADD CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96" FOREIGN KEY ("owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+    await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_129efedcb305c80256db2d57a59" FOREIGN KEY ("extrinsic_id") REFERENCES "extrinsic"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
     await db.query(`ALTER TABLE "extrinsic" ADD CONSTRAINT "FK_886be421c92f221ac8234c6624c" FOREIGN KEY ("signer_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
   }
 
@@ -79,10 +75,6 @@ module.exports = class Data1670188850120 {
     await db.query(`DROP INDEX "public"."IDX_00e1e709436862a20ae074f111"`)
     await db.query(`DROP INDEX "public"."IDX_9d1cea2a04a169d58f13cea7e8"`)
     await db.query(`DROP INDEX "public"."IDX_00656ee0f326da82878ddc91be"`)
-    await db.query(`DROP TABLE "event"`)
-    await db.query(`DROP INDEX "public"."IDX_129efedcb305c80256db2d57a5"`)
-    await db.query(`DROP INDEX "public"."IDX_d70aaf185af2624511a80ff879"`)
-    await db.query(`DROP INDEX "public"."IDX_d201bf824cd72132b9e72785c9"`)
     await db.query(`DROP TABLE "token"`)
     await db.query(`DROP INDEX "public"."IDX_65f74edd41f667e4645e59b61d"`)
     await db.query(`DROP TABLE "royalty_currency"`)
@@ -94,6 +86,8 @@ module.exports = class Data1670188850120 {
     await db.query(`DROP TABLE "collection"`)
     await db.query(`DROP INDEX "public"."IDX_01d689ecc7eba32eaf962ad9d9"`)
     await db.query(`DROP TABLE "account"`)
+    await db.query(`DROP TABLE "event"`)
+    await db.query(`DROP INDEX "public"."IDX_129efedcb305c80256db2d57a5"`)
     await db.query(`DROP TABLE "extrinsic"`)
     await db.query(`DROP INDEX "public"."IDX_886be421c92f221ac8234c6624"`)
     await db.query(`ALTER TABLE "token_account" DROP CONSTRAINT "FK_7921fb23203316a5371f2be4777"`)
@@ -107,15 +101,13 @@ module.exports = class Data1670188850120 {
     await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00e1e709436862a20ae074f111b"`)
     await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b"`)
     await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00656ee0f326da82878ddc91be8"`)
-    await db.query(`ALTER TABLE "event" DROP CONSTRAINT "FK_129efedcb305c80256db2d57a59"`)
-    await db.query(`ALTER TABLE "event" DROP CONSTRAINT "FK_d70aaf185af2624511a80ff8796"`)
-    await db.query(`ALTER TABLE "event" DROP CONSTRAINT "FK_d201bf824cd72132b9e72785c9d"`)
     await db.query(`ALTER TABLE "token" DROP CONSTRAINT "FK_65f74edd41f667e4645e59b61df"`)
     await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be"`)
     await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_861e21e7c2777c9ef09bea27245"`)
     await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_2b2b641fd385385ba996c66098f"`)
     await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_a0ca7fffb7ae953536712abef23"`)
     await db.query(`ALTER TABLE "collection" DROP CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96"`)
+    await db.query(`ALTER TABLE "event" DROP CONSTRAINT "FK_129efedcb305c80256db2d57a59"`)
     await db.query(`ALTER TABLE "extrinsic" DROP CONSTRAINT "FK_886be421c92f221ac8234c6624c"`)
   }
 }

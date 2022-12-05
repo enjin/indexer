@@ -94,6 +94,8 @@ export async function tokenDestroyed(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: token.id,
         data: new MultiTokensTokenDestroyed({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

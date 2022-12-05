@@ -48,12 +48,12 @@ type Extrinsic @entity {
 
 type Event @entity {
   id: ID!
-
   extrinsic: Extrinsic
-  collection: Collection
-  token: Token
-
   data: EventData
+
+  # Filters
+  collectionId: String
+  tokenId: String
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
@@ -381,7 +381,6 @@ type Token @entity {
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
-  events: [Event] @derivedFrom(field: "token")
 
   # Extras
   nonFungible: Boolean
