@@ -57,16 +57,16 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Approved', eventOptions)
     .addEvent('MultiTokens.Unapproved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
-    // .addEvent('Balances.DustLost', eventOptions)
-    // .addEvent('Balances.Endowed', eventOptions)
-    // .addEvent('Balances.ReserveRepatriated', eventOptions)
-    // .addEvent('Balances.Reserved', eventOptions)
-    // .addEvent('Balances.Slashed', eventOptions)
-    // .addEvent('Balances.Transfer', eventOptions)
-    // .addEvent('Balances.Unreserved', eventOptions)
-    // .addEvent('Balances.Withdraw', eventOptions)
-    // .addEvent('Balances.BalanceSet', eventOptions)
-    // .addEvent('Balances.Deposit', eventOptions)
+    .addEvent('Balances.DustLost', eventOptions)
+    .addEvent('Balances.Endowed', eventOptions)
+    .addEvent('Balances.ReserveRepatriated', eventOptions)
+    .addEvent('Balances.Reserved', eventOptions)
+    .addEvent('Balances.Slashed', eventOptions)
+    .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Balances.Withdraw', eventOptions)
+    .addEvent('Balances.BalanceSet', eventOptions)
+    .addEvent('Balances.Deposit', eventOptions)
     .addEvent('Marketplace.ListingCreated', eventOptions)
     .addEvent('Marketplace.ListingCancelled', eventOptions)
     .addEvent('Marketplace.ListingFilled', eventOptions)
@@ -140,17 +140,17 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
             return map.multiTokens.events.transferred(ctx, block, item)
         case 'MultiTokens.Unapproved':
             return map.multiTokens.events.unapproved(ctx, block, item)
-        // case 'Balances.BalanceSet':
-        // case 'Balances.Deposit':
-        // case 'Balances.Endowed':
-        // case 'Balances.Reserved':
-        // case 'Balances.Transfer':
-        // case 'Balances.Unreserved':
-        // case 'Balances.DustLost':
-        // case 'Balances.ReserveRepatriated':
-        // case 'Balances.Slashed':
-        // case 'Balances.Withdraw':
-        //     return map.balances.processor.save(ctx, block, item.event)
+        case 'Balances.BalanceSet':
+        case 'Balances.Deposit':
+        case 'Balances.Endowed':
+        case 'Balances.Reserved':
+        case 'Balances.Transfer':
+        case 'Balances.Unreserved':
+        case 'Balances.DustLost':
+        case 'Balances.ReserveRepatriated':
+        case 'Balances.Slashed':
+        case 'Balances.Withdraw':
+            return map.balances.processor.save(ctx, block, item.event)
         case 'Marketplace.ListingCreated':
             return map.marketplace.events.listingCreated(ctx, block, item)
         case 'Marketplace.ListingCancelled':
@@ -175,7 +175,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
-        console.log(`Processing block ${block.header.height}`)
+        // console.log(`Processing block ${block.header.height}`)
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
             await createEfiToken(ctx, block.header)
@@ -187,14 +187,14 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
-                console.log(`Handling event ${item.name}`)
+                // console.log(`Handling event ${item.name}`)
                 const event = await handleEvents(ctx, block.header, item)
                 if (event) {
                     events.push(event)
                 }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
-                console.log(`Handling call ${item.name}`)
+                // console.log(`Handling call ${item.name}`)
                 if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
 
                 const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
