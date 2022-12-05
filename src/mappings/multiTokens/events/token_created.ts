@@ -278,10 +278,10 @@ export async function tokenCreated(
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
-            relations: {
-                tokens: true,
-                attributes: true,
-            },
+            // relations: {
+            //     tokens: true,
+            //     attributes: true,
+            // },
         })
 
         // let metadata: Metadata | null | undefined = null
