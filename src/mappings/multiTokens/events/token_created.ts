@@ -280,27 +280,27 @@ export async function tokenCreated(
 
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: eventData.collectionId.toString() },
-            relations: {
-                tokens: true,
-                attributes: true,
-            },
+            // relations: {
+            //     tokens: true,
+            //     attributes: true,
+            // },
         })
 
-        let metadata: Metadata | null | undefined = null
-        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
-            metadata = await getMetadata(new Metadata(), collectionUri)
-            // TODO: Far from ideal but we will do this only until we don't have the metadata processor
-            if (metadata) {
-                const otherTokens: Token[] = collection.tokens.map((e) => {
-                    e.metadata = metadata
-                    return e
-                })
-                if (otherTokens.length > 0) {
-                    await ctx.store.save(otherTokens)
-                }
-            }
-        }
+        // let metadata: Metadata | null | undefined = null
+        // const collectionUri = collection.attributes.find((e) => e.key === 'uri')
+        // if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
+        //     metadata = await getMetadata(new Metadata(), collectionUri)
+        //     // TODO: Far from ideal but we will do this only until we don't have the metadata processor
+        //     if (metadata) {
+        //         const otherTokens: Token[] = collection.tokens.map((e) => {
+        //             e.metadata = metadata
+        //             return e
+        //         })
+        //         if (otherTokens.length > 0) {
+        //             await ctx.store.save(otherTokens)
+        //         }
+        //     }
+        // }
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,

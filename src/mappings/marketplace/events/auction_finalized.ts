@@ -62,17 +62,7 @@ export async function auctionFinalized(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(listingStatus)
-
-    // if (data.winningBid) {
-    //     new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
-    //         listing.seller,
-    //         await getOrCreateAccount(ctx, data.winningBid.bidder),
-    //         listing,
-    //         1n
-    //     )
-    //
-    //     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
-    // }
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

@@ -71,16 +71,7 @@ export async function listingFilled(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
-
-    // new EventService(ctx, listing.makeAssetId).MarketplacePurchase(
-    //     listing.seller,
-    //     await getOrCreateAccount(ctx, data.buyer),
-    //     listing,
-    //     data.amountFilled,
-    //     data.amountRemaining
-    // )
-    //
-    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,
