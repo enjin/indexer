@@ -32,11 +32,12 @@ export async function collectionAccountDestroyed(
     if (!data) return undefined
 
     const address = u8aToHex(data.accountId)
-    const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${address}` },
     })
-
-    await ctx.store.remove(collectionAccount)
+    if (collectionAccount) {
+        await ctx.store.remove(collectionAccount)
+    }
 
     return new EventModel({
         id: item.event.id,
