@@ -55,7 +55,7 @@ export async function tokenAccountCreated(
 
     const tokenAccount = new TokenAccount({
         id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
-        balance: data.balance,
+        balance: 0n, // Fix balance
         reservedBalance: 0n,
         lockedBalance: 0n,
         namedReserves: null,
