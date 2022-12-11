@@ -143,7 +143,7 @@ async function getSystemAccountBalances(
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
-        return storage.getManyAsEfinityV1(accounts)
+        return storage.asEfinityV1.getMany(accounts)
     }
     throw new UnknownVersionError(storage.constructor.name)
 }
