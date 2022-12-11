@@ -28,22 +28,26 @@ type Fee {
 
 type Extrinsic @entity {
   id: ID!
-  hash: String!
-  blockNumber: Int!
+  hash: String! @index
+  blockNumber: Int! @index
   blockHash: String!
   success: Boolean!
   pallet: String!
   method: String!
   args: JSON
   signature: JSON!
-  signer: Account!
+  signer: Account! @index
   nonce: Int!
   tip: BigInt
   fee: Fee
   error: String
   createdAt: DateTime!
 
+  # Relationship
   events: [Event] @derivedFrom(field: "extrinsic")
+
+  # Extras
+  participants: String! @index
 }
 
 type Event @entity {
