@@ -1,19 +1,21 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
 import {
+    Account,
     Event as EventModel,
     Extrinsic,
     Listing,
+    ListingSale,
     ListingStatus,
     ListingStatusType,
     MarketplaceAuctionFinalized,
 } from '../../../model'
 import { Bid } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
-import { u8aToHex } from '@polkadot/util'
 
 interface EventData {
     listingId: Uint8Array
@@ -51,6 +53,17 @@ export async function auctionFinalized(
         },
     })
 
+    if (data.winningBid) {
+        const sale = new ListingSale({
+            id: `${listingId}-${item.event.id}`,
+            amount: listing.amount,
+            price: data.winningBid.price,
+            buyer: new Account({ id: u8aToHex(data.winningBid.bidder) }),
+            listing,
+            createdAt: new Date(block.timestamp),
+        })
+        await ctx.store.save(sale)
+    }
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
 

@@ -1,5 +1,5 @@
-module.exports = class Data1670764285640 {
-    name = 'Data1670764285640'
+module.exports = class Data1670780331625 {
+    name = 'Data1670780331625'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -17,6 +17,9 @@ module.exports = class Data1670764285640 {
         await db.query(`CREATE INDEX "IDX_facdd38f7948fbdd281063419b" ON "bid" ("listing_id") `)
         await db.query(`CREATE TABLE "listing_status" ("id" character varying NOT NULL, "type" character varying(9) NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "listing_id" character varying, CONSTRAINT "PK_0524b292b49efd99751063f6ebc" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_904ee0675c88e7bdff412e6ffd" ON "listing_status" ("listing_id") `)
+        await db.query(`CREATE TABLE "listing_sale" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "buyer_id" character varying, "listing_id" character varying, CONSTRAINT "PK_efbef68ee06ac54c263942f6fd0" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE INDEX "IDX_318a2243e5f937e40c17cf2f19" ON "listing_sale" ("buyer_id") `)
+        await db.query(`CREATE INDEX "IDX_fa60d30e1d3921417acd2ce741" ON "listing_sale" ("listing_id") `)
         await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "highest_price" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
         await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
@@ -50,6 +53,8 @@ module.exports = class Data1670764285640 {
         await db.query(`ALTER TABLE "bid" ADD CONSTRAINT "FK_e7618559409a903a897164156b7" FOREIGN KEY ("bidder_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "bid" ADD CONSTRAINT "FK_facdd38f7948fbdd281063419b5" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing_status" ADD CONSTRAINT "FK_904ee0675c88e7bdff412e6ffd0" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "listing_sale" ADD CONSTRAINT "FK_318a2243e5f937e40c17cf2f19c" FOREIGN KEY ("buyer_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "listing_sale" ADD CONSTRAINT "FK_fa60d30e1d3921417acd2ce741b" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00e1e709436862a20ae074f111b" FOREIGN KEY ("seller_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b" FOREIGN KEY ("make_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00656ee0f326da82878ddc91be8" FOREIGN KEY ("take_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -79,6 +84,9 @@ module.exports = class Data1670764285640 {
         await db.query(`DROP INDEX "public"."IDX_facdd38f7948fbdd281063419b"`)
         await db.query(`DROP TABLE "listing_status"`)
         await db.query(`DROP INDEX "public"."IDX_904ee0675c88e7bdff412e6ffd"`)
+        await db.query(`DROP TABLE "listing_sale"`)
+        await db.query(`DROP INDEX "public"."IDX_318a2243e5f937e40c17cf2f19"`)
+        await db.query(`DROP INDEX "public"."IDX_fa60d30e1d3921417acd2ce741"`)
         await db.query(`DROP TABLE "listing"`)
         await db.query(`DROP INDEX "public"."IDX_00e1e709436862a20ae074f111"`)
         await db.query(`DROP INDEX "public"."IDX_9d1cea2a04a169d58f13cea7e8"`)
@@ -112,6 +120,8 @@ module.exports = class Data1670764285640 {
         await db.query(`ALTER TABLE "bid" DROP CONSTRAINT "FK_e7618559409a903a897164156b7"`)
         await db.query(`ALTER TABLE "bid" DROP CONSTRAINT "FK_facdd38f7948fbdd281063419b5"`)
         await db.query(`ALTER TABLE "listing_status" DROP CONSTRAINT "FK_904ee0675c88e7bdff412e6ffd0"`)
+        await db.query(`ALTER TABLE "listing_sale" DROP CONSTRAINT "FK_318a2243e5f937e40c17cf2f19c"`)
+        await db.query(`ALTER TABLE "listing_sale" DROP CONSTRAINT "FK_fa60d30e1d3921417acd2ce741b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00e1e709436862a20ae074f111b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00656ee0f326da82878ddc91be8"`)

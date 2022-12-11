@@ -7,6 +7,7 @@ import {ListingData, fromJsonListingData} from "./_listingData"
 import {ListingState, fromJsonListingState} from "./_listingState"
 import {Bid} from "./bid.model"
 import {ListingStatus} from "./listingStatus.model"
+import {ListingSale} from "./listingSale.model"
 
 @Entity_()
 export class Listing {
@@ -61,6 +62,9 @@ export class Listing {
 
     @OneToMany_(() => ListingStatus, e => e.listing)
     status!: ListingStatus[]
+
+    @OneToMany_(() => ListingSale, e => e.listing)
+    sales!: ListingSale[]
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     highestPrice!: bigint
