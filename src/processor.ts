@@ -172,14 +172,14 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
     }
 }
 
-function getParticipants(args: any, signer: string): string {
+function getParticipants(args: any, signer: string): string[] {
     const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
     if (accountsFromArgs) {
         const accounts = new Set<string>(accountsFromArgs)
-        return Array.from(accounts.add(signer)).join('|')
+        return Array.from(accounts.add(signer))
     }
 
-    return signer
+    return [signer]
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

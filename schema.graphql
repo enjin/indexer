@@ -47,7 +47,7 @@ type Extrinsic @entity {
   events: [Event] @derivedFrom(field: "extrinsic")
 
   # Extras
-  participants: String! @index
+  participants: [String!]!
 }
 
 type Event @entity {
