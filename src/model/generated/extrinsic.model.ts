@@ -61,7 +61,6 @@ export class Extrinsic {
     @OneToMany_(() => Event, e => e.extrinsic)
     events!: Event[]
 
-    @Index_()
-    @Column_("text", {nullable: false})
-    participants!: string
+    @Column_("text", {array: true, nullable: false})
+    participants!: (string)[]
 }
