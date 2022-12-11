@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
+import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexToU8a, u8aToHex } from '@polkadot/util'
 import config from './config'
 import { DEFAULT_PORT } from './common/consts'
@@ -10,6 +10,7 @@ import { encodeId, isAdressSS58 } from './common/tools'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
+import { EntityManager } from 'typeorm'
 
 const eventOptions = {
     data: {
@@ -76,7 +77,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Marketplace.AuctionFinalized', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
-export type Context = BatchContext<Store, Item>
+export type Context = BatchContext<EntityManager, Item>
 
 export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account> {
     const pkHex = u8aToHex(publicKey)
@@ -96,7 +97,7 @@ export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<A
             }),
             nonce: 0,
         })
-        await ctx.store.insert(account)
+        await ctx.store.insert(Account, account as any)
     }
 
     return account
@@ -183,7 +184,7 @@ function getParticipants(args: any, signer: string): string[] {
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-processor.run(new TypeormDatabase(), async (ctx) => {
+processor.run(new FullTypeormDatabase(), async (ctx) => {
     const extrinsics: Extrinsic[] = []
     const events: Event[] = []
 
@@ -248,8 +249,8 @@ processor.run(new TypeormDatabase(), async (ctx) => {
         }
     }
 
-    await ctx.store.insert(extrinsics)
-    await ctx.store.insert(events)
+    await ctx.store.insert(Extrinsic, extrinsics as any)
+    await ctx.store.insert(Event, events as any)
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {

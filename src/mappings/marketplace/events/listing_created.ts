@@ -91,7 +91,7 @@ export async function listingCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(listing)
+    await ctx.store.insert(Listing, listing as any)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
@@ -100,8 +100,8 @@ export async function listingCreated(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
-    // new CollectionService(ctx.store).sync(makeAssetId.collection.id)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
+    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

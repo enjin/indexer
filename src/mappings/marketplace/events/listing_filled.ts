@@ -17,6 +17,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
 import { u8aToHex } from '@polkadot/util'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -69,7 +70,7 @@ export async function listingFilled(
             height: block.height,
             createdAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(listingStatus)
+        await ctx.store.insert(ListingStatus, listingStatus as any)
     }
 
     const sale = new ListingSale({
@@ -84,7 +85,7 @@ export async function listingFilled(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
-    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

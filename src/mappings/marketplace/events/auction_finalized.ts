@@ -16,6 +16,7 @@ import {
 import { Bid } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -74,8 +75,8 @@ export async function auctionFinalized(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
-    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

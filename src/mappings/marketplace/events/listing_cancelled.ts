@@ -12,6 +12,7 @@ import { Context } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -55,8 +56,8 @@ export async function listingCancelled(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(listingStatus)
-    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    await ctx.store.insert(ListingStatus, listingStatus as any)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

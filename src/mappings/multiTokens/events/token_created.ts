@@ -29,6 +29,7 @@ import {
 } from '../../../types/generated/v6'
 import { getMetadata } from '../../util/metadata'
 import { Context, getAccount } from '../../../processor'
+import { CollectionService } from '../../../services'
 
 interface CallData {
     recipient: Uint8Array
@@ -326,7 +327,8 @@ export async function tokenCreated(
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(token)
+        await ctx.store.insert(Token, token as any)
+        new CollectionService(ctx.store).sync(collection.id)
 
         return new EventModel({
             id: item.event.id,
