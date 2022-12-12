@@ -3,7 +3,5 @@
 
 # IDE files
 /.idea
-
 /**/!*
 *.dev*
-.env
