@@ -7,6 +7,7 @@ import { Context, getAccount } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     listingId: Uint8Array
@@ -61,7 +62,7 @@ export async function bidPlaced(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
-    // new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return new EventModel({
         id: item.event.id,

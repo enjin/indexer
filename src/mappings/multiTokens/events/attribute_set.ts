@@ -82,7 +82,7 @@ export async function attributeSet(
             updatedAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(attribute)
+        await ctx.store.insert(Attribute, attribute as any)
 
         if (token) {
             if (!token.metadata) {

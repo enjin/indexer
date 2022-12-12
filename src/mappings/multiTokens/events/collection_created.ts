@@ -151,7 +151,7 @@ export async function collectionCreated(
         createdAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(collection)
+    await ctx.store.insert(Collection, collection as any)
 
     // eslint-disable-next-line no-restricted-syntax
     for (const currency of callData.explicitRoyaltyCurrencies) {
@@ -165,7 +165,7 @@ export async function collectionCreated(
             token,
         })
         // eslint-disable-next-line no-await-in-loop
-        await ctx.store.insert(royaltyCurrency)
+        await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
     }
 
     return new EventModel({

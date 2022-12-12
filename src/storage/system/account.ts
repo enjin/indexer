@@ -4,15 +4,12 @@ import { SystemAccountStorage } from '../../types/generated/storage'
 import { BlockContext } from '../../types/generated/support'
 import { AccountInfo } from '../../types/generated/efinityV1'
 
-async function getStorageData(
-    ctx: BlockContext,
-    accounts: Uint8Array[]
-): Promise<(AccountInfo | undefined)[] | undefined> {
+async function getStorageData(ctx: BlockContext, accounts: Uint8Array[]): Promise<(AccountInfo | undefined)[] | undefined> {
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
-        return storage.getManyAsEfinityV1(accounts)
+        return storage.asEfinityV1.getMany(accounts)
     }
     throw new UnknownVersionError(storage.constructor.name)
 }

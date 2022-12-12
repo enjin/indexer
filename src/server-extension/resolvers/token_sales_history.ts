@@ -2,7 +2,7 @@
 import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Listing } from '../../model'
+import { Event, Listing, ListingSale, ListingStatus } from '../../model'
 
 @ObjectType()
 export class TokenSale {
@@ -32,16 +32,16 @@ export class TokenSalesHistoryResolver {
         const manager = await this.tx()
 
         const builder = manager
-            .getRepository(Listing)
-            .createQueryBuilder('token_event')
-            .leftJoinAndMapOne(`token_event.listing`, Listing, 'listing', `listing.id = token_event.event->>'listing'`)
-            .select('DATE(token_event.created_at) AS day')
+            .getRepository(ListingSale)
+            .createQueryBuilder('listing_sale')
+            .leftJoinAndMapOne('listing_sale.listing', Listing, 'listing', 'listing_sale.listing_id = listing.id')
+            .where('listing.make_asset_id_id = :id', { id })
+            .select('DATE(listing_sale.created_at) AS day')
             .addSelect('COUNT(*) AS trades')
-            .addSelect('SUM(listing.highestPrice) as price')
-            .where(`token_event.event->>'isTypeOf' = :isTypeOf`, { isTypeOf: 'MarketplacePurchaseEvent' })
-            .andWhere('token_event.token = :id', { id })
+            .addSelect('SUM(listing_sale.price) AS price')
+
         if (fromDate) {
-            builder.andWhere('token_event.created_at >= :fromDate', { fromDate })
+            builder.andWhere('listing_sale.created_at >= :fromDate', { fromDate })
         }
 
         return builder.groupBy('day').orderBy('day').getRawMany()

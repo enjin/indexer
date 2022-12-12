@@ -14,6 +14,7 @@ import {
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 import { u8aToHex } from '@polkadot/util'
+import { CollectionService } from '../../../services'
 
 interface EventData {
     collectionId: bigint
@@ -90,6 +91,7 @@ export async function tokenDestroyed(
     }
 
     await ctx.store.remove(token)
+    new CollectionService(ctx.store).sync(data.collectionId.toString())
 
     return new EventModel({
         id: item.event.id,
