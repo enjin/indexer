@@ -11,7 +11,7 @@ import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { EntityManager } from 'typeorm'
-import * as _ from 'lodash'
+import _ from 'lodash'
 
 const eventOptions = {
     data: {
@@ -250,8 +250,8 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         }
     }
 
-    _chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
-    _chunk(events, 500).forEach((chunk) => ctx.store.insert(Event, chunk as any))
+    _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
+    _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
 
     // await ctx.store.insert(Extrinsic, extrinsics as any)
     // await ctx.store.insert(Event, events as any)
