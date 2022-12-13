@@ -2,12 +2,12 @@ import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import { AuctionState, Bid, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceBidPlaced } from '../../../model'
-import { Bid as BidEvent } from '../../../types/generated/v6'
 import { Context, getAccount } from '../../../processor'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
+import { Bid as BidEvent } from '../../../types/generated/v3010'
 
 interface EventData {
     listingId: Uint8Array

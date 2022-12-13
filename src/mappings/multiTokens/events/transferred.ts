@@ -5,9 +5,9 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensTransferred, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { Approval } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { Approval } from '../../../types/generated/v3010'
 
 interface EventData {
     collectionId: bigint

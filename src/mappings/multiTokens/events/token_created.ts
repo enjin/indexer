@@ -20,16 +20,16 @@ import {
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { Call, Event } from '../../../types/generated/support'
+import { getMetadata } from '../../util/metadata'
+import { Context, getAccount } from '../../../processor'
+import { CollectionService } from '../../../services'
 import {
     DefaultMintParams_CreateToken,
     TokenCap,
     TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
-} from '../../../types/generated/v6'
-import { getMetadata } from '../../util/metadata'
-import { Context, getAccount } from '../../../processor'
-import { CollectionService } from '../../../services'
+} from '../../../types/generated/v3010'
 
 interface CallData {
     recipient: Uint8Array
@@ -109,53 +109,31 @@ async function getCallData(ctx: Context, call: Call, event: EventData): Promise<
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
-        } else if (data.isV6) {
-            const { collectionId } = data.asV6
-            const { recipients } = data.asV6
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParams_CreateToken
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    unitPrice: params.unitPrice,
-                    cap,
-                    behavior,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        } else if (data.isV5) {
-            const { collectionId } = data.asV5
-            const { recipients } = data.asV5
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParams_CreateToken
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    unitPrice: params.unitPrice,
-                    cap,
-                    behavior,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
         } else if (data.isEfinityV3000) {
             const { collectionId } = data.asEfinityV3000
             const { recipients } = data.asEfinityV3000
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: params.unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        } else if (data.isV3010) {
+            const { collectionId } = data.asV3010
+            const { recipients } = data.asV3010
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -200,46 +178,28 @@ async function getCallData(ctx: Context, call: Call, event: EventData): Promise<
             listingForbidden: params.listingForbidden ?? false,
         }
     }
-    if (data.isV6) {
-        const { collectionId } = data.asV6
-        const recipient = data.asV6.recipient.value as Uint8Array
-        const params = data.asV6.params as DefaultMintParams_CreateToken
-        const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-
-        return {
-            recipient,
-            collectionId,
-            tokenId: params.tokenId,
-            initialSupply: params.initialSupply,
-            unitPrice: params.unitPrice,
-            cap,
-            behavior,
-            listingForbidden: params.listingForbidden ?? false,
-        }
-    }
-    if (data.isV5) {
-        const { collectionId } = data.asV5
-        const recipient = data.asV5.recipient.value as Uint8Array
-        const params = data.asV5.params as DefaultMintParams_CreateToken
-        const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-
-        return {
-            recipient,
-            collectionId,
-            tokenId: params.tokenId,
-            initialSupply: params.initialSupply,
-            unitPrice: params.unitPrice,
-            cap,
-            behavior,
-            listingForbidden: params.listingForbidden ?? false,
-        }
-    }
     if (data.isEfinityV3000) {
         const { collectionId } = data.asEfinityV3000
         const recipient = data.asEfinityV3000.recipient.value as Uint8Array
         const params = data.asEfinityV3000.params as DefaultMintParams_CreateToken
+        const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            unitPrice: params.unitPrice,
+            cap,
+            behavior,
+            listingForbidden: params.listingForbidden ?? false,
+        }
+    }
+    if (data.isV3010) {
+        const { collectionId } = data.asV3010
+        const recipient = data.asV3010.recipient.value as Uint8Array
+        const params = data.asV3010.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 

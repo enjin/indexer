@@ -16,10 +16,10 @@ import {
     Token,
     TransferPolicy,
 } from '../../../model'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/v6'
 import { Call, Event } from '../../../types/generated/support'
 // eslint-disable-next-line import/no-cycle
 import { Context, getAccount } from '../../../processor'
+import { AssetId, DefaultRoyalty } from '../../../types/generated/v3010'
 
 interface CallData {
     maxTokenCount: bigint | undefined
@@ -58,11 +58,11 @@ async function getCallData(ctx: Context, call: Call): Promise<CallData> {
             explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
         }
     }
-    if (data.isV6) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV6.descriptor.policy.mint
-        const royalty = data.asV6.descriptor.policy.market?.royalty
+    if (data.isEfinityV3000) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3000.descriptor.policy.mint
+        const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asV6.descriptor
+        const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
 
         return {
             maxTokenCount,
@@ -72,22 +72,11 @@ async function getCallData(ctx: Context, call: Call): Promise<CallData> {
             explicitRoyaltyCurrencies,
         }
     }
-    if (data.isV5) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV5.descriptor.policy.mint
-
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market: null,
-            explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
-        }
-    }
-    if (data.isEfinityV3000) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3000.descriptor.policy.mint
-        const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
+    if (data.isV3010) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3010.descriptor.policy.mint
+        const royalty = data.asV3010.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
+        const { explicitRoyaltyCurrencies } = data.asV3010.descriptor
 
         return {
             maxTokenCount,
