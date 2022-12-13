@@ -245,10 +245,10 @@ async function saveAccounts(ctx: Context, block: SubstrateBlock, accountIds: Uin
 }
 
 export async function save(ctx: Context, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
-    const accountIds = new Set<Uint8Array>()
-    processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
-    await saveAccounts(ctx, block, [...accountIds])
-    accountIds.clear()
+    // const accountIds = new Set<Uint8Array>()
+    // processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
+    // await saveAccounts(ctx, block, [...accountIds])
+    // accountIds.clear()
 
     return undefined
 }
