@@ -13,10 +13,10 @@ import {
     ListingStatusType,
     MarketplaceAuctionFinalized,
 } from '../../../model'
-import { Bid } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
+import { Bid } from '../../../types/generated/v3000'
 
 interface EventData {
     listingId: Uint8Array

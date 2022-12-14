@@ -13,9 +13,9 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../../model'
-import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v6'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint

@@ -14,9 +14,9 @@ import {
 } from '../../../model'
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
-import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
 import { Context, getAccount } from '../../../processor'
+import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint

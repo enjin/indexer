@@ -11,6 +11,7 @@ import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { EntityManager } from 'typeorm'
+import _ from 'lodash'
 
 const eventOptions = {
     data: {
@@ -249,8 +250,11 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         }
     }
 
-    await ctx.store.insert(Extrinsic, extrinsics as any)
-    await ctx.store.insert(Event, events as any)
+    _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
+    _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
+
+    // await ctx.store.insert(Extrinsic, extrinsics as any)
+    // await ctx.store.insert(Event, events as any)
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {

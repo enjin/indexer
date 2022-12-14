@@ -5,10 +5,10 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { Approval } from '../../../types/generated/v6'
 import { isNonFungible } from '../utils/helpers'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
+import { Approval } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint

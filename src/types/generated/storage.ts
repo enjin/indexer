@@ -1,8 +1,7 @@
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as efinityV1 from './efinityV1'
-import * as v5 from './v5'
-import * as v6 from './v6'
+import * as v3000 from './v3000'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -1111,15 +1110,15 @@ export class ContractsCodeStorageStorage extends StorageBase {
     /**
      *  A mapping between an original code hash and instrumented wasm code, ready for execution.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '1d41f869264eec7411828c1a845cdbad1a39455691f254f6bfead6b3102145ab'
     }
 
     /**
      *  A mapping between an original code hash and instrumented wasm code, ready for execution.
      */
-    get asV5(): ContractsCodeStorageStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsCodeStorageStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1127,18 +1126,18 @@ export class ContractsCodeStorageStorage extends StorageBase {
 /**
  *  A mapping between an original code hash and instrumented wasm code, ready for execution.
  */
-export interface ContractsCodeStorageStorageV5 {
-    get(key: Uint8Array): Promise<(v5.PrefabWasmModule | undefined)>
-    getAll(): Promise<v5.PrefabWasmModule[]>
-    getMany(keys: Uint8Array[]): Promise<(v5.PrefabWasmModule | undefined)[]>
+export interface ContractsCodeStorageStorageV3000 {
+    get(key: Uint8Array): Promise<(v3000.PrefabWasmModule | undefined)>
+    getAll(): Promise<v3000.PrefabWasmModule[]>
+    getMany(keys: Uint8Array[]): Promise<(v3000.PrefabWasmModule | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v5.PrefabWasmModule][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v5.PrefabWasmModule][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v5.PrefabWasmModule][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v5.PrefabWasmModule][]>
+    getPairs(): Promise<[k: Uint8Array, v: v3000.PrefabWasmModule][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.PrefabWasmModule][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.PrefabWasmModule][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.PrefabWasmModule][]>
 }
 
 export class ContractsContractInfoOfStorage extends StorageBase {
@@ -1155,7 +1154,7 @@ export class ContractsContractInfoOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === 'ca1ad2ae4b550883411d45c2158af4f3e2a0bde306e44674a586527ce222bcf3'
     }
 
@@ -1164,8 +1163,8 @@ export class ContractsContractInfoOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
      */
-    get asV5(): ContractsContractInfoOfStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsContractInfoOfStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1175,18 +1174,18 @@ export class ContractsContractInfoOfStorage extends StorageBase {
  * 
  *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
  */
-export interface ContractsContractInfoOfStorageV5 {
-    get(key: Uint8Array): Promise<(v5.RawContractInfo | undefined)>
-    getAll(): Promise<v5.RawContractInfo[]>
-    getMany(keys: Uint8Array[]): Promise<(v5.RawContractInfo | undefined)[]>
+export interface ContractsContractInfoOfStorageV3000 {
+    get(key: Uint8Array): Promise<(v3000.RawContractInfo | undefined)>
+    getAll(): Promise<v3000.RawContractInfo[]>
+    getMany(keys: Uint8Array[]): Promise<(v3000.RawContractInfo | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v5.RawContractInfo][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v5.RawContractInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v5.RawContractInfo][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v5.RawContractInfo][]>
+    getPairs(): Promise<[k: Uint8Array, v: v3000.RawContractInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.RawContractInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.RawContractInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.RawContractInfo][]>
 }
 
 export class ContractsDeletionQueueStorage extends StorageBase {
@@ -1204,7 +1203,7 @@ export class ContractsDeletionQueueStorage extends StorageBase {
      *  Child trie deletion is a heavy operation depending on the amount of storage items
      *  stored in said trie. Therefore this operation is performed lazily in `on_initialize`.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === 'acd21a3434a729eeba0503ec7163c1b1afb6a839983d2fed35e9e4681d68d116'
     }
 
@@ -1214,8 +1213,8 @@ export class ContractsDeletionQueueStorage extends StorageBase {
      *  Child trie deletion is a heavy operation depending on the amount of storage items
      *  stored in said trie. Therefore this operation is performed lazily in `on_initialize`.
      */
-    get asV5(): ContractsDeletionQueueStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsDeletionQueueStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1226,8 +1225,8 @@ export class ContractsDeletionQueueStorage extends StorageBase {
  *  Child trie deletion is a heavy operation depending on the amount of storage items
  *  stored in said trie. Therefore this operation is performed lazily in `on_initialize`.
  */
-export interface ContractsDeletionQueueStorageV5 {
-    get(): Promise<v5.DeletedContract[]>
+export interface ContractsDeletionQueueStorageV3000 {
+    get(): Promise<v3000.DeletedContract[]>
 }
 
 export class ContractsNonceStorage extends StorageBase {
@@ -1263,7 +1262,7 @@ export class ContractsNonceStorage extends StorageBase {
      *  Do not use it to determine the number of contracts. It won't be decremented if
      *  a contract is destroyed.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '95ff4f914f08e149ddbe1ae2dcb1743bbf9aaae69d04c486e1a398cacfcca06a'
     }
 
@@ -1291,8 +1290,8 @@ export class ContractsNonceStorage extends StorageBase {
      *  Do not use it to determine the number of contracts. It won't be decremented if
      *  a contract is destroyed.
      */
-    get asV5(): ContractsNonceStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsNonceStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1321,7 +1320,7 @@ export class ContractsNonceStorage extends StorageBase {
  *  Do not use it to determine the number of contracts. It won't be decremented if
  *  a contract is destroyed.
  */
-export interface ContractsNonceStorageV5 {
+export interface ContractsNonceStorageV3000 {
     get(): Promise<bigint>
 }
 
@@ -1337,15 +1336,15 @@ export class ContractsOwnerInfoOfStorage extends StorageBase {
     /**
      *  A mapping between an original code hash and its owner information.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '76689686c73821ee740f33d092a38a05de83a2833f6c8857baa886203c5bf939'
     }
 
     /**
      *  A mapping between an original code hash and its owner information.
      */
-    get asV5(): ContractsOwnerInfoOfStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsOwnerInfoOfStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1353,18 +1352,18 @@ export class ContractsOwnerInfoOfStorage extends StorageBase {
 /**
  *  A mapping between an original code hash and its owner information.
  */
-export interface ContractsOwnerInfoOfStorageV5 {
-    get(key: Uint8Array): Promise<(v5.OwnerInfo | undefined)>
-    getAll(): Promise<v5.OwnerInfo[]>
-    getMany(keys: Uint8Array[]): Promise<(v5.OwnerInfo | undefined)[]>
+export interface ContractsOwnerInfoOfStorageV3000 {
+    get(key: Uint8Array): Promise<(v3000.OwnerInfo | undefined)>
+    getAll(): Promise<v3000.OwnerInfo[]>
+    getMany(keys: Uint8Array[]): Promise<(v3000.OwnerInfo | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v5.OwnerInfo][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v5.OwnerInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v5.OwnerInfo][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v5.OwnerInfo][]>
+    getPairs(): Promise<[k: Uint8Array, v: v3000.OwnerInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.OwnerInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.OwnerInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.OwnerInfo][]>
 }
 
 export class ContractsPristineCodeStorage extends StorageBase {
@@ -1379,15 +1378,15 @@ export class ContractsPristineCodeStorage extends StorageBase {
     /**
      *  A mapping from an original code hash to the original code, untouched by instrumentation.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '2c57d2b4da44b4d6783b1eb7d03f42f23490455080a2c71c813169067dfe1a54'
     }
 
     /**
      *  A mapping from an original code hash to the original code, untouched by instrumentation.
      */
-    get asV5(): ContractsPristineCodeStorageV5 {
-        assert(this.isV5)
+    get asV3000(): ContractsPristineCodeStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1395,7 +1394,7 @@ export class ContractsPristineCodeStorage extends StorageBase {
 /**
  *  A mapping from an original code hash to the original code, untouched by instrumentation.
  */
-export interface ContractsPristineCodeStorageV5 {
+export interface ContractsPristineCodeStorageV3000 {
     get(key: Uint8Array): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: Uint8Array[]): Promise<(Uint8Array | undefined)[]>
@@ -1562,30 +1561,15 @@ export class CouncilProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isV5(): boolean {
-        return this.getTypeHash() === '3086cb7dd72e8a750dd7b1a207b9f94123651b10d43e995c166c43e4d1b38101'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asV5(): CouncilProposalOfStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get isV6(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '6429914fd81f6f5a61775b01b8dbf57aeb9ba02892e63196149be82e858e0135'
     }
 
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get asV6(): CouncilProposalOfStorageV6 {
-        assert(this.isV6)
+    get asV3000(): CouncilProposalOfStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -1644,35 +1628,18 @@ export interface CouncilProposalOfStorageEfinityV3000 {
 /**
  *  Actual proposal for a given hash, if it's current.
  */
-export interface CouncilProposalOfStorageV5 {
-    get(key: Uint8Array): Promise<(v5.Call | undefined)>
-    getAll(): Promise<v5.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v5.Call | undefined)[]>
+export interface CouncilProposalOfStorageV3000 {
+    get(key: Uint8Array): Promise<(v3000.Call | undefined)>
+    getAll(): Promise<v3000.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v3000.Call | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v5.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v5.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v5.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v5.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface CouncilProposalOfStorageV6 {
-    get(key: Uint8Array): Promise<(v6.Call | undefined)>
-    getAll(): Promise<v6.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v6.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v6.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v6.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v6.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v6.Call][]>
+    getPairs(): Promise<[k: Uint8Array, v: v3000.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -2311,36 +2278,6 @@ export class DmpQueueConfigurationStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The configuration.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === 'de2fc633d896ffed21e1f630f0a1bfe710ecfa69921c58a4a758e7fd49d0b5a4'
-    }
-
-    /**
-     *  The configuration.
-     */
-    get asV5(): DmpQueueConfigurationStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The configuration.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === '67bde14908f93a3aea4aa5877726bd296c59aa66227203739244319bbf5fb443'
-    }
-
-    /**
-     *  The configuration.
-     */
-    get asV6(): DmpQueueConfigurationStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -2355,20 +2292,6 @@ export interface DmpQueueConfigurationStorageEfinityV1 {
  */
 export interface DmpQueueConfigurationStorageEfinityV3000 {
     get(): Promise<efinityV3000.ConfigData>
-}
-
-/**
- *  The configuration.
- */
-export interface DmpQueueConfigurationStorageV5 {
-    get(): Promise<v5.ConfigData>
-}
-
-/**
- *  The configuration.
- */
-export interface DmpQueueConfigurationStorageV6 {
-    get(): Promise<v6.ConfigData>
 }
 
 export class DmpQueueOverweightStorage extends StorageBase {
@@ -3495,36 +3418,6 @@ export class MultiTokensCollectionsStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The collections in existence and their ownership details.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === '796cee53b5b0994fbc828ea8d49c6ffd793ecd23b4c7a29bd969e059778d89f3'
-    }
-
-    /**
-     *  The collections in existence and their ownership details.
-     */
-    get asV5(): MultiTokensCollectionsStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The collections in existence and their ownership details.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === 'e505bb38c2f05501278271d4d92422c32c38f8976d079eddae5a656ea2e00d3e'
-    }
-
-    /**
-     *  The collections in existence and their ownership details.
-     */
-    get asV6(): MultiTokensCollectionsStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -3559,40 +3452,6 @@ export interface MultiTokensCollectionsStorageEfinityV3000 {
     getPairs(key: bigint): Promise<[k: bigint, v: efinityV3000.Collection][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: efinityV3000.Collection][]>
     getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: efinityV3000.Collection][]>
-}
-
-/**
- *  The collections in existence and their ownership details.
- */
-export interface MultiTokensCollectionsStorageV5 {
-    get(key: bigint): Promise<(v5.Collection | undefined)>
-    getAll(): Promise<v5.Collection[]>
-    getMany(keys: bigint[]): Promise<(v5.Collection | undefined)[]>
-    getKeys(): Promise<bigint[]>
-    getKeys(key: bigint): Promise<bigint[]>
-    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
-    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
-    getPairs(): Promise<[k: bigint, v: v5.Collection][]>
-    getPairs(key: bigint): Promise<[k: bigint, v: v5.Collection][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: v5.Collection][]>
-    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: v5.Collection][]>
-}
-
-/**
- *  The collections in existence and their ownership details.
- */
-export interface MultiTokensCollectionsStorageV6 {
-    get(key: bigint): Promise<(v6.Collection | undefined)>
-    getAll(): Promise<v6.Collection[]>
-    getMany(keys: bigint[]): Promise<(v6.Collection | undefined)[]>
-    getKeys(): Promise<bigint[]>
-    getKeys(key: bigint): Promise<bigint[]>
-    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
-    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
-    getPairs(): Promise<[k: bigint, v: v6.Collection][]>
-    getPairs(key: bigint): Promise<[k: bigint, v: v6.Collection][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: v6.Collection][]>
-    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: v6.Collection][]>
 }
 
 export class MultiTokensIdleOperationsStorage extends StorageBase {
@@ -3633,36 +3492,6 @@ export class MultiTokensIdleOperationsStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  Pending operations to be executed on `Hooks::on_idle`.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === '3eb5f23bd85218994c65072029a61dbd467eb712c53d9f7e5dfa83a6dc8687f3'
-    }
-
-    /**
-     *  Pending operations to be executed on `Hooks::on_idle`.
-     */
-    get asV5(): MultiTokensIdleOperationsStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Pending operations to be executed on `Hooks::on_idle`.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === 'b90452918976da2c388676316009c640f822e1e429f7262cddef8c96a87aa496'
-    }
-
-    /**
-     *  Pending operations to be executed on `Hooks::on_idle`.
-     */
-    get asV6(): MultiTokensIdleOperationsStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -3677,20 +3506,6 @@ export interface MultiTokensIdleOperationsStorageEfinityV2 {
  */
 export interface MultiTokensIdleOperationsStorageEfinityV3000 {
     get(): Promise<efinityV3000.WeightedIdleOperation[]>
-}
-
-/**
- *  Pending operations to be executed on `Hooks::on_idle`.
- */
-export interface MultiTokensIdleOperationsStorageV5 {
-    get(): Promise<v5.WeightedIdleOperation[]>
-}
-
-/**
- *  Pending operations to be executed on `Hooks::on_idle`.
- */
-export interface MultiTokensIdleOperationsStorageV6 {
-    get(): Promise<v6.WeightedIdleOperation[]>
 }
 
 export class MultiTokensNextCollectionIdStorage extends StorageBase {
@@ -3853,36 +3668,6 @@ export class MultiTokensTokensStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  Tokens storage
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === '4eac4ac19f06319a6cc826f78f0b579a3c691cb8f1cdf61c93a535676b73abed'
-    }
-
-    /**
-     *  Tokens storage
-     */
-    get asV5(): MultiTokensTokensStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Tokens storage
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === 'a212292bd554690a043da4ee9ec0a79e4b8384cb8b35b8038a2d72f85bf5d0bc'
-    }
-
-    /**
-     *  Tokens storage
-     */
-    get asV6(): MultiTokensTokensStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -3925,48 +3710,6 @@ export interface MultiTokensTokensStorageEfinityV3000 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
     getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
     getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
-}
-
-/**
- *  Tokens storage
- */
-export interface MultiTokensTokensStorageV5 {
-    get(key1: bigint, key2: bigint): Promise<(v5.Token | undefined)>
-    getAll(): Promise<v5.Token[]>
-    getMany(keys: [bigint, bigint][]): Promise<(v5.Token | undefined)[]>
-    getKeys(): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(): Promise<[k: [bigint, bigint], v: v5.Token][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: v5.Token][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v5.Token][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v5.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v5.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v5.Token][]>
-}
-
-/**
- *  Tokens storage
- */
-export interface MultiTokensTokensStorageV6 {
-    get(key1: bigint, key2: bigint): Promise<(v6.Token | undefined)>
-    getAll(): Promise<v6.Token[]>
-    getMany(keys: [bigint, bigint][]): Promise<(v6.Token | undefined)[]>
-    getKeys(): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(): Promise<[k: [bigint, bigint], v: v6.Token][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: v6.Token][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v6.Token][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v6.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v6.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v6.Token][]>
 }
 
 export class MultisigCallsStorage extends StorageBase {
@@ -4843,40 +4586,6 @@ export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing DMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === 'd3f0e4c96dad8d73df3c44f02993a46a9ed2eed15208047c7d80882af09d67cc'
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing DMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get asV5(): ParachainSystemReservedDmpWeightOverrideStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing DMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === '1e8de4f65927863b2d720c007e917cc371de0d6c8aee8f5e19251fcf4c5a171b'
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing DMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get asV6(): ParachainSystemReservedDmpWeightOverrideStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -4893,22 +4602,6 @@ export interface ParachainSystemReservedDmpWeightOverrideStorageEfinityV1 {
  */
 export interface ParachainSystemReservedDmpWeightOverrideStorageEfinityV3000 {
     get(): Promise<(efinityV3000.Weight | undefined)>
-}
-
-/**
- *  The weight we reserve at the beginning of the block for processing DMP messages. This
- *  overrides the amount set in the Config trait.
- */
-export interface ParachainSystemReservedDmpWeightOverrideStorageV5 {
-    get(): Promise<(bigint | undefined)>
-}
-
-/**
- *  The weight we reserve at the beginning of the block for processing DMP messages. This
- *  overrides the amount set in the Config trait.
- */
-export interface ParachainSystemReservedDmpWeightOverrideStorageV6 {
-    get(): Promise<(v6.Weight | undefined)>
 }
 
 export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBase {
@@ -4953,40 +4646,6 @@ export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBas
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing XCMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === 'd3f0e4c96dad8d73df3c44f02993a46a9ed2eed15208047c7d80882af09d67cc'
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing XCMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get asV5(): ParachainSystemReservedXcmpWeightOverrideStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing XCMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === '1e8de4f65927863b2d720c007e917cc371de0d6c8aee8f5e19251fcf4c5a171b'
-    }
-
-    /**
-     *  The weight we reserve at the beginning of the block for processing XCMP messages. This
-     *  overrides the amount set in the Config trait.
-     */
-    get asV6(): ParachainSystemReservedXcmpWeightOverrideStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -5003,22 +4662,6 @@ export interface ParachainSystemReservedXcmpWeightOverrideStorageEfinityV1 {
  */
 export interface ParachainSystemReservedXcmpWeightOverrideStorageEfinityV3000 {
     get(): Promise<(efinityV3000.Weight | undefined)>
-}
-
-/**
- *  The weight we reserve at the beginning of the block for processing XCMP messages. This
- *  overrides the amount set in the Config trait.
- */
-export interface ParachainSystemReservedXcmpWeightOverrideStorageV5 {
-    get(): Promise<(bigint | undefined)>
-}
-
-/**
- *  The weight we reserve at the beginning of the block for processing XCMP messages. This
- *  overrides the amount set in the Config trait.
- */
-export interface ParachainSystemReservedXcmpWeightOverrideStorageV6 {
-    get(): Promise<(v6.Weight | undefined)>
 }
 
 export class ParachainSystemUpgradeRestrictionSignalStorage extends StorageBase {
@@ -5688,7 +5331,7 @@ export class RandomnessCollectiveFlipRandomMaterialStorage extends StorageBase {
      *  is arranged as a ring buffer with `block_number % 81` being the index into the `Vec` of
      *  the oldest hash.
      */
-    get isV5(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
@@ -5697,8 +5340,8 @@ export class RandomnessCollectiveFlipRandomMaterialStorage extends StorageBase {
      *  is arranged as a ring buffer with `block_number % 81` being the index into the `Vec` of
      *  the oldest hash.
      */
-    get asV5(): RandomnessCollectiveFlipRandomMaterialStorageV5 {
-        assert(this.isV5)
+    get asV3000(): RandomnessCollectiveFlipRandomMaterialStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -5708,7 +5351,7 @@ export class RandomnessCollectiveFlipRandomMaterialStorage extends StorageBase {
  *  is arranged as a ring buffer with `block_number % 81` being the index into the `Vec` of
  *  the oldest hash.
  */
-export interface RandomnessCollectiveFlipRandomMaterialStorageV5 {
+export interface RandomnessCollectiveFlipRandomMaterialStorageV3000 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -5769,30 +5412,15 @@ export class SchedulerAgendaStorage extends StorageBase {
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
-    get isV5(): boolean {
-        return this.getTypeHash() === '993d140b941a0c85f780ae26196adc205e2c2d10e7dbd15212daef68f7909fe9'
-    }
-
-    /**
-     *  Items to be executed, indexed by the block number that they should be executed on.
-     */
-    get asV5(): SchedulerAgendaStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Items to be executed, indexed by the block number that they should be executed on.
-     */
-    get isV6(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '62b55e7b7816de470a37eb07f8ca08653b1ec92b7db0f0196b88e8126dc40a18'
     }
 
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
-    get asV6(): SchedulerAgendaStorageV6 {
-        assert(this.isV6)
+    get asV3000(): SchedulerAgendaStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -5851,35 +5479,18 @@ export interface SchedulerAgendaStorageEfinityV3000 {
 /**
  *  Items to be executed, indexed by the block number that they should be executed on.
  */
-export interface SchedulerAgendaStorageV5 {
-    get(key: number): Promise<(v5.ScheduledV3 | undefined)[]>
-    getAll(): Promise<(v5.ScheduledV3 | undefined)[][]>
-    getMany(keys: number[]): Promise<(v5.ScheduledV3 | undefined)[][]>
+export interface SchedulerAgendaStorageV3000 {
+    get(key: number): Promise<(v3000.ScheduledV3 | undefined)[]>
+    getAll(): Promise<(v3000.ScheduledV3 | undefined)[][]>
+    getMany(keys: number[]): Promise<(v3000.ScheduledV3 | undefined)[][]>
     getKeys(): Promise<number[]>
     getKeys(key: number): Promise<number[]>
     getKeysPaged(pageSize: number): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: (v5.ScheduledV3 | undefined)[]][]>
-    getPairs(key: number): Promise<[k: number, v: (v5.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (v5.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (v5.ScheduledV3 | undefined)[]][]>
-}
-
-/**
- *  Items to be executed, indexed by the block number that they should be executed on.
- */
-export interface SchedulerAgendaStorageV6 {
-    get(key: number): Promise<(v6.ScheduledV3 | undefined)[]>
-    getAll(): Promise<(v6.ScheduledV3 | undefined)[][]>
-    getMany(keys: number[]): Promise<(v6.ScheduledV3 | undefined)[][]>
-    getKeys(): Promise<number[]>
-    getKeys(key: number): Promise<number[]>
-    getKeysPaged(pageSize: number): AsyncIterable<number[]>
-    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: (v6.ScheduledV3 | undefined)[]][]>
-    getPairs(key: number): Promise<[k: number, v: (v6.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (v6.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (v6.ScheduledV3 | undefined)[]][]>
+    getPairs(): Promise<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
+    getPairs(key: number): Promise<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
 }
 
 export class SchedulerLookupStorage extends StorageBase {
@@ -6451,36 +6062,6 @@ export class SystemBlockWeightStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The current weight for the block.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === '3117e920c869758010946f61bdfb045561b02a263bdc3bcff42e4ce915e4e5d4'
-    }
-
-    /**
-     *  The current weight for the block.
-     */
-    get asV5(): SystemBlockWeightStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The current weight for the block.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === 'd35f09c6f3fd2f6e93d9006f364b5b6e91ce1207594e51247070364731dba424'
-    }
-
-    /**
-     *  The current weight for the block.
-     */
-    get asV6(): SystemBlockWeightStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -6495,20 +6076,6 @@ export interface SystemBlockWeightStorageEfinityV1 {
  */
 export interface SystemBlockWeightStorageEfinityV3000 {
     get(): Promise<efinityV3000.PerDispatchClass>
-}
-
-/**
- *  The current weight for the block.
- */
-export interface SystemBlockWeightStorageV5 {
-    get(): Promise<v5.PerDispatchClass>
-}
-
-/**
- *  The current weight for the block.
- */
-export interface SystemBlockWeightStorageV6 {
-    get(): Promise<v6.PerDispatchClass>
 }
 
 export class SystemDigestStorage extends StorageBase {
@@ -6774,34 +6341,7 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    get isV5(): boolean {
-        return this.getTypeHash() === '7c7c47d393bf2bc4e480a9f68d22a0b5249afd129fcd21befeadec081e89bf0a'
-    }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    get asV5(): SystemEventsStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    get isV6(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '03d7614906b22bbf5b724b5ce3fba743511702c731246964712e2259bbd85edd'
     }
 
@@ -6814,8 +6354,8 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    get asV6(): SystemEventsStorageV6 {
-        assert(this.isV6)
+    get asV3000(): SystemEventsStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -6872,21 +6412,8 @@ export interface SystemEventsStorageEfinityV3000 {
  *  Events have a large in-memory size. Box the events to not go out-of-memory
  *  just in case someone still reads them from within the runtime.
  */
-export interface SystemEventsStorageV5 {
-    get(): Promise<v5.EventRecord[]>
-}
-
-/**
- *  Events deposited for the current block.
- * 
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- * 
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface SystemEventsStorageV6 {
-    get(): Promise<v6.EventRecord[]>
+export interface SystemEventsStorageV3000 {
+    get(): Promise<v3000.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -7515,30 +7042,15 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isV5(): boolean {
-        return this.getTypeHash() === '3086cb7dd72e8a750dd7b1a207b9f94123651b10d43e995c166c43e4d1b38101'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asV5(): TechnicalCommitteeProposalOfStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get isV6(): boolean {
+    get isV3000(): boolean {
         return this.getTypeHash() === '6429914fd81f6f5a61775b01b8dbf57aeb9ba02892e63196149be82e858e0135'
     }
 
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get asV6(): TechnicalCommitteeProposalOfStorageV6 {
-        assert(this.isV6)
+    get asV3000(): TechnicalCommitteeProposalOfStorageV3000 {
+        assert(this.isV3000)
         return this as any
     }
 }
@@ -7597,35 +7109,18 @@ export interface TechnicalCommitteeProposalOfStorageEfinityV3000 {
 /**
  *  Actual proposal for a given hash, if it's current.
  */
-export interface TechnicalCommitteeProposalOfStorageV5 {
-    get(key: Uint8Array): Promise<(v5.Call | undefined)>
-    getAll(): Promise<v5.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v5.Call | undefined)[]>
+export interface TechnicalCommitteeProposalOfStorageV3000 {
+    get(key: Uint8Array): Promise<(v3000.Call | undefined)>
+    getAll(): Promise<v3000.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v3000.Call | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v5.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v5.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v5.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v5.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface TechnicalCommitteeProposalOfStorageV6 {
-    get(key: Uint8Array): Promise<(v6.Call | undefined)>
-    getAll(): Promise<v6.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v6.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v6.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v6.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v6.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v6.Call][]>
+    getPairs(): Promise<[k: Uint8Array, v: v3000.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {
@@ -8293,36 +7788,6 @@ export class XcmpQueueQueueConfigStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  The configuration which controls the dynamics of the outbound queue.
-     */
-    get isV5(): boolean {
-        return this.getTypeHash() === 'bc17b84c06c7e0df3f2684c76020e6d76ff231be948076edbe6751b00937b0b1'
-    }
-
-    /**
-     *  The configuration which controls the dynamics of the outbound queue.
-     */
-    get asV5(): XcmpQueueQueueConfigStorageV5 {
-        assert(this.isV5)
-        return this as any
-    }
-
-    /**
-     *  The configuration which controls the dynamics of the outbound queue.
-     */
-    get isV6(): boolean {
-        return this.getTypeHash() === 'b9e7fe75fd5e16e066448c0d0a704aec5c90e5e751ca04108c2b35ab00764560'
-    }
-
-    /**
-     *  The configuration which controls the dynamics of the outbound queue.
-     */
-    get asV6(): XcmpQueueQueueConfigStorageV6 {
-        assert(this.isV6)
-        return this as any
-    }
 }
 
 /**
@@ -8344,20 +7809,6 @@ export interface XcmpQueueQueueConfigStorageEfinityV2 {
  */
 export interface XcmpQueueQueueConfigStorageEfinityV3000 {
     get(): Promise<efinityV3000.QueueConfigData>
-}
-
-/**
- *  The configuration which controls the dynamics of the outbound queue.
- */
-export interface XcmpQueueQueueConfigStorageV5 {
-    get(): Promise<v5.QueueConfigData>
-}
-
-/**
- *  The configuration which controls the dynamics of the outbound queue.
- */
-export interface XcmpQueueQueueConfigStorageV6 {
-    get(): Promise<v6.QueueConfigData>
 }
 
 export class XcmpQueueQueueSuspendedStorage extends StorageBase {

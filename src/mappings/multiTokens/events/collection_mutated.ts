@@ -45,24 +45,6 @@ function getEventData(ctx: Context, event: Event): EventData {
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
     }
-    if (data.isV6) {
-        const { collectionId, mutation } = data.asV6
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-    if (data.isV5) {
-        const { collectionId, mutation } = data.asV5
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty: { __kind: 'None' },
-            explicitRoyaltyCurrencies: undefined,
-        }
-    }
     throw new UnknownVersionError(data.constructor.name)
 }
 
