@@ -1,20 +1,21 @@
 import { u8aToHex } from '@polkadot/util'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import { AuctionState, Bid, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceBidPlaced } from '../../../model'
-import { Context, getAccount } from '../../../processor'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { Bid as BidEvent } from '../../../types/generated/v3000'
+import { CommonHandlerContext } from '../../types/contexts'
+import { CollectionService } from '../../../services'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     listingId: Uint8Array
     bid: BidEvent
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -25,7 +26,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function bidPlaced(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
@@ -41,8 +42,7 @@ export async function bidPlaced(
             },
         },
     })
-
-    const account = await getAccount(ctx, data.bid.bidder)
+    const account = await getOrCreateAccount(ctx, data.bid.bidder)
     const bid = new Bid({
         id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
         bidder: account,

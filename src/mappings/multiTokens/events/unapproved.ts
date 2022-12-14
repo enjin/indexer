@@ -5,7 +5,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { Context } from '../../../processor'
+import { CommonHandlerContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
 interface EventData {
@@ -15,7 +15,7 @@ interface EventData {
     operator: Uint8Array
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensUnapprovedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -31,7 +31,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function unapproved(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -12,8 +12,9 @@ import {
     Token,
     TokenAccount,
 } from '../../../model'
-import { Context, getAccount } from '../../../processor'
+import { CommonHandlerContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
@@ -22,7 +23,7 @@ interface EventData {
     balance: bigint
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensTokenAccountCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -33,7 +34,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function tokenAccountCreated(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
@@ -46,7 +47,7 @@ export async function tokenAccountCreated(
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
-    const account = await getAccount(ctx, data.accountId)
+    const account = await getOrCreateAccount(ctx, data.accountId)
     const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
     })

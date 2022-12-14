@@ -17,9 +17,9 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-// eslint-disable-next-line import/no-cycle
-import { Context, getAccount } from '../../../processor'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v3000'
+import { CommonHandlerContext } from '../../types/contexts'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface CallData {
     maxTokenCount: bigint | undefined
@@ -34,8 +34,8 @@ interface EventData {
     owner: Uint8Array
 }
 
-async function getMarket(ctx: Context, royalty: DefaultRoyalty): Promise<MarketPolicy> {
-    const account = await getAccount(ctx, royalty.beneficiary)
+async function getMarket(ctx: CommonHandlerContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
             beneficiary: account.id,
@@ -44,7 +44,7 @@ async function getMarket(ctx: Context, royalty: DefaultRoyalty): Promise<MarketP
     })
 }
 
-async function getCallData(ctx: Context, call: Call): Promise<CallData> {
+async function getCallData(ctx: CommonHandlerContext, call: Call): Promise<CallData> {
     const data = new MultiTokensCreateCollectionCall(ctx, call)
 
     if (data.isEfinityV2) {
@@ -75,7 +75,7 @@ async function getCallData(ctx: Context, call: Call): Promise<CallData> {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensCollectionCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -86,7 +86,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function collectionCreated(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
@@ -96,7 +96,7 @@ export async function collectionCreated(
     const callData = await getCallData(ctx, item.event.call)
     if (!eventData || !callData) return undefined
 
-    const account = await getAccount(ctx, eventData.owner)
+    const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         owner: account,

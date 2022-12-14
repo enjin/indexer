@@ -9,7 +9,7 @@ async function getStorageData(ctx: BlockContext, accounts: Uint8Array[]): Promis
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
-        return storage.asEfinityV1.getMany(accounts)
+        return storage.getManyAsEfinityV1(accounts)
     }
     throw new UnknownVersionError(storage.constructor.name)
 }

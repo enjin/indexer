@@ -19,16 +19,17 @@ import {
     Token,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { Context, getAccount } from '../../../processor'
 import { CollectionService } from '../../../services'
 import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/v3000'
+import { CommonHandlerContext } from '../../types/contexts'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     listingId: Uint8Array
     listing: ListingEvent
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -39,7 +40,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function listingCreated(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
@@ -57,7 +58,7 @@ export async function listingCreated(
         where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
     })
 
-    const account = await getAccount(ctx, data.listing.seller)
+    const account = await getOrCreateAccount(ctx, data.listing.seller)
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
         data.listing.data.__kind === ListingType.FixedPrice.toString()

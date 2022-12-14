@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
-import { hexToU8a, u8aToHex } from '@polkadot/util'
+import { hexToU8a } from '@polkadot/util'
 import config from './config'
 import { DEFAULT_PORT } from './common/consts'
-import { Account, Balance, Event, Extrinsic, Fee } from './model'
-import { encodeId, isAdressSS58 } from './common/tools'
-// eslint-disable-next-line import/no-cycle
+import { Event, Extrinsic, Fee } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
+import { getOrCreateAccount } from './mappings/util/entities'
+import { CommonHandlerContext } from './mappings/types/contexts'
 
 const eventOptions = {
     data: {
@@ -80,31 +80,7 @@ const processor = new SubstrateBatchProcessor()
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
 
-export async function getAccount(ctx: Context, publicKey: Uint8Array): Promise<Account> {
-    const pkHex = u8aToHex(publicKey)
-    let account = await ctx.store.findOneBy(Account, {
-        id: pkHex,
-    })
-
-    if (!account) {
-        account = new Account({
-            id: pkHex,
-            address: isAdressSS58(publicKey) ? encodeId(publicKey) : pkHex,
-            balance: new Balance({
-                free: 0n,
-                reserved: 0n,
-                miscFrozen: 0n,
-                feeFrozen: 0n,
-            }),
-            nonce: 0,
-        })
-        await ctx.store.insert(Account, account as any)
-    }
-
-    return account
-}
-
-async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
+async function handleEvents(ctx: CommonHandlerContext, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             return map.multiTokens.events.approved(ctx, block, item)
@@ -194,23 +170,21 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         // console.log(`Processing block ${block.header.height}`)
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
-            await createEfiToken(ctx, block.header)
+            await createEfiToken(ctx as unknown as CommonHandlerContext, block.header)
             // eslint-disable-next-line no-await-in-loop
-            await chainState(ctx, block.header)
+            await chainState(ctx as unknown as CommonHandlerContext, block.header)
         }
 
         // eslint-disable-next-line no-restricted-syntax
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
-                // console.log(`Handling event ${item.name}`)
-                const event = await handleEvents(ctx, block.header, item)
+                const event = await handleEvents(ctx as unknown as CommonHandlerContext, block.header, item)
                 if (event) {
                     events.push(event)
                 }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
-                // console.log(`Handling call ${item.name}`)
                 if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
 
                 const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
@@ -222,7 +196,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 ) as string
 
                 // eslint-disable-next-line no-await-in-loop
-                const signer = await getAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                const signer = await getOrCreateAccount(ctx as unknown as CommonHandlerContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                 const callName = call.name.split('.')
                 const extrinsic = new Extrinsic({
                     id,
@@ -258,6 +232,6 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
-        await chainState(ctx, lastBlock)
+        await chainState(ctx as unknown as CommonHandlerContext, lastBlock)
     }
 })

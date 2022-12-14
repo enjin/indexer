@@ -5,7 +5,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensTransferred, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
-import { Context } from '../../../processor'
+import { CommonHandlerContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { Approval } from '../../../types/generated/v3000'
 
@@ -28,7 +28,7 @@ interface StorageData {
     isFrozen: boolean
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensTransferredEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -39,7 +39,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 async function getStorageData(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     account: Uint8Array,
     collectionId: bigint,
@@ -49,7 +49,7 @@ async function getStorageData(
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV2) {
-        const data = await storage.asEfinityV2.get(account, collectionId, tokenId)
+        const data = await storage.getAsEfinityV2(account, collectionId, tokenId)
 
         if (!data) return undefined
 
@@ -64,7 +64,7 @@ async function getStorageData(
         }
     }
     if (storage.isEfinityV3) {
-        const data = await storage.asEfinityV3.get(account, collectionId, tokenId)
+        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
@@ -73,7 +73,7 @@ async function getStorageData(
 }
 
 export async function transferred(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

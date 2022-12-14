@@ -4,7 +4,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Event as EventModel, Extrinsic, Metadata, MultiTokensAttributeSet, Token } from '../../../model'
 import { getMetadata } from '../../util/metadata'
-import { Context } from '../../../processor'
+import { CommonHandlerContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
 interface EventData {
@@ -14,7 +14,7 @@ interface EventData {
     value: Uint8Array
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensAttributeSetEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -26,7 +26,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function attributeSet(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -15,8 +15,9 @@ import {
 import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
-import { Context, getAccount } from '../../../processor'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v3000'
+import { CommonHandlerContext } from '../../types/contexts'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
@@ -25,7 +26,7 @@ interface EventData {
     listingForbidden: boolean | undefined
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -41,7 +42,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 async function getBehavior(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
@@ -50,7 +51,7 @@ async function getBehavior(
         })
     }
 
-    const account = await getAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -61,7 +62,7 @@ async function getBehavior(
 }
 
 export async function tokenMutated(
-    ctx: Context,
+    ctx: CommonHandlerContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
