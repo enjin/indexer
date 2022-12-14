@@ -2,7 +2,6 @@ import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v3000 from './v3000'
-import * as v3010 from './v3010'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -757,21 +756,6 @@ export class CollatorStakingCandidatesStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
-
-    /**
-     *  The current set of candidates for collation.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
-    }
-
-    /**
-     *  The current set of candidates for collation.
-     */
-    get asV3010(): CollatorStakingCandidatesStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -779,13 +763,6 @@ export class CollatorStakingCandidatesStorage extends StorageBase {
  */
 export interface CollatorStakingCandidatesStorageEfinityV1 {
     get(): Promise<efinityV1.Collator[]>
-}
-
-/**
- *  The current set of candidates for collation.
- */
-export interface CollatorStakingCandidatesStorageV3010 {
-    get(): Promise<v3010.Collator[]>
 }
 
 export class CollatorStakingCollatorExitsStorage extends StorageBase {
@@ -853,21 +830,6 @@ export class CollatorStakingCollatorsStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
-
-    /**
-     *  The current set of collators
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
-    }
-
-    /**
-     *  The current set of collators
-     */
-    get asV3010(): CollatorStakingCollatorsStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -875,13 +837,6 @@ export class CollatorStakingCollatorsStorage extends StorageBase {
  */
 export interface CollatorStakingCollatorsStorageEfinityV1 {
     get(): Promise<efinityV1.Collator[]>
-}
-
-/**
- *  The current set of collators
- */
-export interface CollatorStakingCollatorsStorageV3010 {
-    get(): Promise<v3010.Collator[]>
 }
 
 export class CollatorStakingCurrentRoundStorage extends StorageBase {
@@ -907,21 +862,6 @@ export class CollatorStakingCurrentRoundStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
-
-    /**
-     *  The current round information.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '55f635cb275994673c2b749928c20c824098d354b6ce574fd0854fccb2dfd74e'
-    }
-
-    /**
-     *  The current round information.
-     */
-    get asV3010(): CollatorStakingCurrentRoundStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -929,13 +869,6 @@ export class CollatorStakingCurrentRoundStorage extends StorageBase {
  */
 export interface CollatorStakingCurrentRoundStorageEfinityV1 {
     get(): Promise<efinityV1.Round>
-}
-
-/**
- *  The current round information.
- */
-export interface CollatorStakingCurrentRoundStorageV3010 {
-    get(): Promise<v3010.Round>
 }
 
 export class CollatorStakingDesiredCandidatesCountStorage extends StorageBase {
@@ -999,27 +932,6 @@ export class CollatorStakingInvulnerablesStorage extends StorageBase {
         assert(this.isEfinityV2)
         return this as any
     }
-
-    /**
-     *  The invulnerable collators
-     * 
-     *  This is the list of collators who are invulnerable to being ejected from collation
-     *  either by unbonding or by having less stake.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
-    }
-
-    /**
-     *  The invulnerable collators
-     * 
-     *  This is the list of collators who are invulnerable to being ejected from collation
-     *  either by unbonding or by having less stake.
-     */
-    get asV3010(): CollatorStakingInvulnerablesStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -1030,48 +942,6 @@ export class CollatorStakingInvulnerablesStorage extends StorageBase {
  */
 export interface CollatorStakingInvulnerablesStorageEfinityV2 {
     get(): Promise<efinityV2.Collator[]>
-}
-
-/**
- *  The invulnerable collators
- * 
- *  This is the list of collators who are invulnerable to being ejected from collation
- *  either by unbonding or by having less stake.
- */
-export interface CollatorStakingInvulnerablesStorageV3010 {
-    get(): Promise<v3010.Collator[]>
-}
-
-export class CollatorStakingMinCollatorStakeStorage extends StorageBase {
-    protected getPrefix() {
-        return 'CollatorStaking'
-    }
-
-    protected getName() {
-        return 'MinCollatorStake'
-    }
-
-    /**
-     *  The min stake amount for collators
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
-    }
-
-    /**
-     *  The min stake amount for collators
-     */
-    get asV3010(): CollatorStakingMinCollatorStakeStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
-}
-
-/**
- *  The min stake amount for collators
- */
-export interface CollatorStakingMinCollatorStakeStorageV3010 {
-    get(): Promise<bigint>
 }
 
 export class CollatorStakingNominatorsStorage extends StorageBase {
@@ -1120,52 +990,6 @@ export interface CollatorStakingNominatorsStorageEfinityV1 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV1.Nomination][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV1.Nomination][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV1.Nomination][]>
-}
-
-export class CollatorStakingSessionInfoStorage extends StorageBase {
-    protected getPrefix() {
-        return 'CollatorStaking'
-    }
-
-    protected getName() {
-        return 'SessionInfo'
-    }
-
-    /**
-     *  The session info of collators including produced blocks and uptime
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '158926fcec32bbcafd0b7803e082429e4e807c32a63362ded7d2c8c3c9e95edb'
-    }
-
-    /**
-     *  The session info of collators including produced blocks and uptime
-     */
-    get asV3010(): CollatorStakingSessionInfoStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
-}
-
-/**
- *  The session info of collators including produced blocks and uptime
- */
-export interface CollatorStakingSessionInfoStorageV3010 {
-    get(key1: Uint8Array, key2: number): Promise<v3010.CollatorSessionInfo>
-    getAll(): Promise<v3010.CollatorSessionInfo[]>
-    getMany(keys: [Uint8Array, number][]): Promise<v3010.CollatorSessionInfo[]>
-    getKeys(): Promise<[Uint8Array, number][]>
-    getKeys(key1: Uint8Array): Promise<[Uint8Array, number][]>
-    getKeys(key1: Uint8Array, key2: number): Promise<[Uint8Array, number][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, number][]>
-    getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, number][]>
-    getKeysPaged(pageSize: number, key1: Uint8Array, key2: number): AsyncIterable<[Uint8Array, number][]>
-    getPairs(): Promise<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
-    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
-    getPairs(key1: Uint8Array, key2: number): Promise<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array, key2: number): AsyncIterable<[k: [Uint8Array, number], v: v3010.CollatorSessionInfo][]>
 }
 
 export class CommunityPoolApprovalsStorage extends StorageBase {
@@ -1343,25 +1167,6 @@ export class ContractsContractInfoOfStorage extends StorageBase {
         assert(this.isV3000)
         return this as any
     }
-
-    /**
-     *  The code associated with a given account.
-     * 
-     *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'b19f56551b6001070487b6e33ba3a88bf2e7a48df38a8c979b2d69856127de63'
-    }
-
-    /**
-     *  The code associated with a given account.
-     * 
-     *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
-     */
-    get asV3010(): ContractsContractInfoOfStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -1381,25 +1186,6 @@ export interface ContractsContractInfoOfStorageV3000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.RawContractInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.RawContractInfo][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.RawContractInfo][]>
-}
-
-/**
- *  The code associated with a given account.
- * 
- *  TWOX-NOTE: SAFE since `AccountId` is a secure hash.
- */
-export interface ContractsContractInfoOfStorageV3010 {
-    get(key: Uint8Array): Promise<(v3010.ContractInfo | undefined)>
-    getAll(): Promise<v3010.ContractInfo[]>
-    getMany(keys: Uint8Array[]): Promise<(v3010.ContractInfo | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v3010.ContractInfo][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3010.ContractInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3010.ContractInfo][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3010.ContractInfo][]>
 }
 
 export class ContractsDeletionQueueStorage extends StorageBase {
@@ -1786,21 +1572,6 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV3000)
         return this as any
     }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'a4e40eb94b4965765b2697611c009f26ec0e48b329a2d0e0da417ed6d937b200'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asV3010(): CouncilProposalOfStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -1869,23 +1640,6 @@ export interface CouncilProposalOfStorageV3000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface CouncilProposalOfStorageV3010 {
-    get(key: Uint8Array): Promise<(v3010.Call | undefined)>
-    getAll(): Promise<v3010.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v3010.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v3010.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3010.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3010.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3010.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -2730,21 +2484,6 @@ export class FuelTanksAccountsStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  Mapping of Fuel Tanks and their user Accounts to account data
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '01245446ad097e0a27bc7d677ff4084b3e43dd7bf1f408c6295b2c4b9b742aa1'
-    }
-
-    /**
-     *  Mapping of Fuel Tanks and their user Accounts to account data
-     */
-    get asV3010(): FuelTanksAccountsStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -2766,27 +2505,6 @@ export interface FuelTanksAccountsStorageEfinityV3000 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: efinityV3000.UserAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: efinityV3000.UserAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: efinityV3000.UserAccount][]>
-}
-
-/**
- *  Mapping of Fuel Tanks and their user Accounts to account data
- */
-export interface FuelTanksAccountsStorageV3010 {
-    get(key1: Uint8Array, key2: Uint8Array): Promise<(v3010.UserAccount | undefined)>
-    getAll(): Promise<v3010.UserAccount[]>
-    getMany(keys: [Uint8Array, Uint8Array][]): Promise<(v3010.UserAccount | undefined)[]>
-    getKeys(): Promise<[Uint8Array, Uint8Array][]>
-    getKeys(key1: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
-    getKeys(key1: Uint8Array, key2: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, Uint8Array][]>
-    getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
-    getKeysPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
-    getPairs(): Promise<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
-    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
-    getPairs(key1: Uint8Array, key2: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: v3010.UserAccount][]>
 }
 
 export class FuelTanksFreezeQueueStorage extends StorageBase {
@@ -2847,21 +2565,6 @@ export class FuelTanksTanksStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  Mapping of Fuel Tanks accounts to their data
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '170c8c92a3afd2eb9f5df09f52871255ecd25233f0e5b53f9e504a5d16ca3478'
-    }
-
-    /**
-     *  Mapping of Fuel Tanks accounts to their data
-     */
-    get asV3010(): FuelTanksTanksStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -2879,23 +2582,6 @@ export interface FuelTanksTanksStorageEfinityV3000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3000.FuelTank][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3000.FuelTank][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3000.FuelTank][]>
-}
-
-/**
- *  Mapping of Fuel Tanks accounts to their data
- */
-export interface FuelTanksTanksStorageV3010 {
-    get(key: Uint8Array): Promise<(v3010.FuelTank | undefined)>
-    getAll(): Promise<v3010.FuelTank[]>
-    getMany(keys: Uint8Array[]): Promise<(v3010.FuelTank | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v3010.FuelTank][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3010.FuelTank][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3010.FuelTank][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3010.FuelTank][]>
 }
 
 export class MarketplaceInfoStorage extends StorageBase {
@@ -3598,48 +3284,6 @@ export interface MultiAssetsOperatorExtTokenApprovalsStorageEfinityV1 {
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array, key3: bigint, key4: number): AsyncIterable<[k: [Uint8Array, Uint8Array, bigint, number], v: efinityV1.Approval][]>
 }
 
-export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
-    protected getPrefix() {
-        return 'MultiTokens'
-    }
-
-    protected getName() {
-        return 'AssetIdsByLocation'
-    }
-
-    /**
-     *  Map of Locations to AssetIds of Foreign Tokens
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '560c8ffce9be2f673615d006ac6747641630ed7dac4f7ce3edd1fbeb2f2e8c13'
-    }
-
-    /**
-     *  Map of Locations to AssetIds of Foreign Tokens
-     */
-    get asV3010(): MultiTokensAssetIdsByLocationStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
-}
-
-/**
- *  Map of Locations to AssetIds of Foreign Tokens
- */
-export interface MultiTokensAssetIdsByLocationStorageV3010 {
-    get(key: v3010.V1MultiLocation): Promise<(v3010.AssetId | undefined)>
-    getAll(): Promise<v3010.AssetId[]>
-    getMany(keys: v3010.V1MultiLocation[]): Promise<(v3010.AssetId | undefined)[]>
-    getKeys(): Promise<v3010.V1MultiLocation[]>
-    getKeys(key: v3010.V1MultiLocation): Promise<v3010.V1MultiLocation[]>
-    getKeysPaged(pageSize: number): AsyncIterable<v3010.V1MultiLocation[]>
-    getKeysPaged(pageSize: number, key: v3010.V1MultiLocation): AsyncIterable<v3010.V1MultiLocation[]>
-    getPairs(): Promise<[k: v3010.V1MultiLocation, v: v3010.AssetId][]>
-    getPairs(key: v3010.V1MultiLocation): Promise<[k: v3010.V1MultiLocation, v: v3010.AssetId][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: v3010.V1MultiLocation, v: v3010.AssetId][]>
-    getPairsPaged(pageSize: number, key: v3010.V1MultiLocation): AsyncIterable<[k: v3010.V1MultiLocation, v: v3010.AssetId][]>
-}
-
 export class MultiTokensAttributesStorage extends StorageBase {
     protected getPrefix() {
         return 'MultiTokens'
@@ -3864,70 +3508,6 @@ export interface MultiTokensIdleOperationsStorageEfinityV3000 {
     get(): Promise<efinityV3000.WeightedIdleOperation[]>
 }
 
-export class MultiTokensLastIteratedMigrationKeyStorage extends StorageBase {
-    protected getPrefix() {
-        return 'MultiTokens'
-    }
-
-    protected getName() {
-        return 'LastIteratedMigrationKey'
-    }
-
-    /**
-     *  Stores last iterated key for migrations. Used by multi block migrations
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '9d37db61fb40fc6c377391f52a7b349395407634d45b47a8943ab5ccf47e31e4'
-    }
-
-    /**
-     *  Stores last iterated key for migrations. Used by multi block migrations
-     */
-    get asV3010(): MultiTokensLastIteratedMigrationKeyStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
-}
-
-/**
- *  Stores last iterated key for migrations. Used by multi block migrations
- */
-export interface MultiTokensLastIteratedMigrationKeyStorageV3010 {
-    get(): Promise<(Uint8Array | undefined)>
-}
-
-export class MultiTokensMigrationStatusStorage extends StorageBase {
-    protected getPrefix() {
-        return 'MultiTokens'
-    }
-
-    protected getName() {
-        return 'MigrationStatus'
-    }
-
-    /**
-     *  Status of the current multi-block migration
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'b774eae9b764e58709b24f1cf13f47feebc5721c1a9d4e0ed22e4d0aaff8a169'
-    }
-
-    /**
-     *  Status of the current multi-block migration
-     */
-    get asV3010(): MultiTokensMigrationStatusStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
-}
-
-/**
- *  Status of the current multi-block migration
- */
-export interface MultiTokensMigrationStatusStorageV3010 {
-    get(): Promise<v3010.MigrationStage>
-}
-
 export class MultiTokensNextCollectionIdStorage extends StorageBase {
     protected getPrefix() {
         return 'MultiTokens'
@@ -4088,21 +3668,6 @@ export class MultiTokensTokensStorage extends StorageBase {
         assert(this.isEfinityV3000)
         return this as any
     }
-
-    /**
-     *  Tokens storage
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === '1f0fc6f95d09c4195cdaa7e949e1b978130df91d5db17a5653ccc7d3bf38bf98'
-    }
-
-    /**
-     *  Tokens storage
-     */
-    get asV3010(): MultiTokensTokensStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -4145,27 +3710,6 @@ export interface MultiTokensTokensStorageEfinityV3000 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
     getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
     getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3000.Token][]>
-}
-
-/**
- *  Tokens storage
- */
-export interface MultiTokensTokensStorageV3010 {
-    get(key1: bigint, key2: bigint): Promise<(v3010.Token | undefined)>
-    getAll(): Promise<v3010.Token[]>
-    getMany(keys: [bigint, bigint][]): Promise<(v3010.Token | undefined)[]>
-    getKeys(): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint): Promise<[bigint, bigint][]>
-    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
-    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(): Promise<[k: [bigint, bigint], v: v3010.Token][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: v3010.Token][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v3010.Token][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v3010.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v3010.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v3010.Token][]>
 }
 
 export class MultisigCallsStorage extends StorageBase {
@@ -5879,21 +5423,6 @@ export class SchedulerAgendaStorage extends StorageBase {
         assert(this.isV3000)
         return this as any
     }
-
-    /**
-     *  Items to be executed, indexed by the block number that they should be executed on.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'd67a7f50d8866ffac56b3ff8d0cc73cc25fe8a1b60120b8136d389ff49be73c8'
-    }
-
-    /**
-     *  Items to be executed, indexed by the block number that they should be executed on.
-     */
-    get asV3010(): SchedulerAgendaStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -5962,23 +5491,6 @@ export interface SchedulerAgendaStorageV3000 {
     getPairs(key: number): Promise<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
     getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (v3000.ScheduledV3 | undefined)[]][]>
-}
-
-/**
- *  Items to be executed, indexed by the block number that they should be executed on.
- */
-export interface SchedulerAgendaStorageV3010 {
-    get(key: number): Promise<(v3010.ScheduledV3 | undefined)[]>
-    getAll(): Promise<(v3010.ScheduledV3 | undefined)[][]>
-    getMany(keys: number[]): Promise<(v3010.ScheduledV3 | undefined)[][]>
-    getKeys(): Promise<number[]>
-    getKeys(key: number): Promise<number[]>
-    getKeysPaged(pageSize: number): AsyncIterable<number[]>
-    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: (v3010.ScheduledV3 | undefined)[]][]>
-    getPairs(key: number): Promise<[k: number, v: (v3010.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (v3010.ScheduledV3 | undefined)[]][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (v3010.ScheduledV3 | undefined)[]][]>
 }
 
 export class SchedulerLookupStorage extends StorageBase {
@@ -6846,33 +6358,6 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV3000)
         return this as any
     }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'adc33e4903b923fbf404279228748cec0521a73dc7a3614f321949bdbd57ce42'
-    }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    get asV3010(): SystemEventsStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -6929,19 +6414,6 @@ export interface SystemEventsStorageEfinityV3000 {
  */
 export interface SystemEventsStorageV3000 {
     get(): Promise<v3000.EventRecord[]>
-}
-
-/**
- *  Events deposited for the current block.
- * 
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- * 
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface SystemEventsStorageV3010 {
-    get(): Promise<v3010.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -7581,21 +7053,6 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV3000)
         return this as any
     }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get isV3010(): boolean {
-        return this.getTypeHash() === 'a4e40eb94b4965765b2697611c009f26ec0e48b329a2d0e0da417ed6d937b200'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asV3010(): TechnicalCommitteeProposalOfStorageV3010 {
-        assert(this.isV3010)
-        return this as any
-    }
 }
 
 /**
@@ -7664,23 +7121,6 @@ export interface TechnicalCommitteeProposalOfStorageV3000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3000.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3000.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface TechnicalCommitteeProposalOfStorageV3010 {
-    get(key: Uint8Array): Promise<(v3010.Call | undefined)>
-    getAll(): Promise<v3010.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(v3010.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v3010.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v3010.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v3010.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v3010.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {

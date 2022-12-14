@@ -7,7 +7,7 @@ import { Event as EventModel, Extrinsic, MultiTokensTransferred, TokenAccount } 
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
-import { Approval } from '../../../types/generated/v3010'
+import { Approval } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint

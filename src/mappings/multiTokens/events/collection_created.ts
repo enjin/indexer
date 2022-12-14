@@ -19,7 +19,7 @@ import {
 import { Call, Event } from '../../../types/generated/support'
 // eslint-disable-next-line import/no-cycle
 import { Context, getAccount } from '../../../processor'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/v3010'
+import { AssetId, DefaultRoyalty } from '../../../types/generated/v3000'
 
 interface CallData {
     maxTokenCount: bigint | undefined
@@ -63,20 +63,6 @@ async function getCallData(ctx: Context, call: Call): Promise<CallData> {
         const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
         const market = royalty ? await getMarket(ctx, royalty) : null
         const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
-
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market,
-            explicitRoyaltyCurrencies,
-        }
-    }
-    if (data.isV3010) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3010.descriptor.policy.mint
-        const royalty = data.asV3010.descriptor.policy.market?.royalty
-        const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asV3010.descriptor
 
         return {
             maxTokenCount,

@@ -16,7 +16,7 @@ import {
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { Bid } from '../../../types/generated/v3010'
+import { Bid } from '../../../types/generated/v3000'
 
 interface EventData {
     listingId: Uint8Array

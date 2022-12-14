@@ -7,7 +7,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { Bid as BidEvent } from '../../../types/generated/v3010'
+import { Bid as BidEvent } from '../../../types/generated/v3000'
 
 interface EventData {
     listingId: Uint8Array

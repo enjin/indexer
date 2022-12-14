@@ -8,7 +8,7 @@ import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storag
 import { isNonFungible } from '../utils/helpers'
 import { Context } from '../../../processor'
 import { Event } from '../../../types/generated/support'
-import { Approval } from '../../../types/generated/v3010'
+import { Approval } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint
