@@ -44,7 +44,7 @@ const processor = new SubstrateBatchProcessor()
     } as const)
     .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
-    // .addEvent('MultiTokens.CollectionMutated', eventOptions)
+    .addEvent('MultiTokens.CollectionMutated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
     .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
@@ -122,8 +122,8 @@ async function handleEvents(ctx: Context, block: SubstrateBlock, item: Item): Pr
             return map.multiTokens.events.collectionCreated(ctx, block, item)
         case 'MultiTokens.CollectionDestroyed':
             return map.multiTokens.events.collectionDestroyed(ctx, block, item)
-        // case 'MultiTokens.CollectionMutated':
-        //     return map.multiTokens.events.collectionMutated(ctx, block, item)
+        case 'MultiTokens.CollectionMutated':
+            return map.multiTokens.events.collectionMutated(ctx, block, item)
         case 'MultiTokens.Frozen':
             return map.multiTokens.events.frozen(ctx, block, item)
         case 'MultiTokens.Minted':
