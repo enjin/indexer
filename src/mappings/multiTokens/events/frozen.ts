@@ -13,7 +13,7 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../../model'
-import { Context } from '../../../processor'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3000'
 
@@ -25,7 +25,7 @@ interface EventData {
     tokenAccount: Uint8Array | undefined
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensFrozenEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -73,7 +73,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function frozen(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -37,9 +37,7 @@ export class CollectionService {
         if (!collectionId) throw new Error('null collectionId not allowed')
 
         const promises = [
-            this.em.query(`;With cte AS (${this.salesQuery}) SELECT * FROM cte WHERE collection_id = $1;`, [
-                collectionId,
-            ]),
+            this.em.query(`;With cte AS (${this.salesQuery}) SELECT * FROM cte WHERE collection_id = $1;`, [collectionId]),
             this.em.query(this.floorQuery, [collectionId]),
             this.em
                 .getRepository(Token)

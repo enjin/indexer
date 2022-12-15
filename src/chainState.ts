@@ -2,12 +2,12 @@ import { ApiPromise, WsProvider } from '@polkadot/api'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { ChainInfo, Marketplace } from './model'
 import config from './config'
-import { Context } from './processor'
+import { CommonContext } from './mappings/types/contexts'
 
 const wsProvider = new WsProvider(config.dataSource.chain)
 const apiPromise = ApiPromise.create({ provider: wsProvider })
 
-export async function chainState(ctx: Context, block: SubstrateBlock) {
+export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
     const apiAt = await api.at(block.hash)

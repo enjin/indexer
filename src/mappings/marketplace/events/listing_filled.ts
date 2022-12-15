@@ -1,3 +1,6 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
 import {
@@ -12,12 +15,9 @@ import {
     ListingType,
     MarketplaceListingFilled,
 } from '../../../model'
-import { Context } from '../../../processor'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
-import { u8aToHex } from '@polkadot/util'
 import { CollectionService } from '../../../services'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     listingId: Uint8Array
@@ -28,7 +28,7 @@ interface EventData {
     royalty: bigint
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceListingFilledEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -39,7 +39,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function listingFilled(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

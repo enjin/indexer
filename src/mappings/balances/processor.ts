@@ -1,7 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../common/errors'
-import { Account, Balance, BalancesTransfer, Event as EventModel, Extrinsic } from '../../model'
+import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId, isAdressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
@@ -17,10 +17,10 @@ import {
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { AccountInfo } from '../../types/generated/efinityV1'
-import { Context } from '../../processor'
 import { Event } from '../../types/generated/support'
+import { CommonContext } from '../types/contexts'
 
-function getDustLostAccount(ctx: Context, event: Event) {
+function getDustLostAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDustLostEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -32,7 +32,7 @@ function getDustLostAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getBalanceSetAccount(ctx: Context, event: Event) {
+function getBalanceSetAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesBalanceSetEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -44,7 +44,7 @@ function getBalanceSetAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTransferAccounts(ctx: Context, event: Event): [Uint8Array, Uint8Array] {
+function getTransferAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
     const data = new BalancesTransferEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -56,7 +56,7 @@ function getTransferAccounts(ctx: Context, event: Event): [Uint8Array, Uint8Arra
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEndowedAccount(ctx: Context, event: Event) {
+function getEndowedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesEndowedEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -68,7 +68,7 @@ function getEndowedAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getDepositAccount(ctx: Context, event: Event) {
+function getDepositAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDepositEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -80,7 +80,7 @@ function getDepositAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReservedAccount(ctx: Context, event: Event) {
+function getReservedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesReservedEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -92,7 +92,7 @@ function getReservedAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getUnreservedAccount(ctx: Context, event: Event) {
+function getUnreservedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesUnreservedEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -104,7 +104,7 @@ function getUnreservedAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getWithdrawAccount(ctx: Context, event: Event) {
+function getWithdrawAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesWithdrawEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -113,7 +113,7 @@ function getWithdrawAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getSlashedAccount(ctx: Context, event: Event) {
+function getSlashedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesSlashedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -122,7 +122,7 @@ function getSlashedAccount(ctx: Context, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReserveRepatriatedAccounts(ctx: Context, event: Event): [Uint8Array, Uint8Array] {
+function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
     const data = new BalancesReserveRepatriatedEvent(ctx, event)
 
     if (data.isEfinityV1) {
@@ -135,7 +135,7 @@ function getReserveRepatriatedAccounts(ctx: Context, event: Event): [Uint8Array,
 }
 
 async function getSystemAccountBalances(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     accounts: Uint8Array[]
 ): Promise<AccountInfo[] | undefined> {
@@ -148,7 +148,7 @@ async function getSystemAccountBalances(
     throw new UnknownVersionError(storage.constructor.name)
 }
 
-function processBalancesEventItem(ctx: Context, event: Event) {
+function processBalancesEventItem(ctx: CommonContext, event: Event) {
     const ids: Uint8Array[] = []
     switch (event.name) {
         case 'Balances.DustLost': {
@@ -208,11 +208,15 @@ function processBalancesEventItem(ctx: Context, event: Event) {
     return ids
 }
 
-async function getBalances(ctx: Context, block: SubstrateBlock, accountIds: Uint8Array[]): Promise<AccountInfo[] | undefined> {
+async function getBalances(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    accountIds: Uint8Array[]
+): Promise<AccountInfo[] | undefined> {
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
-async function saveAccounts(ctx: Context, block: SubstrateBlock, accountIds: Uint8Array[]) {
+async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountIds: Uint8Array[]) {
     const accountInfos = await getBalances(ctx, block, accountIds)
     if (!accountInfos) {
         return
@@ -244,7 +248,7 @@ async function saveAccounts(ctx: Context, block: SubstrateBlock, accountIds: Uin
     await ctx.store.save(accounts)
 }
 
-export async function save(ctx: Context, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
+export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
     const accountIds = new Set<Uint8Array>()
     processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
     await saveAccounts(ctx, block, [...accountIds])

@@ -1,12 +1,13 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { CommonContext } from './mappings/types/contexts'
+import { getOrCreateAccount } from './mappings/util/entities'
 import { CapType, Collection, CollectionStats, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
-import { Context, getAccount } from './processor'
 
-export async function createEfiToken(ctx: Context, block: SubstrateBlock) {
+export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) {
     const efi = await ctx.store.findOneBy(Token, { id: '0-0' })
 
     if (!efi) {
-        const account = await getAccount(ctx, new Uint8Array(32).fill(0))
+        const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
         const collection = new Collection({
             id: '0',
             owner: account,

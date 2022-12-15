@@ -20,9 +20,6 @@ import {
 } from '../../../model'
 import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { Call, Event } from '../../../types/generated/support'
-import { getMetadata } from '../../util/metadata'
-import { Context, getAccount } from '../../../processor'
-import { CollectionService } from '../../../services'
 import {
     DefaultMintParams_CreateToken,
     TokenCap,
@@ -30,6 +27,10 @@ import {
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/v3000'
+import { getMetadata } from '../../util/metadata'
+import { CommonContext } from '../../types/contexts'
+import { CollectionService } from '../../../services'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface CallData {
     recipient: Uint8Array
@@ -63,7 +64,7 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
 }
 
 async function getBehavior(
-    ctx: Context,
+    ctx: CommonContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
@@ -72,7 +73,7 @@ async function getBehavior(
         })
     }
 
-    const account = await getAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
@@ -83,7 +84,7 @@ async function getBehavior(
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function getCallData(ctx: Context, call: Call, event: EventData): Promise<CallData> {
+async function getCallData(ctx: CommonContext, call: Call, event: EventData): Promise<CallData> {
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
@@ -177,7 +178,7 @@ async function getCallData(ctx: Context, call: Call, event: EventData): Promise<
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTokenCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -189,7 +190,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function tokenCreated(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -10,16 +10,16 @@ import {
     Extrinsic,
     MultiTokensCollectionAccountCreated,
 } from '../../../model'
-// eslint-disable-next-line import/no-cycle
-import { Context, getAccount } from '../../../processor'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
     accountId: Uint8Array
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionAccountCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -30,7 +30,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function collectionAccountCreated(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
@@ -41,7 +41,7 @@ export async function collectionAccountCreated(
         where: { id: data.collectionId.toString() },
     })
 
-    const account = await getAccount(ctx, data.accountId)
+    const account = await getOrCreateAccount(ctx, data.accountId)
     const collectionAccount = new CollectionAccount({
         id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
         isFrozen: false,

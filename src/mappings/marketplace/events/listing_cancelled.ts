@@ -1,3 +1,5 @@
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
 import {
@@ -8,17 +10,15 @@ import {
     ListingStatusType,
     MarketplaceListingCancelled,
 } from '../../../model'
-import { Context } from '../../../processor'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     listingId: Uint8Array
 }
 
-function getEventData(ctx: Context, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceListingCancelledEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -29,7 +29,7 @@ function getEventData(ctx: Context, event: Event): EventData {
 }
 
 export async function listingCancelled(
-    ctx: Context,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
