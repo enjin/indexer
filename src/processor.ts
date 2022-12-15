@@ -1,15 +1,14 @@
-/* eslint-disable no-console */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexToU8a } from '@polkadot/util'
+import { EntityManager } from 'typeorm'
+import _ from 'lodash'
 import config from './config'
 import { DEFAULT_PORT } from './common/consts'
 import { Event, Extrinsic, Fee } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
-import { EntityManager } from 'typeorm'
-import _ from 'lodash'
 import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
 

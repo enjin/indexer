@@ -13,7 +13,7 @@ import {
     ListingStatusType,
     MarketplaceAuctionFinalized,
 } from '../../../model'
-import { Bid } from '../../../types/generated/v6'
+import { Bid } from '../../../types/generated/v3000'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
