@@ -47,7 +47,7 @@ async function getStorageData(
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV2) {
-        const data = await storage.getAsEfinityV2(account, collectionId, tokenId)
+        const data = await storage.asEfinityV2.get(account, collectionId, tokenId)
         if (!data) return undefined
 
         return {
@@ -61,7 +61,7 @@ async function getStorageData(
         }
     }
     if (storage.isEfinityV3) {
-        const data = await storage.getAsEfinityV3(account, collectionId, tokenId)
+        const data = await storage.asEfinityV3.get(account, collectionId, tokenId)
 
         if (!data) return undefined
         return data
