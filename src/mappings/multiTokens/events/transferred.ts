@@ -4,10 +4,8 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensTransferred, TokenAccount } from '../../../model'
-import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { Approval } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint
@@ -18,16 +16,6 @@ interface EventData {
     amount: bigint
 }
 
-interface StorageData {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
-}
-
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTransferredEvent(ctx, event)
 
@@ -36,40 +24,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         return { collectionId, tokenId, operator, from, to, amount }
     }
     throw new UnknownVersionError(data.constructor.name)
-}
-
-async function getStorageData(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    account: Uint8Array,
-    collectionId: bigint,
-    tokenId: bigint
-): Promise<StorageData | undefined> {
-    const storage = new MultiTokensTokenAccountsStorage(ctx, block)
-    if (!storage.isExists) return undefined
-
-    if (storage.isEfinityV2) {
-        const data = await storage.asEfinityV2.get(account, collectionId, tokenId)
-
-        if (!data) return undefined
-
-        return {
-            balance: data.balance,
-            reservedBalance: data.reserved,
-            lockedBalance: 0n,
-            namedReserves: data.namedReserves,
-            locks: [],
-            approvals: data.approvals,
-            isFrozen: data.isFrozen,
-        }
-    }
-    if (storage.isEfinityV3) {
-        const data = await storage.asEfinityV3.get(account, collectionId, tokenId)
-
-        if (!data) return undefined
-        return data
-    }
-    throw new UnknownVersionError(storage.constructor.name)
 }
 
 export async function transferred(
@@ -83,34 +37,34 @@ export async function transferred(
     const fromAddress = u8aToHex(data.from)
     const fromTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
+        relations: { account: true, token: true },
     })
 
     if (fromTokenAccount) {
         fromTokenAccount.balance -= data.amount
         fromTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(fromTokenAccount)
+
+        const { account, token } = fromTokenAccount
+        account.tokenValues -= data.amount * token.unitPrice
+        await ctx.store.save(account)
     }
 
     const toAddress = u8aToHex(data.to)
     const toTokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
+        relations: { account: true, token: true },
     })
 
     if (toTokenAccount) {
         toTokenAccount.balance += data.amount
         toTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(toTokenAccount)
-    }
 
-    // if (fromTokenAccount && toTokenAccount) {
-    //     new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenTransfer(
-    //         fromTokenAccount.account,
-    //         toTokenAccount.account,
-    //         data.amount
-    //     )
-    // }
+        const { account, token } = toTokenAccount
+        account.tokenValues += data.amount * token.unitPrice
+        await ctx.store.save(account)
+    }
 
     return new EventModel({
         id: item.event.id,

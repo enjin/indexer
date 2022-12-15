@@ -240,6 +240,7 @@ type Account @entity {
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
 
   # Extras
+  tokenValues: BigInt!
   lastUpdateBlock: Int
 }
 
