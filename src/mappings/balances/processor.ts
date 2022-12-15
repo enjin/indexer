@@ -240,6 +240,7 @@ async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountId
                         feeFrozen: accountInfo.data.feeFrozen,
                         miscFrozen: accountInfo.data.miscFrozen,
                     }),
+                    tokenValues: 0n,
                 })
             )
         }
