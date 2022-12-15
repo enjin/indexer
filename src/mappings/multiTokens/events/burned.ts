@@ -79,14 +79,6 @@ export async function burned(
 
     const address = u8aToHex(data.accountId)
 
-    const token = await ctx.store.findOne<Token>(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-    })
-    if (token) {
-        token.supply -= data.amount
-        await ctx.store.save(token)
-    }
-
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
@@ -96,10 +88,21 @@ export async function burned(
         tokenAccount.balance -= data.amount
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
-        // new EventService(ctx, new Token({ id: `${data.collectionId}-${data.tokenId}` })).MultiTokenBurn(
-        //     tokenAccount.account,
-        //     data.amount
-        // )
+    }
+
+    const token = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+
+    if (token) {
+        token.supply -= data.amount
+        await ctx.store.save(token)
+    }
+
+    if (tokenAccount && token) {
+        const { account } = tokenAccount
+        account.tokenValues -= data.amount * token.unitPrice
+        await ctx.store.save(account)
     }
 
     return new EventModel({

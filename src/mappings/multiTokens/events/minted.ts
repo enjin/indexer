@@ -4,11 +4,9 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
-import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { Approval } from '../../../types/generated/v3000'
 
 interface EventData {
     collectionId: bigint
@@ -16,16 +14,6 @@ interface EventData {
     issuer: Uint8Array
     recipient: Uint8Array
     amount: bigint
-}
-
-interface StorageData {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
@@ -36,40 +24,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         return { collectionId, tokenId, issuer, recipient, amount }
     }
     throw new UnknownVersionError(data.constructor.name)
-}
-
-async function getStorageData(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    account: Uint8Array,
-    collectionId: bigint,
-    tokenId: bigint
-): Promise<StorageData | undefined> {
-    const storage = new MultiTokensTokenAccountsStorage(ctx, block)
-    if (!storage.isExists) return undefined
-
-    if (storage.isEfinityV2) {
-        const data = await storage.asEfinityV2.get(account, collectionId, tokenId)
-
-        if (!data) return undefined
-
-        return {
-            balance: data.balance,
-            reservedBalance: data.reserved,
-            namedReserves: data.namedReserves,
-            approvals: data.approvals,
-            isFrozen: data.isFrozen,
-            lockedBalance: 0n,
-            locks: [],
-        }
-    }
-    if (storage.isEfinityV3) {
-        const data = await storage.asEfinityV3.get(account, collectionId, tokenId)
-
-        if (!data) return undefined
-        return data
-    }
-    throw new UnknownVersionError(storage.constructor.name)
 }
 
 export async function minted(
@@ -92,11 +46,16 @@ export async function minted(
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
     })
 
     tokenAccount.balance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
     await ctx.store.save(tokenAccount)
+
+    const { account } = tokenAccount
+    account.tokenValues += data.amount * token.unitPrice
+    await ctx.store.save(account)
 
     return new EventModel({
         id: item.event.id,

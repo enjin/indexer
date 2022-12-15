@@ -37,6 +37,9 @@ export class Account {
     @OneToMany_(() => TokenAccount, e => e.account)
     tokenAccounts!: TokenAccount[]
 
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    tokenValues!: bigint
+
     @Column_("int4", {nullable: true})
     lastUpdateBlock!: number | undefined | null
 }
