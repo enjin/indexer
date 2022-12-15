@@ -16,7 +16,7 @@ import { TokenMarketBehavior } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
 import { TokenMarketBehavior_HasRoyalty } from '../../../types/generated/v3000'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
@@ -26,7 +26,7 @@ interface EventData {
     listingForbidden: boolean | undefined
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -42,7 +42,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 async function getBehavior(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
     if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
@@ -62,7 +62,7 @@ async function getBehavior(
 }
 
 export async function tokenMutated(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -12,7 +12,7 @@ import {
     Token,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -35,7 +35,7 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
     return metadata
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensAttributeRemovedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -46,7 +46,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function attributeRemoved(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

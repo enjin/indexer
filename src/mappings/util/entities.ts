@@ -1,10 +1,10 @@
 import { u8aToHex } from '@polkadot/util'
 import { Account, Balance } from '../../model'
-import { BlockHandlerContext, CallHandlerContext, CommonHandlerContext, EventHandlerContext } from '../types/contexts'
+import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
 import { encodeId, isAdressSS58 } from '../../common/tools'
 
 export async function getOrCreateAccount(
-    ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonHandlerContext,
+    ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonContext,
     publicKey: Uint8Array
 ): Promise<Account> {
     const pkHex = u8aToHex(publicKey)

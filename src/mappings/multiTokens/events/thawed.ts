@@ -13,7 +13,7 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../../model'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3000'
 
@@ -25,7 +25,7 @@ interface EventData {
     tokenAccount: Uint8Array | undefined
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensThawedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -73,7 +73,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function thawed(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

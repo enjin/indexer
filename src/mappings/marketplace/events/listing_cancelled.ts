@@ -12,13 +12,13 @@ import {
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     listingId: Uint8Array
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceListingCancelledEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -29,7 +29,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function listingCancelled(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

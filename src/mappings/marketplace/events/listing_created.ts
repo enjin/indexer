@@ -21,7 +21,7 @@ import {
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/v3000'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
@@ -29,7 +29,7 @@ interface EventData {
     listing: ListingEvent
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -40,7 +40,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function listingCreated(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

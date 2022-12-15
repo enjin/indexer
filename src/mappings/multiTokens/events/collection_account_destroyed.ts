@@ -4,7 +4,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountDestroyedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../../model'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
 interface EventData {
@@ -12,7 +12,7 @@ interface EventData {
     accountId: Uint8Array
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionAccountDestroyedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -23,7 +23,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function collectionAccountDestroyed(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionAccountDestroyed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

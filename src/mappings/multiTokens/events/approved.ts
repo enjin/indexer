@@ -14,7 +14,7 @@ import {
 import { encodeId } from '../../../common/tools'
 import { Event } from '../../../types/generated/support'
 import { MultiTokensApprovedEvent } from '../../../types/generated/events'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     collectionId: bigint
@@ -25,7 +25,7 @@ interface EventData {
     expiration: number | undefined
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensApprovedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -43,7 +43,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function approved(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Approved', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

@@ -4,9 +4,9 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import { AuctionState, Bid, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceBidPlaced } from '../../../model'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { Bid as BidEvent } from '../../../types/generated/v3000'
-import { CommonHandlerContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -15,7 +15,7 @@ interface EventData {
     bid: BidEvent
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -26,7 +26,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function bidPlaced(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

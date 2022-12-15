@@ -18,7 +18,7 @@ import {
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/v3000'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface CallData {
@@ -34,7 +34,7 @@ interface EventData {
     owner: Uint8Array
 }
 
-async function getMarket(ctx: CommonHandlerContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
@@ -44,7 +44,7 @@ async function getMarket(ctx: CommonHandlerContext, royalty: DefaultRoyalty): Pr
     })
 }
 
-async function getCallData(ctx: CommonHandlerContext, call: Call): Promise<CallData> {
+async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
     const data = new MultiTokensCreateCollectionCall(ctx, call)
 
     if (data.isEfinityV2) {
@@ -75,7 +75,7 @@ async function getCallData(ctx: CommonHandlerContext, call: Call): Promise<CallD
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -86,7 +86,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function collectionCreated(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

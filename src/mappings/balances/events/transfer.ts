@@ -5,7 +5,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { BalancesTransferEvent } from '../../../types/generated/events'
 import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     from: Uint8Array
@@ -13,7 +13,7 @@ interface EventData {
     amount: bigint
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new BalancesTransferEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -28,7 +28,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function transfer(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Balances.Transfer', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

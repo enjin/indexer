@@ -6,7 +6,7 @@ import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { MultiTokensTokenAccountsStorage } from '../../../types/generated/storage'
 import { isNonFungible } from '../utils/helpers'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { Approval } from '../../../types/generated/v3000'
 
@@ -28,7 +28,7 @@ interface StorageData {
     isFrozen: boolean
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensMintedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -39,7 +39,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 async function getStorageData(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     account: Uint8Array,
     collectionId: bigint,
@@ -73,7 +73,7 @@ async function getStorageData(
 }
 
 export async function minted(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

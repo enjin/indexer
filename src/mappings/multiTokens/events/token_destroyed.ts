@@ -12,7 +12,7 @@ import {
     MultiTokensTokenDestroyed,
     Token,
 } from '../../../model'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 
@@ -22,7 +22,7 @@ interface EventData {
     caller: Uint8Array
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTokenDestroyedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -33,7 +33,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function tokenDestroyed(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

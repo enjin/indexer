@@ -17,7 +17,7 @@ import {
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 
 interface EventData {
     listingId: Uint8Array
@@ -28,7 +28,7 @@ interface EventData {
     royalty: bigint
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceListingFilledEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -39,7 +39,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function listingFilled(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

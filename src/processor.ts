@@ -11,7 +11,7 @@ import * as map from './mappings'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { CommonHandlerContext } from './mappings/types/contexts'
+import { CommonContext } from './mappings/types/contexts'
 
 const eventOptions = {
     data: {
@@ -80,7 +80,7 @@ const processor = new SubstrateBatchProcessor()
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
 
-async function handleEvents(ctx: CommonHandlerContext, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
+async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             return map.multiTokens.events.approved(ctx, block, item)
@@ -170,16 +170,16 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         // console.log(`Processing block ${block.header.height}`)
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
-            await createEfiToken(ctx as unknown as CommonHandlerContext, block.header)
+            await createEfiToken(ctx as unknown as CommonContext, block.header)
             // eslint-disable-next-line no-await-in-loop
-            await chainState(ctx as unknown as CommonHandlerContext, block.header)
+            await chainState(ctx as unknown as CommonContext, block.header)
         }
 
         // eslint-disable-next-line no-restricted-syntax
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
-                const event = await handleEvents(ctx as unknown as CommonHandlerContext, block.header, item)
+                const event = await handleEvents(ctx as unknown as CommonContext, block.header, item)
                 if (event) {
                     events.push(event)
                 }
@@ -196,7 +196,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 ) as string
 
                 // eslint-disable-next-line no-await-in-loop
-                const signer = await getOrCreateAccount(ctx as unknown as CommonHandlerContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                 const callName = call.name.split('.')
                 const extrinsic = new Extrinsic({
                     id,
@@ -232,6 +232,6 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
-        await chainState(ctx as unknown as CommonHandlerContext, lastBlock)
+        await chainState(ctx as unknown as CommonContext, lastBlock)
     }
 })

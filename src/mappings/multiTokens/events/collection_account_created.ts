@@ -10,7 +10,7 @@ import {
     Extrinsic,
     MultiTokensCollectionAccountCreated,
 } from '../../../model'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -19,7 +19,7 @@ interface EventData {
     accountId: Uint8Array
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionAccountCreatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -30,7 +30,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function collectionAccountCreated(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

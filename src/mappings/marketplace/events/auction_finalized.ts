@@ -14,7 +14,7 @@ import {
     MarketplaceAuctionFinalized,
 } from '../../../model'
 import { Bid } from '../../../types/generated/v6'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 
@@ -25,7 +25,7 @@ interface EventData {
     royalty: bigint
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MarketplaceAuctionFinalizedEvent(ctx, event)
 
     if (data.isEfinityV3000) {
@@ -36,7 +36,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
 }
 
 export async function auctionFinalized(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {

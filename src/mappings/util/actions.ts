@@ -1,4 +1,4 @@
-import { CommonHandlerContext } from '../types/contexts'
+import { CommonContext } from '../types/contexts'
 import { ActionData } from '../types/data'
 
 export function getMeta(data: ActionData) {
@@ -11,7 +11,7 @@ export function getMeta(data: ActionData) {
     }
 }
 
-export function createPrevStorageContext(ctx: CommonHandlerContext) {
+export function createPrevStorageContext(ctx: CommonContext) {
     return {
         // eslint-disable-next-line no-underscore-dangle
         _chain: ctx._chain,

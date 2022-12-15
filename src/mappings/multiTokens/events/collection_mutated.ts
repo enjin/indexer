@@ -15,7 +15,7 @@ import {
 } from '../../../model'
 import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
 import { Event, Option } from '../../../types/generated/support'
-import { CommonHandlerContext } from '../../types/contexts'
+import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
@@ -25,7 +25,7 @@ interface EventData {
     explicitRoyaltyCurrencies: AssetId[] | undefined
 }
 
-function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
     if (data.isEfinityV2) {
@@ -49,7 +49,7 @@ function getEventData(ctx: CommonHandlerContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-async function getMarket(ctx: CommonHandlerContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
@@ -61,7 +61,7 @@ async function getMarket(ctx: CommonHandlerContext, royalty: DefaultRoyalty): Pr
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function collectionMutated(
-    ctx: CommonHandlerContext,
+    ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
