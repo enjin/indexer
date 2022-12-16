@@ -39,6 +39,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             expiration,
         }
     }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
