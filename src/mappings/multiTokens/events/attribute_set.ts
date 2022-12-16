@@ -2,10 +2,22 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
-import { Attribute, Collection, Event as EventModel, Extrinsic, Metadata, MultiTokensAttributeSet, Token } from '../../../model'
+import {
+    Attribute,
+    Collection,
+    CollectionStats,
+    Event as EventModel,
+    Extrinsic,
+    Metadata,
+    MintPolicy,
+    MultiTokensAttributeSet,
+    Token,
+    TransferPolicy,
+} from '../../../model'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
@@ -33,9 +45,32 @@ export async function attributeSet(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+    let collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
+    if (!collection) {
+        collection = new Collection({
+            id: data.collectionId.toString(),
+            owner: await getOrCreateAccount(ctx, new Uint8Array(32).fill(0)),
+            mintPolicy: new MintPolicy({
+                forceSingleMint: false,
+            }),
+            stats: new CollectionStats({
+                lastSale: null,
+                floorPrice: null,
+                highestSale: null,
+                tokenCount: 0,
+                salesCount: 0,
+                rank: 0,
+                marketCap: 0n,
+                volume: 0n,
+            }),
+            attributeCount: 0,
+            totalDeposit: 0n,
+            createdAt: new Date(block.timestamp),
+        })
+        await ctx.store.save(collection)
+    }
 
     let token = null
     if (data.tokenId) {

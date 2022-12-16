@@ -140,7 +140,7 @@ export async function collectionCreated(
         createdAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(Collection, collection as any)
+    await ctx.store.save(collection)
 
     // eslint-disable-next-line no-restricted-syntax
     for (const currency of callData.explicitRoyaltyCurrencies) {
