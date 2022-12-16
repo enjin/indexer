@@ -132,6 +132,28 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
+        } else if (data.isV3011) {
+            const { collectionId } = data.asV3011
+            const { recipients } = data.asV3011
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: params.unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
         } else {
             throw new UnknownVersionError(data.constructor.name)
         }

@@ -1,6 +1,7 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
+import * as v3011 from './v3011'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -758,6 +759,21 @@ export class CollatorStakingCandidateJoinedEvent {
      */
     get asEfinityV2(): {accountId: Uint8Array, amount: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A new candidate joined the list of candidates.
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('CollatorStaking.CandidateJoined') === 'f3fde36c9684eb79de0a1b490535e0f48f04cf0a348860f884f7e2ead56e55d9'
+    }
+
+    /**
+     * A new candidate joined the list of candidates.
+     */
+    get asV3011(): {accountId: Uint8Array, amount: bigint, rewardsCut: number} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2744,6 +2760,35 @@ export class DmpQueueWeightExhaustedEvent {
     }
 }
 
+export class EfinityXcmMinimumWeightUpdatedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EfinityXcm.MinimumWeightUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Xcm fee and weight updated
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('EfinityXcm.MinimumWeightUpdated') === 'cbc59a96eca9abb6146043e06a31df11c3f35b6bbf0fc1f34e6ef6998a05c680'
+    }
+
+    /**
+     * Xcm fee and weight updated
+     */
+    get asV3011(): v3011.MinimumWeightFeePair {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class ExtrinsicPauseExtrinsicPausedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -2939,6 +2984,21 @@ export class FuelTanksAccountRuleDataRemovedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Account data of `AccountId` was removed from `RuleSetId`
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('FuelTanks.AccountRuleDataRemoved') === '5a236b56107bcad5eb7d987ef926899db96b36ea5b6671becf5e98d5053e95e7'
+    }
+
+    /**
+     * Account data of `AccountId` was removed from `RuleSetId`
+     */
+    get asV3011(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: v3011.DispatchRuleKind} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class FuelTanksCallDispatchedEvent {
@@ -3111,6 +3171,21 @@ export class FuelTanksFuelTankMutatedEvent {
      */
     get asEfinityV3000(): {tankId: Uint8Array, mutation: efinityV3000.DefaultTankMutation} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A `FuelTank` was mutated
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('FuelTanks.FuelTankMutated') === 'bd9b1c3917349e5b63b5cfa4994a2cfe8969b43bab28ae51dbafc0cfd500ceac'
+    }
+
+    /**
+     * A `FuelTank` was mutated
+     */
+    get asV3011(): {tankId: Uint8Array, mutation: v3011.DefaultTankMutation} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3360,6 +3435,35 @@ export class MarketplaceListingFilledEvent {
      */
     get asEfinityV3000(): {listingId: Uint8Array, buyer: Uint8Array, amountFilled: bigint, amountRemaining: bigint, protocolFee: bigint, royalty: bigint} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MarketplaceProtocolFeeSetEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Marketplace.ProtocolFeeSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Protocol fee was set
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('Marketplace.ProtocolFeeSet') === '164c71fe8ee3317ae364f8c5528ba44b7eddb84e7a9a394e59bb344ad0ec2293'
+    }
+
+    /**
+     * Protocol fee was set
+     */
+    get asV3011(): {protocolFee: number} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4133,6 +4237,21 @@ export class MultiTokensCollectionMutatedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A `Collection` was mutated
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.CollectionMutated') === 'd7b85f625e23a04082ca1038b142ad4c56b4ebeb4ab61685f39f6c00eddb78f1'
+    }
+
+    /**
+     * A `Collection` was mutated
+     */
+    get asV3011(): {collectionId: bigint, mutation: v3011.DefaultCollectionMutation} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensCollectionUpdatedEvent {
@@ -4237,6 +4356,35 @@ export class MultiTokensFrozenEvent {
     }
 }
 
+export class MultiTokensMigrationStatusUpdatedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokens.MigrationStatusUpdated')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Migration stage updated
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.MigrationStatusUpdated') === 'b6a56869fab9a6ad06b131f71f90c0f5cc964731c5de07e117d06485e0c52538'
+    }
+
+    /**
+     * Migration stage updated
+     */
+    get asV3011(): {stage: v3011.MigrationStage} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class MultiTokensMintedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -4262,6 +4410,21 @@ export class MultiTokensMintedEvent {
      */
     get asEfinityV2(): {collectionId: bigint, tokenId: bigint, issuer: Uint8Array, recipient: Uint8Array, amount: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Units of a `Token` were minted
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.Minted') === 'f8fd3b51f96a65531998fe85506037a1c5256b97febbfad202a0a35882f49ae1'
+    }
+
+    /**
+     * Units of a `Token` were minted
+     */
+    get asV3011(): {collectionId: bigint, tokenId: bigint, issuer: v3011.RootOrSigned, recipient: Uint8Array, amount: bigint} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4569,6 +4732,21 @@ export class MultiTokensTokenCreatedEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A `Token` was created
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenCreated') === '119f558a8615f102588d5efe87fe923338791a100e0d848069f41e8db95e7a7e'
+    }
+
+    /**
+     * A `Token` was created
+     */
+    get asV3011(): {collectionId: bigint, tokenId: bigint, issuer: v3011.RootOrSigned, initialSupply: bigint} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensTokenDestroyedEvent {
@@ -4627,6 +4805,21 @@ export class MultiTokensTokenMutatedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A `Token` was mutated
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenMutated') === '41147a64ffaf9cf38e6e98d569b1d12e72b237d26d33a28c99ae74af83fd32b4'
+    }
+
+    /**
+     * A `Token` was mutated
+     */
+    get asV3011(): {collectionId: bigint, tokenId: bigint, mutation: v3011.DefaultTokenMutation} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensTokenUpdatedEvent {
@@ -4669,6 +4862,21 @@ export class MultiTokensTokenUpdatedEvent {
      */
     get asEfinityV3000(): {collectionId: bigint, tokenId: bigint, value: (efinityV3000.Token | undefined)} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenUpdated') === 'b4fd2aa8e0f9b079dd38a7e96e713d6d4dacb3ac6c818ee8826df2547773ccb8'
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get asV3011(): {collectionId: bigint, tokenId: bigint, value: (v3011.Token | undefined)} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7228,6 +7436,64 @@ export class TransactionPaymentTransactionFeePaidEvent {
     }
 }
 
+export class UnknownTokensDepositedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'UnknownTokens.Deposited')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Deposit success.
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('UnknownTokens.Deposited') === '5618a3d9662352222101d08b90934710ebf739425cdbaf5ff63a3c258c219c8a'
+    }
+
+    /**
+     * Deposit success.
+     */
+    get asV3011(): {asset: v3011.V1MultiAsset, who: v3011.V1MultiLocation} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class UnknownTokensWithdrawnEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'UnknownTokens.Withdrawn')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Withdraw success.
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('UnknownTokens.Withdrawn') === '5618a3d9662352222101d08b90934710ebf739425cdbaf5ff63a3c258c219c8a'
+    }
+
+    /**
+     * Withdraw success.
+     */
+    get asV3011(): {asset: v3011.V1MultiAsset, who: v3011.V1MultiLocation} {
+        assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class UtilityBatchCompletedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -7519,6 +7785,35 @@ export class VestingVestingSchedulesUpdatedEvent {
      */
     get asEfinityV2(): {who: Uint8Array} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class XTokensTransferredMultiAssetsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'XTokens.TransferredMultiAssets')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Transferred `MultiAsset` with fee.
+     */
+    get isV3011(): boolean {
+        return this._chain.getEventHash('XTokens.TransferredMultiAssets') === '19a61ff727b39e06bdac9248dc278a5be6292a6af670958a6338915a3e003249'
+    }
+
+    /**
+     * Transferred `MultiAsset` with fee.
+     */
+    get asV3011(): {sender: Uint8Array, assets: v3011.V1MultiAsset[], fee: v3011.V1MultiAsset, dest: v3011.V1MultiLocation} {
+        assert(this.isV3011)
         return this._chain.decodeEvent(this.event)
     }
 }
