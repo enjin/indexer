@@ -43,12 +43,12 @@ const processor = new SubstrateBatchProcessor()
     } as const)
     .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
-    // .addEvent('MultiTokens.CollectionMutated', eventOptions)
+    .addEvent('MultiTokens.CollectionMutated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
     .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
     .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.TokenDestroyed', eventOptions)
-    // .addEvent('MultiTokens.TokenMutated', eventOptions)
+    .addEvent('MultiTokens.TokenMutated', eventOptions)
     .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
     .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
     .addEvent('MultiTokens.Minted', eventOptions)
@@ -97,8 +97,8 @@ async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Ite
             return map.multiTokens.events.collectionCreated(ctx, block, item)
         case 'MultiTokens.CollectionDestroyed':
             return map.multiTokens.events.collectionDestroyed(ctx, block, item)
-        // case 'MultiTokens.CollectionMutated':
-        //     return map.multiTokens.events.collectionMutated(ctx, block, item)
+        case 'MultiTokens.CollectionMutated':
+            return map.multiTokens.events.collectionMutated(ctx, block, item)
         case 'MultiTokens.Frozen':
             return map.multiTokens.events.frozen(ctx, block, item)
         case 'MultiTokens.Minted':
@@ -113,8 +113,8 @@ async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Ite
             return map.multiTokens.events.tokenCreated(ctx, block, item)
         case 'MultiTokens.TokenDestroyed':
             return map.multiTokens.events.tokenDestroyed(ctx, block, item)
-        // case 'MultiTokens.TokenMutated':
-        //     return map.multiTokens.events.tokenMutated(ctx, block, item)
+        case 'MultiTokens.TokenMutated':
+            return map.multiTokens.events.tokenMutated(ctx, block, item)
         case 'MultiTokens.Transferred':
             return map.multiTokens.events.transferred(ctx, block, item)
         case 'MultiTokens.Unapproved':
