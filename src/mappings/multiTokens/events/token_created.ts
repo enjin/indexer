@@ -225,6 +225,13 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         const { collectionId, tokenId, issuer, initialSupply } = data.asEfinityV2
         return { collectionId, tokenId, issuer, initialSupply }
     }
+    if (data.isV3011) {
+        const { collectionId, tokenId, issuer, initialSupply } = data.asV3011
+        if (issuer.__kind === 'Signed') {
+            return { collectionId, tokenId, issuer: issuer.value, initialSupply }
+        }
+        return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), initialSupply }
+    }
     throw new UnknownVersionError(data.constructor.name)
 }
 
