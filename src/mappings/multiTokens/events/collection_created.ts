@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
-import { MultiTokensCreateCollectionCall } from '../../../types/generated/calls'
+import { MultiTokensCreateCollectionCall, MultiTokensForceCreateCollectionCall } from '../../../types/generated/calls'
 import {
     Collection,
     CollectionStats,
@@ -45,7 +45,13 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
 }
 
 async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
-    const data = new MultiTokensCreateCollectionCall(ctx, call)
+    let data: any
+
+    if (call.name === 'MultiTokens.force_create_collection') {
+        data = new MultiTokensForceCreateCollectionCall(ctx, call)
+    } else {
+        data = new MultiTokensCreateCollectionCall(ctx, call)
+    }
 
     if (data.isEfinityV2) {
         const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV2.descriptor.policy.mint
