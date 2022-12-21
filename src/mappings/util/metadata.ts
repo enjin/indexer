@@ -31,17 +31,22 @@ async function fetchMetadata(url: string) {
     return null
 }
 
-function parseMedia(value: string | Media) {
+function parseMedia(value: string | Media[]) {
     try {
         const media = typeof value === 'string' ? JSON.parse(value) : value
-        return media.map(
-            (_media: Media) =>
-                new MetadataMedia({
-                    url: _media.url,
-                    type: _media.type,
-                    alt: _media.alt,
-                })
-        )
+        if (typeof media === 'object' && Array.isArray(media)) {
+            return media
+                .filter((_media) => _media.url)
+                .map(
+                    (_media: Media) =>
+                        new MetadataMedia({
+                            url: _media.url,
+                            type: _media.type,
+                            alt: _media.alt,
+                        })
+                )
+        }
+        return null
     } catch (e) {
         return null
     }
@@ -130,7 +135,7 @@ function metadataParser(
         metadata.fallbackImage = externalMetadata.fallback_image
     }
     if (externalMetadata?.media) {
-        metadata.media = parseMedia(externalMetadata.media as unknown as string | Media)
+        metadata.media = parseMedia(externalMetadata.media)
     }
     if (legacy && externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
         metadata.attributes = parseEthereumProperties(externalMetadata.properties)
