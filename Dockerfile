@@ -33,7 +33,6 @@ COPY --from=builder /squid/lib lib
 ADD .env .env
 ADD db db
 ADD schema.graphql .
-# TODO: use shorter PROMETHEUS_PORT
 ENV PROCESSOR_PROMETHEUS_PORT 3000
 EXPOSE 3000
 EXPOSE 4000
@@ -44,4 +43,14 @@ CMD ["npm", "run", "processor:debug"]
 
 
 FROM squid AS query-node
-CMD ["npm", "run", "query-node:start"]
+CMD [
+    "npx",
+    "squid-graphql-server",
+    "--subscriptions",
+    "--dumb-cache", "in-memory",
+    "--dumb-cache-ttl", "12000",
+    "--dumb-cache-size", "1024",
+    "--dumb-cache-max-age", "12000",
+    "--max-root-fields", "10",
+    "--sql-statement-timeout", "1000"
+]
