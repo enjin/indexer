@@ -43,14 +43,4 @@ CMD ["npm", "run", "processor:debug"]
 
 
 FROM squid AS query-node
-CMD [
-    "npx",
-    "squid-graphql-server",
-    "--subscriptions",
-    "--dumb-cache", "in-memory",
-    "--dumb-cache-ttl", "12000",
-    "--dumb-cache-size", "1024",
-    "--dumb-cache-max-age", "12000",
-    "--max-root-fields", "10",
-    "--sql-statement-timeout", "1000"
-]
+CMD ["npx", "squid-graphql-server", "--subscriptions", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "12000", "--dumb-cache-size", "1024", "--dumb-cache-max-age", "12000", "--max-root-fields", "10", "--sql-statement-timeout", "3000"]
