@@ -1,0 +1,21 @@
+manifestVersion: subsquid.io/v0.1
+name: efinity
+version: 1010
+description: |-
+  A explorer like indexer for the Efinity network.
+
+build:
+
+deploy:
+  addons:
+    postgres:
+  secrets:
+    - SQD_DEBUG
+    - SELECTED_CHAIN
+    - ARCHIVE_ENDPOINT
+    - EFINITY_ENDPOINT
+    - CHAIN_STATE_HEIGHT
+  processor:
+    cmd: [ "node", "lib/processor" ]
+  api:
+    cmd: [ "npx", "squid-graphql-server", "--subscriptions", "--sql-statement-timeout", "1000" ]
