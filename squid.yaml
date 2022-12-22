@@ -2,7 +2,7 @@ manifestVersion: subsquid.io/v0.1
 name: efinity
 version: 1010
 description: |-
-  A explorer like indexer for the Efinity network.
+  An explorer-like indexer for the Efinity network.
 
 build:
 

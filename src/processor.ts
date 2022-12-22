@@ -33,7 +33,6 @@ const eventOptionsWithCall = {
 
 const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
-    .setPrometheusPort(config.port || DEFAULT_PORT)
     .setBlockRange(config.blockRange || { from: 0 })
     .addCall('*', {
         data: {
