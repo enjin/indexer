@@ -18,4 +18,14 @@ deploy:
   processor:
     cmd: [ "node", "lib/processor" ]
   api:
-    cmd: [ "npx", "squid-graphql-server", "--subscriptions", "--sql-statement-timeout", "1000" ]
+    cmd: [
+      "npx",
+      "squid-graphql-server",
+      "--subscriptions",
+      "--dumb-cache", "in-memory",
+      "--dumb-cache-ttl", "12000",
+      "--dumb-cache-size", "256",
+      "--dumb-cache-max-age", "12000",
+      "--max-root-fields", "10",
+      "--sql-statement-timeout", "1000"
+    ]
