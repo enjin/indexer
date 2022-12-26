@@ -5,6 +5,8 @@ npm run build
 
 docker compose build
 docker compose stop indexer_graphql indexer_processor indexer_db
+sleep 3
+
 docker volume rm indexer_indexer_db
 docker compose up -d indexer_db
 
