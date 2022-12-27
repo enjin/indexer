@@ -1,9 +1,14 @@
 #!/bin/sh
+make codegen
+make typegen
+npm run build
+
 docker compose build
-docker stop indexer_db indexer_graphql indexer_processor
-docker rm indexer_db indexer_graphql indexer_processor
-sudo rm -rf /opt/indexer/indexer_db/
+docker compose stop indexer_graphql indexer_processor indexer_db
+docker compose rm -f indexer_db
+docker volume rm indexer_indexer_db
 docker compose up -d indexer_db
+
 sleep 5
 #sudo rm -rf ./db/migrations/*
 #DB_HOST=localhost sh -c 'npx squid-typeorm-migration generate'

@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - /opt/indexer/indexer_db:/var/lib/postgresql/data
+      - indexer_db:/var/lib/postgresql/data
     ports:
       - "${DB_PORT}:5432"
       # command: ["postgres", "-c", "log_statement=all"]
@@ -40,7 +40,7 @@ services:
     image: cockroachdb/cockroach:latest-v21.2
     restart: unless-stopped
     volumes:
-      - /opt/indexer/archive_db:/cockroach/cockroach-data
+      - archive_db:/cockroach/cockroach-data
     ports:
       - "26257:26257"
     command: [
@@ -87,3 +87,7 @@ services:
       DB_USER: "root"
     ports:
       - "4444:3000"
+
+volumes:
+  indexer_db:
+  archive_db:
