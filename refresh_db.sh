@@ -1,8 +1,4 @@
 #!/bin/sh
-make codegen
-make typegen
-npm run build
-
 docker compose build
 docker compose stop indexer_graphql indexer_processor indexer_db
 docker compose rm -f indexer_db
