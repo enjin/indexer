@@ -16,7 +16,7 @@
   "dependencies": {
     "@keyv/redis": "^2.5.4",
     "@polkadot/api": "^9.10.5",
-    "@polkadot/keyring": "^10.2.2",
+    "@polkadot/keyring": "^10.2.3",
     "@polkadot/util": "^10.2.3",
     "@polkadot/util-crypto": "^10.2.3",
     "@subsquid/archive-registry": "^1.0.18",
