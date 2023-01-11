@@ -4,7 +4,6 @@ import { hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import config from './config'
-import { DEFAULT_PORT } from './common/consts'
 import { Event, Extrinsic, Fee } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
@@ -142,7 +141,7 @@ async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Ite
         case 'Marketplace.AuctionFinalized':
             return map.marketplace.events.auctionFinalized(ctx, block, item)
         default: {
-            console.log('Event not handled', item.name)
+            ctx.log.error(`Event not handled: ${item.name}`)
             return undefined
         }
     }

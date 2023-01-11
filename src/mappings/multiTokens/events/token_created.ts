@@ -200,7 +200,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (data.isEfinityV3000) {
+    }
+
+    if (data.isEfinityV3000) {
         const { collectionId } = data.asEfinityV3000
         const recipient = data.asEfinityV3000.recipient.value as Uint8Array
         const params = data.asEfinityV3000.params as DefaultMintParams_CreateToken
@@ -217,7 +219,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (data.isV3011) {
+    }
+
+    if (data.isV3011) {
         const { collectionId } = data.asV3011
         const recipient = data.asV3011.recipient.value as Uint8Array
         const params = data.asV3011.params as DefaultMintParams_CreateToken
@@ -234,7 +238,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             behavior,
             listingForbidden: params.listingForbidden ?? false,
         }
-    } else if (data.isV3012) {
+    }
+
+    if (data.isV3012) {
         const { collectionId } = data.asV3012
         const recipient = data.asV3012.recipient.value as Uint8Array
         const params = data.asV3012.params as DefaultMintParams_CreateToken
