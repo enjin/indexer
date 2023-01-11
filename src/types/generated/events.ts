@@ -2,6 +2,7 @@ import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v3011 from './v3011'
+import * as v3012 from './v3012'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -1654,6 +1655,21 @@ export class CouncilExecutedEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Council.Executed') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV3012(): {proposalHash: Uint8Array, result: v3012.Type_31} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CouncilMemberExecutedEvent {
@@ -1696,6 +1712,21 @@ export class CouncilMemberExecutedEvent {
      */
     get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Council.MemberExecuted') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV3012(): {proposalHash: Uint8Array, result: v3012.Type_31} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2378,6 +2409,21 @@ export class DemocracyTabledEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A public proposal has been tabled for referendum vote.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Democracy.Tabled') === '02ae149915d453560f4d12074a380744b3bbb2fe4c235e963f440e2d79243477'
+    }
+
+    /**
+     * A public proposal has been tabled for referendum vote.
+     */
+    get asV3012(): {proposalIndex: number, deposit: bigint} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class DemocracyUndelegatedEvent {
@@ -2620,6 +2666,21 @@ export class DmpQueueOverweightEnqueuedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Downward message is overweight and was placed in the overweight queue.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('DmpQueue.OverweightEnqueued') === '48bcfc366f324064903ddb05910b4d640e5483bb8166484d427fea6ec6716e87'
+    }
+
+    /**
+     * Downward message is overweight and was placed in the overweight queue.
+     */
+    get asV3012(): {messageId: Uint8Array, overweightIndex: bigint, requiredWeight: v3012.Weight} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class DmpQueueOverweightServicedEvent {
@@ -2664,6 +2725,21 @@ export class DmpQueueOverweightServicedEvent {
      */
     get asEfinityV3000(): {overweightIndex: bigint, weightUsed: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Downward message from the overweight queue was executed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('DmpQueue.OverweightServiced') === 'cbdd24f98e134531ca4f33efcf4821b24f3245563e8787df9ab5a61e3def65fe'
+    }
+
+    /**
+     * Downward message from the overweight queue was executed.
+     */
+    get asV3012(): {overweightIndex: bigint, weightUsed: v3012.Weight} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2758,6 +2834,112 @@ export class DmpQueueWeightExhaustedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * The weight limit for handling downward messages was reached.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('DmpQueue.WeightExhausted') === 'e2c32a245af45a14cf9180adc1d112198df722bb27ee76b5ea163138bb102466'
+    }
+
+    /**
+     * The weight limit for handling downward messages was reached.
+     */
+    get asV3012(): {messageId: Uint8Array, remainingWeight: v3012.Weight, requiredWeight: v3012.Weight} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class EfinityUtilityBatchDispatchedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EfinityUtility.BatchDispatched')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Batch of calls dispatched without errors.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchDispatched') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
+    }
+
+    /**
+     * Batch of calls dispatched without errors.
+     */
+    get asV3012(): null {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class EfinityUtilityBatchFailedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EfinityUtility.BatchFailed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchFailed') === '14dbb9456065a44deeed159d4dbd21796ec92754c0494d698c9bcc529d0f7279'
+    }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get asV3012(): {index: number, error: v3012.DispatchError} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class EfinityUtilityBatchPartiallyDispatchedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EfinityUtility.BatchPartiallyDispatched')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchPartiallyDispatched') === 'e8c77d115afb36887234bd760d38cb5959e266bb65d886545ef622726fe13b48'
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get asV3012(): [number, v3012.DispatchError][] {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class EfinityXcmMinimumWeightUpdatedEvent {
@@ -2785,6 +2967,21 @@ export class EfinityXcmMinimumWeightUpdatedEvent {
      */
     get asV3011(): v3011.MinimumWeightFeePair {
         assert(this.isV3011)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Xcm fee and weight updated
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('EfinityXcm.MinimumWeightUpdated') === 'ddee43169b1685802d4c88cf9e594d83e84d3f8d552ef4ce07966262920e3e23'
+    }
+
+    /**
+     * Xcm fee and weight updated
+     */
+    get asV3012(): v3012.MinimumWeightFeePair {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3057,6 +3254,21 @@ export class FuelTanksDispatchFailedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'f970b8f37c9a8c766c85b1f637a0df7bb53adc91cec3f125a4bb1ff5b20ad335'
+    }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get asV3012(): {tankId: Uint8Array, caller: Uint8Array, error: v3012.DispatchError} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class FuelTanksFreezeStateMutatedEvent {
@@ -3290,6 +3502,21 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
      */
     get asEfinityV3000(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: efinityV3000.DispatchError} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === '3dd605efa4203aa1ffebf8cde16e032dd68b40f907b4483f04a44e9a4770a65d'
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get asV3012(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: v3012.DispatchError} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5097,6 +5324,21 @@ export class MultisigMultisigExecutedEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Multisig.MultisigExecuted') === '303cb15b241c821ed02efcceb1d8f92a11e2a124e8eef73810b68e2592455034'
+    }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get asV3012(): {approving: Uint8Array, timepoint: v3012.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: v3012.Type_31} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultisigNewMultisigEvent {
@@ -5199,6 +5441,21 @@ export class ParachainSystemDownwardMessagesProcessedEvent {
      */
     get asEfinityV3000(): {weightUsed: efinityV3000.Weight, dmqHead: Uint8Array} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Downward messages were processed using the given weight.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('ParachainSystem.DownwardMessagesProcessed') === 'cf9eeacdba66ba832f6a2f98e5183e00967eed37902f126a525a42e65ffec630'
+    }
+
+    /**
+     * Downward messages were processed using the given weight.
+     */
+    get asV3012(): {weightUsed: v3012.Weight, dmqHead: Uint8Array} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5408,6 +5665,39 @@ export class ParachainSystemValidationFunctionStoredEvent {
      */
     get asEfinityV2(): null {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmAssetsClaimedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.AssetsClaimed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some assets have been claimed from an asset trap
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.AssetsClaimed') === '0663ceb24fcbc7c249c0d23c9fc7292b881f8cf18a5c2ade1e5b4a25b0a6d900'
+    }
+
+    /**
+     * Some assets have been claimed from an asset trap
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get asV3012(): [Uint8Array, v3012.V1MultiLocation, v3012.VersionedMultiAssets] {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5742,6 +6032,29 @@ export class PolkadotXcmNotifyOverweightEvent {
      */
     get asEfinityV3000(): [bigint, number, number, efinityV3000.Weight, efinityV3000.Weight] {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Query response has been received and query is removed. The registered notification could
+     * not be dispatched because the dispatch weight is greater than the maximum weight
+     * originally budgeted by this runtime for the query result.
+     * 
+     * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.NotifyOverweight') === '98a4f2faff58b2444156c088dd1e1b3efb6f82323dcf1a7c67d4d2e01b621c0d'
+    }
+
+    /**
+     * Query response has been received and query is removed. The registered notification could
+     * not be dispatched because the dispatch weight is greater than the maximum weight
+     * originally budgeted by this runtime for the query result.
+     * 
+     * \[ id, pallet index, call index, actual weight, max budgeted weight \]
+     */
+    get asV3012(): [bigint, number, number, v3012.Weight, v3012.Weight] {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6318,6 +6631,35 @@ export class SchedulerCallLookupFailedEvent {
     }
 }
 
+export class SchedulerCallUnavailableEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Scheduler.CallUnavailable')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The call for the provided hash was not found so the task has been aborted.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Scheduler.CallUnavailable') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
+    }
+
+    /**
+     * The call for the provided hash was not found so the task has been aborted.
+     */
+    get asV3012(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class SchedulerCanceledEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -6387,6 +6729,79 @@ export class SchedulerDispatchedEvent {
      */
     get asEfinityV3(): {task: [number, number], id: (Uint8Array | undefined), result: efinityV3.Type_29} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Dispatched some task.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Scheduler.Dispatched') === 'b67102cc706599639b8e52e776b81c51142dad43652e91e7e72197b7df9a63f4'
+    }
+
+    /**
+     * Dispatched some task.
+     */
+    get asV3012(): {task: [number, number], id: (Uint8Array | undefined), result: v3012.Type_31} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class SchedulerPeriodicFailedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Scheduler.PeriodicFailed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The given task was unable to be renewed since the agenda is full at that block.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Scheduler.PeriodicFailed') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
+    }
+
+    /**
+     * The given task was unable to be renewed since the agenda is full at that block.
+     */
+    get asV3012(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class SchedulerPermanentlyOverweightEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Scheduler.PermanentlyOverweight')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The given task can never be executed since it is overweight.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Scheduler.PermanentlyOverweight') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
+    }
+
+    /**
+     * The given task can never be executed since it is overweight.
+     */
+    get asV3012(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6552,6 +6967,21 @@ export class SudoSudidEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Sudo.Sudid') === '1b4cd14e3ef27d194a19f72ca99c0748bad5378dacf5240cdcde1536e1d11dad'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV3012(): {sudoResult: v3012.Type_31} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SudoSudoAsDoneEvent {
@@ -6609,6 +7039,21 @@ export class SudoSudoAsDoneEvent {
      */
     get asEfinityV3(): {sudoResult: efinityV3.Type_29} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Sudo.SudoAsDone') === '1b4cd14e3ef27d194a19f72ca99c0748bad5378dacf5240cdcde1536e1d11dad'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV3012(): {sudoResult: v3012.Type_31} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6714,6 +7159,21 @@ export class SystemExtrinsicFailedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * An extrinsic failed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('System.ExtrinsicFailed') === '36c29895cd15b6f845bb064a671635ce07ef9de9648695c2803020e8510d0fb3'
+    }
+
+    /**
+     * An extrinsic failed.
+     */
+    get asV3012(): {dispatchError: v3012.DispatchError, dispatchInfo: v3012.DispatchInfo} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SystemExtrinsicSuccessEvent {
@@ -6771,6 +7231,21 @@ export class SystemExtrinsicSuccessEvent {
      */
     get asEfinityV3000(): {dispatchInfo: efinityV3000.DispatchInfo} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An extrinsic completed successfully.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('System.ExtrinsicSuccess') === '6b78214e1591ecc2de1662ebf5ca93838612414a62415cde1cdd2962f8235a92'
+    }
+
+    /**
+     * An extrinsic completed successfully.
+     */
+    get asV3012(): {dispatchInfo: v3012.DispatchInfo} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7123,6 +7598,21 @@ export class TechnicalCommitteeExecutedEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.Executed') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV3012(): {proposalHash: Uint8Array, result: v3012.Type_31} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TechnicalCommitteeMemberExecutedEvent {
@@ -7165,6 +7655,21 @@ export class TechnicalCommitteeMemberExecutedEvent {
      */
     get asEfinityV3(): {proposalHash: Uint8Array, result: efinityV3.Type_29} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV3012(): {proposalHash: Uint8Array, result: v3012.Type_31} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7598,6 +8103,23 @@ export class UtilityBatchInterruptedEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Utility.BatchInterrupted') === '14dbb9456065a44deeed159d4dbd21796ec92754c0494d698c9bcc529d0f7279'
+    }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get asV3012(): {index: number, error: v3012.DispatchError} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class UtilityDispatchedAsEvent {
@@ -7640,6 +8162,21 @@ export class UtilityDispatchedAsEvent {
      */
     get asEfinityV3(): {result: efinityV3.Type_29} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Utility.DispatchedAs') === 'd15218d9451baa25e4e3c2b30a15d679f7c3c9aa3d43b64b531831430663eb58'
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get asV3012(): {result: v3012.Type_31} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7698,6 +8235,21 @@ export class UtilityItemFailedEvent {
      */
     get asEfinityV3000(): {error: efinityV3000.DispatchError} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('Utility.ItemFailed') === '58463e011dfd19c6786d4056e9e9452b33b4cb0fcf9c6e8c032e8ad7d16b0d34'
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get asV3012(): {error: v3012.DispatchError} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7963,6 +8515,21 @@ export class XcmpQueueFailEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Some XCM failed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('XcmpQueue.Fail') === 'decc5a8e77a358e7b33575a65892e5dedbe76a99a126bf560347fcea7818d5b0'
+    }
+
+    /**
+     * Some XCM failed.
+     */
+    get asV3012(): {messageHash: (Uint8Array | undefined), error: v3012.V2Error, weight: v3012.Weight} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class XcmpQueueOverweightEnqueuedEvent {
@@ -8005,6 +8572,21 @@ export class XcmpQueueOverweightEnqueuedEvent {
      */
     get asEfinityV3000(): {sender: number, sentAt: number, index: bigint, required: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An XCM exceeded the individual message weight budget.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('XcmpQueue.OverweightEnqueued') === '2ab73de7ff203da5932102451076b4fa8c2ccd8d1073f98653bf4d6f0c768abb'
+    }
+
+    /**
+     * An XCM exceeded the individual message weight budget.
+     */
+    get asV3012(): {sender: number, sentAt: number, index: bigint, required: v3012.Weight} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8051,6 +8633,21 @@ export class XcmpQueueOverweightServicedEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * An XCM from the overweight queue was executed with the given actual weight used.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('XcmpQueue.OverweightServiced') === '329a8814d84fbfabe17575c913cc1d0e29db3f8ce21b25c6e90d9e54913d763b'
+    }
+
+    /**
+     * An XCM from the overweight queue was executed with the given actual weight used.
+     */
+    get asV3012(): {index: bigint, used: v3012.Weight} {
+        assert(this.isV3012)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class XcmpQueueSuccessEvent {
@@ -8093,6 +8690,21 @@ export class XcmpQueueSuccessEvent {
      */
     get asEfinityV3000(): {messageHash: (Uint8Array | undefined), weight: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Some XCM was executed ok.
+     */
+    get isV3012(): boolean {
+        return this._chain.getEventHash('XcmpQueue.Success') === 'b84e46a58fb78d04c8748c4d236302e83484bfad9ec3579aa4e8f336f0efaca8'
+    }
+
+    /**
+     * Some XCM was executed ok.
+     */
+    get asV3012(): {messageHash: (Uint8Array | undefined), weight: v3012.Weight} {
+        assert(this.isV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
