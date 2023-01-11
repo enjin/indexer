@@ -12,7 +12,6 @@ import {
     MintPolicy,
     MultiTokensAttributeSet,
     Token,
-    TransferPolicy,
 } from '../../../model'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'

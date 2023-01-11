@@ -3,6 +3,7 @@ import {Chain, ChainContext, CallContext, Call, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v3000 from './v3000'
 import * as v3011 from './v3011'
+import * as v3012 from './v3012'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -1548,6 +1549,80 @@ export class ContractsCallCall {
         assert(this.isV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Makes a call to an account, optionally transferring some balance.
+     * 
+     * # Parameters
+     * 
+     * * `dest`: Address of the contract to call.
+     * * `value`: The balance to transfer from the `origin` to `dest`.
+     * * `gas_limit`: The gas limit enforced when executing the constructor.
+     * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
+     *   caller to pay for the storage consumed.
+     * * `data`: The input data to pass to the contract.
+     * 
+     * * If the account is a smart-contract account, the associated code will be
+     * executed and any value will be transferred.
+     * * If the account is a regular account, any value will be transferred.
+     * * If no account exists and the call value is not less than `existential_deposit`,
+     * a regular account will be created and any value will be transferred.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.call') === '9b1b707b0f5c537afca26d44d0081d29092614e330ff3810d328d0342d6a1845'
+    }
+
+    /**
+     * Makes a call to an account, optionally transferring some balance.
+     * 
+     * # Parameters
+     * 
+     * * `dest`: Address of the contract to call.
+     * * `value`: The balance to transfer from the `origin` to `dest`.
+     * * `gas_limit`: The gas limit enforced when executing the constructor.
+     * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
+     *   caller to pay for the storage consumed.
+     * * `data`: The input data to pass to the contract.
+     * 
+     * * If the account is a smart-contract account, the associated code will be
+     * executed and any value will be transferred.
+     * * If the account is a regular account, any value will be transferred.
+     * * If no account exists and the call value is not less than `existential_deposit`,
+     * a regular account will be created and any value will be transferred.
+     */
+    get asV3012(): {dest: v3012.MultiAddress, value: bigint, gasLimit: v3012.Weight, storageDepositLimit: (bigint | undefined), data: Uint8Array} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ContractsCallOldWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Contracts.call_old_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Deprecated version if [`Self::call`] for use in an in-storage `Call`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.call_old_weight') === 'd96c8a6656d7a4d6af6d5d0d51dd36e041c9ea8a92a7ead343d711addd74780f'
+    }
+
+    /**
+     * Deprecated version if [`Self::call`] for use in an in-storage `Call`.
+     */
+    get asV3012(): {dest: v3012.MultiAddress, value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), data: Uint8Array} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ContractsInstantiateCall {
@@ -1583,6 +1658,58 @@ export class ContractsInstantiateCall {
      */
     get asV3000(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
         assert(this.isV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Instantiates a contract from a previously deployed wasm binary.
+     * 
+     * This function is identical to [`Self::instantiate_with_code`] but without the
+     * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
+     * must be supplied.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.instantiate') === '144f181b3afbf1b5f0fd6ab12277b9e2a4600a80dfdf6fa1aab631acc55d1bd1'
+    }
+
+    /**
+     * Instantiates a contract from a previously deployed wasm binary.
+     * 
+     * This function is identical to [`Self::instantiate_with_code`] but without the
+     * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
+     * must be supplied.
+     */
+    get asV3012(): {value: bigint, gasLimit: v3012.Weight, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ContractsInstantiateOldWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Contracts.instantiate_old_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Deprecated version if [`Self::instantiate`] for use in an in-storage `Call`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.instantiate_old_weight') === '065e28d4aca8ef55389ab2cdeb357c40056320f063a3db0a6c9157a597c14b5b'
+    }
+
+    /**
+     * Deprecated version if [`Self::instantiate`] for use in an in-storage `Call`.
+     */
+    get asV3012(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1662,6 +1789,100 @@ export class ContractsInstantiateWithCodeCall {
      */
     get asV3000(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
         assert(this.isV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Instantiates a new contract from the supplied `code` optionally transferring
+     * some balance.
+     * 
+     * This dispatchable has the same effect as calling [`Self::upload_code`] +
+     * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
+     * also check the documentation of [`Self::upload_code`].
+     * 
+     * # Parameters
+     * 
+     * * `value`: The balance to transfer from the `origin` to the newly created contract.
+     * * `gas_limit`: The gas limit enforced when executing the constructor.
+     * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
+     *   from the caller to pay for the storage consumed.
+     * * `code`: The contract code to deploy in raw bytes.
+     * * `data`: The input data to pass to the contract constructor.
+     * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
+     * 
+     * Instantiation is executed as follows:
+     * 
+     * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
+     *   code.
+     * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
+     * - The destination address is computed based on the sender, code_hash and the salt.
+     * - The smart-contract account is created at the computed address.
+     * - The `value` is transferred to the new account.
+     * - The `deploy` function is executed in the context of the newly-created account.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.instantiate_with_code') === 'f764596bd52fce313b3fe7a10bf25a782558f542e67923c0437000f75dc3d1c8'
+    }
+
+    /**
+     * Instantiates a new contract from the supplied `code` optionally transferring
+     * some balance.
+     * 
+     * This dispatchable has the same effect as calling [`Self::upload_code`] +
+     * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
+     * also check the documentation of [`Self::upload_code`].
+     * 
+     * # Parameters
+     * 
+     * * `value`: The balance to transfer from the `origin` to the newly created contract.
+     * * `gas_limit`: The gas limit enforced when executing the constructor.
+     * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
+     *   from the caller to pay for the storage consumed.
+     * * `code`: The contract code to deploy in raw bytes.
+     * * `data`: The input data to pass to the contract constructor.
+     * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
+     * 
+     * Instantiation is executed as follows:
+     * 
+     * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
+     *   code.
+     * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
+     * - The destination address is computed based on the sender, code_hash and the salt.
+     * - The smart-contract account is created at the computed address.
+     * - The `value` is transferred to the new account.
+     * - The `deploy` function is executed in the context of the newly-created account.
+     */
+    get asV3012(): {value: bigint, gasLimit: v3012.Weight, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ContractsInstantiateWithCodeOldWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Contracts.instantiate_with_code_old_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Deprecated version if [`Self::instantiate_with_code`] for use in an in-storage `Call`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.instantiate_with_code_old_weight') === '2204435764a14a39d7c13f6cffbf98550fcaad4cba9d91306fe99d88a718a62c'
+    }
+
+    /**
+     * Deprecated version if [`Self::instantiate_with_code`] for use in an in-storage `Call`.
+     */
+    get asV3012(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1803,6 +2024,59 @@ export class ContractsUploadCodeCall {
      */
     get asV3000(): {code: Uint8Array, storageDepositLimit: (bigint | undefined)} {
         assert(this.isV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Upload new `code` without instantiating a contract from it.
+     * 
+     * If the code does not already exist a deposit is reserved from the caller
+     * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
+     * depends on the instrumented size of the the supplied `code`.
+     * 
+     * If the code already exists in storage it will still return `Ok` and upgrades
+     * the in storage version to the current
+     * [`InstructionWeights::version`](InstructionWeights).
+     * 
+     * - `determinism`: If this is set to any other value but [`Determinism::Deterministic`]
+     *   then the only way to use this code is to delegate call into it from an offchain
+     *   execution. Set to [`Determinism::Deterministic`] if in doubt.
+     * 
+     * # Note
+     * 
+     * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
+     * To avoid this situation a constructor could employ access control so that it can
+     * only be instantiated by permissioned entities. The same is true when uploading
+     * through [`Self::instantiate_with_code`].
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Contracts.upload_code') === '0611b158a1c5ea1399a178957cd7f7e3f18854c4cbba7eb06690c056695e0ff2'
+    }
+
+    /**
+     * Upload new `code` without instantiating a contract from it.
+     * 
+     * If the code does not already exist a deposit is reserved from the caller
+     * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
+     * depends on the instrumented size of the the supplied `code`.
+     * 
+     * If the code already exists in storage it will still return `Ok` and upgrades
+     * the in storage version to the current
+     * [`InstructionWeights::version`](InstructionWeights).
+     * 
+     * - `determinism`: If this is set to any other value but [`Determinism::Deterministic`]
+     *   then the only way to use this code is to delegate call into it from an offchain
+     *   execution. Set to [`Determinism::Deterministic`] if in doubt.
+     * 
+     * # Note
+     * 
+     * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
+     * To avoid this situation a constructor could employ access control so that it can
+     * only be instantiated by permissioned entities. The same is true when uploading
+     * through [`Self::instantiate_with_code`].
+     */
+    get asV3012(): {code: Uint8Array, storageDepositLimit: (bigint | undefined), determinism: v3012.Determinism} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1971,6 +2245,174 @@ export class CouncilCloseCall {
      */
     get asEfinityV3000(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Council.close') === 'a88911953f51bddf0f0aeafa7caa7ca904d30cdb24f940ff177d2acf7088d3bd'
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get asV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: v3012.Weight, lengthBound: number} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class CouncilCloseOldWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Council.close_old_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Council.close_old_weight') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get asV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2215,6 +2657,41 @@ export class CouncilExecuteCall {
      */
     get asV3011(): {proposal: v3011.Call, lengthBound: number} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Council.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asV3012(): {proposal: v3012.Call, lengthBound: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2564,6 +3041,73 @@ export class CouncilProposeCall {
      */
     get asV3011(): {threshold: number, proposal: v3011.Call, lengthBound: number} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Council.propose') === '92e93213fc1be2618c82cb60eb5f08adc129866b15780fce524dab7d46bafcc9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get asV3012(): {threshold: number, proposal: v3012.Call, lengthBound: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3168,6 +3712,31 @@ export class DemocracyExternalProposeCall {
         assert(this.isEfinityV2)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Schedule a referendum to be tabled once it is legal to schedule an external
+     * referendum.
+     * 
+     * The dispatch origin of this call must be `ExternalOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Democracy.external_propose') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
+    }
+
+    /**
+     * Schedule a referendum to be tabled once it is legal to schedule an external
+     * referendum.
+     * 
+     * The dispatch origin of this call must be `ExternalOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     */
+    get asV3012(): {proposal: v3012.Bounded} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class DemocracyExternalProposeDefaultCall {
@@ -3217,6 +3786,41 @@ export class DemocracyExternalProposeDefaultCall {
         assert(this.isEfinityV2)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Schedule a negative-turnout-bias referendum to be tabled next once it is legal to
+     * schedule an external referendum.
+     * 
+     * The dispatch of this call must be `ExternalDefaultOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     * 
+     * Unlike `external_propose`, blacklisting has no effect on this and it may replace a
+     * pre-scheduled `external_propose` call.
+     * 
+     * Weight: `O(1)`
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Democracy.external_propose_default') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
+    }
+
+    /**
+     * Schedule a negative-turnout-bias referendum to be tabled next once it is legal to
+     * schedule an external referendum.
+     * 
+     * The dispatch of this call must be `ExternalDefaultOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     * 
+     * Unlike `external_propose`, blacklisting has no effect on this and it may replace a
+     * pre-scheduled `external_propose` call.
+     * 
+     * Weight: `O(1)`
+     */
+    get asV3012(): {proposal: v3012.Bounded} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class DemocracyExternalProposeMajorityCall {
@@ -3264,6 +3868,41 @@ export class DemocracyExternalProposeMajorityCall {
      */
     get asEfinityV2(): {proposalHash: Uint8Array} {
         assert(this.isEfinityV2)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a majority-carries referendum to be tabled next once it is legal to schedule
+     * an external referendum.
+     * 
+     * The dispatch of this call must be `ExternalMajorityOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     * 
+     * Unlike `external_propose`, blacklisting has no effect on this and it may replace a
+     * pre-scheduled `external_propose` call.
+     * 
+     * Weight: `O(1)`
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Democracy.external_propose_majority') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
+    }
+
+    /**
+     * Schedule a majority-carries referendum to be tabled next once it is legal to schedule
+     * an external referendum.
+     * 
+     * The dispatch of this call must be `ExternalMajorityOrigin`.
+     * 
+     * - `proposal_hash`: The preimage hash of the proposal.
+     * 
+     * Unlike `external_propose`, blacklisting has no effect on this and it may replace a
+     * pre-scheduled `external_propose` call.
+     * 
+     * Weight: `O(1)`
+     */
+    get asV3012(): {proposal: v3012.Bounded} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3526,6 +4165,37 @@ export class DemocracyProposeCall {
      */
     get asEfinityV2(): {proposalHash: Uint8Array, value: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Propose a sensitive action to be taken.
+     * 
+     * The dispatch origin of this call must be _Signed_ and the sender must
+     * have funds to cover the deposit.
+     * 
+     * - `proposal_hash`: The hash of the proposal preimage.
+     * - `value`: The amount of deposit (must be at least `MinimumDeposit`).
+     * 
+     * Emits `Proposed`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Democracy.propose') === 'db924825c9fd40cb04a839b510db55dcdd425c7b06116ccd22d4834d1201e8db'
+    }
+
+    /**
+     * Propose a sensitive action to be taken.
+     * 
+     * The dispatch origin of this call must be _Signed_ and the sender must
+     * have funds to cover the deposit.
+     * 
+     * - `proposal_hash`: The hash of the proposal preimage.
+     * - `value`: The amount of deposit (must be at least `MinimumDeposit`).
+     * 
+     * Emits `Proposed`.
+     */
+    get asV3012(): {proposal: v3012.Bounded, value: bigint} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3811,6 +4481,31 @@ export class DemocracySecondCall {
      */
     get asEfinityV2(): {proposal: number, secondsUpperBound: number} {
         assert(this.isEfinityV2)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Signals agreement with a particular proposal.
+     * 
+     * The dispatch origin of this call must be _Signed_ and the sender
+     * must have funds to cover the deposit, equal to the original deposit.
+     * 
+     * - `proposal`: The index of the proposal to second.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Democracy.second') === '7ac80a800d6686f21181e7b5b45c8949dc5b807bc6ec111188c7c6850a21b898'
+    }
+
+    /**
+     * Signals agreement with a particular proposal.
+     * 
+     * The dispatch origin of this call must be _Signed_ and the sender
+     * must have funds to cover the deposit, equal to the original deposit.
+     * 
+     * - `proposal`: The index of the proposal to second.
+     */
+    get asV3012(): {proposal: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4110,6 +4805,88 @@ export class DmpQueueServiceOverweightCall {
         assert(this.isEfinityV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Service a single overweight message.
+     * 
+     * - `origin`: Must pass `ExecuteOverweightOrigin`.
+     * - `index`: The index of the overweight message to service.
+     * - `weight_limit`: The amount of weight that message execution may take.
+     * 
+     * Errors:
+     * - `Unknown`: Message of `index` is unknown.
+     * - `OverLimit`: Message execution may use greater than `weight_limit`.
+     * 
+     * Events:
+     * - `OverweightServiced`: On success.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('DmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
+    }
+
+    /**
+     * Service a single overweight message.
+     * 
+     * - `origin`: Must pass `ExecuteOverweightOrigin`.
+     * - `index`: The index of the overweight message to service.
+     * - `weight_limit`: The amount of weight that message execution may take.
+     * 
+     * Errors:
+     * - `Unknown`: Message of `index` is unknown.
+     * - `OverLimit`: Message execution may use greater than `weight_limit`.
+     * 
+     * Events:
+     * - `OverweightServiced`: On success.
+     */
+    get asV3012(): {index: bigint, weightLimit: bigint} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class EfinityUtilityBatchCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'EfinityUtility.batch')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('EfinityUtility.batch') === 'b1689eefbd8b66daf8769783c9eb2bf9c76b38f20577024c26cc71282cd018df'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     */
+    get asV3012(): {calls: v3012.Call[], continueOnFailure: boolean} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class EfinityXcmForceSetMinimumWeightCall {
@@ -4137,6 +4914,21 @@ export class EfinityXcmForceSetMinimumWeightCall {
      */
     get asV3011(): {xcmCall: v3011.XcmOperation, xcmWeightFeeMisc: v3011.MinimumWeightFeePair} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('EfinityXcm.force_set_minimum_weight') === '267efe07666c8afefd16420b4956a7fd0562d42740846fcce2b3cfde567ac845'
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get asV3012(): {xcmCall: v3012.XcmOperation, xcmWeightFeeMisc: v3012.MinimumWeightFeePair} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4190,6 +4982,47 @@ export class EfinityXcmTransferAssetToParachainCall {
      */
     get asV3011(): {paraId: v3011.ParachainId, beneficiary: v3011.Account, assetId: v3011.AssetId, amount: bigint, destWeight: bigint} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('EfinityXcm.transfer_asset_to_parachain') === 'a90715f430da7f543e76cf34a7a4c94eb884910fb6830c2daffdfc04e9613447'
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
+     */
+    get asV3012(): {paraId: v3012.ParachainId, beneficiary: v3012.Account, assetId: v3012.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4274,6 +5107,47 @@ export class EfinityXcmTransferToParachainCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
+     *   `MultiLocation`
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('EfinityXcm.transfer_to_parachain') === 'b78bfbeb395c8dfe84788045085ed4230266e12ad40559a5ed1fdf518db02770'
+    }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
+     *   `MultiLocation`
+     */
+    get asV3012(): {paraId: v3012.ParachainId, beneficiary: v3012.Account, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ExtrinsicPausePauseExtrinsicCall {
@@ -4334,6 +5208,31 @@ export class ExtrinsicPausePauseExtrinsicCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '3a016ad7f8a510ffbc43c0afc3ffad3c5952120d62da1a066db102cef66f7678'
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     */
+    get asV3012(): {call: v3012.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ExtrinsicPauseResumeExtrinsicCall {
@@ -4386,6 +5285,31 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asV3011(): {call: v3011.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === 'd15b976dc282a1da37a10793b600afa144444807780acbfefdf726aa6e1b4db2'
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     */
+    get asV3012(): {call: v3012.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4565,6 +5489,29 @@ export class FuelTanksCreateFuelTankCall {
      */
     get asV3011(): {descriptor: v3011.FuelTankDescriptor} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * - `FuelTankAlreadyExists` if `tank_id` already exists
+     * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === 'b80235e13db298392f2a78a9bcf83dd5d935e965474364a33a6a6323e42f6e5a'
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * - `FuelTankAlreadyExists` if `tank_id` already exists
+     * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
+     */
+    get asV3012(): {descriptor: v3012.FuelTankDescriptor} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4763,6 +5710,55 @@ export class FuelTanksDispatchCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - `FuelTankNotFound` if `tank_id` does not exist.
+     * - `InvalidRuleSetId` if `rule_set_id` does not exist
+     * - `UsageRestricted` if caller is not part of ruleset whitelist
+     * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
+     * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
+     *   ruleset
+     * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
+     *   ruleset
+     * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
+     *   ruleset
+     * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
+     * - `Overflow` if amount overflows type
+     * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
+     *   remaining_fee when `pays_remaining_fee` is true
+     * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === '76e6c92bb834e2ab85b4edaac54aa7351f5d41f7e87f479eeee6d17dd4deb5e9'
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - `FuelTankNotFound` if `tank_id` does not exist.
+     * - `InvalidRuleSetId` if `rule_set_id` does not exist
+     * - `UsageRestricted` if caller is not part of ruleset whitelist
+     * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
+     * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
+     *   ruleset
+     * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
+     *   ruleset
+     * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
+     *   ruleset
+     * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
+     * - `Overflow` if amount overflows type
+     * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
+     *   remaining_fee when `pays_remaining_fee` is true
+     * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
+     */
+    get asV3012(): {tankId: v3012.MultiAddress, ruleSetId: number, call: v3012.Call, paysRemainingFee: boolean} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDispatchAndTouchCall {
@@ -4844,6 +5840,29 @@ export class FuelTanksDispatchAndTouchCall {
      */
     get asV3011(): {tankId: v3011.MultiAddress, ruleSetId: number, call: v3011.Call, paysRemainingFee: boolean} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * # Errors
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '76e6c92bb834e2ab85b4edaac54aa7351f5d41f7e87f479eeee6d17dd4deb5e9'
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * # Errors
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get asV3012(): {tankId: v3012.MultiAddress, ruleSetId: number, call: v3012.Call, paysRemainingFee: boolean} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4987,6 +6006,49 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asV3011(): {tankId: v3011.MultiAddress, ruleSetId: number, rules: v3011.DispatchRuleDescriptor[]} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - `FuelTankNotFound` if `tank_id` does not exist.
+     * - `NoPermission` if caller is not the fuel tank owner
+     * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
+     * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
+     *   data
+     * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
+     * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === 'adaef5dbdb3c21b8d78c03b4e121b7381a0a295fd289d43652c3a4b96f254680'
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - `FuelTankNotFound` if `tank_id` does not exist.
+     * - `NoPermission` if caller is not the fuel tank owner
+     * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
+     * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
+     *   data
+     * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
+     * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
+     */
+    get asV3012(): {tankId: v3012.MultiAddress, ruleSetId: number, rules: v3012.DispatchRuleDescriptor[]} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6419,6 +7481,45 @@ export class MultiTokensBatchMintCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * `AccountId` and `MintParams`. A single mint failure will fail all of them in the batch.
+     * 
+     * # Errors
+     * - `AmountZero` if `amount == 0`.
+     * - `NotFound` if `collection` does **not** exist.
+     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+     * - `MintForbidden` if the policy disallows the operation
+     * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+     * - `TokenCountOverflow` if the token_count overflows
+     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('MultiTokens.batch_mint') === '0c8f31ef9708128069f735e820a42408b1da004a78ff20d127fe9ab42533a690'
+    }
+
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * `AccountId` and `MintParams`. A single mint failure will fail all of them in the batch.
+     * 
+     * # Errors
+     * - `AmountZero` if `amount == 0`.
+     * - `NotFound` if `collection` does **not** exist.
+     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+     * - `MintForbidden` if the policy disallows the operation
+     * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
+     * - `TokenCountOverflow` if the token_count overflows
+     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+     */
+    get asV3012(): {collectionId: bigint, recipients: v3012.Type_378[]} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultiTokensBatchSetAttributeCall {
@@ -7383,6 +8484,53 @@ export class MultiTokensMintCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * `MintPolicy`.
+     * 
+     * # Errors
+     * - `AmountZero` if `amount == 0`.
+     * - `CollectionNotFound` if `Collection` does not exist.
+     * - `TokenNotFound` if `Token` does not exist.
+     * - `TokenAlreadyExists` if attempting to create a token that already exists
+     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+     * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
+     *   token_count
+     * overflows.
+     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+     * - `ConflictingLocation` if the token is foreign and the location is already mapped to
+     *   another asset in `AssetIdsByLocation`
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('MultiTokens.mint') === '166a9a493c469412cddabceaf140321536c0e288eecfdb6506086a8a44c0451a'
+    }
+
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * `MintPolicy`.
+     * 
+     * # Errors
+     * - `AmountZero` if `amount == 0`.
+     * - `CollectionNotFound` if `Collection` does not exist.
+     * - `TokenNotFound` if `Token` does not exist.
+     * - `TokenAlreadyExists` if attempting to create a token that already exists
+     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
+     * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
+     *   token_count
+     * overflows.
+     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
+     * - `ConflictingLocation` if the token is foreign and the location is already mapped to
+     *   another asset in `AssetIdsByLocation`
+     */
+    get asV3012(): {recipient: v3012.MultiAddress, collectionId: bigint, params: v3012.DefaultMintParams} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultiTokensMutateCollectionCall {
@@ -7985,6 +9133,89 @@ export class MultisigApproveAsMultiCall {
         assert(this.isEfinityV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call_hash`: The hash of the call to be executed.
+     * 
+     * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+     * 
+     * # <weight>
+     * - `O(S)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * ----------------------------------
+     * - DB Weight:
+     *     - Read: Multisig Storage, [Caller Account]
+     *     - Write: Multisig Storage, [Caller Account]
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Multisig.approve_as_multi') === '88561668497d8fdee3be21d28e6e68bc1cd9568f418501a4b294fe2b9803acb4'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call_hash`: The hash of the call to be executed.
+     * 
+     * NOTE: If this is the final approval, you will want to use `as_multi` instead.
+     * 
+     * # <weight>
+     * - `O(S)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * ----------------------------------
+     * - DB Weight:
+     *     - Read: Multisig Storage, [Caller Account]
+     *     - Write: Multisig Storage, [Caller Account]
+     * # </weight>
+     */
+    get asV3012(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v3012.Timepoint | undefined), callHash: Uint8Array, maxWeight: v3012.Weight} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultisigAsMultiCall {
@@ -8203,6 +9434,109 @@ export class MultisigAsMultiCall {
      */
     get asEfinityV3000(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (efinityV3000.Timepoint | undefined), call: Uint8Array, storeCall: boolean, maxWeight: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '22f1076e19a712198629d972d9c2531e9570a507fa7cfdcfaaf6650a820e1a21'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get asV3012(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v3012.Timepoint | undefined), call: v3012.Call, maxWeight: v3012.Weight} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8442,6 +9776,51 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asV3011(): {otherSignatories: Uint8Array[], call: v3011.Call} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '011310f636ffc0ad21b6033e9ff63b0bd443f85874e3a71b5f58bede65671b83'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get asV3012(): {otherSignatories: Uint8Array[], call: v3012.Call} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8822,6 +10201,41 @@ export class PolkadotXcmExecuteCall {
      */
     get asEfinityV3000(): {message: efinityV3000.Type_315, maxWeight: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Execute an XCM message from a local, signed, origin.
+     * 
+     * An event is deposited indicating whether `msg` could be executed completely or only
+     * partially.
+     * 
+     * No more than `max_weight` will be used in its attempted execution. If this is less than the
+     * maximum amount of weight that the message could take to be executed, then no execution
+     * attempt will be made.
+     * 
+     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+     * to completion; only that *some* of it was executed.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.execute') === 'c6251691ab3319ecee95442d381c308f9ada155e423798c908cbd6b063aa26b4'
+    }
+
+    /**
+     * Execute an XCM message from a local, signed, origin.
+     * 
+     * An event is deposited indicating whether `msg` could be executed completely or only
+     * partially.
+     * 
+     * No more than `max_weight` will be used in its attempted execution. If this is less than the
+     * maximum amount of weight that the message could take to be executed, then no execution
+     * attempt will be made.
+     * 
+     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
+     * to completion; only that *some* of it was executed.
+     */
+    get asV3012(): {message: v3012.Type_334, maxWeight: bigint} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9561,6 +10975,21 @@ export class SchedulerCancelNamedCall {
         assert(this.isEfinityV2)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Cancel a named scheduled task.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Scheduler.cancel_named') === '2a01c4c05d6bf45e0dc267bd7f6e27df3b3e4b23af7982734357c4de87ef690c'
+    }
+
+    /**
+     * Cancel a named scheduled task.
+     */
+    get asV3012(): {id: Uint8Array} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleCall {
@@ -9648,6 +11077,21 @@ export class SchedulerScheduleCall {
      */
     get asV3011(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3011.MaybeHashed} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '5c09a6608ee8dc51aa46a33b155eb4986241ec0ace6f0c5334dbef395bc8c4bc'
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get asV3012(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3012.Call} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9779,6 +11223,29 @@ export class SchedulerScheduleAfterCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'f9717f36b8f3c5bc5d686a2be3ffb8fdf780357d2f10cb29c0998644f1e14f80'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
+    get asV3012(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3012.Call} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleNamedCall {
@@ -9866,6 +11333,21 @@ export class SchedulerScheduleNamedCall {
      */
     get asV3011(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3011.MaybeHashed} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '99ad55ba3a89373087e9c496806101bfb344f1fea715a4b8690f50e3709c238f'
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get asV3012(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3012.Call} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9995,6 +11477,29 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asV3011(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3011.MaybeHashed} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '42f85a6cd3071a5de843a227855667009e6987c77a36a8c1e9817808de32144c'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
+     */
+    get asV3012(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v3012.Call} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10411,6 +11916,39 @@ export class SudoSudoCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'abca980bf1016589013fe0614efe2dd23384abb1c388ab991938f365f60cf944'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV3012(): {call: v3012.Call} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -10635,6 +12173,41 @@ export class SudoSudoAsCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === 'a7eb144ee92988818dde525805e530d742c0e5f7d5694fda1a7e740f6dd85685'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV3012(): {who: v3012.MultiAddress, call: v3012.Call} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -10845,6 +12418,39 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV3011(): {call: v3011.Call, weight: v3011.Weight} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === 'ef6fe7d0c636223dc7389e1d1924343af6b401774e910acdd681a5990f89da31'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV3012(): {call: v3012.Call, weight: v3012.Weight} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11530,6 +13136,174 @@ export class TechnicalCommitteeCloseCall {
         assert(this.isEfinityV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.close') === 'a88911953f51bddf0f0aeafa7caa7ca904d30cdb24f940ff177d2acf7088d3bd'
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get asV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: v3012.Weight, lengthBound: number} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class TechnicalCommitteeCloseOldWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'TechnicalCommittee.close_old_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.close_old_weight') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
+    }
+
+    /**
+     * Close a vote that is either approved, disapproved or whose voting period has ended.
+     * 
+     * May be called by any signed account in order to finish voting and close the proposal.
+     * 
+     * If called before the end of the voting period it will only close the vote if it is
+     * has enough votes to be approved or disapproved.
+     * 
+     * If called after the end of the voting period abstentions are counted as rejections
+     * unless there is a prime member set and the prime member cast an approval.
+     * 
+     * If the close operation completes successfully with disapproval, the transaction fee will
+     * be waived. Otherwise execution of the approved operation will be charged to the caller.
+     * 
+     * + `proposal_weight_bound`: The maximum amount of weight consumed by executing the closed
+     * proposal.
+     * + `length_bound`: The upper bound for the length of the proposal in storage. Checked via
+     * `storage::read` so it is `size_of::<u32>() == 4` larger than the pure length.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1 + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - `P1` is the complexity of `proposal` preimage.
+     *   - `P2` is proposal-count (code-bounded)
+     * - DB:
+     *  - 2 storage reads (`Members`: codec `O(M)`, `Prime`: codec `O(1)`)
+     *  - 3 mutations (`Voting`: codec `O(M)`, `ProposalOf`: codec `O(B)`, `Proposals`: codec
+     *    `O(P2)`)
+     *  - any mutations done while executing `proposal` (`P1`)
+     * - up to 3 events
+     * # </weight>
+     */
+    get asV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class TechnicalCommitteeDisapproveProposalCall {
@@ -11772,6 +13546,41 @@ export class TechnicalCommitteeExecuteCall {
      */
     get asV3011(): {proposal: v3011.Call, lengthBound: number} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asV3012(): {proposal: v3012.Call, lengthBound: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -12121,6 +13930,73 @@ export class TechnicalCommitteeProposeCall {
      */
     get asV3011(): {threshold: number, proposal: v3011.Call, lengthBound: number} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '92e93213fc1be2618c82cb60eb5f08adc129866b15780fce524dab7d46bafcc9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get asV3012(): {threshold: number, proposal: v3012.Call, lengthBound: number} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -12883,6 +14759,45 @@ export class UtilityAsDerivativeCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '711ce2cfecb3011fecb639d4e926dbb8d148da3879eefb1aa8f02b72c45647d3'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV3012(): {index: number, call: v3012.Call} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -13152,6 +15067,57 @@ export class UtilityBatchCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV3012(): {calls: v3012.Call[]} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -13371,6 +15337,47 @@ export class UtilityBatchAllCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV3012(): {calls: v3012.Call[]} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -13550,6 +15557,39 @@ export class UtilityDispatchAsCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '1d12132e6e70653f2d4123d7ae2d10da60a0e0ed8018d95550710be641d44458'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV3012(): {asOrigin: v3012.OriginCaller, call: v3012.Call} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityForceBatchCall {
@@ -13687,6 +15727,47 @@ export class UtilityForceBatchCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV3012(): {calls: v3012.Call[]} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class VestingClaimCall {
@@ -13810,6 +15891,45 @@ export class VestingRegistrarClaimBatchCall {
     }
 }
 
+export class VestingRegistrarForceVestAllSchedulesCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'VestingRegistrar.force_vest_all_schedules')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * For all registered accounts, it sets the vesting schedule expiration to the next block
+     * number.
+     * 
+     * This is a privileged call and can only be called by the root origin.
+     * 
+     * It simply updates each schedule registered for `account` to expire in the next block.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('VestingRegistrar.force_vest_all_schedules') === '12886a7697ff37821fd3068ef982fe5fe78bd390b2f49b4ad09eb1856aa01e23'
+    }
+
+    /**
+     * For all registered accounts, it sets the vesting schedule expiration to the next block
+     * number.
+     * 
+     * This is a privileged call and can only be called by the root origin.
+     * 
+     * It simply updates each schedule registered for `account` to expire in the next block.
+     */
+    get asV3012(): {accounts: v3012.VestedAccount[]} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class VestingRegistrarRegisterBatchCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -13888,6 +16008,43 @@ export class XTokensTransferCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Transfer native currencies.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer') === '79391a9017e3585a7001d474da89bbb6c7839b0a5da51df2b2acb37145309690'
+    }
+
+    /**
+     * Transfer native currencies.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {currencyId: v3012.AssetId, amount: bigint, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XTokensTransferMultiassetCall {
@@ -13937,6 +16094,43 @@ export class XTokensTransferMultiassetCall {
      */
     get asV3011(): {asset: v3011.VersionedMultiAsset, dest: v3011.VersionedMultiLocation, destWeight: bigint} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Transfer `MultiAsset`.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_multiasset') === '124b77e480550e2d7eac49ed107d76163c8e7e2864b828c843c249ef6ae8515f'
+    }
+
+    /**
+     * Transfer `MultiAsset`.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {asset: v3012.VersionedMultiAsset, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14008,6 +16202,61 @@ export class XTokensTransferMultiassetWithFeeCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Transfer `MultiAsset` specifying the fee and amount as separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the multiasset to be spent to pay for execution in
+     * destination chain. Both fee and amount will be subtracted form the
+     * callers balance For now we only accept fee and asset having the same
+     * `MultiLocation` id.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_multiasset_with_fee') === 'afea57197ed47389f761cf32ea9293aa35a8fb52ae656fb5a27162139197c988'
+    }
+
+    /**
+     * Transfer `MultiAsset` specifying the fee and amount as separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the multiasset to be spent to pay for execution in
+     * destination chain. Both fee and amount will be subtracted form the
+     * callers balance For now we only accept fee and asset having the same
+     * `MultiLocation` id.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {asset: v3012.VersionedMultiAsset, fee: v3012.VersionedMultiAsset, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XTokensTransferMultiassetsCall {
@@ -14065,6 +16314,49 @@ export class XTokensTransferMultiassetsCall {
         assert(this.isV3011)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Transfer several `MultiAsset` specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the MultiAssets that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_multiassets') === '3c0b0dac1e68352c618c2cea8b190730d35ccc04742093f63dff05648d32475d'
+    }
+
+    /**
+     * Transfer several `MultiAsset` specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the MultiAssets that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {assets: v3012.VersionedMultiAssets, feeItem: number, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XTokensTransferMulticurrenciesCall {
@@ -14120,6 +16412,49 @@ export class XTokensTransferMulticurrenciesCall {
      */
     get asV3011(): {currencies: [v3011.AssetId, bigint][], feeItem: number, dest: v3011.VersionedMultiLocation, destWeight: bigint} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Transfer several currencies specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the currencies tuple that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_multicurrencies') === '77355a13cd005f4800b70515631ea9dfd26d4731dea1d46661dec1ab7daa6814'
+    }
+
+    /**
+     * Transfer several currencies specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the currencies tuple that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {currencies: [v3012.AssetId, bigint][], feeItem: number, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14189,6 +16524,61 @@ export class XTokensTransferWithFeeCall {
      */
     get asV3011(): {currencyId: v3011.AssetId, amount: bigint, fee: bigint, dest: v3011.VersionedMultiLocation, destWeight: bigint} {
         assert(this.isV3011)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Transfer native currencies specifying the fee and amount as
+     * separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the amount to be spent to pay for execution in destination
+     * chain. Both fee and amount will be subtracted form the callers
+     * balance.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_with_fee') === '72ecf67644efd990972c23f37933a458240035fe8aa77c27202e5dcd5c919f1a'
+    }
+
+    /**
+     * Transfer native currencies specifying the fee and amount as
+     * separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the amount to be spent to pay for execution in destination
+     * chain. Both fee and amount will be subtracted form the callers
+     * balance.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    get asV3012(): {currencyId: v3012.AssetId, amount: bigint, fee: bigint, dest: v3012.VersionedMultiLocation, destWeightLimit: v3012.V2WeightLimit} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14318,6 +16708,45 @@ export class XcmpQueueServiceOverweightCall {
      */
     get asEfinityV3000(): {index: bigint, weightLimit: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Services a single overweight XCM.
+     * 
+     * - `origin`: Must pass `ExecuteOverweightOrigin`.
+     * - `index`: The index of the overweight XCM to service
+     * - `weight_limit`: The amount of weight that XCM execution may take.
+     * 
+     * Errors:
+     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+     * 
+     * Events:
+     * - `OverweightServiced`: On success.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XcmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
+    }
+
+    /**
+     * Services a single overweight XCM.
+     * 
+     * - `origin`: Must pass `ExecuteOverweightOrigin`.
+     * - `index`: The index of the overweight XCM to service
+     * - `weight_limit`: The amount of weight that XCM execution may take.
+     * 
+     * Errors:
+     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
+     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
+     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
+     * 
+     * Events:
+     * - `OverweightServiced`: On success.
+     */
+    get asV3012(): {index: bigint, weightLimit: bigint} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14520,6 +16949,27 @@ export class XcmpQueueUpdateThresholdWeightCall {
         assert(this.isEfinityV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Overwrites the amount of remaining weight under which we stop processing messages.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.threshold_weight`
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+    }
+
+    /**
+     * Overwrites the amount of remaining weight under which we stop processing messages.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.threshold_weight`
+     */
+    get asV3012(): {new: bigint} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XcmpQueueUpdateWeightRestrictDecayCall {
@@ -14580,6 +17030,29 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
         assert(this.isEfinityV3000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Overwrites the speed to which the available weight approaches the maximum weight.
+     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+    }
+
+    /**
+     * Overwrites the speed to which the available weight approaches the maximum weight.
+     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
+     */
+    get asV3012(): {new: bigint} {
+        assert(this.isV3012)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
@@ -14638,6 +17111,29 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
      */
     get asEfinityV3000(): {new: efinityV3000.Weight} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Overwrite the maximum amount of weight any individual message may consume.
+     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+     */
+    get isV3012(): boolean {
+        return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
+    }
+
+    /**
+     * Overwrite the maximum amount of weight any individual message may consume.
+     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
+     * 
+     * - `origin`: Must pass `Root`.
+     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
+     */
+    get asV3012(): {new: bigint} {
+        assert(this.isV3012)
         return this._chain.decodeCall(this.call)
     }
 }
