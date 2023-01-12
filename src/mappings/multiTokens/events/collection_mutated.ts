@@ -40,7 +40,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     }
     if (data.isEfinityV3000) {
         const { collectionId, mutation } = data.asEfinityV3000
-        console.log(JSON.stringify(mutation))
 
         const royalty: ShouldMutate =
             mutation.royalty.__kind === 'None'
@@ -61,6 +60,15 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     }
     if (data.isV3011) {
         const { collectionId, mutation } = data.asV3011
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+    if (data.isEfinityV3012) {
+        const { collectionId, mutation } = data.asEfinityV3012
         return {
             collectionId,
             owner: mutation.owner,

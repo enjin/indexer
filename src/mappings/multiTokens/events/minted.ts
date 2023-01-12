@@ -30,6 +30,13 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         }
         return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), recipient, amount }
     }
+    if (data.isEfinityV3012) {
+        const { collectionId, tokenId, issuer, recipient, amount } = data.asEfinityV3012
+        if (issuer.__kind === 'Signed') {
+            return { collectionId, tokenId, issuer: issuer.value, recipient, amount }
+        }
+        return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), recipient, amount }
+    }
     throw new UnknownVersionError(data.constructor.name)
 }
 
