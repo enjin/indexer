@@ -67,6 +67,15 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             listingForbidden: mutation.listingForbidden,
         }
     }
+    if (data.isEfinityV3012) {
+        const { collectionId, tokenId, mutation } = data.asEfinityV3012
+        return {
+            collectionId,
+            tokenId,
+            behavior: mutation.behavior,
+            listingForbidden: mutation.listingForbidden,
+        }
+    }
     throw new UnknownVersionError(data.constructor.name)
 }
 

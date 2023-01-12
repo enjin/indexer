@@ -92,6 +92,20 @@ async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
             explicitRoyaltyCurrencies,
         }
     }
+    if (data.isV3012) {
+        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3012.descriptor.policy.mint
+        const royalty = data.asV3012.descriptor.policy.market?.royalty
+        const market = royalty ? await getMarket(ctx, royalty) : null
+        const { explicitRoyaltyCurrencies } = data.asV3011.descriptor
+
+        return {
+            maxTokenCount,
+            maxTokenSupply,
+            forceSingleMint,
+            market,
+            explicitRoyaltyCurrencies,
+        }
+    }
     throw new UnknownVersionError(data.constructor.name)
 }
 
