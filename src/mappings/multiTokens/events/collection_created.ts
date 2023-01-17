@@ -44,69 +44,83 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
     })
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
-    let data: any
-
     if (call.name === 'MultiTokens.force_create_collection') {
-        data = new MultiTokensForceCreateCollectionCall(ctx, call)
+        const data = new MultiTokensForceCreateCollectionCall(ctx, call)
+        if (data.isEfinityV3012) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3012.descriptor.policy.mint
+            const royalty = data.asEfinityV3012.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asEfinityV3012.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+        throw new UnknownVersionError(data.constructor.name)
     } else {
-        data = new MultiTokensCreateCollectionCall(ctx, call)
-    }
+        const data = new MultiTokensCreateCollectionCall(ctx, call)
+        if (data.isEfinityV2) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV2.descriptor.policy.mint
 
-    if (data.isEfinityV2) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV2.descriptor.policy.mint
-
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market: null,
-            explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market: null,
+                explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
+            }
         }
-    }
-    if (data.isEfinityV3000) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3000.descriptor.policy.mint
-        const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
-        const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
+        if (data.isEfinityV3000) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3000.descriptor.policy.mint
+            const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
 
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market,
-            explicitRoyaltyCurrencies,
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
         }
-    }
-    if (data.isV3011) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3011.descriptor.policy.mint
-        const royalty = data.asV3011.descriptor.policy.market?.royalty
-        const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asV3011.descriptor
+        if (data.isV3011) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3011.descriptor.policy.mint
+            const royalty = data.asV3011.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV3011.descriptor
 
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market,
-            explicitRoyaltyCurrencies,
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
         }
-    }
-    if (data.isV3012) {
-        const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3012.descriptor.policy.mint
-        const royalty = data.asV3012.descriptor.policy.market?.royalty
-        const market = royalty ? await getMarket(ctx, royalty) : null
-        const { explicitRoyaltyCurrencies } = data.asV3011.descriptor
+        if (data.isEfinityV3012) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3012.descriptor.policy.mint
+            const royalty = data.asEfinityV3012.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asEfinityV3012.descriptor
 
-        return {
-            maxTokenCount,
-            maxTokenSupply,
-            forceSingleMint,
-            market,
-            explicitRoyaltyCurrencies,
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
         }
+
+        throw new UnknownVersionError(data.constructor.name)
     }
-    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
