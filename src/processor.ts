@@ -224,9 +224,6 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
     _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
     _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
 
-    // await ctx.store.insert(Extrinsic, extrinsics as any)
-    // await ctx.store.insert(Event, events as any)
-
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
         await chainState(ctx as unknown as CommonContext, lastBlock)

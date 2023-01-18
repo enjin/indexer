@@ -376,7 +376,7 @@ export async function tokenCreated(
             cap: callData.cap,
             behavior: callData.behavior,
             isFrozen: false,
-            minimumBalance: 0n, // TODO: Fixed for now
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / callData.unitPrice))),
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
