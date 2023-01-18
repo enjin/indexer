@@ -108,7 +108,7 @@ export async function collectionMutated(
 
     if (data.royalty.__kind === 'SomeMutation') {
         if (data.royalty.value === undefined) {
-            collection.marketPolicy = undefined
+            collection.marketPolicy = null
         } else {
             collection.marketPolicy = await getMarket(ctx, data.royalty.value)
         }
