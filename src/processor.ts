@@ -56,7 +56,9 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Frozen', eventOptions)
     .addEvent('MultiTokens.Thawed', eventOptions)
     .addEvent('MultiTokens.Approved', eventOptions)
+    .addEvent('MultiTokens.Reserved', eventOptions)
     .addEvent('MultiTokens.Unapproved', eventOptions)
+    .addEvent('MultiTokens.Unreserved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
     .addEvent('Balances.DustLost', eventOptions)
     .addEvent('Balances.Endowed', eventOptions)
@@ -101,6 +103,8 @@ async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Ite
             return map.multiTokens.events.frozen(ctx, block, item)
         case 'MultiTokens.Minted':
             return map.multiTokens.events.minted(ctx, block, item)
+        case 'MultiTokens.Reserved':
+            return map.multiTokens.events.reserved(ctx, block, item)
         case 'MultiTokens.Thawed':
             return map.multiTokens.events.thawed(ctx, block, item)
         case 'MultiTokens.TokenAccountCreated':
@@ -117,6 +121,8 @@ async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Ite
             return map.multiTokens.events.transferred(ctx, block, item)
         case 'MultiTokens.Unapproved':
             return map.multiTokens.events.unapproved(ctx, block, item)
+        case 'MultiTokens.Unreserved':
+            return map.multiTokens.events.unreserved(ctx, block, item)
         case 'Balances.Transfer':
             await map.balances.processor.save(ctx, block, item.event)
             return map.balances.events.transfer(ctx, block, item)
