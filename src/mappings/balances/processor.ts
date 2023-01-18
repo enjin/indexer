@@ -222,31 +222,29 @@ async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountId
         return
     }
 
-    const accounts: Account[] = []
+    const accounts: any[] = []
 
     for (let i = 0; i < accountIds.length; i += 1) {
         const id = u8aToHex(accountIds[i])
         const accountInfo = accountInfos[i]
 
         if (accountInfo) {
-            accounts.push(
-                new Account({
-                    id,
-                    address: isAdressSS58(accountIds[i]) ? encodeId(accountIds[i]) : u8aToHex(accountIds[i]),
-                    nonce: accountInfo.nonce,
-                    balance: new Balance({
-                        free: accountInfo.data.free,
-                        reserved: accountInfo.data.reserved,
-                        feeFrozen: accountInfo.data.feeFrozen,
-                        miscFrozen: accountInfo.data.miscFrozen,
-                    }),
-                    tokenValues: 0n,
-                })
-            )
+            accounts.push({
+                id,
+                address: isAdressSS58(accountIds[i]) ? encodeId(accountIds[i]) : u8aToHex(accountIds[i]),
+                nonce: accountInfo.nonce,
+                balance: new Balance({
+                    free: accountInfo.data.free,
+                    reserved: accountInfo.data.reserved,
+                    feeFrozen: accountInfo.data.feeFrozen,
+                    miscFrozen: accountInfo.data.miscFrozen,
+                }),
+                tokenValues: 0n,
+            })
         }
     }
 
-    await ctx.store.save(accounts)
+    await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
 }
 
 export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
