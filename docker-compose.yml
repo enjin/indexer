@@ -37,7 +37,7 @@ services:
 
   archive_db:
     container_name: archive_db
-    image: cockroachdb/cockroach:latest-v21.2
+    image: cockroachdb/cockroach:v22.2.2
     restart: unless-stopped
     volumes:
       - archive_db:/cockroach/cockroach-data
