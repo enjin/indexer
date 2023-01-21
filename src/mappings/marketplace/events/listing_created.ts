@@ -4,6 +4,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
 import {
+    AccountEvent,
     AuctionData,
     AuctionState,
     Event as EventModel,
@@ -104,7 +105,7 @@ export async function listingCreated(
     await ctx.store.insert(ListingStatus, listingStatus as any)
     new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: makeAssetId.collection.id,
@@ -113,4 +114,8 @@ export async function listingCreated(
             listing: listing.id,
         }),
     })
+
+    ctx.store.save(AccountEvent, new AccountEvent({ id: item.event.id, account: listing.seller, event }))
+
+    return event
 }

@@ -3,7 +3,16 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
-import { AuctionState, Bid, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceBidPlaced } from '../../../model'
+import {
+    AccountEvent,
+    AuctionState,
+    Bid,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingType,
+    MarketplaceBidPlaced,
+} from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { Bid as BidEvent } from '../../../types/generated/v3000'
@@ -64,7 +73,7 @@ export async function bidPlaced(
     await ctx.store.save(listing)
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
@@ -74,4 +83,8 @@ export async function bidPlaced(
             bid: bid.id,
         }),
     })
+
+    ctx.store.save(AccountEvent, new AccountEvent({ id: item.event.id, account: bid.bidder, event }))
+
+    return event
 }

@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
+import { Account, AccountEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
@@ -71,7 +71,7 @@ export async function minted(
     account.tokenValues += data.amount * token.unitPrice
     await ctx.store.save(account)
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
@@ -84,4 +84,19 @@ export async function minted(
             amount: data.amount,
         }),
     })
+
+    ctx.store.save(AccountEvent, [
+        new AccountEvent({
+            id: `${item.event.id}-issuer`,
+            account: new Account({ id: u8aToHex(data.issuer) }),
+            event,
+        }),
+        new AccountEvent({
+            id: `${item.event.id}-recipient`,
+            account: new Account({ id: u8aToHex(data.recipient) }),
+            event,
+        }),
+    ])
+
+    return event
 }

@@ -60,6 +60,12 @@ type Event @entity {
   tokenId: String @index
 }
 
+type AccountEvent @entity {
+  id: ID!
+  account: Account! 
+  event: Event!
+}
+
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
   | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
   | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
