@@ -5,6 +5,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
 import {
     Account,
+    AccountEvent,
     Event as EventModel,
     Extrinsic,
     Listing,
@@ -39,7 +40,7 @@ export async function auctionFinalized(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -78,7 +79,7 @@ export async function auctionFinalized(
     await ctx.store.insert(ListingStatus, listingStatus as any)
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
@@ -90,4 +91,6 @@ export async function auctionFinalized(
             royalty: data.royalty,
         }),
     })
+
+    return [event, new AccountEvent({ id: item.event.id, account: listing.seller, event })]
 }

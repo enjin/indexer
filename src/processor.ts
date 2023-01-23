@@ -4,7 +4,7 @@ import { hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import config from './config'
-import { Event, Extrinsic, Fee } from './model'
+import { AccountEvent, Event, Extrinsic, Fee } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -79,7 +79,11 @@ const processor = new SubstrateBatchProcessor()
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
 
-async function handleEvents(ctx: CommonContext, block: SubstrateBlock, item: Item): Promise<Event | undefined> {
+async function handleEvents(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: Item
+): Promise<Event | [Event, AccountEvent] | [Event, AccountEvent[]] | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             return map.multiTokens.events.approved(ctx, block, item)
@@ -167,10 +171,11 @@ function getParticipants(args: any, signer: string): string[] {
 processor.run(new FullTypeormDatabase(), async (ctx) => {
     const extrinsics: Extrinsic[] = []
     const events: Event[] = []
+    const accountEvents: AccountEvent[] = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
-        // console.log(`Processing block ${block.header.height}`)
+        // console.log(`Processing block ${block.header.height} and events: ${block.items.length}`)
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
             await createEfiToken(ctx as unknown as CommonContext, block.header)
@@ -184,7 +189,12 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 // eslint-disable-next-line no-await-in-loop
                 const event = await handleEvents(ctx as unknown as CommonContext, block.header, item)
                 if (event) {
-                    events.push(event)
+                    if (Array.isArray(event)) {
+                        events.push(event[0])
+                        Array.prototype.push.apply(accountEvents, Array.isArray(event[1]) ? event[1] : [event[1]])
+                    } else {
+                        events.push(event)
+                    }
                 }
             } else if (item.kind === 'call') {
                 // eslint-disable-next-line no-continue
@@ -229,6 +239,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
     _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
     _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
+    _.chunk(accountEvents, 500).forEach((chunk: any) => ctx.store.insert(AccountEvent, chunk as any))
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {

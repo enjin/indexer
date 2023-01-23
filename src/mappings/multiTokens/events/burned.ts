@@ -3,7 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../../model'
+import { Account, AccountEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
@@ -29,7 +29,7 @@ export async function burned(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -61,7 +61,7 @@ export async function burned(
         await ctx.store.save(account)
     }
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
@@ -73,4 +73,13 @@ export async function burned(
             amount: data.amount,
         }),
     })
+
+    return [
+        event,
+        new AccountEvent({
+            id: item.event.id,
+            account: new Account({ id: address }),
+            event,
+        }),
+    ]
 }
