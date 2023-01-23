@@ -44,7 +44,7 @@ export async function minted(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountEvent[]] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -85,18 +85,19 @@ export async function minted(
         }),
     })
 
-    ctx.store.save(AccountEvent, [
-        new AccountEvent({
-            id: `${item.event.id}-issuer`,
-            account: new Account({ id: u8aToHex(data.issuer) }),
-            event,
-        }),
-        new AccountEvent({
-            id: `${item.event.id}-recipient`,
-            account: new Account({ id: u8aToHex(data.recipient) }),
-            event,
-        }),
-    ])
-
-    return event
+    return [
+        event,
+        [
+            new AccountEvent({
+                id: `${item.event.id}-issuer`,
+                account: new Account({ id: u8aToHex(data.issuer) }),
+                event,
+            }),
+            new AccountEvent({
+                id: `${item.event.id}-recipient`,
+                account: new Account({ id: u8aToHex(data.recipient) }),
+                event,
+            }),
+        ],
+    ]
 }

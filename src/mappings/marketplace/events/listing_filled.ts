@@ -43,7 +43,7 @@ export async function listingFilled(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -103,10 +103,5 @@ export async function listingFilled(
         }),
     })
 
-    ctx.store.save(
-        AccountEvent,
-        new AccountEvent({ id: item.event.id, account: new Account({ id: u8aToHex(data.buyer) }), event })
-    )
-
-    return event
+    return [event, new AccountEvent({ id: item.event.id, account: new Account({ id: u8aToHex(data.buyer) }), event })]
 }

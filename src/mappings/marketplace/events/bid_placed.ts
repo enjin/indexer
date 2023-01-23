@@ -38,7 +38,7 @@ export async function bidPlaced(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -84,7 +84,5 @@ export async function bidPlaced(
         }),
     })
 
-    ctx.store.save(AccountEvent, new AccountEvent({ id: item.event.id, account: bid.bidder, event }))
-
-    return event
+    return [event, new AccountEvent({ id: item.event.id, account: bid.bidder, event })]
 }
