@@ -17,13 +17,13 @@ import { Event } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { Type_131, Type_134 } from '../../../types/generated/v3011'
+import { Type_129, Type_132 } from '../../../types/generated/efinityV3012'
 
 interface EventData {
     collectionId: bigint
     tokenId: bigint
-    behavior: Type_131
-    listingForbidden: Type_134
+    behavior: Type_129
+    listingForbidden: Type_132
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
@@ -31,7 +31,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 
     if (data.isEfinityV3000) {
         const { collectionId, tokenId, mutation } = data.asEfinityV3000
-        const behavior: Type_131 =
+        const behavior: Type_129 =
             mutation.behavior.__kind === 'None'
                 ? {
                       __kind: 'NoMutation',
@@ -41,7 +41,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
                       value: mutation.behavior.value,
                   }
 
-        const listingForbidden: Type_134 =
+        const listingForbidden: Type_132 =
             mutation.listingForbidden === undefined
                 ? {
                       __kind: 'NoMutation',
@@ -56,15 +56,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             tokenId,
             behavior,
             listingForbidden,
-        }
-    }
-    if (data.isV3011) {
-        const { collectionId, tokenId, mutation } = data.asV3011
-        return {
-            collectionId,
-            tokenId,
-            behavior: mutation.behavior,
-            listingForbidden: mutation.listingForbidden,
         }
     }
     if (data.isEfinityV3012) {

@@ -15,7 +15,7 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { Bid as BidEvent } from '../../../types/generated/v3000'
+import { Bid as BidEvent } from '../../../types/generated/v3012'
 import { CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
 

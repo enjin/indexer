@@ -17,7 +17,7 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/v3000'
+import { AssetId, DefaultRoyalty } from '../../../types/generated/v3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -81,20 +81,6 @@ async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
             const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
-
-            return {
-                maxTokenCount,
-                maxTokenSupply,
-                forceSingleMint,
-                market,
-                explicitRoyaltyCurrencies,
-            }
-        }
-        if (data.isV3011) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV3011.descriptor.policy.mint
-            const royalty = data.asV3011.descriptor.policy.market?.royalty
-            const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asV3011.descriptor
 
             return {
                 maxTokenCount,

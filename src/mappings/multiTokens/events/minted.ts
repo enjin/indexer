@@ -23,13 +23,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         const { collectionId, tokenId, issuer, recipient, amount } = data.asEfinityV2
         return { collectionId, tokenId, issuer, recipient, amount }
     }
-    if (data.isV3011) {
-        const { collectionId, tokenId, issuer, recipient, amount } = data.asV3011
-        if (issuer.__kind === 'Signed') {
-            return { collectionId, tokenId, issuer: issuer.value, recipient, amount }
-        }
-        return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), recipient, amount }
-    }
     if (data.isEfinityV3012) {
         const { collectionId, tokenId, issuer, recipient, amount } = data.asEfinityV3012
         if (issuer.__kind === 'Signed') {
