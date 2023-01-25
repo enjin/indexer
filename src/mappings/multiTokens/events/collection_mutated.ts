@@ -17,7 +17,7 @@ import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { ShouldMutate } from '../../../types/generated/v3011'
+import { ShouldMutate } from '../../../types/generated/v3012'
 
 interface EventData {
     collectionId: bigint
@@ -55,15 +55,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             collectionId,
             owner: mutation.owner,
             royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-    if (data.isV3011) {
-        const { collectionId, mutation } = data.asV3011
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
     }
