@@ -78,19 +78,23 @@ export async function minted(
         }),
     })
 
-    return [
-        event,
-        [
-            new AccountEvent({
-                id: `${item.event.id}-issuer`,
-                account: new Account({ id: u8aToHex(data.issuer) }),
-                event,
-            }),
+    const accountEvents = [
+        new AccountEvent({
+            id: `${item.event.id}-issuer`,
+            account: new Account({ id: u8aToHex(data.issuer) }),
+            event,
+        }),
+    ]
+    // eliminate duplicate recipient event when the issuer same as recipient
+    if (u8aToHex(data.recipient) !== u8aToHex(data.issuer)) {
+        accountEvents.push(
             new AccountEvent({
                 id: `${item.event.id}-recipient`,
                 account: new Account({ id: u8aToHex(data.recipient) }),
                 event,
-            }),
-        ],
-    ]
+            })
+        )
+    }
+
+    return [event, accountEvents]
 }
