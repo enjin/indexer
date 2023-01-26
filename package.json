@@ -20,7 +20,7 @@
     "@polkadot/util": "^10.2.3",
     "@polkadot/util-crypto": "^10.2.3",
     "@subsquid/archive-registry": "^2.1.0",
-    "@subsquid/cli": "^2.0.3",
+    "@subsquid/cli": "^2.1.0",
     "@subsquid/graphql-server": "^3.3.0",
     "@subsquid/ss58": "^0.1.2",
     "@subsquid/substrate-processor": "^2.2.0",
