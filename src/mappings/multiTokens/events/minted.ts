@@ -3,7 +3,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import { Account, AccountEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensMinted,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
@@ -37,11 +45,11 @@ export async function minted(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountEvent[]] | undefined> {
+): Promise<[EventModel, AccountTokenEvent[]] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const token = await ctx.store.findOneOrFail<Token>(Token, {
+    const token = await ctx.store.findOneOrFail(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
             collection: true,
@@ -78,23 +86,25 @@ export async function minted(
         }),
     })
 
-    const accountEvents = [
-        new AccountEvent({
+    const accountTokenEvents = [
+        new AccountTokenEvent({
             id: `${item.event.id}-issuer`,
+            token,
             account: new Account({ id: u8aToHex(data.issuer) }),
             event,
         }),
     ]
     // eliminate duplicate recipient event when the issuer same as recipient
     if (u8aToHex(data.recipient) !== u8aToHex(data.issuer)) {
-        accountEvents.push(
-            new AccountEvent({
+        accountTokenEvents.push(
+            new AccountTokenEvent({
                 id: `${item.event.id}-recipient`,
+                token,
                 account: new Account({ id: u8aToHex(data.recipient) }),
                 event,
             })
         )
     }
 
-    return [event, accountEvents]
+    return [event, accountTokenEvents]
 }

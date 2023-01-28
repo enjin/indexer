@@ -4,7 +4,7 @@ import { hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import config from './config'
-import { AccountEvent, Event, Extrinsic, Fee } from './model'
+import { AccountTokenEvent, Event, Extrinsic, Fee } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -83,7 +83,7 @@ async function handleEvents(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: Item
-): Promise<Event | [Event, AccountEvent] | [Event, AccountEvent[]] | undefined> {
+): Promise<Event | [Event, AccountTokenEvent] | [Event, AccountTokenEvent[]] | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             return map.multiTokens.events.approved(ctx, block, item)
@@ -171,7 +171,7 @@ function getParticipants(args: any, signer: string): string[] {
 processor.run(new FullTypeormDatabase(), async (ctx) => {
     const extrinsics: Extrinsic[] = []
     const events: Event[] = []
-    const accountEvents: AccountEvent[] = []
+    const accountTokenEvents: AccountTokenEvent[] = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
@@ -191,7 +191,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 if (event) {
                     if (Array.isArray(event)) {
                         events.push(event[0])
-                        Array.prototype.push.apply(accountEvents, Array.isArray(event[1]) ? event[1] : [event[1]])
+                        Array.prototype.push.apply(accountTokenEvents, Array.isArray(event[1]) ? event[1] : [event[1]])
                     } else {
                         events.push(event)
                     }
@@ -242,7 +242,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
     _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
     _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
-    _.chunk(accountEvents, 500).forEach((chunk: any) => ctx.store.insert(AccountEvent, chunk as any))
+    _.chunk(accountTokenEvents, 500).forEach((chunk: any) => ctx.store.insert(AccountTokenEvent, chunk as any))
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
