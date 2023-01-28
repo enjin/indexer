@@ -11,6 +11,7 @@ type Media = {
 async function fetchMetadata(url: string) {
     const api = Axios.create({
         headers: {
+            'Cache-Control': 'no-cache',
             'Content-Type': 'application/json',
             'accept-encoding': 'gzip;q=0,deflate,sdch',
         },

@@ -2,6 +2,7 @@
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
+import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Metadata, Token } from '../../model'
 import { getMetadata } from '../../mappings/util/metadata'
 
@@ -30,7 +31,7 @@ export class RefreshMetadataResolver {
     @Query(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
         @Arg('collectionId') collectionId: string,
-        @Arg('tokenId', { nullable: true }) tokenId: bigint
+        @Arg('tokenId', () => BigInteger, { nullable: true }) tokenId: bigint
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
         let resource!: Collection | Token | null
@@ -40,7 +41,6 @@ export class RefreshMetadataResolver {
                 where: { id: collectionId },
                 relations: {
                     attributes: true,
-                    metadata: true,
                 },
             })
         } else {
@@ -53,7 +53,6 @@ export class RefreshMetadataResolver {
                 },
                 relations: {
                     attributes: true,
-                    metadata: true,
                 },
             })
         }
