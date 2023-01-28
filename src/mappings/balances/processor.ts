@@ -220,6 +220,8 @@ const accountsSet = new Set<string>()
 
 export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     const accountIds = Array.from(accountsSet)
+    if (accountIds.length === 0) return
+
     const accountsU8a: Uint8Array[] = accountIds.map((id) => hexToU8a(id))
     const accountInfos = await getBalances(ctx, block, accountsU8a)
     if (!accountInfos) {
