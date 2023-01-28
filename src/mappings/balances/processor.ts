@@ -1,4 +1,4 @@
-import { u8aToHex } from '@polkadot/util'
+import { hexToU8a, u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance, Event as EventModel } from '../../model'
@@ -216,8 +216,14 @@ async function getBalances(
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
-async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountIds: Uint8Array[]) {
-    const accountInfos = await getBalances(ctx, block, accountIds)
+const accountsSet = new Set<string>()
+
+export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
+    const accountIds = Array.from(accountsSet)
+    if (accountIds.length === 0) return
+
+    const accountsU8a: Uint8Array[] = accountIds.map((id) => hexToU8a(id))
+    const accountInfos = await getBalances(ctx, block, accountsU8a)
     if (!accountInfos) {
         return
     }
@@ -225,13 +231,13 @@ async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountId
     const accounts: any[] = []
 
     for (let i = 0; i < accountIds.length; i += 1) {
-        const id = u8aToHex(accountIds[i])
+        const id = accountIds[i]
         const accountInfo = accountInfos[i]
 
         if (accountInfo) {
             accounts.push({
                 id,
-                address: isAdressSS58(accountIds[i]) ? encodeId(accountIds[i]) : u8aToHex(accountIds[i]),
+                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                 nonce: accountInfo.nonce,
                 balance: new Balance({
                     free: accountInfo.data.free,
@@ -245,13 +251,11 @@ async function saveAccounts(ctx: CommonContext, block: SubstrateBlock, accountId
     }
 
     await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
+    accountsSet.clear()
 }
 
 export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
-    const accountIds = new Set<Uint8Array>()
-    processBalancesEventItem(ctx, event).forEach((id) => accountIds.add(id))
-    await saveAccounts(ctx, block, [...accountIds])
-    accountIds.clear()
+    processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(u8aToHex(id)))
 
     return undefined
 }
