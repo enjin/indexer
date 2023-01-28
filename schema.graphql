@@ -60,10 +60,11 @@ type Event @entity {
   tokenId: String @index
 }
 
-type AccountEvent @entity {
+type AccountTokenEvent @entity @index(fields: ["account", "token"]) {
   id: ID!
   account: Account! 
   event: Event!
+  token: Token!
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
