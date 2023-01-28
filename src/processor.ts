@@ -235,6 +235,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 extrinsics.push(extrinsic)
             }
         }
+
+        // eslint-disable-next-line no-await-in-loop
+        await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
     }
 
     _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
