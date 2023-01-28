@@ -245,6 +245,7 @@ type Account @entity {
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
+  tokenEvents: [AccountTokenEvent] @derivedFrom(field: "account")
 
   # Extras
   tokenValues: BigInt!
