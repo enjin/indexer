@@ -172,7 +172,9 @@ function metadataParser(
     return metadata
 }
 
-async function processMetadata(metadata: Metadata, attribute: Attribute) {
+async function processMetadata(metadata: Metadata, attribute: Attribute | null) {
+    if (!attribute) return metadata
+
     if (attribute.key === 'uri') {
         const externalMetadata = await fetchMetadata(attribute.value)
         return metadataParser(
@@ -186,6 +188,6 @@ async function processMetadata(metadata: Metadata, attribute: Attribute) {
     return metadataParser(metadata, attribute, null)
 }
 
-export async function getMetadata(metadata: Metadata, attribute: Attribute): Promise<Metadata> {
+export async function getMetadata(metadata: Metadata, attribute: Attribute | null): Promise<Metadata> {
     return processMetadata(metadata, attribute)
 }
