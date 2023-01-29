@@ -6,6 +6,7 @@ import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { encodeId } from '../../../common/tools'
 
 interface EventData {
     collectionId: bigint
@@ -85,11 +86,17 @@ export async function transferred(
         event,
         [
             new AccountTokenEvent({
+                id: `${item.event.id}-${encodeId(data.from)}`,
                 account: fromTokenAccount?.account,
                 event,
                 token: new Token({ id: event.tokenId as string }),
             }),
-            new AccountTokenEvent({ account: toTokenAccount?.account, event, token: new Token({ id: event.tokenId as string }) }),
+            new AccountTokenEvent({
+                id: `${item.event.id}-${encodeId(data.to)}`,
+                account: toTokenAccount?.account,
+                event,
+                token: new Token({ id: event.tokenId as string }),
+            }),
         ],
     ]
 }
