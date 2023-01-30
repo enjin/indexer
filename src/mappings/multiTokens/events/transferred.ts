@@ -86,13 +86,13 @@ export async function transferred(
         event,
         [
             new AccountTokenEvent({
-                id: `${item.event.id}-${encodeId(data.from)}`,
+                id: `${item.event.id}-from-${encodeId(data.from)}`,
                 account: fromTokenAccount?.account,
                 event,
                 token: new Token({ id: event.tokenId as string }),
             }),
             new AccountTokenEvent({
-                id: `${item.event.id}-${encodeId(data.to)}`,
+                id: `${item.event.id}-to-${encodeId(data.to)}`,
                 account: toTokenAccount?.account,
                 event,
                 token: new Token({ id: event.tokenId as string }),
