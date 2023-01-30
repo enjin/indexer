@@ -29,5 +29,5 @@ export function isNonFungible(token: Token): boolean | null {
     }
 
     // All other cases we can't be sure if it is fungible or non-fungible.
-    return null
+    return false
 }
