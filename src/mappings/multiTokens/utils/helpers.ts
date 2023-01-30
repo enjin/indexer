@@ -1,6 +1,6 @@
 import { CapType, Token, TokenBehaviorType, TokenCapSupply } from '../../../model'
 
-export function isNonFungible(token: Token): boolean | null {
+export function isNonFungible(token: Token): boolean {
     if (token.behavior?.type === TokenBehaviorType.IsCurrency) {
         // If the token is a currency it is fungible.
         return false
@@ -29,5 +29,5 @@ export function isNonFungible(token: Token): boolean | null {
     }
 
     // All other cases we can't be sure if it is fungible or non-fungible.
-    return null
+    return false
 }

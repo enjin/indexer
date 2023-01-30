@@ -394,7 +394,7 @@ type Token @entity {
   offers: [Listing] @derivedFrom(field: "takeAssetId")
 
   # Extras
-  nonFungible: Boolean
+  nonFungible: Boolean!
   metadata: Metadata
   createdAt: DateTime!
 }
