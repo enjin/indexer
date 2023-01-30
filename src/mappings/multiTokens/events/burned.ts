@@ -3,7 +3,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import { Account, AccountEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensBurned,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
@@ -29,13 +37,13 @@ export async function burned(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
     const address = u8aToHex(data.accountId)
 
-    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+    const tokenAccount = await ctx.store.findOne(TokenAccount, {
         where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
@@ -46,7 +54,7 @@ export async function burned(
         await ctx.store.save(tokenAccount)
     }
 
-    const token = await ctx.store.findOne<Token>(Token, {
+    const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
@@ -76,8 +84,9 @@ export async function burned(
 
     return [
         event,
-        new AccountEvent({
+        new AccountTokenEvent({
             id: item.event.id,
+            token: token ?? undefined,
             account: new Account({ id: address }),
             event,
         }),

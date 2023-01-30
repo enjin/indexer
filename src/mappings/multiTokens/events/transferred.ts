@@ -3,9 +3,10 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
-import { Event as EventModel, Extrinsic, MultiTokensTransferred, TokenAccount } from '../../../model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { encodeId } from '../../../common/tools'
 
 interface EventData {
     collectionId: bigint
@@ -30,7 +31,7 @@ export async function transferred(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+): Promise<[EventModel, AccountTokenEvent[]] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -66,7 +67,7 @@ export async function transferred(
         await ctx.store.save(account)
     }
 
-    return new EventModel({
+    const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
@@ -80,4 +81,22 @@ export async function transferred(
             amount: data.amount,
         }),
     })
+
+    return [
+        event,
+        [
+            new AccountTokenEvent({
+                id: `${item.event.id}-${encodeId(data.from)}`,
+                account: fromTokenAccount?.account,
+                event,
+                token: new Token({ id: event.tokenId as string }),
+            }),
+            new AccountTokenEvent({
+                id: `${item.event.id}-${encodeId(data.to)}`,
+                account: toTokenAccount?.account,
+                event,
+                token: new Token({ id: event.tokenId as string }),
+            }),
+        ],
+    ]
 }

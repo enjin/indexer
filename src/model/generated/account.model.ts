@@ -5,6 +5,7 @@ import {Extrinsic} from "./extrinsic.model"
 import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
+import {AccountTokenEvent} from "./accountTokenEvent.model"
 
 @Entity_()
 export class Account {
@@ -36,6 +37,9 @@ export class Account {
 
     @OneToMany_(() => TokenAccount, e => e.account)
     tokenAccounts!: TokenAccount[]
+
+    @OneToMany_(() => AccountTokenEvent, e => e.account)
+    tokenEvents!: AccountTokenEvent[]
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     tokenValues!: bigint

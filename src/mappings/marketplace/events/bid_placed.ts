@@ -4,7 +4,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import {
-    AccountEvent,
+    AccountTokenEvent,
     AuctionState,
     Bid,
     Event as EventModel,
@@ -38,7 +38,7 @@ export async function bidPlaced(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -84,5 +84,13 @@ export async function bidPlaced(
         }),
     })
 
-    return [event, new AccountEvent({ id: item.event.id, account: bid.bidder, event })]
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: listing.makeAssetId,
+            account: bid.bidder,
+            event,
+        }),
+    ]
 }

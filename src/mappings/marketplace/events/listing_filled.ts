@@ -5,7 +5,7 @@ import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
 import {
     Account,
-    AccountEvent,
+    AccountTokenEvent,
     Event as EventModel,
     Extrinsic,
     FixedPriceState,
@@ -43,7 +43,7 @@ export async function listingFilled(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -103,5 +103,13 @@ export async function listingFilled(
         }),
     })
 
-    return [event, new AccountEvent({ id: item.event.id, account: new Account({ id: u8aToHex(data.buyer) }), event })]
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: listing.makeAssetId,
+            account: new Account({ id: u8aToHex(data.buyer) }),
+            event,
+        }),
+    ]
 }

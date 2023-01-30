@@ -4,6 +4,7 @@ import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import {
+    AccountTokenEvent,
     Attribute,
     Event as EventModel,
     Extrinsic,
@@ -72,6 +73,7 @@ export async function tokenDestroyed(
         })
         const listings = [...makeListings, ...takeListings]
         await ctx.store.remove(listings)
+        await ctx.store.delete(AccountTokenEvent, { token: { id: token.id } })
         await ctx.store.remove(attributes)
     }
 
