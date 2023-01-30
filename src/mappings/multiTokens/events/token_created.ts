@@ -293,6 +293,7 @@ export async function tokenCreated(
             attributeCount: 0,
             collection,
             metadata: null,
+            nonFungible: false,
             listingForbidden: callData.listingForbidden,
             createdAt: new Date(block.timestamp),
         })
