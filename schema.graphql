@@ -286,6 +286,7 @@ type CollectionStats {
 
 type Collection @entity {
   id: ID!
+  collectionId: BigInt! @index
 
   # Storage defaults
   owner: Account!

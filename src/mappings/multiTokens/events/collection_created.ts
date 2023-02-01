@@ -133,6 +133,7 @@ export async function collectionCreated(
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
         id: eventData.collectionId.toString(),
+        collectionId: eventData.collectionId,
         owner: account,
         mintPolicy: new MintPolicy({
             maxTokenCount: callData.maxTokenCount,

@@ -50,6 +50,7 @@ export async function attributeSet(
     if (!collection) {
         collection = new Collection({
             id: data.collectionId.toString(),
+            collectionId: data.collectionId,
             owner: await getOrCreateAccount(ctx, new Uint8Array(32).fill(0)),
             mintPolicy: new MintPolicy({
                 forceSingleMint: false,

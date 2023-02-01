@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
@@ -20,6 +20,10 @@ export class Collection {
 
     @PrimaryColumn_()
     id!: string
+
+    @Index_()
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    collectionId!: bigint
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})

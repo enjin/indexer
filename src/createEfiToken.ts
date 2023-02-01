@@ -10,6 +10,7 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
         const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
         const collection = new Collection({
             id: '0',
+            collectionId: 0n,
             owner: account,
             mintPolicy: new MintPolicy({
                 maxTokenCount: 1n,

@@ -64,8 +64,8 @@ export class Token {
     @OneToMany_(() => Listing, e => e.takeAssetId)
     offers!: Listing[]
 
-    @Column_("bool", {nullable: true})
-    nonFungible!: boolean | undefined | null
+    @Column_("bool", {nullable: false})
+    nonFungible!: boolean
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
