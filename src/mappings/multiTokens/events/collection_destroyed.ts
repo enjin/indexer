@@ -3,7 +3,14 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
-import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed, RoyaltyCurrency } from '../../../model'
+import {
+    Attribute,
+    Collection,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensCollectionDestroyed,
+    RoyaltyCurrency,
+} from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
@@ -37,8 +44,15 @@ export async function collectionDestroyed(
         where: { collection: { id: collection.id } },
     })
 
+    const attributes = await ctx.store.find(Attribute, {
+        where: {
+            collection: { id: collection.id },
+        },
+    })
+
     await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(collection)
+    await ctx.store.remove(attributes)
 
     return new EventModel({
         id: item.event.id,
