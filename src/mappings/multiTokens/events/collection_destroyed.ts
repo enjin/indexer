@@ -51,8 +51,8 @@ export async function collectionDestroyed(
     })
 
     await ctx.store.remove(royaltyCurrencies)
-    await ctx.store.remove(collection)
     await ctx.store.remove(attributes)
+    await ctx.store.remove(collection)
 
     return new EventModel({
         id: item.event.id,
