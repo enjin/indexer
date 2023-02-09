@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
+import { Query, Resolver, Arg, ObjectType, Field, Int } from 'type-graphql'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { BigInteger } from '@subsquid/graphql-server'
 import { EntityManager } from 'typeorm'
@@ -35,7 +35,7 @@ export class VerifyTransferResolver {
     @Query(() => VerifyTransferResult)
     async verifyTransfer(
         @Arg('publicKey', { description: 'The public key of the address' }) publicKey: string,
-        @Arg('nonce', { description: 'The nonce of account at the transfer event block' }) nonce: number,
+        @Arg('nonce', () => Int, { description: 'The nonce of account at the transfer event block' }) nonce: number,
         @Arg('amount', () => BigInteger, { description: 'The amount of EFI transferred' }) amount: bigint
     ): Promise<VerifyTransferResult> {
         const manager = await this.tx()
