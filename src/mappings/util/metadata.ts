@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import https from 'https'
-import { u8aToHex, u8aToU8a, isAscii, u8aToString } from '@polkadot/util'
+import { stringToHex } from '@polkadot/util'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
 type Media = {
@@ -9,13 +9,18 @@ type Media = {
     alt: string
 }
 
-function safeString(s: string) {
-    const u8a = u8aToU8a(s)
-    if (isAscii(s)) {
-        return u8aToString(u8a)
-    }
+// eslint-disable-next-line no-control-regex
+const regex = /[^\u0000-\u00ff]/
 
-    return u8aToHex(u8a)
+function isNonAscii(s: string) {
+    return regex.test(s)
+}
+
+function safeString(s: string) {
+    if (isNonAscii(s)) {
+        return stringToHex(s)
+    }
+    return s
 }
 
 async function fetchMetadata(url: string) {
