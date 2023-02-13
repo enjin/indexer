@@ -1,26 +1,12 @@
 import Axios from 'axios'
 import https from 'https'
-import { stringToHex } from '@polkadot/util'
+import { safeString } from '../../common/tools'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
 type Media = {
     url: string
     type: string
     alt: string
-}
-
-// eslint-disable-next-line no-control-regex
-const regex = /[^\u0000-\u00ff]/
-
-function isNonAscii(s: string) {
-    return regex.test(s)
-}
-
-function safeString(s: string) {
-    if (isNonAscii(s)) {
-        return stringToHex(s)
-    }
-    return s
 }
 
 async function fetchMetadata(url: string) {
@@ -164,11 +150,11 @@ function metadataParser(
     }
 
     if (attribute.key === 'name') {
-        metadata.name = safeString(attribute.value)
+        metadata.name = attribute.value
     } else if (attribute.key === 'description') {
-        metadata.description = safeString(attribute.value)
+        metadata.description = attribute.value
     } else if (attribute.key === 'fallback_image') {
-        metadata.fallbackImage = safeString(attribute.value)
+        metadata.fallbackImage = attribute.value
     } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
     } else if (attribute.key === 'attributes') {

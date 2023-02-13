@@ -1,7 +1,7 @@
 import * as ss58 from '@subsquid/ss58'
 import { decodeHex } from '@subsquid/util-internal-hex'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
-import { hexToU8a, isHex } from '@polkadot/util'
+import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
 
 export function isValidAddress(address: any) {
@@ -72,4 +72,14 @@ export function saturatingSumBigInt(
         return max
     }
     return sum
+}
+
+// eslint-disable-next-line no-control-regex
+const regex = /[^\u0000-\u00ff]/
+
+export function safeString(s: string) {
+    if (regex.test(s)) {
+        return stringToHex(s)
+    }
+    return s
 }
