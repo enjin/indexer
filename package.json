@@ -21,7 +21,7 @@
     "@polkadot/util-crypto": "^10.2.3",
     "@subsquid/archive-registry": "^2.1.2",
     "@subsquid/cli": "^2.1.2",
-    "@subsquid/graphql-server": "^3.3.1",
+    "@subsquid/graphql-server": "^3.3.2",
     "@subsquid/ss58": "^0.1.4",
     "@subsquid/substrate-processor": "^2.3.0",
     "@subsquid/typeorm-migration": "^0.1.5",
