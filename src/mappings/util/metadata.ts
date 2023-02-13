@@ -1,11 +1,21 @@
 import Axios from 'axios'
 import https from 'https'
+import { u8aToHex, u8aToU8a, isAscii, u8aToString } from '@polkadot/util'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
 type Media = {
     url: string
     type: string
     alt: string
+}
+
+function safeString(s: string) {
+    const u8a = u8aToU8a(s)
+    if (isAscii(s)) {
+        return u8aToString(u8a)
+    }
+
+    return u8aToHex(u8a)
 }
 
 async function fetchMetadata(url: string) {
@@ -121,19 +131,19 @@ function metadataParser(
     legacy = false
 ) {
     if (externalMetadata?.name) {
-        metadata.name = externalMetadata.name
+        metadata.name = safeString(externalMetadata.name)
     }
     if (externalMetadata?.description) {
-        metadata.description = externalMetadata.description
+        metadata.description = safeString(externalMetadata.description)
     }
     if (externalMetadata?.external_url) {
-        metadata.externalUrl = externalMetadata.external_url
+        metadata.externalUrl = safeString(externalMetadata.external_url)
     }
     if (legacy && externalMetadata?.image) {
-        metadata.fallbackImage = externalMetadata.image
+        metadata.fallbackImage = safeString(externalMetadata.image)
     }
     if (externalMetadata?.fallback_image) {
-        metadata.fallbackImage = externalMetadata.fallback_image
+        metadata.fallbackImage = safeString(externalMetadata.fallback_image)
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)
@@ -149,11 +159,11 @@ function metadataParser(
     }
 
     if (attribute.key === 'name') {
-        metadata.name = attribute.value
+        metadata.name = safeString(attribute.value)
     } else if (attribute.key === 'description') {
-        metadata.description = attribute.value
+        metadata.description = safeString(attribute.value)
     } else if (attribute.key === 'fallback_image') {
-        metadata.fallbackImage = attribute.value
+        metadata.fallbackImage = safeString(attribute.value)
     } else if (attribute.key === 'media') {
         metadata.media = parseMedia(attribute.value)
     } else if (attribute.key === 'attributes') {
