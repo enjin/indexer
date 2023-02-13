@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import https from 'https'
+import { safeString } from '../../common/tools'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
 type Media = {
@@ -121,19 +122,19 @@ function metadataParser(
     legacy = false
 ) {
     if (externalMetadata?.name) {
-        metadata.name = externalMetadata.name
+        metadata.name = safeString(externalMetadata.name)
     }
     if (externalMetadata?.description) {
-        metadata.description = externalMetadata.description
+        metadata.description = safeString(externalMetadata.description)
     }
     if (externalMetadata?.external_url) {
-        metadata.externalUrl = externalMetadata.external_url
+        metadata.externalUrl = safeString(externalMetadata.external_url)
     }
     if (legacy && externalMetadata?.image) {
-        metadata.fallbackImage = externalMetadata.image
+        metadata.fallbackImage = safeString(externalMetadata.image)
     }
     if (externalMetadata?.fallback_image) {
-        metadata.fallbackImage = externalMetadata.fallback_image
+        metadata.fallbackImage = safeString(externalMetadata.fallback_image)
     }
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)

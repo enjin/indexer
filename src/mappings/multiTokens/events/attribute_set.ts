@@ -17,6 +17,7 @@ import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
+import { safeString } from '../../../common/tools'
 
 interface EventData {
     collectionId: bigint
@@ -79,8 +80,8 @@ export async function attributeSet(
         })
     }
 
-    const key = Buffer.from(data.key).toString()
-    const value = Buffer.from(data.value).toString()
+    const key = safeString(Buffer.from(data.key).toString())
+    const value = safeString(Buffer.from(data.value).toString())
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
 
