@@ -37,7 +37,7 @@ export async function burned(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -82,13 +82,17 @@ export async function burned(
         }),
     })
 
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token: token ?? undefined,
-            account: new Account({ id: address }),
+    if (token) {
+        return [
             event,
-        }),
-    ]
+            new AccountTokenEvent({
+                id: item.event.id,
+                token,
+                account: new Account({ id: address }),
+                event,
+            }),
+        ]
+    }
+
+    return event
 }
