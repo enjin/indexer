@@ -20,6 +20,8 @@ services:
     build:
       context: .
       target: processor
+    volumes:
+      - .env:/squid/.env
     depends_on:
       - indexer_db
 
@@ -31,6 +33,8 @@ services:
       target: query-node
     ports:
       - "4467:4347"
+    volumes:
+      - .env:/squid/.env
     depends_on:
       - indexer_db
       - indexer_processor
