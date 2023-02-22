@@ -1,6 +1,7 @@
 {
   "name": "efinity-indexer",
   "private": true,
+  "version": "1.5.5",
   "engines": {
     "node": ">=16"
   },
