@@ -29,6 +29,6 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
           [ "$VERSION" == "test" ] && VERSION=test
         
-          echo VERSION=$VERSION
+          export VERSION=$VERSION
           docker compose build indexer_processor indexer_graphql
           docker compose push indexer_processor indexer_graphql
