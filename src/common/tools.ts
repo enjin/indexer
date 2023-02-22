@@ -75,7 +75,7 @@ export function saturatingSumBigInt(
 }
 
 // eslint-disable-next-line no-control-regex
-const regex = /[^\u0000-\u00ff]/
+const regex = /\/\/u0000/ // null unicode
 
 export function safeString(s: string) {
     if (regex.test(s)) {
