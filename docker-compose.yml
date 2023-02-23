@@ -17,7 +17,7 @@ services:
   indexer_processor:
     container_name: indexer_processor
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer-processor:1.5.4
+    image: ghcr.io/efinity/indexer-processor:1.5.5
     build:
       context: .
       target: processor
@@ -29,7 +29,7 @@ services:
   indexer_graphql:
     container_name: indexer_graphql
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer-graphql:1.5.4
+    image: ghcr.io/efinity/indexer-graphql:1.5.5
     build:
       context: .
       target: query-node
