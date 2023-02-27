@@ -1,13 +1,8 @@
 name: Snyk
-on:
-  push:
-    branches:
-      - master
-  pull_request:
+on: push
 
 jobs:
   security:
-    name: Security Checker
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
