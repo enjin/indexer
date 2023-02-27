@@ -9,7 +9,13 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - uses: actions/checkout@master
+      - name: Install dependencies
+        run: npm install
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         continue-on-error: true # To make sure that SARIF upload gets called
