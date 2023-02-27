@@ -10,7 +10,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
+      - run: npm install --lockfile-version=2
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
