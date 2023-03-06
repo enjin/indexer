@@ -2,10 +2,6 @@ name: Publish docker image
 
 on:
   push:
-    branches:
-      - test
-      - master
-
     tags:
       - v*
 
@@ -27,7 +23,6 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           [ "$VERSION" == "master" ] && VERSION=latest
-          [ "$VERSION" == "test" ] && VERSION=test
 
           export VERSION=$VERSION
           docker compose build indexer_processor indexer_graphql
