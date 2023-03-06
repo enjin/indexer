@@ -14,7 +14,7 @@
     "fix": "eslint src --ext .ts,.js --fix"
   },
   "dependencies": {
-    "@polkadot/api": "^9.14.2",
+    "@polkadot/api": "^10.0.1",
     "@polkadot/keyring": "^10.3.1",
     "@polkadot/util": "^10.2.3",
     "@polkadot/util-crypto": "^10.2.3",
