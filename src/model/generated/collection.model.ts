@@ -9,6 +9,7 @@ import {Token} from "./token.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
+import {Trait} from "./trait.model"
 import {Metadata} from "./_metadata"
 import {CollectionStats} from "./_collectionStats"
 
@@ -64,6 +65,9 @@ export class Collection {
 
     @OneToMany_(() => Attribute, e => e.collection)
     attributes!: Attribute[]
+
+    @OneToMany_(() => Trait, e => e.collection)
+    traits!: Trait[]
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
