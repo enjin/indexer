@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import Queue from 'bull'
 import isPlainObject from 'lodash/isPlainObject'
 import connection from '../connection'
@@ -29,6 +30,8 @@ traitsQueue.process(async (job, done) => {
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
 
+    const traitsTokenToDelete: TraitToken[] = []
+
     const start = new Date()
 
     const { collectionId } = job.data satisfies JobData
@@ -40,6 +43,7 @@ traitsQueue.process(async (job, done) => {
         .createQueryBuilder('token')
         .select('token.id')
         .addSelect('token.metadata')
+        .leftJoinAndMapMany('token.traits', TraitToken, 'traitToken', 'traitToken.token = token.id')
         .where('token.collection = :collectionId', { collectionId })
         .getMany()
 
@@ -69,6 +73,9 @@ traitsQueue.process(async (job, done) => {
 
             tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), `${traitType}:${value}`])
         })
+
+        // check if token has same traits
+        token.traits
     })
 
     console.log(`Found ${traitTypeMap.size} trait types in collection ${collectionId}`, traitTypeMap)
@@ -82,7 +89,13 @@ traitsQueue.process(async (job, done) => {
             const trait = traits.find((t) => t.traitType === traitType && t.value === value)
             if (!trait) {
                 traitsToSave.push(
-                    new Trait({ collection: new Collection({ id: collectionId }), traitType, value, count: traitValue.count })
+                    new Trait({
+                        id: `${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`,
+                        collection: new Collection({ id: collectionId }),
+                        traitType,
+                        value,
+                        count: traitValue.count,
+                    })
                 )
             } else if (trait.count !== traitValue.count) {
                 trait.count = traitValue.count
@@ -91,12 +104,9 @@ traitsQueue.process(async (job, done) => {
         })
     })
 
-    console.log(`Found ${traitsToSave.length} traits to save in collection ${collectionId}`)
-    console.log([...traitsToSave, ...traitsToUpdate])
+    console.log(`Found ${[...traitsToSave, ...traitsToUpdate].length} traits to save in collection ${collectionId}`)
 
     await em.upsert(Trait, [...traitsToSave, ...traitsToUpdate] as any, ['id'])
-
-    const traitsTokenToDelete: TraitToken[] = []
 
     tokenTraitMap.forEach((_traits, _tokenId) => {
         if (!_traits.length) return

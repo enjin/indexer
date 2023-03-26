@@ -170,7 +170,7 @@ function getParticipants(args: any, signer: string): string[] {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(new FullTypeormDatabase(), async (ctx) => {
-  //  computeTraits('2174')
+    computeTraits('2174')
 
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
