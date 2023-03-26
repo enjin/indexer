@@ -10,6 +10,7 @@ import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
+import { computeTraits } from './jobs/compute-traits'
 
 const eventOptions = {
     data: {
@@ -169,6 +170,8 @@ function getParticipants(args: any, signer: string): string[] {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(new FullTypeormDatabase(), async (ctx) => {
+  //  computeTraits('2174')
+
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
         const extrinsics: Extrinsic[] = []

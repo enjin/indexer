@@ -1,33 +1,39 @@
 import Queue from 'bull'
-import { EntityManager } from 'typeorm'
 import isPlainObject from 'lodash/isPlainObject'
-import { Token, Trait } from '../model'
+import connection from '../connection'
+import { Collection, Token, Trait, TraitToken } from '../model'
 
-type JobData = { em: EntityManager; collectionId: string }
+type JobData = { collectionId: string }
 type TraitValueMap = Map<string, { count: number }>
 
 const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 12000, attempts: 2, removeOnComplete: { age: 600, count: 2000 } },
 })
 
-const computeTraits = async (em: EntityManager, collectionId: string) => {
-    traitsQueue.add({ em, collectionId }, { jobId: collectionId })
+const computeTraits = async (collectionId: string) => {
+    traitsQueue.add({ collectionId })
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 traitsQueue.process(async (job, done) => {
-    if (!job.data.em || !(job.data.em instanceof EntityManager)) {
-        throw new Error('EntityManager not provided.')
-    }
-
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')
     }
+    console.log(`Processing job ${job.id} for collection ${job.data.collectionId}`)
+    if (!connection.isInitialized) {
+        await connection.initialize()
+    }
+
+    const em = connection.manager
 
     const traitTypeMap = new Map<string, TraitValueMap>()
+    const tokenTraitMap = new Map<string, string[]>()
 
     const start = new Date()
 
-    const { em, collectionId } = job.data satisfies JobData
+    const { collectionId } = job.data satisfies JobData
+
+    console.log(`Starting trait computation for collection ${collectionId} at ${start}`)
 
     const tokens = await em
         .getRepository(Token)
@@ -60,10 +66,49 @@ traitsQueue.process(async (job, done) => {
             }
             const traitValue = tType.get(value) as TraitValueMap extends Map<string, infer V> ? V : never
             traitValue.count += 1
+
+            tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), `${traitType}:${value}`])
         })
     })
 
-    console.log(`Found ${traitTypeMap.size} trait types.`, traitTypeMap)
+    console.log(`Found ${traitTypeMap.size} trait types in collection ${collectionId}`, traitTypeMap)
+
+    const traitsToSave: Trait[] = []
+    const traitsToDelete: Trait[] = []
+    const traitsToUpdate: Trait[] = []
+
+    traitTypeMap.forEach((traitValueMap, traitType) => {
+        traitValueMap.forEach((traitValue, value) => {
+            const trait = traits.find((t) => t.traitType === traitType && t.value === value)
+            if (!trait) {
+                traitsToSave.push(
+                    new Trait({ collection: new Collection({ id: collectionId }), traitType, value, count: traitValue.count })
+                )
+            } else if (trait.count !== traitValue.count) {
+                trait.count = traitValue.count
+                traitsToUpdate.push(trait)
+            }
+        })
+    })
+
+    console.log(`Found ${traitsToSave.length} traits to save in collection ${collectionId}`)
+    console.log([...traitsToSave, ...traitsToUpdate])
+
+    await em.upsert(Trait, [...traitsToSave, ...traitsToUpdate] as any, ['id'])
+
+    const traitsTokenToDelete: TraitToken[] = []
+
+    tokenTraitMap.forEach((_traits, _tokenId) => {
+        if (!_traits.length) return
+
+        const token = tokens.find((t) => t.id === _tokenId)
+        if (token?.traits.length) {
+            const tokenTraitsToDelete = token.traits.filter((t) => !_traits.includes(`${t.trait.traitType}:${t.trait.value}`))
+            if (tokenTraitsToDelete.length) {
+                token.traits = token.traits.filter((t) => !tokenTraitsToDelete.includes(t))
+            }
+        }
+    })
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
 })
