@@ -290,7 +290,7 @@ type Trait @entity {
   collection: Collection!
   traitType: String!
   value: String!
-  count: Int!
+  count: BigInt!
   tokens: [TraitToken] @derivedFrom(field: "trait")
 }
 
