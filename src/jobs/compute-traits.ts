@@ -104,11 +104,11 @@ traitsQueue.process(async (job, done) => {
 
     traitTypeMap.forEach((traitValueMap, traitType) => {
         traitValueMap.forEach((traitValue, value) => {
-            const trait = traits.find((t) => t.id === hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`))
+            const trait = traits.find((t) => t.id === hash(`${collectionId}-${traitType}-${value}`))
             if (!trait) {
                 traitsToSave.push(
                     new Trait({
-                        id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`),
+                        id: hash(`${collectionId}-${traitType}-${value}`),
                         collection: new Collection({ id: collectionId }),
                         traitType,
                         value,
@@ -126,7 +126,7 @@ traitsQueue.process(async (job, done) => {
         if (
             !traitTypeMap.has(trait.traitType) ||
             !traitTypeMap.get(trait.traitType)?.has(trait.value) ||
-            trait.id !== hash(`${collectionId}-${trait.traitType.toLowerCase()}-${trait.value.toLowerCase()}`)
+            trait.id !== hash(`${collectionId}-${trait.traitType}-${trait.value}`)
         ) {
             traitsToDelete.push(trait)
         }
@@ -148,17 +148,14 @@ traitsQueue.process(async (job, done) => {
             if (token?.traits.length) {
                 for (let i = 0; i < token.traits.length; i += 1) {
                     const traitToken = token.traits[i]
-                    if (traitToken.id === hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}-${_tokenId}`)) {
+                    if (traitToken.id === hash(`${collectionId}-${traitType}-${value}-${_tokenId}`)) {
                         return
                     }
 
                     if (
                         !_traits.some((tt) => {
                             const splitted = tt.split(':')
-                            return (
-                                traitToken.id ===
-                                hash(`${collectionId}-${splitted[0].toLowerCase()}-${splitted[1].toLowerCase()}-${_tokenId}`)
-                            )
+                            return traitToken.id === hash(`${collectionId}-${splitted[0]}-${splitted[1]}-${_tokenId}`)
                         })
                     ) {
                         traitTokensToDelete.push(new TraitToken({ id: traitToken.id }))
@@ -169,8 +166,8 @@ traitsQueue.process(async (job, done) => {
 
             traitTokensToSave.push(
                 new TraitToken({
-                    id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}-${_tokenId}`),
-                    trait: new Trait({ id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`) }),
+                    id: hash(`${collectionId}-${traitType}-${value}-${_tokenId}`),
+                    trait: new Trait({ id: hash(`${collectionId}-${traitType}-${value}`) }),
                     token: new Token({ id: _tokenId }),
                 })
             )
