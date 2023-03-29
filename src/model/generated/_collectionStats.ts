@@ -5,7 +5,7 @@ export class CollectionStats {
     private _floorPrice!: bigint | undefined | null
     private _lastSale!: bigint | undefined | null
     private _highestSale!: bigint | undefined | null
-    private _supply!: bigint | undefined | null
+    private _supply!: bigint
     private _tokenCount!: number
     private _salesCount!: number
     private _rank!: number
@@ -18,7 +18,7 @@ export class CollectionStats {
             this._floorPrice = json.floorPrice == null ? undefined : marshal.bigint.fromJSON(json.floorPrice)
             this._lastSale = json.lastSale == null ? undefined : marshal.bigint.fromJSON(json.lastSale)
             this._highestSale = json.highestSale == null ? undefined : marshal.bigint.fromJSON(json.highestSale)
-            this._supply = json.supply == null ? undefined : marshal.bigint.fromJSON(json.supply)
+            this._supply = marshal.bigint.fromJSON(json.supply)
             this._tokenCount = marshal.int.fromJSON(json.tokenCount)
             this._salesCount = marshal.int.fromJSON(json.salesCount)
             this._rank = marshal.int.fromJSON(json.rank)
@@ -51,11 +51,12 @@ export class CollectionStats {
         this._highestSale = value
     }
 
-    get supply(): bigint | undefined | null {
+    get supply(): bigint {
+        assert(this._supply != null, 'uninitialized access')
         return this._supply
     }
 
-    set supply(value: bigint | undefined | null) {
+    set supply(value: bigint) {
         this._supply = value
     }
 
@@ -109,7 +110,7 @@ export class CollectionStats {
             floorPrice: this.floorPrice == null ? undefined : marshal.bigint.toJSON(this.floorPrice),
             lastSale: this.lastSale == null ? undefined : marshal.bigint.toJSON(this.lastSale),
             highestSale: this.highestSale == null ? undefined : marshal.bigint.toJSON(this.highestSale),
-            supply: this.supply == null ? undefined : marshal.bigint.toJSON(this.supply),
+            supply: marshal.bigint.toJSON(this.supply),
             tokenCount: this.tokenCount,
             salesCount: this.salesCount,
             rank: this.rank,
