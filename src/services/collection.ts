@@ -53,7 +53,7 @@ export class CollectionService {
 
         const stats = new CollectionStats({
             tokenCount: Number(tokenCount),
-            supply: BigInt(supply),
+            supply: BigInt(supply ?? 0n),
             salesCount: sales?.sales ?? 0,
             rank: sales?.rank ?? 0,
             volume: sales?.total_volume ?? 0n,

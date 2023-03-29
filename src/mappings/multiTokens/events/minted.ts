@@ -15,6 +15,7 @@ import {
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { CollectionService } from '../../../services'
 import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
@@ -56,6 +57,11 @@ export async function minted(
             collection: true,
         },
     })
+
+    if (token.supply !== 0n) {
+        computeTraits(data.collectionId.toString())
+    }
+
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
@@ -73,7 +79,7 @@ export async function minted(
     account.tokenValues += data.amount * token.unitPrice
     await ctx.store.save(account)
 
-    computeTraits(data.collectionId.toString())
+    new CollectionService(ctx.store).sync(data.collectionId.toString())
 
     const event = new EventModel({
         id: item.event.id,

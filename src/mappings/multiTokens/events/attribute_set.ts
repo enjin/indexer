@@ -138,8 +138,9 @@ export async function attributeSet(
             await ctx.store.save(collection)
         }
     }
-
-    computeTraits(collection.id)
+    if (token && token.metadata?.attributes) {
+        computeTraits(collection.id)
+    }
 
     return new EventModel({
         id: item.event.id,
