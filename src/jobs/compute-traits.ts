@@ -8,10 +8,13 @@ type JobData = { collectionId: string }
 type TraitValueMap = Map<string, { count: number }>
 
 const traitsQueue = new Queue<JobData>('traitsQueue', {
-    defaultJobOptions: { delay: 12000, attempts: 2, removeOnComplete: { age: 600, count: 2000 } },
+    defaultJobOptions: { delay: 12000, attempts: 2, removeOnComplete: true },
 })
 
 const computeTraits = async (collectionId: string) => {
+    if (!collectionId) {
+        throw new Error('Collection ID not provided.')
+    }
     traitsQueue.add({ collectionId })
 }
 
@@ -20,7 +23,9 @@ traitsQueue.process(async (job, done) => {
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')
     }
+
     console.log(`Processing job ${job.id} for collection ${job.data.collectionId}`)
+
     if (!connection.isInitialized) {
         await connection.initialize()
     }
@@ -29,8 +34,6 @@ traitsQueue.process(async (job, done) => {
 
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
-
-    const traitsTokenToDelete: TraitToken[] = []
 
     const start = new Date()
 
@@ -54,7 +57,6 @@ traitsQueue.process(async (job, done) => {
         .where('trait.collection = :collectionId', { collectionId })
         .getMany()
 
-    // fetch all traits for this collection
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
         const attributes = token.metadata.attributes as Record<string, { value: string }>
@@ -73,12 +75,9 @@ traitsQueue.process(async (job, done) => {
 
             tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), `${traitType}:${value}`])
         })
-
-        // check if token has same traits
-        token.traits
     })
 
-    console.log(`Found ${traitTypeMap.size} trait types in collection ${collectionId}`, traitTypeMap)
+    console.log(`Found ${traitTypeMap.size} trait types in collection ${collectionId}`)
 
     const traitsToSave: Trait[] = []
     const traitsToDelete: Trait[] = []
@@ -104,21 +103,45 @@ traitsQueue.process(async (job, done) => {
         })
     })
 
+    traits.forEach((trait) => {
+        if (!traitTypeMap.has(trait.traitType) || !traitTypeMap.get(trait.traitType)?.has(trait.value)) {
+            traitsToDelete.push(trait)
+        }
+    })
+
     console.log(`Found ${[...traitsToSave, ...traitsToUpdate].length} traits to save in collection ${collectionId}`)
+    console.log(`Found ${traitsToDelete.length} traits to delete in collection ${collectionId}`)
 
     await em.upsert(Trait, [...traitsToSave, ...traitsToUpdate] as any, ['id'])
+    await em.remove(traitsToDelete)
 
     tokenTraitMap.forEach((_traits, _tokenId) => {
         if (!_traits.length) return
-
+        const tokenTraits: TraitToken[] = []
         const token = tokens.find((t) => t.id === _tokenId)
-        if (token?.traits.length) {
-            const tokenTraitsToDelete = token.traits.filter((t) => !_traits.includes(`${t.trait.traitType}:${t.trait.value}`))
-            if (tokenTraitsToDelete.length) {
-                token.traits = token.traits.filter((t) => !tokenTraitsToDelete.includes(t))
-            }
-        }
+        /*  if (token?.traits.length) {
+            token.traits.forEach((t) => {
+                if (!_traits.includes(`${t.trait.traitType}:${t.trait.value}`)) {
+                    traitTokensToDelete.push(t)
+                }
+            })
+        } else { */
+        _traits.forEach((t) => {
+            const [traitType, value] = t.split(':')
+            tokenTraits.push(
+                new TraitToken({
+                    trait: new Trait({ id: `${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}` }),
+                    token: new Token({ id: _tokenId }),
+                })
+            )
+        })
+        if (token) token.traits = tokenTraits
+        // }
     })
+
+    console.log('Saving tokens')
+
+    await em.save(tokens)
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
 })
