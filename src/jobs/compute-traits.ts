@@ -20,9 +20,13 @@ const computeTraits = async (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
-    traitsQueue.getDelayed().then((jobs) => {
-        jobs.filter((job) => job.data.collectionId === collectionId).forEach((job) => job.remove())
-    })
+    const jobs = await traitsQueue.getDelayed()
+    const collectionJob = jobs.find((job) => job?.data.collectionId === collectionId)
+    if (collectionJob) {
+        console.log(`Job for collection ${collectionId} already in queue.`)
+
+        return
+    }
 
     traitsQueue.add({ collectionId })
 }
