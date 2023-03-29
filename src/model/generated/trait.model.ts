@@ -1,4 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import * as marshal from "./marshal"
 import {Collection} from "./collection.model"
 import {TraitToken} from "./traitToken.model"
 
@@ -21,8 +22,8 @@ export class Trait {
     @Column_("text", {nullable: false})
     value!: string
 
-    @Column_("int4", {nullable: false})
-    count!: number
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    count!: bigint
 
     @OneToMany_(() => TraitToken, e => e.trait)
     tokens!: TraitToken[]

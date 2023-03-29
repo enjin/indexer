@@ -5,6 +5,7 @@ import type { EntityManager } from 'typeorm'
 import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Metadata, Token } from '../../model'
 import { getMetadata } from '../../mappings/util/metadata'
+import { computeTraits } from '../../jobs/compute-traits'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',
@@ -72,6 +73,8 @@ export class RefreshMetadataResolver {
             }
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Unknown error' }
         }
+
+        computeTraits(collectionId)
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }

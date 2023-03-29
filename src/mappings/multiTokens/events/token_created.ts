@@ -31,6 +31,7 @@ import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface CallData {
     recipient: Uint8Array
@@ -300,6 +301,7 @@ export async function tokenCreated(
 
         await ctx.store.insert(Token, token as any)
         new CollectionService(ctx.store).sync(collection.id)
+        computeTraits(collection.id)
 
         return new EventModel({
             id: item.event.id,

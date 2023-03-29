@@ -6,7 +6,7 @@ import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
 
 type JobData = { collectionId: string }
-type TraitValueMap = Map<string, { count: number }>
+type TraitValueMap = Map<string, { count: bigint }>
 
 const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
@@ -31,9 +31,11 @@ traitsQueue.process(async (job, done) => {
 
     console.log(`Processing job ${job.id} for collection ${job.data.collectionId}`)
 
-    await connection.initialize().catch((err) => {
-        throw err
-    })
+    if (!connection.isInitialized) {
+        await connection.initialize().catch((err) => {
+            throw err
+        })
+    }
 
     const em = connection.manager
 
@@ -49,6 +51,7 @@ traitsQueue.process(async (job, done) => {
         .createQueryBuilder('token')
         .select('token.id')
         .addSelect('token.metadata')
+        .addSelect('token.supply')
         .leftJoinAndMapMany('token.traits', TraitToken, 'traitToken', 'traitToken.token = token.id')
         .where('token.collection = :collectionId', { collectionId })
         .getMany()
@@ -58,8 +61,6 @@ traitsQueue.process(async (job, done) => {
         .createQueryBuilder('trait')
         .where('trait.collection = :collectionId', { collectionId })
         .getMany()
-
-    console.log(`Fetched ${tokens.length} tokens and ${traits.length} traits in ${collectionId}`)
 
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
@@ -72,14 +73,21 @@ traitsQueue.process(async (job, done) => {
             }
             const tType = traitTypeMap.get(traitType) as TraitValueMap
             if (!tType.has(value)) {
-                tType.set(value, { count: 0 })
+                tType.set(value, { count: 0n })
             }
             const traitValue = tType.get(value) as TraitValueMap extends Map<string, infer V> ? V : never
-            traitValue.count += 1
+            traitValue.count += token.supply
 
             tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), `${traitType}:${value}`])
         })
     })
+
+    if (!traitTypeMap.size) {
+        console.log(`No traits found for collection ${collectionId}`)
+        done()
+
+        return
+    }
 
     const traitsToSave: Trait[] = []
     const traitsToDelete: Trait[] = []
