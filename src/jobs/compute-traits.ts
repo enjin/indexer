@@ -20,15 +20,16 @@ const computeTraits = async (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
-    const jobs = await traitsQueue.getDelayed()
+    // TODO: use dynamicJob Id, check if job already in queue, add some kind of throttle for same collectionId
+    /*   const jobs = await traitsQueue.getDelayed()
     const collectionJob = jobs.find((job) => job?.data.collectionId === collectionId)
     if (collectionJob) {
         console.log(`Job for collection ${collectionId} already in queue.`)
 
         return
-    }
+    } */
 
-    traitsQueue.add({ collectionId })
+    traitsQueue.add({ collectionId }, { jobId: collectionId })
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
