@@ -58,7 +58,7 @@ export async function minted(
         },
     })
 
-    if (token.supply !== 0n) {
+    if (token.supply !== 0n && token.metadata?.attributes) {
         computeTraits(data.collectionId.toString())
     }
 
