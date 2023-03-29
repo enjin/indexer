@@ -20,7 +20,11 @@ const computeTraits = async (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
-    traitsQueue.add({ collectionId }, { jobId: collectionId })
+    traitsQueue.getDelayed().then((jobs) => {
+        jobs.filter((job) => job.data.collectionId === collectionId).forEach((job) => job.remove())
+    })
+
+    traitsQueue.add({ collectionId })
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

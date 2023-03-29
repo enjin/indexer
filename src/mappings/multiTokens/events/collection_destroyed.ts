@@ -10,6 +10,7 @@ import {
     Extrinsic,
     MultiTokensCollectionDestroyed,
     RoyaltyCurrency,
+    Trait,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
@@ -50,6 +51,7 @@ export async function collectionDestroyed(
         },
     })
 
+    await ctx.store.delete(Trait, { collection: { id: collection.id } })
     await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(attributes)
     await ctx.store.remove(collection)

@@ -18,6 +18,7 @@ import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
     collectionId: bigint
@@ -137,6 +138,8 @@ export async function attributeSet(
             await ctx.store.save(collection)
         }
     }
+
+    computeTraits(collection.id)
 
     return new EventModel({
         id: item.event.id,
