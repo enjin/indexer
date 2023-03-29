@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import Queue from 'bull'
+import { createHash } from 'crypto'
 import isPlainObject from 'lodash/isPlainObject'
 import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
@@ -8,14 +9,18 @@ type JobData = { collectionId: string }
 type TraitValueMap = Map<string, { count: number }>
 
 const traitsQueue = new Queue<JobData>('traitsQueue', {
-    defaultJobOptions: { delay: 12000, attempts: 2, removeOnComplete: true },
+    defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
 })
+
+const hash = (str: string) => {
+    return createHash('sha1').update(str).digest('hex')
+}
 
 const computeTraits = async (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
-    traitsQueue.add({ collectionId })
+    traitsQueue.add({ collectionId }, { jobId: collectionId })
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -26,9 +31,9 @@ traitsQueue.process(async (job, done) => {
 
     console.log(`Processing job ${job.id} for collection ${job.data.collectionId}`)
 
-    if (!connection.isInitialized) {
-        await connection.initialize()
-    }
+    await connection.initialize().catch((err) => {
+        throw err
+    })
 
     const em = connection.manager
 
@@ -38,8 +43,6 @@ traitsQueue.process(async (job, done) => {
     const start = new Date()
 
     const { collectionId } = job.data satisfies JobData
-
-    console.log(`Starting trait computation for collection ${collectionId} at ${start}`)
 
     const tokens = await em
         .getRepository(Token)
@@ -53,9 +56,10 @@ traitsQueue.process(async (job, done) => {
     const traits = await em
         .getRepository(Trait)
         .createQueryBuilder('trait')
-        .select('trait.*')
         .where('trait.collection = :collectionId', { collectionId })
         .getMany()
+
+    console.log(`Fetched ${tokens.length} tokens and ${traits.length} traits in ${collectionId}`)
 
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
@@ -77,19 +81,17 @@ traitsQueue.process(async (job, done) => {
         })
     })
 
-    console.log(`Found ${traitTypeMap.size} trait types in collection ${collectionId}`)
-
     const traitsToSave: Trait[] = []
     const traitsToDelete: Trait[] = []
     const traitsToUpdate: Trait[] = []
 
     traitTypeMap.forEach((traitValueMap, traitType) => {
         traitValueMap.forEach((traitValue, value) => {
-            const trait = traits.find((t) => t.traitType === traitType && t.value === value)
+            const trait = traits.find((t) => t.id === hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`))
             if (!trait) {
                 traitsToSave.push(
                     new Trait({
-                        id: `${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`,
+                        id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`),
                         collection: new Collection({ id: collectionId }),
                         traitType,
                         value,
@@ -104,44 +106,72 @@ traitsQueue.process(async (job, done) => {
     })
 
     traits.forEach((trait) => {
-        if (!traitTypeMap.has(trait.traitType) || !traitTypeMap.get(trait.traitType)?.has(trait.value)) {
+        if (
+            !traitTypeMap.has(trait.traitType) ||
+            !traitTypeMap.get(trait.traitType)?.has(trait.value) ||
+            trait.id !== hash(`${collectionId}-${trait.traitType.toLowerCase()}-${trait.value.toLowerCase()}`)
+        ) {
             traitsToDelete.push(trait)
         }
     })
 
-    console.log(`Found ${[...traitsToSave, ...traitsToUpdate].length} traits to save in collection ${collectionId}`)
-    console.log(`Found ${traitsToDelete.length} traits to delete in collection ${collectionId}`)
-
     await em.upsert(Trait, [...traitsToSave, ...traitsToUpdate] as any, ['id'])
-    await em.remove(traitsToDelete)
+
+    const traitTokensToSave: TraitToken[] = []
+    const traitTokensToDelete: TraitToken[] = []
 
     tokenTraitMap.forEach((_traits, _tokenId) => {
         if (!_traits.length) return
-        const tokenTraits: TraitToken[] = []
+
         const token = tokens.find((t) => t.id === _tokenId)
-        /*  if (token?.traits.length) {
-            token.traits.forEach((t) => {
-                if (!_traits.includes(`${t.trait.traitType}:${t.trait.value}`)) {
-                    traitTokensToDelete.push(t)
-                }
-            })
-        } else { */
+
         _traits.forEach((t) => {
             const [traitType, value] = t.split(':')
-            tokenTraits.push(
+
+            if (token?.traits.length) {
+                for (let i = 0; i < token.traits.length; i += 1) {
+                    const traitToken = token.traits[i]
+                    if (traitToken.id === hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}-${_tokenId}`)) {
+                        return
+                    }
+
+                    if (
+                        !_traits.some((tt) => {
+                            const splitted = tt.split(':')
+                            return (
+                                traitToken.id ===
+                                hash(`${collectionId}-${splitted[0].toLowerCase()}-${splitted[1].toLowerCase()}-${_tokenId}`)
+                            )
+                        })
+                    ) {
+                        traitTokensToDelete.push(new TraitToken({ id: traitToken.id }))
+                        return
+                    }
+                }
+            }
+
+            traitTokensToSave.push(
                 new TraitToken({
-                    trait: new Trait({ id: `${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}` }),
+                    id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}-${_tokenId}`),
+                    trait: new Trait({ id: hash(`${collectionId}-${traitType.toLowerCase()}-${value.toLowerCase()}`) }),
                     token: new Token({ id: _tokenId }),
                 })
             )
         })
-        if (token) token.traits = tokenTraits
-        // }
     })
 
-    console.log('Saving tokens')
-
-    await em.save(tokens)
+    console.log(
+        `Saving TraitToken ${traitTokensToSave.length} and deleting ${traitTokensToDelete.length} in collection ${collectionId}`
+    )
+    await em
+        .createQueryBuilder()
+        .insert()
+        .into(TraitToken)
+        .values(traitTokensToSave as any)
+        .orIgnore()
+        .execute()
+    await em.remove(traitTokensToDelete)
+    await em.remove(traitsToDelete)
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
 })
