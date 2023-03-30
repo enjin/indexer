@@ -17,6 +17,7 @@ export async function getOrCreateAccount(
             id: pkHex,
             address: isAdressSS58(publicKey) ? encodeId(publicKey) : pkHex,
             balance: new Balance({
+                transferable: 0n,
                 free: 0n,
                 reserved: 0n,
                 miscFrozen: 0n,

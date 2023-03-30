@@ -240,6 +240,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                 address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                 nonce: accountInfo.nonce,
                 balance: new Balance({
+                    transferable: accountInfo.data.free - accountInfo.data.miscFrozen,
                     free: accountInfo.data.free,
                     reserved: accountInfo.data.reserved,
                     feeFrozen: accountInfo.data.feeFrozen,
