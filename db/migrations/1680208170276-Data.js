@@ -1,5 +1,5 @@
-module.exports = class Data1680088893462 {
-    name = 'Data1680088893462'
+module.exports = class Data1680208170276 {
+    name = 'Data1680208170276'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -24,11 +24,6 @@ module.exports = class Data1680088893462 {
         await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
         await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
         await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
-        await db.query(`CREATE TABLE "trait" ("id" character varying NOT NULL, "trait_type" text NOT NULL, "value" text NOT NULL, "count" numeric NOT NULL, "collection_id" character varying, CONSTRAINT "PK_c5d145e577199fe58afbf2a1b2d" PRIMARY KEY ("id"))`)
-        await db.query(`CREATE INDEX "IDX_641b9ad0c609f0a1ec747a05ce" ON "trait" ("collection_id") `)
-        await db.query(`CREATE TABLE "trait_token" ("id" character varying NOT NULL, "trait_id" character varying, "token_id" character varying, CONSTRAINT "PK_4e57eb88e2621a0cc66431f9115" PRIMARY KEY ("id"))`)
-        await db.query(`CREATE INDEX "IDX_71850fdd62a5b8d25de4245e55" ON "trait_token" ("trait_id") `)
-        await db.query(`CREATE INDEX "IDX_42c1cb4414e0240cf7e0ee8f96" ON "trait_token" ("token_id") `)
         await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric NOT NULL, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "non_fungible" boolean NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_cab3c454b0419a03584a3990ce" ON "token" ("token_id") `)
         await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
@@ -68,9 +63,6 @@ module.exports = class Data1680088893462 {
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00e1e709436862a20ae074f111b" FOREIGN KEY ("seller_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b" FOREIGN KEY ("make_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00656ee0f326da82878ddc91be8" FOREIGN KEY ("take_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-        await db.query(`ALTER TABLE "trait" ADD CONSTRAINT "FK_641b9ad0c609f0a1ec747a05ce3" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-        await db.query(`ALTER TABLE "trait_token" ADD CONSTRAINT "FK_71850fdd62a5b8d25de4245e550" FOREIGN KEY ("trait_id") REFERENCES "trait"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-        await db.query(`ALTER TABLE "trait_token" ADD CONSTRAINT "FK_42c1cb4414e0240cf7e0ee8f968" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "token" ADD CONSTRAINT "FK_65f74edd41f667e4645e59b61df" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_861e21e7c2777c9ef09bea27245" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -107,11 +99,6 @@ module.exports = class Data1680088893462 {
         await db.query(`DROP INDEX "public"."IDX_00e1e709436862a20ae074f111"`)
         await db.query(`DROP INDEX "public"."IDX_9d1cea2a04a169d58f13cea7e8"`)
         await db.query(`DROP INDEX "public"."IDX_00656ee0f326da82878ddc91be"`)
-        await db.query(`DROP TABLE "trait"`)
-        await db.query(`DROP INDEX "public"."IDX_641b9ad0c609f0a1ec747a05ce"`)
-        await db.query(`DROP TABLE "trait_token"`)
-        await db.query(`DROP INDEX "public"."IDX_71850fdd62a5b8d25de4245e55"`)
-        await db.query(`DROP INDEX "public"."IDX_42c1cb4414e0240cf7e0ee8f96"`)
         await db.query(`DROP TABLE "token"`)
         await db.query(`DROP INDEX "public"."IDX_cab3c454b0419a03584a3990ce"`)
         await db.query(`DROP INDEX "public"."IDX_65f74edd41f667e4645e59b61d"`)
@@ -151,9 +138,6 @@ module.exports = class Data1680088893462 {
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00e1e709436862a20ae074f111b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00656ee0f326da82878ddc91be8"`)
-        await db.query(`ALTER TABLE "trait" DROP CONSTRAINT "FK_641b9ad0c609f0a1ec747a05ce3"`)
-        await db.query(`ALTER TABLE "trait_token" DROP CONSTRAINT "FK_71850fdd62a5b8d25de4245e550"`)
-        await db.query(`ALTER TABLE "trait_token" DROP CONSTRAINT "FK_42c1cb4414e0240cf7e0ee8f968"`)
         await db.query(`ALTER TABLE "token" DROP CONSTRAINT "FK_65f74edd41f667e4645e59b61df"`)
         await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be"`)
         await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_861e21e7c2777c9ef09bea27245"`)
