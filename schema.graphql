@@ -277,11 +277,27 @@ type CollectionStats {
     floorPrice: BigInt
     lastSale: BigInt
     highestSale: BigInt
+    supply: BigInt!
     tokenCount: Int!
     salesCount: Int!
     rank: Int!
     marketCap: BigInt!
     volume: BigInt!
+}
+
+type Trait @entity {
+  id: ID!
+  collection: Collection!
+  traitType: String!
+  value: String!
+  count: BigInt!
+  tokens: [TraitToken] @derivedFrom(field: "trait")
+}
+
+type TraitToken @entity {
+  id: ID!
+  trait: Trait!
+  token: Token!
 }
 
 type Collection @entity {
@@ -304,6 +320,7 @@ type Collection @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "collection")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "collection")
   attributes: [Attribute] @derivedFrom(field: "collection")
+  traits: [Trait] @derivedFrom(field: "collection")
 
   # Extras
   metadata: Metadata
@@ -395,6 +412,7 @@ type Token @entity {
   attributes: [Attribute] @derivedFrom(field: "token")
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
+  traits: [TraitToken] @derivedFrom(field: "token")
 
   # Extras
   nonFungible: Boolean!

@@ -6,6 +6,7 @@ import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
+import {TraitToken} from "./traitToken.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -63,6 +64,9 @@ export class Token {
 
     @OneToMany_(() => Listing, e => e.takeAssetId)
     offers!: Listing[]
+
+    @OneToMany_(() => TraitToken, e => e.token)
+    traits!: TraitToken[]
 
     @Column_("bool", {nullable: false})
     nonFungible!: boolean

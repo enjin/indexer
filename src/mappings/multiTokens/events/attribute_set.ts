@@ -18,6 +18,7 @@ import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
     collectionId: bigint
@@ -63,6 +64,7 @@ export async function attributeSet(
                 tokenCount: 0,
                 salesCount: 0,
                 rank: 0,
+                supply: 0n,
                 marketCap: 0n,
                 volume: 0n,
             }),
@@ -135,6 +137,9 @@ export async function attributeSet(
             collection.attributeCount += 1
             await ctx.store.save(collection)
         }
+    }
+    if (token && token.metadata?.attributes) {
+        computeTraits(collection.id)
     }
 
     return new EventModel({

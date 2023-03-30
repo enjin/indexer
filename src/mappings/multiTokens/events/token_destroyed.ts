@@ -12,10 +12,12 @@ import {
     ListingStatus,
     MultiTokensTokenDestroyed,
     Token,
+    TraitToken,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
     collectionId: bigint
@@ -73,12 +75,14 @@ export async function tokenDestroyed(
         })
         const listings = [...makeListings, ...takeListings]
         await ctx.store.remove(listings)
+        await ctx.store.delete(TraitToken, { token: { id: token.id } })
         await ctx.store.delete(AccountTokenEvent, { token: { id: token.id } })
         await ctx.store.remove(attributes)
     }
 
     await ctx.store.remove(token)
     new CollectionService(ctx.store).sync(data.collectionId.toString())
+    computeTraits(data.collectionId.toString())
 
     return new EventModel({
         id: item.event.id,

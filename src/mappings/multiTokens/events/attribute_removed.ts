@@ -13,6 +13,7 @@ import {
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
     collectionId: bigint
@@ -75,6 +76,8 @@ export async function attributeRemoved(
             token.metadata = metadataParser(token.metadata, attribute)
             token.attributeCount -= 1
             await ctx.store.save(token)
+
+            computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
             const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },

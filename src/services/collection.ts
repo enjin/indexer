@@ -42,15 +42,18 @@ export class CollectionService {
             this.em
                 .getRepository(Token)
                 .createQueryBuilder('token')
+                .select('COUNT(token.id)', 'tokenCount')
+                .addSelect('SUM(token.supply)', 'supply')
                 .where('token.collection = :collectionId', { collectionId })
-                .getCount(),
+                .getRawOne(),
         ]
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const [[sales], [{ floor_price }], tokenCount] = await Promise.all(promises)
+        const [[sales], [{ floor_price }], { tokenCount, supply }] = await Promise.all(promises)
 
         const stats = new CollectionStats({
-            tokenCount,
+            tokenCount: Number(tokenCount),
+            supply: BigInt(supply ?? 0n),
             salesCount: sales?.sales ?? 0,
             rank: sales?.rank ?? 0,
             volume: sales?.total_volume ?? 0n,
