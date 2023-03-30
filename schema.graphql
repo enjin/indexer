@@ -226,6 +226,7 @@ type MultiTokensUnapproved {
 }
 
 type Balance {
+  transferable: BigInt!
   free: BigInt!
   reserved: BigInt!
   miscFrozen: BigInt!
