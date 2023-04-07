@@ -50,6 +50,14 @@ type Extrinsic @entity {
   participants: [String!]!
 }
 
+type Claim @entity {
+  id: ID!
+  extrinsic: Extrinsic
+
+  who: Account!
+  amount: BigInt!
+}
+
 type Event @entity {
   id: ID!
   extrinsic: Extrinsic
