@@ -24,6 +24,7 @@ services:
     volumes:
       - .env:/squid/.env
     depends_on:
+      - indexer_redis
       - indexer_db
 
   indexer_graphql:
@@ -93,7 +94,17 @@ services:
       DB_USER: "root"
     ports:
       - "4444:3000"
+  indexer_redis:
+    container_name: indexer_redis
+    image: redis:7.0
+    restart: unless-stopped
+    volumes:
+      - redis_db:/data
+    ports:
+      - "6379:6379"
 
 volumes:
   indexer_db:
   archive_db:
+  redis_db:
+  
