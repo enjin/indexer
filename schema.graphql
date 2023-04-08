@@ -135,6 +135,7 @@ type MultiTokensAttributeSet {
 type MultiTokensBurned {
   collectionId: BigInt!
   tokenId: BigInt!
+  token: Token
   account: Account!
   amount: BigInt!
 }
@@ -170,6 +171,7 @@ type MultiTokensFrozen {
 type MultiTokensMinted {
   collectionId: BigInt!
   tokenId: BigInt!
+  token: Token
   issuer: Account!
   recipient: Account!
   amount: BigInt!
@@ -212,6 +214,7 @@ type MultiTokensTokenMutated {
 type MultiTokensTransferred {
   collectionId: BigInt!
   tokenId: BigInt!
+  token: Token
   operator: Account!
   from: Account!
   to: Account!

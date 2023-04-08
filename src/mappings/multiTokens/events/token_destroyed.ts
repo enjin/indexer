@@ -73,9 +73,13 @@ export async function tokenDestroyed(
                 id: token.id,
             },
         })
+
         const listings = [...makeListings, ...takeListings]
         await ctx.store.remove(listings)
         await ctx.store.delete(TraitToken, { token: { id: token.id } })
+        // TODO: We are removing all events that are related to this token.
+        // We should only update the events that have relationship so it is null.
+        await ctx.store.delete(Event, { tokenId: token.id })
         await ctx.store.delete(AccountTokenEvent, { token: { id: token.id } })
         await ctx.store.remove(attributes)
     }

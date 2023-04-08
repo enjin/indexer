@@ -89,6 +89,7 @@ export async function minted(
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
+            token: token.id,
             issuer: u8aToHex(data.issuer),
             recipient: u8aToHex(data.recipient),
             amount: data.amount,

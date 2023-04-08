@@ -1,11 +1,13 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {Token} from "./token.model"
 import {Account} from "./account.model"
 
 export class MultiTokensTransferred {
     public readonly isTypeOf = 'MultiTokensTransferred'
     private _collectionId!: bigint
     private _tokenId!: bigint
+    private _token!: string | undefined | null
     private _operator!: string
     private _from!: string
     private _to!: string
@@ -16,6 +18,7 @@ export class MultiTokensTransferred {
         if (json != null) {
             this._collectionId = marshal.bigint.fromJSON(json.collectionId)
             this._tokenId = marshal.bigint.fromJSON(json.tokenId)
+            this._token = json.token == null ? undefined : marshal.string.fromJSON(json.token)
             this._operator = marshal.string.fromJSON(json.operator)
             this._from = marshal.string.fromJSON(json.from)
             this._to = marshal.string.fromJSON(json.to)
@@ -39,6 +42,14 @@ export class MultiTokensTransferred {
 
     set tokenId(value: bigint) {
         this._tokenId = value
+    }
+
+    get token(): string | undefined | null {
+        return this._token
+    }
+
+    set token(value: string | undefined | null) {
+        this._token = value
     }
 
     get operator(): string {
@@ -82,6 +93,7 @@ export class MultiTokensTransferred {
             isTypeOf: this.isTypeOf,
             collectionId: marshal.bigint.toJSON(this.collectionId),
             tokenId: marshal.bigint.toJSON(this.tokenId),
+            token: this.token,
             operator: this.operator,
             from: this.from,
             to: this.to,
