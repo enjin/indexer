@@ -10,6 +10,10 @@ type TraitValueMap = Map<string, { count: bigint }>
 
 const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
+    redis: {
+        port: 6379,
+        host: 'indexer_redis',
+    },
 })
 
 const hash = (str: string) => {
