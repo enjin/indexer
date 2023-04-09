@@ -75,6 +75,7 @@ export async function transferred(
         data: new MultiTokensTransferred({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
+            token: `${data.collectionId}-${data.tokenId}`,
             operator: u8aToHex(data.operator),
             from: fromAddress,
             to: toAddress,

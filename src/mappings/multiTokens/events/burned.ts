@@ -77,6 +77,7 @@ export async function burned(
         data: new MultiTokensBurned({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
+            token: token ? token.id : null,
             account: address,
             amount: data.amount,
         }),
