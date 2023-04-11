@@ -18,7 +18,7 @@
     "@polkadot/keyring": "^11.1.2",
     "@polkadot/util": "^11.1.3",
     "@polkadot/util-crypto": "^11.0.1",
-    "@subsquid/archive-registry": "^2.1.11",
+    "@subsquid/archive-registry": "^2.1.12",
     "@subsquid/cli": "^2.2.2",
     "@subsquid/graphql-server": "^3.3.2",
     "@subsquid/ss58": "^0.1.4",
