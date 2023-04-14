@@ -38,7 +38,7 @@
     "@subsquid/substrate-metadata-explorer": "^1.1.2",
     "@subsquid/substrate-typegen": "^2.2.1",
     "@subsquid/typeorm-codegen": "^0.3.3",
-    "@types/lodash": "^4.14.192",
+    "@types/lodash": "^4.14.194",
     "@types/bull": "^4.10.0",
     "@types/node": "^16.18.6",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
