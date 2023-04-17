@@ -97,7 +97,7 @@ services:
   indexer_redis:
     container_name: indexer_redis
     image: redis:7.0
-    restart: unless-stopped
+    restart: on-failure
     volumes:
       - redis_db:/data
     ports:

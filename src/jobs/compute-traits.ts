@@ -13,6 +13,10 @@ const traitsQueue = new Queue<JobData>('traitsQueue', {
     redis: {
         port: 6379,
         host: 'indexer_redis',
+        retryStrategy: (times) => {
+            return Math.min(times * 200, 2000)
+            // 200ms to 4secs
+        },
     },
 })
 
