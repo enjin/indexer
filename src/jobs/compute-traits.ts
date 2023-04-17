@@ -14,10 +14,6 @@ const traitsQueue = new Queue<JobData>('traitsQueue', {
     redis: {
         port: 6379,
         host: config.redisHost,
-        retryStrategy: (times) => {
-            return Math.min(times * 200, 2000)
-            // 200ms to 4secs
-        },
     },
 })
 
@@ -38,7 +34,10 @@ const computeTraits = async (collectionId: string) => {
         return
     } */
 
-    traitsQueue.add({ collectionId }, { jobId: collectionId })
+    traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+        console.log('Closing connection as Redis is not available')
+        traitsQueue.close(true)
+    })
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

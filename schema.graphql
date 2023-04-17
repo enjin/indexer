@@ -278,7 +278,7 @@ type CollectionStats {
     floorPrice: BigInt
     lastSale: BigInt
     highestSale: BigInt
-    supply: BigInt!
+    supply: BigInt
     tokenCount: Int!
     salesCount: Int!
     rank: Int!
