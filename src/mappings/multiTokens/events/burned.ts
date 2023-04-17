@@ -14,6 +14,8 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { computeTraits } from '../../../jobs/compute-traits'
+import { CollectionService } from '../../../services/collection'
 
 interface EventData {
     collectionId: bigint
@@ -61,6 +63,12 @@ export async function burned(
     if (token) {
         token.supply -= data.amount
         await ctx.store.save(token)
+
+        if (token.metadata?.attributes) {
+            computeTraits(data.collectionId.toString())
+        }
+
+        new CollectionService(ctx.store).sync(data.collectionId.toString())
     }
 
     if (tokenAccount && token) {
