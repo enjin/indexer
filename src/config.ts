@@ -14,6 +14,7 @@ const config: ProcessorConfig = {
     blockRange: {
         from: 0,
     },
+    redisHost: process.env.REDIS_HOST || 'indexer_redis',
 }
 
 export default config

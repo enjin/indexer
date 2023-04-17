@@ -1,4 +1,5 @@
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
+import Queue from 'bull'
 
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
@@ -18,4 +19,5 @@ export interface ProcessorConfig {
     batchSize?: Parameters<SubstrateProcessor<any>['setBatchSize']>[HandlerParams.NAME]
     port?: Parameters<SubstrateProcessor<any>['setPrometheusPort']>[HandlerParams.NAME]
     blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[HandlerParams.NAME]
+    redisHost: string
 }

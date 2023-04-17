@@ -4,6 +4,7 @@ import { createHash } from 'crypto'
 import isPlainObject from 'lodash/isPlainObject'
 import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
+import config from '../config'
 
 type JobData = { collectionId: string }
 type TraitValueMap = Map<string, { count: bigint }>
@@ -12,7 +13,7 @@ const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: {
         port: 6379,
-        host: 'indexer_redis',
+        host: config.redisHost,
     },
 })
 
@@ -33,7 +34,10 @@ const computeTraits = async (collectionId: string) => {
         return
     } */
 
-    traitsQueue.add({ collectionId }, { jobId: collectionId })
+    traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+        console.log('Closing connection as Redis is not available')
+        traitsQueue.close(true)
+    })
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
