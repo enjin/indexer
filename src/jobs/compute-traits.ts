@@ -4,6 +4,7 @@ import { createHash } from 'crypto'
 import isPlainObject from 'lodash/isPlainObject'
 import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
+import config from '../config'
 
 type JobData = { collectionId: string }
 type TraitValueMap = Map<string, { count: bigint }>
@@ -12,7 +13,7 @@ const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: {
         port: 6379,
-        host: 'indexer_redis',
+        host: config.redisHost,
         retryStrategy: (times) => {
             return Math.min(times * 200, 2000)
             // 200ms to 4secs
