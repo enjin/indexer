@@ -193,6 +193,14 @@ traitsQueue.process(async (job, done) => {
         .orIgnore()
         .execute()
     await em.remove(traitTokensToDelete)
+
+    await em
+        .createQueryBuilder()
+        .delete()
+        .from(TraitToken)
+        .where('traitToken.trait IN (:...traitsToDelete)', { traitsToDelete: traitsToDelete.map((t) => t.id) })
+        .execute()
+
     await em.remove(traitsToDelete)
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
