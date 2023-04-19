@@ -403,9 +403,9 @@ type Token @entity {
   cap: TokenCap
   behavior: TokenBehavior
   listingForbidden: Boolean!
-  unitPrice: BigInt!
 
   # Storage extras
+  unitPrice: BigInt
   minimumBalance: BigInt!
   mintDeposit: BigInt!
   attributeCount: Int!

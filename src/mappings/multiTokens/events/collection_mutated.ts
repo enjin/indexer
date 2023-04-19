@@ -17,7 +17,7 @@ import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { ShouldMutate } from '../../../types/generated/v3012'
+import { ShouldMutate } from '../../../types/generated/efinityV3012'
 
 interface EventData {
     collectionId: bigint

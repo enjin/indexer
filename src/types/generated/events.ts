@@ -1,6 +1,7 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
+import * as v500 from './v500'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -717,6 +718,50 @@ export class ClaimsClaimedEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Someone claimed some ENJ2 from EFI. `[who, ethereum_address, amount]`
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('Claims.Claimed') === '90aceb8c762fb3641d6c1bacc267cf16591d3a8651141a6e852d3cf24a86f20d'
+    }
+
+    /**
+     * Someone claimed some ENJ2 from EFI. `[who, ethereum_address, amount]`
+     */
+    get asV500(): {who: Uint8Array, ethereumAddress: (Uint8Array | undefined), amount: bigint} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class ClaimsClaimedEnjEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Claims.ClaimedEnj')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * A user burned EFI in order to begin a claim of ENJ.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('Claims.ClaimedEnj') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * A user burned EFI in order to begin a claim of ENJ.
+     */
+    get asV500(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CollatorStakingCandidateJoinedEvent {
@@ -1259,6 +1304,35 @@ export class CommunityPoolSpendingEvent {
     }
 }
 
+export class CommunityPoolUpdatedInactiveEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'CommunityPool.UpdatedInactive')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The inactive funds of the pallet have been updated.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('CommunityPool.UpdatedInactive') === 'd25083f089d99f72f11dfcdd8481dbdc5c0c6d9c3369646530e2e08cd9f6bbba'
+    }
+
+    /**
+     * The inactive funds of the pallet have been updated.
+     */
+    get asV500(): {reactivated: bigint, deactivated: bigint} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class ContractsCalledEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -1281,7 +1355,7 @@ export class ContractsCalledEvent {
      * calls. This is because on failure all storage changes including events are
      * rolled back.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.Called') === '21a729a4d368d7f57eb42f0ec77b595e3270a67ec14974cfcbc643abeda2921f'
     }
 
@@ -1294,8 +1368,8 @@ export class ContractsCalledEvent {
      * calls. This is because on failure all storage changes including events are
      * rolled back.
      */
-    get asV3012(): {caller: Uint8Array, contract: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {caller: Uint8Array, contract: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1316,15 +1390,15 @@ export class ContractsCodeRemovedEvent {
     /**
      * A code with the specified hash was removed.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.CodeRemoved') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
     }
 
     /**
      * A code with the specified hash was removed.
      */
-    get asV3012(): {codeHash: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {codeHash: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1345,15 +1419,15 @@ export class ContractsCodeStoredEvent {
     /**
      * Code with the specified hash has been stored.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.CodeStored') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
     }
 
     /**
      * Code with the specified hash has been stored.
      */
-    get asV3012(): {codeHash: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {codeHash: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1374,15 +1448,15 @@ export class ContractsContractCodeUpdatedEvent {
     /**
      * A contract's code was updated.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.ContractCodeUpdated') === 'f9de6decda4961d31d7cf59e3f8acd4849a220323ebabbb036464d999de54c18'
     }
 
     /**
      * A contract's code was updated.
      */
-    get asV3012(): {contract: Uint8Array, newCodeHash: Uint8Array, oldCodeHash: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {contract: Uint8Array, newCodeHash: Uint8Array, oldCodeHash: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1403,15 +1477,15 @@ export class ContractsContractEmittedEvent {
     /**
      * A custom event emitted by the contract.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.ContractEmitted') === '7f28393268795b9a97f05e82911cdcc4200d99e9968c1ab6a564f949f753b929'
     }
 
     /**
      * A custom event emitted by the contract.
      */
-    get asV3012(): {contract: Uint8Array, data: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {contract: Uint8Array, data: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1438,7 +1512,7 @@ export class ContractsDelegateCalledEvent {
      * calls. This is because on failure all storage changes including events are
      * rolled back.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.DelegateCalled') === '76261d7cbe52d35ce20ad428e69f2cc49c1719d1fbb27a3b951b1e26e8ef5993'
     }
 
@@ -1451,8 +1525,8 @@ export class ContractsDelegateCalledEvent {
      * calls. This is because on failure all storage changes including events are
      * rolled back.
      */
-    get asV3012(): {contract: Uint8Array, codeHash: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {contract: Uint8Array, codeHash: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1473,15 +1547,15 @@ export class ContractsInstantiatedEvent {
     /**
      * Contract deployed by address at the specified address.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.Instantiated') === '20f9f9057a4149f58eb48c00359f9800a42b51d4d2168437dfcce668c27a8d37'
     }
 
     /**
      * Contract deployed by address at the specified address.
      */
-    get asV3012(): {deployer: Uint8Array, contract: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {deployer: Uint8Array, contract: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1507,7 +1581,7 @@ export class ContractsTerminatedEvent {
      * The only way for a contract to be removed and emitting this event is by calling
      * `seal_terminate`.
      */
-    get isV3012(): boolean {
+    get isRocfinityV3012(): boolean {
         return this._chain.getEventHash('Contracts.Terminated') === '8e0b376b4821223ecd835a0ae76a615e7aa14158260ff9c7f87220449d98175b'
     }
 
@@ -1519,8 +1593,8 @@ export class ContractsTerminatedEvent {
      * The only way for a contract to be removed and emitting this event is by calling
      * `seal_terminate`.
      */
-    get asV3012(): {contract: Uint8Array, beneficiary: Uint8Array} {
-        assert(this.isV3012)
+    get asRocfinityV3012(): {contract: Uint8Array, beneficiary: Uint8Array} {
+        assert(this.isRocfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1838,6 +1912,23 @@ export class CumulusXcmExecutedDownwardEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Downward message executed with the given outcome.
+     * \[ id, outcome \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('CumulusXcm.ExecutedDownward') === '0a5524dcf48d575bf19533e72499c1b6f08167113160e1bb190028315c81787f'
+    }
+
+    /**
+     * Downward message executed with the given outcome.
+     * \[ id, outcome \]
+     */
+    get asV500(): [Uint8Array, v500.V3Outcome] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CumulusXcmInvalidFormatEvent {
@@ -1869,6 +1960,23 @@ export class CumulusXcmInvalidFormatEvent {
         assert(this.isEfinityV1)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Downward message is invalid XCM.
+     * \[ id \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('CumulusXcm.InvalidFormat') === '21ea0c8f2488eafafdea1de92b54cd17d8b1caff525e37616abf0ff93f11531d'
+    }
+
+    /**
+     * Downward message is invalid XCM.
+     * \[ id \]
+     */
+    get asV500(): Uint8Array {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CumulusXcmUnsupportedVersionEvent {
@@ -1898,6 +2006,23 @@ export class CumulusXcmUnsupportedVersionEvent {
      */
     get asEfinityV1(): Uint8Array {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Downward message is unsupported version of XCM.
+     * \[ id \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('CumulusXcm.UnsupportedVersion') === '21ea0c8f2488eafafdea1de92b54cd17d8b1caff525e37616abf0ff93f11531d'
+    }
+
+    /**
+     * Downward message is unsupported version of XCM.
+     * \[ id \]
+     */
+    get asV500(): Uint8Array {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2573,6 +2698,21 @@ export class DmpQueueExecutedDownwardEvent {
         assert(this.isEfinityV3000)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Downward message executed with the given outcome.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('DmpQueue.ExecutedDownward') === 'bbdc5e15442f2bee7199707f9da66674b3ad89835c84687a406e183c7d31121e'
+    }
+
+    /**
+     * Downward message executed with the given outcome.
+     */
+    get asV500(): {messageId: Uint8Array, outcome: v500.V3Outcome} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class DmpQueueInvalidFormatEvent {
@@ -2970,6 +3110,35 @@ export class EfinityXcmMinimumWeightUpdatedEvent {
     }
 }
 
+export class EfinityXcmXcmTransferFailedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'EfinityXcm.XcmTransferFailed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('EfinityXcm.XcmTransferFailed') === 'd5fd2071b14700fa32a86c145c56694290f189f8dc994af777b89c72bc7f0f75'
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get asV500(): v500.DispatchError {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class ExtrinsicPauseExtrinsicPausedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -3207,6 +3376,35 @@ export class FuelTanksCallDispatchedEvent {
      */
     get asEfinityV3000(): {caller: Uint8Array, tankId: Uint8Array} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class FuelTanksConsumptionSetEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'FuelTanks.ConsumptionSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The consumption for an account was set for a rule set on a [`FuelTank`]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('FuelTanks.ConsumptionSet') === '060d3726c09d4bf39a8170bce46b0e962e6156f845c7aa3783726e37856cd0fe'
+    }
+
+    /**
+     * The consumption for an account was set for a rule set on a [`FuelTank`]
+     */
+    get asV500(): {tankId: Uint8Array, userId: (Uint8Array | undefined), ruleSetId: number, consumption: v500.Consumption} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4565,6 +4763,21 @@ export class MultiTokensFrozenEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Collection, token or account was frozen
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('MultiTokens.Frozen') === '5cbc7fc4c80127d7f9f1d04214e275834ef6eb218526ecacd7cb52716bca5909'
+    }
+
+    /**
+     * Collection, token or account was frozen
+     */
+    get asV500(): v500.Freeze {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensMigrationStatusUpdatedEvent {
@@ -4812,6 +5025,21 @@ export class MultiTokensThawedEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Collection, token or account was unfrozen
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('MultiTokens.Thawed') === '5cbc7fc4c80127d7f9f1d04214e275834ef6eb218526ecacd7cb52716bca5909'
+    }
+
+    /**
+     * Collection, token or account was unfrozen
+     */
+    get asV500(): v500.Freeze {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensTokenAccountCreatedEvent {
@@ -5031,6 +5259,21 @@ export class MultiTokensTokenMutatedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A [`Token`](ep_multi_tokens::Token) was mutated
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenMutated') === '020a496ead997e5add19341a576048ad36de5c80d1ce3a9afe009a4332d54dca'
+    }
+
+    /**
+     * A [`Token`](ep_multi_tokens::Token) was mutated
+     */
+    get asV500(): {collectionId: bigint, tokenId: bigint, mutation: v500.DefaultTokenMutation} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensTokenUpdatedEvent {
@@ -5088,6 +5331,21 @@ export class MultiTokensTokenUpdatedEvent {
      */
     get asEfinityV3012(): {collectionId: bigint, tokenId: bigint, value: (efinityV3012.Token | undefined)} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenUpdated') === '8e21db81185ca56321585ca7650c3428ba360b92e5840103677c4a97ae7f9e25'
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get asV500(): {collectionId: bigint, tokenId: bigint, value: (v500.Token | undefined)} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5381,6 +5639,21 @@ export class OrmlXcmSentEvent {
         assert(this.isEfinityV3)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * XCM message sent. \[to, message\]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('OrmlXcm.Sent') === '3a86f4dc1fd9ac7a9db26bfc04e4e976c06d6b089449fea20d7cfce98a4b3528'
+    }
+
+    /**
+     * XCM message sent. \[to, message\]
+     */
+    get asV500(): {to: v500.V3MultiLocation, message: v500.V3Instruction[]} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class ParachainSystemDownwardMessagesProcessedEvent {
@@ -5530,6 +5803,35 @@ export class ParachainSystemUpgradeAuthorizedEvent {
      */
     get asEfinityV3000(): {codeHash: Uint8Array} {
         assert(this.isEfinityV3000)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class ParachainSystemUpwardMessageSentEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'ParachainSystem.UpwardMessageSent')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * An upward message was sent to the relay chain.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('ParachainSystem.UpwardMessageSent') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
+    }
+
+    /**
+     * An upward message was sent to the relay chain.
+     */
+    get asV500(): {messageHash: (Uint8Array | undefined)} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5684,6 +5986,25 @@ export class PolkadotXcmAssetsClaimedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Some assets have been claimed from an asset trap
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.AssetsClaimed') === '31f92e7520747dddaef3e11b450bf3ace3a2df72f612e4237ea77faaffe7a16c'
+    }
+
+    /**
+     * Some assets have been claimed from an asset trap
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get asV500(): [Uint8Array, v500.V3MultiLocation, v500.VersionedMultiAssets] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmAssetsTrappedEvent {
@@ -5715,6 +6036,25 @@ export class PolkadotXcmAssetsTrappedEvent {
      */
     get asEfinityV1(): [Uint8Array, efinityV1.V1MultiLocation, efinityV1.VersionedMultiAssets] {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Some assets have been placed in an asset trap.
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.AssetsTrapped') === '31f92e7520747dddaef3e11b450bf3ace3a2df72f612e4237ea77faaffe7a16c'
+    }
+
+    /**
+     * Some assets have been placed in an asset trap.
+     * 
+     * \[ hash, origin, assets \]
+     */
+    get asV500(): [Uint8Array, v500.V3MultiLocation, v500.VersionedMultiAssets] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5769,6 +6109,140 @@ export class PolkadotXcmAttemptedEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Execution of an XCM message was attempted.
+     * 
+     * \[ outcome \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.Attempted') === '9f44833a3470bf6416377180f3875a05cfa0cf60651f18f6456d9e12cbab7095'
+    }
+
+    /**
+     * Execution of an XCM message was attempted.
+     * 
+     * \[ outcome \]
+     */
+    get asV500(): v500.V3Outcome {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmFeesPaidEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.FeesPaid')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Fees were paid from a location for an operation (often for using `SendXcm`).
+     * 
+     * \[ paying location, fees \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.FeesPaid') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
+    }
+
+    /**
+     * Fees were paid from a location for an operation (often for using `SendXcm`).
+     * 
+     * \[ paying location, fees \]
+     */
+    get asV500(): [v500.V3MultiLocation, v500.V3MultiAsset[]] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmInvalidQuerierEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.InvalidQuerier')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Expected query response has been received but the querier location of the response does
+     * not match the expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     * 
+     * \[ origin location, id, expected querier, maybe actual querier \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.InvalidQuerier') === '7c1090f283eee877a7601bfed0fd6fc3ca831930ac944924347ca8a2c6bd92e3'
+    }
+
+    /**
+     * Expected query response has been received but the querier location of the response does
+     * not match the expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     * 
+     * \[ origin location, id, expected querier, maybe actual querier \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint, v500.V3MultiLocation, (v500.V3MultiLocation | undefined)] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmInvalidQuerierVersionEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.InvalidQuerierVersion')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Expected query response has been received but the expected querier location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     * 
+     * \[ origin location, id \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.InvalidQuerierVersion') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
+    }
+
+    /**
+     * Expected query response has been received but the expected querier location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     * 
+     * \[ origin location, id \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmInvalidResponderEvent {
@@ -5804,6 +6278,29 @@ export class PolkadotXcmInvalidResponderEvent {
      */
     get asEfinityV1(): [efinityV1.V1MultiLocation, bigint, (efinityV1.V1MultiLocation | undefined)] {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Expected query response has been received but the origin location of the response does
+     * not match that expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     * 
+     * \[ origin location, id, expected location \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.InvalidResponder') === '3bf64d16d6fb5992c738643efff778414cc181e36377c106ab8130ca32b906de'
+    }
+
+    /**
+     * Expected query response has been received but the origin location of the response does
+     * not match that expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     * 
+     * \[ origin location, id, expected location \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint, (v500.V3MultiLocation | undefined)] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5849,6 +6346,37 @@ export class PolkadotXcmInvalidResponderVersionEvent {
      */
     get asEfinityV1(): [efinityV1.V1MultiLocation, bigint] {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Expected query response has been received but the expected origin location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     * 
+     * \[ origin location, id \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.InvalidResponderVersion') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
+    }
+
+    /**
+     * Expected query response has been received but the expected origin location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     * 
+     * \[ origin location, id \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6076,6 +6604,27 @@ export class PolkadotXcmNotifyTargetMigrationFailEvent {
         assert(this.isEfinityV1)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * migrating the location to our new XCM format.
+     * 
+     * \[ location, query ID \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.NotifyTargetMigrationFail') === '8266fa3a9f901885a47ef275cb4d4053fa3a36033a40564944a565ca686bb27d'
+    }
+
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * migrating the location to our new XCM format.
+     * 
+     * \[ location, query ID \]
+     */
+    get asV500(): [v500.VersionedMultiLocation, bigint] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmNotifyTargetSendFailEvent {
@@ -6132,6 +6681,27 @@ export class PolkadotXcmNotifyTargetSendFailEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * sending the notification to it.
+     * 
+     * \[ location, query ID, error \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.NotifyTargetSendFail') === '26c26186934c8414941ac6565c3465399a31fd237e9f48bcc04601c00427c6fc'
+    }
+
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * sending the notification to it.
+     * 
+     * \[ location, query ID, error \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint, v500.V3Error] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmResponseReadyEvent {
@@ -6186,6 +6756,27 @@ export class PolkadotXcmResponseReadyEvent {
      */
     get asEfinityV2(): [bigint, efinityV2.V2Response] {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Query response has been received and is ready for taking with `take_response`. There is
+     * no registered notification call.
+     * 
+     * \[ id, response \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.ResponseReady') === '47e2336328ac2f8cffe468836a85755d501dbd3f9fe77c829ae5b5c5c33f5e9c'
+    }
+
+    /**
+     * Query response has been received and is ready for taking with `take_response`. There is
+     * no registered notification call.
+     * 
+     * \[ id, response \]
+     */
+    get asV500(): [bigint, v500.V3Response] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6273,6 +6864,25 @@ export class PolkadotXcmSentEvent {
         assert(this.isEfinityV2)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A XCM message was sent.
+     * 
+     * \[ origin, destination, message \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.Sent') === '8b71eb54444ef55962e90645805fd80535dfb12f572b41fdb1e093b7627b132d'
+    }
+
+    /**
+     * A XCM message was sent.
+     * 
+     * \[ origin, destination, message \]
+     */
+    get asV500(): [v500.V3MultiLocation, v500.V3MultiLocation, v500.V3Instruction[]] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmSupportedVersionChangedEvent {
@@ -6306,6 +6916,27 @@ export class PolkadotXcmSupportedVersionChangedEvent {
      */
     get asEfinityV1(): [efinityV1.V1MultiLocation, number] {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * The supported version of a location has been changed. This might be through an
+     * automatic notification or a manual intervention.
+     * 
+     * \[ location, XCM version \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.SupportedVersionChanged') === '9fb88093240cec5964187b6999557d2d8c4331f97b6c42c5664d30afbf50d7d4'
+    }
+
+    /**
+     * The supported version of a location has been changed. This might be through an
+     * automatic notification or a manual intervention.
+     * 
+     * \[ location, XCM version \]
+     */
+    get asV500(): [v500.V3MultiLocation, number] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6345,6 +6976,29 @@ export class PolkadotXcmUnexpectedResponseEvent {
         assert(this.isEfinityV1)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Query response received which does not match a registered query. This may be because a
+     * matching query was never registered, it may be because it is a duplicate response, or
+     * because the query timed out.
+     * 
+     * \[ origin location, id \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.UnexpectedResponse') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
+    }
+
+    /**
+     * Query response received which does not match a registered query. This may be because a
+     * matching query was never registered, it may be because it is a duplicate response, or
+     * because the query timed out.
+     * 
+     * \[ origin location, id \]
+     */
+    get asV500(): [v500.V3MultiLocation, bigint] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class PolkadotXcmVersionChangeNotifiedEvent {
@@ -6376,6 +7030,130 @@ export class PolkadotXcmVersionChangeNotifiedEvent {
      */
     get asEfinityV1(): [efinityV1.V1MultiLocation, number] {
         assert(this.isEfinityV1)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An XCM version change notification message has been attempted to be sent.
+     * 
+     * The cost of sending it (borne by the chain) is included.
+     * 
+     * \[ destination, result, cost \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.VersionChangeNotified') === '3e656c216d68595d03592e62a70ad5d9d6a20b8a41bc0686433d36902cc47f08'
+    }
+
+    /**
+     * An XCM version change notification message has been attempted to be sent.
+     * 
+     * The cost of sending it (borne by the chain) is included.
+     * 
+     * \[ destination, result, cost \]
+     */
+    get asV500(): [v500.V3MultiLocation, number, v500.V3MultiAsset[]] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmVersionNotifyRequestedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.VersionNotifyRequested')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * We have requested that a remote chain sends us XCM version change notifications.
+     * 
+     * \[ destination location, cost \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.VersionNotifyRequested') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
+    }
+
+    /**
+     * We have requested that a remote chain sends us XCM version change notifications.
+     * 
+     * \[ destination location, cost \]
+     */
+    get asV500(): [v500.V3MultiLocation, v500.V3MultiAsset[]] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmVersionNotifyStartedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.VersionNotifyStarted')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * A remote has requested XCM version change notification from us and we have honored it.
+     * A version information message is sent to them and its cost is included.
+     * 
+     * \[ destination location, cost \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.VersionNotifyStarted') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
+    }
+
+    /**
+     * A remote has requested XCM version change notification from us and we have honored it.
+     * A version information message is sent to them and its cost is included.
+     * 
+     * \[ destination location, cost \]
+     */
+    get asV500(): [v500.V3MultiLocation, v500.V3MultiAsset[]] {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class PolkadotXcmVersionNotifyUnrequestedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'PolkadotXcm.VersionNotifyUnrequested')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * We have requested that a remote chain stops sending us XCM version change notifications.
+     * 
+     * \[ destination location, cost \]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('PolkadotXcm.VersionNotifyUnrequested') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
+    }
+
+    /**
+     * We have requested that a remote chain stops sending us XCM version change notifications.
+     * 
+     * \[ destination location, cost \]
+     */
+    get asV500(): [v500.V3MultiLocation, v500.V3MultiAsset[]] {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7952,6 +8730,21 @@ export class UnknownTokensDepositedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Deposit success.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('UnknownTokens.Deposited') === '56d763db65b5d2d0b08faf432352ea07b43e96d3748f93c593bf63f666b69808'
+    }
+
+    /**
+     * Deposit success.
+     */
+    get asV500(): {asset: v500.V3MultiAsset, who: v500.V3MultiLocation} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class UnknownTokensWithdrawnEvent {
@@ -7979,6 +8772,21 @@ export class UnknownTokensWithdrawnEvent {
      */
     get asEfinityV3012(): {asset: efinityV3012.V1MultiAsset, who: efinityV3012.V1MultiLocation} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Withdraw success.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('UnknownTokens.Withdrawn') === '56d763db65b5d2d0b08faf432352ea07b43e96d3748f93c593bf63f666b69808'
+    }
+
+    /**
+     * Withdraw success.
+     */
+    get asV500(): {asset: v500.V3MultiAsset, who: v500.V3MultiLocation} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8352,6 +9160,21 @@ export class XTokensTransferredMultiAssetsEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Transferred `MultiAsset` with fee.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('XTokens.TransferredMultiAssets') === '15736a72848dcda33acde4ffd89efcf41166a311cefd45a3ccad9cf54e78a91d'
+    }
+
+    /**
+     * Transferred `MultiAsset` with fee.
+     */
+    get asV500(): {sender: Uint8Array, assets: v500.V3MultiAsset[], fee: v500.V3MultiAsset, dest: v500.V3MultiLocation} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class XcmpQueueBadFormatEvent {
@@ -8512,6 +9335,21 @@ export class XcmpQueueFailEvent {
      */
     get asEfinityV3012(): {messageHash: (Uint8Array | undefined), error: efinityV3012.V2Error, weight: efinityV3012.Weight} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Some XCM failed.
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('XcmpQueue.Fail') === 'add7b9cc246aa92449c7315a345573f307df55cd0b7e472982a726f0e1757cf0'
+    }
+
+    /**
+     * Some XCM failed.
+     */
+    get asV500(): {messageHash: (Uint8Array | undefined), error: v500.V3Error, weight: v500.Weight} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }

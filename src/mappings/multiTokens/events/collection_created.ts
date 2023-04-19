@@ -17,7 +17,7 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/v3012'
+import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 

@@ -26,7 +26,11 @@ import {
     TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
-} from '../../../types/generated/v3012'
+} from '../../../types/generated/efinityV3012'
+import {
+    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
+    SufficiencyParam_Sufficient,
+} from '../../../types/generated/v500'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -36,7 +40,8 @@ interface CallData {
     collectionId: bigint
     tokenId: bigint
     initialSupply: bigint
-    unitPrice: bigint
+    minimumBalance: bigint
+    unitPrice: bigint | null
     cap: TokenCapSupply | TokenCapSingleMint | null
     behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null
     listingForbidden: boolean
@@ -87,9 +92,37 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (data.isEfinityV2) {
-            const { collectionId } = data.asEfinityV2
-            const { recipients } = data.asEfinityV2
+        if (data.isV500) {
+            const { collectionId, recipients } = data.asV500
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        } else if (data.isEfinityV2) {
+            const { collectionId, recipients } = data.asEfinityV2
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -103,6 +136,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -110,8 +144,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 }
             }
         } else if (data.isEfinityV3000) {
-            const { collectionId } = data.asEfinityV3000
-            const { recipients } = data.asEfinityV3000
+            const { collectionId, recipients } = data.asEfinityV3000
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -125,6 +158,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -132,8 +166,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 }
             }
         } else if (data.isEfinityV3012) {
-            const { collectionId } = data.asEfinityV3012
-            const { recipients } = data.asEfinityV3012
+            const { collectionId, recipients } = data.asEfinityV3012
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -147,6 +180,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -160,6 +194,33 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
 
     const data = new MultiTokensMintCall(ctx, call)
 
+    if (data.isV500) {
+        const { collectionId } = data.asV500
+        const recipient = data.asV500.recipient.value as Uint8Array
+        const params = data.asV500.params as DefaultMintParamsCreateToken_v500
+        const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+        let unitPrice: bigint | null = 10_000_000_000_000_000n
+        let minimumBalance = 1n
+
+        if (params.sufficiency.__kind === 'Sufficient') {
+            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+            unitPrice = null
+        }
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            minimumBalance,
+            unitPrice,
+            cap,
+            behavior,
+            listingForbidden: params.listingForbidden ?? false,
+        }
+    }
+
     if (data.isEfinityV2) {
         const { collectionId } = data.asEfinityV2
         const recipient = data.asEfinityV2.recipient.value as Uint8Array
@@ -172,6 +233,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -191,6 +253,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -210,6 +273,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -286,7 +350,7 @@ export async function tokenCreated(
             cap: callData.cap,
             behavior: callData.behavior,
             isFrozen: false,
-            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / callData.unitPrice))),
+            minimumBalance: callData.minimumBalance,
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
