@@ -14,6 +14,15 @@ services:
       - "5432:5432"
       # command: ["postgres", "-c", "log_statement=all"]
 
+  indexer_redis:
+    container_name: indexer_redis
+    image: redis:7.0
+    restart: on-failure
+    volumes:
+      - redis_db:/data
+    ports:
+      - "6389:6379"
+
   indexer_processor:
     container_name: indexer_processor
     restart: unless-stopped
@@ -94,14 +103,6 @@ services:
       DB_USER: "root"
     ports:
       - "4444:3000"
-  indexer_redis:
-    container_name: indexer_redis
-    image: redis:7.0
-    restart: on-failure
-    volumes:
-      - redis_db:/data
-    ports:
-      - "6389:6379"
 
 volumes:
   indexer_db:
