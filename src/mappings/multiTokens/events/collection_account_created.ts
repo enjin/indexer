@@ -46,7 +46,7 @@ export async function collectionAccountCreated(
         id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
         isFrozen: false,
         approvals: null,
-        accountCount: 0, // TODO: Change fixed for now
+        accountCount: 0,
         account,
         collection,
         createdAt: new Date(block.timestamp),

@@ -21,7 +21,7 @@ import {
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/v3012'
+import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 

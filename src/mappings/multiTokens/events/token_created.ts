@@ -26,7 +26,8 @@ import {
     TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
-} from '../../../types/generated/v3012'
+} from '../../../types/generated/efinityV3012'
+import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500 } from '../../../types/generated/v500'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -87,9 +88,29 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (data.isEfinityV2) {
-            const { collectionId } = data.asEfinityV2
-            const { recipients } = data.asEfinityV2
+        if (data.isV500) {
+            const { collectionId, recipients } = data.asV500
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    unitPrice: 0n, // params.unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        } else if (data.isEfinityV2) {
+            const { collectionId, recipients } = data.asEfinityV2
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -110,8 +131,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 }
             }
         } else if (data.isEfinityV3000) {
-            const { collectionId } = data.asEfinityV3000
-            const { recipients } = data.asEfinityV3000
+            const { collectionId, recipients } = data.asEfinityV3000
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -132,8 +152,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 }
             }
         } else if (data.isEfinityV3012) {
-            const { collectionId } = data.asEfinityV3012
-            const { recipients } = data.asEfinityV3012
+            const { collectionId, recipients } = data.asEfinityV3012
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -159,6 +178,25 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     }
 
     const data = new MultiTokensMintCall(ctx, call)
+
+    if (data.isV500) {
+        const { collectionId } = data.asV500
+        const recipient = data.asV500.recipient.value as Uint8Array
+        const params = data.asV500.params as DefaultMintParamsCreateToken_v500
+        const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            unitPrice: 0n, // params.unitPrice,
+            cap,
+            behavior,
+            listingForbidden: params.listingForbidden ?? false,
+        }
+    }
 
     if (data.isEfinityV2) {
         const { collectionId } = data.asEfinityV2

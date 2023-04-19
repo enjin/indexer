@@ -15,7 +15,8 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/v3012'
+import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/efinityV3012'
+import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
 
 interface EventData {
     collectionId: bigint
@@ -27,6 +28,48 @@ interface EventData {
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensThawedEvent(ctx, event)
+
+    if (data.isV500) {
+        const { collectionId, freezeType } = data.asV500
+
+        if (freezeType.__kind === 'Collection') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                tokenId: undefined,
+                collectionAccount: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        if (freezeType.__kind === 'CollectionAccount') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                collectionAccount: (freezeType as FreezeType_CollectionAccount).value,
+                tokenId: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        if (freezeType.__kind === 'Token') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                tokenId: (freezeType as FreezeTypeToken_v500).tokenId,
+                collectionAccount: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        return {
+            collectionId,
+            freezeType: freezeType.__kind,
+            tokenId: (freezeType as FreezeType_TokenAccount).tokenId,
+            tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
+            collectionAccount: undefined,
+        }
+    }
 
     if (data.isEfinityV2) {
         const { collectionId, freezeType } = data.asEfinityV2
