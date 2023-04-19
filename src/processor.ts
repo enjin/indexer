@@ -246,6 +246,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
+        import('./handleJobs')
         await chainState(ctx as unknown as CommonContext, lastBlock)
     }
 })
