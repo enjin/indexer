@@ -27,7 +27,10 @@ import {
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/efinityV3012'
-import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500 } from '../../../types/generated/v500'
+import {
+    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
+    SufficiencyParam_Sufficient,
+} from '../../../types/generated/v500'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -37,7 +40,8 @@ interface CallData {
     collectionId: bigint
     tokenId: bigint
     initialSupply: bigint
-    unitPrice: bigint
+    minimumBalance: bigint
+    unitPrice: bigint | null
     cap: TokenCapSupply | TokenCapSingleMint | null
     behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null
     listingForbidden: boolean
@@ -97,13 +101,21 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 const params = recipientCall.params as DefaultMintParamsCreateToken_v500
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
 
                 return {
                     recipient,
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
-                    unitPrice: 0n, // params.unitPrice,
+                    minimumBalance,
+                    unitPrice,
                     cap,
                     behavior,
                     listingForbidden: params.listingForbidden ?? false,
@@ -124,6 +136,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -145,6 +158,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -166,6 +180,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     collectionId,
                     tokenId: params.tokenId,
                     initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
@@ -185,13 +200,21 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
         const params = data.asV500.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+        let unitPrice: bigint | null = 10_000_000_000_000_000n
+        let minimumBalance = 1n
+
+        if (params.sufficiency.__kind === 'Sufficient') {
+            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+            unitPrice = null
+        }
 
         return {
             recipient,
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
-            unitPrice: 0n, // params.unitPrice,
+            minimumBalance,
+            unitPrice,
             cap,
             behavior,
             listingForbidden: params.listingForbidden ?? false,
@@ -210,6 +233,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -229,6 +253,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -248,6 +273,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             collectionId,
             tokenId: params.tokenId,
             initialSupply: params.initialSupply,
+            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
             unitPrice: params.unitPrice,
             cap,
             behavior,
@@ -324,7 +350,7 @@ export async function tokenCreated(
             cap: callData.cap,
             behavior: callData.behavior,
             isFrozen: false,
-            minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / callData.unitPrice))),
+            minimumBalance: callData.minimumBalance,
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,

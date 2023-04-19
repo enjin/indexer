@@ -73,7 +73,7 @@ export async function burned(
 
     if (tokenAccount && token) {
         const { account } = tokenAccount
-        account.tokenValues -= data.amount * token.unitPrice
+        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
         await ctx.store.save(account)
     }
 

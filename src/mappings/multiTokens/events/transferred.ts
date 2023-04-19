@@ -47,7 +47,7 @@ export async function transferred(
         await ctx.store.save(fromTokenAccount)
 
         const { account, token } = fromTokenAccount
-        account.tokenValues -= data.amount * token.unitPrice
+        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
         await ctx.store.save(account)
     }
 
@@ -63,7 +63,7 @@ export async function transferred(
         await ctx.store.save(toTokenAccount)
 
         const { account, token } = toTokenAccount
-        account.tokenValues += data.amount * token.unitPrice
+        account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
         await ctx.store.save(account)
     }
 

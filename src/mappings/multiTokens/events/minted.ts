@@ -76,7 +76,7 @@ export async function minted(
     await ctx.store.save(tokenAccount)
 
     const { account } = tokenAccount
-    account.tokenValues += data.amount * token.unitPrice
+    account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
     await ctx.store.save(account)
 
     new CollectionService(ctx.store).sync(data.collectionId.toString())

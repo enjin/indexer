@@ -37,8 +37,8 @@ export class Token {
     @Column_("bool", {nullable: false})
     listingForbidden!: boolean
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    unitPrice!: bigint
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+    unitPrice!: bigint | undefined | null
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     minimumBalance!: bigint
