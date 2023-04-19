@@ -42,7 +42,7 @@ const chains = [
         paraId: 1000,
         relay: 'enjin-chain',
         genesisHash: '0x364d2ef585c308e4c3d38c410db2e0b4bb1ea5fa4e67a009ac9d352839fc2790',
-        website: 'https://efinity.io/',
+        website: 'https://enjin.io/',
     },
 ] as const
 
