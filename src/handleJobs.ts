@@ -155,23 +155,29 @@ traitsQueue.process(async (job, done) => {
     console.log(
         `Saving TraitToken ${traitTokensToSave.length} and deleting ${traitTokensToDelete.length} in collection ${collectionId}`
     )
-    await em
-        .createQueryBuilder()
-        .insert()
-        .into(TraitToken)
-        .values(traitTokensToSave as any)
-        .orIgnore()
-        .execute()
-    await em.remove(traitTokensToDelete)
+    if (traitTokensToSave.length) {
+        await em
+            .createQueryBuilder()
+            .insert()
+            .into(TraitToken)
+            .values(traitTokensToSave as any)
+            .orIgnore()
+            .execute()
+    }
+    if (traitTokensToDelete.length) {
+        await em.remove(traitTokensToDelete)
+    }
 
-    await em
-        .createQueryBuilder()
-        .delete()
-        .from(TraitToken)
-        .where('traitToken.trait IN (:...traitsToDelete)', { traitsToDelete: traitsToDelete.map((t) => t.id) })
-        .execute()
+    if (traitsToDelete.length) {
+        await em
+            .createQueryBuilder()
+            .delete()
+            .from(TraitToken)
+            .where('trait_id IN (:...traitsToDelete)', { traitsToDelete: traitsToDelete.map((t) => t.id) })
+            .execute()
 
-    await em.remove(traitsToDelete)
+        await em.remove(traitsToDelete)
+    }
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
 })
