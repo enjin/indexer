@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
-import { Account, Balance, Claim, Extrinsic, Fee } from '../../model'
 import * as crypto from 'crypto'
 import { EntityManager } from 'typeorm'
+import { Account, Balance, Claim, Extrinsic, Fee } from '../../model'
 
 @ObjectType()
 export class ClaimResult {
