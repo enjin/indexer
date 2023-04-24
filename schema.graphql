@@ -55,8 +55,7 @@ type Claim @entity {
   extrinsic: Extrinsic
 
   account: Account! @index
-  ethereumAddress: String! @index
-  amount: BigInt
+  amount: BigInt!
 }
 
 type Event @entity {
@@ -82,12 +81,11 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimed
+  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimedEnj
 
-type ClaimsClaimed {
+type ClaimsClaimedEnj {
   who: Account!
-  ethereumAddress: String!
-  amount: BigInt
+  amount: BigInt!
 }
 
 type BalancesTransfer {

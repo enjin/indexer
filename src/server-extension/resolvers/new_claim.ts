@@ -77,7 +77,7 @@ export class NewClaimResolver {
         const claim = new Claim({
             id: crypto.randomBytes(10).toString('hex'),
             extrinsic,
-            who: account,
+            account,
             amount: BigInt(amount),
         })
 
