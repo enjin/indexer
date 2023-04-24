@@ -50,6 +50,14 @@ type Extrinsic @entity {
   participants: [String!]!
 }
 
+type Claim @entity {
+  id: ID!
+  extrinsic: Extrinsic
+
+  account: Account! @index
+  amount: BigInt!
+}
+
 type Event @entity {
   id: ID!
   extrinsic: Extrinsic
@@ -73,7 +81,12 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | BalancesTransfer
+  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimedEnj
+
+type ClaimsClaimedEnj {
+  who: Account!
+  amount: BigInt!
+}
 
 type BalancesTransfer {
   from: Account!
@@ -250,6 +263,7 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "account")
+  claimsEvents: [Claim] @derivedFrom(field: "account")
 
   # Extras
   tokenValues: BigInt!

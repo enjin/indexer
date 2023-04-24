@@ -6,6 +6,7 @@ import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {AccountTokenEvent} from "./accountTokenEvent.model"
+import {Claim} from "./claim.model"
 
 @Entity_()
 export class Account {
@@ -40,6 +41,9 @@ export class Account {
 
     @OneToMany_(() => AccountTokenEvent, e => e.account)
     tokenEvents!: AccountTokenEvent[]
+
+    @OneToMany_(() => Claim, e => e.account)
+    claimsEvents!: Claim[]
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     tokenValues!: bigint
