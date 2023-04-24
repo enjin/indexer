@@ -18,8 +18,12 @@ export class Claim {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    who!: Account
+    account!: Account
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    amount!: bigint
+    @Index_()
+    @Column_("text", {nullable: false})
+    ethereumAddress!: string
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+    amount!: bigint | undefined | null
 }

@@ -23,8 +23,9 @@ import {MarketplaceListingCancelled} from "./_marketplaceListingCancelled"
 import {MarketplaceListingCreated} from "./_marketplaceListingCreated"
 import {MarketplaceListingFilled} from "./_marketplaceListingFilled"
 import {BalancesTransfer} from "./_balancesTransfer"
+import {ClaimsClaimed} from "./_claimsClaimed"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimed
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -53,6 +54,7 @@ export function fromJsonEventData(json: any): EventData {
         case 'MarketplaceListingCreated': return new MarketplaceListingCreated(undefined, json)
         case 'MarketplaceListingFilled': return new MarketplaceListingFilled(undefined, json)
         case 'BalancesTransfer': return new BalancesTransfer(undefined, json)
+        case 'ClaimsClaimed': return new ClaimsClaimed(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }
