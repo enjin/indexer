@@ -6,6 +6,7 @@ import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Metadata, Token } from '../../model'
 import { getMetadata } from '../../mappings/util/metadata'
 import { computeTraits } from '../../jobs/compute-traits'
+import { CollectionService } from '../../services'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',
@@ -73,6 +74,7 @@ export class RefreshMetadataResolver {
             }
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Unknown error' }
         }
+        new CollectionService(manager).sync(collectionId)
 
         computeTraits(collectionId)
 
