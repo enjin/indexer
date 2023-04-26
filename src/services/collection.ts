@@ -1,5 +1,5 @@
 import { EntityManager } from 'typeorm'
-import { Collection, CollectionStats, Listing, ListingStatus, Token } from '../model'
+import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, Token } from '../model'
 
 export class CollectionService {
     constructor(public em: EntityManager) {}
@@ -11,13 +11,15 @@ export class CollectionService {
             .addSelect('RANK() OVER (ORDER BY SUM(l.highest_price) DESC NULLS LAST)::int AS rank')
             .addSelect('MAX(l.highest_price) AS highest_sale')
             .addSelect('MAX(l.last_sale) AS last_sale')
-            .addSelect('SUM(l.highest_price) AS total_volume')
-            .addSelect('COUNT(l.id)::int AS sales')
+            .addSelect('SUM(l.highest_price * l.amount) AS total_volume')
+            .addSelect('SUM(l.count)::int AS sales')
             .from((qb) => {
                 return qb
                     .select('listing.id AS id')
+                    .addSelect('COUNT(sale.id) AS count')
                     .addSelect('listing.highest_price AS highest_price')
                     .addSelect('collection.id AS collection_id')
+                    .addSelect('listing.amount AS amount')
                     .addSelect(
                         'CASE WHEN lead(listing.id) OVER(PARTITION BY collection.id ORDER BY listing.created_at) IS NULL THEN listing.highest_price END AS last_sale'
                     )
@@ -25,6 +27,9 @@ export class CollectionService {
                     .innerJoin(Token, 'token', 'listing.make_asset_id_id = token.id')
                     .innerJoin(Collection, 'collection', 'token.collection = collection.id')
                     .innerJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
+                    .leftJoin(ListingSale, 'sale', 'listing.id = sale.listing')
+                    .addGroupBy('listing.id')
+                    .addGroupBy('collection.id')
             }, 'l')
             .groupBy('l.collection_id')
             .getQuery()
