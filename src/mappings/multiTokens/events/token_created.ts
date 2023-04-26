@@ -18,7 +18,6 @@ import {
     TokenCapSingleMint,
     TokenCapSupply,
 } from '../../../model'
-import { MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
@@ -26,14 +25,18 @@ import {
     TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
+    MultiTokensCall_mint,
 } from '../../../types/generated/efinityV3012'
+import { MultiTokensCall_mint as MultiTokensCall_mint_rV3012 } from '../../../types/generated/rocfinityV3012'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
+    MultiTokensCall_mint as MultiTokensCall_mint_v500,
     SufficiencyParam_Sufficient,
 } from '../../../types/generated/v500'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { EfinityUtilityBatchCall, MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 
 interface CallData {
     recipient: Uint8Array
@@ -89,6 +92,113 @@ async function getBehavior(
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call, event: EventData): Promise<CallData> {
+    if (call.name === 'EfinityUtility.batch') {
+        const data = new EfinityUtilityBatchCall(ctx, call)
+
+        if (data.isV500) {
+            const { calls } = data.asV500
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    r.value.__kind === 'mint' &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
+        if (data.isEfinityV3012) {
+            const { calls } = data.asEfinityV3012
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    r.value.__kind === 'mint' &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
+                    unitPrice: params.unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
+        if (data.isRocfinityV3012) {
+            const { calls } = data.asRocfinityV3012
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    r.value.__kind === 'mint' &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint_rV3012
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParams_CreateToken
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance: BigInt(Math.max(1, Number(10n ** 16n / params.unitPrice))),
+                    unitPrice: params.unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+    }
+
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
@@ -221,10 +331,10 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
         }
     }
 
-    if (data.isEfinityV2) {
-        const { collectionId } = data.asEfinityV2
-        const recipient = data.asEfinityV2.recipient.value as Uint8Array
-        const params = data.asEfinityV2.params as DefaultMintParams_CreateToken
+    if (data.isEfinityV3012) {
+        const { collectionId } = data.asEfinityV3012
+        const recipient = data.asEfinityV3012.recipient.value as Uint8Array
+        const params = data.asEfinityV3012.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
@@ -261,10 +371,10 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
         }
     }
 
-    if (data.isEfinityV3012) {
-        const { collectionId } = data.asEfinityV3012
-        const recipient = data.asEfinityV3012.recipient.value as Uint8Array
-        const params = data.asEfinityV3012.params as DefaultMintParams_CreateToken
+    if (data.isEfinityV2) {
+        const { collectionId } = data.asEfinityV2
+        const recipient = data.asEfinityV2.recipient.value as Uint8Array
+        const params = data.asEfinityV2.params as DefaultMintParams_CreateToken
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
 
@@ -280,6 +390,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             listingForbidden: params.listingForbidden ?? false,
         }
     }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
