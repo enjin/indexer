@@ -83,14 +83,16 @@ export async function transferred(
         }),
     })
 
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            from: fromTokenAccount?.account,
-            to: toTokenAccount?.account,
+    if (fromTokenAccount) {
+        return [
             event,
-            token: new Token({ id: event.tokenId as string }),
-        }),
-    ]
+            new AccountTokenEvent({
+                id: item.event.id,
+                from: fromTokenAccount.account,
+                to: toTokenAccount?.account,
+                event,
+                token: new Token({ id: event.tokenId as string }),
+            }),
+        ]
+    }
 }
