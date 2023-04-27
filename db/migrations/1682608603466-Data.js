@@ -1,5 +1,5 @@
-module.exports = class Data1682379511060 {
-    name = 'Data1682379511060'
+module.exports = class Data1682608603466 {
+    name = 'Data1682608603466'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -45,10 +45,11 @@ module.exports = class Data1682379511060 {
         await db.query(`CREATE INDEX "IDX_129efedcb305c80256db2d57a5" ON "event" ("extrinsic_id") `)
         await db.query(`CREATE INDEX "IDX_d70aaf185af2624511a80ff879" ON "event" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_d201bf824cd72132b9e72785c9" ON "event" ("token_id") `)
-        await db.query(`CREATE TABLE "account_token_event" ("id" character varying NOT NULL, "account_id" character varying, "event_id" character varying, "token_id" character varying, CONSTRAINT "PK_c37a7fda674246b4860508b876d" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "account_token_event" ("id" character varying NOT NULL, "from_id" character varying, "to_id" character varying, "event_id" character varying, "token_id" character varying, CONSTRAINT "PK_c37a7fda674246b4860508b876d" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE INDEX "IDX_98871cac0c6c4e3d02e9dba219" ON "account_token_event" ("from_id") `)
+        await db.query(`CREATE INDEX "IDX_3fdcf5dfb12f3dd04d468cb6ca" ON "account_token_event" ("to_id") `)
         await db.query(`CREATE INDEX "IDX_aaa1cf924ed392764b0bace1ad" ON "account_token_event" ("event_id") `)
         await db.query(`CREATE INDEX "IDX_87fb00cfed5217b47de01f5856" ON "account_token_event" ("token_id") `)
-        await db.query(`CREATE INDEX "IDX_475ae0141d894b7c4f33323b4b" ON "account_token_event" ("account_id", "token_id") `)
         await db.query(`CREATE TABLE "claim" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "extrinsic_id" character varying, "account_id" character varying, CONSTRAINT "PK_466b305cc2e591047fa1ce58f81" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_54cfa60b0bdcdb3d28bc2180ef" ON "claim" ("extrinsic_id") `)
         await db.query(`CREATE INDEX "IDX_f1b34350a4500236d1f9e788cd" ON "claim" ("account_id") `)
@@ -81,7 +82,8 @@ module.exports = class Data1682379511060 {
         await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_a0ca7fffb7ae953536712abef23" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "collection" ADD CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96" FOREIGN KEY ("owner_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "event" ADD CONSTRAINT "FK_129efedcb305c80256db2d57a59" FOREIGN KEY ("extrinsic_id") REFERENCES "extrinsic"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
-        await db.query(`ALTER TABLE "account_token_event" ADD CONSTRAINT "FK_3d725893b6aa2fb935db373faac" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "account_token_event" ADD CONSTRAINT "FK_98871cac0c6c4e3d02e9dba2197" FOREIGN KEY ("from_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "account_token_event" ADD CONSTRAINT "FK_3fdcf5dfb12f3dd04d468cb6ca9" FOREIGN KEY ("to_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "account_token_event" ADD CONSTRAINT "FK_aaa1cf924ed392764b0bace1ad1" FOREIGN KEY ("event_id") REFERENCES "event"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "account_token_event" ADD CONSTRAINT "FK_87fb00cfed5217b47de01f58562" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "claim" ADD CONSTRAINT "FK_54cfa60b0bdcdb3d28bc2180efd" FOREIGN KEY ("extrinsic_id") REFERENCES "extrinsic"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -134,9 +136,10 @@ module.exports = class Data1682379511060 {
         await db.query(`DROP INDEX "public"."IDX_d70aaf185af2624511a80ff879"`)
         await db.query(`DROP INDEX "public"."IDX_d201bf824cd72132b9e72785c9"`)
         await db.query(`DROP TABLE "account_token_event"`)
+        await db.query(`DROP INDEX "public"."IDX_98871cac0c6c4e3d02e9dba219"`)
+        await db.query(`DROP INDEX "public"."IDX_3fdcf5dfb12f3dd04d468cb6ca"`)
         await db.query(`DROP INDEX "public"."IDX_aaa1cf924ed392764b0bace1ad"`)
         await db.query(`DROP INDEX "public"."IDX_87fb00cfed5217b47de01f5856"`)
-        await db.query(`DROP INDEX "public"."IDX_475ae0141d894b7c4f33323b4b"`)
         await db.query(`DROP TABLE "claim"`)
         await db.query(`DROP INDEX "public"."IDX_54cfa60b0bdcdb3d28bc2180ef"`)
         await db.query(`DROP INDEX "public"."IDX_f1b34350a4500236d1f9e788cd"`)
@@ -169,7 +172,8 @@ module.exports = class Data1682379511060 {
         await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_a0ca7fffb7ae953536712abef23"`)
         await db.query(`ALTER TABLE "collection" DROP CONSTRAINT "FK_01d689ecc7eba32eaf962ad9d96"`)
         await db.query(`ALTER TABLE "event" DROP CONSTRAINT "FK_129efedcb305c80256db2d57a59"`)
-        await db.query(`ALTER TABLE "account_token_event" DROP CONSTRAINT "FK_3d725893b6aa2fb935db373faac"`)
+        await db.query(`ALTER TABLE "account_token_event" DROP CONSTRAINT "FK_98871cac0c6c4e3d02e9dba2197"`)
+        await db.query(`ALTER TABLE "account_token_event" DROP CONSTRAINT "FK_3fdcf5dfb12f3dd04d468cb6ca9"`)
         await db.query(`ALTER TABLE "account_token_event" DROP CONSTRAINT "FK_aaa1cf924ed392764b0bace1ad1"`)
         await db.query(`ALTER TABLE "account_token_event" DROP CONSTRAINT "FK_87fb00cfed5217b47de01f58562"`)
         await db.query(`ALTER TABLE "claim" DROP CONSTRAINT "FK_54cfa60b0bdcdb3d28bc2180efd"`)

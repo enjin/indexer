@@ -97,7 +97,7 @@ export async function burned(
             new AccountTokenEvent({
                 id: item.event.id,
                 token,
-                account: new Account({ id: address }),
+                from: new Account({ id: address }),
                 event,
             }),
         ]

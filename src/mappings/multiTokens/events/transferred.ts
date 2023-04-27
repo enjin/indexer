@@ -6,7 +6,6 @@ import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { encodeId } from '../../../common/tools'
 
 interface EventData {
     collectionId: bigint
@@ -31,7 +30,7 @@ export async function transferred(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent[]] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -83,21 +82,18 @@ export async function transferred(
         }),
     })
 
-    return [
-        event,
-        [
+    if (fromTokenAccount) {
+        return [
+            event,
             new AccountTokenEvent({
-                id: `${item.event.id}-from-${encodeId(data.from)}`,
-                account: fromTokenAccount?.account,
+                id: item.event.id,
+                from: fromTokenAccount.account,
+                to: toTokenAccount?.account,
                 event,
                 token: new Token({ id: event.tokenId as string }),
             }),
-            new AccountTokenEvent({
-                id: `${item.event.id}-to-${encodeId(data.to)}`,
-                account: toTokenAccount?.account,
-                event,
-                token: new Token({ id: event.tokenId as string }),
-            }),
-        ],
-    ]
+        ]
+    }
+
+    return event
 }

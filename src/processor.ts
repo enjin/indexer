@@ -84,7 +84,7 @@ async function handleEvents(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: Item
-): Promise<Event | [Event, AccountTokenEvent] | [Event, AccountTokenEvent[]] | undefined> {
+): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
             return map.multiTokens.events.approved(ctx, block, item)
@@ -195,7 +195,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 if (event) {
                     if (Array.isArray(event)) {
                         events.push(event[0])
-                        Array.prototype.push.apply(accountTokenEvents, Array.isArray(event[1]) ? event[1] : [event[1]])
+                        accountTokenEvents.push(event[1])
                     } else {
                         events.push(event)
                     }

@@ -47,7 +47,7 @@ export async function minted(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent[]] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -96,25 +96,14 @@ export async function minted(
         }),
     })
 
-    const accountTokenEvents = [
+    return [
+        event,
         new AccountTokenEvent({
-            id: `${item.event.id}-issuer`,
+            id: item.event.id,
             token,
-            account: new Account({ id: u8aToHex(data.issuer) }),
+            from: new Account({ id: u8aToHex(data.issuer) }),
+            to: new Account({ id: u8aToHex(data.recipient) }),
             event,
         }),
     ]
-    // eliminate duplicate recipient event when the issuer same as recipient
-    if (u8aToHex(data.recipient) !== u8aToHex(data.issuer)) {
-        accountTokenEvents.push(
-            new AccountTokenEvent({
-                id: `${item.event.id}-recipient`,
-                token,
-                account: new Account({ id: u8aToHex(data.recipient) }),
-                event,
-            })
-        )
-    }
-
-    return [event, accountTokenEvents]
 }
