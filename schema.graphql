@@ -298,7 +298,6 @@ type CollectionStats {
     supply: BigInt
     tokenCount: Int!
     salesCount: Int!
-    rank: Int!
     marketCap: BigInt!
     volume: BigInt!
 }

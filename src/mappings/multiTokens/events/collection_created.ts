@@ -150,7 +150,6 @@ export async function collectionCreated(
             highestSale: null,
             tokenCount: 0,
             salesCount: 0,
-            rank: 0,
             supply: 0n,
             marketCap: 0n,
             volume: 0n,

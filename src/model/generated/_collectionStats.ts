@@ -8,7 +8,6 @@ export class CollectionStats {
     private _supply!: bigint | undefined | null
     private _tokenCount!: number
     private _salesCount!: number
-    private _rank!: number
     private _marketCap!: bigint
     private _volume!: bigint
 
@@ -21,7 +20,6 @@ export class CollectionStats {
             this._supply = json.supply == null ? undefined : marshal.bigint.fromJSON(json.supply)
             this._tokenCount = marshal.int.fromJSON(json.tokenCount)
             this._salesCount = marshal.int.fromJSON(json.salesCount)
-            this._rank = marshal.int.fromJSON(json.rank)
             this._marketCap = marshal.bigint.fromJSON(json.marketCap)
             this._volume = marshal.bigint.fromJSON(json.volume)
         }
@@ -77,15 +75,6 @@ export class CollectionStats {
         this._salesCount = value
     }
 
-    get rank(): number {
-        assert(this._rank != null, 'uninitialized access')
-        return this._rank
-    }
-
-    set rank(value: number) {
-        this._rank = value
-    }
-
     get marketCap(): bigint {
         assert(this._marketCap != null, 'uninitialized access')
         return this._marketCap
@@ -112,7 +101,6 @@ export class CollectionStats {
             supply: this.supply == null ? undefined : marshal.bigint.toJSON(this.supply),
             tokenCount: this.tokenCount,
             salesCount: this.salesCount,
-            rank: this.rank,
             marketCap: marshal.bigint.toJSON(this.marketCap),
             volume: marshal.bigint.toJSON(this.volume),
         }

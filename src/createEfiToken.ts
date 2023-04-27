@@ -26,7 +26,6 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
                 highestSale: null,
                 tokenCount: 1,
                 salesCount: 0,
-                rank: 0,
                 supply: 2_000_000_000n,
                 marketCap: 0n,
                 volume: 0n,
