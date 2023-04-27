@@ -31,7 +31,7 @@ export async function transferred(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
@@ -95,4 +95,6 @@ export async function transferred(
             }),
         ]
     }
+
+    return event
 }
