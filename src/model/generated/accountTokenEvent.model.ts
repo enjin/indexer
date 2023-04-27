@@ -1,9 +1,8 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import {Account} from "./account.model"
 import {Event} from "./event.model"
 import {Token} from "./token.model"
 
-@Index_(["account", "token"], {unique: false})
 @Entity_()
 export class AccountTokenEvent {
     constructor(props?: Partial<AccountTokenEvent>) {
@@ -13,8 +12,13 @@ export class AccountTokenEvent {
     @PrimaryColumn_()
     id!: string
 
+    @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    account!: Account
+    from!: Account
+
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    to!: Account | undefined | null
 
     @Index_()
     @ManyToOne_(() => Event, {nullable: true})

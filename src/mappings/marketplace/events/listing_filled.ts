@@ -108,7 +108,7 @@ export async function listingFilled(
         new AccountTokenEvent({
             id: item.event.id,
             token: listing.makeAssetId,
-            account: new Account({ id: u8aToHex(data.buyer) }),
+            from: new Account({ id: u8aToHex(data.buyer) }),
             event,
         }),
     ]

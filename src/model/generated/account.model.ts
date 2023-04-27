@@ -39,7 +39,7 @@ export class Account {
     @OneToMany_(() => TokenAccount, e => e.account)
     tokenAccounts!: TokenAccount[]
 
-    @OneToMany_(() => AccountTokenEvent, e => e.account)
+    @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
 
     @OneToMany_(() => Claim, e => e.account)

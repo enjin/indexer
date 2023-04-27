@@ -115,5 +115,5 @@ export async function listingCreated(
         }),
     })
 
-    return [event, new AccountTokenEvent({ id: item.event.id, token: makeAssetId, account: listing.seller, event })]
+    return [event, new AccountTokenEvent({ id: item.event.id, token: makeAssetId, from: listing.seller, event })]
 }

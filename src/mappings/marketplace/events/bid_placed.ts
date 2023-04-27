@@ -89,7 +89,7 @@ export async function bidPlaced(
         new AccountTokenEvent({
             id: item.event.id,
             token: listing.makeAssetId,
-            account: bid.bidder,
+            from: bid.bidder,
             event,
         }),
     ]

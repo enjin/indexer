@@ -97,7 +97,7 @@ export async function auctionFinalized(
         new AccountTokenEvent({
             id: item.event.id,
             token: listing.makeAssetId,
-            account: listing.seller,
+            from: listing.seller,
             event,
         }),
     ]

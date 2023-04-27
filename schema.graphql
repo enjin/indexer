@@ -68,9 +68,10 @@ type Event @entity {
   tokenId: String @index
 }
 
-type AccountTokenEvent @entity @index(fields: ["account", "token"]) {
+type AccountTokenEvent @entity {
   id: ID!
-  account: Account! 
+  from: Account! 
+  to: Account
   event: Event!
   token: Token!
 }
@@ -262,7 +263,7 @@ type Account @entity {
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
-  tokenEvents: [AccountTokenEvent] @derivedFrom(field: "account")
+  tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
   claimsEvents: [Claim] @derivedFrom(field: "account")
 
   # Extras
