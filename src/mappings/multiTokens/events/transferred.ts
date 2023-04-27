@@ -6,7 +6,6 @@ import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { encodeId } from '../../../common/tools'
 
 interface EventData {
     collectionId: bigint
