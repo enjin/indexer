@@ -22,4 +22,5 @@ export interface ProcessorConfig {
     redisHost: string
     redisDb: number
     redisSupportsTls: boolean
+    redisPort: number
 }
