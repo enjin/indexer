@@ -20,4 +20,6 @@ export interface ProcessorConfig {
     port?: Parameters<SubstrateProcessor<any>['setPrometheusPort']>[HandlerParams.NAME]
     blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[HandlerParams.NAME]
     redisHost: string
+    redisDb: number
+    redisSupportsTls: boolean
 }

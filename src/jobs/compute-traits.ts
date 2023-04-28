@@ -9,6 +9,8 @@ export const traitsQueue = new Queue<JobData>('traitsQueue', {
     redis: {
         port: 6379,
         host: config.redisHost,
+        db: config.redisDb,
+        tls: config.redisSupportsTls ? {} : undefined,
     },
 })
 
