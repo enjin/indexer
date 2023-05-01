@@ -15,6 +15,9 @@ const config: ProcessorConfig = {
         from: 0,
     },
     redisHost: process.env.REDIS_HOST || 'indexer_redis',
+    redisDb: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
+    redisSupportsTls: process.env.REDIS_SUPPORTS_TLS === 'true',
+    redisPort: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
 }
 
 export default config

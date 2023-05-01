@@ -7,8 +7,10 @@ export type JobData = { collectionId: string }
 export const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: {
-        port: 6379,
+        port: config.redisPort,
         host: config.redisHost,
+        db: config.redisDb,
+        tls: config.redisSupportsTls ? {} : undefined,
     },
 })
 
