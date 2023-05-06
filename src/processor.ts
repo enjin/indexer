@@ -1,10 +1,10 @@
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
-import { hexToU8a } from '@polkadot/util'
+import { hexStripPrefix, hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import config from './config'
-import { AccountTokenEvent, Event, Extrinsic, Fee } from './model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
 import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -215,6 +215,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 // eslint-disable-next-line no-await-in-loop
                 const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                 const callName = call.name.split('.')
+
                 const extrinsic = new Extrinsic({
                     id,
                     hash,
@@ -236,6 +237,20 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                     createdAt: new Date(block.header.timestamp),
                     participants: getParticipants(call.args, publicKey),
                 })
+
+                // Hotfix for adding listing seller to participant
+                if (call.name === 'Marketplace.fill_listing') {
+                    const listingId = call.args.listingId.toString()
+                    // eslint-disable-next-line no-await-in-loop
+                    const listing = await ctx.store.findOne(Listing, {
+                        where: { id: hexStripPrefix(listingId) },
+                        relations: { seller: true },
+                    })
+                    if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
+                        extrinsic.participants.push(listing.seller.id)
+                    }
+                }
+
                 extrinsics.push(extrinsic)
             }
         }
