@@ -58,6 +58,7 @@ export async function collectionAccountCreated(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
         data: new MultiTokensCollectionAccountCreated({
             collectionId: data.collectionId,
             account: account.id,

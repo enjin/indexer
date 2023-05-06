@@ -76,7 +76,7 @@ export async function tokenAccountCreated(
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        tokenId: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
         data: new MultiTokensTokenAccountCreated({
             collectionId: data.collectionId,
             tokenId: data.tokenId,

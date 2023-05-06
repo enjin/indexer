@@ -146,6 +146,7 @@ export async function collectionMutated(
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
         data: new MultiTokensCollectionMutated(),
     })
 }

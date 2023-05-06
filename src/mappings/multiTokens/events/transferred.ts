@@ -70,7 +70,7 @@ export async function transferred(
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
+        tokenId: `${data.collectionId.toString()}-${data.tokenId.toString()}`,
         data: new MultiTokensTransferred({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
