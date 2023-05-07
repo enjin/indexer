@@ -48,9 +48,25 @@ export async function tokenAccountCreated(
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
     const account = await getOrCreateAccount(ctx, data.accountId)
-    const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+
+    let collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
     })
+
+    if (!collectionAccount) {
+        collectionAccount = new CollectionAccount({
+            id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
+            isFrozen: false,
+            approvals: null,
+            accountCount: 0,
+            account,
+            collection,
+            createdAt: new Date(block.timestamp),
+            updatedAt: new Date(block.timestamp),
+        })
+        await ctx.store.insert(CollectionAccount, collectionAccount as any)
+    }
+
     collectionAccount.accountCount += 1
     await ctx.store.save(collectionAccount)
 
