@@ -41,7 +41,7 @@ export async function burned(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = getEventData(ctx, item.event)
-    if (!data) return undefined
+    if (!data || data.amount === 0n) return undefined
 
     const address = u8aToHex(data.accountId)
 
