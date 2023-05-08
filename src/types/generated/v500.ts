@@ -1035,6 +1035,21 @@ export interface TransactionData {
     amount: bigint
 }
 
+export interface Migration {
+    stage: MigrationStage
+    lastIteratedKey: (Uint8Array | undefined)
+}
+
+export interface TokenAccount {
+    balance: bigint
+    reservedBalance: bigint
+    lockedBalance: bigint
+    namedReserves: [Uint8Array, bigint][]
+    locks: [Uint8Array, bigint][]
+    approvals: [Uint8Array, Approval][]
+    isFrozen: boolean
+}
+
 export type QueryStatus = QueryStatus_Pending | QueryStatus_VersionNotifier | QueryStatus_Ready
 
 export interface QueryStatus_Pending {
@@ -6011,6 +6026,29 @@ export interface Type_302_SiblingParachain {
 
 export type Void = never
 
+export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
+
+export interface MigrationStage_NotStarted {
+    __kind: 'NotStarted'
+}
+
+export interface MigrationStage_InProgress {
+    __kind: 'InProgress'
+}
+
+export interface MigrationStage_Completed {
+    __kind: 'Completed'
+}
+
+export interface MigrationStage_Failed {
+    __kind: 'Failed'
+}
+
+export interface Approval {
+    amount: bigint
+    expiration: (number | undefined)
+}
+
 export type VersionedResponse = VersionedResponse_V2 | VersionedResponse_V3
 
 export interface VersionedResponse_V2 {
@@ -6545,16 +6583,6 @@ export interface CollectionAccount {
     isFrozen: boolean
     approvals: [Uint8Array, (number | undefined)][]
     accountCount: number
-}
-
-export interface TokenAccount {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
 }
 
 export interface PoolsMutation {
@@ -9581,11 +9609,6 @@ export interface DefaultCollectionPolicy {
     market: DefaultMarketPolicy
 }
 
-export interface Approval {
-    amount: bigint
-    expiration: (number | undefined)
-}
-
 export interface Pool {
     feeShare: number
 }
@@ -9771,24 +9794,6 @@ export interface RootOrSigned_Root {
 export interface RootOrSigned_Signed {
     __kind: 'Signed'
     value: Uint8Array
-}
-
-export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
-
-export interface MigrationStage_NotStarted {
-    __kind: 'NotStarted'
-}
-
-export interface MigrationStage_InProgress {
-    __kind: 'InProgress'
-}
-
-export interface MigrationStage_Completed {
-    __kind: 'Completed'
-}
-
-export interface MigrationStage_Failed {
-    __kind: 'Failed'
 }
 
 export interface Listing {

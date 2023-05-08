@@ -3,6 +3,7 @@ import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} f
 import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
 import * as rocfinityV3012 from './rocfinityV3012'
+import * as v600 from './v600'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -2010,6 +2011,21 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV600(): boolean {
+        return this.getTypeHash() === 'd0a200fac2f9993d848c3a7287da92f026ee7ee2a194fed9e6f2d9eb76c9ab57'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV600(): CouncilProposalOfStorageV600 {
+        assert(this.isV600)
+        return this as any
+    }
 }
 
 /**
@@ -2112,6 +2128,23 @@ export interface CouncilProposalOfStorageV500 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v500.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v500.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v500.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV600 {
+    get(key: Uint8Array): Promise<(v600.Call | undefined)>
+    getAll(): Promise<v600.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v600.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v600.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -4451,6 +4484,60 @@ export interface MultiTokensMigrationStatusStorageEfinityV3012 {
     get(): Promise<efinityV3012.MigrationStage>
 }
 
+export class MultiTokensMigrationsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'Migrations'
+    }
+
+    /**
+     *  Stores last iterated keys for migrations. Used by multi block migrations
+     *  to resume from the last iterated key.
+     * 
+     *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
+     *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
+     */
+    get isV500(): boolean {
+        return this.getTypeHash() === '63315d583f765c75d71965bc03cd236f3e328b0d0c36349716dd7e18cb40721d'
+    }
+
+    /**
+     *  Stores last iterated keys for migrations. Used by multi block migrations
+     *  to resume from the last iterated key.
+     * 
+     *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
+     *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
+     */
+    get asV500(): MultiTokensMigrationsStorageV500 {
+        assert(this.isV500)
+        return this as any
+    }
+}
+
+/**
+ *  Stores last iterated keys for migrations. Used by multi block migrations
+ *  to resume from the last iterated key.
+ * 
+ *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
+ *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
+ */
+export interface MultiTokensMigrationsStorageV500 {
+    get(key: Uint8Array): Promise<(v500.Migration | undefined)>
+    getAll(): Promise<v500.Migration[]>
+    getMany(keys: Uint8Array[]): Promise<(v500.Migration | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v500.Migration][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v500.Migration][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v500.Migration][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v500.Migration][]>
+}
+
 export class MultiTokensNextCollectionIdStorage extends StorageBase {
     protected getPrefix() {
         return 'MultiTokens'
@@ -4521,6 +4608,21 @@ export class MultiTokensTokenAccountsStorage extends StorageBase {
         assert(this.isEfinityV3)
         return this as any
     }
+
+    /**
+     *  Accounts per token
+     */
+    get isV500(): boolean {
+        return this.getTypeHash() === '022fd18d40c53146908df260f1461b3e2a5e157129bb9cf34fd0207c0910c0a9'
+    }
+
+    /**
+     *  Accounts per token
+     */
+    get asV500(): MultiTokensTokenAccountsStorageV500 {
+        assert(this.isV500)
+        return this as any
+    }
 }
 
 /**
@@ -4571,6 +4673,31 @@ export interface MultiTokensTokenAccountsStorageEfinityV3 {
     getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
+}
+
+/**
+ *  Accounts per token
+ */
+export interface MultiTokensTokenAccountsStorageV500 {
+    get(key1: bigint, key2: bigint, key3: Uint8Array): Promise<(v500.TokenAccount | undefined)>
+    getAll(): Promise<v500.TokenAccount[]>
+    getMany(keys: [bigint, bigint, Uint8Array][]): Promise<(v500.TokenAccount | undefined)[]>
+    getKeys(): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getPairs(): Promise<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: v500.TokenAccount][]>
 }
 
 export class MultiTokensTokensStorage extends StorageBase {
@@ -4639,6 +4766,21 @@ export class MultiTokensTokensStorage extends StorageBase {
      */
     get asV500(): MultiTokensTokensStorageV500 {
         assert(this.isV500)
+        return this as any
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get isV600(): boolean {
+        return this.getTypeHash() === '459387852b7c4d57e0769b6472defe27e00a6384a006f2d282c25b921828e149'
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get asV600(): MultiTokensTokensStorageV600 {
+        assert(this.isV600)
         return this as any
     }
 }
@@ -4725,6 +4867,27 @@ export interface MultiTokensTokensStorageV500 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v500.Token][]>
     getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v500.Token][]>
     getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v500.Token][]>
+}
+
+/**
+ *  Tokens storage
+ */
+export interface MultiTokensTokensStorageV600 {
+    get(key1: bigint, key2: bigint): Promise<(v600.Token | undefined)>
+    getAll(): Promise<v600.Token[]>
+    getMany(keys: [bigint, bigint][]): Promise<(v600.Token | undefined)[]>
+    getKeys(): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: v600.Token][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: v600.Token][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v600.Token][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v600.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v600.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v600.Token][]>
 }
 
 export class MultisigCallsStorage extends StorageBase {
@@ -7913,6 +8076,33 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV600(): boolean {
+        return this.getTypeHash() === '492eab1b45057659ac7e26547dd44eb8c72ec589d897ca0d65f3e57f6618a78e'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV600(): SystemEventsStorageV600 {
+        assert(this.isV600)
+        return this as any
+    }
 }
 
 /**
@@ -7995,6 +8185,19 @@ export interface SystemEventsStorageRocfinityV3012 {
  */
 export interface SystemEventsStorageV500 {
     get(): Promise<v500.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV600 {
+    get(): Promise<v600.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -8664,6 +8867,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV600(): boolean {
+        return this.getTypeHash() === 'd0a200fac2f9993d848c3a7287da92f026ee7ee2a194fed9e6f2d9eb76c9ab57'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV600(): TechnicalCommitteeProposalOfStorageV600 {
+        assert(this.isV600)
+        return this as any
+    }
 }
 
 /**
@@ -8766,6 +8984,23 @@ export interface TechnicalCommitteeProposalOfStorageV500 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v500.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v500.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v500.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV600 {
+    get(key: Uint8Array): Promise<(v600.Call | undefined)>
+    getAll(): Promise<v600.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v600.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v600.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {

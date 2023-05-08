@@ -2,6 +2,7 @@ import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
+import * as v600 from './v600'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -5346,6 +5347,21 @@ export class MultiTokensTokenUpdatedEvent {
      */
     get asV500(): {collectionId: bigint, tokenId: bigint, value: (v500.Token | undefined)} {
         assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get isV600(): boolean {
+        return this._chain.getEventHash('MultiTokens.TokenUpdated') === 'bdfad0bec6d256ae0fde104ed92cdc20185613745dc8a4149ef923e312f22d5f'
+    }
+
+    /**
+     * Token storage was set to `value`
+     */
+    get asV600(): {collectionId: bigint, tokenId: bigint, value: (v600.Token | undefined)} {
+        assert(this.isV600)
         return this._chain.decodeEvent(this.event)
     }
 }
