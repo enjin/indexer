@@ -39,7 +39,9 @@ LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
 LABEL org.opencontainers.image.description="Efinity Indexer - Processor"
 LABEL org.opencontainers.image.licenses=GPLv3
 
-CMD ["npm", "run", "processor:debug"]
+COPY --chmod=0755 start.sh .
+
+CMD ["/bin/sh", "-c", "/squid/start.sh"]
 
 
 FROM squid AS query-node
