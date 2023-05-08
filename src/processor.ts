@@ -3,6 +3,7 @@ import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
 import { createEfiToken } from './createEfiToken'
@@ -67,6 +68,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Balances.Slashed', eventOptions)
     .addEvent('Balances.Transfer', eventOptions)
     .addEvent('Balances.Unreserved', eventOptions)
+    // eslint-disable-next-line sonarjs/no-duplicate-string
     .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Balances.BalanceSet', eventOptions)
     .addEvent('Balances.Deposit', eventOptions)
@@ -237,6 +239,34 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                     createdAt: new Date(block.header.timestamp),
                     participants: getParticipants(call.args, publicKey),
                 })
+
+                // If fee empty search for the withdrawal event
+                if (!fee) {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const eventItem of block.items) {
+                        if (eventItem.name !== 'Balances.Withdraw') {
+                            // eslint-disable-next-line no-continue
+                            continue
+                        }
+
+                        if (eventItem.event.extrinsic?.id !== extrinsic.id) {
+                            // eslint-disable-next-line no-continue
+                            continue
+                        }
+
+                        // eslint-disable-next-line no-await-in-loop
+                        const feeAmount = await map.balances.events.withdraw(
+                            ctx as unknown as CommonContext,
+                            block.header,
+                            eventItem
+                        )
+
+                        if (extrinsic.fee && feeAmount) {
+                            extrinsic.fee.amount = feeAmount
+                            break
+                        }
+                    }
+                }
 
                 // Hotfix for adding listing seller to participant
                 if (call.name === 'Marketplace.fill_listing') {
