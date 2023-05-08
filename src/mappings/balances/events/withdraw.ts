@@ -1,37 +1,28 @@
-// import { UnknownVersionError } from '../../../common/errors'
-// import { BalancesWithdrawEvent } from '../../../types/generated/events'
-// import { EventHandlerContext } from '../../types/contexts'
-// import { Fee } from '../../../model'
-// import { getOrCreateAccount } from '../../util/entities'
-// import { encodeId } from '../../../common/tools'
-//
-// interface EventData {
-//     who: Uint8Array
-//     amount: bigint
-// }
-//
-// function getEventData(ctx: EventHandlerContext): EventData {
-//     const event = new BalancesWithdrawEvent(ctx)
-//
-//     if (event.isEfinityV2) {
-//         const { who, amount } = event.asEfinityV2
-//         return { who, amount }
-//     }
-//     throw new UnknownVersionError(event.constructor.name)
-// }
-//
-// export async function handleWithdraw(ctx: EventHandlerContext) {
-//     // const eventData = getEventData(ctx)
-//     //
-//     // if (!eventData) return
-//     // if (!ctx.event.extrinsic?.call?.id) return
-//     //
-//     // const who = await getOrCreateAccount(ctx, encodeId(eventData.who))
-//     // const fee = new Fee({
-//     //     id: ctx.event.extrinsic.call.id,
-//     //     amount: eventData.amount,
-//     //     who,
-//     // })
-//     //
-//     // await ctx.store.insert(Fee, fee as any)
-// }
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { UnknownVersionError } from '../../../common/errors'
+import { BalancesWithdrawEvent } from '../../../types/generated/events'
+import { Event } from '../../../types/generated/support'
+import { CommonContext } from '../../types/contexts'
+
+function getEventData(ctx: CommonContext, event: Event): bigint {
+    const data = new BalancesWithdrawEvent(ctx, event)
+
+    if (data.isEfinityV2) {
+        const { amount } = data.asEfinityV2
+        return amount
+    }
+
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+export async function withdraw(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: EventItem<'Balances.Withdraw', { event: { args: true; extrinsic: true } }>
+): Promise<bigint | undefined> {
+    const fee = getEventData(ctx, item.event)
+    if (!fee) return undefined
+
+    return fee
+}
