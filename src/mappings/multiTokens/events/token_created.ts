@@ -95,6 +95,45 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     if (call.name === 'EfinityUtility.batch') {
         const data = new EfinityUtilityBatchCall(ctx, call)
 
+        if (data.isV600) {
+            const { calls } = data.asV600
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    r.value.__kind === 'mint' &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
         if (data.isV500) {
             const { calls } = data.asV500
             const recipientCall = calls.find(
@@ -202,7 +241,36 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (data.isV500) {
+        if (data.isV600) {
+            const { collectionId, recipients } = data.asV600
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        } else if (data.isV500) {
             const { collectionId, recipients } = data.asV500
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
@@ -303,6 +371,33 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
     }
 
     const data = new MultiTokensMintCall(ctx, call)
+
+    if (data.isV600) {
+        const { collectionId } = data.asV600
+        const recipient = data.asV600.recipient.value as Uint8Array
+        const params = data.asV600.params as DefaultMintParamsCreateToken_v500
+        const cap = params.cap ? getCapType(params.cap) : null
+        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+        let unitPrice: bigint | null = 10_000_000_000_000_000n
+        let minimumBalance = 1n
+
+        if (params.sufficiency.__kind === 'Sufficient') {
+            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+            unitPrice = null
+        }
+
+        return {
+            recipient,
+            collectionId,
+            tokenId: params.tokenId,
+            initialSupply: params.initialSupply,
+            minimumBalance,
+            unitPrice,
+            cap,
+            behavior,
+            listingForbidden: params.listingForbidden ?? false,
+        }
+    }
 
     if (data.isV500) {
         const { collectionId } = data.asV500
