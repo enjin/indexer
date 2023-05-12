@@ -8,6 +8,7 @@
 
 [![Discord](https://img.shields.io/discord/783393889548501023)](https://discord.gg/EUKexwF5RM)
 [![Medium](https://img.shields.io/badge/Medium-gray?logo=medium)](https://medium.com/@enjin)
+<!-- markdown-link-check-disable-next-line -->
 [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fefinityio)](https://twitter.com/efinityio)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=social)](https://youtube.com/c/EnjinTV)
 [![Blog URL](https://img.shields.io/badge/-blog-blue)](https://enjin.io/blog)
