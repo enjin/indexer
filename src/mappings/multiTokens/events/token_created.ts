@@ -8,6 +8,7 @@ import {
     Collection,
     Event as EventModel,
     Extrinsic,
+    FreezeState,
     Metadata,
     MultiTokensTokenCreated,
     Royalty,
@@ -21,15 +22,16 @@ import {
 import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
+    MultiTokensCall_mint,
     TokenCap,
     TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
-    MultiTokensCall_mint,
 } from '../../../types/generated/efinityV3012'
 import { MultiTokensCall_mint as MultiTokensCall_mint_rV3012 } from '../../../types/generated/rocfinityV3012'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
+    FreezeState as FreezeState_v500,
     MultiTokensCall_mint as MultiTokensCall_mint_v500,
     SufficiencyParam_Sufficient,
 } from '../../../types/generated/v500'
@@ -47,6 +49,7 @@ interface CallData {
     unitPrice: bigint | null
     cap: TokenCapSupply | TokenCapSingleMint | null
     behavior: TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty | null
+    freezeState: FreezeState | null
     listingForbidden: boolean
 }
 
@@ -68,6 +71,19 @@ function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
     })
+}
+
+function getFreezeState(state: FreezeState_v500): FreezeState | null {
+    switch (state.__kind) {
+        case 'Permanent':
+            return FreezeState.Permanent
+        case 'Temporary':
+            return FreezeState.Temporary
+        case 'Never':
+            return FreezeState.Never
+        default:
+            return null
+    }
 }
 
 async function getBehavior(
@@ -112,6 +128,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 const params = mintCall.params as DefaultMintParamsCreateToken_v500
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
                 let unitPrice: bigint | null = 10_000_000_000_000_000n
                 let minimumBalance = 1n
 
@@ -129,6 +146,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice,
                     cap,
                     behavior,
+                    freezeState,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -151,6 +169,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 const params = mintCall.params as DefaultMintParamsCreateToken_v500
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
                 let unitPrice: bigint | null = 10_000_000_000_000_000n
                 let minimumBalance = 1n
 
@@ -168,6 +187,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice,
                     cap,
                     behavior,
+                    freezeState,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -200,6 +220,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
+                    freezeState: null,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -232,6 +253,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
+                    freezeState: null,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -250,6 +272,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 const params = recipientCall.params as DefaultMintParamsCreateToken_v500
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
                 let unitPrice: bigint | null = 10_000_000_000_000_000n
                 let minimumBalance = 1n
 
@@ -267,6 +290,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice,
                     cap,
                     behavior,
+                    freezeState,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -279,6 +303,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                 const params = recipientCall.params as DefaultMintParamsCreateToken_v500
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
                 let unitPrice: bigint | null = 10_000_000_000_000_000n
                 let minimumBalance = 1n
 
@@ -296,6 +321,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice,
                     cap,
                     behavior,
+                    freezeState,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -318,6 +344,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
+                    freezeState: null,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -340,6 +367,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
+                    freezeState: null,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -362,6 +390,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
                     unitPrice: params.unitPrice,
                     cap,
                     behavior,
+                    freezeState: null,
                     listingForbidden: params.listingForbidden ?? false,
                 }
             }
@@ -378,6 +407,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
         const params = data.asV600.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+        const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
         let unitPrice: bigint | null = 10_000_000_000_000_000n
         let minimumBalance = 1n
 
@@ -395,6 +425,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             unitPrice,
             cap,
             behavior,
+            freezeState,
             listingForbidden: params.listingForbidden ?? false,
         }
     }
@@ -405,6 +436,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
         const params = data.asV500.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+        const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
         let unitPrice: bigint | null = 10_000_000_000_000_000n
         let minimumBalance = 1n
 
@@ -422,6 +454,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             unitPrice,
             cap,
             behavior,
+            freezeState,
             listingForbidden: params.listingForbidden ?? false,
         }
     }
@@ -442,6 +475,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             unitPrice: params.unitPrice,
             cap,
             behavior,
+            freezeState: null,
             listingForbidden: params.listingForbidden ?? false,
         }
     }
@@ -462,6 +496,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             unitPrice: params.unitPrice,
             cap,
             behavior,
+            freezeState: null,
             listingForbidden: params.listingForbidden ?? false,
         }
     }
@@ -482,6 +517,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: EventData): Pr
             unitPrice: params.unitPrice,
             cap,
             behavior,
+            freezeState: null,
             listingForbidden: params.listingForbidden ?? false,
         }
     }
@@ -556,6 +592,7 @@ export async function tokenCreated(
             cap: callData.cap,
             behavior: callData.behavior,
             isFrozen: false,
+            freezeState: callData.freezeState,
             minimumBalance: callData.minimumBalance,
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
