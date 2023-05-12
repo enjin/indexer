@@ -52,7 +52,6 @@ type Extrinsic @entity {
 
 type Claim @entity {
   id: ID!
-  extrinsic: Extrinsic
 
   account: Account! @index
   amount: BigInt!

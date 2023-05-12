@@ -37,11 +37,9 @@ export async function claimedEnj(
 
     const who = u8aToHex(data.who)
     const account = await getOrCreateAccount(ctx as unknown as CommonContext, data.who)
-    const extrinsic = item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null
 
     const claim = new Claim({
         id: `${who}-${item.event.id}`,
-        extrinsic,
         account,
         amount: data.amount,
     })
@@ -49,7 +47,7 @@ export async function claimedEnj(
     await ctx.store.save(claim)
     return new EventModel({
         id: item.event.id,
-        extrinsic,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new ClaimsClaimedEnj({
             who,
             amount: data.amount,
