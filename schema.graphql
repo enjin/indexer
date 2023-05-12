@@ -59,6 +59,7 @@ type Claim @entity {
   extrinsicId: String!
   extrinsicHash: String!
   blockNumber: Int! @index
+  blockHash: String!
 }
 
 type Event @entity {

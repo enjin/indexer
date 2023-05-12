@@ -27,4 +27,7 @@ export class Claim {
     @Index_()
     @Column_("int4", {nullable: false})
     blockNumber!: number
+
+    @Column_("text", {nullable: false})
+    blockHash!: string
 }

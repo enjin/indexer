@@ -45,6 +45,7 @@ export async function claimedEnj(
         extrinsicId: item.event.extrinsic?.id,
         extrinsicHash: item.event.extrinsic?.hash,
         blockNumber: block.height,
+        blockHash: block.hash,
     })
 
     await ctx.store.save(claim)
