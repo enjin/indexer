@@ -1,6 +1,5 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
-import {Extrinsic} from "./extrinsic.model"
 import {Account} from "./account.model"
 
 @Entity_()
@@ -13,13 +12,22 @@ export class Claim {
     id!: string
 
     @Index_()
-    @ManyToOne_(() => Extrinsic, {nullable: true})
-    extrinsic!: Extrinsic | undefined | null
-
-    @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     account!: Account
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amount!: bigint
+
+    @Column_("text", {nullable: false})
+    extrinsicId!: string
+
+    @Column_("text", {nullable: false})
+    extrinsicHash!: string
+
+    @Index_()
+    @Column_("int4", {nullable: false})
+    blockNumber!: number
+
+    @Column_("text", {nullable: false})
+    blockHash!: string
 }

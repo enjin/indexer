@@ -52,10 +52,14 @@ type Extrinsic @entity {
 
 type Claim @entity {
   id: ID!
-  extrinsic: Extrinsic
 
   account: Account! @index
   amount: BigInt!
+
+  extrinsicId: String!
+  extrinsicHash: String!
+  blockNumber: Int! @index
+  blockHash: String!
 }
 
 type Event @entity {
