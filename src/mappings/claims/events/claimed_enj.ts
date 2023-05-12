@@ -42,6 +42,9 @@ export async function claimedEnj(
         id: `${who}-${item.event.id}`,
         account,
         amount: data.amount,
+        extrinsicId: item.event.extrinsic?.id,
+        extrinsicHash: item.event.extrinsic?.hash,
+        blockNumber: block.height,
     })
 
     await ctx.store.save(claim)

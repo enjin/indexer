@@ -17,4 +17,14 @@ export class Claim {
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amount!: bigint
+
+    @Column_("text", {nullable: false})
+    extrinsicId!: string
+
+    @Column_("text", {nullable: false})
+    extrinsicHash!: string
+
+    @Index_()
+    @Column_("int4", {nullable: false})
+    blockNumber!: number
 }
