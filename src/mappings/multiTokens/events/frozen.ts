@@ -12,15 +12,17 @@ import {
     Token,
     TokenAccount,
     TransferPolicy,
+    FreezeState,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { FreezeType_CollectionAccount, FreezeType_Token, FreezeType_TokenAccount } from '../../../types/generated/efinityV3012'
-import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
+import { FreezeState as FreezeStateEvent } from '../../../types/generated/v500'
 
 interface EventData {
     collectionId: bigint
     freezeType: string
+    freezeState: FreezeStateEvent | undefined
     tokenId: bigint | undefined
     collectionAccount: Uint8Array | undefined
     tokenAccount: Uint8Array | undefined
@@ -36,6 +38,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
+                freezeState: undefined,
                 tokenId: undefined,
                 collectionAccount: undefined,
                 tokenAccount: undefined,
@@ -46,6 +49,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
+                freezeState: undefined,
                 collectionAccount: (freezeType as FreezeType_CollectionAccount).value,
                 tokenId: undefined,
                 tokenAccount: undefined,
@@ -56,7 +60,8 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
-                tokenId: (freezeType as FreezeTypeToken_v500).tokenId,
+                freezeState: freezeType.freezeState,
+                tokenId: freezeType.tokenId,
                 collectionAccount: undefined,
                 tokenAccount: undefined,
             }
@@ -65,6 +70,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         return {
             collectionId,
             freezeType: freezeType.__kind,
+            freezeState: undefined,
             tokenId: (freezeType as FreezeType_TokenAccount).tokenId,
             tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
             collectionAccount: undefined,
@@ -78,6 +84,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
+                freezeState: undefined,
                 tokenId: undefined,
                 collectionAccount: undefined,
                 tokenAccount: undefined,
@@ -88,6 +95,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
+                freezeState: undefined,
                 collectionAccount: (freezeType as FreezeType_CollectionAccount).value,
                 tokenId: undefined,
                 tokenAccount: undefined,
@@ -98,6 +106,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
+                freezeState: undefined,
                 tokenId: (freezeType as FreezeType_Token).value,
                 collectionAccount: undefined,
                 tokenAccount: undefined,
@@ -107,6 +116,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         return {
             collectionId,
             freezeType: freezeType.__kind,
+            freezeState: undefined,
             tokenId: (freezeType as FreezeType_TokenAccount).tokenId,
             tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
             collectionAccount: undefined,
@@ -147,6 +157,22 @@ export async function frozen(
         })
 
         token.isFrozen = true
+
+        switch (data.freezeState?.__kind) {
+            case 'Permanent':
+                token.freezeState = FreezeState.Permanent
+                break
+            case 'Temporary':
+                token.freezeState = FreezeState.Temporary
+                break
+            case 'Never':
+                token.freezeState = FreezeState.Never
+                break
+            default:
+                token.freezeState = null
+                break
+        }
+
         await ctx.store.save(token)
     } else {
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {

@@ -74,7 +74,7 @@ type Event @entity {
 
 type AccountTokenEvent @entity {
   id: ID!
-  from: Account! 
+  from: Account!
   to: Account
   event: Event!
   token: Token!
@@ -297,14 +297,14 @@ type RoyaltyCurrency @entity {
 }
 
 type CollectionStats {
-    floorPrice: BigInt
-    lastSale: BigInt
-    highestSale: BigInt
-    supply: BigInt
-    tokenCount: Int!
-    salesCount: Int!
-    marketCap: BigInt!
-    volume: BigInt!
+  floorPrice: BigInt
+  lastSale: BigInt
+  highestSale: BigInt
+  supply: BigInt
+  tokenCount: Int!
+  salesCount: Int!
+  marketCap: BigInt!
+  volume: BigInt!
 }
 
 type Trait @entity {
@@ -411,6 +411,12 @@ type TokenBehaviorIsCurrency {
   type: TokenBehaviorType!
 }
 
+enum FreezeState {
+  Permanent
+  Temporary
+  Never
+}
+
 type Token @entity {
   id: ID!
 
@@ -418,6 +424,7 @@ type Token @entity {
   tokenId: BigInt! @index
   supply: BigInt!
   isFrozen: Boolean!
+  freezeState: FreezeState
   cap: TokenCap
   behavior: TokenBehavior
   listingForbidden: Boolean!
@@ -576,11 +583,11 @@ enum ListingStatusType {
 }
 
 type ListingStatus @entity {
-    id: ID!
-    type: ListingStatusType!
-    listing: Listing!
-    height: Int!
-    createdAt: DateTime!
+  id: ID!
+  type: ListingStatusType!
+  listing: Listing!
+  height: Int!
+  createdAt: DateTime!
 }
 
 type ListingSale @entity {
