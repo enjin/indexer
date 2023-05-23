@@ -27,5 +27,5 @@ deploy:
       "--dumb-cache-size", "256",
       "--dumb-cache-max-age", "12000",
       "--max-root-fields", "10",
-      "--sql-statement-timeout", "1000"
+      "--sql-statement-timeout", "3000"
     ]
