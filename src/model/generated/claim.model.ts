@@ -18,6 +18,9 @@ export class Claim {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amount!: bigint
 
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    earlyBirdAmount!: bigint
+
     @Column_("text", {nullable: false})
     extrinsicId!: string
 

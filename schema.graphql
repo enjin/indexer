@@ -55,6 +55,7 @@ type Claim @entity {
 
   account: Account! @index
   amount: BigInt!
+  earlyBirdAmount: BigInt!
 
   extrinsicId: String!
   extrinsicHash: String!

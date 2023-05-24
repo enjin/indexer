@@ -11,16 +11,27 @@ import { getOrCreateAccount } from '../../util/entities'
 interface EventData {
     who: Uint8Array
     amount: bigint
+    earlyBirdAmount: bigint
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new ClaimsClaimedEnjEvent(ctx, event)
+
+    if (data.isV700) {
+        const { who, amount, earlyBirdAmount } = data.asV700
+        return {
+            who,
+            amount,
+            earlyBirdAmount,
+        }
+    }
 
     if (data.isV500) {
         const { who, amount } = data.asV500
         return {
             who,
             amount,
+            earlyBirdAmount: 0n,
         }
     }
 
@@ -42,6 +53,7 @@ export async function claimedEnj(
         id: `${who}-${item.event.id}`,
         account,
         amount: data.amount,
+        earlyBirdAmount: data.earlyBirdAmount,
         extrinsicId: item.event.extrinsic?.id,
         extrinsicHash: item.event.extrinsic?.hash,
         blockNumber: block.height,

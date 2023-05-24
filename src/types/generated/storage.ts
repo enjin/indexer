@@ -4,6 +4,7 @@ import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
 import * as rocfinityV3012 from './rocfinityV3012'
 import * as v600 from './v600'
+import * as v700 from './v700'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -774,6 +775,38 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
  */
 export interface ClaimsLatestBlockNumberStorageV500 {
     get(): Promise<(v500.TrackedBlockNumbers | undefined)>
+}
+
+export class ClaimsMaxEfiForEarlyBirdRewardsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'Claims'
+    }
+
+    protected getName() {
+        return 'MaxEfiForEarlyBirdRewards'
+    }
+
+    /**
+     *  Stores maximum eligible EFI for early bird bonus
+     */
+    get isV700(): boolean {
+        return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
+    }
+
+    /**
+     *  Stores maximum eligible EFI for early bird bonus
+     */
+    get asV700(): ClaimsMaxEfiForEarlyBirdRewardsStorageV700 {
+        assert(this.isV700)
+        return this as any
+    }
+}
+
+/**
+ *  Stores maximum eligible EFI for early bird bonus
+ */
+export interface ClaimsMaxEfiForEarlyBirdRewardsStorageV700 {
+    get(): Promise<bigint>
 }
 
 export class ClaimsPendingApprovalsStorage extends StorageBase {
@@ -2026,6 +2059,21 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV700(): boolean {
+        return this.getTypeHash() === 'f95066b5320c7ce52a2b68aaac4c5d73a53fc56deaa8ee9a196f7658b7ea8987'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV700(): CouncilProposalOfStorageV700 {
+        assert(this.isV700)
+        return this as any
+    }
 }
 
 /**
@@ -2145,6 +2193,23 @@ export interface CouncilProposalOfStorageV600 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV700 {
+    get(key: Uint8Array): Promise<(v700.Call | undefined)>
+    getAll(): Promise<v700.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v700.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v700.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v700.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v700.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v700.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -8103,6 +8168,33 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV700(): boolean {
+        return this.getTypeHash() === '62021b18720c9790ce917c8bf65bb8fc5163d9cef29ae7c7567b59c2098b7b91'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV700(): SystemEventsStorageV700 {
+        assert(this.isV700)
+        return this as any
+    }
 }
 
 /**
@@ -8198,6 +8290,19 @@ export interface SystemEventsStorageV500 {
  */
 export interface SystemEventsStorageV600 {
     get(): Promise<v600.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV700 {
+    get(): Promise<v700.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -8882,6 +8987,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV700(): boolean {
+        return this.getTypeHash() === 'f95066b5320c7ce52a2b68aaac4c5d73a53fc56deaa8ee9a196f7658b7ea8987'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV700(): TechnicalCommitteeProposalOfStorageV700 {
+        assert(this.isV700)
+        return this as any
+    }
 }
 
 /**
@@ -9001,6 +9121,23 @@ export interface TechnicalCommitteeProposalOfStorageV600 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV700 {
+    get(key: Uint8Array): Promise<(v700.Call | undefined)>
+    getAll(): Promise<v700.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v700.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v700.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v700.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v700.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v700.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {

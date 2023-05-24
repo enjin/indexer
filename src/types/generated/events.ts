@@ -763,6 +763,21 @@ export class ClaimsClaimedEnjEvent {
         assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A user burned EFI in order to begin a claim of ENJ.
+     */
+    get isV700(): boolean {
+        return this._chain.getEventHash('Claims.ClaimedEnj') === '371fca57711fec548f87cba70985c04cdb1ba3bb2aebb99c99d408eff713f447'
+    }
+
+    /**
+     * A user burned EFI in order to begin a claim of ENJ.
+     */
+    get asV700(): {who: Uint8Array, amount: bigint, earlyBirdAmount: bigint} {
+        assert(this.isV700)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CollatorStakingCandidateJoinedEvent {
