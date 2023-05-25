@@ -4,7 +4,7 @@ import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
 import * as rocfinityV3012 from './rocfinityV3012'
 import * as v600 from './v600'
-import * as v700 from './v700'
+import * as v601 from './v601'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -2952,8 +2952,8 @@ export class CouncilExecuteCall {
      * - 1 event
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Council.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Council.execute') === 'b28b68a3dd66badc21cb53ab1687c9791a0b29bd28740e3160ea03bcf21db8de'
     }
 
     /**
@@ -2969,8 +2969,8 @@ export class CouncilExecuteCall {
      * - 1 event
      * # </weight>
      */
-    get asV700(): {proposal: v700.Call, lengthBound: number} {
-        assert(this.isV700)
+    get asV601(): {proposal: v601.Call, lengthBound: number} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3486,8 +3486,8 @@ export class CouncilProposeCall {
      *   - 1 event
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Council.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Council.propose') === '4b61433e884dffa8d3067b5a199d91ba1d8ca839a709c084cf267410834076a1'
     }
 
     /**
@@ -3519,8 +3519,8 @@ export class CouncilProposeCall {
      *   - 1 event
      * # </weight>
      */
-    get asV700(): {threshold: number, proposal: v700.Call, lengthBound: number} {
-        assert(this.isV700)
+    get asV601(): {threshold: number, proposal: v601.Call, lengthBound: number} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5440,8 +5440,8 @@ export class EfinityUtilityBatchCall {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('EfinityUtility.batch') === '80e22f993fd5c72bc399d4e665ea03c5509e7c82d97b8bedcd9c8c8c03233f38'
+    get isV601(): boolean {
+        return this._chain.getCallHash('EfinityUtility.batch') === 'd95d104b78102649e6953ef939c20300f8c36c6708491ef89af765114cef5f02'
     }
 
     /**
@@ -5459,8 +5459,8 @@ export class EfinityUtilityBatchCall {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    get asV700(): {calls: v700.Call[], continueOnFailure: boolean} {
-        assert(this.isV700)
+    get asV601(): {calls: v601.Call[], continueOnFailure: boolean} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5921,8 +5921,8 @@ export class ExtrinsicPausePauseExtrinsicCall {
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '120a84065d71e4f85ea1f8879441bdd4c362a38c0d77f408690abe54115d3017'
+    get isV601(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '454008567728b06c3d19b326c93ff0969da986eb0d8d3c79b78760b59eb0eea2'
     }
 
     /**
@@ -5938,8 +5938,8 @@ export class ExtrinsicPausePauseExtrinsicCall {
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
-    get asV700(): {call: v700.Call, pauseOnlyExtrinsic: boolean} {
-        assert(this.isV700)
+    get asV601(): {call: v601.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6100,8 +6100,8 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '4096c42ef9c26661475412cf92733e3915e425e37b4ad313f68ad79c2fa3e752'
+    get isV601(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '11a49786b673dfab243c2c0bd817f8814a9c5f6ea21d734469cedd237d71807c'
     }
 
     /**
@@ -6116,8 +6116,8 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
-    get asV700(): {call: v700.Call, resumeOnlyExtrinsic: boolean} {
-        assert(this.isV700)
+    get asV601(): {call: v601.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6381,8 +6381,8 @@ export class FuelTanksCreateFuelTankCall {
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '11c151a0b04647ec6cab03a41e161da00dcd7d29939edea3097de844f00e33e2'
+    get isV601(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '3e3ac599e23537bde5e89f9fe09e243762fba2eb4fbf6f4407875f25399ad188'
     }
 
     /**
@@ -6393,8 +6393,8 @@ export class FuelTanksCreateFuelTankCall {
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
-    get asV700(): {descriptor: v700.FuelTankDescriptor} {
-        assert(this.isV700)
+    get asV601(): {descriptor: v601.FuelTankDescriptor} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6662,8 +6662,8 @@ export class FuelTanksDispatchCall {
      *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch') === 'b64566a6171343865e9194cedb43dfa14fc43ed8beba5ae91baaaf2741966138'
+    get isV601(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === '33c3dea7e41ee95ee38dc5f9da10e787ce4fe8eafd493e2244c878e62bf696a2'
     }
 
     /**
@@ -6676,8 +6676,8 @@ export class FuelTanksDispatchCall {
      *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
-    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, call: v700.Call, paysRemainingFee: boolean} {
-        assert(this.isV700)
+    get asV601(): {tankId: v601.MultiAddress, ruleSetId: number, call: v601.Call, paysRemainingFee: boolean} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6827,8 +6827,8 @@ export class FuelTanksDispatchAndTouchCall {
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'b64566a6171343865e9194cedb43dfa14fc43ed8beba5ae91baaaf2741966138'
+    get isV601(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '33c3dea7e41ee95ee38dc5f9da10e787ce4fe8eafd493e2244c878e62bf696a2'
     }
 
     /**
@@ -6840,8 +6840,8 @@ export class FuelTanksDispatchAndTouchCall {
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
-    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, call: v700.Call, paysRemainingFee: boolean} {
-        assert(this.isV700)
+    get asV601(): {tankId: v601.MultiAddress, ruleSetId: number, call: v601.Call, paysRemainingFee: boolean} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7139,8 +7139,8 @@ export class FuelTanksInsertRuleSetCall {
      * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
      *   kind
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '19ae402b4c74f304e0b022c4cbcc1f2d42774b1ba22ad98b9ce7f3f1e2798e6c'
+    get isV601(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '721235e6cb4eba79cba31829b4f5245a89ad23649a9c67179937314f2288b2a4'
     }
 
     /**
@@ -7161,8 +7161,8 @@ export class FuelTanksInsertRuleSetCall {
      * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
      *   kind
      */
-    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, rules: v700.DispatchRuleDescriptor[]} {
-        assert(this.isV700)
+    get asV601(): {tankId: v601.MultiAddress, ruleSetId: number, rules: v601.DispatchRuleDescriptor[]} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10240,6 +10240,198 @@ export class MultiTokensUnapproveTokenCall {
     }
 }
 
+export class MultiTokensMigrationFinalizeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.finalize')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Finalizes the migration process by unpausing all related pallets, setting the next
+     * collection ID, updating the migration status, and emitting a `MigrationFinished` event.
+     * 
+     * # Arguments
+     * 
+     * * `origin` - The origin of the transaction.
+     * * `next_collection_id` - The ID of the next collection.
+     * 
+     * # Errors
+     * - [`Error::OnlyFinalizeOngoing`] if auction is not ongoing.
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.finalize') === '137977a56f38380f8d4ccd77b98084830ccd66df180fbb23d13a738621ab87b8'
+    }
+
+    /**
+     * Finalizes the migration process by unpausing all related pallets, setting the next
+     * collection ID, updating the migration status, and emitting a `MigrationFinished` event.
+     * 
+     * # Arguments
+     * 
+     * * `origin` - The origin of the transaction.
+     * * `next_collection_id` - The ID of the next collection.
+     * 
+     * # Errors
+     * - [`Error::OnlyFinalizeOngoing`] if auction is not ongoing.
+     */
+    get asV601(): {nextCollectionId: bigint} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensMigrationMigrateAttributesCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.migrate_attributes')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Migrates [`Attributes`] by setting attribute values for the specified list of attributes
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.migrate_attributes') === '38678b38b1093dceec6ad9eb431127466c58af938a8150a8c7ad7c37e5072de9'
+    }
+
+    /**
+     * Migrates [`Attributes`] by setting attribute values for the specified list of attributes
+     */
+    get asV601(): {attributes: [bigint, (bigint | undefined), Uint8Array, v601.Attribute][]} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensMigrationMigrateCollectionAccountsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.migrate_collection_accounts')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Migrates [`CollectionAccounts`] by setting values for the given accounts
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.migrate_collection_accounts') === '813084e51cd54ab7bfef8bf7e5059f31e0d2b9c12322cf69ce76a95e9699cac1'
+    }
+
+    /**
+     * Migrates [`CollectionAccounts`] by setting values for the given accounts
+     */
+    get asV601(): {accounts: [bigint, Uint8Array, v601.CollectionAccount][]} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensMigrationMigrateCollectionsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.migrate_collections')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Migrates [`Collections`] by setting values for the given collections
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.migrate_collections') === '37cd3868d6f3f9dbe259cd581888f07612dc8dd99faeda8210d75e8fac60889e'
+    }
+
+    /**
+     * Migrates [`Collections`] by setting values for the given collections
+     */
+    get asV601(): {collections: [bigint, v601.Collection][]} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensMigrationMigrateTokenAccountsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.migrate_token_accounts')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Migrates [`TokenAccounts`] by setting values for the given accounts
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.migrate_token_accounts') === 'a8273c032ee74f21d24abe2440c005682abdfed982744ce56f3d7dbb682df9d1'
+    }
+
+    /**
+     * Migrates [`TokenAccounts`] by setting values for the given accounts
+     */
+    get asV601(): {accounts: [bigint, bigint, Uint8Array, v601.TokenAccount][]} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensMigrationMigrateTokensCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokensMigration.migrate_tokens')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Migrates [`Tokens`] by setting values for the given tokens
+     */
+    get isV601(): boolean {
+        return this._chain.getCallHash('MultiTokensMigration.migrate_tokens') === '5a462e1cc4608c0590c2a56f5ea8ac6910e1ace1b917bfe39df97eff05101008'
+    }
+
+    /**
+     * Migrates [`Tokens`] by setting values for the given tokens
+     */
+    get asV601(): {tokens: [bigint, bigint, v601.Token][]} {
+        assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class MultisigApproveAsMultiCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -11181,8 +11373,8 @@ export class MultisigAsMultiCall {
      * - Plus Call Weight
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi') === '59bdca927149e5bb749dcbbf8d8b1d16c8c076cce2a8f5e764e42091efb81498'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '89e1a5611f269f661a5d2ff7986a904e3b1f6f29bf5c37bfa287def921138b41'
     }
 
     /**
@@ -11232,8 +11424,8 @@ export class MultisigAsMultiCall {
      * - Plus Call Weight
      * # </weight>
      */
-    get asV700(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v700.Timepoint | undefined), call: v700.Call, maxWeight: v700.Weight} {
-        assert(this.isV700)
+    get asV601(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v601.Timepoint | undefined), call: v601.Call, maxWeight: v601.Weight} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11584,8 +11776,8 @@ export class MultisigAsMultiThreshold1Call {
      * - Plus Call Weight
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '9acbbee9c49c57ce3cabacc10d51d53d6b918eed24489755b6238e8da042f9e1'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '1df05f9c21384080a8652ca61c90547f8e933b72535b3f47f3b8b634f1b3885c'
     }
 
     /**
@@ -11606,8 +11798,8 @@ export class MultisigAsMultiThreshold1Call {
      * - Plus Call Weight
      * # </weight>
      */
-    get asV700(): {otherSignatories: Uint8Array[], call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {otherSignatories: Uint8Array[], call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13214,15 +13406,15 @@ export class SchedulerScheduleCall {
     /**
      * Anonymously schedule a task.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule') === 'fb3a115f44097e3216d14732383a763716c2e07d914495de3ee4905571e7b00d'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '274e0ddf3b350286fb916d8a27bb459cdd43a7e9cd94f8af3e4bf5fc38928281'
     }
 
     /**
      * Anonymously schedule a task.
      */
-    get asV700(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13408,8 +13600,8 @@ export class SchedulerScheduleAfterCall {
      * Same as [`schedule`].
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_after') === '3a7ad4266e4380b3cb2d58043698e9285471e548162604b00dc5386d1f267484'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'db5a422a240b35f05e86e99d3597fca715d3ed4fbcd1479473e19fe22123e87a'
     }
 
     /**
@@ -13419,8 +13611,8 @@ export class SchedulerScheduleAfterCall {
      * Same as [`schedule`].
      * # </weight>
      */
-    get asV700(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13546,15 +13738,15 @@ export class SchedulerScheduleNamedCall {
     /**
      * Schedule a named task.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named') === '23b0656545975655cb9ec88b0002267db258749dc6cc13098d1f77f637e337e4'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '5a7ebcffc466dda19795055512f20e3e1e2e39b1ef67d72625c7932fe5366c59'
     }
 
     /**
      * Schedule a named task.
      */
-    get asV700(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13740,8 +13932,8 @@ export class SchedulerScheduleNamedAfterCall {
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named_after') === '39dea555796a18177a2f3b7c0e87eea697e65295a41c5c64eed7b76f64df0a0e'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '46bf91ec8f35d4d8216223c8db0e82ee4eb726b0418d9b850eb627f6c2e4ca07'
     }
 
     /**
@@ -13751,8 +13943,8 @@ export class SchedulerScheduleNamedAfterCall {
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
      */
-    get asV700(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14248,8 +14440,8 @@ export class SudoSudoCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Sudo.sudo') === 'ebe84dbcc3482c312d777586036acd26a8723db744f4e0346571e0507b8cd52d'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'ea350d4ed27fd053d26a50a70d9c6c3f428ca20cdf1858ee0b34ab93dfe62bec'
     }
 
     /**
@@ -14264,8 +14456,8 @@ export class SudoSudoCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    get asV700(): {call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14576,8 +14768,8 @@ export class SudoSudoAsCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_as') === 'c535c69fe19f34ab90d5303be3231520c2172b3e8684d944945241ed17c18c9a'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '62ac10da47d3f5018c9e380b05c897e8e0917d4f2aac08ebd23efc2916a8de07'
     }
 
     /**
@@ -14593,8 +14785,8 @@ export class SudoSudoAsCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    get asV700(): {who: v700.MultiAddress, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {who: v601.MultiAddress, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14888,8 +15080,8 @@ export class SudoSudoUncheckedWeightCall {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '59f62c6dbdc6c6d0506a3279757baeb92a08b28f4b043a1984be2479d738e3b9'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '43efb9f5a3014ebfbd711fdca91967e5843c81504ab5e18cbc2a2b5b6e869973'
     }
 
     /**
@@ -14904,8 +15096,8 @@ export class SudoSudoUncheckedWeightCall {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    get asV700(): {call: v700.Call, weight: v700.Weight} {
-        assert(this.isV700)
+    get asV601(): {call: v601.Call, weight: v601.Weight} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16087,8 +16279,8 @@ export class TechnicalCommitteeExecuteCall {
      * - 1 event
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    get isV601(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === 'b28b68a3dd66badc21cb53ab1687c9791a0b29bd28740e3160ea03bcf21db8de'
     }
 
     /**
@@ -16104,8 +16296,8 @@ export class TechnicalCommitteeExecuteCall {
      * - 1 event
      * # </weight>
      */
-    get asV700(): {proposal: v700.Call, lengthBound: number} {
-        assert(this.isV700)
+    get asV601(): {proposal: v601.Call, lengthBound: number} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16621,8 +16813,8 @@ export class TechnicalCommitteeProposeCall {
      *   - 1 event
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    get isV601(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '4b61433e884dffa8d3067b5a199d91ba1d8ca839a709c084cf267410834076a1'
     }
 
     /**
@@ -16654,8 +16846,8 @@ export class TechnicalCommitteeProposeCall {
      *   - 1 event
      * # </weight>
      */
-    get asV700(): {threshold: number, proposal: v700.Call, lengthBound: number} {
-        assert(this.isV700)
+    get asV601(): {threshold: number, proposal: v601.Call, lengthBound: number} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -17512,8 +17704,8 @@ export class UtilityAsDerivativeCall {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.as_derivative') === '220736072baa2d6b09583e5c03a2934ad4b894abfef4be99262c3e3c2a35e122'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '41703a82485ae02a56541e3acba156cae26fe3522e64e72826e528de96dd5e74'
     }
 
     /**
@@ -17531,8 +17723,8 @@ export class UtilityAsDerivativeCall {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    get asV700(): {index: number, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {index: number, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -17928,8 +18120,8 @@ export class UtilityBatchCall {
      * and the error of the failed call. If all were successful, then the `BatchCompleted`
      * event is deposited.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'eb21e1c13388f4c532d8f59a1d531280aa72fd3f27c906d0558cec63d6e94380'
     }
 
     /**
@@ -17953,8 +18145,8 @@ export class UtilityBatchCall {
      * and the error of the failed call. If all were successful, then the `BatchCompleted`
      * event is deposited.
      */
-    get asV700(): {calls: v700.Call[]} {
-        assert(this.isV700)
+    get asV601(): {calls: v601.Call[]} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -18275,8 +18467,8 @@ export class UtilityBatchAllCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.batch_all') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'eb21e1c13388f4c532d8f59a1d531280aa72fd3f27c906d0558cec63d6e94380'
     }
 
     /**
@@ -18295,8 +18487,8 @@ export class UtilityBatchAllCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
-    get asV700(): {calls: v700.Call[]} {
-        assert(this.isV700)
+    get asV601(): {calls: v601.Call[]} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -18557,8 +18749,8 @@ export class UtilityDispatchAsCall {
      * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.dispatch_as') === '85281785bac4e0c2e1f3e82d746ba52383b2a77414d82dfc827f4abec0eccf44'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '22172f67822fd04f3d24cfb58e0fffe21b278c6b5cfcce8c228488d1afe6f262'
     }
 
     /**
@@ -18573,8 +18765,8 @@ export class UtilityDispatchAsCall {
      * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
      * # </weight>
      */
-    get asV700(): {asOrigin: v700.OriginCaller, call: v700.Call} {
-        assert(this.isV700)
+    get asV601(): {asOrigin: v601.OriginCaller, call: v601.Call} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -18813,8 +19005,8 @@ export class UtilityForceBatchCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.force_batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'eb21e1c13388f4c532d8f59a1d531280aa72fd3f27c906d0558cec63d6e94380'
     }
 
     /**
@@ -18833,8 +19025,8 @@ export class UtilityForceBatchCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
-    get asV700(): {calls: v700.Call[]} {
-        assert(this.isV700)
+    get asV601(): {calls: v601.Call[]} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -18910,8 +19102,8 @@ export class UtilityWithWeightCall {
      * 
      * The dispatch origin for this call must be _Root_.
      */
-    get isV700(): boolean {
-        return this._chain.getCallHash('Utility.with_weight') === '59f62c6dbdc6c6d0506a3279757baeb92a08b28f4b043a1984be2479d738e3b9'
+    get isV601(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '43efb9f5a3014ebfbd711fdca91967e5843c81504ab5e18cbc2a2b5b6e869973'
     }
 
     /**
@@ -18922,8 +19114,8 @@ export class UtilityWithWeightCall {
      * 
      * The dispatch origin for this call must be _Root_.
      */
-    get asV700(): {call: v700.Call, weight: v700.Weight} {
-        assert(this.isV700)
+    get asV601(): {call: v601.Call, weight: v601.Weight} {
+        assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
 }

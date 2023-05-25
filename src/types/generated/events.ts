@@ -763,21 +763,6 @@ export class ClaimsClaimedEnjEvent {
         assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
-
-    /**
-     * A user burned EFI in order to begin a claim of ENJ.
-     */
-    get isV700(): boolean {
-        return this._chain.getEventHash('Claims.ClaimedEnj') === '371fca57711fec548f87cba70985c04cdb1ba3bb2aebb99c99d408eff713f447'
-    }
-
-    /**
-     * A user burned EFI in order to begin a claim of ENJ.
-     */
-    get asV700(): {who: Uint8Array, amount: bigint, earlyBirdAmount: bigint} {
-        assert(this.isV700)
-        return this._chain.decodeEvent(this.event)
-    }
 }
 
 export class CollatorStakingCandidateJoinedEvent {
@@ -5493,6 +5478,180 @@ export class MultiTokensWithdrawEvent {
      */
     get asEfinityV3(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
         assert(this.isEfinityV3)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedAttributesEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedAttributes')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of attributes have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedAttributes') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of attributes have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedCollectionAccountsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedCollectionAccounts')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of collection accounts have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedCollectionAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of collection accounts have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedCollectionsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedCollections')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of collections that have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedCollections') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of collections that have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedTokenAccountsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedTokenAccounts')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of token accounts have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedTokenAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of token accounts have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedTokensEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedTokens')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of tokens have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedTokens') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of tokens have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigrationFinishedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigrationFinished')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Indicates that the migration is finished
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigrationFinished') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
+    }
+
+    /**
+     * Indicates that the migration is finished
+     */
+    get asV601(): null {
+        assert(this.isV601)
         return this._chain.decodeEvent(this.event)
     }
 }
