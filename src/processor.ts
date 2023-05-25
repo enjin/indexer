@@ -268,7 +268,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 }
 
                 // Hotfix for adding listing seller to participant
-                if (call.name === 'Marketplace.fill_listing') {
+                if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
                     const listingId = call.args.listingId.toString()
                     // eslint-disable-next-line no-await-in-loop
                     const listing = await ctx.store.findOne(Listing, {
