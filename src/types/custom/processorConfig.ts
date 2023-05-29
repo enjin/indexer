@@ -23,4 +23,5 @@ export interface ProcessorConfig {
     redisDb: number
     redisSupportsTls: boolean
     redisPort: number
+    pusher: any
 }

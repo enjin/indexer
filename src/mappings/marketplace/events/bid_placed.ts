@@ -18,6 +18,8 @@ import { Event } from '../../../types/generated/support'
 import { Bid as BidEvent } from '../../../types/generated/efinityV3012'
 import { CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
+import { Pusher } from '../../../common/pusher'
+import { safeJson } from '../../../common/tools'
 
 interface EventData {
     listingId: Uint8Array
@@ -84,7 +86,7 @@ export async function bidPlaced(
         }),
     })
 
-    return [
+    const eventData: [EventModel, AccountTokenEvent] | undefined = [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -93,4 +95,8 @@ export async function bidPlaced(
             event,
         }),
     ]
+
+    await Pusher.getInstance().trigger('marketplace', 'bidPlaced', safeJson(eventData))
+
+    return eventData
 }

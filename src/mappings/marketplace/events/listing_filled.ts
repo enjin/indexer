@@ -19,6 +19,8 @@ import {
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
+import { Pusher } from '../../../common/pusher'
+import { safeJson } from '../../../common/tools'
 
 interface EventData {
     listingId: Uint8Array
@@ -103,7 +105,7 @@ export async function listingFilled(
         }),
     })
 
-    return [
+    const eventData: [EventModel, AccountTokenEvent] | undefined = [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -112,4 +114,8 @@ export async function listingFilled(
             event,
         }),
     ]
+
+    await Pusher.getInstance().trigger('marketplace', 'listingFilled', safeJson(eventData))
+
+    return eventData
 }

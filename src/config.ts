@@ -18,6 +18,12 @@ const config: ProcessorConfig = {
     redisDb: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
     redisSupportsTls: process.env.REDIS_SUPPORTS_TLS === 'true',
     redisPort: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+    pusher: {
+        appId: process.env.PUSHER_APP_ID,
+        key: process.env.PUSHER_APP_KEY,
+        secret: process.env.PUSHER_APP_SECRET,
+        cluster: process.env.PUSHER_APP_CLUSTER,
+    },
 }
 
 export default config

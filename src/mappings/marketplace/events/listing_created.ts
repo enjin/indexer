@@ -24,6 +24,8 @@ import { CollectionService } from '../../../services'
 import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { Pusher } from '../../../common/pusher'
+import { safeJson } from '../../../common/tools'
 
 interface EventData {
     listingId: Uint8Array
@@ -115,5 +117,12 @@ export async function listingCreated(
         }),
     })
 
-    return [event, new AccountTokenEvent({ id: item.event.id, token: makeAssetId, from: listing.seller, event })]
+    const eventData: [EventModel, AccountTokenEvent] | undefined = [
+        event,
+        new AccountTokenEvent({ id: item.event.id, token: makeAssetId, from: listing.seller, event }),
+    ]
+
+    await Pusher.getInstance().trigger('marketplace', 'listingCreated', safeJson(eventData))
+
+    return eventData
 }

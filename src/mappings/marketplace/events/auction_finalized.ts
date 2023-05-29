@@ -18,6 +18,8 @@ import { Bid } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
+import { Pusher } from '../../../common/pusher'
+import { safeJson } from '../../../common/tools'
 
 interface EventData {
     listingId: Uint8Array
@@ -92,7 +94,7 @@ export async function auctionFinalized(
         }),
     })
 
-    return [
+    const eventData: [EventModel, AccountTokenEvent] | undefined = [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -101,4 +103,8 @@ export async function auctionFinalized(
             event,
         }),
     ]
+
+    await Pusher.getInstance().trigger('marketplace', 'auctionFinalized', safeJson(eventData))
+
+    return eventData
 }
