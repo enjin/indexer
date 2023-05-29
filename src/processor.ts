@@ -1,5 +1,5 @@
-import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { FullTypeormDatabase } from '@subsquid/typeorm-store'
+import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
@@ -172,7 +172,7 @@ function getParticipants(args: any, signer: string): string[] {
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-processor.run(new FullTypeormDatabase(), async (ctx) => {
+processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const block of ctx.blocks) {
         const extrinsics: Extrinsic[] = []
@@ -286,9 +286,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
         // eslint-disable-next-line no-await-in-loop
         await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-        _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
-        _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
-        _.chunk(accountTokenEvents, 500).forEach((chunk: any) => ctx.store.insert(AccountTokenEvent, chunk as any))
+        _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(chunk))
+        _.chunk(events, 500).forEach((chunk) => ctx.store.insert(chunk))
+        _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(chunk as any))
     }
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
