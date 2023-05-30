@@ -5,6 +5,7 @@ import * as v500 from './v500'
 import * as rocfinityV3012 from './rocfinityV3012'
 import * as v600 from './v600'
 import * as v601 from './v601'
+import * as v700 from './v700'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -2973,6 +2974,41 @@ export class CouncilExecuteCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Council.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asV700(): {proposal: v700.Call, lengthBound: number} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class CouncilProposeCall {
@@ -3521,6 +3557,73 @@ export class CouncilProposeCall {
      */
     get asV601(): {threshold: number, proposal: v601.Call, lengthBound: number} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Council.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get asV700(): {threshold: number, proposal: v700.Call, lengthBound: number} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5463,6 +5566,45 @@ export class EfinityUtilityBatchCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('EfinityUtility.batch') === '80e22f993fd5c72bc399d4e665ea03c5509e7c82d97b8bedcd9c8c8c03233f38'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get asV700(): {calls: v700.Call[], continueOnFailure: boolean} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class EfinityXcmForceSetMinimumWeightCall {
@@ -5942,6 +6084,41 @@ export class ExtrinsicPausePauseExtrinsicCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '120a84065d71e4f85ea1f8879441bdd4c362a38c0d77f408690abe54115d3017'
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get asV700(): {call: v700.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ExtrinsicPauseResumeExtrinsicCall {
@@ -6118,6 +6295,39 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asV601(): {call: v601.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '4096c42ef9c26661475412cf92733e3915e425e37b4ad313f68ad79c2fa3e752'
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get asV700(): {call: v700.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6395,6 +6605,31 @@ export class FuelTanksCreateFuelTankCall {
      */
     get asV601(): {descriptor: v601.FuelTankDescriptor} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '11c151a0b04647ec6cab03a41e161da00dcd7d29939edea3097de844f00e33e2'
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get asV700(): {descriptor: v700.FuelTankDescriptor} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6680,6 +6915,35 @@ export class FuelTanksDispatchCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === 'b64566a6171343865e9194cedb43dfa14fc43ed8beba5ae91baaaf2741966138'
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, call: v700.Call, paysRemainingFee: boolean} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDispatchAndTouchCall {
@@ -6842,6 +7106,33 @@ export class FuelTanksDispatchAndTouchCall {
      */
     get asV601(): {tankId: v601.MultiAddress, ruleSetId: number, call: v601.Call, paysRemainingFee: boolean} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'b64566a6171343865e9194cedb43dfa14fc43ed8beba5ae91baaaf2741966138'
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, call: v700.Call, paysRemainingFee: boolean} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7163,6 +7454,51 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asV601(): {tankId: v601.MultiAddress, ruleSetId: number, rules: v601.DispatchRuleDescriptor[]} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '19ae402b4c74f304e0b022c4cbcc1f2d42774b1ba22ad98b9ce7f3f1e2798e6c'
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get asV700(): {tankId: v700.MultiAddress, ruleSetId: number, rules: v700.DispatchRuleDescriptor[]} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11428,6 +11764,109 @@ export class MultisigAsMultiCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '59bdca927149e5bb749dcbbf8d8b1d16c8c076cce2a8f5e764e42091efb81498'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get asV700(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v700.Timepoint | undefined), call: v700.Call, maxWeight: v700.Weight} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultisigAsMultiThreshold1Call {
@@ -11800,6 +12239,51 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asV601(): {otherSignatories: Uint8Array[], call: v601.Call} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '9acbbee9c49c57ce3cabacc10d51d53d6b918eed24489755b6238e8da042f9e1'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get asV700(): {otherSignatories: Uint8Array[], call: v700.Call} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13417,6 +13901,21 @@ export class SchedulerScheduleCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === 'fb3a115f44097e3216d14732383a763716c2e07d914495de3ee4905571e7b00d'
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get asV700(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleAfterCall {
@@ -13615,6 +14114,29 @@ export class SchedulerScheduleAfterCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === '3a7ad4266e4380b3cb2d58043698e9285471e548162604b00dc5386d1f267484'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
+    get asV700(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleNamedCall {
@@ -13747,6 +14269,21 @@ export class SchedulerScheduleNamedCall {
      */
     get asV601(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '23b0656545975655cb9ec88b0002267db258749dc6cc13098d1f77f637e337e4'
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get asV700(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13945,6 +14482,29 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asV601(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v601.Call} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '39dea555796a18177a2f3b7c0e87eea697e65295a41c5c64eed7b76f64df0a0e'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
+     */
+    get asV700(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v700.Call} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14460,6 +15020,39 @@ export class SudoSudoCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'ebe84dbcc3482c312d777586036acd26a8723db744f4e0346571e0507b8cd52d'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV700(): {call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -14789,6 +15382,41 @@ export class SudoSudoAsCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === 'c535c69fe19f34ab90d5303be3231520c2172b3e8684d944945241ed17c18c9a'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asV700(): {who: v700.MultiAddress, call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -15098,6 +15726,39 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV601(): {call: v601.Call, weight: v601.Weight} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '59f62c6dbdc6c6d0506a3279757baeb92a08b28f4b043a1984be2479d738e3b9'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get asV700(): {call: v700.Call, weight: v700.Weight} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16300,6 +16961,41 @@ export class TechnicalCommitteeExecuteCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asV700(): {proposal: v700.Call, lengthBound: number} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class TechnicalCommitteeProposeCall {
@@ -16848,6 +17544,73 @@ export class TechnicalCommitteeProposeCall {
      */
     get asV601(): {threshold: number, proposal: v601.Call, lengthBound: number} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get asV700(): {threshold: number, proposal: v700.Call, lengthBound: number} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -17727,6 +18490,45 @@ export class UtilityAsDerivativeCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '220736072baa2d6b09583e5c03a2934ad4b894abfef4be99262c3e3c2a35e122'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV700(): {index: number, call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -18149,6 +18951,57 @@ export class UtilityBatchCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV700(): {calls: v700.Call[]} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -18491,6 +19344,47 @@ export class UtilityBatchAllCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV700(): {calls: v700.Call[]} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -18769,6 +19663,39 @@ export class UtilityDispatchAsCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '85281785bac4e0c2e1f3e82d746ba52383b2a77414d82dfc827f4abec0eccf44'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asV700(): {asOrigin: v700.OriginCaller, call: v700.Call} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityForceBatchCall {
@@ -19029,6 +19956,47 @@ export class UtilityForceBatchCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asV700(): {calls: v700.Call[]} {
+        assert(this.isV700)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityWithWeightCall {
@@ -19116,6 +20084,31 @@ export class UtilityWithWeightCall {
      */
     get asV601(): {call: v601.Call, weight: v601.Weight} {
         assert(this.isV601)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV700(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '59f62c6dbdc6c6d0506a3279757baeb92a08b28f4b043a1984be2479d738e3b9'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV700(): {call: v700.Call, weight: v700.Weight} {
+        assert(this.isV700)
         return this._chain.decodeCall(this.call)
     }
 }
