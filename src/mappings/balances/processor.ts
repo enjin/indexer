@@ -16,7 +16,8 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { AccountInfo } from '../../types/generated/efinityV1'
+import { AccountData, AccountInfo } from '../../types/generated/efinityV1'
+import { AccountData as AccountData_v602, AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
 
@@ -41,6 +42,10 @@ function getBalanceSetAccount(ctx: CommonContext, event: Event) {
     if (data.isEfinityV2) {
         return data.asEfinityV2.who
     }
+    if (data.isV602) {
+        return data.asV602.who
+    }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
@@ -138,13 +143,17 @@ async function getSystemAccountBalances(
     ctx: CommonContext,
     block: SubstrateBlock,
     accounts: Uint8Array[]
-): Promise<AccountInfo[] | undefined> {
+): Promise<AccountInfo[] | AccountInfo_v602[] | undefined> {
     const storage = new SystemAccountStorage(ctx, block)
     if (!storage.isExists) return undefined
 
     if (storage.isEfinityV1) {
         return storage.asEfinityV1.getMany(accounts)
     }
+    if (storage.isV602) {
+        return storage.asV602.getMany(accounts)
+    }
+
     throw new UnknownVersionError(storage.constructor.name)
 }
 
@@ -212,12 +221,13 @@ async function getBalances(
     ctx: CommonContext,
     block: SubstrateBlock,
     accountIds: Uint8Array[]
-): Promise<AccountInfo[] | undefined> {
+): Promise<AccountInfo[] | AccountInfo_v602[] | undefined> {
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
 const accountsSet = new Set<string>()
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
@@ -234,20 +244,41 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         const id = accountIds[i]
         const accountInfo = accountInfos[i]
 
-        if (accountInfo) {
-            accounts.push({
-                id,
-                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                nonce: accountInfo.nonce,
-                balance: new Balance({
-                    transferable: accountInfo.data.free - accountInfo.data.miscFrozen,
-                    free: accountInfo.data.free,
-                    reserved: accountInfo.data.reserved,
-                    feeFrozen: accountInfo.data.feeFrozen,
-                    miscFrozen: accountInfo.data.miscFrozen,
-                }),
-                tokenValues: 0n,
-            })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const getData = (data: AccountData | AccountData_v602): void => {
+            if ('frozen' in data) {
+                const accountData = data as AccountData_v602
+                accounts.push({
+                    id,
+                    address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                    nonce: accountInfo.nonce,
+                    balance: new Balance({
+                        transferable: accountData.free - accountData.frozen,
+                        free: accountData.free,
+                        reserved: accountData.reserved,
+                        feeFrozen: 0n,
+                        miscFrozen: 0n,
+                    }),
+                    tokenValues: 0n,
+                })
+            }
+
+            if ('miscFrozen' in data) {
+                const accountData = data as AccountData
+                accounts.push({
+                    id,
+                    address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                    nonce: accountInfo.nonce,
+                    balance: new Balance({
+                        transferable: accountData.free - accountData.miscFrozen,
+                        free: accountData.free,
+                        reserved: accountData.reserved,
+                        feeFrozen: accountData.feeFrozen,
+                        miscFrozen: accountData.miscFrozen,
+                    }),
+                    tokenValues: 0n,
+                })
+            }
         }
     }
 
