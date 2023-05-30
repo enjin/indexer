@@ -3,6 +3,7 @@ import {Chain, ChainContext, EventContext, Event, Result, Option} from './suppor
 import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
 import * as v600 from './v600'
+import * as v602 from './v602'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -94,6 +95,50 @@ export class BalancesBalanceSetEvent {
      */
     get asEfinityV2(): {who: Uint8Array, free: bigint, reserved: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.BalanceSet') === '8c52e43e845654720e1db5c5bd166f80eb777baf474e93ce4d20fd385601a8fb'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV602(): {who: Uint8Array, free: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesBurnedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Burned')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some amount was burned from an account.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Burned') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some amount was burned from an account.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -234,6 +279,151 @@ export class BalancesEndowedEvent {
     }
 }
 
+export class BalancesFrozenEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Frozen')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some balance was frozen.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Frozen') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some balance was frozen.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesIssuedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Issued')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Total issuance was increased by `amount`, creating a credit to be balanced.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Issued') === 'a3bdd43eed59e7b65720eef9b2dfe72389ca71ac9dbe7fe2874438aae4f18886'
+    }
+
+    /**
+     * Total issuance was increased by `amount`, creating a credit to be balanced.
+     */
+    get asV602(): {amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesLockedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Locked')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some balance was locked.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Locked') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some balance was locked.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesMintedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Minted')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some amount was minted into an account.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Minted') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some amount was minted into an account.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesRescindedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Rescinded')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Total issuance was decreased by `amount`, creating a debt to be balanced.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Rescinded') === 'a3bdd43eed59e7b65720eef9b2dfe72389ca71ac9dbe7fe2874438aae4f18886'
+    }
+
+    /**
+     * Total issuance was decreased by `amount`, creating a debt to be balanced.
+     */
+    get asV602(): {amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class BalancesReserveRepatriatedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -328,6 +518,35 @@ export class BalancesReservedEvent {
     }
 }
 
+export class BalancesRestoredEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Restored')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some amount was restored into an account.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Restored') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some amount was restored into an account.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class BalancesSlashedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -353,6 +572,64 @@ export class BalancesSlashedEvent {
      */
     get asEfinityV2(): {who: Uint8Array, amount: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesSuspendedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Suspended')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some amount was suspended from an account (it can be restored later).
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Suspended') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some amount was suspended from an account (it can be restored later).
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesThawedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Thawed')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some balance was thawed.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Thawed') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some balance was thawed.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -401,6 +678,35 @@ export class BalancesTransferEvent {
     }
 }
 
+export class BalancesUnlockedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Unlocked')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Some balance was unlocked.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Unlocked') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
+    }
+
+    /**
+     * Some balance was unlocked.
+     */
+    get asV602(): {who: Uint8Array, amount: bigint} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class BalancesUnreservedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -441,6 +747,35 @@ export class BalancesUnreservedEvent {
      */
     get asEfinityV2(): {who: Uint8Array, amount: bigint} {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class BalancesUpgradedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Balances.Upgraded')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * An account was upgraded.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Balances.Upgraded') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
+    }
+
+    /**
+     * An account was upgraded.
+     */
+    get asV602(): {who: Uint8Array} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1744,6 +2079,21 @@ export class CouncilExecutedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Council.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CouncilMemberExecutedEvent {
@@ -1801,6 +2151,21 @@ export class CouncilMemberExecutedEvent {
      */
     get asEfinityV3012(): {proposalHash: Uint8Array, result: efinityV3012.Type_31} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Council.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2184,6 +2549,93 @@ export class DemocracyExternalTabledEvent {
      */
     get asEfinityV2(): null {
         assert(this.isEfinityV2)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class DemocracyMetadataClearedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Democracy.MetadataCleared')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Metadata for a proposal or a referendum has been cleared.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Democracy.MetadataCleared') === '5973f98e3dfb93077820ad77490dd9fe605110b75a8f006f1565898a599055ab'
+    }
+
+    /**
+     * Metadata for a proposal or a referendum has been cleared.
+     */
+    get asV602(): {owner: v602.MetadataOwner, hash: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class DemocracyMetadataSetEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Democracy.MetadataSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Metadata for a proposal or a referendum has been set.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Democracy.MetadataSet') === '5973f98e3dfb93077820ad77490dd9fe605110b75a8f006f1565898a599055ab'
+    }
+
+    /**
+     * Metadata for a proposal or a referendum has been set.
+     */
+    get asV602(): {owner: v602.MetadataOwner, hash: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class DemocracyMetadataTransferredEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Democracy.MetadataTransferred')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Metadata has been transferred to new owner.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Democracy.MetadataTransferred') === '6a30d674b0ce2457e6cff0b5493fa843349fa6b51c1641c1ac02b3f35ebbb927'
+    }
+
+    /**
+     * Metadata has been transferred to new owner.
+     */
+    get asV602(): {prevOwner: v602.MetadataOwner, owner: v602.MetadataOwner, hash: Uint8Array} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2762,6 +3214,35 @@ export class DmpQueueInvalidFormatEvent {
     }
 }
 
+export class DmpQueueMaxMessagesExhaustedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'DmpQueue.MaxMessagesExhausted')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * The maximum number of downward messages was.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('DmpQueue.MaxMessagesExhausted') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
+    }
+
+    /**
+     * The maximum number of downward messages was.
+     */
+    get asV602(): {messageId: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class DmpQueueOverweightEnqueuedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -3049,6 +3530,23 @@ export class EfinityUtilityBatchFailedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchFailed') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
+    }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get asV602(): {index: number, error: v602.DispatchError} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class EfinityUtilityBatchPartiallyDispatchedEvent {
@@ -3078,6 +3576,23 @@ export class EfinityUtilityBatchPartiallyDispatchedEvent {
      */
     get asEfinityV3012(): [number, efinityV3012.DispatchError][] {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchPartiallyDispatched') === 'e8822977bbce544338a2045c4a6d2fb3da534e0f4c11a56538e8e91418672714'
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get asV602(): [number, v602.DispatchError][] {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3136,6 +3651,21 @@ export class EfinityXcmXcmTransferFailedEvent {
      */
     get asV500(): v500.DispatchError {
         assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityXcm.XcmTransferFailed') === '5747c908f53c720bf9e468f6e392edf8206d75a8d2648f3f939ac5ec008cd282'
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get asV602(): v602.DispatchError {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3452,6 +3982,21 @@ export class FuelTanksDispatchFailedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'd9f757c05fd07f9e190422b766d54a656da3a7c9bdeada71be000f0b5172bf91'
+    }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get asV602(): {tankId: Uint8Array, caller: Uint8Array, error: v602.DispatchError} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class FuelTanksFreezeStateMutatedEvent {
@@ -3700,6 +4245,21 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
      */
     get asEfinityV3012(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: efinityV3012.DispatchError} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === 'dc9ad6b566b745be5ed408d534ce44157f1ad4307a3ec1a29c489fe844ba12d6'
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get asV602(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: v602.DispatchError} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5482,6 +6042,180 @@ export class MultiTokensWithdrawEvent {
     }
 }
 
+export class MultiTokensMigrationMigratedAttributesEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedAttributes')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of attributes have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedAttributes') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of attributes have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedCollectionAccountsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedCollectionAccounts')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of collection accounts have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedCollectionAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of collection accounts have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedCollectionsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedCollections')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of collections that have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedCollections') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of collections that have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedTokenAccountsEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedTokenAccounts')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of token accounts have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedTokenAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of token accounts have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigratedTokensEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigratedTokens')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Number of tokens have been migrated
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigratedTokens') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
+    }
+
+    /**
+     * Number of tokens have been migrated
+     */
+    get asV601(): number {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
+export class MultiTokensMigrationMigrationFinishedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'MultiTokensMigration.MigrationFinished')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * Indicates that the migration is finished
+     */
+    get isV601(): boolean {
+        return this._chain.getEventHash('MultiTokensMigration.MigrationFinished') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
+    }
+
+    /**
+     * Indicates that the migration is finished
+     */
+    get asV601(): null {
+        assert(this.isV601)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class MultisigMultisigApprovalEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -5595,6 +6329,21 @@ export class MultisigMultisigExecutedEvent {
      */
     get asEfinityV3012(): {approving: Uint8Array, timepoint: efinityV3012.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: efinityV3012.Type_31} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Multisig.MultisigExecuted') === 'a3dac12242761ae515c903986cd4d4bac07e81a7c3d28c6ddc9bb9faaa3196f1'
+    }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get asV602(): {approving: Uint8Array, timepoint: v602.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7524,6 +8273,21 @@ export class SchedulerDispatchedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Dispatched some task.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Scheduler.Dispatched') === '154dd24b4e6cd6cd4e2529e62ebb06fadb719be62866fec5887d179577869c45'
+    }
+
+    /**
+     * Dispatched some task.
+     */
+    get asV602(): {task: [number, number], id: (Uint8Array | undefined), result: v602.Type_33} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SchedulerPeriodicFailedEvent {
@@ -7760,6 +8524,21 @@ export class SudoSudidEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Sudo.Sudid') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV602(): {sudoResult: v602.Type_33} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SudoSudoAsDoneEvent {
@@ -7832,6 +8611,21 @@ export class SudoSudoAsDoneEvent {
      */
     get asEfinityV3012(): {sudoResult: efinityV3012.Type_31} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Sudo.SudoAsDone') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV602(): {sudoResult: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7950,6 +8744,21 @@ export class SystemExtrinsicFailedEvent {
      */
     get asEfinityV3012(): {dispatchError: efinityV3012.DispatchError, dispatchInfo: efinityV3012.DispatchInfo} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An extrinsic failed.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('System.ExtrinsicFailed') === '3dbd96eefe1aa593b278d8684042e23a6a118e379fb5699dd871cf28fb627cd6'
+    }
+
+    /**
+     * An extrinsic failed.
+     */
+    get asV602(): {dispatchError: v602.DispatchError, dispatchInfo: v602.DispatchInfo} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8391,6 +9200,21 @@ export class TechnicalCommitteeExecutedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TechnicalCommitteeMemberExecutedEvent {
@@ -8448,6 +9272,21 @@ export class TechnicalCommitteeMemberExecutedEvent {
      */
     get asEfinityV3012(): {proposalHash: Uint8Array, result: efinityV3012.Type_31} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8928,6 +9767,23 @@ export class UtilityBatchInterruptedEvent {
         assert(this.isEfinityV3012)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Utility.BatchInterrupted') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
+    }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get asV602(): {index: number, error: v602.DispatchError} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class UtilityDispatchedAsEvent {
@@ -8985,6 +9841,21 @@ export class UtilityDispatchedAsEvent {
      */
     get asEfinityV3012(): {result: efinityV3012.Type_31} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Utility.DispatchedAs') === 'e6b126b1d10869892737f36b23109c1b51d3828aeab399104c160e9f275d8049'
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get asV602(): {result: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -9058,6 +9929,21 @@ export class UtilityItemFailedEvent {
      */
     get asEfinityV3012(): {error: efinityV3012.DispatchError} {
         assert(this.isEfinityV3012)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Utility.ItemFailed') === '3ea595fddebcb407af8f717186084e8c4f09481ff7bcc5d4cc97dcd83cddd616'
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get asV602(): {error: v602.DispatchError} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }

@@ -4,6 +4,8 @@ import * as efinityV1 from './efinityV1'
 import * as v500 from './v500'
 import * as rocfinityV3012 from './rocfinityV3012'
 import * as v600 from './v600'
+import * as v601 from './v601'
+import * as v602 from './v602'
 import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
@@ -251,6 +253,67 @@ export class BalancesAccountStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '12d9e780c790f66e9c340b94cabd98da447e1087819d4acb4b1fe22bbb2783fb'
+    }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
+    get asV602(): BalancesAccountStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -270,6 +333,130 @@ export interface BalancesAccountStorageEfinityV1 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV1.AccountData][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountData][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountData][]>
+}
+
+/**
+ *  The Balances pallet example of storing the balance of an account.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+ *   }
+ *  ```
+ * 
+ *  You can also store the balance of an account in the `System` pallet.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *    type AccountStore = System
+ *   }
+ *  ```
+ * 
+ *  But this comes with tradeoffs, storing account balances in the system pallet stores
+ *  `frame_system` data alongside the account data contrary to storing account balances in the
+ *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+ *  NOTE: This is only used in the case that this pallet is used to store balances.
+ */
+export interface BalancesAccountStorageV602 {
+    get(key: Uint8Array): Promise<v602.AccountData>
+    getAll(): Promise<v602.AccountData[]>
+    getMany(keys: Uint8Array[]): Promise<v602.AccountData[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.AccountData][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.AccountData][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.AccountData][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.AccountData][]>
+}
+
+export class BalancesFreezesStorage extends StorageBase {
+    protected getPrefix() {
+        return 'Balances'
+    }
+
+    protected getName() {
+        return 'Freezes'
+    }
+
+    /**
+     *  Freeze locks on account balances.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
+    }
+
+    /**
+     *  Freeze locks on account balances.
+     */
+    get asV602(): BalancesFreezesStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Freeze locks on account balances.
+ */
+export interface BalancesFreezesStorageV602 {
+    get(key: Uint8Array): Promise<v602.IdAmount[]>
+    getAll(): Promise<v602.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<v602.IdAmount[][]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
+}
+
+export class BalancesHoldsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'Balances'
+    }
+
+    protected getName() {
+        return 'Holds'
+    }
+
+    /**
+     *  Holds on account balances.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
+    }
+
+    /**
+     *  Holds on account balances.
+     */
+    get asV602(): BalancesHoldsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface BalancesHoldsStorageV602 {
+    get(key: Uint8Array): Promise<v602.IdAmount[]>
+    getAll(): Promise<v602.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<v602.IdAmount[][]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
 }
 
 export class BalancesInactiveIssuanceStorage extends StorageBase {
@@ -2026,6 +2213,36 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV601(): boolean {
+        return this.getTypeHash() === 'cc79ccb140126aa785dace5b0d26db51b8387db5f6cbb6917faa59383367df1d'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV601(): CouncilProposalOfStorageV601 {
+        assert(this.isV601)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '89559d3fb6f541bdf5075d1f4863bb5ac0e0acfed89282c2e8067b09a3b99f23'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV602(): CouncilProposalOfStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -2145,6 +2362,40 @@ export interface CouncilProposalOfStorageV600 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV601 {
+    get(key: Uint8Array): Promise<(v601.Call | undefined)>
+    getAll(): Promise<v601.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v601.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v601.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v601.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v601.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v601.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV602 {
+    get(key: Uint8Array): Promise<(v602.Call | undefined)>
+    getAll(): Promise<v602.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v602.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -2424,6 +2675,63 @@ export class DemocracyLowestUnbakedStorage extends StorageBase {
  */
 export interface DemocracyLowestUnbakedStorageEfinityV2 {
     get(): Promise<number>
+}
+
+export class DemocracyMetadataOfStorage extends StorageBase {
+    protected getPrefix() {
+        return 'Democracy'
+    }
+
+    protected getName() {
+        return 'MetadataOf'
+    }
+
+    /**
+     *  General information concerning any proposal or referendum.
+     *  The `PreimageHash` refers to the preimage of the `Preimages` provider which can be a JSON
+     *  dump or IPFS hash of a JSON file.
+     * 
+     *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
+     *  large preimages.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'a67a07e9fffcce1c75e0f4b23d9fdf10851d6031a73b67c731af0a1b8e2197e2'
+    }
+
+    /**
+     *  General information concerning any proposal or referendum.
+     *  The `PreimageHash` refers to the preimage of the `Preimages` provider which can be a JSON
+     *  dump or IPFS hash of a JSON file.
+     * 
+     *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
+     *  large preimages.
+     */
+    get asV602(): DemocracyMetadataOfStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  General information concerning any proposal or referendum.
+ *  The `PreimageHash` refers to the preimage of the `Preimages` provider which can be a JSON
+ *  dump or IPFS hash of a JSON file.
+ * 
+ *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
+ *  large preimages.
+ */
+export interface DemocracyMetadataOfStorageV602 {
+    get(key: v602.MetadataOwner): Promise<(Uint8Array | undefined)>
+    getAll(): Promise<Uint8Array[]>
+    getMany(keys: v602.MetadataOwner[]): Promise<(Uint8Array | undefined)[]>
+    getKeys(): Promise<v602.MetadataOwner[]>
+    getKeys(key: v602.MetadataOwner): Promise<v602.MetadataOwner[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v602.MetadataOwner[]>
+    getKeysPaged(pageSize: number, key: v602.MetadataOwner): AsyncIterable<v602.MetadataOwner[]>
+    getPairs(): Promise<[k: v602.MetadataOwner, v: Uint8Array][]>
+    getPairs(key: v602.MetadataOwner): Promise<[k: v602.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v602.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number, key: v602.MetadataOwner): AsyncIterable<[k: v602.MetadataOwner, v: Uint8Array][]>
 }
 
 export class DemocracyNextExternalStorage extends StorageBase {
@@ -5050,6 +5358,21 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '901f6f87c9fafe3d3f61c36b45b24a63a90d51ae151f2b4a361d3c5611ffb723'
+    }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
+    get asV602(): ParachainSystemAuthorizedUpgradeStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -5057,6 +5380,13 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
  */
 export interface ParachainSystemAuthorizedUpgradeStorageEfinityV1 {
     get(): Promise<(Uint8Array | undefined)>
+}
+
+/**
+ *  The next authorized upgrade, if there is one.
+ */
+export interface ParachainSystemAuthorizedUpgradeStorageV602 {
+    get(): Promise<(v602.CodeUpgradeAuthorization | undefined)>
 }
 
 export class ParachainSystemCustomValidationHeadDataStorage extends StorageBase {
@@ -6646,6 +6976,38 @@ export interface PolkadotXcmVersionNotifyTargetsStorageV500 {
     getPairsPaged(pageSize: number, key1: number, key2: v500.VersionedMultiLocation): AsyncIterable<[k: [number, v500.VersionedMultiLocation], v: [bigint, v500.Weight, number]][]>
 }
 
+export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
+    protected getPrefix() {
+        return 'PolkadotXcm'
+    }
+
+    protected getName() {
+        return 'XcmExecutionSuspended'
+    }
+
+    /**
+     *  Global suspension state of the XCM executor.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
+    }
+
+    /**
+     *  Global suspension state of the XCM executor.
+     */
+    get asV602(): PolkadotXcmXcmExecutionSuspendedStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Global suspension state of the XCM executor.
+ */
+export interface PolkadotXcmXcmExecutionSuspendedStorageV602 {
+    get(): Promise<boolean>
+}
+
 export class PoolsNextPoolIdStorage extends StorageBase {
     protected getPrefix() {
         return 'Pools'
@@ -7573,6 +7935,21 @@ export class SystemAccountStorage extends StorageBase {
         assert(this.isEfinityV1)
         return this as any
     }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get asV602(): SystemAccountStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -7590,6 +7967,23 @@ export interface SystemAccountStorageEfinityV1 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV1.AccountInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountInfo][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountInfo][]>
+}
+
+/**
+ *  The full account information for a particular account ID.
+ */
+export interface SystemAccountStorageV602 {
+    get(key: Uint8Array): Promise<v602.AccountInfo>
+    getAll(): Promise<v602.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<v602.AccountInfo[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.AccountInfo][]>
 }
 
 export class SystemAllExtrinsicsLenStorage extends StorageBase {
@@ -8103,6 +8497,60 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV601(): boolean {
+        return this.getTypeHash() === '9a12903bc922139b71e2eb8cb38b73727f3896ca3de80e5d1bdd0519dd921f9b'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV601(): SystemEventsStorageV601 {
+        assert(this.isV601)
+        return this as any
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'e1ee78d27d2150e8a2f93ff7bf8eecec264eabf963316e9e980901ba7fab01b2'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV602(): SystemEventsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -8198,6 +8646,32 @@ export interface SystemEventsStorageV500 {
  */
 export interface SystemEventsStorageV600 {
     get(): Promise<v600.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV601 {
+    get(): Promise<v601.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV602 {
+    get(): Promise<v602.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -8882,6 +9356,36 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV600)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV601(): boolean {
+        return this.getTypeHash() === 'cc79ccb140126aa785dace5b0d26db51b8387db5f6cbb6917faa59383367df1d'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV601(): TechnicalCommitteeProposalOfStorageV601 {
+        assert(this.isV601)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '89559d3fb6f541bdf5075d1f4863bb5ac0e0acfed89282c2e8067b09a3b99f23'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV602(): TechnicalCommitteeProposalOfStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -9001,6 +9505,40 @@ export interface TechnicalCommitteeProposalOfStorageV600 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v600.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV601 {
+    get(key: Uint8Array): Promise<(v601.Call | undefined)>
+    getAll(): Promise<v601.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v601.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v601.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v601.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v601.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v601.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV602 {
+    get(key: Uint8Array): Promise<(v602.Call | undefined)>
+    getAll(): Promise<v602.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v602.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {
