@@ -1,7 +1,6 @@
-import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { TypeormDatabase } from '@subsquid/typeorm-store'
+import { BatchProcessorItem, DataHandlerContext, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
+import { Store, TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a } from '@polkadot/util'
-import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
@@ -9,7 +8,6 @@ import { createEfiToken } from './createEfiToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { CommonContext } from './mappings/types/contexts'
 
 const eventOptions = {
     data: {
@@ -79,10 +77,10 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Claims.ClaimedEnj', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
-export type Context = BatchContext<EntityManager, Item>
+export type Context = DataHandlerContext<Store, Item>
 
 async function handleEvents(
-    ctx: CommonContext,
+    ctx: Context,
     block: SubstrateBlock,
     item: Item
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
@@ -183,16 +181,16 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
 
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
-            await createEfiToken(ctx as unknown as CommonContext, block.header)
+            await createEfiToken(ctx, block.header)
             // eslint-disable-next-line no-await-in-loop
-            await chainState(ctx as unknown as CommonContext, block.header)
+            await chainState(ctx, block.header)
         }
 
         // eslint-disable-next-line no-restricted-syntax
         for (const item of block.items) {
             if (item.kind === 'event') {
                 // eslint-disable-next-line no-await-in-loop
-                const event = await handleEvents(ctx as unknown as CommonContext, block.header, item)
+                const event = await handleEvents(ctx, block.header, item)
                 if (event) {
                     if (Array.isArray(event)) {
                         events.push(event[0])
@@ -214,7 +212,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
                 ) as string
 
                 // eslint-disable-next-line no-await-in-loop
-                const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                const signer = await getOrCreateAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                 const callName = call.name.split('.')
 
                 const extrinsic = new Extrinsic({
@@ -254,11 +252,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
                         }
 
                         // eslint-disable-next-line no-await-in-loop
-                        const feeAmount = await map.balances.events.withdraw(
-                            ctx as unknown as CommonContext,
-                            block.header,
-                            eventItem
-                        )
+                        const feeAmount = await map.balances.events.withdraw(ctx, block.header, eventItem)
 
                         if (extrinsic.fee && feeAmount) {
                             extrinsic.fee.amount = feeAmount
@@ -285,7 +279,7 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
         }
 
         // eslint-disable-next-line no-await-in-loop
-        await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+        await map.balances.processor.saveAccounts(ctx, block.header)
         _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(chunk))
         _.chunk(events, 500).forEach((chunk) => ctx.store.insert(chunk))
         _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(chunk as any))
@@ -294,6 +288,6 @@ processor.run(new TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
     if (lastBlock.height > config.chainStateHeight) {
         import('./handleJobs')
-        await chainState(ctx as unknown as CommonContext, lastBlock)
+        await chainState(ctx, lastBlock)
     }
 })

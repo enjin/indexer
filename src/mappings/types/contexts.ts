@@ -1,18 +1,15 @@
-import { EntityManager } from 'typeorm'
-import {
-    BlockHandlerContext as PrBlockHandlerContext,
-    EventHandlerContext as PrEventHandlerContext,
-    CallHandlerContext as PrCallHandlerContext,
-    CommonHandlerContext as PrCommonHandlerContext,
-} from '@subsquid/substrate-processor'
-import { CallDataRequest, EventDataRequest } from '@subsquid/substrate-processor/lib/interfaces/data-selection'
+import { Chain } from '@subsquid/substrate-processor/lib/chain'
+import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { Logger } from '@subsquid/logger'
 
-export type EventHandlerContext<T extends EventDataRequest = { event: true }> = PrEventHandlerContext<EntityManager, T>
-export type BlockHandlerContext = PrBlockHandlerContext<EntityManager>
-export type CallHandlerContext<T extends CallDataRequest = { call: true; extrinsic: true }> = PrCallHandlerContext<
-    EntityManager,
-    T
->
-export type CommonContext = PrCommonHandlerContext<EntityManager>
+export interface BatchBlock<Item> {
+    header: SubstrateBlock
+    items: Item[]
+}
 
-export { CallContext, EventContext } from '../../types/generated/support'
+export interface BatchContext<Store, Item> {
+    _chain: Chain
+    log: Logger
+    store: Store
+    blocks: BatchBlock<Item>[]
+}
