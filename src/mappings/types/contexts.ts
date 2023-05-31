@@ -5,7 +5,7 @@ import {
     CallHandlerContext as PrCallHandlerContext,
     CommonHandlerContext as PrCommonHandlerContext,
 } from '@subsquid/substrate-processor'
-import { CallDataRequest, EventDataRequest } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { CallDataRequest, EventDataRequest } from '@subsquid/substrate-processor/lib/interfaces/data-selection'
 
 export type EventHandlerContext<T extends EventDataRequest = { event: true }> = PrEventHandlerContext<EntityManager, T>
 export type BlockHandlerContext = PrBlockHandlerContext<EntityManager>

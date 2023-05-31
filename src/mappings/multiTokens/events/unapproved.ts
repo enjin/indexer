@@ -1,6 +1,6 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/data-selection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'

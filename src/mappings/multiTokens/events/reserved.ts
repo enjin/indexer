@@ -1,6 +1,6 @@
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/data-selection'
 import { TokenAccount, TokenNamedReserve } from '../../../model'
 import { MultiTokensReservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'

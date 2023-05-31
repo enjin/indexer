@@ -1,5 +1,5 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/data-selection'
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceAuctionFinalizedEvent } from '../../../types/generated/events'
