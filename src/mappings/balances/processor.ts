@@ -16,8 +16,8 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { AccountData, AccountInfo } from '../../types/generated/efinityV1'
-import { AccountData as AccountData_v602, AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
+import { AccountInfo } from '../../types/generated/efinityV1'
+import { AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
 
@@ -243,42 +243,36 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     for (let i = 0; i < accountIds.length; i += 1) {
         const id = accountIds[i]
         const accountInfo = accountInfos[i]
+        const accountData = accountInfo.data
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const getData = (data: AccountData | AccountData_v602): void => {
-            if ('frozen' in data) {
-                const accountData = data as AccountData_v602
-                accounts.push({
-                    id,
-                    address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                    nonce: accountInfo.nonce,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.frozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        feeFrozen: 0n,
-                        miscFrozen: 0n,
-                    }),
-                    tokenValues: 0n,
-                })
-            }
-
-            if ('miscFrozen' in data) {
-                const accountData = data as AccountData
-                accounts.push({
-                    id,
-                    address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                    nonce: accountInfo.nonce,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.miscFrozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        feeFrozen: accountData.feeFrozen,
-                        miscFrozen: accountData.miscFrozen,
-                    }),
-                    tokenValues: 0n,
-                })
-            }
+        if ('frozen' in accountData) {
+            accounts.push({
+                id,
+                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                nonce: accountInfo.nonce,
+                balance: new Balance({
+                    transferable: accountData.free - accountData.frozen,
+                    free: accountData.free,
+                    reserved: accountData.reserved,
+                    feeFrozen: 0n,
+                    miscFrozen: 0n,
+                }),
+                tokenValues: 0n,
+            })
+        } else if ('miscFrozen' in accountData) {
+            accounts.push({
+                id,
+                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                nonce: accountInfo.nonce,
+                balance: new Balance({
+                    transferable: accountData.free - accountData.miscFrozen,
+                    free: accountData.free,
+                    reserved: accountData.reserved,
+                    feeFrozen: accountData.feeFrozen,
+                    miscFrozen: accountData.miscFrozen,
+                }),
+                tokenValues: 0n,
+            })
         }
     }
 
