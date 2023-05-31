@@ -846,6 +846,51 @@ export interface V2WeightLimit_Limited {
     value: bigint
 }
 
+export type VersionedXcm = VersionedXcm_V0 | VersionedXcm_V1 | VersionedXcm_V2
+
+export interface VersionedXcm_V0 {
+    __kind: 'V0'
+    value: V0Xcm
+}
+
+export interface VersionedXcm_V1 {
+    __kind: 'V1'
+    value: V1Xcm
+}
+
+export interface VersionedXcm_V2 {
+    __kind: 'V2'
+    value: V2Instruction[]
+}
+
+export type Type_334 = Type_334_V0 | Type_334_V1 | Type_334_V2
+
+export interface Type_334_V0 {
+    __kind: 'V0'
+    value: Type_335
+}
+
+export interface Type_334_V1 {
+    __kind: 'V1'
+    value: Type_340
+}
+
+export interface Type_334_V2 {
+    __kind: 'V2'
+    value: Type_346[]
+}
+
+export type V2WeightLimit = V2WeightLimit_Unlimited | V2WeightLimit_Limited
+
+export interface V2WeightLimit_Unlimited {
+    __kind: 'Unlimited'
+}
+
+export interface V2WeightLimit_Limited {
+    __kind: 'Limited'
+    value: bigint
+}
+
 export type OriginCaller = OriginCaller_system | OriginCaller_Council | OriginCaller_TechnicalCommittee | OriginCaller_PolkadotXcm | OriginCaller_CumulusXcm | OriginCaller_Void
 
 export interface OriginCaller_system {

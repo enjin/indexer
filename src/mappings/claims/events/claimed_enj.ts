@@ -16,6 +16,14 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new ClaimsClaimedEnjEvent(ctx, event)
 
+    if (data.isEfinityV3014) {
+        const { who, amount } = data.asEfinityV3014
+        return {
+            who,
+            amount,
+        }
+    }
+
     if (data.isV500) {
         const { who, amount } = data.asV500
         return {

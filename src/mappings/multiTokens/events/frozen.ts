@@ -31,6 +31,52 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensFrozenEvent(ctx, event)
 
+    if (data.isEfinityV3014) {
+        const { collectionId, freezeType } = data.asEfinityV3014
+
+        if (freezeType.__kind === 'Collection') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                freezeState: undefined,
+                tokenId: undefined,
+                collectionAccount: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        if (freezeType.__kind === 'CollectionAccount') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                freezeState: undefined,
+                collectionAccount: (freezeType as FreezeType_CollectionAccount).value,
+                tokenId: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        if (freezeType.__kind === 'Token') {
+            return {
+                collectionId,
+                freezeType: freezeType.__kind,
+                freezeState: freezeType.freezeState,
+                tokenId: freezeType.tokenId,
+                collectionAccount: undefined,
+                tokenAccount: undefined,
+            }
+        }
+
+        return {
+            collectionId,
+            freezeType: freezeType.__kind,
+            freezeState: undefined,
+            tokenId: (freezeType as FreezeType_TokenAccount).tokenId,
+            tokenAccount: (freezeType as FreezeType_TokenAccount).accountId,
+            collectionAccount: undefined,
+        }
+    }
+
     if (data.isV500) {
         const { collectionId, freezeType } = data.asV500
 

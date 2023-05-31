@@ -10,6 +10,7 @@ import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
 import * as efinityV3012 from './efinityV3012'
+import * as efinityV3014 from './efinityV3014'
 
 export class AssetRegistryRegisteredAssetEvent {
     private readonly _chain: Chain
@@ -3971,8 +3972,8 @@ export class EfinityXcmXcmTransferFailedEvent {
     /**
      * XCM transfer failed
      */
-    get asV500(): v500.DispatchError {
-        assert(this.isV500)
+    get asEfinityV3014(): efinityV3014.DispatchError {
+        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 

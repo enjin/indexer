@@ -11,6 +11,7 @@ import * as efinityV2 from './efinityV2'
 import * as efinityV3 from './efinityV3'
 import * as efinityV3000 from './efinityV3000'
 import * as efinityV3012 from './efinityV3012'
+import * as efinityV3014 from './efinityV3014'
 
 export class AssetRegistryRegisterAssetCall {
     private readonly _chain: Chain
@@ -3036,6 +3037,41 @@ export class CouncilExecuteCall {
      * - 1 event
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Council.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asEfinityV3014(): {proposal: efinityV3014.Call, lengthBound: number} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Council.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
     }
@@ -3511,6 +3547,73 @@ export class CouncilProposeCall {
      *   - branching is influenced by `threshold` where:
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Council.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
      */
     get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
@@ -12478,6 +12581,109 @@ export class MultisigAsMultiCall {
      * - Plus Call Weight
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '59bdca927149e5bb749dcbbf8d8b1d16c8c076cce2a8f5e764e42091efb81498'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get asEfinityV3014(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (efinityV3014.Timepoint | undefined), call: efinityV3014.Call, maxWeight: efinityV3014.Weight} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * # <weight>
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     * -------------------------------
+     * - DB Weight:
+     *     - Reads: Multisig Storage, [Caller Account]
+     *     - Writes: Multisig Storage, [Caller Account]
+     * - Plus Call Weight
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Multisig.as_multi') === '22f1076e19a712198629d972d9c2531e9570a507fa7cfdcfaaf6650a820e1a21'
     }
@@ -13159,6 +13365,51 @@ export class MultisigAsMultiThreshold1Call {
      * 
      * ## Complexity
      * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get asEfinityV3014(): {otherSignatories: Uint8Array[], call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '9acbbee9c49c57ce3cabacc10d51d53d6b918eed24489755b6238e8da042f9e1'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * # <weight>
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     * -------------------------------
+     * - DB Weight: None
+     * - Plus Call Weight
+     * # </weight>
      */
     get asEfinityV3014(): {otherSignatories: Uint8Array[], call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
@@ -14134,6 +14385,48 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
      * - `origin`: Must be Root.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
+    }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    get asEfinityV3014(): {location: efinityV3014.VersionedMultiLocation} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    get isRocfinityV3012(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
+    }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
+    get asRocfinityV3012(): {location: rocfinityV3012.VersionedMultiLocation} {
+        assert(this.isRocfinityV3012)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Ask a location to notify us regarding their XCM version and any changes to it.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we should subscribe for XCM version notifications.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
     }
@@ -14281,6 +14574,56 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
+    }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    get asEfinityV3014(): {location: efinityV3014.VersionedMultiLocation} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    get isRocfinityV3012(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
+    }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
+    get asRocfinityV3012(): {location: rocfinityV3012.VersionedMultiLocation} {
+        assert(this.isRocfinityV3012)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Require that a particular destination should no longer notify us regarding any XCM
+     * version changes.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The location to which we are currently subscribed for XCM version
+     *   notifications which we no longer desire.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
     }
@@ -14354,6 +14697,56 @@ export class PolkadotXcmForceXcmVersionCall {
      * version of XCM.
      * 
      * - `origin`: Must be an origin specified by AdminOrigin.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get asEfinityV3014(): {location: efinityV3014.V3MultiLocation, xcmVersion: number} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get isRocfinityV3012(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '3bdd3ba3db54facd962462ff1c2c0ede1b428cf9119b36a4e96fa86916145f75'
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get asRocfinityV3012(): {location: rocfinityV3012.V1MultiLocation, xcmVersion: number} {
+        assert(this.isRocfinityV3012)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '998b5a56e7662d76955b41c2526c2219fe8304fec6501afa115db1bd705e7ff6'
+    }
+
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be Root.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
      */
@@ -15885,6 +16278,29 @@ export class SchedulerScheduleAfterCall {
      * Same as [`schedule`].
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === '3a7ad4266e4380b3cb2d58043698e9285471e548162604b00dc5386d1f267484'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
+    get asEfinityV3014(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule`].
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Scheduler.schedule_after') === 'f9717f36b8f3c5bc5d686a2be3ffb8fdf780357d2f10cb29c0998644f1e14f80'
     }
@@ -16264,6 +16680,29 @@ export class SchedulerScheduleNamedAfterCall {
 
     /**
      * Schedule a named task after a delay.
+     */
+    get asEfinityV3014(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '39dea555796a18177a2f3b7c0e87eea697e65295a41c5c64eed7b76f64df0a0e'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     * 
+     * # <weight>
+     * Same as [`schedule_named`](Self::schedule_named).
+     * # </weight>
      */
     get asEfinityV3014(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
@@ -16795,6 +17234,39 @@ export class SudoSudoCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === 'ebe84dbcc3482c312d777586036acd26a8723db744f4e0346571e0507b8cd52d'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get asEfinityV3014(): {call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Sudo.sudo') === 'abca980bf1016589013fe0614efe2dd23384abb1c388ab991938f365f60cf944'
     }
@@ -17150,6 +17622,41 @@ export class SudoSudoAsCall {
      * 
      * ## Complexity
      * - O(1).
+     */
+    get asEfinityV3014(): {who: efinityV3014.MultiAddress, call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === 'c535c69fe19f34ab90d5303be3231520c2172b3e8684d944945241ed17c18c9a'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
      */
     get asEfinityV3014(): {who: efinityV3014.MultiAddress, call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
@@ -17525,6 +18032,39 @@ export class SudoSudoUncheckedWeightCall {
      * 
      * ## Complexity
      * - O(1).
+     */
+    get asEfinityV3014(): {call: efinityV3014.Call, weight: efinityV3014.Weight} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '59f62c6dbdc6c6d0506a3279757baeb92a08b28f4b043a1984be2479d738e3b9'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
      */
     get asEfinityV3014(): {call: efinityV3014.Call, weight: efinityV3014.Weight} {
         assert(this.isEfinityV3014)
@@ -18796,6 +19336,41 @@ export class TechnicalCommitteeExecuteCall {
      * - 1 event
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '5fc128c9e2eaa14a821a10e0656275422aa9fbe3be6c491e26f1aacf5b4faea9'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
+    get asEfinityV3014(): {proposal: efinityV3014.Call, lengthBound: number} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
+     *   `proposal`
+     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
+     * - 1 event
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
     }
@@ -19271,6 +19846,73 @@ export class TechnicalCommitteeProposeCall {
      *   - branching is influenced by `threshold` where:
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '1964238603321f939a1e9b473adc4b0b5685472bed66ce34d35aa8dc3c7a5604'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * # <weight>
+     * ## Weight
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     * - DB:
+     *   - 1 storage read `is_member` (codec `O(M)`)
+     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
+     *   - DB accesses influenced by `threshold`:
+     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
+     *     - OR proposal insertion (`threshold <= 2`)
+     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
+     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
+     *       - 1 storage write `ProposalOf` (codec `O(B)`)
+     *       - 1 storage write `Voting` (codec `O(M)`)
+     *   - 1 event
+     * # </weight>
      */
     get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
@@ -20829,6 +21471,57 @@ export class UtilityBatchCall {
      * and the error of the failed call. If all were successful, then the `BatchCompleted`
      * event is deposited.
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asEfinityV3014(): {calls: efinityV3014.Call[]} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Utility.batch') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
     }
@@ -21294,6 +21987,47 @@ export class UtilityBatchAllCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get asEfinityV3014(): {calls: efinityV3014.Call[]} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Utility.batch_all') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
     }
@@ -21664,6 +22398,39 @@ export class UtilityDispatchAsCall {
      * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
      * # </weight>
      */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '85281785bac4e0c2e1f3e82d746ba52383b2a77414d82dfc827f4abec0eccf44'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
+    get asEfinityV3014(): {asOrigin: efinityV3014.OriginCaller, call: efinityV3014.Call} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
+     * # </weight>
+     */
     get isRocfinityV3012(): boolean {
         return this._chain.getCallHash('Utility.dispatch_as') === '1d12132e6e70653f2d4123d7ae2d10da60a0e0ed8018d95550710be641d44458'
     }
@@ -21938,6 +22705,47 @@ export class UtilityForceBatchCall {
      * 
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
+     */
+    get asEfinityV3014(): {calls: efinityV3014.Call[]} {
+        assert(this.isEfinityV3014)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
+     */
+    get isEfinityV3014(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '240bb596b0addf43a5718b78093e81b65b8474910fed2fa90d40ec8a5cc6011b'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * # <weight>
+     * - Complexity: O(C) where C is the number of calls to be batched.
+     * # </weight>
      */
     get asEfinityV3014(): {calls: efinityV3014.Call[]} {
         assert(this.isEfinityV3014)

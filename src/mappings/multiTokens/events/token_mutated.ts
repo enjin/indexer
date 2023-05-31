@@ -29,6 +29,16 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
+    if (data.isEfinityV3014) {
+        const { collectionId, tokenId, mutation } = data.asEfinityV3014
+        return {
+            collectionId,
+            tokenId,
+            behavior: mutation.behavior,
+            listingForbidden: mutation.listingForbidden,
+        }
+    }
+
     if (data.isV500) {
         const { collectionId, tokenId, mutation } = data.asV500
         return {
