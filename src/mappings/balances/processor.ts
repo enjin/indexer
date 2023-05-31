@@ -16,8 +16,8 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { AccountData, AccountInfo } from '../../types/generated/efinityV1'
-import { AccountData as AccountData_v602, AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
+import { AccountInfo } from '../../types/generated/efinityV1'
+import { AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
 
