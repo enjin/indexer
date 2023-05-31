@@ -2,7 +2,7 @@ import { EntityManager } from 'typeorm'
 import { Collection, CollectionStats, Listing, ListingSale, ListingStatus, Token } from '../model'
 
 export class CollectionService {
-    constructor(public em: EntityManager) {}
+    constructor(public em: any) {}
 
     private floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND
      (SELECT count(*) FROM "listing_status" AS "listing_status" WHERE "listing_status"."type" = 'Active' AND "listing_status"."listing_id" = "listing"."id") = (SELECT count(*) FROM "listing_status" AS "listing_status_1" WHERE "listing_status_1"."listing_id" = "listing"."id")`
@@ -17,7 +17,7 @@ export class CollectionService {
                 .addSelect('MAX(l.last_sale) AS last_sale')
                 .addSelect('SUM(l.volume) AS total_volume')
                 .addSelect('SUM(l.count)::int AS sales')
-                .from((qb) => {
+                .from((qb: any) => {
                     return qb
                         .select('listing.id AS id')
                         .addSelect('COUNT(sale.id) AS count')

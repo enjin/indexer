@@ -1,15 +1,4 @@
-import { Chain } from '@subsquid/substrate-processor/lib/chain'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { Logger } from '@subsquid/logger'
+import { Store } from '@subsquid/typeorm-store'
+import { DataHandlerContext } from '@subsquid/substrate-processor'
 
-export interface BatchBlock<Item> {
-    header: SubstrateBlock
-    items: Item[]
-}
-
-export interface BatchContext<Store, Item> {
-    _chain: Chain
-    log: Logger
-    store: Store
-    blocks: BatchBlock<Item>[]
-}
+export type CommonContext = DataHandlerContext<Store, any>

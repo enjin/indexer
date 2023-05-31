@@ -64,7 +64,7 @@ export async function tokenAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, collectionAccount as any)
+        await ctx.store.insert(collectionAccount)
     }
 
     collectionAccount.accountCount += 1
@@ -86,7 +86,7 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(TokenAccount, tokenAccount as any)
+    await ctx.store.insert(tokenAccount)
 
     return new EventModel({
         id: item.event.id,

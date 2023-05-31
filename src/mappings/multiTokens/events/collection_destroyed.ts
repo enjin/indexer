@@ -50,8 +50,8 @@ export async function collectionDestroyed(
             collection: { id: collection.id },
         },
     })
-
-    await ctx.store.delete(Trait, { collection: { id: collection.id } })
+    // FIXME: remove traits
+    // await ctx.store.delete(Trait, { collection: { id: collection.id } })
     await ctx.store.remove(royaltyCurrencies)
     await ctx.store.remove(attributes)
     await ctx.store.remove(collection)

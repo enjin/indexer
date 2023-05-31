@@ -238,6 +238,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         return
     }
 
+    // eslint-disable-next-line sonarjs/no-unused-collection
     const accounts: any[] = []
 
     for (let i = 0; i < accountIds.length; i += 1) {
@@ -281,8 +282,8 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
             }
         }
     }
-
-    await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
+    // FIXME: replace query builder
+    // await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
     accountsSet.clear()
 }
 

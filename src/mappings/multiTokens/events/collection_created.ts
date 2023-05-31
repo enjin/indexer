@@ -175,7 +175,7 @@ export async function collectionCreated(
             token,
         })
         // eslint-disable-next-line no-await-in-loop
-        await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+        await ctx.store.insert(royaltyCurrency)
     }
 
     return new EventModel({

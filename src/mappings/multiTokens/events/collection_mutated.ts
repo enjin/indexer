@@ -135,7 +135,7 @@ export async function collectionMutated(
                 })
 
                 // eslint-disable-next-line no-await-in-loop
-                await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+                await ctx.store.insert(royaltyCurrency)
             }
             await ctx.store.remove(royaltyCurrencies)
         }

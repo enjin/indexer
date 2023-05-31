@@ -59,7 +59,7 @@ export async function listingCancelled(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
+    await ctx.store.insert(listingStatus)
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     const event = new EventModel({

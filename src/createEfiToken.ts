@@ -37,7 +37,7 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Collection, collection as any)
+        await ctx.store.insert(collection)
 
         const token = new Token({
             id: `0-0`,
@@ -58,6 +58,6 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
+        await ctx.store.insert(token)
     }
 }

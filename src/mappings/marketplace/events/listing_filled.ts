@@ -73,7 +73,7 @@ export async function listingFilled(
             height: block.height,
             createdAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(ListingStatus, listingStatus as any)
+        await ctx.store.insert(listingStatus)
     }
 
     const sale = new ListingSale({

@@ -58,7 +58,7 @@ export async function collectionAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, collectionAccount as any)
+        await ctx.store.insert(collectionAccount)
     }
 
     return new EventModel({
