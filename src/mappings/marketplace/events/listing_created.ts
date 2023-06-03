@@ -23,7 +23,7 @@ import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
-import { getBestListing, getOrCreateAccount } from '../../util/entities'
+import { getOrCreateAccount } from '../../util/entities'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
