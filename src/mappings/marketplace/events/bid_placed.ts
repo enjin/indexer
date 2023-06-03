@@ -78,7 +78,7 @@ export async function bidPlaced(
 
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        if (bestListing) {
+        if (bestListing?.id !== listing.id) {
             listing.makeAssetId.bestListing = bestListing
             await ctx.store.save(listing.makeAssetId)
         }

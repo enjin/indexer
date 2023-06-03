@@ -41,7 +41,7 @@ export async function getBestListing(ctx: CommonContext, tokenId: string) {
         .addSelect('COUNT(status.type)')
         .innerJoin(ListingStatus, 'status', 'status.listing = listing.id')
         .where('listing.makeAssetId = :tokenId', { tokenId })
-        .orderBy('listing.price', 'ASC')
+        .orderBy('listing.highestPrice', 'ASC')
         .groupBy('listing.id')
         .having('COUNT(status.type) = 1')
         .getOne()

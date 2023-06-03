@@ -55,6 +55,7 @@ export async function listingCreated(
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
             collection: true,
+            bestListing: true,
         },
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -106,10 +107,8 @@ export async function listingCreated(
     })
     await ctx.store.insert(ListingStatus, listingStatus as any)
 
-    const bestListing = await getBestListing(ctx, makeAssetId.id)
-
     // update best listing
-    if ((bestListing && bestListing.highestPrice >= listing.price) || !bestListing) {
+    if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
         makeAssetId.bestListing = listing
     }
     makeAssetId.recentListing = listing
