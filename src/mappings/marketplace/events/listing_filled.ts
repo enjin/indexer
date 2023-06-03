@@ -21,6 +21,7 @@ import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
+import { getBestListing } from '../../util/entities'
 
 interface EventData {
     listingId: Uint8Array
@@ -56,6 +57,7 @@ export async function listingFilled(
             seller: true,
             makeAssetId: {
                 collection: true,
+                bestListing: true,
             },
         },
     })
@@ -88,6 +90,16 @@ export async function listingFilled(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
+
+    if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
+        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        listing.makeAssetId.bestListing = null
+        if (bestListing) {
+            listing.makeAssetId.bestListing = bestListing
+        }
+        await ctx.store.save(listing.makeAssetId)
+    }
+
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     const event = new EventModel({

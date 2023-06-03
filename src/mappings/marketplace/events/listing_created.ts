@@ -23,7 +23,7 @@ import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
-import { getOrCreateAccount } from '../../util/entities'
+import { getBestListing, getOrCreateAccount } from '../../util/entities'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
@@ -105,6 +105,17 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(ListingStatus, listingStatus as any)
+
+    const bestListing = await getBestListing(ctx, makeAssetId.id)
+    console.log('bestListing', bestListing)
+
+    // update best listing
+    if ((bestListing && bestListing.price >= listing.price) || !bestListing) {
+        makeAssetId.bestListing = listing
+    }
+    makeAssetId.recentListing = listing
+    await ctx.store.save(makeAssetId)
+
     new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 
     const event = new EventModel({
@@ -119,7 +130,7 @@ export async function listingCreated(
 
     const eventData: [EventModel, AccountTokenEvent] | undefined = [
         event,
-        new AccountTokenEvent({ id: item.event.id, token: makeAssetId, from: listing.seller, event }),
+        new AccountTokenEvent({ id: item.event.id, token: new Token({ id: makeAssetId.id }), from: listing.seller, event }),
     ]
 
     await Pusher.getInstance().trigger('marketplace', 'listingCreated', safeJson(eventData))
