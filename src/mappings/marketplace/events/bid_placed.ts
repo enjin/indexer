@@ -12,12 +12,13 @@ import {
     Listing,
     ListingType,
     MarketplaceBidPlaced,
+    Token,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { Bid as BidEvent } from '../../../types/generated/efinityV3012'
 import { CollectionService } from '../../../services'
-import { getOrCreateAccount } from '../../util/entities'
+import { getBestListing, getOrCreateAccount } from '../../util/entities'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
@@ -50,6 +51,7 @@ export async function bidPlaced(
         relations: {
             makeAssetId: {
                 collection: true,
+                bestListing: true,
             },
         },
     })
@@ -73,6 +75,15 @@ export async function bidPlaced(
 
     listing.updatedAt = new Date(block.timestamp)
     await ctx.store.save(listing)
+
+    if (listing.makeAssetId.bestListing?.id === listing.id) {
+        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        if (bestListing) {
+            listing.makeAssetId.bestListing = bestListing
+            await ctx.store.save(listing.makeAssetId)
+        }
+    }
+
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     const event = new EventModel({
@@ -90,7 +101,7 @@ export async function bidPlaced(
         event,
         new AccountTokenEvent({
             id: item.event.id,
-            token: listing.makeAssetId,
+            token: new Token({ id: listing.makeAssetId.id }),
             from: bid.bidder,
             event,
         }),

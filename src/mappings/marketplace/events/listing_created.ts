@@ -107,10 +107,9 @@ export async function listingCreated(
     await ctx.store.insert(ListingStatus, listingStatus as any)
 
     const bestListing = await getBestListing(ctx, makeAssetId.id)
-    console.log('bestListing', bestListing)
 
     // update best listing
-    if ((bestListing && bestListing.price >= listing.price) || !bestListing) {
+    if ((bestListing && bestListing.highestPrice >= listing.price) || !bestListing) {
         makeAssetId.bestListing = listing
     }
     makeAssetId.recentListing = listing
