@@ -25,7 +25,15 @@ function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     throw new Error('Unsupported version')
 }
 
-function 
+function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
+
+    if (attributeStorage.isEfinityV2) {
+        return attributeStorage.asEfinityV2
+    }
+
+    throw new Error('Unsupported version')
+}
 
 async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
     const pagedCollections = getCollectionStorage(ctx, block).getPairsPaged(BATCH_SIZE)
@@ -73,7 +81,7 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                     attributeCount: data.attributeCount,
                     totalDeposit: data.totalDeposit,
                     createdAt: new Date(block.timestamp),
-
+                    collectionId: id,
                 })
             }
         )
