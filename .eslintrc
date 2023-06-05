@@ -27,7 +27,7 @@
     "airbnb-base",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
-    "plugin:sonarjs/recommended",
+   // "plugin:sonarjs/recommended",
    // "plugin:unicorn/recommended",
     "plugin:prettier/recommended",
     "prettier"

@@ -10,6 +10,7 @@ import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
+import { populateGenesis } from './populateGenesis'
 
 const eventOptions = {
     data: {
@@ -179,7 +180,10 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         const events: Event[] = []
         const accountTokenEvents: AccountTokenEvent[] = []
 
-        // console.log(`Processing block ${block.header.height} and events: ${block.items.length}`)
+        if (block.header.height % 1000 === 0) {
+            // eslint-disable-next-line no-await-in-loop
+            await populateGenesis(ctx as unknown as CommonContext, block.header)
+        }
 
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
@@ -286,9 +290,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
         // eslint-disable-next-line no-await-in-loop
         await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-        _.chunk(extrinsics, 500).forEach((chunk: any) => ctx.store.insert(Extrinsic, chunk as any))
-        _.chunk(events, 500).forEach((chunk: any) => ctx.store.insert(Event, chunk as any))
-        _.chunk(accountTokenEvents, 500).forEach((chunk: any) => ctx.store.insert(AccountTokenEvent, chunk as any))
+        _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
+        _.chunk(events, 500).forEach((chunk) => ctx.store.insert(Event, chunk as any))
+        _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
     }
 
     const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
