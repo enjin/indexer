@@ -23,7 +23,6 @@ import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
     MultiTokensCall_mint,
-    TokenCap,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/efinityV3012'
