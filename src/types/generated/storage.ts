@@ -1,8 +1,9 @@
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as efinityV1 from './efinityV1'
-import * as v500 from './v500'
+import * as efinityV3014 from './efinityV3014'
 import * as rocfinityV3012 from './rocfinityV3012'
+import * as v500 from './v500'
 import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
@@ -280,6 +281,128 @@ export class BalancesAccountStorage extends StorageBase {
      *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
      *  NOTE: This is only used in the case that this pallet is used to store balances.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '12d9e780c790f66e9c340b94cabd98da447e1087819d4acb4b1fe22bbb2783fb'
+    }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
+    get asEfinityV3014(): BalancesAccountStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '0b3b4bf0dd7388459eba461bc7c3226bf58608c941710a714e02f33ec0f91e78'
+    }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
+    get asRocfinityV3012(): BalancesAccountStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The Balances pallet example of storing the balance of an account.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+     *   }
+     *  ```
+     * 
+     *  You can also store the balance of an account in the `System` pallet.
+     * 
+     *  # Example
+     * 
+     *  ```nocompile
+     *   impl pallet_balances::Config for Runtime {
+     *    type AccountStore = System
+     *   }
+     *  ```
+     * 
+     *  But this comes with tradeoffs, storing account balances in the system pallet stores
+     *  `frame_system` data alongside the account data contrary to storing account balances in the
+     *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     */
     get isV602(): boolean {
         return this.getTypeHash() === '12d9e780c790f66e9c340b94cabd98da447e1087819d4acb4b1fe22bbb2783fb'
     }
@@ -361,6 +484,86 @@ export interface BalancesAccountStorageEfinityV1 {
  *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
  *  NOTE: This is only used in the case that this pallet is used to store balances.
  */
+export interface BalancesAccountStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<efinityV3014.AccountData>
+    getAll(): Promise<efinityV3014.AccountData[]>
+    getMany(keys: Uint8Array[]): Promise<efinityV3014.AccountData[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.AccountData][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.AccountData][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.AccountData][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.AccountData][]>
+}
+
+/**
+ *  The Balances pallet example of storing the balance of an account.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+ *   }
+ *  ```
+ * 
+ *  You can also store the balance of an account in the `System` pallet.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *    type AccountStore = System
+ *   }
+ *  ```
+ * 
+ *  But this comes with tradeoffs, storing account balances in the system pallet stores
+ *  `frame_system` data alongside the account data contrary to storing account balances in the
+ *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+ *  NOTE: This is only used in the case that this pallet is used to store balances.
+ */
+export interface BalancesAccountStorageRocfinityV3012 {
+    get(key: Uint8Array): Promise<rocfinityV3012.AccountData>
+    getAll(): Promise<rocfinityV3012.AccountData[]>
+    getMany(keys: Uint8Array[]): Promise<rocfinityV3012.AccountData[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: rocfinityV3012.AccountData][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: rocfinityV3012.AccountData][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: rocfinityV3012.AccountData][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: rocfinityV3012.AccountData][]>
+}
+
+/**
+ *  The Balances pallet example of storing the balance of an account.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *     type AccountStore = StorageMapShim<Self::Account<Runtime>, frame_system::Provider<Runtime>, AccountId, Self::AccountData<Balance>>
+ *   }
+ *  ```
+ * 
+ *  You can also store the balance of an account in the `System` pallet.
+ * 
+ *  # Example
+ * 
+ *  ```nocompile
+ *   impl pallet_balances::Config for Runtime {
+ *    type AccountStore = System
+ *   }
+ *  ```
+ * 
+ *  But this comes with tradeoffs, storing account balances in the system pallet stores
+ *  `frame_system` data alongside the account data contrary to storing account balances in the
+ *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
+ *  NOTE: This is only used in the case that this pallet is used to store balances.
+ */
 export interface BalancesAccountStorageV602 {
     get(key: Uint8Array): Promise<v602.AccountData>
     getAll(): Promise<v602.AccountData[]>
@@ -387,15 +590,15 @@ export class BalancesFreezesStorage extends StorageBase {
     /**
      *  Freeze locks on account balances.
      */
-    get isV602(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
     }
 
     /**
      *  Freeze locks on account balances.
      */
-    get asV602(): BalancesFreezesStorageV602 {
-        assert(this.isV602)
+    get asEfinityV3014(): BalancesFreezesStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -403,18 +606,18 @@ export class BalancesFreezesStorage extends StorageBase {
 /**
  *  Freeze locks on account balances.
  */
-export interface BalancesFreezesStorageV602 {
-    get(key: Uint8Array): Promise<v602.IdAmount[]>
-    getAll(): Promise<v602.IdAmount[][]>
-    getMany(keys: Uint8Array[]): Promise<v602.IdAmount[][]>
+export interface BalancesFreezesStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<efinityV3014.IdAmount[]>
+    getAll(): Promise<efinityV3014.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<efinityV3014.IdAmount[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
 }
 
 export class BalancesHoldsStorage extends StorageBase {
@@ -429,15 +632,15 @@ export class BalancesHoldsStorage extends StorageBase {
     /**
      *  Holds on account balances.
      */
-    get isV602(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
     }
 
     /**
      *  Holds on account balances.
      */
-    get asV602(): BalancesHoldsStorageV602 {
-        assert(this.isV602)
+    get asEfinityV3014(): BalancesHoldsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -445,18 +648,18 @@ export class BalancesHoldsStorage extends StorageBase {
 /**
  *  Holds on account balances.
  */
-export interface BalancesHoldsStorageV602 {
-    get(key: Uint8Array): Promise<v602.IdAmount[]>
-    getAll(): Promise<v602.IdAmount[][]>
-    getMany(keys: Uint8Array[]): Promise<v602.IdAmount[][]>
+export interface BalancesHoldsStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<efinityV3014.IdAmount[]>
+    getAll(): Promise<efinityV3014.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<efinityV3014.IdAmount[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.IdAmount[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.IdAmount[]][]>
 }
 
 export class BalancesInactiveIssuanceStorage extends StorageBase {
@@ -471,15 +674,15 @@ export class BalancesInactiveIssuanceStorage extends StorageBase {
     /**
      *  The total units of outstanding deactivated balance in the system.
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The total units of outstanding deactivated balance in the system.
      */
-    get asV500(): BalancesInactiveIssuanceStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): BalancesInactiveIssuanceStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -487,7 +690,7 @@ export class BalancesInactiveIssuanceStorage extends StorageBase {
 /**
  *  The total units of outstanding deactivated balance in the system.
  */
-export interface BalancesInactiveIssuanceStorageV500 {
+export interface BalancesInactiveIssuanceStorageEfinityV3014 {
     get(): Promise<bigint>
 }
 
@@ -961,6 +1164,38 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
  */
 export interface ClaimsLatestBlockNumberStorageV500 {
     get(): Promise<(v500.TrackedBlockNumbers | undefined)>
+}
+
+export class ClaimsMaxEfiForEarlyBirdRewardsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'Claims'
+    }
+
+    protected getName() {
+        return 'MaxEfiForEarlyBirdRewards'
+    }
+
+    /**
+     *  Stores maximum eligible EFI for early bird bonus
+     */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
+    }
+
+    /**
+     *  Stores maximum eligible EFI for early bird bonus
+     */
+    get asEfinityV3014(): ClaimsMaxEfiForEarlyBirdRewardsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+}
+
+/**
+ *  Stores maximum eligible EFI for early bird bonus
+ */
+export interface ClaimsMaxEfiForEarlyBirdRewardsStorageEfinityV3014 {
+    get(): Promise<bigint>
 }
 
 export class ClaimsPendingApprovalsStorage extends StorageBase {
@@ -1600,15 +1835,15 @@ export class CommunityPoolDeactivatedStorage extends StorageBase {
     /**
      *  The amount which has been reported as inactive to Currency.
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The amount which has been reported as inactive to Currency.
      */
-    get asV500(): CommunityPoolDeactivatedStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): CommunityPoolDeactivatedStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -1616,7 +1851,7 @@ export class CommunityPoolDeactivatedStorage extends StorageBase {
 /**
  *  The amount which has been reported as inactive to Currency.
  */
-export interface CommunityPoolDeactivatedStorageV500 {
+export interface CommunityPoolDeactivatedStorageEfinityV3014 {
     get(): Promise<bigint>
 }
 
@@ -2172,6 +2407,21 @@ export class CouncilProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '55b93fe51dc259c64e7ccd6364c69a6ff7c5dcacfd08498dc55059727da4938d'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asEfinityV3014(): CouncilProposalOfStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
     get isRocfinityV3012(): boolean {
         return this.getTypeHash() === '7ed70254be0aed8e19c3ec391131fe3dbd3320b92ff6b61d79b32af21435db03'
     }
@@ -2311,6 +2561,23 @@ export interface CouncilProposalOfStorageEfinityV3012 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3012.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3012.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3012.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<(efinityV3014.Call | undefined)>
+    getAll(): Promise<efinityV3014.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(efinityV3014.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
 }
 
 /**
@@ -2694,7 +2961,7 @@ export class DemocracyMetadataOfStorage extends StorageBase {
      *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
      *  large preimages.
      */
-    get isV602(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === 'a67a07e9fffcce1c75e0f4b23d9fdf10851d6031a73b67c731af0a1b8e2197e2'
     }
 
@@ -2706,8 +2973,8 @@ export class DemocracyMetadataOfStorage extends StorageBase {
      *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
      *  large preimages.
      */
-    get asV602(): DemocracyMetadataOfStorageV602 {
-        assert(this.isV602)
+    get asEfinityV3014(): DemocracyMetadataOfStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -2720,18 +2987,18 @@ export class DemocracyMetadataOfStorage extends StorageBase {
  *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
  *  large preimages.
  */
-export interface DemocracyMetadataOfStorageV602 {
-    get(key: v602.MetadataOwner): Promise<(Uint8Array | undefined)>
+export interface DemocracyMetadataOfStorageEfinityV3014 {
+    get(key: efinityV3014.MetadataOwner): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
-    getMany(keys: v602.MetadataOwner[]): Promise<(Uint8Array | undefined)[]>
-    getKeys(): Promise<v602.MetadataOwner[]>
-    getKeys(key: v602.MetadataOwner): Promise<v602.MetadataOwner[]>
-    getKeysPaged(pageSize: number): AsyncIterable<v602.MetadataOwner[]>
-    getKeysPaged(pageSize: number, key: v602.MetadataOwner): AsyncIterable<v602.MetadataOwner[]>
-    getPairs(): Promise<[k: v602.MetadataOwner, v: Uint8Array][]>
-    getPairs(key: v602.MetadataOwner): Promise<[k: v602.MetadataOwner, v: Uint8Array][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: v602.MetadataOwner, v: Uint8Array][]>
-    getPairsPaged(pageSize: number, key: v602.MetadataOwner): AsyncIterable<[k: v602.MetadataOwner, v: Uint8Array][]>
+    getMany(keys: efinityV3014.MetadataOwner[]): Promise<(Uint8Array | undefined)[]>
+    getKeys(): Promise<efinityV3014.MetadataOwner[]>
+    getKeys(key: efinityV3014.MetadataOwner): Promise<efinityV3014.MetadataOwner[]>
+    getKeysPaged(pageSize: number): AsyncIterable<efinityV3014.MetadataOwner[]>
+    getKeysPaged(pageSize: number, key: efinityV3014.MetadataOwner): AsyncIterable<efinityV3014.MetadataOwner[]>
+    getPairs(): Promise<[k: efinityV3014.MetadataOwner, v: Uint8Array][]>
+    getPairs(key: efinityV3014.MetadataOwner): Promise<[k: efinityV3014.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3014.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number, key: efinityV3014.MetadataOwner): AsyncIterable<[k: efinityV3014.MetadataOwner, v: Uint8Array][]>
 }
 
 export class DemocracyNextExternalStorage extends StorageBase {
@@ -3232,15 +3499,15 @@ export class DmpQueueCounterForOverweightStorage extends StorageBase {
     /**
      * Counter for the related counted storage map
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      * Counter for the related counted storage map
      */
-    get asV500(): DmpQueueCounterForOverweightStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): DmpQueueCounterForOverweightStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -3248,7 +3515,7 @@ export class DmpQueueCounterForOverweightStorage extends StorageBase {
 /**
  * Counter for the related counted storage map
  */
-export interface DmpQueueCounterForOverweightStorageV500 {
+export interface DmpQueueCounterForOverweightStorageEfinityV3014 {
     get(): Promise<number>
 }
 
@@ -3407,6 +3674,52 @@ export class EfinityXcmMinimumWeightsStorage extends StorageBase {
      * 
      *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '54746c8f01b687fecc1a895c1db7ce3ffd9db2d7ab532bd2488b343309741009'
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    get asEfinityV3014(): EfinityXcmMinimumWeightsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'a6c0b18ac1880d14733b821d81f9929753a09ce6f844e3eee25d384d26e504f3'
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    get asRocfinityV3012(): EfinityXcmMinimumWeightsStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '54746c8f01b687fecc1a895c1db7ce3ffd9db2d7ab532bd2488b343309741009'
     }
@@ -3443,6 +3756,48 @@ export interface EfinityXcmMinimumWeightsStorageEfinityV3012 {
     getPairs(key: efinityV3012.XcmOperation): Promise<[k: efinityV3012.XcmOperation, v: efinityV3012.MinimumWeightFeePair][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3012.XcmOperation, v: efinityV3012.MinimumWeightFeePair][]>
     getPairsPaged(pageSize: number, key: efinityV3012.XcmOperation): AsyncIterable<[k: efinityV3012.XcmOperation, v: efinityV3012.MinimumWeightFeePair][]>
+}
+
+/**
+ *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+ *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+ *  used for setting the minimum fee (in DOT) for statemint.
+ * 
+ *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+ */
+export interface EfinityXcmMinimumWeightsStorageEfinityV3014 {
+    get(key: efinityV3014.XcmOperation): Promise<efinityV3014.MinimumWeightFeePair>
+    getAll(): Promise<efinityV3014.MinimumWeightFeePair[]>
+    getMany(keys: efinityV3014.XcmOperation[]): Promise<efinityV3014.MinimumWeightFeePair[]>
+    getKeys(): Promise<efinityV3014.XcmOperation[]>
+    getKeys(key: efinityV3014.XcmOperation): Promise<efinityV3014.XcmOperation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<efinityV3014.XcmOperation[]>
+    getKeysPaged(pageSize: number, key: efinityV3014.XcmOperation): AsyncIterable<efinityV3014.XcmOperation[]>
+    getPairs(): Promise<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
+    getPairs(key: efinityV3014.XcmOperation): Promise<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number, key: efinityV3014.XcmOperation): AsyncIterable<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
+}
+
+/**
+ *  The `dest_weight` limit and fee for executing XCM msg sent by efinityXcm. Must be
+ *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+ *  used for setting the minimum fee (in DOT) for statemint.
+ * 
+ *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+ */
+export interface EfinityXcmMinimumWeightsStorageRocfinityV3012 {
+    get(key: rocfinityV3012.XcmOperation): Promise<rocfinityV3012.MinimumWeightFeePair>
+    getAll(): Promise<rocfinityV3012.MinimumWeightFeePair[]>
+    getMany(keys: rocfinityV3012.XcmOperation[]): Promise<rocfinityV3012.MinimumWeightFeePair[]>
+    getKeys(): Promise<rocfinityV3012.XcmOperation[]>
+    getKeys(key: rocfinityV3012.XcmOperation): Promise<rocfinityV3012.XcmOperation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<rocfinityV3012.XcmOperation[]>
+    getKeysPaged(pageSize: number, key: rocfinityV3012.XcmOperation): AsyncIterable<rocfinityV3012.XcmOperation[]>
+    getPairs(): Promise<[k: rocfinityV3012.XcmOperation, v: rocfinityV3012.MinimumWeightFeePair][]>
+    getPairs(key: rocfinityV3012.XcmOperation): Promise<[k: rocfinityV3012.XcmOperation, v: rocfinityV3012.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: rocfinityV3012.XcmOperation, v: rocfinityV3012.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number, key: rocfinityV3012.XcmOperation): AsyncIterable<[k: rocfinityV3012.XcmOperation, v: rocfinityV3012.MinimumWeightFeePair][]>
 }
 
 /**
@@ -4435,6 +4790,36 @@ export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
     /**
      *  Map of Locations to AssetIds of Foreign Tokens
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '7920f1b519a7f965b522a230108d367f65586e4e31d2aa9d94778fd4f0aab869'
+    }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
+    get asEfinityV3014(): MultiTokensAssetIdsByLocationStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '560c8ffce9be2f673615d006ac6747641630ed7dac4f7ce3edd1fbeb2f2e8c13'
+    }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
+    get asRocfinityV3012(): MultiTokensAssetIdsByLocationStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '7920f1b519a7f965b522a230108d367f65586e4e31d2aa9d94778fd4f0aab869'
     }
@@ -4463,6 +4848,40 @@ export interface MultiTokensAssetIdsByLocationStorageEfinityV3012 {
     getPairs(key: efinityV3012.V1MultiLocation): Promise<[k: efinityV3012.V1MultiLocation, v: efinityV3012.AssetId][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3012.V1MultiLocation, v: efinityV3012.AssetId][]>
     getPairsPaged(pageSize: number, key: efinityV3012.V1MultiLocation): AsyncIterable<[k: efinityV3012.V1MultiLocation, v: efinityV3012.AssetId][]>
+}
+
+/**
+ *  Map of Locations to AssetIds of Foreign Tokens
+ */
+export interface MultiTokensAssetIdsByLocationStorageEfinityV3014 {
+    get(key: efinityV3014.V3MultiLocation): Promise<(efinityV3014.AssetId | undefined)>
+    getAll(): Promise<efinityV3014.AssetId[]>
+    getMany(keys: efinityV3014.V3MultiLocation[]): Promise<(efinityV3014.AssetId | undefined)[]>
+    getKeys(): Promise<efinityV3014.V3MultiLocation[]>
+    getKeys(key: efinityV3014.V3MultiLocation): Promise<efinityV3014.V3MultiLocation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<efinityV3014.V3MultiLocation[]>
+    getKeysPaged(pageSize: number, key: efinityV3014.V3MultiLocation): AsyncIterable<efinityV3014.V3MultiLocation[]>
+    getPairs(): Promise<[k: efinityV3014.V3MultiLocation, v: efinityV3014.AssetId][]>
+    getPairs(key: efinityV3014.V3MultiLocation): Promise<[k: efinityV3014.V3MultiLocation, v: efinityV3014.AssetId][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3014.V3MultiLocation, v: efinityV3014.AssetId][]>
+    getPairsPaged(pageSize: number, key: efinityV3014.V3MultiLocation): AsyncIterable<[k: efinityV3014.V3MultiLocation, v: efinityV3014.AssetId][]>
+}
+
+/**
+ *  Map of Locations to AssetIds of Foreign Tokens
+ */
+export interface MultiTokensAssetIdsByLocationStorageRocfinityV3012 {
+    get(key: rocfinityV3012.V1MultiLocation): Promise<(rocfinityV3012.AssetId | undefined)>
+    getAll(): Promise<rocfinityV3012.AssetId[]>
+    getMany(keys: rocfinityV3012.V1MultiLocation[]): Promise<(rocfinityV3012.AssetId | undefined)[]>
+    getKeys(): Promise<rocfinityV3012.V1MultiLocation[]>
+    getKeys(key: rocfinityV3012.V1MultiLocation): Promise<rocfinityV3012.V1MultiLocation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<rocfinityV3012.V1MultiLocation[]>
+    getKeysPaged(pageSize: number, key: rocfinityV3012.V1MultiLocation): AsyncIterable<rocfinityV3012.V1MultiLocation[]>
+    getPairs(): Promise<[k: rocfinityV3012.V1MultiLocation, v: rocfinityV3012.AssetId][]>
+    getPairs(key: rocfinityV3012.V1MultiLocation): Promise<[k: rocfinityV3012.V1MultiLocation, v: rocfinityV3012.AssetId][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: rocfinityV3012.V1MultiLocation, v: rocfinityV3012.AssetId][]>
+    getPairsPaged(pageSize: number, key: rocfinityV3012.V1MultiLocation): AsyncIterable<[k: rocfinityV3012.V1MultiLocation, v: rocfinityV3012.AssetId][]>
 }
 
 /**
@@ -4808,7 +5227,7 @@ export class MultiTokensMigrationsStorage extends StorageBase {
      *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
      *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '63315d583f765c75d71965bc03cd236f3e328b0d0c36349716dd7e18cb40721d'
     }
 
@@ -4819,8 +5238,8 @@ export class MultiTokensMigrationsStorage extends StorageBase {
      *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
      *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
      */
-    get asV500(): MultiTokensMigrationsStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): MultiTokensMigrationsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -4832,18 +5251,18 @@ export class MultiTokensMigrationsStorage extends StorageBase {
  *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
  *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
  */
-export interface MultiTokensMigrationsStorageV500 {
-    get(key: Uint8Array): Promise<(v500.Migration | undefined)>
-    getAll(): Promise<v500.Migration[]>
-    getMany(keys: Uint8Array[]): Promise<(v500.Migration | undefined)[]>
+export interface MultiTokensMigrationsStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<(efinityV3014.Migration | undefined)>
+    getAll(): Promise<efinityV3014.Migration[]>
+    getMany(keys: Uint8Array[]): Promise<(efinityV3014.Migration | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: v500.Migration][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v500.Migration][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v500.Migration][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v500.Migration][]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.Migration][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.Migration][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.Migration][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.Migration][]>
 }
 
 export class MultiTokensNextCollectionIdStorage extends StorageBase {
@@ -4920,6 +5339,36 @@ export class MultiTokensTokenAccountsStorage extends StorageBase {
     /**
      *  Accounts per token
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '022fd18d40c53146908df260f1461b3e2a5e157129bb9cf34fd0207c0910c0a9'
+    }
+
+    /**
+     *  Accounts per token
+     */
+    get asEfinityV3014(): MultiTokensTokenAccountsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Accounts per token
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'aa9987301d7154519df0fc59a4664d747676b382efcba3db6f30f66eda406862'
+    }
+
+    /**
+     *  Accounts per token
+     */
+    get asRocfinityV3012(): MultiTokensTokenAccountsStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  Accounts per token
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '022fd18d40c53146908df260f1461b3e2a5e157129bb9cf34fd0207c0910c0a9'
     }
@@ -4981,6 +5430,56 @@ export interface MultiTokensTokenAccountsStorageEfinityV3 {
     getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: efinityV3.TokenAccount][]>
+}
+
+/**
+ *  Accounts per token
+ */
+export interface MultiTokensTokenAccountsStorageEfinityV3014 {
+    get(key1: bigint, key2: bigint, key3: Uint8Array): Promise<(efinityV3014.TokenAccount | undefined)>
+    getAll(): Promise<efinityV3014.TokenAccount[]>
+    getMany(keys: [bigint, bigint, Uint8Array][]): Promise<(efinityV3014.TokenAccount | undefined)[]>
+    getKeys(): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint, Uint8Array][]>
+    getKeys(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[bigint, bigint, Uint8Array][]>
+    getPairs(): Promise<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: efinityV3014.TokenAccount][]>
+}
+
+/**
+ *  Accounts per token
+ */
+export interface MultiTokensTokenAccountsStorageRocfinityV3012 {
+    get(key1: Uint8Array, key2: bigint, key3: bigint): Promise<(rocfinityV3012.TokenAccount | undefined)>
+    getAll(): Promise<rocfinityV3012.TokenAccount[]>
+    getMany(keys: [Uint8Array, bigint, bigint][]): Promise<(rocfinityV3012.TokenAccount | undefined)[]>
+    getKeys(): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array, key2: bigint): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array, key2: bigint, key3: bigint): Promise<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getPairs(): Promise<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairs(key1: Uint8Array, key2: bigint): Promise<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairs(key1: Uint8Array, key2: bigint, key3: bigint): Promise<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: rocfinityV3012.TokenAccount][]>
 }
 
 /**
@@ -5059,6 +5558,36 @@ export class MultiTokensTokensStorage extends StorageBase {
      */
     get asEfinityV3012(): MultiTokensTokensStorageEfinityV3012 {
         assert(this.isEfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '459387852b7c4d57e0769b6472defe27e00a6384a006f2d282c25b921828e149'
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get asEfinityV3014(): MultiTokensTokensStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '1f0fc6f95d09c4195cdaa7e949e1b978130df91d5db17a5653ccc7d3bf38bf98'
+    }
+
+    /**
+     *  Tokens storage
+     */
+    get asRocfinityV3012(): MultiTokensTokensStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
         return this as any
     }
 
@@ -5154,6 +5683,48 @@ export interface MultiTokensTokensStorageEfinityV3012 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: efinityV3012.Token][]>
     getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3012.Token][]>
     getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3012.Token][]>
+}
+
+/**
+ *  Tokens storage
+ */
+export interface MultiTokensTokensStorageEfinityV3014 {
+    get(key1: bigint, key2: bigint): Promise<(efinityV3014.Token | undefined)>
+    getAll(): Promise<efinityV3014.Token[]>
+    getMany(keys: [bigint, bigint][]): Promise<(efinityV3014.Token | undefined)[]>
+    getKeys(): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: efinityV3014.Token][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: efinityV3014.Token][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: efinityV3014.Token][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: efinityV3014.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3014.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: efinityV3014.Token][]>
+}
+
+/**
+ *  Tokens storage
+ */
+export interface MultiTokensTokensStorageRocfinityV3012 {
+    get(key1: bigint, key2: bigint): Promise<(rocfinityV3012.Token | undefined)>
+    getAll(): Promise<rocfinityV3012.Token[]>
+    getMany(keys: [bigint, bigint][]): Promise<(rocfinityV3012.Token | undefined)[]>
+    getKeys(): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: rocfinityV3012.Token][]>
 }
 
 /**
@@ -5362,6 +5933,36 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
     /**
      *  The next authorized upgrade, if there is one.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '901f6f87c9fafe3d3f61c36b45b24a63a90d51ae151f2b4a361d3c5611ffb723'
+    }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
+    get asEfinityV3014(): ParachainSystemAuthorizedUpgradeStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
+    }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
+    get asRocfinityV3012(): ParachainSystemAuthorizedUpgradeStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The next authorized upgrade, if there is one.
+     */
     get isV602(): boolean {
         return this.getTypeHash() === '901f6f87c9fafe3d3f61c36b45b24a63a90d51ae151f2b4a361d3c5611ffb723'
     }
@@ -5379,6 +5980,20 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
  *  The next authorized upgrade, if there is one.
  */
 export interface ParachainSystemAuthorizedUpgradeStorageEfinityV1 {
+    get(): Promise<(Uint8Array | undefined)>
+}
+
+/**
+ *  The next authorized upgrade, if there is one.
+ */
+export interface ParachainSystemAuthorizedUpgradeStorageEfinityV3014 {
+    get(): Promise<(efinityV3014.CodeUpgradeAuthorization | undefined)>
+}
+
+/**
+ *  The next authorized upgrade, if there is one.
+ */
+export interface ParachainSystemAuthorizedUpgradeStorageRocfinityV3012 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -6437,15 +7052,15 @@ export class PolkadotXcmLockedFungiblesStorage extends StorageBase {
     /**
      *  Fungible assets which we know are locked on this chain.
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '83620d989e5dd77ea5cdf77e62586d64ad0b7ace0ba3b24d7f207643583d77cc'
     }
 
     /**
      *  Fungible assets which we know are locked on this chain.
      */
-    get asV500(): PolkadotXcmLockedFungiblesStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): PolkadotXcmLockedFungiblesStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -6453,18 +7068,18 @@ export class PolkadotXcmLockedFungiblesStorage extends StorageBase {
 /**
  *  Fungible assets which we know are locked on this chain.
  */
-export interface PolkadotXcmLockedFungiblesStorageV500 {
-    get(key: Uint8Array): Promise<([bigint, v500.VersionedMultiLocation][] | undefined)>
-    getAll(): Promise<[bigint, v500.VersionedMultiLocation][][]>
-    getMany(keys: Uint8Array[]): Promise<([bigint, v500.VersionedMultiLocation][] | undefined)[]>
+export interface PolkadotXcmLockedFungiblesStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<([bigint, efinityV3014.VersionedMultiLocation][] | undefined)>
+    getAll(): Promise<[bigint, efinityV3014.VersionedMultiLocation][][]>
+    getMany(keys: Uint8Array[]): Promise<([bigint, efinityV3014.VersionedMultiLocation][] | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: [bigint, v500.VersionedMultiLocation][]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: [bigint, v500.VersionedMultiLocation][]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: [bigint, v500.VersionedMultiLocation][]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: [bigint, v500.VersionedMultiLocation][]][]>
+    getPairs(): Promise<[k: Uint8Array, v: [bigint, efinityV3014.VersionedMultiLocation][]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: [bigint, efinityV3014.VersionedMultiLocation][]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: [bigint, efinityV3014.VersionedMultiLocation][]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: [bigint, efinityV3014.VersionedMultiLocation][]][]>
 }
 
 export class PolkadotXcmQueriesStorage extends StorageBase {
@@ -6488,6 +7103,36 @@ export class PolkadotXcmQueriesStorage extends StorageBase {
      */
     get asEfinityV3000(): PolkadotXcmQueriesStorageEfinityV3000 {
         assert(this.isEfinityV3000)
+        return this as any
+    }
+
+    /**
+     *  The ongoing queries.
+     */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === 'c33614a63099009a42799d8206979c61fd1a7b5d142259a57bdcbc726105e8f1'
+    }
+
+    /**
+     *  The ongoing queries.
+     */
+    get asEfinityV3014(): PolkadotXcmQueriesStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The ongoing queries.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '8497eae9bd9ecc14a9d7da5daf99074e5fb888ce8b1254175ebacb93a450f902'
+    }
+
+    /**
+     *  The ongoing queries.
+     */
+    get asRocfinityV3012(): PolkadotXcmQueriesStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
         return this as any
     }
 
@@ -6522,6 +7167,40 @@ export interface PolkadotXcmQueriesStorageEfinityV3000 {
     getPairs(key: bigint): Promise<[k: bigint, v: efinityV3000.QueryStatus][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: efinityV3000.QueryStatus][]>
     getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: efinityV3000.QueryStatus][]>
+}
+
+/**
+ *  The ongoing queries.
+ */
+export interface PolkadotXcmQueriesStorageEfinityV3014 {
+    get(key: bigint): Promise<(efinityV3014.QueryStatus | undefined)>
+    getAll(): Promise<efinityV3014.QueryStatus[]>
+    getMany(keys: bigint[]): Promise<(efinityV3014.QueryStatus | undefined)[]>
+    getKeys(): Promise<bigint[]>
+    getKeys(key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+    getPairs(): Promise<[k: bigint, v: efinityV3014.QueryStatus][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: efinityV3014.QueryStatus][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: efinityV3014.QueryStatus][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: efinityV3014.QueryStatus][]>
+}
+
+/**
+ *  The ongoing queries.
+ */
+export interface PolkadotXcmQueriesStorageRocfinityV3012 {
+    get(key: bigint): Promise<(rocfinityV3012.QueryStatus | undefined)>
+    getAll(): Promise<rocfinityV3012.QueryStatus[]>
+    getMany(keys: bigint[]): Promise<(rocfinityV3012.QueryStatus | undefined)[]>
+    getKeys(): Promise<bigint[]>
+    getKeys(key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+    getPairs(): Promise<[k: bigint, v: rocfinityV3012.QueryStatus][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: rocfinityV3012.QueryStatus][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: rocfinityV3012.QueryStatus][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: rocfinityV3012.QueryStatus][]>
 }
 
 /**
@@ -6585,15 +7264,15 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '32350375a3f683ddfbcb5dbc0bc4773d1d5aa9c2f1f2e358dced4492be76a541'
     }
 
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get asV500(): PolkadotXcmRemoteLockedFungiblesStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -6601,26 +7280,26 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
 /**
  *  Fungible assets which we know are locked on a remote chain.
  */
-export interface PolkadotXcmRemoteLockedFungiblesStorageV500 {
-    get(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<(v500.RemoteLockedFungibleRecord | undefined)>
-    getAll(): Promise<v500.RemoteLockedFungibleRecord[]>
-    getMany(keys: [number, Uint8Array, v500.VersionedAssetId][]): Promise<(v500.RemoteLockedFungibleRecord | undefined)[]>
-    getKeys(): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeys(key1: number): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
-    getPairs(): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+export interface PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
+    get(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<(efinityV3014.RemoteLockedFungibleRecord | undefined)>
+    getAll(): Promise<efinityV3014.RemoteLockedFungibleRecord[]>
+    getMany(keys: [number, Uint8Array, efinityV3014.VersionedAssetId][]): Promise<(efinityV3014.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeys(key1: number): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
+    getPairs(): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
 }
 
 export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
@@ -6685,6 +7364,36 @@ export class PolkadotXcmSupportedVersionStorage extends StorageBase {
     /**
      *  The Latest versions that we know various locations support.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '0e2aec9a2da85831b6c7f06cf2ebb00fa3489433254df2ecc1d89a9f142d7859'
+    }
+
+    /**
+     *  The Latest versions that we know various locations support.
+     */
+    get asEfinityV3014(): PolkadotXcmSupportedVersionStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The Latest versions that we know various locations support.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'bf203870a932f637011bee3e0dae76dc35a120f80e5ac7fb32e2dbede4fd5795'
+    }
+
+    /**
+     *  The Latest versions that we know various locations support.
+     */
+    get asRocfinityV3012(): PolkadotXcmSupportedVersionStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The Latest versions that we know various locations support.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '0e2aec9a2da85831b6c7f06cf2ebb00fa3489433254df2ecc1d89a9f142d7859'
     }
@@ -6717,6 +7426,48 @@ export interface PolkadotXcmSupportedVersionStorageEfinityV3000 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: number][]>
     getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: number][]>
     getPairsPaged(pageSize: number, key1: number, key2: efinityV3000.VersionedMultiLocation): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: number][]>
+}
+
+/**
+ *  The Latest versions that we know various locations support.
+ */
+export interface PolkadotXcmSupportedVersionStorageEfinityV3014 {
+    get(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<(number | undefined)>
+    getAll(): Promise<number[]>
+    getMany(keys: [number, efinityV3014.VersionedMultiLocation][]): Promise<(number | undefined)[]>
+    getKeys(): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: number][]>
+}
+
+/**
+ *  The Latest versions that we know various locations support.
+ */
+export interface PolkadotXcmSupportedVersionStorageRocfinityV3012 {
+    get(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<(number | undefined)>
+    getAll(): Promise<number[]>
+    getMany(keys: [number, rocfinityV3012.VersionedMultiLocation][]): Promise<(number | undefined)[]>
+    getKeys(): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: number][]>
 }
 
 /**
@@ -6773,6 +7524,44 @@ export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
      *  the `u32` counter is the number of times that a send to the destination has been attempted,
      *  which is used as a prioritization.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '1861bd13354557dc519a64b8d53a95cd897ff993484c969af972f15ebe14ed22'
+    }
+
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
+    get asEfinityV3014(): PolkadotXcmVersionDiscoveryQueueStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '16a258fa3891b3d97c16b446ca40a6dbafd16eb5bc2936a51286241b38207f42'
+    }
+
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
+    get asRocfinityV3012(): PolkadotXcmVersionDiscoveryQueueStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '1861bd13354557dc519a64b8d53a95cd897ff993484c969af972f15ebe14ed22'
     }
@@ -6795,6 +7584,24 @@ export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
  */
 export interface PolkadotXcmVersionDiscoveryQueueStorageEfinityV3000 {
     get(): Promise<[efinityV3000.VersionedMultiLocation, number][]>
+}
+
+/**
+ *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+ *  the `u32` counter is the number of times that a send to the destination has been attempted,
+ *  which is used as a prioritization.
+ */
+export interface PolkadotXcmVersionDiscoveryQueueStorageEfinityV3014 {
+    get(): Promise<[efinityV3014.VersionedMultiLocation, number][]>
+}
+
+/**
+ *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+ *  the `u32` counter is the number of times that a send to the destination has been attempted,
+ *  which is used as a prioritization.
+ */
+export interface PolkadotXcmVersionDiscoveryQueueStorageRocfinityV3012 {
+    get(): Promise<[rocfinityV3012.VersionedMultiLocation, number][]>
 }
 
 /**
@@ -6833,6 +7640,36 @@ export class PolkadotXcmVersionNotifiersStorage extends StorageBase {
     /**
      *  All locations that we have requested version notifications from.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '2e570d6a39a9644e69bdccf883c25d1723f752493a252d530fc3667560486716'
+    }
+
+    /**
+     *  All locations that we have requested version notifications from.
+     */
+    get asEfinityV3014(): PolkadotXcmVersionNotifiersStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  All locations that we have requested version notifications from.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'c04d92c1d09bb51782b185c1fa4f78678bd7c63c2388986e2fe34f2f1e02cf9a'
+    }
+
+    /**
+     *  All locations that we have requested version notifications from.
+     */
+    get asRocfinityV3012(): PolkadotXcmVersionNotifiersStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  All locations that we have requested version notifications from.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '2e570d6a39a9644e69bdccf883c25d1723f752493a252d530fc3667560486716'
     }
@@ -6865,6 +7702,48 @@ export interface PolkadotXcmVersionNotifiersStorageEfinityV3000 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: bigint][]>
     getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: bigint][]>
     getPairsPaged(pageSize: number, key1: number, key2: efinityV3000.VersionedMultiLocation): AsyncIterable<[k: [number, efinityV3000.VersionedMultiLocation], v: bigint][]>
+}
+
+/**
+ *  All locations that we have requested version notifications from.
+ */
+export interface PolkadotXcmVersionNotifiersStorageEfinityV3014 {
+    get(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<(bigint | undefined)>
+    getAll(): Promise<bigint[]>
+    getMany(keys: [number, efinityV3014.VersionedMultiLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: bigint][]>
+}
+
+/**
+ *  All locations that we have requested version notifications from.
+ */
+export interface PolkadotXcmVersionNotifiersStorageRocfinityV3012 {
+    get(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<(bigint | undefined)>
+    getAll(): Promise<bigint[]>
+    getMany(keys: [number, rocfinityV3012.VersionedMultiLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: bigint][]>
 }
 
 /**
@@ -6918,6 +7797,40 @@ export class PolkadotXcmVersionNotifyTargetsStorage extends StorageBase {
      *  The target locations that are subscribed to our version changes, as well as the most recent
      *  of our versions we informed them of.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '080bdd3fd57ea1cba05e6b46642e4860965e8f150a64cc9d5bafc6eebd6207fb'
+    }
+
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    get asEfinityV3014(): PolkadotXcmVersionNotifyTargetsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'be7b24532d6af66a6c35ced8427c3201e32a7ab9e2a0c901f57c6d5a416ddc46'
+    }
+
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    get asRocfinityV3012(): PolkadotXcmVersionNotifyTargetsStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '080bdd3fd57ea1cba05e6b46642e4860965e8f150a64cc9d5bafc6eebd6207fb'
     }
@@ -6958,6 +7871,50 @@ export interface PolkadotXcmVersionNotifyTargetsStorageEfinityV3000 {
  *  The target locations that are subscribed to our version changes, as well as the most recent
  *  of our versions we informed them of.
  */
+export interface PolkadotXcmVersionNotifyTargetsStorageEfinityV3014 {
+    get(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<([bigint, efinityV3014.Weight, number] | undefined)>
+    getAll(): Promise<[bigint, efinityV3014.Weight, number][]>
+    getMany(keys: [number, efinityV3014.VersionedMultiLocation][]): Promise<([bigint, efinityV3014.Weight, number] | undefined)[]>
+    getKeys(): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[number, efinityV3014.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+    getPairs(key1: number): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+    getPairs(key1: number, key2: efinityV3014.VersionedMultiLocation): Promise<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+    getPairsPaged(pageSize: number, key1: number, key2: efinityV3014.VersionedMultiLocation): AsyncIterable<[k: [number, efinityV3014.VersionedMultiLocation], v: [bigint, efinityV3014.Weight, number]][]>
+}
+
+/**
+ *  The target locations that are subscribed to our version changes, as well as the most recent
+ *  of our versions we informed them of.
+ */
+export interface PolkadotXcmVersionNotifyTargetsStorageRocfinityV3012 {
+    get(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<([bigint, bigint, number] | undefined)>
+    getAll(): Promise<[bigint, bigint, number][]>
+    getMany(keys: [number, rocfinityV3012.VersionedMultiLocation][]): Promise<([bigint, bigint, number] | undefined)[]>
+    getKeys(): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[number, rocfinityV3012.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+    getPairs(key1: number): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+    getPairs(key1: number, key2: rocfinityV3012.VersionedMultiLocation): Promise<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+    getPairsPaged(pageSize: number, key1: number, key2: rocfinityV3012.VersionedMultiLocation): AsyncIterable<[k: [number, rocfinityV3012.VersionedMultiLocation], v: [bigint, bigint, number]][]>
+}
+
+/**
+ *  The target locations that are subscribed to our version changes, as well as the most recent
+ *  of our versions we informed them of.
+ */
 export interface PolkadotXcmVersionNotifyTargetsStorageV500 {
     get(key1: number, key2: v500.VersionedMultiLocation): Promise<([bigint, v500.Weight, number] | undefined)>
     getAll(): Promise<[bigint, v500.Weight, number][]>
@@ -6988,15 +7945,15 @@ export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
     /**
      *  Global suspension state of the XCM executor.
      */
-    get isV602(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  Global suspension state of the XCM executor.
      */
-    get asV602(): PolkadotXcmXcmExecutionSuspendedStorageV602 {
-        assert(this.isV602)
+    get asEfinityV3014(): PolkadotXcmXcmExecutionSuspendedStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -7004,7 +7961,7 @@ export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
 /**
  *  Global suspension state of the XCM executor.
  */
-export interface PolkadotXcmXcmExecutionSuspendedStorageV602 {
+export interface PolkadotXcmXcmExecutionSuspendedStorageEfinityV3014 {
     get(): Promise<boolean>
 }
 
@@ -7335,6 +8292,36 @@ export class SchedulerAgendaStorage extends StorageBase {
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '6fe031a319b530f979b7d99af729c9762ca4fc70785d6631d8088992a71ae701'
+    }
+
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    get asEfinityV3014(): SchedulerAgendaStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === 'a3e055e5b1bc78a9c0bf07ec2e12a6e84ef0e6040db9b7d685a8c82d052bd87e'
+    }
+
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
+    get asRocfinityV3012(): SchedulerAgendaStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  Items to be executed, indexed by the block number that they should be executed on.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '6fe031a319b530f979b7d99af729c9762ca4fc70785d6631d8088992a71ae701'
     }
@@ -7414,6 +8401,40 @@ export interface SchedulerAgendaStorageEfinityV3012 {
     getPairs(key: number): Promise<[k: number, v: (efinityV3012.Scheduled | undefined)[]][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (efinityV3012.Scheduled | undefined)[]][]>
     getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (efinityV3012.Scheduled | undefined)[]][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface SchedulerAgendaStorageEfinityV3014 {
+    get(key: number): Promise<(efinityV3014.Scheduled | undefined)[]>
+    getAll(): Promise<(efinityV3014.Scheduled | undefined)[][]>
+    getMany(keys: number[]): Promise<(efinityV3014.Scheduled | undefined)[][]>
+    getKeys(): Promise<number[]>
+    getKeys(key: number): Promise<number[]>
+    getKeysPaged(pageSize: number): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
+    getPairs(): Promise<[k: number, v: (efinityV3014.Scheduled | undefined)[]][]>
+    getPairs(key: number): Promise<[k: number, v: (efinityV3014.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (efinityV3014.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (efinityV3014.Scheduled | undefined)[]][]>
+}
+
+/**
+ *  Items to be executed, indexed by the block number that they should be executed on.
+ */
+export interface SchedulerAgendaStorageRocfinityV3012 {
+    get(key: number): Promise<(rocfinityV3012.Scheduled | undefined)[]>
+    getAll(): Promise<(rocfinityV3012.Scheduled | undefined)[][]>
+    getMany(keys: number[]): Promise<(rocfinityV3012.Scheduled | undefined)[][]>
+    getKeys(): Promise<number[]>
+    getKeys(key: number): Promise<number[]>
+    getKeysPaged(pageSize: number): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
+    getPairs(): Promise<[k: number, v: (rocfinityV3012.Scheduled | undefined)[]][]>
+    getPairs(key: number): Promise<[k: number, v: (rocfinityV3012.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (rocfinityV3012.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (rocfinityV3012.Scheduled | undefined)[]][]>
 }
 
 /**
@@ -7939,6 +8960,36 @@ export class SystemAccountStorage extends StorageBase {
     /**
      *  The full account information for a particular account ID.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get asEfinityV3014(): SystemAccountStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get isRocfinityV3012(): boolean {
+        return this.getTypeHash() === '1ddc7ade926221442c388ee4405a71c9428e548fab037445aaf4b3a78f4735c1'
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get asRocfinityV3012(): SystemAccountStorageRocfinityV3012 {
+        assert(this.isRocfinityV3012)
+        return this as any
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
     get isV602(): boolean {
         return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
     }
@@ -7967,6 +9018,40 @@ export interface SystemAccountStorageEfinityV1 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV1.AccountInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountInfo][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV1.AccountInfo][]>
+}
+
+/**
+ *  The full account information for a particular account ID.
+ */
+export interface SystemAccountStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<efinityV3014.AccountInfo>
+    getAll(): Promise<efinityV3014.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<efinityV3014.AccountInfo[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.AccountInfo][]>
+}
+
+/**
+ *  The full account information for a particular account ID.
+ */
+export interface SystemAccountStorageRocfinityV3012 {
+    get(key: Uint8Array): Promise<rocfinityV3012.AccountInfo>
+    getAll(): Promise<rocfinityV3012.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<rocfinityV3012.AccountInfo[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: rocfinityV3012.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: rocfinityV3012.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: rocfinityV3012.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: rocfinityV3012.AccountInfo][]>
 }
 
 /**
@@ -8426,6 +9511,33 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === 'cc511fb88fb3c573ce4bbe26f8662a53bd4e39e3c663fb39824ed94a8f5a1ca7'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asEfinityV3014(): SystemEventsStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
     get isRocfinityV3012(): boolean {
         return this.getTypeHash() === '22655e23d2b361220fc5e90d1f4fb02d3c81f0f96d93c89d42c7d5ce1fe15de6'
     }
@@ -8607,6 +9719,19 @@ export interface SystemEventsStorageEfinityV3000 {
  */
 export interface SystemEventsStorageEfinityV3012 {
     get(): Promise<efinityV3012.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageEfinityV3014 {
+    get(): Promise<efinityV3014.EventRecord[]>
 }
 
 /**
@@ -9315,6 +10440,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
+    get isEfinityV3014(): boolean {
+        return this.getTypeHash() === '55b93fe51dc259c64e7ccd6364c69a6ff7c5dcacfd08498dc55059727da4938d'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asEfinityV3014(): TechnicalCommitteeProposalOfStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
     get isRocfinityV3012(): boolean {
         return this.getTypeHash() === '7ed70254be0aed8e19c3ec391131fe3dbd3320b92ff6b61d79b32af21435db03'
     }
@@ -9454,6 +10594,23 @@ export interface TechnicalCommitteeProposalOfStorageEfinityV3012 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3012.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3012.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3012.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageEfinityV3014 {
+    get(key: Uint8Array): Promise<(efinityV3014.Call | undefined)>
+    getAll(): Promise<efinityV3014.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(efinityV3014.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
 }
 
 /**
@@ -9849,15 +11006,15 @@ export class XcmpQueueCounterForOverweightStorage extends StorageBase {
     /**
      * Counter for the related counted storage map
      */
-    get isV500(): boolean {
+    get isEfinityV3014(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      * Counter for the related counted storage map
      */
-    get asV500(): XcmpQueueCounterForOverweightStorageV500 {
-        assert(this.isV500)
+    get asEfinityV3014(): XcmpQueueCounterForOverweightStorageEfinityV3014 {
+        assert(this.isEfinityV3014)
         return this as any
     }
 }
@@ -9865,7 +11022,7 @@ export class XcmpQueueCounterForOverweightStorage extends StorageBase {
 /**
  * Counter for the related counted storage map
  */
-export interface XcmpQueueCounterForOverweightStorageV500 {
+export interface XcmpQueueCounterForOverweightStorageEfinityV3014 {
     get(): Promise<number>
 }
 

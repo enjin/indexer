@@ -75,11 +75,6 @@ export interface DispatchError_Unavailable {
     __kind: 'Unavailable'
 }
 
-export interface Consumption {
-    totalConsumed: bigint
-    lastResetBlock: (number | undefined)
-}
-
 export interface Freeze {
     collectionId: bigint
     freezeType: FreezeType
@@ -394,11 +389,6 @@ export interface VersionedMultiAssets_V3 {
     value: V3MultiAsset[]
 }
 
-export interface V3MultiAsset {
-    id: V3AssetId
-    fun: V3Fungibility
-}
-
 export type VersionedMultiLocation = VersionedMultiLocation_V2 | VersionedMultiLocation_V3
 
 export interface VersionedMultiLocation_V2 {
@@ -604,6 +594,11 @@ export interface V3Response_PalletsInfo {
 export interface V3Response_DispatchResult {
     __kind: 'DispatchResult'
     value: V3MaybeErrorCode
+}
+
+export interface V3MultiAsset {
+    id: V3AssetId
+    fun: V3Fungibility
 }
 
 export interface Weight {
@@ -832,11 +827,6 @@ export interface AssetId {
     tokenId: bigint
 }
 
-export interface CurrencyIdAmountPair {
-    currencyId: AssetId
-    amount: bigint
-}
-
 export interface FuelTankDescriptor {
     name: Uint8Array
     userAccountManagement: (UserAccountManagement | undefined)
@@ -1035,11 +1025,6 @@ export interface TransactionData {
     amount: bigint
 }
 
-export interface Migration {
-    stage: MigrationStage
-    lastIteratedKey: (Uint8Array | undefined)
-}
-
 export interface TokenAccount {
     balance: bigint
     reservedBalance: bigint
@@ -1070,20 +1055,6 @@ export interface QueryStatus_Ready {
     __kind: 'Ready'
     response: VersionedResponse
     at: number
-}
-
-export type VersionedAssetId = VersionedAssetId_V3
-
-export interface VersionedAssetId_V3 {
-    __kind: 'V3'
-    value: V3AssetId
-}
-
-export interface RemoteLockedFungibleRecord {
-    amount: bigint
-    owner: VersionedMultiLocation
-    locker: VersionedMultiLocation
-    users: number
 }
 
 export interface Scheduled {
@@ -1482,6 +1453,20 @@ export interface V2MultiAsset {
     fun: V2Fungibility
 }
 
+export interface V2MultiLocation {
+    parents: number
+    interior: V2Junctions
+}
+
+export interface V3PalletInfo {
+    index: number
+    name: Uint8Array
+    moduleName: Uint8Array
+    major: number
+    minor: number
+    patch: number
+}
+
 export type V3AssetId = V3AssetId_Concrete | V3AssetId_Abstract
 
 export interface V3AssetId_Concrete {
@@ -1504,20 +1489,6 @@ export interface V3Fungibility_Fungible {
 export interface V3Fungibility_NonFungible {
     __kind: 'NonFungible'
     value: V3AssetInstance
-}
-
-export interface V2MultiLocation {
-    parents: number
-    interior: V2Junctions
-}
-
-export interface V3PalletInfo {
-    index: number
-    name: Uint8Array
-    moduleName: Uint8Array
-    major: number
-    minor: number
-    patch: number
 }
 
 /**
@@ -6026,24 +5997,6 @@ export interface Type_302_SiblingParachain {
 
 export type Void = never
 
-export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
-
-export interface MigrationStage_NotStarted {
-    __kind: 'NotStarted'
-}
-
-export interface MigrationStage_InProgress {
-    __kind: 'InProgress'
-}
-
-export interface MigrationStage_Completed {
-    __kind: 'Completed'
-}
-
-export interface MigrationStage_Failed {
-    __kind: 'Failed'
-}
-
 export interface Approval {
     amount: bigint
     expiration: (number | undefined)
@@ -6391,37 +6344,6 @@ export interface V2Fungibility_NonFungible {
     value: V2AssetInstance
 }
 
-export type V3AssetInstance = V3AssetInstance_Undefined | V3AssetInstance_Index | V3AssetInstance_Array4 | V3AssetInstance_Array8 | V3AssetInstance_Array16 | V3AssetInstance_Array32
-
-export interface V3AssetInstance_Undefined {
-    __kind: 'Undefined'
-}
-
-export interface V3AssetInstance_Index {
-    __kind: 'Index'
-    value: bigint
-}
-
-export interface V3AssetInstance_Array4 {
-    __kind: 'Array4'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array8 {
-    __kind: 'Array8'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array16 {
-    __kind: 'Array16'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array32 {
-    __kind: 'Array32'
-    value: Uint8Array
-}
-
 export type V2Junctions = V2Junctions_Here | V2Junctions_X1 | V2Junctions_X2 | V2Junctions_X3 | V2Junctions_X4 | V2Junctions_X5 | V2Junctions_X6 | V2Junctions_X7 | V2Junctions_X8
 
 export interface V2Junctions_Here {
@@ -6466,6 +6388,37 @@ export interface V2Junctions_X7 {
 export interface V2Junctions_X8 {
     __kind: 'X8'
     value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
+}
+
+export type V3AssetInstance = V3AssetInstance_Undefined | V3AssetInstance_Index | V3AssetInstance_Array4 | V3AssetInstance_Array8 | V3AssetInstance_Array16 | V3AssetInstance_Array32
+
+export interface V3AssetInstance_Undefined {
+    __kind: 'Undefined'
+}
+
+export interface V3AssetInstance_Index {
+    __kind: 'Index'
+    value: bigint
+}
+
+export interface V3AssetInstance_Array4 {
+    __kind: 'Array4'
+    value: Uint8Array
+}
+
+export interface V3AssetInstance_Array8 {
+    __kind: 'Array8'
+    value: Uint8Array
+}
+
+export interface V3AssetInstance_Array16 {
+    __kind: 'Array16'
+    value: Uint8Array
+}
+
+export interface V3AssetInstance_Array32 {
+    __kind: 'Array32'
+    value: Uint8Array
 }
 
 export interface ParachainInherentData {
@@ -6522,6 +6475,11 @@ export interface Conviction_Locked6x {
 export interface SessionKeys {
     aura: Uint8Array
     pools: Uint8Array
+}
+
+export interface CurrencyIdAmountPair {
+    currencyId: AssetId
+    amount: bigint
 }
 
 export interface DefaultCollectionDescriptor {
@@ -6630,6 +6588,11 @@ export interface DispatchRuleKind_PermittedCalls {
 
 export interface DispatchRuleKind_PermittedExtrinsics {
     __kind: 'PermittedExtrinsics'
+}
+
+export interface Consumption {
+    totalConsumed: bigint
+    lastResetBlock: (number | undefined)
 }
 
 export interface AuctionData {
@@ -9794,6 +9757,24 @@ export interface RootOrSigned_Root {
 export interface RootOrSigned_Signed {
     __kind: 'Signed'
     value: Uint8Array
+}
+
+export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
+
+export interface MigrationStage_NotStarted {
+    __kind: 'NotStarted'
+}
+
+export interface MigrationStage_InProgress {
+    __kind: 'InProgress'
+}
+
+export interface MigrationStage_Completed {
+    __kind: 'Completed'
+}
+
+export interface MigrationStage_Failed {
+    __kind: 'Failed'
 }
 
 export interface Listing {
