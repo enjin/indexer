@@ -476,6 +476,7 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
                     salt: Buffer.from(data.salt).toString('hex'),
                     data: listingData,
                     state: listingState,
+                    deadListing: true,
                     createdAt: new Date(block.timestamp),
                     updatedAt: new Date(block.timestamp),
                 }),

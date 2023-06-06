@@ -623,6 +623,7 @@ type Listing @entity {
 
   # Extras
   highestPrice: BigInt!
+  deadListing: Boolean
 
   createdAt: DateTime!
   updatedAt: DateTime!

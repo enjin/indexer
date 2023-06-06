@@ -69,6 +69,9 @@ export class Listing {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     highestPrice!: bigint
 
+    @Column_("bool", {nullable: true})
+    deadListing!: boolean | undefined | null
+
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 
