@@ -27,6 +27,15 @@ import {
     TokenApproval,
     Attribute,
     Metadata,
+    Listing,
+    FeeSide,
+    FixedPriceData,
+    ListingType,
+    AuctionData,
+    AuctionState,
+    FixedPriceState,
+    ListingStatusType,
+    ListingStatus,
 } from './model'
 import * as efinityV2 from './types/generated/efinityV2'
 import * as efinityV3000 from './types/generated/efinityV3000'
@@ -35,7 +44,6 @@ import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { getMetadata } from './mappings/util/metadata'
 
-const GENSIS_HASH = config.genesisHash
 const BATCH_SIZE = 1000
 
 const spinner = ora()
@@ -135,6 +143,16 @@ function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
 
     if (attributeStorage.asEfinityV2) {
         return attributeStorage.asEfinityV2
+    }
+
+    throw new Error('Unsupported version')
+}
+
+function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const listingStorage = new Storage.MarketplaceListingsStorage(ctx, block)
+
+    if (listingStorage.isEfinityV3000) {
+        return listingStorage.asEfinityV3000
     }
 
     throw new Error('Unsupported version')
@@ -369,11 +387,11 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
             const tokenId = k[1]
             const key = safeString(Buffer.from(k[2]).toString())
             const value = safeString(Buffer.from(data.value).toString())
-            const id = tokenId ? `${collectionId}-${tokenId}` : collectionId.toString()
+            const id = tokenId !== undefined ? `${collectionId}-${tokenId}` : collectionId.toString()
 
             const attributeId = `${id}-${Buffer.from(key).toString('hex')}`
 
-            if (tokenId) {
+            if (tokenId !== undefined) {
                 const attribute = new Attribute({
                     id: attributeId,
                     token: new Token({ id }),
@@ -382,6 +400,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                     deposit: data.deposit,
                     collection: new Collection({ id: collectionId.toString() }),
                     createdAt: new Date(block.timestamp),
+                    updatedAt: new Date(block.timestamp),
                 })
 
                 if (key === 'uri') {
@@ -400,6 +419,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                 deposit: data.deposit,
                 collection: new Collection({ id }),
                 createdAt: new Date(block.timestamp),
+                updatedAt: new Date(block.timestamp),
             })
 
             if (key === 'uri') {
@@ -412,6 +432,62 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
         })
 
         await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
+    }
+}
+
+async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getListingStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        await getAccountsMap(
+            ctx,
+            pairs.map(([, data]) => data.seller)
+        )
+
+        const listings = pairs.map(([id, data]) => {
+            const listingData =
+                data.data.__kind === ListingType.FixedPrice
+                    ? new FixedPriceData({ listingType: ListingType.FixedPrice })
+                    : new AuctionData({
+                          listingType: ListingType.Auction,
+                          startHeight: data.data.value.startBlock,
+                          endHeight: data.data.value.endBlock,
+                      })
+
+            const listingState =
+                data.state.__kind === ListingType.FixedPrice
+                    ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+                    : new AuctionState({ listingType: ListingType.Auction })
+
+            return [
+                new Listing({
+                    id: u8aToHex(id),
+                    price: data.price,
+                    amount: data.amount,
+                    highestPrice: data.price,
+                    minTakeValue: data.minTakeValue,
+                    feeSide: FeeSide[data.feeSide.__kind],
+                    seller: new Account({ id: u8aToHex(data.seller) }),
+                    makeAssetId: new Token({ id: `${data.makeAssetId.collectionId}-${data.makeAssetId.tokenId}` }),
+                    takeAssetId: new Token({ id: `${data.takeAssetId.collectionId}-${data.takeAssetId.tokenId}` }),
+                    height: data.creationBlock,
+                    deposit: data.deposit,
+                    salt: u8aToHex(data.salt),
+                    data: listingData,
+                    state: listingState,
+                    createdAt: new Date(block.timestamp),
+                    updatedAt: new Date(block.timestamp),
+                }),
+                new ListingStatus({
+                    id: `${u8aToHex(id)}-0`,
+                    type: ListingStatusType.Active,
+                    listing: new Listing({ id: u8aToHex(id) }),
+                    height: 0,
+                    createdAt: new Date(block.timestamp),
+                }),
+            ]
+        })
+
+        await ctx.store.insert(Listing, listings.map((l) => l[0]) as any)
+        await ctx.store.insert(ListingStatus, listings.map((l) => l[1]) as any)
     }
 }
 
@@ -434,28 +510,13 @@ export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock)
     spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
 
     spinner.start('Syncing attributes...')
-    spinner.text = 'Syncing attributes... (This could take a while)'
-    spinner.spinner = {
-        interval: 80,
-        frames: [
-            ' 🧑⚽️       🧑 ',
-            '🧑  ⚽️      🧑 ',
-            '🧑   ⚽️     🧑 ',
-            '🧑    ⚽️    🧑 ',
-            '🧑     ⚽️   🧑 ',
-            '🧑      ⚽️  🧑 ',
-            '🧑       ⚽️🧑  ',
-            '🧑      ⚽️  🧑 ',
-            '🧑     ⚽️   🧑 ',
-            '🧑    ⚽️    🧑 ',
-            '🧑   ⚽️     🧑 ',
-            '🧑  ⚽️      🧑 ',
-        ],
-    }
+    spinner.text = 'Syncing attributes... (can take a while)'
     await syncAttributes(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
 
-    console.timeEnd('populateGenesis')
+    spinner.start('Syncing listings...')
+    await syncListings(ctx, block)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`)
 
-    throw new Error('Not implemented')
+    console.timeEnd('populateGenesis')
 }
