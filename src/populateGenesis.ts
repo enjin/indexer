@@ -458,9 +458,11 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
                     ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
                     : new AuctionState({ listingType: ListingType.Auction })
 
+            const listingId = Buffer.from(id).toString('hex')
+
             return [
                 new Listing({
-                    id: u8aToHex(id),
+                    id: listingId,
                     price: data.price,
                     amount: data.amount,
                     highestPrice: data.price,
@@ -471,16 +473,16 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
                     takeAssetId: new Token({ id: `${data.takeAssetId.collectionId}-${data.takeAssetId.tokenId}` }),
                     height: data.creationBlock,
                     deposit: data.deposit,
-                    salt: u8aToHex(data.salt),
+                    salt: Buffer.from(data.salt).toString('hex'),
                     data: listingData,
                     state: listingState,
                     createdAt: new Date(block.timestamp),
                     updatedAt: new Date(block.timestamp),
                 }),
                 new ListingStatus({
-                    id: `${u8aToHex(id)}-0`,
+                    id: `${listingId}-0`,
                     type: ListingStatusType.Active,
-                    listing: new Listing({ id: u8aToHex(id) }),
+                    listing: new Listing({ id: listingId }),
                     height: 0,
                     createdAt: new Date(block.timestamp),
                 }),
