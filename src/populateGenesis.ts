@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { u8aToHex } from '@polkadot/util'
+import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import ora from 'ora'
@@ -22,13 +22,18 @@ import {
     TokenBehaviorType,
     TokenBehaviorHasRoyalty,
     TokenAccount,
+    TokenNamedReserve,
+    TokenLock,
+    TokenApproval,
+    Attribute,
+    Metadata,
 } from './model'
 import * as efinityV2 from './types/generated/efinityV2'
 import * as efinityV3000 from './types/generated/efinityV3000'
-import * as efinityV3012 from './types/generated/efinityV3012'
-import * as efinityV3014 from './types/generated/efinityV3014'
 import { getCapType, getFreezeState } from './mappings/multiTokens/events/token_created'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
+import { safeString } from './common/tools'
+import { getMetadata } from './mappings/util/metadata'
 
 const GENSIS_HASH = config.genesisHash
 const BATCH_SIZE = 1000
@@ -115,10 +120,20 @@ function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
     throw new Error('Unsupported version')
 }
 
+function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const tokenAccountsStorage = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
+
+    if (tokenAccountsStorage.isEfinityV3014) {
+        return tokenAccountsStorage.asEfinityV3014
+    }
+
+    throw new Error('Unsupported version')
+}
+
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
     const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
 
-    if (attributeStorage.isEfinityV2) {
+    if (attributeStorage.asEfinityV2) {
         return attributeStorage.asEfinityV2
     }
 
@@ -280,6 +295,126 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
+async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getTokenAccountsStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        const accountMap = await getAccountsMap(
+            ctx,
+            pairs.map(([k]) => k[2])
+        )
+
+        const tokenAccounts = pairs.map(([k, data]) => {
+            const collectionId = k[0]
+            const tokenId = k[1]
+            const accountId = u8aToHex(k[2])
+            const account = accountMap.get(accountId)
+
+            if (!account) throw Errors.accountNotFound()
+
+            let namedReserves = null
+            if (data.namedReserves && data.namedReserves.length > 0) {
+                namedReserves = data.namedReserves.map((namedReserve) => {
+                    return new TokenNamedReserve({
+                        pallet: u8aToString(namedReserve[0]),
+                        amount: namedReserve[1],
+                    })
+                })
+            }
+
+            let locks = null
+            if (data.locks && data.locks.length > 0) {
+                locks = data.locks.map((lock) => {
+                    return new TokenLock({
+                        pallet: u8aToString(lock[0]),
+                        amount: lock[1],
+                    })
+                })
+            }
+
+            let approvals = null
+            if (data.approvals && data.approvals.length > 0) {
+                approvals = data.approvals.map((approval) => {
+                    return new TokenApproval({
+                        account: u8aToHex(approval[0]),
+                        amount: approval[1].amount,
+                        expiration: approval[1].expiration,
+                    })
+                })
+            }
+
+            return new TokenAccount({
+                id: `${accountId}-${collectionId}-${tokenId}`,
+                balance: data.balance,
+                reservedBalance: data.reservedBalance,
+                lockedBalance: data.lockedBalance,
+                namedReserves,
+                locks,
+                approvals,
+                isFrozen: data.isFrozen,
+                account,
+                collection: new Collection({ id: collectionId.toString() }),
+                token: new Token({ id: `${collectionId}-${tokenId}` }),
+                createdAt: new Date(block.timestamp),
+                updatedAt: new Date(block.timestamp),
+            })
+        })
+
+        await ctx.store.insert(TokenAccount, tokenAccounts as any)
+    }
+}
+
+async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getAttributeStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        const attributePromise = pairs.map(async ([k, data]) => {
+            const collectionId = k[0]
+            const tokenId = k[1]
+            const key = safeString(Buffer.from(k[2]).toString())
+            const value = safeString(Buffer.from(data.value).toString())
+            const id = tokenId ? `${collectionId}-${tokenId}` : collectionId.toString()
+
+            const attributeId = `${id}-${Buffer.from(key).toString('hex')}`
+
+            if (tokenId) {
+                const attribute = new Attribute({
+                    id: attributeId,
+                    token: new Token({ id }),
+                    key,
+                    value,
+                    deposit: data.deposit,
+                    collection: new Collection({ id: collectionId.toString() }),
+                    createdAt: new Date(block.timestamp),
+                })
+
+                if (key === 'uri') {
+                    const token = new Token({ id, metadata: new Metadata() })
+                    token.metadata = await getMetadata(token.metadata as Metadata, attribute)
+                    await ctx.store.save(token)
+                }
+
+                return attribute
+            }
+
+            const attribute = new Attribute({
+                id: attributeId,
+                key,
+                value,
+                deposit: data.deposit,
+                collection: new Collection({ id }),
+                createdAt: new Date(block.timestamp),
+            })
+
+            if (key === 'uri') {
+                const collection = new Collection({ id, metadata: new Metadata() })
+                collection.metadata = await getMetadata(collection.metadata as Metadata, attribute)
+                await ctx.store.save(collection)
+            }
+
+            return attribute
+        })
+
+        await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
+    }
+}
+
 export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
     spinner.info('Syncing collections...')
@@ -287,16 +422,38 @@ export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
     spinner.start('Syncing collection accounts...')
-    // await syncCollectionAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collections`)
+    await syncCollectionAccounts(ctx, block)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     spinner.start('Syncing tokens...')
     await syncTokens(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} collections`)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
     spinner.start('Syncing token accounts...')
     await syncTokenAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} collections`)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+
+    spinner.start('Syncing attributes...')
+    spinner.text = 'Syncing attributes... (This could take a while)'
+    spinner.spinner = {
+        interval: 80,
+        frames: [
+            ' 🧑⚽️       🧑 ',
+            '🧑  ⚽️      🧑 ',
+            '🧑   ⚽️     🧑 ',
+            '🧑    ⚽️    🧑 ',
+            '🧑     ⚽️   🧑 ',
+            '🧑      ⚽️  🧑 ',
+            '🧑       ⚽️🧑  ',
+            '🧑      ⚽️  🧑 ',
+            '🧑     ⚽️   🧑 ',
+            '🧑    ⚽️    🧑 ',
+            '🧑   ⚽️     🧑 ',
+            '🧑  ⚽️      🧑 ',
+        ],
+    }
+    await syncAttributes(ctx, block)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
 
     console.timeEnd('populateGenesis')
 
