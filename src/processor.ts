@@ -180,16 +180,14 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         const events: Event[] = []
         const accountTokenEvents: AccountTokenEvent[] = []
 
-        if (block.header.height % 1000 === 0) {
-            // eslint-disable-next-line no-await-in-loop
-            await populateGenesis(ctx as unknown as CommonContext, block.header)
-        }
-
         if (block.header.height === 1) {
             // eslint-disable-next-line no-await-in-loop
-            await createEfiToken(ctx as unknown as CommonContext, block.header)
+            //  await createEfiToken(ctx as unknown as CommonContext, block.header)
             // eslint-disable-next-line no-await-in-loop
-            await chainState(ctx as unknown as CommonContext, block.header)
+            //   await chainState(ctx as unknown as CommonContext, block.header)
+
+            // eslint-disable-next-line no-await-in-loop
+            await populateGenesis(ctx as unknown as CommonContext, block.header)
         }
 
         // eslint-disable-next-line no-restricted-syntax
