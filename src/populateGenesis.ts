@@ -18,9 +18,17 @@ import {
     Balance,
     CollectionAccount,
     Token,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+    TokenBehaviorHasRoyalty,
+    TokenAccount,
 } from './model'
 import * as efinityV2 from './types/generated/efinityV2'
 import * as efinityV3000 from './types/generated/efinityV3000'
+import * as efinityV3012 from './types/generated/efinityV3012'
+import * as efinityV3014 from './types/generated/efinityV3014'
+import { getCapType, getFreezeState } from './mappings/multiTokens/events/token_created'
+import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 
 const GENSIS_HASH = config.genesisHash
 const BATCH_SIZE = 1000
@@ -74,14 +82,14 @@ async function getAccountsMap(
 }
 
 function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const balanceAccountStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
+    const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
-    if (balanceAccountStorage.isEfinityV2) {
-        return balanceAccountStorage.asEfinityV2
+    if (collectionStorage.isEfinityV2) {
+        return collectionStorage.asEfinityV2
     }
 
-    if (balanceAccountStorage.isEfinityV3000) {
-        return balanceAccountStorage.asEfinityV3000
+    if (collectionStorage.isEfinityV3000) {
+        return collectionStorage.asEfinityV3000
     }
 
     throw new Error('Unsupported version')
@@ -100,16 +108,8 @@ function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock)
 function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
     const tokensStorage = new Storage.MultiTokensTokensStorage(ctx, block)
 
-    if (tokensStorage.isEfinityV3012) {
-        return tokensStorage.asEfinityV3012
-    }
-
-    if (tokensStorage.isEfinityV3000) {
-        return tokensStorage.asEfinityV3000
-    }
-
-    if (tokensStorage.isEfinityV2) {
-        return tokensStorage.asEfinityV2
+    if (tokensStorage.isEfinityV3014) {
+        return tokensStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -219,40 +219,86 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 
 async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
     for await (const pairs of getTokensStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        const tokens = pairs.map(([k, data]) => {
+        await getAccountsMap(
+            ctx,
+            pairs.map(([, d]: [any, any]) => d?.marketBehavior?.value?.beneficiary)
+        )
+        const tokensPromise = pairs.map(async ([k, data]) => {
             const collectionId = k[0]
             const tokenId = k[1]
-            const collection = new Collection({ id: collectionId.toString() })
+            const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            
+            let behavior = null
 
-            return new Token({
+            if ('marketBehavior' in data && data.marketBehavior) {
+                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+                    behavior = new TokenBehaviorIsCurrency({
+                        type: TokenBehaviorType.IsCurrency,
+                    })
+                } else {
+                    behavior = new TokenBehaviorHasRoyalty({
+                        type: TokenBehaviorType.HasRoyalty,
+                        royalty: new Royalty({
+                            beneficiary: u8aToHex(data.marketBehavior.value.beneficiary),
+                            percentage: data.marketBehavior.value.percentage,
+                        }),
+                    })
+                }
+            }
+
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (data.sufficiency.__kind === 'Insufficient') {
+                unitPrice = data.sufficiency.unitPrice
+                minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
+            }
+
+            const token = new Token({
                 id: `${collectionId}-${tokenId}`,
                 tokenId,
                 collection,
                 attributeCount: data.attributeCount,
-                isFrozen: data.isFrozen,
-                
-                
-
-                
-
+                supply: data.supply,
+                isFrozen: false,
+                cap: data.cap ? getCapType(data.cap) : null,
+                behavior,
+                freezeState: data.freezeState ? getFreezeState(data.freezeState) : undefined,
+                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
+                minimumBalance,
+                unitPrice,
+                createdAt: new Date(block.timestamp),
+                mintDeposit: data.mintDeposit,
             })
+
+            token.nonFungible = isNonFungible(token)
+
+            return token
         })
+
+        await Promise.all(tokensPromise).then((tokens) => ctx.store.insert(Token, tokens as any))
     }
 }
 
 export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock) {
+    console.time('populateGenesis')
     spinner.info('Syncing collections...')
     await syncCollection(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
     spinner.start('Syncing collection accounts...')
-    await syncCollectionAccounts(ctx, block)
+    // await syncCollectionAccounts(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collections`)
 
     spinner.start('Syncing tokens...')
     await syncTokens(ctx, block)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} collections`)
+
+    spinner.start('Syncing token accounts...')
+    await syncTokenAccounts(ctx, block)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} collections`)
+
+    console.timeEnd('populateGenesis')
 
     throw new Error('Not implemented')
 }

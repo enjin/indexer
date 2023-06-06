@@ -185,9 +185,10 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             //  await createEfiToken(ctx as unknown as CommonContext, block.header)
             // eslint-disable-next-line no-await-in-loop
             //   await chainState(ctx as unknown as CommonContext, block.header)
-
-            // eslint-disable-next-line no-await-in-loop
-            await populateGenesis(ctx as unknown as CommonContext, block.header)
+            if (Number(config.prefix) === 1110) {
+                // eslint-disable-next-line no-await-in-loop
+                await populateGenesis(ctx as unknown as CommonContext, block.header)
+            }
         }
 
         // eslint-disable-next-line no-restricted-syntax
