@@ -43,6 +43,7 @@ import { getCapType, getFreezeState } from './mappings/multiTokens/events/token_
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { getMetadata } from './mappings/util/metadata'
+import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 
 const BATCH_SIZE = 1000
 
@@ -491,6 +492,22 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
+async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
+    const updateSize = 100
+    const updateBalance = async (skip: number) => {
+        const data = await ctx.store.find(Account, { skip, take: updateSize })
+        addAccountsToSet(data.map((a) => a.id))
+        await saveAccounts(ctx, block)
+    }
+
+    const count = await ctx.store.count(Account)
+
+    for (let skip = 0; skip <= count - updateSize; skip += updateSize) {
+        // eslint-disable-next-line no-await-in-loop
+        await updateBalance(skip)
+    }
+}
+
 export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
     spinner.info('Syncing collections...')
@@ -517,6 +534,10 @@ export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock)
     spinner.start('Syncing listings...')
     await syncListings(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`)
+
+    spinner.start('Syncing balances...')
+    await syncBalance(ctx, block)
+    spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
 }

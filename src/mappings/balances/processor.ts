@@ -285,3 +285,7 @@ export async function save(ctx: CommonContext, block: SubstrateBlock, event: Eve
 
     return undefined
 }
+
+export const addAccountsToSet = (accounts: string[]) => {
+    accounts.forEach((id) => accountsSet.add(id))
+}
