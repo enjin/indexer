@@ -27,6 +27,8 @@ codegen:
 typegen:
 	@npx squid-substrate-typegen typegen/typegen.json
 
+local-up:
+	@docker-compose up -d --build
 up:
 	@docker-compose up -d
 

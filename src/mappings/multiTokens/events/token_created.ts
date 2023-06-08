@@ -23,11 +23,10 @@ import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken,
     MultiTokensCall_mint,
-    TokenCap,
-    TokenCap_Supply,
     TokenMarketBehavior,
     TokenMarketBehavior_HasRoyalty,
 } from '../../../types/generated/efinityV3012'
+import { TokenCap as TokenCap_v3014 } from '../../../types/generated/efinityV3014'
 import { MultiTokensCall_mint as MultiTokensCall_mint_rV3012 } from '../../../types/generated/rocfinityV3012'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
@@ -60,20 +59,22 @@ interface EventData {
     initialSupply: bigint
 }
 
-function getCapType(cap: TokenCap): TokenCapSupply | TokenCapSingleMint {
-    if (cap.__kind === CapType.Supply.toString()) {
+export function getCapType(cap: TokenCap_v3014) {
+    if (cap.__kind === CapType.Supply) {
         return new TokenCapSupply({
             type: CapType.Supply,
-            supply: (cap as TokenCap_Supply).value,
+            supply: cap.value,
         })
     }
+
+    // TODO: add collapsing
 
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
     })
 }
 
-function getFreezeState(state: FreezeState_v500): FreezeState | null {
+export function getFreezeState(state: FreezeState_v500): FreezeState | null {
     switch (state.__kind) {
         case 'Permanent':
             return FreezeState.Permanent
