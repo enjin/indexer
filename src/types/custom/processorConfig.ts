@@ -24,4 +24,5 @@ export interface ProcessorConfig {
     redisSupportsTls: boolean
     redisPort: number
     pusher: any
+    marketplaceUrl: string
 }

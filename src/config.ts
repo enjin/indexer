@@ -24,6 +24,7 @@ const config: ProcessorConfig = {
         secret: process.env.PUSHER_APP_SECRET,
         cluster: process.env.PUSHER_APP_CLUSTER,
     },
+    marketplaceUrl: process.env.MARKETPLACE_URL || 'https://beta.nft.io',
 }
 
 export default config
