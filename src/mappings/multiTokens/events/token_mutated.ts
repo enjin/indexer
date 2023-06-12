@@ -12,21 +12,13 @@ import {
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '../../../model'
-import { TokenMarketBehavior, TokenMarketBehavior_HasRoyalty } from '../../../types/generated/efinityV3000'
 import { Event } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { Type_129, Type_132 } from '../../../types/generated/efinityV3012'
+import { TokenMarketBehavior } from '../../../types/generated/efinityV3014'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint
-    behavior: Type_129
-    listingForbidden: Type_132
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
     if (data.isEfinityV3014) {
@@ -39,55 +31,6 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
         }
     }
 
-    if (data.isV500) {
-        const { collectionId, tokenId, mutation } = data.asV500
-        return {
-            collectionId,
-            tokenId,
-            behavior: mutation.behavior,
-            listingForbidden: mutation.listingForbidden,
-        }
-    }
-
-    if (data.isEfinityV3000) {
-        const { collectionId, tokenId, mutation } = data.asEfinityV3000
-        const behavior: Type_129 =
-            mutation.behavior.__kind === 'None'
-                ? {
-                      __kind: 'NoMutation',
-                  }
-                : {
-                      __kind: 'SomeMutation',
-                      value: mutation.behavior.value,
-                  }
-
-        const listingForbidden: Type_132 =
-            mutation.listingForbidden === undefined
-                ? {
-                      __kind: 'NoMutation',
-                  }
-                : {
-                      __kind: 'SomeMutation',
-                      value: mutation.listingForbidden,
-                  }
-
-        return {
-            collectionId,
-            tokenId,
-            behavior,
-            listingForbidden,
-        }
-    }
-
-    if (data.isEfinityV3012) {
-        const { collectionId, tokenId, mutation } = data.asEfinityV3012
-        return {
-            collectionId,
-            tokenId,
-            behavior: mutation.behavior,
-            listingForbidden: mutation.listingForbidden,
-        }
-    }
     throw new UnknownVersionError(data.constructor.name)
 }
 
@@ -95,18 +38,18 @@ async function getBehavior(
     ctx: CommonContext,
     behavior: TokenMarketBehavior
 ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-    if (behavior.__kind === TokenBehaviorType.IsCurrency.toString()) {
+    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
         return new TokenBehaviorIsCurrency({
             type: TokenBehaviorType.IsCurrency,
         })
     }
 
-    const account = await getOrCreateAccount(ctx, (behavior as TokenMarketBehavior_HasRoyalty).value.beneficiary)
+    const account = await getOrCreateAccount(ctx, behavior.value.beneficiary)
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
         royalty: new Royalty({
             beneficiary: account.id,
-            percentage: (behavior as TokenMarketBehavior_HasRoyalty).value.percentage,
+            percentage: behavior.value.percentage,
         }),
     })
 }
