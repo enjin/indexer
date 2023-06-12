@@ -456,6 +456,14 @@ export interface Weight {
     proofSize: bigint
 }
 
+export interface Header {
+    parentHash: Uint8Array
+    number: number
+    stateRoot: Uint8Array
+    extrinsicsRoot: Uint8Array
+    digest: Digest
+}
+
 export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
 
 export interface MultiAddress_Id {
@@ -846,51 +854,6 @@ export interface V2WeightLimit_Limited {
     value: bigint
 }
 
-export type VersionedXcm = VersionedXcm_V0 | VersionedXcm_V1 | VersionedXcm_V2
-
-export interface VersionedXcm_V0 {
-    __kind: 'V0'
-    value: V0Xcm
-}
-
-export interface VersionedXcm_V1 {
-    __kind: 'V1'
-    value: V1Xcm
-}
-
-export interface VersionedXcm_V2 {
-    __kind: 'V2'
-    value: V2Instruction[]
-}
-
-export type Type_334 = Type_334_V0 | Type_334_V1 | Type_334_V2
-
-export interface Type_334_V0 {
-    __kind: 'V0'
-    value: Type_335
-}
-
-export interface Type_334_V1 {
-    __kind: 'V1'
-    value: Type_340
-}
-
-export interface Type_334_V2 {
-    __kind: 'V2'
-    value: Type_346[]
-}
-
-export type V2WeightLimit = V2WeightLimit_Unlimited | V2WeightLimit_Limited
-
-export interface V2WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export interface V2WeightLimit_Limited {
-    __kind: 'Limited'
-    value: bigint
-}
-
 export type OriginCaller = OriginCaller_system | OriginCaller_Council | OriginCaller_TechnicalCommittee | OriginCaller_PolkadotXcm | OriginCaller_CumulusXcm | OriginCaller_Void
 
 export interface OriginCaller_system {
@@ -935,11 +898,33 @@ export interface VersionedMultiAsset_V1 {
     value: V1MultiAsset
 }
 
+export type UncleEntryItem = UncleEntryItem_InclusionHeight | UncleEntryItem_Uncle
+
+export interface UncleEntryItem_InclusionHeight {
+    __kind: 'InclusionHeight'
+    value: number
+}
+
+export interface UncleEntryItem_Uncle {
+    __kind: 'Uncle'
+    value: [Uint8Array, (Uint8Array | undefined)]
+}
+
 export interface AccountData {
     free: bigint
     reserved: bigint
     miscFrozen: bigint
     feeFrozen: bigint
+}
+
+export type Releases = Releases_V1_0_0 | Releases_V2_0_0
+
+export interface Releases_V1_0_0 {
+    __kind: 'V1_0_0'
+}
+
+export interface Releases_V2_0_0 {
+    __kind: 'V2_0_0'
 }
 
 export interface PrefabWasmModule {
@@ -1407,6 +1392,10 @@ export interface V1Fungibility_Fungible {
 export interface V1Fungibility_NonFungible {
     __kind: 'NonFungible'
     value: V1AssetInstance
+}
+
+export interface Digest {
+    logs: DigestItem[]
 }
 
 /**
@@ -6148,6 +6137,32 @@ export interface V0Junction_Plurality {
     part: V0BodyPart
 }
 
+export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
+
+export interface DigestItem_PreRuntime {
+    __kind: 'PreRuntime'
+    value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Consensus {
+    __kind: 'Consensus'
+    value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Seal {
+    __kind: 'Seal'
+    value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Other {
+    __kind: 'Other'
+    value: Uint8Array
+}
+
+export interface DigestItem_RuntimeEnvironmentUpdated {
+    __kind: 'RuntimeEnvironmentUpdated'
+}
+
 export interface ParachainInherentData {
     validationData: V2PersistedValidationData
     relayChainState: StorageProof
@@ -6209,14 +6224,6 @@ export interface Conviction_Locked5x {
 
 export interface Conviction_Locked6x {
     __kind: 'Locked6x'
-}
-
-export interface Header {
-    parentHash: Uint8Array
-    number: number
-    stateRoot: Uint8Array
-    extrinsicsRoot: Uint8Array
-    digest: Digest
 }
 
 export interface SessionKeys {
@@ -9531,10 +9538,6 @@ export interface InboundHrmpMessage {
     data: Uint8Array
 }
 
-export interface Digest {
-    logs: DigestItem[]
-}
-
 export interface DefaultCollectionPolicyDescriptor {
     mint: DefaultMintPolicyDescriptor
     market: DefaultMarketPolicyDescriptor
@@ -9643,32 +9646,6 @@ export interface Listing {
 export interface Bid {
     bidder: Uint8Array
     price: bigint
-}
-
-export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
-
-export interface DigestItem_PreRuntime {
-    __kind: 'PreRuntime'
-    value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Consensus {
-    __kind: 'Consensus'
-    value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Seal {
-    __kind: 'Seal'
-    value: [Uint8Array, Uint8Array]
-}
-
-export interface DigestItem_Other {
-    __kind: 'Other'
-    value: Uint8Array
-}
-
-export interface DigestItem_RuntimeEnvironmentUpdated {
-    __kind: 'RuntimeEnvironmentUpdated'
 }
 
 export interface DefaultMintPolicyDescriptor {

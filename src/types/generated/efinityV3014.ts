@@ -1,5 +1,15 @@
 import type {Result, Option} from './support'
 
+export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
+
+export interface BalanceStatus_Free {
+    __kind: 'Free'
+}
+
+export interface BalanceStatus_Reserved {
+    __kind: 'Reserved'
+}
+
 export type Type_33 = Type_33_Ok | Type_33_Err
 
 export interface Type_33_Ok {
@@ -42,6 +52,39 @@ export interface MetadataOwner_Proposal {
 export interface MetadataOwner_Referendum {
     __kind: 'Referendum'
     value: number
+}
+
+export type VoteThreshold = VoteThreshold_SuperMajorityApprove | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SimpleMajority
+
+export interface VoteThreshold_SuperMajorityApprove {
+    __kind: 'SuperMajorityApprove'
+}
+
+export interface VoteThreshold_SuperMajorityAgainst {
+    __kind: 'SuperMajorityAgainst'
+}
+
+export interface VoteThreshold_SimpleMajority {
+    __kind: 'SimpleMajority'
+}
+
+export type AccountVote = AccountVote_Standard | AccountVote_Split
+
+export interface AccountVote_Standard {
+    __kind: 'Standard'
+    vote: number
+    balance: bigint
+}
+
+export interface AccountVote_Split {
+    __kind: 'Split'
+    aye: bigint
+    nay: bigint
+}
+
+export interface Weight {
+    refTime: bigint
+    proofSize: bigint
 }
 
 export type DispatchError = DispatchError_Other | DispatchError_CannotLookup | DispatchError_BadOrigin | DispatchError_Module | DispatchError_ConsumerRemaining | DispatchError_NoProviders | DispatchError_TooManyConsumers | DispatchError_Token | DispatchError_Arithmetic | DispatchError_Transactional | DispatchError_Exhausted | DispatchError_Corruption | DispatchError_Unavailable
@@ -102,14 +145,139 @@ export interface DispatchError_Unavailable {
     __kind: 'Unavailable'
 }
 
+export interface MinimumWeightFeePair {
+    minimumWeight: Weight
+    fee: bigint
+}
+
+export type DispatchRuleKind = DispatchRuleKind_WhitelistedCallers | DispatchRuleKind_WhitelistedCollections | DispatchRuleKind_MaxFuelBurnPerTransaction | DispatchRuleKind_UserFuelBudget | DispatchRuleKind_TankFuelBudget | DispatchRuleKind_RequireToken | DispatchRuleKind_PermittedCalls | DispatchRuleKind_PermittedExtrinsics
+
+export interface DispatchRuleKind_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+}
+
+export interface DispatchRuleKind_WhitelistedCollections {
+    __kind: 'WhitelistedCollections'
+}
+
+export interface DispatchRuleKind_MaxFuelBurnPerTransaction {
+    __kind: 'MaxFuelBurnPerTransaction'
+}
+
+export interface DispatchRuleKind_UserFuelBudget {
+    __kind: 'UserFuelBudget'
+}
+
+export interface DispatchRuleKind_TankFuelBudget {
+    __kind: 'TankFuelBudget'
+}
+
+export interface DispatchRuleKind_RequireToken {
+    __kind: 'RequireToken'
+}
+
+export interface DispatchRuleKind_PermittedCalls {
+    __kind: 'PermittedCalls'
+}
+
+export interface DispatchRuleKind_PermittedExtrinsics {
+    __kind: 'PermittedExtrinsics'
+}
+
 export interface Consumption {
     totalConsumed: bigint
     lastResetBlock: (number | undefined)
 }
 
+export interface DefaultTankMutation {
+    userAccountManagement: Type_211
+    providesDeposit: (boolean | undefined)
+    accountRules: (AccountRuleDescriptor[] | undefined)
+}
+
+export interface Bid {
+    bidder: Uint8Array
+    price: bigint
+}
+
+export interface Listing {
+    seller: Uint8Array
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    minTakeValue: bigint
+    feeSide: FeeSide
+    creationBlock: number
+    deposit: bigint
+    salt: Uint8Array
+    data: ListingData
+    state: ListingState
+}
+
+export interface CollectionAccount {
+    isFrozen: boolean
+    approvals: [Uint8Array, (number | undefined)][]
+    accountCount: number
+}
+
+export interface DefaultCollectionMutation {
+    owner: (Uint8Array | undefined)
+    royalty: ShouldMutate
+    explicitRoyaltyCurrencies: (AssetId[] | undefined)
+}
+
+export interface Collection {
+    owner: Uint8Array
+    policy: DefaultCollectionPolicy
+    tokenCount: bigint
+    attributeCount: number
+    totalDeposit: bigint
+    explicitRoyaltyCurrencies: [AssetId, null][]
+}
+
 export interface Freeze {
     collectionId: bigint
     freezeType: FreezeType
+}
+
+export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
+
+export interface MigrationStage_NotStarted {
+    __kind: 'NotStarted'
+}
+
+export interface MigrationStage_InProgress {
+    __kind: 'InProgress'
+}
+
+export interface MigrationStage_Completed {
+    __kind: 'Completed'
+}
+
+export interface MigrationStage_Failed {
+    __kind: 'Failed'
+}
+
+export type RootOrSigned = RootOrSigned_Root | RootOrSigned_Signed
+
+export interface RootOrSigned_Root {
+    __kind: 'Root'
+}
+
+export interface RootOrSigned_Signed {
+    __kind: 'Signed'
+    value: Uint8Array
+}
+
+export interface TokenAccount {
+    balance: bigint
+    reservedBalance: bigint
+    lockedBalance: bigint
+    namedReserves: [Uint8Array, bigint][]
+    locks: [Uint8Array, bigint][]
+    approvals: [Uint8Array, Approval][]
+    isFrozen: boolean
 }
 
 export interface DefaultTokenMutation {
@@ -638,15 +806,24 @@ export interface V3Response_DispatchResult {
     value: V3MaybeErrorCode
 }
 
+export interface PoolsMutation {
+    community: Pool
+    collator: Pool
+    fuelTanks: Pool
+    priceDiscovery: Pool
+}
+
 export interface DispatchInfo {
     weight: Weight
     class: DispatchClass
     paysFee: Pays
 }
 
-export interface Weight {
-    refTime: bigint
-    proofSize: bigint
+export interface VestingSchedule {
+    start: number
+    period: number
+    periodCount: number
+    perPeriod: bigint
 }
 
 export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
@@ -843,6 +1020,54 @@ export interface Call_EfinityUtility {
     value: EfinityUtilityCall
 }
 
+export type Conviction = Conviction_None | Conviction_Locked1x | Conviction_Locked2x | Conviction_Locked3x | Conviction_Locked4x | Conviction_Locked5x | Conviction_Locked6x
+
+export interface Conviction_None {
+    __kind: 'None'
+}
+
+export interface Conviction_Locked1x {
+    __kind: 'Locked1x'
+}
+
+export interface Conviction_Locked2x {
+    __kind: 'Locked2x'
+}
+
+export interface Conviction_Locked3x {
+    __kind: 'Locked3x'
+}
+
+export interface Conviction_Locked4x {
+    __kind: 'Locked4x'
+}
+
+export interface Conviction_Locked5x {
+    __kind: 'Locked5x'
+}
+
+export interface Conviction_Locked6x {
+    __kind: 'Locked6x'
+}
+
+export type Bounded = Bounded_Legacy | Bounded_Inline | Bounded_Lookup
+
+export interface Bounded_Legacy {
+    __kind: 'Legacy'
+    hash: Uint8Array
+}
+
+export interface Bounded_Inline {
+    __kind: 'Inline'
+    value: Uint8Array
+}
+
+export interface Bounded_Lookup {
+    __kind: 'Lookup'
+    hash: Uint8Array
+    len: number
+}
+
 export type XcmOperation = XcmOperation_XTokensTransfer | XcmOperation_ParachainFee
 
 export interface XcmOperation_XTokensTransfer {
@@ -852,11 +1077,6 @@ export interface XcmOperation_XTokensTransfer {
 export interface XcmOperation_ParachainFee {
     __kind: 'ParachainFee'
     value: V3MultiLocation
-}
-
-export interface MinimumWeightFeePair {
-    minimumWeight: Weight
-    fee: bigint
 }
 
 export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
@@ -945,9 +1165,59 @@ export interface DispatchRuleDescriptor_PermittedExtrinsics {
     value: Call[]
 }
 
+export interface AuctionData {
+    startBlock: number
+    endBlock: number
+}
+
 export interface Type_390 {
     accountId: Uint8Array
     params: DefaultMintParams
+}
+
+export interface AttributeKeyValuePair {
+    key: Uint8Array
+    value: Uint8Array
+}
+
+export interface Recipient {
+    accountId: Uint8Array
+    params: DefaultTransferParams
+}
+
+export interface DefaultBurnParams {
+    tokenId: bigint
+    amount: bigint
+    keepAlive: boolean
+    removeTokenStorage: boolean
+}
+
+export interface DefaultCollectionDescriptor {
+    policy: DefaultCollectionPolicyDescriptor
+    explicitRoyaltyCurrencies: AssetId[]
+    attributes: AttributeKeyValuePair[]
+}
+
+export interface Attribute {
+    value: Uint8Array
+    deposit: bigint
+}
+
+export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
+
+export interface DefaultTransferParams_Simple {
+    __kind: 'Simple'
+    tokenId: bigint
+    amount: bigint
+    keepAlive: boolean
+}
+
+export interface DefaultTransferParams_Operator {
+    __kind: 'Operator'
+    tokenId: bigint
+    source: Uint8Array
+    amount: bigint
+    keepAlive: boolean
 }
 
 export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
@@ -984,6 +1254,13 @@ export interface VersionedXcm_V3 {
     value: V3Instruction[]
 }
 
+export interface ParachainInherentData {
+    validationData: V4PersistedValidationData
+    relayChainState: StorageProof
+    downwardMessages: InboundDownwardMessage[]
+    horizontalMessages: [number, InboundHrmpMessage[]][]
+}
+
 export type Type_347 = Type_347_V2 | Type_347_V3
 
 export interface Type_347_V2 {
@@ -1005,6 +1282,11 @@ export interface V3WeightLimit_Unlimited {
 export interface V3WeightLimit_Limited {
     __kind: 'Limited'
     value: Weight
+}
+
+export interface SessionKeys {
+    aura: Uint8Array
+    pools: Uint8Array
 }
 
 export type OriginCaller = OriginCaller_system | OriginCaller_Council | OriginCaller_TechnicalCommittee | OriginCaller_PolkadotXcm | OriginCaller_CumulusXcm | OriginCaller_Void
@@ -1039,6 +1321,11 @@ export interface OriginCaller_Void {
     value: Void
 }
 
+export interface VestedAccount {
+    accountId: Uint8Array
+    amount: bigint
+}
+
 export type VersionedMultiAsset = VersionedMultiAsset_V2 | VersionedMultiAsset_V3
 
 export interface VersionedMultiAsset_V2 {
@@ -1062,24 +1349,221 @@ export interface IdAmount {
     amount: bigint
 }
 
+export interface BalanceLock {
+    id: Uint8Array
+    amount: bigint
+    reasons: Reasons
+}
+
+export interface ReserveData {
+    id: Uint8Array
+    amount: bigint
+}
+
+export interface Bounty {
+    proposer: Uint8Array
+    value: bigint
+    fee: bigint
+    curatorDeposit: bigint
+    bond: bigint
+    status: BountyStatus
+}
+
+export interface Collator {
+    account: Uint8Array
+    amount: bigint
+    totalStake: bigint
+    rewardsCut: number
+    nominators: Uint8Array[]
+}
+
+export interface Round {
+    number: number
+    startingBlock: number
+    collators: Collator[]
+}
+
+export interface Nomination {
+    account: Uint8Array
+    amount: bigint
+}
+
+export interface CollatorSessionInfo {
+    authoredBlockCount: number
+    uptime: number
+}
+
+export interface Proposal {
+    proposer: Uint8Array
+    value: bigint
+    beneficiary: Uint8Array
+    bond: bigint
+}
+
+export interface Votes {
+    index: number
+    threshold: number
+    ayes: Uint8Array[]
+    nays: Uint8Array[]
+    end: number
+}
+
+export type ReferendumInfo = ReferendumInfo_Ongoing | ReferendumInfo_Finished
+
+export interface ReferendumInfo_Ongoing {
+    __kind: 'Ongoing'
+    value: ReferendumStatus
+}
+
+export interface ReferendumInfo_Finished {
+    __kind: 'Finished'
+    approved: boolean
+    end: number
+}
+
+export type Voting = Voting_Direct | Voting_Delegating
+
+export interface Voting_Direct {
+    __kind: 'Direct'
+    votes: [number, AccountVote][]
+    delegations: Delegations
+    prior: [number, bigint]
+}
+
+export interface Voting_Delegating {
+    __kind: 'Delegating'
+    balance: bigint
+    target: Uint8Array
+    conviction: Conviction
+    delegations: Delegations
+    prior: [number, bigint]
+}
+
+export interface ConfigData {
+    maxIndividual: Weight
+}
+
+export interface PageIndexData {
+    beginUsed: number
+    endUsed: number
+    overweightCount: bigint
+}
+
+export interface ExtrinsicInfo {
+    palletName: Uint8Array
+    extrinsicName: (Uint8Array | undefined)
+}
+
+export interface UserAccount {
+    tankDeposit: bigint
+    userDeposit: bigint
+    ruleDataSets: [number, [DispatchRuleKind, Uint8Array][]][]
+}
+
+export interface FreezeQueueItem {
+    tankId: Uint8Array
+    ruleSetId: (number | undefined)
+    isFrozen: boolean
+}
+
+export interface FuelTank {
+    owner: Uint8Array
+    name: Uint8Array
+    ruleSets: [number, RuleSet][]
+    totalReserved: bigint
+    accountCount: number
+    userAccountManagement: (UserAccountManagement | undefined)
+    isFrozen: boolean
+    providesDeposit: boolean
+    accountRules: [AccountRuleKind, AccountRuleWrapper][]
+}
+
+export interface MarketPlaceInfo {
+    protocolFee: number
+    fixedPriceListingCount: number
+    auctionListingCount: number
+}
+
+export interface WeightedIdleOperation {
+    operation: IdleOperation
+    estimatedWeight: Weight
+}
+
 export interface Migration {
     stage: MigrationStage
     lastIteratedKey: (Uint8Array | undefined)
 }
 
-export interface TokenAccount {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
+export interface Multisig {
+    when: Timepoint
+    deposit: bigint
+    depositor: Uint8Array
+    approvals: Uint8Array[]
 }
 
 export interface CodeUpgradeAuthorization {
     codeHash: Uint8Array
     checkVersion: boolean
+}
+
+export interface V4AbridgedHostConfiguration {
+    maxCodeSize: number
+    maxHeadDataSize: number
+    maxUpwardQueueCount: number
+    maxUpwardQueueSize: number
+    maxUpwardMessageSize: number
+    maxUpwardMessageNumPerCandidate: number
+    hrmpMaxMessageNumPerCandidate: number
+    validationUpgradeCooldown: number
+    validationUpgradeDelay: number
+}
+
+export interface OutboundHrmpMessage {
+    recipient: number
+    data: Uint8Array
+}
+
+export interface StorageProof {
+    trieNodes: Uint8Array[]
+}
+
+export interface MessagingStateSnapshot {
+    dmqMqcHead: Uint8Array
+    relayDispatchQueueSize: [number, number]
+    ingressChannels: [number, V4AbridgedHrmpChannel][]
+    egressChannels: [number, V4AbridgedHrmpChannel][]
+}
+
+export type V4UpgradeRestriction = V4UpgradeRestriction_Present
+
+export interface V4UpgradeRestriction_Present {
+    __kind: 'Present'
+}
+
+export interface V4PersistedValidationData {
+    parentHead: Uint8Array
+    relayParentNumber: number
+    relayParentStorageRoot: Uint8Array
+    maxPovSize: number
+}
+
+export type VersionMigrationStage = VersionMigrationStage_MigrateSupportedVersion | VersionMigrationStage_MigrateVersionNotifiers | VersionMigrationStage_NotifyCurrentTargets | VersionMigrationStage_MigrateAndNotifyOldTargets
+
+export interface VersionMigrationStage_MigrateSupportedVersion {
+    __kind: 'MigrateSupportedVersion'
+}
+
+export interface VersionMigrationStage_MigrateVersionNotifiers {
+    __kind: 'MigrateVersionNotifiers'
+}
+
+export interface VersionMigrationStage_NotifyCurrentTargets {
+    __kind: 'NotifyCurrentTargets'
+    value: (Uint8Array | undefined)
+}
+
+export interface VersionMigrationStage_MigrateAndNotifyOldTargets {
+    __kind: 'MigrateAndNotifyOldTargets'
 }
 
 export type QueryStatus = QueryStatus_Pending | QueryStatus_VersionNotifier | QueryStatus_Ready
@@ -1118,6 +1602,25 @@ export interface RemoteLockedFungibleRecord {
     users: number
 }
 
+export interface Pool {
+    feeShare: number
+}
+
+export type RequestStatus = RequestStatus_Unrequested | RequestStatus_Requested
+
+export interface RequestStatus_Unrequested {
+    __kind: 'Unrequested'
+    deposit: [Uint8Array, bigint]
+    len: number
+}
+
+export interface RequestStatus_Requested {
+    __kind: 'Requested'
+    deposit: ([Uint8Array, bigint] | undefined)
+    count: number
+    len: (number | undefined)
+}
+
 export interface Scheduled {
     maybeId: (Uint8Array | undefined)
     priority: number
@@ -1134,10 +1637,73 @@ export interface AccountInfo {
     data: AccountData
 }
 
+export interface PerDispatchClass {
+    normal: Weight
+    operational: Weight
+    mandatory: Weight
+}
+
+export interface Digest {
+    logs: DigestItem[]
+}
+
 export interface EventRecord {
     phase: Phase
     event: Event
     topics: Uint8Array[]
+}
+
+export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
+
+export interface Phase_ApplyExtrinsic {
+    __kind: 'ApplyExtrinsic'
+    value: number
+}
+
+export interface Phase_Finalization {
+    __kind: 'Finalization'
+}
+
+export interface Phase_Initialization {
+    __kind: 'Initialization'
+}
+
+export interface LastRuntimeUpgradeInfo {
+    specVersion: number
+    specName: string
+}
+
+export type Releases = Releases_V1Ancient | Releases_V2
+
+export interface Releases_V1Ancient {
+    __kind: 'V1Ancient'
+}
+
+export interface Releases_V2 {
+    __kind: 'V2'
+}
+
+export interface InboundChannelDetails {
+    sender: number
+    state: InboundState
+    messageMetadata: [number, XcmpMessageFormat][]
+}
+
+export interface OutboundChannelDetails {
+    recipient: number
+    state: OutboundState
+    signalsExist: boolean
+    firstIndex: number
+    lastIndex: number
+}
+
+export interface QueueConfigData {
+    suspendThreshold: number
+    dropThreshold: number
+    resumeThreshold: number
+    thresholdWeight: Weight
+    weightRestrictDecay: Weight
+    xcmpMaxIndividualWeight: Weight
 }
 
 export interface ModuleError {
@@ -1207,6 +1773,83 @@ export interface TransactionalError_NoLayer {
     __kind: 'NoLayer'
 }
 
+export type Type_211 = Type_211_NoMutation | Type_211_SomeMutation
+
+export interface Type_211_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface Type_211_SomeMutation {
+    __kind: 'SomeMutation'
+    value: (UserAccountManagement | undefined)
+}
+
+export type AccountRuleDescriptor = AccountRuleDescriptor_WhitelistedCallers | AccountRuleDescriptor_RequireToken
+
+export interface AccountRuleDescriptor_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: Uint8Array[]
+}
+
+export interface AccountRuleDescriptor_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
+
+export interface FeeSide_NoFee {
+    __kind: 'NoFee'
+}
+
+export interface FeeSide_Make {
+    __kind: 'Make'
+}
+
+export interface FeeSide_Take {
+    __kind: 'Take'
+}
+
+export type ListingData = ListingData_FixedPrice | ListingData_Auction
+
+export interface ListingData_FixedPrice {
+    __kind: 'FixedPrice'
+}
+
+export interface ListingData_Auction {
+    __kind: 'Auction'
+    value: AuctionData
+}
+
+export type ListingState = ListingState_FixedPrice | ListingState_Auction
+
+export interface ListingState_FixedPrice {
+    __kind: 'FixedPrice'
+    amountFilled: bigint
+}
+
+export interface ListingState_Auction {
+    __kind: 'Auction'
+    value: AuctionState
+}
+
+export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
+
+export interface ShouldMutate_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface ShouldMutate_SomeMutation {
+    __kind: 'SomeMutation'
+    value: (DefaultRoyalty | undefined)
+}
+
+export interface DefaultCollectionPolicy {
+    mint: DefaultMintPolicy
+    transfer: DefaultTransferPolicy
+    market: DefaultMarketPolicy
+}
+
 export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
@@ -1228,6 +1871,11 @@ export interface FreezeType_TokenAccount {
     __kind: 'TokenAccount'
     tokenId: bigint
     accountId: Uint8Array
+}
+
+export interface Approval {
+    amount: bigint
+    expiration: (number | undefined)
 }
 
 export type Type_148 = Type_148_NoMutation | Type_148_SomeMutation
@@ -5051,18 +5699,6 @@ export interface UserAccountManagement {
     tankReservesAccountCreationDeposit: boolean
 }
 
-export type AccountRuleDescriptor = AccountRuleDescriptor_WhitelistedCallers | AccountRuleDescriptor_RequireToken
-
-export interface AccountRuleDescriptor_WhitelistedCallers {
-    __kind: 'WhitelistedCallers'
-    value: Uint8Array[]
-}
-
-export interface AccountRuleDescriptor_RequireToken {
-    __kind: 'RequireToken'
-    value: RequireTokenRule
-}
-
 export interface UserFuelBudgetRuleDescriptor {
     amount: bigint
     resetPeriod: number
@@ -5078,6 +5714,11 @@ export interface RequireTokenRule {
     tokenId: bigint
 }
 
+export interface DefaultCollectionPolicyDescriptor {
+    mint: DefaultMintPolicyDescriptor
+    market: DefaultMarketPolicyDescriptor
+}
+
 export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
 
 export interface SufficiencyParam_Insufficient {
@@ -5088,11 +5729,6 @@ export interface SufficiencyParam_Insufficient {
 export interface SufficiencyParam_Sufficient {
     __kind: 'Sufficient'
     minimumBalance: bigint
-}
-
-export interface AttributeKeyValuePair {
-    key: Uint8Array
-    value: Uint8Array
 }
 
 export interface ForeignTokenCreationParams {
@@ -5268,6 +5904,16 @@ export interface V2Instruction_SubscribeVersion {
 
 export interface V2Instruction_UnsubscribeVersion {
     __kind: 'UnsubscribeVersion'
+}
+
+export interface InboundDownwardMessage {
+    sentAt: number
+    msg: Uint8Array
+}
+
+export interface InboundHrmpMessage {
+    sentAt: number
+    data: Uint8Array
 }
 
 export type Type_350 = Type_350_WithdrawAsset | Type_350_ReserveAssetDeposited | Type_350_ReceiveTeleportedAsset | Type_350_QueryResponse | Type_350_TransferAsset | Type_350_TransferReserveAsset | Type_350_Transact | Type_350_HrmpNewChannelOpenRequest | Type_350_HrmpChannelAccepted | Type_350_HrmpChannelClosing | Type_350_ClearOrigin | Type_350_DescendOrigin | Type_350_ReportError | Type_350_DepositAsset | Type_350_DepositReserveAsset | Type_350_ExchangeAsset | Type_350_InitiateReserveWithdraw | Type_350_InitiateTeleport | Type_350_QueryHolding | Type_350_BuyExecution | Type_350_RefundSurplus | Type_350_SetErrorHandler | Type_350_SetAppendix | Type_350_ClearError | Type_350_ClaimAsset | Type_350_Trap | Type_350_SubscribeVersion | Type_350_UnsubscribeVersion
@@ -5782,27 +6428,108 @@ export interface Type_307_SiblingParachain {
 
 export type Void = never
 
-export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
+export type Reasons = Reasons_Fee | Reasons_Misc | Reasons_All
 
-export interface MigrationStage_NotStarted {
-    __kind: 'NotStarted'
+export interface Reasons_Fee {
+    __kind: 'Fee'
 }
 
-export interface MigrationStage_InProgress {
-    __kind: 'InProgress'
+export interface Reasons_Misc {
+    __kind: 'Misc'
 }
 
-export interface MigrationStage_Completed {
-    __kind: 'Completed'
+export interface Reasons_All {
+    __kind: 'All'
 }
 
-export interface MigrationStage_Failed {
-    __kind: 'Failed'
+export type BountyStatus = BountyStatus_Proposed | BountyStatus_Approved | BountyStatus_Funded | BountyStatus_CuratorProposed | BountyStatus_Active | BountyStatus_PendingPayout
+
+export interface BountyStatus_Proposed {
+    __kind: 'Proposed'
 }
 
-export interface Approval {
-    amount: bigint
-    expiration: (number | undefined)
+export interface BountyStatus_Approved {
+    __kind: 'Approved'
+}
+
+export interface BountyStatus_Funded {
+    __kind: 'Funded'
+}
+
+export interface BountyStatus_CuratorProposed {
+    __kind: 'CuratorProposed'
+    curator: Uint8Array
+}
+
+export interface BountyStatus_Active {
+    __kind: 'Active'
+    curator: Uint8Array
+    updateDue: number
+}
+
+export interface BountyStatus_PendingPayout {
+    __kind: 'PendingPayout'
+    curator: Uint8Array
+    beneficiary: Uint8Array
+    unlockAt: number
+}
+
+export interface ReferendumStatus {
+    end: number
+    proposal: Bounded
+    threshold: VoteThreshold
+    delay: number
+    tally: Tally
+}
+
+export interface Delegations {
+    votes: bigint
+    capital: bigint
+}
+
+export interface RuleSet {
+    rules: [DispatchRuleKind, DispatchRuleWrapper][]
+    isFrozen: boolean
+}
+
+export type AccountRuleKind = AccountRuleKind_WhitelistedCallers | AccountRuleKind_RequireToken
+
+export interface AccountRuleKind_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+}
+
+export interface AccountRuleKind_RequireToken {
+    __kind: 'RequireToken'
+}
+
+export type AccountRuleWrapper = AccountRuleWrapper_WhitelistedCallers | AccountRuleWrapper_RequireToken
+
+export interface AccountRuleWrapper_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: Uint8Array[]
+}
+
+export interface AccountRuleWrapper_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export type IdleOperation = IdleOperation_DeleteAttributes
+
+export interface IdleOperation_DeleteAttributes {
+    __kind: 'DeleteAttributes'
+    collectionId: bigint
+    tokenId: (bigint | undefined)
+    attributeCount: number
+}
+
+export interface V4AbridgedHrmpChannel {
+    maxCapacity: number
+    maxTotalSize: number
+    maxMessageSize: number
+    msgCount: number
+    totalSize: number
+    mqcHead: (Uint8Array | undefined)
 }
 
 export type VersionedResponse = VersionedResponse_V2 | VersionedResponse_V3
@@ -5817,37 +6544,30 @@ export interface VersionedResponse_V3 {
     value: V3Response
 }
 
-export type Bounded = Bounded_Legacy | Bounded_Inline | Bounded_Lookup
+export type DigestItem = DigestItem_PreRuntime | DigestItem_Consensus | DigestItem_Seal | DigestItem_Other | DigestItem_RuntimeEnvironmentUpdated
 
-export interface Bounded_Legacy {
-    __kind: 'Legacy'
-    hash: Uint8Array
+export interface DigestItem_PreRuntime {
+    __kind: 'PreRuntime'
+    value: [Uint8Array, Uint8Array]
 }
 
-export interface Bounded_Inline {
-    __kind: 'Inline'
+export interface DigestItem_Consensus {
+    __kind: 'Consensus'
+    value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Seal {
+    __kind: 'Seal'
+    value: [Uint8Array, Uint8Array]
+}
+
+export interface DigestItem_Other {
+    __kind: 'Other'
     value: Uint8Array
 }
 
-export interface Bounded_Lookup {
-    __kind: 'Lookup'
-    hash: Uint8Array
-    len: number
-}
-
-export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
-
-export interface Phase_ApplyExtrinsic {
-    __kind: 'ApplyExtrinsic'
-    value: number
-}
-
-export interface Phase_Finalization {
-    __kind: 'Finalization'
-}
-
-export interface Phase_Initialization {
-    __kind: 'Initialization'
+export interface DigestItem_RuntimeEnvironmentUpdated {
+    __kind: 'RuntimeEnvironmentUpdated'
 }
 
 export type Event = Event_System | Event_ParachainSystem | Event_Sudo | Event_Preimage | Event_Scheduler | Event_Utility | Event_Balances | Event_TransactionPayment | Event_Vesting | Event_Democracy | Event_Council | Event_TechnicalCommittee | Event_CommunityPool | Event_TechnicalMembership | Event_Multisig | Event_CollatorStaking | Event_Session | Event_XcmpQueue | Event_PolkadotXcm | Event_CumulusXcm | Event_DmpQueue | Event_OrmlXcm | Event_EfinityXcm | Event_UnknownTokens | Event_XTokens | Event_Bounties | Event_MultiTokens | Event_Claims | Event_Pools | Event_FuelTanks | Event_Marketplace | Event_ExtrinsicPause | Event_EfinityUtility
@@ -6017,9 +6737,61 @@ export interface Event_EfinityUtility {
     value: EfinityUtilityEvent
 }
 
+export type InboundState = InboundState_Ok | InboundState_Suspended
+
+export interface InboundState_Ok {
+    __kind: 'Ok'
+}
+
+export interface InboundState_Suspended {
+    __kind: 'Suspended'
+}
+
+export type XcmpMessageFormat = XcmpMessageFormat_ConcatenatedVersionedXcm | XcmpMessageFormat_ConcatenatedEncodedBlob | XcmpMessageFormat_Signals
+
+export interface XcmpMessageFormat_ConcatenatedVersionedXcm {
+    __kind: 'ConcatenatedVersionedXcm'
+}
+
+export interface XcmpMessageFormat_ConcatenatedEncodedBlob {
+    __kind: 'ConcatenatedEncodedBlob'
+}
+
+export interface XcmpMessageFormat_Signals {
+    __kind: 'Signals'
+}
+
+export type OutboundState = OutboundState_Ok | OutboundState_Suspended
+
+export interface OutboundState_Ok {
+    __kind: 'Ok'
+}
+
+export interface OutboundState_Suspended {
+    __kind: 'Suspended'
+}
+
+export interface AuctionState {
+    highBid: (Bid | undefined)
+}
+
 export interface DefaultRoyalty {
     beneficiary: Uint8Array
     percentage: number
+}
+
+export interface DefaultMintPolicy {
+    maxTokenCount: (bigint | undefined)
+    maxTokenSupply: (bigint | undefined)
+    forceSingleMint: boolean
+}
+
+export interface DefaultTransferPolicy {
+    isFrozen: boolean
+}
+
+export interface DefaultMarketPolicy {
+    royalty: (DefaultRoyalty | undefined)
 }
 
 export interface DefaultForeignTokenMetadata {
@@ -6229,185 +7001,14 @@ export interface V2Junctions_X8 {
     value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
 }
 
-export interface ParachainInherentData {
-    validationData: V4PersistedValidationData
-    relayChainState: StorageProof
-    downwardMessages: InboundDownwardMessage[]
-    horizontalMessages: [number, InboundHrmpMessage[]][]
+export interface DefaultMintPolicyDescriptor {
+    maxTokenCount: (bigint | undefined)
+    maxTokenSupply: (bigint | undefined)
+    forceSingleMint: boolean
 }
 
-export interface VestingSchedule {
-    start: number
-    period: number
-    periodCount: number
-    perPeriod: bigint
-}
-
-export interface VestedAccount {
-    accountId: Uint8Array
-    amount: bigint
-}
-
-export type AccountVote = AccountVote_Standard | AccountVote_Split
-
-export interface AccountVote_Standard {
-    __kind: 'Standard'
-    vote: number
-    balance: bigint
-}
-
-export interface AccountVote_Split {
-    __kind: 'Split'
-    aye: bigint
-    nay: bigint
-}
-
-export type Conviction = Conviction_None | Conviction_Locked1x | Conviction_Locked2x | Conviction_Locked3x | Conviction_Locked4x | Conviction_Locked5x | Conviction_Locked6x
-
-export interface Conviction_None {
-    __kind: 'None'
-}
-
-export interface Conviction_Locked1x {
-    __kind: 'Locked1x'
-}
-
-export interface Conviction_Locked2x {
-    __kind: 'Locked2x'
-}
-
-export interface Conviction_Locked3x {
-    __kind: 'Locked3x'
-}
-
-export interface Conviction_Locked4x {
-    __kind: 'Locked4x'
-}
-
-export interface Conviction_Locked5x {
-    __kind: 'Locked5x'
-}
-
-export interface Conviction_Locked6x {
-    __kind: 'Locked6x'
-}
-
-export interface SessionKeys {
-    aura: Uint8Array
-    pools: Uint8Array
-}
-
-export interface DefaultCollectionDescriptor {
-    policy: DefaultCollectionPolicyDescriptor
-    explicitRoyaltyCurrencies: AssetId[]
-    attributes: AttributeKeyValuePair[]
-}
-
-export interface DefaultCollectionMutation {
-    owner: (Uint8Array | undefined)
-    royalty: ShouldMutate
-    explicitRoyaltyCurrencies: (AssetId[] | undefined)
-}
-
-export interface DefaultBurnParams {
-    tokenId: bigint
-    amount: bigint
-    keepAlive: boolean
-    removeTokenStorage: boolean
-}
-
-export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
-
-export interface DefaultTransferParams_Simple {
-    __kind: 'Simple'
-    tokenId: bigint
-    amount: bigint
-    keepAlive: boolean
-}
-
-export interface DefaultTransferParams_Operator {
-    __kind: 'Operator'
-    tokenId: bigint
-    source: Uint8Array
-    amount: bigint
-    keepAlive: boolean
-}
-
-export interface Recipient {
-    accountId: Uint8Array
-    params: DefaultTransferParams
-}
-
-export interface Collection {
-    owner: Uint8Array
-    policy: DefaultCollectionPolicy
-    tokenCount: bigint
-    attributeCount: number
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [AssetId, null][]
-}
-
-export interface Attribute {
-    value: Uint8Array
-    deposit: bigint
-}
-
-export interface CollectionAccount {
-    isFrozen: boolean
-    approvals: [Uint8Array, (number | undefined)][]
-    accountCount: number
-}
-
-export interface PoolsMutation {
-    community: Pool
-    collator: Pool
-    fuelTanks: Pool
-    priceDiscovery: Pool
-}
-
-export interface DefaultTankMutation {
-    userAccountManagement: Type_211
-    providesDeposit: (boolean | undefined)
-    accountRules: (AccountRuleDescriptor[] | undefined)
-}
-
-export type DispatchRuleKind = DispatchRuleKind_WhitelistedCallers | DispatchRuleKind_WhitelistedCollections | DispatchRuleKind_MaxFuelBurnPerTransaction | DispatchRuleKind_UserFuelBudget | DispatchRuleKind_TankFuelBudget | DispatchRuleKind_RequireToken | DispatchRuleKind_PermittedCalls | DispatchRuleKind_PermittedExtrinsics
-
-export interface DispatchRuleKind_WhitelistedCallers {
-    __kind: 'WhitelistedCallers'
-}
-
-export interface DispatchRuleKind_WhitelistedCollections {
-    __kind: 'WhitelistedCollections'
-}
-
-export interface DispatchRuleKind_MaxFuelBurnPerTransaction {
-    __kind: 'MaxFuelBurnPerTransaction'
-}
-
-export interface DispatchRuleKind_UserFuelBudget {
-    __kind: 'UserFuelBudget'
-}
-
-export interface DispatchRuleKind_TankFuelBudget {
-    __kind: 'TankFuelBudget'
-}
-
-export interface DispatchRuleKind_RequireToken {
-    __kind: 'RequireToken'
-}
-
-export interface DispatchRuleKind_PermittedCalls {
-    __kind: 'PermittedCalls'
-}
-
-export interface DispatchRuleKind_PermittedExtrinsics {
-    __kind: 'PermittedExtrinsics'
-}
-
-export interface AuctionData {
-    startBlock: number
-    endBlock: number
+export interface DefaultMarketPolicyDescriptor {
+    royalty: (DefaultRoyalty | undefined)
 }
 
 export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
@@ -6452,6 +7053,54 @@ export interface V2WeightLimit_Unlimited {
 export interface V2WeightLimit_Limited {
     __kind: 'Limited'
     value: bigint
+}
+
+export interface Tally {
+    ayes: bigint
+    nays: bigint
+    turnout: bigint
+}
+
+export type DispatchRuleWrapper = DispatchRuleWrapper_WhitelistedCallers | DispatchRuleWrapper_WhitelistedCollections | DispatchRuleWrapper_MaxFuelBurnPerTransaction | DispatchRuleWrapper_UserFuelBudget | DispatchRuleWrapper_TankFuelBudget | DispatchRuleWrapper_RequireToken | DispatchRuleWrapper_PermittedCalls | DispatchRuleWrapper_PermittedExtrinsics
+
+export interface DispatchRuleWrapper_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: Uint8Array[]
+}
+
+export interface DispatchRuleWrapper_WhitelistedCollections {
+    __kind: 'WhitelistedCollections'
+    value: bigint[]
+}
+
+export interface DispatchRuleWrapper_MaxFuelBurnPerTransaction {
+    __kind: 'MaxFuelBurnPerTransaction'
+    value: bigint
+}
+
+export interface DispatchRuleWrapper_UserFuelBudget {
+    __kind: 'UserFuelBudget'
+    value: UserFuelBudgetRule
+}
+
+export interface DispatchRuleWrapper_TankFuelBudget {
+    __kind: 'TankFuelBudget'
+    value: TankFuelBudgetRule
+}
+
+export interface DispatchRuleWrapper_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export interface DispatchRuleWrapper_PermittedCalls {
+    __kind: 'PermittedCalls'
+    value: Uint8Array[]
+}
+
+export interface DispatchRuleWrapper_PermittedExtrinsics {
+    __kind: 'PermittedExtrinsics'
+    value: Type_594[]
 }
 
 /**
@@ -9508,64 +10157,6 @@ export interface V2Junction_Plurality {
     part: V2BodyPart
 }
 
-export interface V4PersistedValidationData {
-    parentHead: Uint8Array
-    relayParentNumber: number
-    relayParentStorageRoot: Uint8Array
-    maxPovSize: number
-}
-
-export interface StorageProof {
-    trieNodes: Uint8Array[]
-}
-
-export interface InboundDownwardMessage {
-    sentAt: number
-    msg: Uint8Array
-}
-
-export interface InboundHrmpMessage {
-    sentAt: number
-    data: Uint8Array
-}
-
-export interface DefaultCollectionPolicyDescriptor {
-    mint: DefaultMintPolicyDescriptor
-    market: DefaultMarketPolicyDescriptor
-}
-
-export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
-
-export interface ShouldMutate_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface ShouldMutate_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultCollectionPolicy {
-    mint: DefaultMintPolicy
-    transfer: DefaultTransferPolicy
-    market: DefaultMarketPolicy
-}
-
-export interface Pool {
-    feeShare: number
-}
-
-export type Type_211 = Type_211_NoMutation | Type_211_SomeMutation
-
-export interface Type_211_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface Type_211_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (UserAccountManagement | undefined)
-}
-
 export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
 
 export interface V2Error_Overflow {
@@ -9686,59 +10277,19 @@ export interface V2WildMultiAsset_AllOf {
     fun: V2WildFungibility
 }
 
-export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
-
-export interface BalanceStatus_Free {
-    __kind: 'Free'
+export interface UserFuelBudgetRule {
+    budget: Budget
+    userCount: number
 }
 
-export interface BalanceStatus_Reserved {
-    __kind: 'Reserved'
+export interface TankFuelBudgetRule {
+    budget: Budget
+    consumption: Consumption
 }
 
-export type VoteThreshold = VoteThreshold_SuperMajorityApprove | VoteThreshold_SuperMajorityAgainst | VoteThreshold_SimpleMajority
-
-export interface VoteThreshold_SuperMajorityApprove {
-    __kind: 'SuperMajorityApprove'
-}
-
-export interface VoteThreshold_SuperMajorityAgainst {
-    __kind: 'SuperMajorityAgainst'
-}
-
-export interface VoteThreshold_SimpleMajority {
-    __kind: 'SimpleMajority'
-}
-
-export type RootOrSigned = RootOrSigned_Root | RootOrSigned_Signed
-
-export interface RootOrSigned_Root {
-    __kind: 'Root'
-}
-
-export interface RootOrSigned_Signed {
-    __kind: 'Signed'
-    value: Uint8Array
-}
-
-export interface Listing {
-    seller: Uint8Array
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    minTakeValue: bigint
-    feeSide: FeeSide
-    creationBlock: number
-    deposit: bigint
-    salt: Uint8Array
-    data: ListingData
-    state: ListingState
-}
-
-export interface Bid {
-    bidder: Uint8Array
-    price: bigint
+export interface Type_594 {
+    palletName: Uint8Array
+    extrinsicName: Uint8Array
 }
 
 export type V2NetworkId = V2NetworkId_Any | V2NetworkId_Named | V2NetworkId_Polkadot | V2NetworkId_Kusama
@@ -9833,30 +10384,6 @@ export interface V2BodyPart_MoreThanProportion {
     denom: number
 }
 
-export interface DefaultMintPolicyDescriptor {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultMarketPolicyDescriptor {
-    royalty: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultMintPolicy {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultTransferPolicy {
-    isFrozen: boolean
-}
-
-export interface DefaultMarketPolicy {
-    royalty: (DefaultRoyalty | undefined)
-}
-
 export type V2WildFungibility = V2WildFungibility_Fungible | V2WildFungibility_NonFungible
 
 export interface V2WildFungibility_Fungible {
@@ -9867,43 +10394,7 @@ export interface V2WildFungibility_NonFungible {
     __kind: 'NonFungible'
 }
 
-export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
-
-export interface FeeSide_NoFee {
-    __kind: 'NoFee'
-}
-
-export interface FeeSide_Make {
-    __kind: 'Make'
-}
-
-export interface FeeSide_Take {
-    __kind: 'Take'
-}
-
-export type ListingData = ListingData_FixedPrice | ListingData_Auction
-
-export interface ListingData_FixedPrice {
-    __kind: 'FixedPrice'
-}
-
-export interface ListingData_Auction {
-    __kind: 'Auction'
-    value: AuctionData
-}
-
-export type ListingState = ListingState_FixedPrice | ListingState_Auction
-
-export interface ListingState_FixedPrice {
-    __kind: 'FixedPrice'
-    amountFilled: bigint
-}
-
-export interface ListingState_Auction {
-    __kind: 'Auction'
-    value: AuctionState
-}
-
-export interface AuctionState {
-    highBid: (Bid | undefined)
+export interface Budget {
+    amount: bigint
+    resetPeriod: number
 }
