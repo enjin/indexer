@@ -9,8 +9,8 @@ import { CommonContext } from '../../types/contexts'
 function getEventData(ctx: CommonContext, eventItem: Event) {
     const event = new MultiTokensReservedEvent(ctx, eventItem)
 
-    if (event.isEfinityV2) {
-        return event.asEfinityV2
+    if (event.isEfinityV3014) {
+        return event.asEfinityV3014
     }
 
     return null

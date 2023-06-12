@@ -16,28 +16,11 @@ import { Event } from '../../../types/generated/support'
 import { MultiTokensApprovedEvent } from '../../../types/generated/events'
 import { CommonContext } from '../../types/contexts'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint | undefined
-    owner: Uint8Array
-    operator: Uint8Array
-    amount: bigint | undefined
-    expiration: number | undefined
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensApprovedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, owner, operator, amount, expiration } = data.asEfinityV2
-        return {
-            collectionId,
-            tokenId,
-            owner,
-            operator,
-            amount,
-            expiration,
-        }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
 
     throw new UnknownVersionError(data.constructor.name)
