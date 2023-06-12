@@ -34,10 +34,13 @@ function getBalanceSetAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesBalanceSetEvent(ctx, event)
 
     if (data.isEfinityV3014) {
-        return data.asRocfinityV3012.who
+        return data.asEfinityV3014.who
     }
     if (data.isV602) {
         return data.asV602.who
+    }
+    if (data.isV500) {
+        return data.asV500.who
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -115,11 +118,7 @@ function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): [Uint8
     throw new UnknownVersionError(data.constructor.name)
 }
 
-async function getSystemAccountBalances(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    accounts: Uint8Array[]
-): Promise<AccountInfo[] | AccountInfo_v602[] | undefined> {
+async function getSystemAccountBalances(ctx: CommonContext, block: SubstrateBlock, accounts: Uint8Array[]) {
     const storage = new SystemAccountStorage(ctx, block)
     if (!storage.isExists) return undefined
 
@@ -128,6 +127,10 @@ async function getSystemAccountBalances(
     }
     if (storage.isV602) {
         return storage.asV602.getMany(accounts)
+    }
+
+    if (storage.isV500) {
+        return storage.asV500.getMany(accounts)
     }
 
     throw new UnknownVersionError(storage.constructor.name)
@@ -193,11 +196,7 @@ function processBalancesEventItem(ctx: CommonContext, event: Event) {
     return ids
 }
 
-async function getBalances(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    accountIds: Uint8Array[]
-): Promise<AccountInfo[] | AccountInfo_v602[] | undefined> {
+async function getBalances(ctx: CommonContext, block: SubstrateBlock, accountIds: Uint8Array[]) {
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
