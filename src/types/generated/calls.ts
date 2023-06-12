@@ -1,40 +1,10 @@
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result, Option} from './support'
-import * as rocfinityV3012 from './rocfinityV3012'
 import * as efinityV3014 from './efinityV3014'
 import * as v500 from './v500'
 import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
-
-export class AuthorshipSetUnclesCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Authorship.set_uncles')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Provide a set of uncles.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Authorship.set_uncles') === 'cf2d7dac8c8babfdda54dfcca36fda32336dc937b0f1767c6b2332a9b718e0b5'
-    }
-
-    /**
-     * Provide a set of uncles.
-     */
-    get asRocfinityV3012(): {newUncles: rocfinityV3012.Header[]} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
 
 export class BalancesForceSetBalanceCall {
     private readonly _chain: Chain
@@ -156,7 +126,7 @@ export class BalancesSetBalanceCall {
      * 
      * The dispatch origin for this call is `root`.
      */
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('Balances.set_balance') === 'beb82909d38c015bc075ff8b107e47a02f8772bf5cf681d6cd84ef685e448a8f'
     }
 
@@ -170,8 +140,8 @@ export class BalancesSetBalanceCall {
      * 
      * The dispatch origin for this call is `root`.
      */
-    get asRocfinityV3012(): {who: rocfinityV3012.MultiAddress, newFree: bigint, newReserved: bigint} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {who: v500.MultiAddress, newFree: bigint, newReserved: bigint} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -945,7 +915,7 @@ export class ClaimsClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('Claims.claim') === '46f6fbe643b51ee7e3a08e102493b6291f118e76145971a19fb90446b9af7251'
     }
 
@@ -975,8 +945,8 @@ export class ClaimsClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get asRocfinityV3012(): {dest: Uint8Array, ethereumSignature: Uint8Array} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {dest: Uint8Array, ethereumSignature: Uint8Array} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1052,7 +1022,7 @@ export class ClaimsMintClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('Claims.mint_claim') === 'bd93629e146aeda1b31bc7c1c194470feee46b9e4aed4d426ce152fe4c633fce'
     }
 
@@ -1071,8 +1041,8 @@ export class ClaimsMintClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get asRocfinityV3012(): {who: Uint8Array, value: bigint} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {who: Uint8Array, value: bigint} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1129,15 +1099,6 @@ export class ClaimsMoveClaimCall {
         assert(call.name === 'Claims.move_claim')
         this._chain = ctx._chain
         this.call = call
-    }
-
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Claims.move_claim') === 'f6ca004c519bffb9d3e43365a3d6810f9f443ead5407fe14deb41c7ab92c1336'
-    }
-
-    get asRocfinityV3012(): {old: Uint8Array, new: Uint8Array, preclaim: (Uint8Array | undefined)} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -1891,417 +1852,6 @@ export class CommunityPoolSpendCall {
     }
 }
 
-export class ContractsCallCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.call')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Makes a call to an account, optionally transferring some balance.
-     * 
-     * # Parameters
-     * 
-     * * `dest`: Address of the contract to call.
-     * * `value`: The balance to transfer from the `origin` to `dest`.
-     * * `gas_limit`: The gas limit enforced when executing the constructor.
-     * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
-     *   caller to pay for the storage consumed.
-     * * `data`: The input data to pass to the contract.
-     * 
-     * * If the account is a smart-contract account, the associated code will be
-     * executed and any value will be transferred.
-     * * If the account is a regular account, any value will be transferred.
-     * * If no account exists and the call value is not less than `existential_deposit`,
-     * a regular account will be created and any value will be transferred.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.call') === '9b1b707b0f5c537afca26d44d0081d29092614e330ff3810d328d0342d6a1845'
-    }
-
-    /**
-     * Makes a call to an account, optionally transferring some balance.
-     * 
-     * # Parameters
-     * 
-     * * `dest`: Address of the contract to call.
-     * * `value`: The balance to transfer from the `origin` to `dest`.
-     * * `gas_limit`: The gas limit enforced when executing the constructor.
-     * * `storage_deposit_limit`: The maximum amount of balance that can be charged from the
-     *   caller to pay for the storage consumed.
-     * * `data`: The input data to pass to the contract.
-     * 
-     * * If the account is a smart-contract account, the associated code will be
-     * executed and any value will be transferred.
-     * * If the account is a regular account, any value will be transferred.
-     * * If no account exists and the call value is not less than `existential_deposit`,
-     * a regular account will be created and any value will be transferred.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.MultiAddress, value: bigint, gasLimit: rocfinityV3012.Weight, storageDepositLimit: (bigint | undefined), data: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsCallOldWeightCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.call_old_weight')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Deprecated version if [`Self::call`] for use in an in-storage `Call`.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.call_old_weight') === 'd96c8a6656d7a4d6af6d5d0d51dd36e041c9ea8a92a7ead343d711addd74780f'
-    }
-
-    /**
-     * Deprecated version if [`Self::call`] for use in an in-storage `Call`.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.MultiAddress, value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), data: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsInstantiateCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.instantiate')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Instantiates a contract from a previously deployed wasm binary.
-     * 
-     * This function is identical to [`Self::instantiate_with_code`] but without the
-     * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
-     * must be supplied.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.instantiate') === '144f181b3afbf1b5f0fd6ab12277b9e2a4600a80dfdf6fa1aab631acc55d1bd1'
-    }
-
-    /**
-     * Instantiates a contract from a previously deployed wasm binary.
-     * 
-     * This function is identical to [`Self::instantiate_with_code`] but without the
-     * code deployment step. Instead, the `code_hash` of an on-chain deployed wasm binary
-     * must be supplied.
-     */
-    get asRocfinityV3012(): {value: bigint, gasLimit: rocfinityV3012.Weight, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsInstantiateOldWeightCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.instantiate_old_weight')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Deprecated version if [`Self::instantiate`] for use in an in-storage `Call`.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.instantiate_old_weight') === '065e28d4aca8ef55389ab2cdeb357c40056320f063a3db0a6c9157a597c14b5b'
-    }
-
-    /**
-     * Deprecated version if [`Self::instantiate`] for use in an in-storage `Call`.
-     */
-    get asRocfinityV3012(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), codeHash: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsInstantiateWithCodeCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.instantiate_with_code')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Instantiates a new contract from the supplied `code` optionally transferring
-     * some balance.
-     * 
-     * This dispatchable has the same effect as calling [`Self::upload_code`] +
-     * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
-     * also check the documentation of [`Self::upload_code`].
-     * 
-     * # Parameters
-     * 
-     * * `value`: The balance to transfer from the `origin` to the newly created contract.
-     * * `gas_limit`: The gas limit enforced when executing the constructor.
-     * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
-     *   from the caller to pay for the storage consumed.
-     * * `code`: The contract code to deploy in raw bytes.
-     * * `data`: The input data to pass to the contract constructor.
-     * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
-     * 
-     * Instantiation is executed as follows:
-     * 
-     * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
-     *   code.
-     * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
-     * - The destination address is computed based on the sender, code_hash and the salt.
-     * - The smart-contract account is created at the computed address.
-     * - The `value` is transferred to the new account.
-     * - The `deploy` function is executed in the context of the newly-created account.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.instantiate_with_code') === 'f764596bd52fce313b3fe7a10bf25a782558f542e67923c0437000f75dc3d1c8'
-    }
-
-    /**
-     * Instantiates a new contract from the supplied `code` optionally transferring
-     * some balance.
-     * 
-     * This dispatchable has the same effect as calling [`Self::upload_code`] +
-     * [`Self::instantiate`]. Bundling them together provides efficiency gains. Please
-     * also check the documentation of [`Self::upload_code`].
-     * 
-     * # Parameters
-     * 
-     * * `value`: The balance to transfer from the `origin` to the newly created contract.
-     * * `gas_limit`: The gas limit enforced when executing the constructor.
-     * * `storage_deposit_limit`: The maximum amount of balance that can be charged/reserved
-     *   from the caller to pay for the storage consumed.
-     * * `code`: The contract code to deploy in raw bytes.
-     * * `data`: The input data to pass to the contract constructor.
-     * * `salt`: Used for the address derivation. See [`Pallet::contract_address`].
-     * 
-     * Instantiation is executed as follows:
-     * 
-     * - The supplied `code` is instrumented, deployed, and a `code_hash` is created for that
-     *   code.
-     * - If the `code_hash` already exists on the chain the underlying `code` will be shared.
-     * - The destination address is computed based on the sender, code_hash and the salt.
-     * - The smart-contract account is created at the computed address.
-     * - The `value` is transferred to the new account.
-     * - The `deploy` function is executed in the context of the newly-created account.
-     */
-    get asRocfinityV3012(): {value: bigint, gasLimit: rocfinityV3012.Weight, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsInstantiateWithCodeOldWeightCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.instantiate_with_code_old_weight')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Deprecated version if [`Self::instantiate_with_code`] for use in an in-storage `Call`.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.instantiate_with_code_old_weight') === '2204435764a14a39d7c13f6cffbf98550fcaad4cba9d91306fe99d88a718a62c'
-    }
-
-    /**
-     * Deprecated version if [`Self::instantiate_with_code`] for use in an in-storage `Call`.
-     */
-    get asRocfinityV3012(): {value: bigint, gasLimit: bigint, storageDepositLimit: (bigint | undefined), code: Uint8Array, data: Uint8Array, salt: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsRemoveCodeCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.remove_code')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Remove the code stored under `code_hash` and refund the deposit to its owner.
-     * 
-     * A code can only be removed by its original uploader (its owner) and only if it is
-     * not used by any contract.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.remove_code') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
-    }
-
-    /**
-     * Remove the code stored under `code_hash` and refund the deposit to its owner.
-     * 
-     * A code can only be removed by its original uploader (its owner) and only if it is
-     * not used by any contract.
-     */
-    get asRocfinityV3012(): {codeHash: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsSetCodeCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.set_code')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Privileged function that changes the code of an existing contract.
-     * 
-     * This takes care of updating refcounts and all other necessary operations. Returns
-     * an error if either the `code_hash` or `dest` do not exist.
-     * 
-     * # Note
-     * 
-     * This does **not** change the address of the contract in question. This means
-     * that the contract address is no longer derived from its code hash after calling
-     * this dispatchable.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.set_code') === '70cd8e4f03fe2c8334a13735563897eedfa16eb9b8e0c97b3aacce6c108aacc0'
-    }
-
-    /**
-     * Privileged function that changes the code of an existing contract.
-     * 
-     * This takes care of updating refcounts and all other necessary operations. Returns
-     * an error if either the `code_hash` or `dest` do not exist.
-     * 
-     * # Note
-     * 
-     * This does **not** change the address of the contract in question. This means
-     * that the contract address is no longer derived from its code hash after calling
-     * this dispatchable.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.MultiAddress, codeHash: Uint8Array} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class ContractsUploadCodeCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'Contracts.upload_code')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * Upload new `code` without instantiating a contract from it.
-     * 
-     * If the code does not already exist a deposit is reserved from the caller
-     * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
-     * depends on the instrumented size of the the supplied `code`.
-     * 
-     * If the code already exists in storage it will still return `Ok` and upgrades
-     * the in storage version to the current
-     * [`InstructionWeights::version`](InstructionWeights).
-     * 
-     * - `determinism`: If this is set to any other value but [`Determinism::Deterministic`]
-     *   then the only way to use this code is to delegate call into it from an offchain
-     *   execution. Set to [`Determinism::Deterministic`] if in doubt.
-     * 
-     * # Note
-     * 
-     * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
-     * To avoid this situation a constructor could employ access control so that it can
-     * only be instantiated by permissioned entities. The same is true when uploading
-     * through [`Self::instantiate_with_code`].
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Contracts.upload_code') === '0611b158a1c5ea1399a178957cd7f7e3f18854c4cbba7eb06690c056695e0ff2'
-    }
-
-    /**
-     * Upload new `code` without instantiating a contract from it.
-     * 
-     * If the code does not already exist a deposit is reserved from the caller
-     * and unreserved only when [`Self::remove_code`] is called. The size of the reserve
-     * depends on the instrumented size of the the supplied `code`.
-     * 
-     * If the code already exists in storage it will still return `Ok` and upgrades
-     * the in storage version to the current
-     * [`InstructionWeights::version`](InstructionWeights).
-     * 
-     * - `determinism`: If this is set to any other value but [`Determinism::Deterministic`]
-     *   then the only way to use this code is to delegate call into it from an offchain
-     *   execution. Set to [`Determinism::Deterministic`] if in doubt.
-     * 
-     * # Note
-     * 
-     * Anyone can instantiate a contract from any uploaded code and thus prevent its removal.
-     * To avoid this situation a constructor could employ access control so that it can
-     * only be instantiated by permissioned entities. The same is true when uploading
-     * through [`Self::instantiate_with_code`].
-     */
-    get asRocfinityV3012(): {code: Uint8Array, storageDepositLimit: (bigint | undefined), determinism: rocfinityV3012.Determinism} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
 export class CouncilCloseCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -2424,7 +1974,7 @@ export class CouncilCloseOldWeightCall {
      * - up to 3 events
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('Council.close_old_weight') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
     }
 
@@ -2462,8 +2012,8 @@ export class CouncilCloseOldWeightCall {
      * - up to 3 events
      * # </weight>
      */
-    get asRocfinityV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2556,41 +2106,6 @@ export class CouncilExecuteCall {
      */
     get asEfinityV3014(): {proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Dispatch a proposal from a member using the `Member` origin.
-     * 
-     * Origin must be a member of the collective.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-     *   `proposal`
-     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-     * - 1 event
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Council.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
-    }
-
-    /**
-     * Dispatch a proposal from a member using the `Member` origin.
-     * 
-     * Origin must be a member of the collective.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-     *   `proposal`
-     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-     * - 1 event
-     * # </weight>
-     */
-    get asRocfinityV3012(): {proposal: rocfinityV3012.Call, lengthBound: number} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -2782,73 +2297,6 @@ export class CouncilProposeCall {
      */
     get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Add a new proposal to either be voted on or executed directly.
-     * 
-     * Requires the sender to be member.
-     * 
-     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-     * or put up for voting.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(B + M + P1)` or `O(B + M + P2)` where:
-     *   - `B` is `proposal` size in bytes (length-fee-bounded)
-     *   - `M` is members-count (code- and governance-bounded)
-     *   - branching is influenced by `threshold` where:
-     *     - `P1` is proposal execution complexity (`threshold < 2`)
-     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-     * - DB:
-     *   - 1 storage read `is_member` (codec `O(M)`)
-     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-     *   - DB accesses influenced by `threshold`:
-     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-     *     - OR proposal insertion (`threshold <= 2`)
-     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-     *       - 1 storage write `ProposalOf` (codec `O(B)`)
-     *       - 1 storage write `Voting` (codec `O(M)`)
-     *   - 1 event
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Council.propose') === '92e93213fc1be2618c82cb60eb5f08adc129866b15780fce524dab7d46bafcc9'
-    }
-
-    /**
-     * Add a new proposal to either be voted on or executed directly.
-     * 
-     * Requires the sender to be member.
-     * 
-     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-     * or put up for voting.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(B + M + P1)` or `O(B + M + P2)` where:
-     *   - `B` is `proposal` size in bytes (length-fee-bounded)
-     *   - `M` is members-count (code- and governance-bounded)
-     *   - branching is influenced by `threshold` where:
-     *     - `P1` is proposal execution complexity (`threshold < 2`)
-     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-     * - DB:
-     *   - 1 storage read `is_member` (codec `O(M)`)
-     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-     *   - DB accesses influenced by `threshold`:
-     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-     *     - OR proposal insertion (`threshold <= 2`)
-     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-     *       - 1 storage write `ProposalOf` (codec `O(B)`)
-     *       - 1 storage write `Voting` (codec `O(M)`)
-     *   - 1 event
-     * # </weight>
-     */
-    get asRocfinityV3012(): {threshold: number, proposal: rocfinityV3012.Call, lengthBound: number} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -4181,58 +3629,6 @@ export class DmpQueueServiceOverweightCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Service a single overweight message.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight message to service.
-     * - `weight_limit`: The amount of weight that message execution may take.
-     * 
-     * Errors:
-     * - `Unknown`: Message of `index` is unknown.
-     * - `OverLimit`: Message execution may use greater than `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('DmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
-    }
-
-    /**
-     * Service a single overweight message.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight message to service.
-     * - `weight_limit`: The amount of weight that message execution may take.
-     * 
-     * Errors:
-     * - `Unknown`: Message of `index` is unknown.
-     * - `OverLimit`: Message execution may use greater than `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get asRocfinityV3012(): {index: bigint, weightLimit: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Service a single overweight message.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('DmpQueue.service_overweight') === '80fae8875bf513efc1e06b7dac547fccfc1e5fc45888cc8afd9b43812cf51bf5'
-    }
-
-    /**
-     * Service a single overweight message.
-     */
-    get asV500(): {index: bigint, weightLimit: v500.Weight} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class EfinityUtilityBatchCall {
@@ -4284,37 +3680,6 @@ export class EfinityUtilityBatchCall {
      */
     get asEfinityV3014(): {calls: efinityV3014.Call[], continueOnFailure: boolean} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Dispatch a batch of calls.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('EfinityUtility.batch') === 'b1689eefbd8b66daf8769783c9eb2bf9c76b38f20577024c26cc71282cd018df'
-    }
-
-    /**
-     * Dispatch a batch of calls.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     */
-    get asRocfinityV3012(): {calls: rocfinityV3012.Call[], continueOnFailure: boolean} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -4502,36 +3867,6 @@ export class EfinityXcmForceSetMinimumWeightCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Update xcm fees amount to be used in xcm.Withdraw message
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('EfinityXcm.force_set_minimum_weight') === '267efe07666c8afefd16420b4956a7fd0562d42740846fcce2b3cfde567ac845'
-    }
-
-    /**
-     * Update xcm fees amount to be used in xcm.Withdraw message
-     */
-    get asRocfinityV3012(): {xcmCall: rocfinityV3012.XcmOperation, xcmWeightFeeMisc: rocfinityV3012.MinimumWeightFeePair} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Update xcm fees amount to be used in xcm.Withdraw message
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('EfinityXcm.force_set_minimum_weight') === '4c92aee9cd2c92a06e50e7ae691000178c9980b7f9c4e035739e193479d9f615'
-    }
-
-    /**
-     * Update xcm fees amount to be used in xcm.Withdraw message
-     */
-    get asV500(): {xcmCall: v500.XcmOperation, xcmWeightFeeMisc: v500.MinimumWeightFeePair} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class EfinityXcmTransferAssetToParachainCall {
@@ -4591,94 +3926,6 @@ export class EfinityXcmTransferAssetToParachainCall {
      */
     get asEfinityV3014(): {paraId: efinityV3014.ParachainId, beneficiary: efinityV3014.Account, currencyId: efinityV3014.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('EfinityXcm.transfer_asset_to_parachain') === 'a90715f430da7f543e76cf34a7a4c94eb884910fb6830c2daffdfc04e9613447'
-    }
-
-    /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - `InvalidAccountId`: `beneficiary` is invalid, i.e could not be converted to
-     */
-    get asRocfinityV3012(): {paraId: rocfinityV3012.ParachainId, beneficiary: rocfinityV3012.Account, assetId: rocfinityV3012.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
-     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
-     *   the asset.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('EfinityXcm.transfer_asset_to_parachain') === '6e0995af8a1271406f286250994b7e96ef4e950ec17addde0aa13d7dcf06db7e'
-    }
-
-    /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
-     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
-     *   the asset.
-     */
-    get asV500(): {paraId: v500.ParachainId, beneficiary: v500.Account, currencyId: v500.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4842,31 +4089,6 @@ export class ExtrinsicPausePauseExtrinsicCall {
      */
     get asEfinityV3014(): {call: efinityV3014.Call, pauseOnlyExtrinsic: boolean} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Pause execution of extrinsic(s)
-     * 
-     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
-     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
-     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
-     * is paused, else the entire pallet is paused.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '3a016ad7f8a510ffbc43c0afc3ffad3c5952120d62da1a066db102cef66f7678'
-    }
-
-    /**
-     * Pause execution of extrinsic(s)
-     * 
-     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
-     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
-     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
-     * is paused, else the entire pallet is paused.
-     */
-    get asRocfinityV3012(): {call: rocfinityV3012.Call, pauseOnlyExtrinsic: boolean} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -5054,31 +4276,6 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asEfinityV3014(): {call: efinityV3014.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Resume execution of extrinsic(s)
-     * 
-     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
-     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
-     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
-     * is resumed, else the entire pallet is resumed.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === 'd15b976dc282a1da37a10793b600afa144444807780acbfefdf726aa6e1b4db2'
-    }
-
-    /**
-     * Resume execution of extrinsic(s)
-     * 
-     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
-     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
-     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
-     * is resumed, else the entire pallet is resumed.
-     */
-    get asRocfinityV3012(): {call: rocfinityV3012.Call, resumeOnlyExtrinsic: boolean} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -5380,29 +4577,6 @@ export class FuelTanksCreateFuelTankCall {
      * Creates a fuel tank, given a descriptor
      * 
      * # Errors
-     * - `FuelTankAlreadyExists` if `tank_id` already exists
-     * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === 'b80235e13db298392f2a78a9bcf83dd5d935e965474364a33a6a6323e42f6e5a'
-    }
-
-    /**
-     * Creates a fuel tank, given a descriptor
-     * 
-     * # Errors
-     * - `FuelTankAlreadyExists` if `tank_id` already exists
-     * - `DuplicateRuleKinds` if a rule set has multiple rules of the same kind
-     */
-    get asRocfinityV3012(): {descriptor: rocfinityV3012.FuelTankDescriptor} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Creates a fuel tank, given a descriptor
-     * 
-     * # Errors
      * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
@@ -5595,55 +4769,6 @@ export class FuelTanksDispatchCall {
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
      * 
      * # Errors
-     * - `FuelTankNotFound` if `tank_id` does not exist.
-     * - `InvalidRuleSetId` if `rule_set_id` does not exist
-     * - `UsageRestricted` if caller is not part of ruleset whitelist
-     * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
-     * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
-     *   ruleset
-     * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
-     *   ruleset
-     * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
-     *   ruleset
-     * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
-     * - `Overflow` if amount overflows type
-     * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
-     *   remaining_fee when `pays_remaining_fee` is true
-     * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch') === '76e6c92bb834e2ab85b4edaac54aa7351f5d41f7e87f479eeee6d17dd4deb5e9'
-    }
-
-    /**
-     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     * 
-     * # Errors
-     * - `FuelTankNotFound` if `tank_id` does not exist.
-     * - `InvalidRuleSetId` if `rule_set_id` does not exist
-     * - `UsageRestricted` if caller is not part of ruleset whitelist
-     * - `TransactionExceedsFuelBurnLimit` if call exceeds the max fee limit set by ruleset
-     * - `TransactionExceedsUserBudget` if call exceeds the max user budget limit set by
-     *   ruleset
-     * - `TransactionExceedsFuelTankBudget` if call exceeds the max fuel tank budget set by
-     *   ruleset
-     * - `CallerDoesNotHaveRuleSetTokenBalance` if caller does not own the tokens to use the
-     *   ruleset
-     * - `TransactionNotPermitted` if the call is not in the list of permitted calls of ruleset
-     * - `Overflow` if amount overflows type
-     * - `UserBalanceLowForRemainingFee` if caller does not have enough balance to pay for
-     *   remaining_fee when `pays_remaining_fee` is true
-     * - `FuelTankOutOfFunds` if the fuel tank account cannot pay fees
-     */
-    get asRocfinityV3012(): {tankId: rocfinityV3012.MultiAddress, ruleSetId: number, call: rocfinityV3012.Call, paysRemainingFee: boolean} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     * 
-     * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
      * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
@@ -5794,29 +4919,6 @@ export class FuelTanksDispatchAndTouchCall {
      */
     get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, ruleSetId: number, call: efinityV3014.Call, paysRemainingFee: boolean} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
-     * exist and is allowed by the fuel tank's `user_account_management` settings.
-     * # Errors
-     * Returns the same errors as [dispatch](Self::dispatch) and
-     * [add_account](Self::add_account)
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '76e6c92bb834e2ab85b4edaac54aa7351f5d41f7e87f479eeee6d17dd4deb5e9'
-    }
-
-    /**
-     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
-     * exist and is allowed by the fuel tank's `user_account_management` settings.
-     * # Errors
-     * Returns the same errors as [dispatch](Self::dispatch) and
-     * [add_account](Self::add_account)
-     */
-    get asRocfinityV3012(): {tankId: rocfinityV3012.MultiAddress, ruleSetId: number, call: rocfinityV3012.Call, paysRemainingFee: boolean} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6033,49 +5135,6 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, ruleSetId: number, rules: efinityV3014.DispatchRuleDescriptor[]} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
-     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
-     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
-     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
-     * and it will maintain any persistent data it already has.
-     * 
-     * This is only callable by the fuel tank's owner.
-     * ### Errors
-     * - `FuelTankNotFound` if `tank_id` does not exist.
-     * - `NoPermission` if caller is not the fuel tank owner
-     * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
-     * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
-     *   data
-     * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
-     * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('FuelTanks.insert_rule_set') === 'adaef5dbdb3c21b8d78c03b4e121b7381a0a295fd289d43652c3a4b96f254680'
-    }
-
-    /**
-     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
-     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
-     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
-     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
-     * and it will maintain any persistent data it already has.
-     * 
-     * This is only callable by the fuel tank's owner.
-     * ### Errors
-     * - `FuelTankNotFound` if `tank_id` does not exist.
-     * - `NoPermission` if caller is not the fuel tank owner
-     * - `RequiresFrozenTankOrRuleset` if tank or rule set is not frozen
-     * - `CannotRemoveRuleThatIsStoringAccountData` if removing a rule that is storing account
-     *   data
-     * - `MaxRuleSetsExceeded` if max number of rule sets was exceeded
-     * - `DuplicateRuleKinds` if adding a rule set with multiple rules of the same kind
-     */
-    get asRocfinityV3012(): {tankId: rocfinityV3012.MultiAddress, ruleSetId: number, rules: rocfinityV3012.DispatchRuleDescriptor[]} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6959,45 +6018,6 @@ export class MultiTokensBatchMintCall {
 
     /**
      * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
-     * `AccountId` and `MintParams`. A single mint failure will fail all of them in the batch.
-     * 
-     * # Errors
-     * - `AmountZero` if `amount == 0`.
-     * - `NotFound` if `collection` does **not** exist.
-     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
-     * - `MintForbidden` if the policy disallows the operation
-     * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
-     * - `TokenCountOverflow` if the token_count overflows
-     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
-     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.batch_mint') === '0c8f31ef9708128069f735e820a42408b1da004a78ff20d127fe9ab42533a690'
-    }
-
-    /**
-     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
-     * `AccountId` and `MintParams`. A single mint failure will fail all of them in the batch.
-     * 
-     * # Errors
-     * - `AmountZero` if `amount == 0`.
-     * - `NotFound` if `collection` does **not** exist.
-     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
-     * - `MintForbidden` if the policy disallows the operation
-     * - `BalanceOverflow` if `amount + current_total_supply` overflows its type.
-     * - `TokenCountOverflow` if the token_count overflows
-     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
-     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
-     */
-    get asRocfinityV3012(): {collectionId: bigint, recipients: rocfinityV3012.Type_378[]} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
      * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
      * will fail all of them in the batch.
      * 
@@ -7495,27 +6515,6 @@ export class MultiTokensForceSetTokenCall {
 
     /**
      * Set the Tokens storage to the given `value`, origin must be root
-     * 
-     * # Errors
-     * - `BadOrigin` if origin != root
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.force_set_token') === '5b7285ab60ef16b1bc066fab5d476a7be9743fed0ce10d505b35529a833b5f6a'
-    }
-
-    /**
-     * Set the Tokens storage to the given `value`, origin must be root
-     * 
-     * # Errors
-     * - `BadOrigin` if origin != root
-     */
-    get asRocfinityV3012(): {collectionId: bigint, tokenId: bigint, value: (rocfinityV3012.Token | undefined)} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Set the Tokens storage to the given `value`, origin must be root
      */
     get isV500(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_token') === '6e309a6623c66424fa2b051393f739db30a442cb48712f14fef0c24db32bf0bc'
@@ -7640,36 +6639,6 @@ export class MultiTokensFreezeCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Freeze collection, token or account
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.freeze') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
-    }
-
-    /**
-     * Freeze collection, token or account
-     */
-    get asRocfinityV3012(): {info: rocfinityV3012.Freeze} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Freeze collection, token or account
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('MultiTokens.freeze') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
-    }
-
-    /**
-     * Freeze collection, token or account
-     */
-    get asV500(): {info: v500.Freeze} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class MultiTokensMintCall {
@@ -7727,53 +6696,6 @@ export class MultiTokensMintCall {
      */
     get asEfinityV3014(): {recipient: efinityV3014.MultiAddress, collectionId: bigint, params: efinityV3014.DefaultMintParams} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
-     * `MintPolicy`.
-     * 
-     * # Errors
-     * - `AmountZero` if `amount == 0`.
-     * - `CollectionNotFound` if `Collection` does not exist.
-     * - `TokenNotFound` if `Token` does not exist.
-     * - `TokenAlreadyExists` if attempting to create a token that already exists
-     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
-     * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
-     *   token_count
-     * overflows.
-     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
-     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
-     * - `ConflictingLocation` if the token is foreign and the location is already mapped to
-     *   another asset in `AssetIdsByLocation`
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.mint') === '166a9a493c469412cddabceaf140321536c0e288eecfdb6506086a8a44c0451a'
-    }
-
-    /**
-     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
-     * `MintPolicy`.
-     * 
-     * # Errors
-     * - `AmountZero` if `amount == 0`.
-     * - `CollectionNotFound` if `Collection` does not exist.
-     * - `TokenNotFound` if `Token` does not exist.
-     * - `TokenAlreadyExists` if attempting to create a token that already exists
-     * - `NoPermission` if `caller` is not allowed to mint the `collection`.
-     * - `Overflow` if `amount + current_total_supply` overflows its type, or if the
-     *   token_count
-     * overflows.
-     * - `TokenMintCapExceeded` if the mint policy TokenCap does not allow minting
-     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - `DepositReserveFailed` if the issuer does not have sufficent balance for token deposit
-     * - `ConflictingLocation` if the token is foreign and the location is already mapped to
-     *   another asset in `AssetIdsByLocation`
-     */
-    get asRocfinityV3012(): {recipient: rocfinityV3012.MultiAddress, collectionId: bigint, params: rocfinityV3012.DefaultMintParams} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -7952,70 +6874,6 @@ export class MultiTokensMutateTokenCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Modify `Token` with `token_id`  from `Collection` with `collection_id` by applying
-     * `mutation`
-     * 
-     * # Errors
-     * - `CurrencyIncompatibleWithCollectionRoyalty` if token has already been assigned a
-     *   royalty
-     * - `NoPermission` if not the collection owner
-     * - `TokenNotFound` if Token does not exist
-     * - `ConflictingLocation` if the new location is already occupied
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.mutate_token') === '24d5244e7196ae827f944238e5b6e1b1a354dab7b4a2d4e42abc785254c50da5'
-    }
-
-    /**
-     * Modify `Token` with `token_id`  from `Collection` with `collection_id` by applying
-     * `mutation`
-     * 
-     * # Errors
-     * - `CurrencyIncompatibleWithCollectionRoyalty` if token has already been assigned a
-     *   royalty
-     * - `NoPermission` if not the collection owner
-     * - `TokenNotFound` if Token does not exist
-     * - `ConflictingLocation` if the new location is already occupied
-     */
-    get asRocfinityV3012(): {collectionId: bigint, tokenId: bigint, mutation: rocfinityV3012.DefaultTokenMutation} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
-     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
-     * 
-     * # Errors
-     * 
-     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
-     *   assigned a royalty
-     * - [`Error::NoPermission`] if not the collection owner
-     * - [`Error::TokenNotFound`] if Token does not exist
-     * - [`Error::ConflictingLocation`] if the new location is already occupied
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('MultiTokens.mutate_token') === 'b1df46e912bd6082a6796b61e3d5451b698e752c5aa782392bb97d3c78d81f3c'
-    }
-
-    /**
-     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
-     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
-     * 
-     * # Errors
-     * 
-     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
-     *   assigned a royalty
-     * - [`Error::NoPermission`] if not the collection owner
-     * - [`Error::TokenNotFound`] if Token does not exist
-     * - [`Error::ConflictingLocation`] if the new location is already occupied
-     */
-    get asV500(): {collectionId: bigint, tokenId: bigint, mutation: v500.DefaultTokenMutation} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class MultiTokensRemoveAllAttributesCall {
@@ -8180,36 +7038,6 @@ export class MultiTokensThawCall {
      */
     get asEfinityV3014(): {info: efinityV3014.Freeze} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Thaw collection, token or account
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('MultiTokens.thaw') === '019c3973873981e43338b40ff63c8765c270b4956d51a9937f393b0e8e31d9a7'
-    }
-
-    /**
-     * Thaw collection, token or account
-     */
-    get asRocfinityV3012(): {info: rocfinityV3012.Freeze} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Thaw collection, token or account
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('MultiTokens.thaw') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
-    }
-
-    /**
-     * Thaw collection, token or account
-     */
-    get asV500(): {info: v500.Freeze} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8757,109 +7585,6 @@ export class MultisigAsMultiCall {
      * - Plus Call Weight
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi') === '22f1076e19a712198629d972d9c2531e9570a507fa7cfdcfaaf6650a820e1a21'
-    }
-
-    /**
-     * Register approval for a dispatch to be made from a deterministic composite account if
-     * approved by a total of `threshold - 1` of `other_signatories`.
-     * 
-     * If there are enough, then dispatch the call.
-     * 
-     * Payment: `DepositBase` will be reserved if this is the first approval, plus
-     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
-     * is cancelled.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * - `threshold`: The total number of approvals for this dispatch before it is executed.
-     * - `other_signatories`: The accounts (other than the sender) who can approve this
-     * dispatch. May not be empty.
-     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
-     * not the first approval, then it must be `Some`, with the timepoint (block number and
-     * transaction index) of the first approval transaction.
-     * - `call`: The call to be executed.
-     * 
-     * NOTE: Unless this is the final approval, you will generally want to use
-     * `approve_as_multi` instead, since it only requires a hash of the call.
-     * 
-     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
-     * on success, result is `Ok` and the result from the interior call, if it was executed,
-     * may be found in the deposited `MultisigExecuted` event.
-     * 
-     * # <weight>
-     * - `O(S + Z + Call)`.
-     * - Up to one balance-reserve or unreserve operation.
-     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
-     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
-     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
-     * - One encode & hash, both of complexity `O(S)`.
-     * - Up to one binary search and insert (`O(logS + S)`).
-     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
-     * - One event.
-     * - The weight of the `call`.
-     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
-     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
-     * -------------------------------
-     * - DB Weight:
-     *     - Reads: Multisig Storage, [Caller Account]
-     *     - Writes: Multisig Storage, [Caller Account]
-     * - Plus Call Weight
-     * # </weight>
-     */
-    get asRocfinityV3012(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (rocfinityV3012.Timepoint | undefined), call: rocfinityV3012.Call, maxWeight: rocfinityV3012.Weight} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Register approval for a dispatch to be made from a deterministic composite account if
-     * approved by a total of `threshold - 1` of `other_signatories`.
-     * 
-     * If there are enough, then dispatch the call.
-     * 
-     * Payment: `DepositBase` will be reserved if this is the first approval, plus
-     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
-     * is cancelled.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * - `threshold`: The total number of approvals for this dispatch before it is executed.
-     * - `other_signatories`: The accounts (other than the sender) who can approve this
-     * dispatch. May not be empty.
-     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
-     * not the first approval, then it must be `Some`, with the timepoint (block number and
-     * transaction index) of the first approval transaction.
-     * - `call`: The call to be executed.
-     * 
-     * NOTE: Unless this is the final approval, you will generally want to use
-     * `approve_as_multi` instead, since it only requires a hash of the call.
-     * 
-     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
-     * on success, result is `Ok` and the result from the interior call, if it was executed,
-     * may be found in the deposited `MultisigExecuted` event.
-     * 
-     * # <weight>
-     * - `O(S + Z + Call)`.
-     * - Up to one balance-reserve or unreserve operation.
-     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
-     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
-     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
-     * - One encode & hash, both of complexity `O(S)`.
-     * - Up to one binary search and insert (`O(logS + S)`).
-     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
-     * - One event.
-     * - The weight of the `call`.
-     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
-     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
-     * -------------------------------
-     * - DB Weight:
-     *     - Reads: Multisig Storage, [Caller Account]
-     *     - Writes: Multisig Storage, [Caller Account]
-     * - Plus Call Weight
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Multisig.as_multi') === '371d05f5e4e07f488e5d3155644987faec0f8d7bd75a674a65f957283b3d81be'
     }
@@ -9282,51 +8007,6 @@ export class MultisigAsMultiThreshold1Call {
      * - Plus Call Weight
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '011310f636ffc0ad21b6033e9ff63b0bd443f85874e3a71b5f58bede65671b83'
-    }
-
-    /**
-     * Immediately dispatch a multi-signature call using a single approval from the caller.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * - `other_signatories`: The accounts (other than the sender) who are part of the
-     * multi-signature, but do not participate in the approval process.
-     * - `call`: The call to be executed.
-     * 
-     * Result is equivalent to the dispatched result.
-     * 
-     * # <weight>
-     * O(Z + C) where Z is the length of the call and C its execution weight.
-     * -------------------------------
-     * - DB Weight: None
-     * - Plus Call Weight
-     * # </weight>
-     */
-    get asRocfinityV3012(): {otherSignatories: Uint8Array[], call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Immediately dispatch a multi-signature call using a single approval from the caller.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * - `other_signatories`: The accounts (other than the sender) who are part of the
-     * multi-signature, but do not participate in the approval process.
-     * - `call`: The call to be executed.
-     * 
-     * Result is equivalent to the dispatched result.
-     * 
-     * # <weight>
-     * O(Z + C) where Z is the length of the call and C its execution weight.
-     * -------------------------------
-     * - DB Weight: None
-     * - Plus Call Weight
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '1464000ac9e2b89ca25c526bb2b352230fc2811890ca7fb640c05a3557a8ffdd'
     }
@@ -9578,36 +8258,6 @@ export class OrmlXcmSendAsSovereignCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Send an XCM message as parachain sovereign.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('OrmlXcm.send_as_sovereign') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
-    }
-
-    /**
-     * Send an XCM message as parachain sovereign.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, message: rocfinityV3012.VersionedXcm} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Send an XCM message as parachain sovereign.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('OrmlXcm.send_as_sovereign') === '9c814457e6c06e355f17d8e2e59924a734ef38dfc7852490ba89fd5b845b6f48'
-    }
-
-    /**
-     * Send an XCM message as parachain sovereign.
-     */
-    get asV500(): {dest: v500.VersionedMultiLocation, message: v500.VersionedXcm} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class ParachainSystemAuthorizeUpgradeCall {
@@ -9652,12 +8302,12 @@ export class ParachainSystemAuthorizeUpgradeCall {
         return this._chain.decodeCall(this.call)
     }
 
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('ParachainSystem.authorize_upgrade') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
     }
 
-    get asRocfinityV3012(): {codeHash: Uint8Array} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {codeHash: Uint8Array} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 
@@ -9851,76 +8501,6 @@ export class PolkadotXcmExecuteCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Execute an XCM message from a local, signed, origin.
-     * 
-     * An event is deposited indicating whether `msg` could be executed completely or only
-     * partially.
-     * 
-     * No more than `max_weight` will be used in its attempted execution. If this is less than the
-     * maximum amount of weight that the message could take to be executed, then no execution
-     * attempt will be made.
-     * 
-     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-     * to completion; only that *some* of it was executed.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.execute') === 'c6251691ab3319ecee95442d381c308f9ada155e423798c908cbd6b063aa26b4'
-    }
-
-    /**
-     * Execute an XCM message from a local, signed, origin.
-     * 
-     * An event is deposited indicating whether `msg` could be executed completely or only
-     * partially.
-     * 
-     * No more than `max_weight` will be used in its attempted execution. If this is less than the
-     * maximum amount of weight that the message could take to be executed, then no execution
-     * attempt will be made.
-     * 
-     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-     * to completion; only that *some* of it was executed.
-     */
-    get asRocfinityV3012(): {message: rocfinityV3012.Type_334, maxWeight: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Execute an XCM message from a local, signed, origin.
-     * 
-     * An event is deposited indicating whether `msg` could be executed completely or only
-     * partially.
-     * 
-     * No more than `max_weight` will be used in its attempted execution. If this is less than the
-     * maximum amount of weight that the message could take to be executed, then no execution
-     * attempt will be made.
-     * 
-     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-     * to completion; only that *some* of it was executed.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.execute') === 'a1da862b5d9db8fd6f3072da00ea4e66052f97b5dcfb87e58d49ca1fd1f1ef90'
-    }
-
-    /**
-     * Execute an XCM message from a local, signed, origin.
-     * 
-     * An event is deposited indicating whether `msg` could be executed completely or only
-     * partially.
-     * 
-     * No more than `max_weight` will be used in its attempted execution. If this is less than the
-     * maximum amount of weight that the message could take to be executed, then no execution
-     * attempt will be made.
-     * 
-     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-     * to completion; only that *some* of it was executed.
-     */
-    get asV500(): {message: v500.Type_338, maxWeight: v500.Weight} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class PolkadotXcmForceDefaultXcmVersionCall {
@@ -9991,48 +8571,6 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
      */
     get asEfinityV3014(): {location: efinityV3014.VersionedMultiLocation} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Ask a location to notify us regarding their XCM version and any changes to it.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we should subscribe for XCM version notifications.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
-    }
-
-    /**
-     * Ask a location to notify us regarding their XCM version and any changes to it.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we should subscribe for XCM version notifications.
-     */
-    get asRocfinityV3012(): {location: rocfinityV3012.VersionedMultiLocation} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Ask a location to notify us regarding their XCM version and any changes to it.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we should subscribe for XCM version notifications.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
-    }
-
-    /**
-     * Ask a location to notify us regarding their XCM version and any changes to it.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we should subscribe for XCM version notifications.
-     */
-    get asV500(): {location: v500.VersionedMultiLocation} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10109,56 +8647,6 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Require that a particular destination should no longer notify us regarding any XCM
-     * version changes.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we are currently subscribed for XCM version
-     *   notifications which we no longer desire.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === 'f3f38b2278743e50bfd76c0f778560fb38a60c931275e9df42f2b9ce08c1d6fc'
-    }
-
-    /**
-     * Require that a particular destination should no longer notify us regarding any XCM
-     * version changes.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we are currently subscribed for XCM version
-     *   notifications which we no longer desire.
-     */
-    get asRocfinityV3012(): {location: rocfinityV3012.VersionedMultiLocation} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Require that a particular destination should no longer notify us regarding any XCM
-     * version changes.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we are currently subscribed for XCM version
-     *   notifications which we no longer desire.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
-    }
-
-    /**
-     * Require that a particular destination should no longer notify us regarding any XCM
-     * version changes.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we are currently subscribed for XCM version
-     *   notifications which we no longer desire.
-     */
-    get asV500(): {location: v500.VersionedMultiLocation} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class PolkadotXcmForceXcmVersionCall {
@@ -10196,56 +8684,6 @@ export class PolkadotXcmForceXcmVersionCall {
      */
     get asEfinityV3014(): {location: efinityV3014.V3MultiLocation, xcmVersion: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Extoll that a particular destination can be communicated with through a particular
-     * version of XCM.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The destination that is being described.
-     * - `xcm_version`: The latest version of XCM that `location` supports.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '3bdd3ba3db54facd962462ff1c2c0ede1b428cf9119b36a4e96fa86916145f75'
-    }
-
-    /**
-     * Extoll that a particular destination can be communicated with through a particular
-     * version of XCM.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The destination that is being described.
-     * - `xcm_version`: The latest version of XCM that `location` supports.
-     */
-    get asRocfinityV3012(): {location: rocfinityV3012.V1MultiLocation, xcmVersion: number} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Extoll that a particular destination can be communicated with through a particular
-     * version of XCM.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The destination that is being described.
-     * - `xcm_version`: The latest version of XCM that `location` supports.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '998b5a56e7662d76955b41c2526c2219fe8304fec6501afa115db1bd705e7ff6'
-    }
-
-    /**
-     * Extoll that a particular destination can be communicated with through a particular
-     * version of XCM.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The destination that is being described.
-     * - `xcm_version`: The latest version of XCM that `location` supports.
-     */
-    get asV500(): {location: v500.V3MultiLocation, xcmVersion: number} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10311,104 +8749,6 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.limited_reserve_transfer_assets') === '3c203a3f95b9fe53b8c376802c4fe60fa6077815af7432dcd2a3e458169a5d2a'
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, beneficiary: rocfinityV3012.VersionedMultiLocation, assets: rocfinityV3012.VersionedMultiAssets, feeAssetItem: number, weightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.limited_reserve_transfer_assets') === 'c5f45c1775bd92c7b425f46c92a6891334f7df5ae2518cd2c0a106447da3bbd9'
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get asV500(): {dest: v500.VersionedMultiLocation, beneficiary: v500.VersionedMultiLocation, assets: v500.VersionedMultiAssets, feeAssetItem: number, weightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class PolkadotXcmLimitedTeleportAssetsCall {
@@ -10470,100 +8810,6 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.limited_teleport_assets') === '3c203a3f95b9fe53b8c376802c4fe60fa6077815af7432dcd2a3e458169a5d2a'
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, beneficiary: rocfinityV3012.VersionedMultiLocation, assets: rocfinityV3012.VersionedMultiAssets, feeAssetItem: number, weightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.limited_teleport_assets') === 'c5f45c1775bd92c7b425f46c92a6891334f7df5ae2518cd2c0a106447da3bbd9'
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    get asV500(): {dest: v500.VersionedMultiLocation, beneficiary: v500.VersionedMultiLocation, assets: v500.VersionedMultiAssets, feeAssetItem: number, weightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class PolkadotXcmReserveTransferAssetsCall {
@@ -10623,96 +8869,6 @@ export class PolkadotXcmReserveTransferAssetsCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.reserve_transfer_assets') === '123b8170fa49ede01f38623e457f4e4d417c90cff5b93ced45a9eb8fe8e6ca2e'
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, beneficiary: rocfinityV3012.VersionedMultiLocation, assets: rocfinityV3012.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.reserve_transfer_assets') === 'ebd99cece75c1b0fc48830527bc513cf672b8d0c6c0c505498bba5c8c5e1617c'
-    }
-
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get asV500(): {dest: v500.VersionedMultiLocation, beneficiary: v500.VersionedMultiLocation, assets: v500.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class PolkadotXcmSendCall {
@@ -10734,24 +8890,6 @@ export class PolkadotXcmSendCall {
 
     get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, message: efinityV3014.VersionedXcm} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.send') === '3ca4beb317aeed3e0a00ae870ffd3bef841bb6f4e766db0b286c7fc5d8eef886'
-    }
-
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, message: rocfinityV3012.VersionedXcm} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.send') === '9c814457e6c06e355f17d8e2e59924a734ef38dfc7852490ba89fd5b845b6f48'
-    }
-
-    get asV500(): {dest: v500.VersionedMultiLocation, message: v500.VersionedXcm} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10809,92 +8947,6 @@ export class PolkadotXcmTeleportAssetsCall {
      */
     get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, beneficiary: efinityV3014.VersionedMultiLocation, assets: efinityV3014.VersionedMultiAssets, feeAssetItem: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.teleport_assets') === '123b8170fa49ede01f38623e457f4e4d417c90cff5b93ced45a9eb8fe8e6ca2e'
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get asRocfinityV3012(): {dest: rocfinityV3012.VersionedMultiLocation, beneficiary: rocfinityV3012.VersionedMultiLocation, assets: rocfinityV3012.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('PolkadotXcm.teleport_assets') === 'ebd99cece75c1b0fc48830527bc513cf672b8d0c6c0c505498bba5c8c5e1617c'
-    }
-
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    get asV500(): {dest: v500.VersionedMultiLocation, beneficiary: v500.VersionedMultiLocation, assets: v500.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11167,21 +9219,6 @@ export class SchedulerScheduleCall {
     /**
      * Anonymously schedule a task.
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule') === '5c09a6608ee8dc51aa46a33b155eb4986241ec0ace6f0c5334dbef395bc8c4bc'
-    }
-
-    /**
-     * Anonymously schedule a task.
-     */
-    get asRocfinityV3012(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Anonymously schedule a task.
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Scheduler.schedule') === '6b5b00362b6e8ab49ccce9efed96fa17584732dae6bf66e4c0002de6ddccbdbf'
     }
@@ -11265,29 +9302,6 @@ export class SchedulerScheduleAfterCall {
      */
     get asEfinityV3014(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Anonymously schedule a task after a delay.
-     * 
-     * # <weight>
-     * Same as [`schedule`].
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_after') === 'f9717f36b8f3c5bc5d686a2be3ffb8fdf780357d2f10cb29c0998644f1e14f80'
-    }
-
-    /**
-     * Anonymously schedule a task after a delay.
-     * 
-     * # <weight>
-     * Same as [`schedule`].
-     * # </weight>
-     */
-    get asRocfinityV3012(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11407,21 +9421,6 @@ export class SchedulerScheduleNamedCall {
     /**
      * Schedule a named task.
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named') === '99ad55ba3a89373087e9c496806101bfb344f1fea715a4b8690f50e3709c238f'
-    }
-
-    /**
-     * Schedule a named task.
-     */
-    get asRocfinityV3012(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Schedule a named task.
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Scheduler.schedule_named') === 'a769574b7ca2ea2e82898d0ba8c54e1ed628ecc5e784f7372c06644f51be4911'
     }
@@ -11505,29 +9504,6 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asEfinityV3014(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Schedule a named task after a delay.
-     * 
-     * # <weight>
-     * Same as [`schedule_named`](Self::schedule_named).
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named_after') === '42f85a6cd3071a5de843a227855667009e6987c77a36a8c1e9817808de32144c'
-    }
-
-    /**
-     * Schedule a named task after a delay.
-     * 
-     * # <weight>
-     * Same as [`schedule_named`](Self::schedule_named).
-     * # </weight>
-     */
-    get asRocfinityV3012(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11803,39 +9779,6 @@ export class SudoSudoCall {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Sudo.sudo') === 'abca980bf1016589013fe0614efe2dd23384abb1c388ab991938f365f60cf944'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + 10,000.
-     * # </weight>
-     */
-    get asRocfinityV3012(): {call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + 10,000.
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Sudo.sudo') === 'dc6a960e485548d27a1905ecd7699e6e72ce591ec0211a03a455e8ac78006198'
     }
@@ -11986,41 +9929,6 @@ export class SudoSudoAsCall {
      */
     get asEfinityV3014(): {who: efinityV3014.MultiAddress, call: efinityV3014.Call} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-     * a given account.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + 10,000.
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_as') === 'a7eb144ee92988818dde525805e530d742c0e5f7d5694fda1a7e740f6dd85685'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-     * a given account.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + 10,000.
-     * # </weight>
-     */
-    get asRocfinityV3012(): {who: rocfinityV3012.MultiAddress, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -12211,39 +10119,6 @@ export class SudoSudoUncheckedWeightCall {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === 'ef6fe7d0c636223dc7389e1d1924343af6b401774e910acdd681a5990f89da31'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * This function does not check the weight of the call, and instead allows the
-     * Sudo user to specify the weight of the call.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - The weight of this call is defined by the caller.
-     * # </weight>
-     */
-    get asRocfinityV3012(): {call: rocfinityV3012.Call, weight: rocfinityV3012.Weight} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * This function does not check the weight of the call, and instead allows the
-     * Sudo user to specify the weight of the call.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - The weight of this call is defined by the caller.
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '15b86c403edea0d4d0985082b714f1ef80d8d68858c939cc34cb14ab43e96f0a'
     }
@@ -12357,35 +10232,6 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV602(): {call: v602.Call, weight: v602.Weight} {
         assert(this.isV602)
-        return this._chain.decodeCall(this.call)
-    }
-}
-
-export class SystemFillBlockCall {
-    private readonly _chain: Chain
-    private readonly call: Call
-
-    constructor(ctx: CallContext)
-    constructor(ctx: ChainContext, call: Call)
-    constructor(ctx: CallContext, call?: Call) {
-        call = call || ctx.call
-        assert(call.name === 'System.fill_block')
-        this._chain = ctx._chain
-        this.call = call
-    }
-
-    /**
-     * A dispatch that will fill the block weight up to the given ratio.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('System.fill_block') === '41c1841312db092642508be699e4a3f54d52efe2dcaa8101ca9518398fb70c49'
-    }
-
-    /**
-     * A dispatch that will fill the block weight up to the given ratio.
-     */
-    get asRocfinityV3012(): {ratio: number} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -12768,7 +10614,7 @@ export class TechnicalCommitteeCloseOldWeightCall {
      * - up to 3 events
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
+    get isV500(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.close_old_weight') === '45a5978a11ceb5a8b2c51f7152abaa939cd8bd4bcdc5e1162029cedba4b598ea'
     }
 
@@ -12806,8 +10652,8 @@ export class TechnicalCommitteeCloseOldWeightCall {
      * - up to 3 events
      * # </weight>
      */
-    get asRocfinityV3012(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
-        assert(this.isRocfinityV3012)
+    get asV500(): {proposalHash: Uint8Array, index: number, proposalWeightBound: bigint, lengthBound: number} {
+        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -12900,41 +10746,6 @@ export class TechnicalCommitteeExecuteCall {
      */
     get asEfinityV3014(): {proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Dispatch a proposal from a member using the `Member` origin.
-     * 
-     * Origin must be a member of the collective.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-     *   `proposal`
-     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-     * - 1 event
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.execute') === '87f0281405450ee112b448908a3bcf42da7d893ad165d52a6d5c35b8c1ce9b66'
-    }
-
-    /**
-     * Dispatch a proposal from a member using the `Member` origin.
-     * 
-     * Origin must be a member of the collective.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
-     *   `proposal`
-     * - DB: 1 read (codec `O(M)`) + DB access of `proposal`
-     * - 1 event
-     * # </weight>
-     */
-    get asRocfinityV3012(): {proposal: rocfinityV3012.Call, lengthBound: number} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -13126,73 +10937,6 @@ export class TechnicalCommitteeProposeCall {
      */
     get asEfinityV3014(): {threshold: number, proposal: efinityV3014.Call, lengthBound: number} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Add a new proposal to either be voted on or executed directly.
-     * 
-     * Requires the sender to be member.
-     * 
-     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-     * or put up for voting.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(B + M + P1)` or `O(B + M + P2)` where:
-     *   - `B` is `proposal` size in bytes (length-fee-bounded)
-     *   - `M` is members-count (code- and governance-bounded)
-     *   - branching is influenced by `threshold` where:
-     *     - `P1` is proposal execution complexity (`threshold < 2`)
-     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-     * - DB:
-     *   - 1 storage read `is_member` (codec `O(M)`)
-     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-     *   - DB accesses influenced by `threshold`:
-     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-     *     - OR proposal insertion (`threshold <= 2`)
-     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-     *       - 1 storage write `ProposalOf` (codec `O(B)`)
-     *       - 1 storage write `Voting` (codec `O(M)`)
-     *   - 1 event
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.propose') === '92e93213fc1be2618c82cb60eb5f08adc129866b15780fce524dab7d46bafcc9'
-    }
-
-    /**
-     * Add a new proposal to either be voted on or executed directly.
-     * 
-     * Requires the sender to be member.
-     * 
-     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
-     * or put up for voting.
-     * 
-     * # <weight>
-     * ## Weight
-     * - `O(B + M + P1)` or `O(B + M + P2)` where:
-     *   - `B` is `proposal` size in bytes (length-fee-bounded)
-     *   - `M` is members-count (code- and governance-bounded)
-     *   - branching is influenced by `threshold` where:
-     *     - `P1` is proposal execution complexity (`threshold < 2`)
-     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
-     * - DB:
-     *   - 1 storage read `is_member` (codec `O(M)`)
-     *   - 1 storage read `ProposalOf::contains_key` (codec `O(1)`)
-     *   - DB accesses influenced by `threshold`:
-     *     - EITHER storage accesses done by `proposal` (`threshold < 2`)
-     *     - OR proposal insertion (`threshold <= 2`)
-     *       - 1 storage mutation `Proposals` (codec `O(P2)`)
-     *       - 1 storage mutation `ProposalCount` (codec `O(1)`)
-     *       - 1 storage write `ProposalOf` (codec `O(B)`)
-     *       - 1 storage write `Voting` (codec `O(M)`)
-     *   - 1 event
-     * # </weight>
-     */
-    get asRocfinityV3012(): {threshold: number, proposal: rocfinityV3012.Call, lengthBound: number} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -13924,45 +11668,6 @@ export class UtilityAsDerivativeCall {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Utility.as_derivative') === '711ce2cfecb3011fecb639d4e926dbb8d148da3879eefb1aa8f02b72c45647d3'
-    }
-
-    /**
-     * Send a call through an indexed pseudonym of the sender.
-     * 
-     * Filter from origin are passed along. The call will be dispatched with an origin which
-     * use the same filter as the origin of this call.
-     * 
-     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-     * because you expect `proxy` to have been used prior in the call stack and you do not want
-     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-     * in the Multisig pallet instead.
-     * 
-     * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     */
-    get asRocfinityV3012(): {index: number, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Send a call through an indexed pseudonym of the sender.
-     * 
-     * Filter from origin are passed along. The call will be dispatched with an origin which
-     * use the same filter as the origin of this call.
-     * 
-     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
-     * because you expect `proxy` to have been used prior in the call stack and you do not want
-     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
-     * in the Multisig pallet instead.
-     * 
-     * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Utility.as_derivative') === '8228a867ebef820abe86288abff2f2e9d268d9dccb2584ea45bd75d68bfe4bc6'
     }
@@ -14164,57 +11869,6 @@ export class UtilityBatchCall {
      */
     get asEfinityV3014(): {calls: efinityV3014.Call[]} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Send a batch of dispatch calls.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     * 
-     * This will return `Ok` in all circumstances. To determine the success of the batch, an
-     * event is deposited. If a call failed and the batch was interrupted, then the
-     * `BatchInterrupted` event is deposited, along with the number of successful calls made
-     * and the error of the failed call. If all were successful, then the `BatchCompleted`
-     * event is deposited.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Utility.batch') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
-    }
-
-    /**
-     * Send a batch of dispatch calls.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     * 
-     * This will return `Ok` in all circumstances. To determine the success of the batch, an
-     * event is deposited. If a call failed and the batch was interrupted, then the
-     * `BatchInterrupted` event is deposited, along with the number of successful calls made
-     * and the error of the failed call. If all were successful, then the `BatchCompleted`
-     * event is deposited.
-     */
-    get asRocfinityV3012(): {calls: rocfinityV3012.Call[]} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -14489,47 +12143,6 @@ export class UtilityBatchAllCall {
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Utility.batch_all') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
-    }
-
-    /**
-     * Send a batch of dispatch calls and atomically execute them.
-     * The whole transaction will rollback and fail if any of the calls failed.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     */
-    get asRocfinityV3012(): {calls: rocfinityV3012.Call[]} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Send a batch of dispatch calls and atomically execute them.
-     * The whole transaction will rollback and fail if any of the calls failed.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Utility.batch_all') === '77b6387abaaa673a066a11d3d46131e65b783f9a461b86ffea319e50d3cc682c'
     }
@@ -14727,39 +12340,6 @@ export class UtilityDispatchAsCall {
      * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
      * # </weight>
      */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Utility.dispatch_as') === '1d12132e6e70653f2d4123d7ae2d10da60a0e0ed8018d95550710be641d44458'
-    }
-
-    /**
-     * Dispatches a function call with a provided origin.
-     * 
-     * The dispatch origin for this call must be _Root_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-     * # </weight>
-     */
-    get asRocfinityV3012(): {asOrigin: rocfinityV3012.OriginCaller, call: rocfinityV3012.Call} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Dispatches a function call with a provided origin.
-     * 
-     * The dispatch origin for this call must be _Root_.
-     * 
-     * # <weight>
-     * - O(1).
-     * - Limited storage reads.
-     * - One DB write (event).
-     * - Weight of derivative `call` execution + T::WeightInfo::dispatch_as().
-     * # </weight>
-     */
     get isV500(): boolean {
         return this._chain.getCallHash('Utility.dispatch_as') === '5646f15c4842be20985720c8c98d33539a96ec7ab1c96cebbd015f55bfe5284e'
     }
@@ -14922,47 +12502,6 @@ export class UtilityForceBatchCall {
      */
     get asEfinityV3014(): {calls: efinityV3014.Call[]} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Send a batch of dispatch calls.
-     * Unlike `batch`, it allows errors and won't interrupt.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatch without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('Utility.force_batch') === 'f97908bb421906e08491d3825b90a29fc8e46699eef714fc8e2bd30afafdbbbf'
-    }
-
-    /**
-     * Send a batch of dispatch calls.
-     * Unlike `batch`, it allows errors and won't interrupt.
-     * 
-     * May be called from any origin except `None`.
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatch without checking origin filter. (This
-     * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
-     * # <weight>
-     * - Complexity: O(C) where C is the number of calls to be batched.
-     * # </weight>
-     */
-    get asRocfinityV3012(): {calls: rocfinityV3012.Call[]} {
-        assert(this.isRocfinityV3012)
         return this._chain.decodeCall(this.call)
     }
 
@@ -15516,80 +13055,6 @@ export class XTokensTransferCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer') === '79391a9017e3585a7001d474da89bbb6c7839b0a5da51df2b2acb37145309690'
-    }
-
-    /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {currencyId: rocfinityV3012.AssetId, amount: bigint, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer') === '26df7f19916781e6746694066c0d24f7fef9a20367132a192147dc6c414af64c'
-    }
-
-    /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {currencyId: v500.AssetId, amount: bigint, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class XTokensTransferMultiassetCall {
@@ -15639,80 +13104,6 @@ export class XTokensTransferMultiassetCall {
      */
     get asEfinityV3014(): {asset: efinityV3014.VersionedMultiAsset, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer `MultiAsset`.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiasset') === '124b77e480550e2d7eac49ed107d76163c8e7e2864b828c843c249ef6ae8515f'
-    }
-
-    /**
-     * Transfer `MultiAsset`.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {asset: rocfinityV3012.VersionedMultiAsset, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer `MultiAsset`.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiasset') === 'a87b2931a2da31f4548173df0d164afbd7f9413f0b0a9373582011906fdc8ac9'
-    }
-
-    /**
-     * Transfer `MultiAsset`.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {asset: v500.VersionedMultiAsset, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -15784,116 +13175,6 @@ export class XTokensTransferMultiassetWithFeeCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Transfer `MultiAsset` specifying the fee and amount as separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the multiasset to be spent to pay for execution in
-     * destination chain. Both fee and amount will be subtracted form the
-     * callers balance For now we only accept fee and asset having the same
-     * `MultiLocation` id.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiasset_with_fee') === 'afea57197ed47389f761cf32ea9293aa35a8fb52ae656fb5a27162139197c988'
-    }
-
-    /**
-     * Transfer `MultiAsset` specifying the fee and amount as separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the multiasset to be spent to pay for execution in
-     * destination chain. Both fee and amount will be subtracted form the
-     * callers balance For now we only accept fee and asset having the same
-     * `MultiLocation` id.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {asset: rocfinityV3012.VersionedMultiAsset, fee: rocfinityV3012.VersionedMultiAsset, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer `MultiAsset` specifying the fee and amount as separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the multiasset to be spent to pay for execution in
-     * destination chain. Both fee and amount will be subtracted form the
-     * callers balance For now we only accept fee and asset having the same
-     * `MultiLocation` id.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiasset_with_fee') === 'e1673c048436ca84c1278f4f2f8a12456b25e4911f3ec72d0295b843ed7a4c7f'
-    }
-
-    /**
-     * Transfer `MultiAsset` specifying the fee and amount as separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the multiasset to be spent to pay for execution in
-     * destination chain. Both fee and amount will be subtracted form the
-     * callers balance For now we only accept fee and asset having the same
-     * `MultiLocation` id.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {asset: v500.VersionedMultiAsset, fee: v500.VersionedMultiAsset, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class XTokensTransferMultiassetsCall {
@@ -15951,92 +13232,6 @@ export class XTokensTransferMultiassetsCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Transfer several `MultiAsset` specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the MultiAssets that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiassets') === '3c0b0dac1e68352c618c2cea8b190730d35ccc04742093f63dff05648d32475d'
-    }
-
-    /**
-     * Transfer several `MultiAsset` specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the MultiAssets that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {assets: rocfinityV3012.VersionedMultiAssets, feeItem: number, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer several `MultiAsset` specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the MultiAssets that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multiassets') === 'b49a1a3bce05ffe02f0ac5efca4907e6bf7f963113419870a760a3013dc86495'
-    }
-
-    /**
-     * Transfer several `MultiAsset` specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the MultiAssets that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {assets: v500.VersionedMultiAssets, feeItem: number, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class XTokensTransferMulticurrenciesCall {
@@ -16092,92 +13287,6 @@ export class XTokensTransferMulticurrenciesCall {
      */
     get asEfinityV3014(): {currencies: [efinityV3014.AssetId, bigint][], feeItem: number, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multicurrencies') === '77355a13cd005f4800b70515631ea9dfd26d4731dea1d46661dec1ab7daa6814'
-    }
-
-    /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {currencies: [rocfinityV3012.AssetId, bigint][], feeItem: number, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_multicurrencies') === 'fa576588d6b62b5cf4c7bdd8bee764e1be7fc0c2fbe730e805ffd89ad1a3b1e6'
-    }
-
-    /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {currencies: [v500.AssetId, bigint][], feeItem: number, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16247,116 +13356,6 @@ export class XTokensTransferWithFeeCall {
      */
     get asEfinityV3014(): {currencyId: efinityV3014.AssetId, amount: bigint, fee: bigint, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_with_fee') === '72ecf67644efd990972c23f37933a458240035fe8aa77c27202e5dcd5c919f1a'
-    }
-
-    /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asRocfinityV3012(): {currencyId: rocfinityV3012.AssetId, amount: bigint, fee: bigint, dest: rocfinityV3012.VersionedMultiLocation, destWeightLimit: rocfinityV3012.V2WeightLimit} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XTokens.transfer_with_fee') === 'c05a522029f57db9f9e4ceeff8427cc674dd992c069c7798b3625e3d55e588cb'
-    }
-
-    /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
-     */
-    get asV500(): {currencyId: v500.AssetId, amount: bigint, fee: bigint, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16447,84 +13446,6 @@ export class XcmpQueueServiceOverweightCall {
      */
     get asEfinityV3014(): {index: bigint, weightLimit: efinityV3014.Weight} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Services a single overweight XCM.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight XCM to service
-     * - `weight_limit`: The amount of weight that XCM execution may take.
-     * 
-     * Errors:
-     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
-     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
-     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XcmpQueue.service_overweight') === 'f6b281f58290b6af96ac2dda36163d81223f37d0a8a100877e2526969a57d772'
-    }
-
-    /**
-     * Services a single overweight XCM.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight XCM to service
-     * - `weight_limit`: The amount of weight that XCM execution may take.
-     * 
-     * Errors:
-     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
-     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
-     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get asRocfinityV3012(): {index: bigint, weightLimit: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Services a single overweight XCM.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight XCM to service
-     * - `weight_limit`: The amount of weight that XCM execution may take.
-     * 
-     * Errors:
-     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
-     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
-     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XcmpQueue.service_overweight') === '80fae8875bf513efc1e06b7dac547fccfc1e5fc45888cc8afd9b43812cf51bf5'
-    }
-
-    /**
-     * Services a single overweight XCM.
-     * 
-     * - `origin`: Must pass `ExecuteOverweightOrigin`.
-     * - `index`: The index of the overweight XCM to service
-     * - `weight_limit`: The amount of weight that XCM execution may take.
-     * 
-     * Errors:
-     * - `BadOverweightIndex`: XCM under `index` is not found in the `Overweight` storage map.
-     * - `BadXcm`: XCM under `index` cannot be properly decoded into a valid XCM format.
-     * - `WeightOverLimit`: XCM execution may use greater `weight_limit`.
-     * 
-     * Events:
-     * - `OverweightServiced`: On success.
-     */
-    get asV500(): {index: bigint, weightLimit: v500.Weight} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16706,48 +13627,6 @@ export class XcmpQueueUpdateThresholdWeightCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Overwrites the amount of remaining weight under which we stop processing messages.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.threshold_weight`
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
-    }
-
-    /**
-     * Overwrites the amount of remaining weight under which we stop processing messages.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.threshold_weight`
-     */
-    get asRocfinityV3012(): {new: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Overwrites the amount of remaining weight under which we stop processing messages.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.threshold_weight`
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
-    }
-
-    /**
-     * Overwrites the amount of remaining weight under which we stop processing messages.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.threshold_weight`
-     */
-    get asV500(): {new: v500.Weight} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class XcmpQueueUpdateWeightRestrictDecayCall {
@@ -16785,52 +13664,6 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
         assert(this.isEfinityV3014)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Overwrites the speed to which the available weight approaches the maximum weight.
-     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
-    }
-
-    /**
-     * Overwrites the speed to which the available weight approaches the maximum weight.
-     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
-     */
-    get asRocfinityV3012(): {new: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Overwrites the speed to which the available weight approaches the maximum weight.
-     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
-    }
-
-    /**
-     * Overwrites the speed to which the available weight approaches the maximum weight.
-     * A lower number results in a faster progression. A value of 1 makes the entire weight available initially.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
-     */
-    get asV500(): {new: v500.Weight} {
-        assert(this.isV500)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
@@ -16866,52 +13699,6 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
      */
     get asEfinityV3014(): {new: efinityV3014.Weight} {
         assert(this.isEfinityV3014)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Overwrite the maximum amount of weight any individual message may consume.
-     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
-     */
-    get isRocfinityV3012(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '8768ae636c927ffed8b3cb5f0df1e15afb0921835e5bc84b9495f4b39ea663b7'
-    }
-
-    /**
-     * Overwrite the maximum amount of weight any individual message may consume.
-     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
-     */
-    get asRocfinityV3012(): {new: bigint} {
-        assert(this.isRocfinityV3012)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Overwrite the maximum amount of weight any individual message may consume.
-     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
-     */
-    get isV500(): boolean {
-        return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
-    }
-
-    /**
-     * Overwrite the maximum amount of weight any individual message may consume.
-     * Messages above this weight go into the overweight queue and may only be serviced explicitly.
-     * 
-     * - `origin`: Must pass `Root`.
-     * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
-     */
-    get asV500(): {new: v500.Weight} {
-        assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
 }

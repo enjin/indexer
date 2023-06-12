@@ -16,19 +16,16 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { AccountInfo } from '../../types/generated/efinityV1'
 import { AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
+import { AccountInfo } from '../../types/generated/efinityV3014'
 
 function getDustLostAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDustLostEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.account
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.account
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -36,11 +33,8 @@ function getDustLostAccount(ctx: CommonContext, event: Event) {
 function getBalanceSetAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesBalanceSetEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asRocfinityV3012.who
     }
     if (data.isV602) {
         return data.asV602.who
@@ -52,11 +46,8 @@ function getBalanceSetAccount(ctx: CommonContext, event: Event) {
 function getTransferAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
     const data = new BalancesTransferEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return [data.asEfinityV1[0], data.asEfinityV1[1]]
-    }
-    if (data.isEfinityV2) {
-        return [data.asEfinityV2.from, data.asEfinityV2.to]
+    if (data.isEfinityV3014) {
+        return [data.asEfinityV3014.from, data.asEfinityV3014.to]
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -64,11 +55,8 @@ function getTransferAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uin
 function getEndowedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesEndowedEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.account
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.account
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -76,11 +64,8 @@ function getEndowedAccount(ctx: CommonContext, event: Event) {
 function getDepositAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDepositEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.who
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -88,11 +73,8 @@ function getDepositAccount(ctx: CommonContext, event: Event) {
 function getReservedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesReservedEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.who
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -100,11 +82,8 @@ function getReservedAccount(ctx: CommonContext, event: Event) {
 function getUnreservedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesUnreservedEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return data.asEfinityV1[0]
-    }
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.who
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -112,8 +91,8 @@ function getUnreservedAccount(ctx: CommonContext, event: Event) {
 function getWithdrawAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesWithdrawEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.who
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -121,8 +100,8 @@ function getWithdrawAccount(ctx: CommonContext, event: Event) {
 function getSlashedAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesSlashedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        return data.asEfinityV2.who
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014.who
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -130,11 +109,8 @@ function getSlashedAccount(ctx: CommonContext, event: Event) {
 function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
     const data = new BalancesReserveRepatriatedEvent(ctx, event)
 
-    if (data.isEfinityV1) {
-        return [data.asEfinityV1[0], data.asEfinityV1[1]]
-    }
-    if (data.isEfinityV2) {
-        return [data.asEfinityV2.from, data.asEfinityV2.to]
+    if (data.isEfinityV3014) {
+        return [data.asEfinityV3014.from, data.asEfinityV3014.to]
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -147,8 +123,8 @@ async function getSystemAccountBalances(
     const storage = new SystemAccountStorage(ctx, block)
     if (!storage.isExists) return undefined
 
-    if (storage.isEfinityV1) {
-        return storage.asEfinityV1.getMany(accounts)
+    if (storage.isEfinityV3014) {
+        return storage.asEfinityV3014.getMany(accounts)
     }
     if (storage.isV602) {
         return storage.asV602.getMany(accounts)

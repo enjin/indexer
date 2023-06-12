@@ -8,8 +8,8 @@ async function getStorageData(ctx: BlockContext, accounts: Uint8Array[]): Promis
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isEfinityV1) {
-        return storage.asEfinityV1.getMany(accounts)
+    if (storage.isEfinityV3014) {
+        return storage.asEfinityV3014.getMany(accounts)
     }
     throw new UnknownVersionError(storage.constructor.name)
 }
