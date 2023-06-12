@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import isPlainObject from 'lodash/isPlainObject'
 import { createHash } from 'crypto'
 import connection from './connection'

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { u8aToHex, u8aToString } from '@polkadot/util'

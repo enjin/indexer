@@ -16,10 +16,8 @@ import {
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
 import { SystemAccountStorage } from '../../types/generated/storage'
-import { AccountInfo as AccountInfo_v602 } from '../../types/generated/v602'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
-import { AccountInfo } from '../../types/generated/efinityV3014'
 
 function getDustLostAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDustLostEvent(ctx, event)
