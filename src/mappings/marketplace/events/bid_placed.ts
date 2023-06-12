@@ -15,23 +15,16 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { Bid as BidEvent } from '../../../types/generated/efinityV3012'
 import { CollectionService } from '../../../services'
 import { getOrCreateAccount } from '../../util/entities'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
-interface EventData {
-    listingId: Uint8Array
-    bid: BidEvent
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
 
-    if (data.isEfinityV3000) {
-        const { listingId, bid } = data.asEfinityV3000
-        return { listingId, bid }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

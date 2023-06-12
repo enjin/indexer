@@ -14,25 +14,17 @@ import {
     ListingStatusType,
     MarketplaceAuctionFinalized,
 } from '../../../model'
-import { Bid } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
-interface EventData {
-    listingId: Uint8Array
-    winningBid: Bid | undefined
-    protocolFee: bigint
-    royalty: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceAuctionFinalizedEvent(ctx, event)
 
-    if (data.isEfinityV3000) {
-        const { listingId, winningBid, protocolFee, royalty } = data.asEfinityV3000
+    if (data.isEfinityV3014) {
+        const { listingId, winningBid, protocolFee, royalty } = data.asEfinityV3014
         return { listingId, winningBid, protocolFee, royalty }
     }
     throw new UnknownVersionError(data.constructor.name)

@@ -22,21 +22,11 @@ import { CommonContext } from '../../types/contexts'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
-interface EventData {
-    listingId: Uint8Array
-    buyer: Uint8Array
-    amountFilled: bigint
-    amountRemaining: bigint
-    protocolFee: bigint
-    royalty: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingFilledEvent(ctx, event)
 
-    if (data.isEfinityV3000) {
-        const { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty } = data.asEfinityV3000
-        return { listingId, buyer, amountFilled, amountRemaining, protocolFee, royalty }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

@@ -16,14 +16,11 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new BalancesTransferEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { from, to, amount } = data.asEfinityV2
+    if (data.isEfinityV3014) {
+        const { from, to, amount } = data.asEfinityV3014
         return { from, to, amount }
     }
-    if (data.isEfinityV1) {
-        const [from, to, amount] = data.asEfinityV1
-        return { from, to, amount }
-    }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
@@ -44,21 +41,4 @@ export async function transfer(
             amount: eventData.amount,
         }),
     })
-
-    // const call = ctx.event.extrinsic?.call
-    // if (!call || call.name !== 'Balances.transfer_all') return
-    //
-    // await saveTransfer(ctx, {
-    //     id: call.id,
-    //     timestamp: new Date(ctx.block.timestamp),
-    //     blockNumber: ctx.block.height,
-    //     extrinsicHash: ctx.event.extrinsic?.hash,
-    //     fromId: encodeId(eventData.from),
-    //     toId: encodeId(eventData.to),
-    //     amount: eventData.amount,
-    //     tip: ctx.event.extrinsic?.tip,
-    //     error: ctx.event.extrinsic?.error,
-    //     success: call.success,
-    //     type: TransferType.Native,
-    // })
 }
