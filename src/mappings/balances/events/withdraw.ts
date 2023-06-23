@@ -8,8 +8,8 @@ import { CommonContext } from '../../types/contexts'
 function getEventData(ctx: CommonContext, event: Event): bigint {
     const data = new BalancesWithdrawEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { amount } = data.asEfinityV2
+    if (data.isEfinityV3014) {
+        const { amount } = data.asEfinityV3014
         return amount
     }
 

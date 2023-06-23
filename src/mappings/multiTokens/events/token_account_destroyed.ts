@@ -16,9 +16,8 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensTokenAccountDestroyedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, accountId } = data.asEfinityV2
-        return { collectionId, tokenId, accountId }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

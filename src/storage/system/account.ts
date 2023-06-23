@@ -1,16 +1,17 @@
 import { UnknownVersionError } from '../../common/errors'
 import { decodeId } from '../../common/tools'
+import { AccountInfo } from '../../types/generated/efinityV3014'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { BlockContext } from '../../types/generated/support'
-import { AccountInfo } from '../../types/generated/efinityV1'
 
 async function getStorageData(ctx: BlockContext, accounts: Uint8Array[]): Promise<(AccountInfo | undefined)[] | undefined> {
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isEfinityV1) {
-        return storage.asEfinityV1.getMany(accounts)
+    if (storage.isEfinityV3014) {
+        return storage.asEfinityV3014.getMany(accounts)
     }
+
     throw new UnknownVersionError(storage.constructor.name)
 }
 

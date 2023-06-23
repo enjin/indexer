@@ -7,21 +7,11 @@ import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferr
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint
-    operator: Uint8Array
-    from: Uint8Array
-    to: Uint8Array
-    amount: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTransferredEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, operator, from, to, amount } = data.asEfinityV2
-        return { collectionId, tokenId, operator, from, to, amount }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

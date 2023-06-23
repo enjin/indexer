@@ -21,23 +21,16 @@ import {
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
-import { Listing as ListingEvent, ListingData_Auction } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
 
-interface EventData {
-    listingId: Uint8Array
-    listing: ListingEvent
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
 
-    if (data.isEfinityV3000) {
-        const { listingId, listing } = data.asEfinityV3000
-        return { listingId, listing }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -64,12 +57,12 @@ export async function listingCreated(
     const account = await getOrCreateAccount(ctx, data.listing.seller)
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
-        data.listing.data.__kind === ListingType.FixedPrice.toString()
+        data.listing.data.__kind === ListingType.FixedPrice
             ? new FixedPriceData({ listingType: ListingType.FixedPrice })
             : new AuctionData({
                   listingType: ListingType.Auction,
-                  startHeight: (data.listing.data as ListingData_Auction).value.startBlock,
-                  endHeight: (data.listing.data as ListingData_Auction).value.endBlock,
+                  startHeight: data.listing.data.value.startBlock,
+                  endHeight: data.listing.data.value.endBlock,
               })
     const listingState =
         data.listing.state.__kind === ListingType.FixedPrice.toString()

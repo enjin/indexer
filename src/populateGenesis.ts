@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { u8aToHex, u8aToString } from '@polkadot/util'
@@ -37,8 +38,6 @@ import {
     ListingStatusType,
     ListingStatus,
 } from './model'
-import * as efinityV2 from './types/generated/efinityV2'
-import * as efinityV3000 from './types/generated/efinityV3000'
 import { getCapType, getFreezeState } from './mappings/multiTokens/events/token_created'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
@@ -98,12 +97,12 @@ async function getAccountsMap(
 function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
-    if (collectionStorage.isEfinityV2) {
-        return collectionStorage.asEfinityV2
+    if (collectionStorage.isEfinityV3014) {
+        return collectionStorage.asEfinityV3014
     }
 
-    if (collectionStorage.isEfinityV3000) {
-        return collectionStorage.asEfinityV3000
+    if (collectionStorage.isEfinityV3014) {
+        return collectionStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -112,8 +111,8 @@ function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
     const balanceAccountStorage = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
 
-    if (balanceAccountStorage.isEfinityV2) {
-        return balanceAccountStorage.asEfinityV2
+    if (balanceAccountStorage.isEfinityV3014) {
+        return balanceAccountStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -142,8 +141,8 @@ function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
     const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
 
-    if (attributeStorage.asEfinityV2) {
-        return attributeStorage.asEfinityV2
+    if (attributeStorage.isEfinityV3014) {
+        return attributeStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -152,8 +151,8 @@ function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
     const listingStorage = new Storage.MarketplaceListingsStorage(ctx, block)
 
-    if (listingStorage.isEfinityV3000) {
-        return listingStorage.asEfinityV3000
+    if (listingStorage.isEfinityV3014) {
+        return listingStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -163,59 +162,57 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
     for await (const collectionPairs of getCollectionStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
         const accountMap = await getAccountsMap(
             ctx,
-            collectionPairs.map(([, data]: [bigint, efinityV2.Collection | efinityV3000.Collection]) => [
+            collectionPairs.map(([, data]) => [
                 data.owner,
                 'market' in data.policy ? data.policy.market?.royalty?.beneficiary : null,
             ])
         )
-        const collectionsPromise = collectionPairs.map(
-            async ([id, data]: [bigint, efinityV2.Collection | efinityV3000.Collection]) => {
-                const owner = accountMap.get(u8aToHex(data.owner))
-                let market = null
-                if ('market' in data.policy && data.policy.market.royalty) {
-                    const account = accountMap.get(u8aToHex(data.policy.market.royalty.beneficiary))
+        const collectionsPromise = collectionPairs.map(async ([id, data]) => {
+            const owner = accountMap.get(u8aToHex(data.owner))
+            let market = null
+            if ('market' in data.policy && data.policy.market.royalty) {
+                const account = accountMap.get(u8aToHex(data.policy.market.royalty.beneficiary))
 
-                    if (!account) throw Errors.accountNotFound()
+                if (!account) throw Errors.accountNotFound()
 
-                    market = new MarketPolicy({
-                        royalty: new Royalty({
-                            beneficiary: account.id,
-                            percentage: data.policy.market.royalty.percentage,
-                        }),
-                    })
-                }
-
-                return new Collection({
-                    id: id.toString(),
-                    owner,
-                    mintPolicy: new MintPolicy({
-                        maxTokenCount: data.tokenCount,
-                        maxTokenSupply: data.policy.mint.maxTokenSupply,
-                        forceSingleMint: data.policy.mint.forceSingleMint,
+                market = new MarketPolicy({
+                    royalty: new Royalty({
+                        beneficiary: account.id,
+                        percentage: data.policy.market.royalty.percentage,
                     }),
-                    marketPolicy: market,
-                    transferPolicy: new TransferPolicy({
-                        isFrozen: data.policy.transfer.isFrozen,
-                    }),
-                    stats: new CollectionStats({
-                        lastSale: null,
-                        floorPrice: null,
-                        highestSale: null,
-                        tokenCount: Number(data.tokenCount),
-                        salesCount: 0,
-                        supply: 0n,
-                        marketCap: 0n,
-                        volume: 0n,
-                    }),
-                    burnPolicy: null,
-                    attributePolicy: null,
-                    attributeCount: data.attributeCount,
-                    totalDeposit: data.totalDeposit,
-                    createdAt: new Date(block.timestamp),
-                    collectionId: id,
                 })
             }
-        )
+
+            return new Collection({
+                id: id.toString(),
+                owner,
+                mintPolicy: new MintPolicy({
+                    maxTokenCount: data.tokenCount,
+                    maxTokenSupply: data.policy.mint.maxTokenSupply,
+                    forceSingleMint: data.policy.mint.forceSingleMint,
+                }),
+                marketPolicy: market,
+                transferPolicy: new TransferPolicy({
+                    isFrozen: data.policy.transfer.isFrozen,
+                }),
+                stats: new CollectionStats({
+                    lastSale: null,
+                    floorPrice: null,
+                    highestSale: null,
+                    tokenCount: Number(data.tokenCount),
+                    salesCount: 0,
+                    supply: 0n,
+                    marketCap: 0n,
+                    volume: 0n,
+                }),
+                burnPolicy: null,
+                attributePolicy: null,
+                attributeCount: data.attributeCount,
+                totalDeposit: data.totalDeposit,
+                createdAt: new Date(block.timestamp),
+                collectionId: id,
+            })
+        })
 
         await Promise.all(collectionsPromise).then((collections) => ctx.store.insert(Collection, collections as any))
     }

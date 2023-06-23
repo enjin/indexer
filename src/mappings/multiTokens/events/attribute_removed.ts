@@ -39,9 +39,8 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensAttributeRemovedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, key } = data.asEfinityV2
-        return { collectionId, tokenId, key }
+    if (data.asEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

@@ -20,19 +20,11 @@ import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
 import { computeTraits } from '../../../jobs/compute-traits'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint | undefined
-    key: Uint8Array
-    value: Uint8Array
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensAttributeSetEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, key, value } = data.asEfinityV2
-        return { collectionId, tokenId, key, value }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

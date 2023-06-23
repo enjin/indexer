@@ -16,19 +16,11 @@ import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint
-    accountId: Uint8Array
-    balance: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenAccountCreatedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, tokenId, accountId, balance } = data.asEfinityV2
-        return { collectionId, tokenId, accountId, balance }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(data.constructor.name)
 }

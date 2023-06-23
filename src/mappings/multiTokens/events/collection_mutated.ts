@@ -13,53 +13,17 @@ import {
     RoyaltyCurrency,
     Token,
 } from '../../../model'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3000'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { ShouldMutate } from '../../../types/generated/efinityV3012'
+import { DefaultRoyalty } from '../../../types/generated/efinityV3014'
 
-interface EventData {
-    collectionId: bigint
-    owner: Uint8Array | undefined
-    royalty: ShouldMutate
-    explicitRoyaltyCurrencies: AssetId[] | undefined
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
+function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, mutation } = data.asEfinityV2
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty: { __kind: 'NoMutation' },
-            explicitRoyaltyCurrencies: undefined,
-        }
-    }
-    if (data.isEfinityV3000) {
-        const { collectionId, mutation } = data.asEfinityV3000
+    if (data.isEfinityV3014) {
+        const { collectionId, mutation } = data.asEfinityV3014
 
-        const royalty: ShouldMutate =
-            mutation.royalty.__kind === 'None'
-                ? {
-                      __kind: 'NoMutation',
-                  }
-                : {
-                      __kind: 'SomeMutation',
-                      value: mutation.royalty.value,
-                  }
-
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-    if (data.isEfinityV3012) {
-        const { collectionId, mutation } = data.asEfinityV3012
         return {
             collectionId,
             owner: mutation.owner,
@@ -67,6 +31,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
     }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 

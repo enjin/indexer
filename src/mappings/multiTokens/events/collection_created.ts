@@ -17,24 +17,16 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-import { AssetId, DefaultRoyalty } from '../../../types/generated/efinityV3012'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-
-interface CallData {
-    maxTokenCount: bigint | undefined
-    maxTokenSupply: bigint | undefined
-    forceSingleMint: boolean
-    market: MarketPolicy | null
-    explicitRoyaltyCurrencies: AssetId[]
-}
+import { DefaultRoyalty } from '../../../types/generated/efinityV3014'
 
 interface EventData {
     collectionId: bigint
     owner: Uint8Array
 }
 
-async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
+async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
         royalty: new Royalty({
@@ -45,14 +37,14 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
+async function getCallData(ctx: CommonContext, call: Call) {
     if (call.name === 'MultiTokens.force_create_collection') {
         const data = new MultiTokensForceCreateCollectionCall(ctx, call)
-        if (data.isEfinityV3012) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3012.descriptor.policy.mint
-            const royalty = data.asEfinityV3012.descriptor.policy.market?.royalty
+        if (data.isEfinityV3014) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3014.descriptor.policy.mint
+            const royalty = data.asEfinityV3014.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asEfinityV3012.descriptor
+            const { explicitRoyaltyCurrencies } = data.asEfinityV3014.descriptor
 
             return {
                 maxTokenCount,
@@ -65,36 +57,12 @@ async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
         throw new UnknownVersionError(data.constructor.name)
     } else {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
-        if (data.isEfinityV2) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV2.descriptor.policy.mint
 
-            return {
-                maxTokenCount,
-                maxTokenSupply,
-                forceSingleMint,
-                market: null,
-                explicitRoyaltyCurrencies: [{ collectionId: 0n, tokenId: 0n }],
-            }
-        }
-        if (data.isEfinityV3000) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3000.descriptor.policy.mint
-            const royalty = data.asEfinityV3000.descriptor.policy.market?.royalty
+        if (data.isEfinityV3014) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3014.descriptor.policy.mint
+            const royalty = data.asEfinityV3014.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asEfinityV3000.descriptor
-
-            return {
-                maxTokenCount,
-                maxTokenSupply,
-                forceSingleMint,
-                market,
-                explicitRoyaltyCurrencies,
-            }
-        }
-        if (data.isEfinityV3012) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asEfinityV3012.descriptor.policy.mint
-            const royalty = data.asEfinityV3012.descriptor.policy.market?.royalty
-            const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asEfinityV3012.descriptor
+            const { explicitRoyaltyCurrencies } = data.asEfinityV3014.descriptor
 
             return {
                 maxTokenCount,
@@ -112,9 +80,8 @@ async function getCallData(ctx: CommonContext, call: Call): Promise<CallData> {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionCreatedEvent(ctx, event)
 
-    if (data.isEfinityV2) {
-        const { collectionId, owner } = data.asEfinityV2
-        return { collectionId, owner }
+    if (data.isEfinityV3014) {
+        return data.asEfinityV3014
     }
     throw new UnknownVersionError(event.constructor.name)
 }
