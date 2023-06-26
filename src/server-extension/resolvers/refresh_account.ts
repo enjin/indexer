@@ -4,6 +4,7 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'
 import { Account } from '../../model'
+import { fetchAccountsDetail } from '../../mappings/util/entities'
 
 @Resolver()
 export class RefreshAccountResolver {
@@ -20,7 +21,7 @@ export class RefreshAccountResolver {
         const account = await manager.findOneBy(Account, { id })
 
         if (account) {
-            
+            // const [data] = await fetchAccountsDetail([account.id])
         }
 
         return true

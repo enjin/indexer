@@ -5,6 +5,14 @@ import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerCon
 import { encodeId, isAdressSS58 } from '../../common/tools'
 import config from '../../config'
 
+export type AddressVerification = {
+    username: string
+    publicKey: string
+    image: string
+    verified: boolean
+    verifiedDate: string
+}
+
 export async function getOrCreateAccount(
     ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonContext,
     publicKey: Uint8Array

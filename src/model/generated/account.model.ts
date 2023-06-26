@@ -55,7 +55,7 @@ export class Account {
     username!: string | undefined | null
 
     @Column_("timestamp with time zone", {nullable: true})
-    verifiedDate!: Date | undefined | null
+    verifiedAt!: Date | undefined | null
 
     @Column_("text", {nullable: true})
     image!: string | undefined | null

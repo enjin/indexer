@@ -276,7 +276,7 @@ type Account @entity {
 
   # profile
   username: String
-  verifiedDate: DateTime
+  verifiedAt: DateTime
   image: String
 }
 
