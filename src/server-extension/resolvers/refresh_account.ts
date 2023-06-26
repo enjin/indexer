@@ -4,7 +4,8 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'
 import { Account } from '../../model'
-import { fetchAccountsDetail } from '../../mappings/util/entities'
+import { fetchAccountsDetail } from '../../mappings/util/marketplace'
+import { getOrCreateAccount } from '../../mappings/util/entities'
 
 @Resolver()
 export class RefreshAccountResolver {
@@ -14,14 +15,19 @@ export class RefreshAccountResolver {
     async refreshAccount(@Arg('id') id: string): Promise<boolean> {
         const manager = await this.tx()
 
-        if (!id || decodeAddress(id) == null) {
+        if (!id || decodeAddress(id).length === 0) {
             return false
         }
 
-        const account = await manager.findOneBy(Account, { id })
+        const account = await getOrCreateAccount({ store: manager } as any, decodeAddress(id))
 
         if (account) {
-            // const [data] = await fetchAccountsDetail([account.id])
+            const [data] = await fetchAccountsDetail([account.id])
+            account.username = data.username
+            account.image = data.image
+            account.verifiedAt = data.verifiedAt
+
+            await manager.save(account)
         }
 
         return true

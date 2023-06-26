@@ -1,17 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
-import axios from 'axios'
 import { Account, Balance } from '../../model'
 import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
 import { encodeId, isAdressSS58 } from '../../common/tools'
-import config from '../../config'
-
-export type AddressVerification = {
-    username: string
-    publicKey: string
-    image: string
-    verified: boolean
-    verifiedDate: string
-}
 
 export async function getOrCreateAccount(
     ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonContext,
@@ -40,8 +30,4 @@ export async function getOrCreateAccount(
     }
 
     return account
-}
-
-export async function fetchAccountsDetail(ids: string[]) {
-    return axios.get(`${config.marketplaceUrl}/internal-api/user?=${ids.join(',')}`)
 }
