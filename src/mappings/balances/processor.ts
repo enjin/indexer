@@ -18,6 +18,7 @@ import {
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { Event } from '../../types/generated/support'
 import { CommonContext } from '../types/contexts'
+import { fetchAccountsDetail } from '../util/marketplace'
 
 function getDustLostAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDustLostEvent(ctx, event)
@@ -206,7 +207,10 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     if (accountIds.length === 0) return
 
     const accountsU8a: Uint8Array[] = accountIds.map((id) => hexToU8a(id))
-    const accountInfos = await getBalances(ctx, block, accountsU8a)
+    const [accountInfos, accountDetails] = await Promise.all([
+        getBalances(ctx, block, accountsU8a),
+        fetchAccountsDetail(accountIds),
+    ])
     if (!accountInfos) {
         return
     }
@@ -215,6 +219,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
 
     for (let i = 0; i < accountIds.length; i += 1) {
         const id = accountIds[i]
+        const detail = accountDetails[i]
         const accountInfo = accountInfos[i]
         const accountData = accountInfo.data
 
@@ -231,6 +236,9 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     miscFrozen: 0n,
                 }),
                 tokenValues: 0n,
+                username: detail?.username || null,
+                image: detail?.image || null,
+                verifiedAt: detail?.verifiedAt || null,
             })
         } else if ('miscFrozen' in accountData) {
             accounts.push({
@@ -245,6 +253,9 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     miscFrozen: accountData.miscFrozen,
                 }),
                 tokenValues: 0n,
+                username: detail?.username || null,
+                image: detail?.image || null,
+                verifiedAt: detail?.verifiedAt || null,
             })
         }
     }

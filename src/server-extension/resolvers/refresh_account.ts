@@ -3,7 +3,6 @@ import { Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'
-import { Account } from '../../model'
 import { fetchAccountsDetail } from '../../mappings/util/marketplace'
 import { getOrCreateAccount } from '../../mappings/util/entities'
 
@@ -23,6 +22,7 @@ export class RefreshAccountResolver {
 
         if (account) {
             const [data] = await fetchAccountsDetail([account.id])
+            if (!data) return false
             account.username = data.username
             account.image = data.image
             account.verifiedAt = data.verifiedAt

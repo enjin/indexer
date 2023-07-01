@@ -27,11 +27,12 @@ export async function fetchAccountsDetail(ids: string[]) {
     })
     return ids.map((id) => {
         const account = data.result.find((i) => i.publicKey === id)
+        if (!account) return null
         return {
             publicKey: id,
-            username: account?.username || null,
-            image: account?.image || null,
-            verifiedAt: account?.verified ? new Date(account.verifiedDate) : null,
+            username: account.username || null,
+            image: account.image || null,
+            verifiedAt: account.verified ? new Date(account.verifiedDate) : null,
         }
     })
 }
