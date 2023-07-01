@@ -37,7 +37,8 @@ export async function fetchAccountsDetail(ids: string[]) {
             }
         })
     } catch (error) {
-        console.error(error)
+        // eslint-disable-next-line no-console
+        console.error('Error: Fetching account details', error)
         return ids.map(() => null)
     }
 }
