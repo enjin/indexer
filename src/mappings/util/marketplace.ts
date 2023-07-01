@@ -20,14 +20,17 @@ export type AddressVerification = {
 }
 export async function fetchAccountsDetail(ids: string[]) {
     try {
-        const { data } = await axios.post<{ result: AddressVerification[] }>(`${config.marketplaceUrl}/graphiql/internal`, {
-            query: addressesQuery,
-            variables: {
-                ids,
-            },
-        })
+        const { data } = await axios.post<{ data: { result: AddressVerification[] } }>(
+            `${config.marketplaceUrl}/graphql/internal`,
+            {
+                query: addressesQuery,
+                variables: {
+                    ids,
+                },
+            }
+        )
         return ids.map((id) => {
-            const account = data.result.find((i) => i.publicKey === id)
+            const account = data.data.result.find((i) => i.publicKey === id)
             if (!account) return null
             return {
                 publicKey: id,
