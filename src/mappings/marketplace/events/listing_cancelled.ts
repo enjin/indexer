@@ -16,6 +16,7 @@ import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { Pusher } from '../../../common/pusher'
 import { safeJson } from '../../../common/tools'
+import { getBestListing } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCancelledEvent(ctx, event)
@@ -41,6 +42,7 @@ export async function listingCancelled(
             seller: true,
             makeAssetId: {
                 collection: true,
+                bestListing: true,
             },
         },
     })
@@ -55,6 +57,16 @@ export async function listingCancelled(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(ListingStatus, listingStatus as any)
+
+    if (listing.makeAssetId.bestListing?.id === listing.id) {
+        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        listing.makeAssetId.bestListing = null
+        if (bestListing) {
+            listing.makeAssetId.bestListing = bestListing
+        }
+        await ctx.store.save(listing.makeAssetId)
+    }
+
     new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     const event = new EventModel({

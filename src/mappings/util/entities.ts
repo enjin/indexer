@@ -1,5 +1,5 @@
 import { u8aToHex } from '@polkadot/util'
-import { Account, Balance } from '../../model'
+import { Account, Balance, Listing, ListingStatus, ListingStatusType } from '../../model'
 import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
 import { encodeId, isAdressSS58 } from '../../common/tools'
 
@@ -30,4 +30,19 @@ export async function getOrCreateAccount(
     }
 
     return account
+}
+
+export async function getBestListing(ctx: CommonContext, tokenId: string) {
+    return ctx.store
+        .getRepository(Listing)
+        .createQueryBuilder('listing')
+        .select('listing.id')
+        .addSelect('listing.highestPrice')
+        .addSelect('COUNT(status.type)')
+        .innerJoin(ListingStatus, 'status', 'status.listing = listing.id')
+        .where('listing.makeAssetId = :tokenId', { tokenId })
+        .orderBy('listing.highestPrice', 'ASC')
+        .groupBy('listing.id')
+        .having('COUNT(status.type) = 1')
+        .getOne()
 }
