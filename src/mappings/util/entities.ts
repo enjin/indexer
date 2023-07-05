@@ -1,5 +1,5 @@
 import { u8aToHex } from '@polkadot/util'
-import { Account, Balance, Listing, ListingStatus, ListingStatusType } from '../../model'
+import { Account, Balance, Listing, ListingStatus } from '../../model'
 import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
 import { encodeId, isAdressSS58 } from '../../common/tools'
 

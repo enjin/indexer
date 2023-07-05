@@ -1,5 +1,5 @@
-module.exports = class Data1688225759041 {
-    name = 'Data1688225759041'
+module.exports = class Data1688571772343 {
+    name = 'Data1688571772343'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -29,9 +29,11 @@ module.exports = class Data1688225759041 {
         await db.query(`CREATE TABLE "trait_token" ("id" character varying NOT NULL, "trait_id" character varying, "token_id" character varying, CONSTRAINT "PK_4e57eb88e2621a0cc66431f9115" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_71850fdd62a5b8d25de4245e55" ON "trait_token" ("trait_id") `)
         await db.query(`CREATE INDEX "IDX_42c1cb4414e0240cf7e0ee8f96" ON "trait_token" ("token_id") `)
-        await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "freeze_state" character varying(9), "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "non_fungible" boolean NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "token" ("id" character varying NOT NULL, "token_id" numeric NOT NULL, "supply" numeric NOT NULL, "is_frozen" boolean NOT NULL, "freeze_state" character varying(9), "cap" jsonb, "behavior" jsonb, "listing_forbidden" boolean NOT NULL, "unit_price" numeric, "minimum_balance" numeric NOT NULL, "mint_deposit" numeric NOT NULL, "attribute_count" integer NOT NULL, "non_fungible" boolean NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "collection_id" character varying, "best_listing_id" character varying, "recent_listing_id" character varying, CONSTRAINT "PK_82fae97f905930df5d62a702fc9" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_cab3c454b0419a03584a3990ce" ON "token" ("token_id") `)
         await db.query(`CREATE INDEX "IDX_65f74edd41f667e4645e59b61d" ON "token" ("collection_id") `)
+        await db.query(`CREATE INDEX "IDX_3329305f7a90cd8be81342574a" ON "token" ("best_listing_id") `)
+        await db.query(`CREATE INDEX "IDX_c767cb0b961c3e85c5978a582b" ON "token" ("recent_listing_id") `)
         await db.query(`CREATE TABLE "royalty_currency" ("id" character varying NOT NULL, "collection_id" character varying, "token_id" character varying, CONSTRAINT "PK_8b20fc27efc10e78ee3ac86fb17" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_e8b9ca718a67bb51d171240e0b" ON "royalty_currency" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_861e21e7c2777c9ef09bea2724" ON "royalty_currency" ("token_id") `)
@@ -76,6 +78,8 @@ module.exports = class Data1688225759041 {
         await db.query(`ALTER TABLE "trait_token" ADD CONSTRAINT "FK_71850fdd62a5b8d25de4245e550" FOREIGN KEY ("trait_id") REFERENCES "trait"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "trait_token" ADD CONSTRAINT "FK_42c1cb4414e0240cf7e0ee8f968" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "token" ADD CONSTRAINT "FK_65f74edd41f667e4645e59b61df" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "token" ADD CONSTRAINT "FK_3329305f7a90cd8be81342574ac" FOREIGN KEY ("best_listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "token" ADD CONSTRAINT "FK_c767cb0b961c3e85c5978a582b6" FOREIGN KEY ("recent_listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be" FOREIGN KEY ("collection_id") REFERENCES "collection"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "royalty_currency" ADD CONSTRAINT "FK_861e21e7c2777c9ef09bea27245" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "collection_account" ADD CONSTRAINT "FK_2b2b641fd385385ba996c66098f" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -121,6 +125,8 @@ module.exports = class Data1688225759041 {
         await db.query(`DROP TABLE "token"`)
         await db.query(`DROP INDEX "public"."IDX_cab3c454b0419a03584a3990ce"`)
         await db.query(`DROP INDEX "public"."IDX_65f74edd41f667e4645e59b61d"`)
+        await db.query(`DROP INDEX "public"."IDX_3329305f7a90cd8be81342574a"`)
+        await db.query(`DROP INDEX "public"."IDX_c767cb0b961c3e85c5978a582b"`)
         await db.query(`DROP TABLE "royalty_currency"`)
         await db.query(`DROP INDEX "public"."IDX_e8b9ca718a67bb51d171240e0b"`)
         await db.query(`DROP INDEX "public"."IDX_861e21e7c2777c9ef09bea2724"`)
@@ -165,6 +171,8 @@ module.exports = class Data1688225759041 {
         await db.query(`ALTER TABLE "trait_token" DROP CONSTRAINT "FK_71850fdd62a5b8d25de4245e550"`)
         await db.query(`ALTER TABLE "trait_token" DROP CONSTRAINT "FK_42c1cb4414e0240cf7e0ee8f968"`)
         await db.query(`ALTER TABLE "token" DROP CONSTRAINT "FK_65f74edd41f667e4645e59b61df"`)
+        await db.query(`ALTER TABLE "token" DROP CONSTRAINT "FK_3329305f7a90cd8be81342574ac"`)
+        await db.query(`ALTER TABLE "token" DROP CONSTRAINT "FK_c767cb0b961c3e85c5978a582b6"`)
         await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_e8b9ca718a67bb51d171240e0be"`)
         await db.query(`ALTER TABLE "royalty_currency" DROP CONSTRAINT "FK_861e21e7c2777c9ef09bea27245"`)
         await db.query(`ALTER TABLE "collection_account" DROP CONSTRAINT "FK_2b2b641fd385385ba996c66098f"`)
