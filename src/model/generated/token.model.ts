@@ -72,6 +72,14 @@ export class Token {
     @OneToMany_(() => TraitToken, e => e.token)
     traits!: TraitToken[]
 
+    @Index_()
+    @ManyToOne_(() => Listing, {nullable: true})
+    bestListing!: Listing | undefined | null
+
+    @Index_()
+    @ManyToOne_(() => Listing, {nullable: true})
+    recentListing!: Listing | undefined | null
+
     @Column_("bool", {nullable: false})
     nonFungible!: boolean
 

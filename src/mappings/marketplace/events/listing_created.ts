@@ -48,6 +48,7 @@ export async function listingCreated(
         where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
         relations: {
             collection: true,
+            bestListing: true,
         },
     })
     const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
@@ -98,6 +99,14 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp),
     })
     await ctx.store.insert(ListingStatus, listingStatus as any)
+
+    // update best listing
+    if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
+        makeAssetId.bestListing = listing
+    }
+    makeAssetId.recentListing = listing
+    await ctx.store.save(makeAssetId)
+
     new CollectionService(ctx.store).sync(makeAssetId.collection.id)
 
     const event = new EventModel({
@@ -112,7 +121,7 @@ export async function listingCreated(
 
     const eventData: [EventModel, AccountTokenEvent] | undefined = [
         event,
-        new AccountTokenEvent({ id: item.event.id, token: makeAssetId, from: listing.seller, event }),
+        new AccountTokenEvent({ id: item.event.id, token: new Token({ id: makeAssetId.id }), from: listing.seller, event }),
     ]
 
     await Pusher.getInstance().trigger('marketplace', 'listingCreated', safeJson(eventData))
