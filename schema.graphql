@@ -273,6 +273,11 @@ type Account @entity {
   # Extras
   tokenValues: BigInt!
   lastUpdateBlock: Int
+
+  # profile
+  username: String
+  verifiedAt: DateTime
+  image: String
 }
 
 type MintPolicy {
