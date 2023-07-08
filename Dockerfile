@@ -50,4 +50,4 @@ LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
 LABEL org.opencontainers.image.description="Efinity Indexer - GraphQL"
 LABEL org.opencontainers.image.licenses=GPLv3
 
-CMD ["npx", "squid-graphql-server", "--subscriptions", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "12000", "--dumb-cache-size", "1024", "--dumb-cache-max-age", "12000", "--max-root-fields", "10", "--sql-statement-timeout", "3000"]
+CMD ["npx", "squid-graphql-server", "--subscriptions", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "12000", "--dumb-cache-size", "1024", "--dumb-cache-max-age", "12000", "--max-root-fields", "10", "--sql-statement-timeout", "5000"]
