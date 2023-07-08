@@ -33,21 +33,12 @@ EXPOSE 3000
 EXPOSE 4000
 
 
-FROM squid AS processor
+FROM squid AS efinity-indexer
 
 LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
-LABEL org.opencontainers.image.description="Efinity Indexer - Processor"
+LABEL org.opencontainers.image.description="Efinity Blockchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
 
 COPY --chmod=0755 start.sh .
 
 CMD ["/bin/sh", "-c", "/squid/start.sh"]
-
-
-FROM squid AS query-node
-
-LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
-LABEL org.opencontainers.image.description="Efinity Indexer - GraphQL"
-LABEL org.opencontainers.image.licenses=GPLv3
-
-CMD ["npx", "squid-graphql-server", "--subscriptions", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "12000", "--dumb-cache-size", "1024", "--dumb-cache-max-age", "12000", "--max-root-fields", "10", "--sql-statement-timeout", "5000"]
