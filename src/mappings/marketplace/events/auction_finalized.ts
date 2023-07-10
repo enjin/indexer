@@ -104,6 +104,7 @@ export async function auctionFinalized(
             id: item.event.id,
             token: listing.makeAssetId,
             from: listing.seller,
+            to: data.winningBid?.bidder ? new Account({ id: u8aToHex(data.winningBid.bidder) }) : null,
             event,
         }),
     ]
