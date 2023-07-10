@@ -26,23 +26,24 @@ services:
   indexer_processor:
     container_name: indexer_processor
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer-processor:${VERSION:-latest}
+    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    environment:
+      CONTAINER_ROLE: processor
     build:
       context: .
-      target: processor
     volumes:
       - .env:/squid/.env
     depends_on:
-      - indexer_redis
       - indexer_db
 
   indexer_graphql:
     container_name: indexer_graphql
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer-graphql:${VERSION:-latest}
+    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    environment:
+      CONTAINER_ROLE: graphql
     build:
       context: .
-      target: query-node
     ports:
       - "4467:4347"
     volumes:
