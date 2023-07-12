@@ -17,6 +17,7 @@ deploy:
     - ARCHIVE_ENDPOINT
     - EFINITY_ENDPOINT
     - CHAIN_STATE_HEIGHT
+    - FETCH_ACCOUNTS
   processor:
     cmd: [ "node", "lib/processor" ]
   api:
