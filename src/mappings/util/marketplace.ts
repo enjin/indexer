@@ -20,7 +20,7 @@ export type AddressVerification = {
 }
 export async function fetchAccountsDetail(ids: string[]) {
     try {
-        const { data } = await axios.post<{ data: { result: AddressVerification[] } }>(
+        const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
                 query: addressesQuery,
@@ -29,6 +29,7 @@ export async function fetchAccountsDetail(ids: string[]) {
                 },
             }
         )
+        if ('errors' in data) throw new Error(data.errors[0].message)
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
             if (!account) return null
@@ -41,7 +42,7 @@ export async function fetchAccountsDetail(ids: string[]) {
         })
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Error: Fetching account details', error)
+        console.error('Error: Fetching account details', ids, error)
         return ids.map(() => null)
     }
 }
