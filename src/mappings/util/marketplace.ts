@@ -1,7 +1,7 @@
 import axios from 'axios'
 import config from '../../config'
 
-const addressesQuery = `query AddressesQuery($ids: [String]) {
+const addressesQuery = `query AddressesQuery($ids: [String!]) {
     result: AddressesVerification(publicKeys:$ids){
       publicKey
       username
@@ -29,7 +29,8 @@ export async function fetchAccountsDetail(ids: string[]) {
                 },
             }
         )
-        if ('errors' in data) throw new Error(data.errors[0].message)
+
+        if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
             if (!account) return null
