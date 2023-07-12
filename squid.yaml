@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: efinity
-version: 2101
+version: 2102
 description: |-
   An explorer-like indexer for the Efinity network.
 
@@ -9,8 +9,10 @@ build:
 deploy:
   addons:
     postgres:
+      config:
+        statement_timeout: 120000
+        log_min_duration_statement: 5000
   secrets:
-    - SQD_DEBUG
     - SELECTED_CHAIN
     - ARCHIVE_ENDPOINT
     - EFINITY_ENDPOINT
@@ -27,5 +29,5 @@ deploy:
       "--dumb-cache-size", "256",
       "--dumb-cache-max-age", "12000",
       "--max-root-fields", "10",
-      "--sql-statement-timeout", "3000"
+      "--sql-statement-timeout", "5000"
     ]
