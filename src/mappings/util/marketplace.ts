@@ -23,12 +23,19 @@ export async function fetchAccountsDetail(ids: string[]) {
         if (!config.shouldFetchAccounts) {
             return ids.map(() => null)
         }
+
         const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
                 query: addressesQuery,
                 variables: {
                     ids,
+                },
+            },
+            {
+                headers: {
+                    'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+                    'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
                 },
             }
         )
@@ -39,6 +46,7 @@ export async function fetchAccountsDetail(ids: string[]) {
             console.error('No data returned', data)
             throw new Error('No data returned')
         }
+
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
             if (!account) return null
