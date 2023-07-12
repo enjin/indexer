@@ -26,6 +26,7 @@ const config: ProcessorConfig = {
     },
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://beta.nft.io',
     shouldFetchAccounts: process.env.FETCH_ACCOUNTS !== 'false',
+    sentryDsn: process.env.SENTRY_DSN,
 }
 
 export default config
