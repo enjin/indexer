@@ -1,7 +1,7 @@
 import axios from 'axios'
 import config from '../../config'
 
-const addressesQuery = `query AddressesQuery($ids: [String]) {
+const addressesQuery = `query AddressesQuery($ids: [String!]) {
     result: AddressesVerification(publicKeys:$ids){
       publicKey
       username
@@ -20,7 +20,10 @@ export type AddressVerification = {
 }
 export async function fetchAccountsDetail(ids: string[]) {
     try {
-        const { data } = await axios.post<{ data: { result: AddressVerification[] } }>(
+        if (!config.shouldFetchAccounts) {
+            return ids.map(() => null)
+        }
+        const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
                 query: addressesQuery,
@@ -29,6 +32,13 @@ export async function fetchAccountsDetail(ids: string[]) {
                 },
             }
         )
+
+        if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
+        if (!data.data) {
+            // eslint-disable-next-line no-console
+            console.error('No data returned', data)
+            throw new Error('No data returned')
+        }
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
             if (!account) return null
@@ -41,7 +51,7 @@ export async function fetchAccountsDetail(ids: string[]) {
         })
     } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Error: Fetching account details', error)
+        console.error('Error: Fetching account details', ids, error)
         return ids.map(() => null)
     }
 }

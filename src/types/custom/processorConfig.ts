@@ -25,4 +25,5 @@ export interface ProcessorConfig {
     redisPort: number
     pusher: any
     marketplaceUrl: string
+    shouldFetchAccounts: boolean
 }
