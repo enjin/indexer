@@ -26,4 +26,5 @@ export interface ProcessorConfig {
     pusher: any
     marketplaceUrl: string
     shouldFetchAccounts: boolean
+    sentryDsn?: string
 }
