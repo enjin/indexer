@@ -468,7 +468,7 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
                     seller: new Account({ id: u8aToHex(data.seller) }),
                     makeAssetId: new Token({ id: `${data.makeAssetId.collectionId}-${data.makeAssetId.tokenId}` }),
                     takeAssetId: new Token({ id: `${data.takeAssetId.collectionId}-${data.takeAssetId.tokenId}` }),
-                    height: data.creationBlock,
+                    height: 0,
                     deposit: data.deposit,
                     salt: Buffer.from(data.salt).toString('hex'),
                     data: listingData,
