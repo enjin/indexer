@@ -72,7 +72,7 @@ services:
     depends_on:
       - archive_db
     command: [
-      "-e", "wss://rpc.parachain.efinitystaging.com",
+      "-e", "wss://archive.rpc.efinity.io",
       "-c", "40",
       "--out", "postgres://root@archive_db:26257/defaultdb"
     ]
