@@ -2,11 +2,12 @@ name: Publish docker image
 
 on:
   push:
-    tags:
-      - v*
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
-  push:
+  build:
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -42,6 +43,6 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: indexer
-          IMAGE_TAG: ${{ steps.vars.outputs.VERSION }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker tag ghcr.io/efinity/indexer:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
