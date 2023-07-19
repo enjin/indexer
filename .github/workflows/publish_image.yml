@@ -27,7 +27,6 @@ jobs:
 
           export VERSION=$VERSION
           docker compose build indexer_processor
-          docker compose push indexer_processor
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
