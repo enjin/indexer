@@ -4,7 +4,7 @@ import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } fr
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { Collection, CollectionAccount, Listing, ListingSale, ListingStatus, Token } from '../../model'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -67,6 +67,9 @@ export class CollectionRow {
     @Field(() => Int, { nullable: false })
     sales!: number
 
+    @Field(() => Int, { nullable: false })
+    users!: number
+
     constructor(props: Partial<CollectionRow>) {
         Object.assign(this, props)
     }
@@ -89,6 +92,7 @@ export class TopCollectionResolver {
         const builder = manager
             .createQueryBuilder()
             .addSelect('collectionId AS id')
+            .addSelect('( SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId ) AS users')
             .addSelect('metadata AS metadata')
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
