@@ -4,7 +4,7 @@ import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } fr
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, CollectionAccount, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -13,6 +13,7 @@ enum Timeframe {
     WEEK = 'WEEK',
     MONTH = 'MONTH',
     YEAR = 'YEAR',
+    ALL = 'ALL',
 }
 
 const timeFrameMap = {
@@ -22,12 +23,14 @@ const timeFrameMap = {
     WEEK: { c: '7 days', p: '14 days' },
     MONTH: { c: '30 days', p: '60 days' },
     YEAR: { c: '365 days', p: '730 days' },
+    ALL: { c: '0', p: '0' },
 }
 
 enum OrderBy {
     VOLUME = 'volume',
     SALES = 'sales',
     VOLUME_CHANGE = 'volume_change',
+    USERS = 'users',
 }
 
 enum Order {
@@ -58,7 +61,7 @@ export class CollectionRow {
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
 
-    @Field({ nullable: false })
+    @Field({ nullable: true })
     volume_change!: string
 
     @Field({ nullable: false })
@@ -98,29 +101,41 @@ export class TopCollectionResolver {
             .addSelect('volume_last_duration AS volume')
             .addSelect('sales_last_duration AS sales')
             .addSelect(
-                'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE 100 END AS volume_change'
+                'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
             )
             .from((qb) => {
-                return qb
+                const inBuilder = qb
                     .select('collection.id AS collectionId')
                     .addSelect('collection.metadata AS metadata')
                     .addSelect('collection.stats AS stats')
-                    .addSelect(
-                        `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_last_duration`
-                    )
-                    .addSelect(
-                        `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_previous_duration`
-                    )
-                    .addSelect(
-                        `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
-                    )
+                if (timeFrame === Timeframe.ALL) {
+                    inBuilder
+                        .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
+                        .addSelect(`COUNT(sale.id)::int AS sales_last_duration`)
+                        .addSelect(`0 AS volume_previous_duration`)
+                } else {
+                    inBuilder
+                        .addSelect(
+                            `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_last_duration`
+                        )
+                        .addSelect(
+                            `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_previous_duration`
+                        )
+                        .addSelect(
+                            `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
+                        )
+                        .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
+                }
+
+                inBuilder
                     .from(ListingSale, 'sale')
                     .innerJoin(Listing, 'listing', 'listing.id = sale.listing')
                     .innerJoin(Token, 'token', 'listing.make_asset_id_id = token.id')
                     .innerJoin(Collection, 'collection', 'token.collection = collection.id')
                     .leftJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
-                    .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
                     .addGroupBy('collection.id')
+
+                return inBuilder
             }, 'l')
             .orderBy(orderBy, order)
             .limit(limit)
