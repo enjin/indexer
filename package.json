@@ -19,7 +19,7 @@
     "@polkadot/util": "^12.3.1",
     "@polkadot/util-crypto": "^12.3.2",
     "@sentry/integrations": "^7.59.2",
-    "@sentry/node": "^7.59.2",
+    "@sentry/node": "^7.60.0",
     "@subsquid/archive-registry": "^3.2.0",
     "@subsquid/cli": "^2.4.3",
     "@subsquid/graphql-server": "^4.2.0",
