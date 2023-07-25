@@ -9,6 +9,7 @@ jobs:
   push:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       packages: write
       contents: read
 
@@ -25,5 +26,29 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
 
           export VERSION=$VERSION
-          docker compose build indexer_processor indexer_graphql
-          docker compose push indexer_processor indexer_graphql
+          docker compose build indexer_processor
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: indexer-matrixchain
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [ "$VERSION" == "master" ] && VERSION=latest
+          
+          export VERSION=$VERSION
+          docker compose build indexer_processor
+          docker tag ghcr.io/efinity/indexer:$VERSION $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
