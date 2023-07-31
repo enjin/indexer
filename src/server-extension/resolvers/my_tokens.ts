@@ -109,7 +109,7 @@ class MyTokensBestListing {
 }
 
 @ObjectType()
-export class MyTokensResponse {
+export class MyTokensToken {
     @Field(() => ID)
     id!: string
 
@@ -148,15 +148,26 @@ export class MyTokensResponse {
     }
 }
 
+@ObjectType()
+export class MyTokensResponse {
+    @Field(() => [MyTokensToken])
+    data!: MyTokensToken[]
+
+    @Field(() => Int)
+    count!: number
+
+    constructor(props: Partial<MyTokensResponse>) {
+        Object.assign(this, props)
+    }
+}
+
 @Resolver()
 export class MyTokensResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
-    @Query(() => [MyTokensResponse])
-    async myTokens(@Args() { accountId, limit, offset, order, orderBy, query }: MyTokenArgs): Promise<MyTokensResponse[]> {
+    @Query(() => MyTokensResponse)
+    async myTokens(@Args() { accountId, limit, offset, order, orderBy, query }: MyTokenArgs): Promise<MyTokensResponse> {
         const manager = await this.tx()
-
-        console.log(isValidAddress(accountId))
 
         const builder = manager
             .getRepository(Token)
@@ -180,6 +191,8 @@ export class MyTokensResolver {
             })
         }
 
-        return builder.getMany() as any
+        const [data, count] = (await builder.getManyAndCount()) as any[]
+
+        return { data, count }
     }
 }
