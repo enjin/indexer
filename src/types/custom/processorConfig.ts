@@ -1,5 +1,4 @@
 import { SubstrateProcessor } from '@subsquid/substrate-processor'
-import Queue from 'bull'
 
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
@@ -23,7 +22,6 @@ export interface ProcessorConfig {
     redisDb: number
     redisSupportsTls: boolean
     redisPort: number
-    pusher: any
     marketplaceUrl: string
     shouldFetchAccounts: boolean
     sentryDsn?: string

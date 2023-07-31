@@ -18,8 +18,6 @@ import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { getBestListing, getOrCreateAccount } from '../../util/entities'
-import { Pusher } from '../../../common/pusher'
-import { safeJson } from '../../../common/tools'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
@@ -90,7 +88,7 @@ export async function bidPlaced(
         }),
     })
 
-    const eventData: [EventModel, AccountTokenEvent] | undefined = [
+    return [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -99,8 +97,4 @@ export async function bidPlaced(
             event,
         }),
     ]
-
-    await Pusher.getInstance().trigger('marketplace', 'bidPlaced', safeJson(eventData))
-
-    return eventData
 }

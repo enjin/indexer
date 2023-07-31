@@ -23,8 +23,6 @@ import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { Pusher } from '../../../common/pusher'
-import { safeJson } from '../../../common/tools'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
@@ -119,12 +117,8 @@ export async function listingCreated(
         }),
     })
 
-    const eventData: [EventModel, AccountTokenEvent] | undefined = [
+    return [
         event,
         new AccountTokenEvent({ id: item.event.id, token: new Token({ id: makeAssetId.id }), from: listing.seller, event }),
     ]
-
-    await Pusher.getInstance().trigger('marketplace', 'listingCreated', safeJson(eventData))
-
-    return eventData
 }

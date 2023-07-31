@@ -14,8 +14,6 @@ import {
 import { Event } from '../../../types/generated/support'
 import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
-import { Pusher } from '../../../common/pusher'
-import { safeJson } from '../../../common/tools'
 import { getBestListing } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: Event) {
@@ -79,7 +77,7 @@ export async function listingCancelled(
         }),
     })
 
-    const eventData: [EventModel, AccountTokenEvent] | undefined = [
+    return [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -88,8 +86,4 @@ export async function listingCancelled(
             event,
         }),
     ]
-
-    await Pusher.getInstance().trigger('marketplace', 'listingCancelled', safeJson(eventData))
-
-    return eventData
 }
