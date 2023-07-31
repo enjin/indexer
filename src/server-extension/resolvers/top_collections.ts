@@ -26,7 +26,7 @@ const timeFrameMap = {
     ALL: { c: '0', p: '0' },
 }
 
-enum OrderBy {
+enum TopCollectionOrderBy {
     VOLUME = 'volume',
     SALES = 'sales',
     VOLUME_CHANGE = 'volume_change',
@@ -42,12 +42,12 @@ registerEnumType(Timeframe, {
     name: 'Timeframe',
 })
 
-registerEnumType(OrderBy, {
-    name: 'OrderBy',
+registerEnumType(TopCollectionOrderBy, {
+    name: 'TopCollectionOrderBy',
 })
 
 registerEnumType(Order, {
-    name: 'Order',
+    name: 'TopCollectionOrder',
 })
 
 @ObjectType()
@@ -85,7 +85,7 @@ export class TopCollectionResolver {
     @Query(() => [CollectionRow])
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
-        @Arg('orderBy', () => OrderBy) orderBy: OrderBy,
+        @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
