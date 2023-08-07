@@ -187,7 +187,7 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                 id: id.toString(),
                 owner,
                 mintPolicy: new MintPolicy({
-                    maxTokenCount: data.tokenCount,
+                    maxTokenCount: data.policy.mint.maxTokenCount,
                     maxTokenSupply: data.policy.mint.maxTokenSupply,
                     forceSingleMint: data.policy.mint.forceSingleMint,
                 }),
