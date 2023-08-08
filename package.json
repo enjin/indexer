@@ -28,7 +28,7 @@
     "@subsquid/typeorm-migration": "^1.2.1",
     "@subsquid/typeorm-store": "^0.2.1",
     "axios": "^1.4.0",
-    "bull": "^4.10.4",
+    "bull": "^4.11.1",
     "cacheable-request": "^8.3.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
