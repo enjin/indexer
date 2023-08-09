@@ -66,6 +66,15 @@ export class RefreshMetadataResolver {
             resource.metadata = new Metadata()
         }
         resource.metadata = await getMetadata(resource.metadata, resource.attributes.find((a) => a.key === 'uri') ?? null)
+        const syncAttributesPromise = resource.attributes
+            .filter((a) => a.key !== 'uri')
+            .map(async (a) => {
+                if (resource && resource.metadata) {
+                    resource.metadata = await getMetadata(resource.metadata, a)
+                }
+            })
+
+        await Promise.all(syncAttributesPromise)
         try {
             await manager.save(resource)
         } catch (error) {
