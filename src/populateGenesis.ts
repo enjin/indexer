@@ -89,7 +89,9 @@ async function getAccountsMap(
         await ctx.store.insert(Account, account as any)
         return account
     })
-    ;(await Promise.all(accountsPromise)).forEach((a) => map.set(a.id, a))
+
+    const accountsArr = await Promise.all(accountsPromise)
+    accountsArr.forEach((a) => map.set(a.id, a))
 
     return map
 }
@@ -153,6 +155,24 @@ function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
 
     if (listingStorage.isEfinityV3014) {
         return listingStorage.asEfinityV3014
+    }
+
+    throw new Error('Unsupported version')
+}
+
+function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const accountStorage = new Storage.SystemAccountStorage(ctx, block)
+
+    if (accountStorage.isV602) {
+        return accountStorage.asV602
+    }
+
+    if (accountStorage.isV500) {
+        return accountStorage.asV500
+    }
+
+    if (accountStorage.isEfinityV3014) {
+        return accountStorage.asEfinityV3014
     }
 
     throw new Error('Unsupported version')
@@ -505,6 +525,12 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
     for (let skip = 0; skip <= count - updateSize; skip += updateSize) {
         // eslint-disable-next-line no-await-in-loop
         await updateBalance(skip)
+    }
+
+    for await (const keys of getAccountsStorage(ctx, block).getKeysPaged(BATCH_SIZE)) {
+        await getAccountsMap(ctx, keys)
+        addAccountsToSet(keys.map((a) => u8aToHex(a)))
+        await saveAccounts(ctx, block)
     }
 }
 
