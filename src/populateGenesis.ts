@@ -513,20 +513,6 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
 }
 
 async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
-    const updateSize = 100
-    const updateBalance = async (skip: number) => {
-        const data = await ctx.store.find(Account, { skip, take: updateSize })
-        addAccountsToSet(data.map((a) => a.id))
-        await saveAccounts(ctx, block)
-    }
-
-    const count = await ctx.store.count(Account)
-
-    for (let skip = 0; skip <= count - updateSize; skip += updateSize) {
-        // eslint-disable-next-line no-await-in-loop
-        await updateBalance(skip)
-    }
-
     for await (const keys of getAccountsStorage(ctx, block).getKeysPaged(BATCH_SIZE)) {
         await getAccountsMap(ctx, keys)
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
