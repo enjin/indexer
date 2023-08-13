@@ -1,5 +1,5 @@
 // import { UnknownVersionError } from '../../../common/errors'
-// import { encodeId, getOriginAccountId, isAdressSS58 } from '../../../common/tools'
+// import { encodeId, getOriginAccountId, isAddressSS58 } from '../../../common/tools'
 // import { TransferType } from '../../../model'
 // import { BalancesTransferKeepAliveCall } from '../../../types/generated/calls'
 // import { CallContext, CallHandlerContext } from '../../types/contexts'
@@ -35,7 +35,7 @@
 //         blockNumber: ctx.block.height,
 //         extrinsicHash: ctx.extrinsic.hash,
 //         fromId: accountId,
-//         toId: isAdressSS58(data.to) ? encodeId(data.to) : `0x${Buffer.from(data.to).toString('hex')}`,
+//         toId: isAddressSS58(data.to) ? encodeId(data.to) : `0x${Buffer.from(data.to).toString('hex')}`,
 //         amount: data.amount,
 //         tip: ctx.extrinsic.tip,
 //         error: ctx.extrinsic.error,

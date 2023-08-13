@@ -18,11 +18,11 @@
 
 ## Introduction
 
-The Efinity Indexer is a Squid that serves processed blockchain data for another applications and dApps that requires a more performatic approach to retrieve the data as well as filtering, sorting and relationships.
+The Efinity Indexer is a Squid that serves processed blockchain data for another applications and dApps that requires a more performant approach to retrieve the data as well as filtering, sorting and relationships.
 
 ### What is a Squid?
 
-> A squid is a project that extracts and transforms on-chain data in order to present it as a GraphQL API. Squids are developed using the Subsquid SDK, which provides extensive tooling to define data schemas, data transfomation rules, and the shape of the resulting API.
+> A squid is a project that extracts and transforms on-chain data in order to present it as a GraphQL API. Squids are developed using the Subsquid SDK, which provides extensive tooling to define data schemas, data transformation rules, and the shape of the resulting API.
 
 We recommend that you read SubSquid docs to understand how it works: https://docs.subsquid.io/
 
@@ -44,14 +44,14 @@ The indexer is composed of 7 containers
 1. **indexer_db** - a postgres database that stores the processed data;
 2. **indexer_processor** - the worker that transforms and saves the blockchain data;
 3. **indexer_graphql** - the GraphQL API that exposes the processed data;
-4. **archive_db** - a coackroach db that stores the blockchain data;
+4. **archive_db** - a cockroach db that stores the blockchain data;
 5. **archive_ingest** - the worker that ingests the blockchain data;
 6. **archive_gateway** - the gateway that exposes the blockchain data to the processor;
 7. **archive_explorer** - the GraphQL API that exposes the blockchain data;
 
 ## Metadata
 
-The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadatas ever used you can use the following command:
+The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
 npx squid-substrate-metadata-explorer --chain wss://archive.rpc.efinity.io --out typegen/efinityVersions.jsonl
@@ -61,7 +61,7 @@ In this indexer we use all the metadata of **Efinity** and **Devfinity** so make
 
 ## Typegen
 
-The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadatas from **Efinity** and **Devfinity** into a single file. Then you can use the following command:
+The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadata from **Efinity** and **Devfinity** into a single file. Then you can use the following command:
 
 ```bash
 npx squid-substrate-typegen typegen/typegen.json

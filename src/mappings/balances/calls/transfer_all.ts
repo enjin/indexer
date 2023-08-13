@@ -1,5 +1,5 @@
 // import { BalancesTransferAllCall } from '../../../types/generated/calls'
-// import { encodeId, getOriginAccountId, isAdressSS58 } from '../../../common/tools'
+// import { encodeId, getOriginAccountId, isAddressSS58 } from '../../../common/tools'
 // import { UnknownVersionError } from '../../../common/errors'
 // import { CallContext, CallHandlerContext } from '../../types/contexts'
 // import { saveTransfer } from '../../util/entities'
@@ -46,7 +46,7 @@
 //             blockNumber: ctx.block.height,
 //             extrinsicHash: ctx.extrinsic.hash,
 //             fromId: accountId,
-//             toId: isAdressSS58(data.to) ? encodeId(data.to) : `0x${Buffer.from(data.to).toString('hex')}`,
+//             toId: isAddressSS58(data.to) ? encodeId(data.to) : `0x${Buffer.from(data.to).toString('hex')}`,
 //             amount: 0n,
 //             tip: ctx.extrinsic.tip,
 //             error: ctx.extrinsic.error,
