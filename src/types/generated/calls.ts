@@ -376,7 +376,7 @@ export class BalancesUpgradeAccountsCall {
      * 
      * This will waive the transaction fee if at least all but 10% of the accounts needed to
      * be upgraded. (We let some not have to be upgraded just in order to allow for the
-     * possibililty of churn).
+     * possibility of churn).
      */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Balances.upgrade_accounts') === 'e074d5a93414f189b47fbb5d94c57b62cfb9e63808a3c94665eeb2cfe53be8df'
@@ -390,7 +390,7 @@ export class BalancesUpgradeAccountsCall {
      * 
      * This will waive the transaction fee if at least all but 10% of the accounts needed to
      * be upgraded. (We let some not have to be upgraded just in order to allow for the
-     * possibililty of churn).
+     * possibility of churn).
      */
     get asEfinityV3014(): {who: Uint8Array[]} {
         assert(this.isEfinityV3014)
@@ -1061,7 +1061,7 @@ export class ClaimsMintEnjFromNativeEfiCall {
     }
 
     /**
-     * Bridge EFI from the Efinity parachain to the Enjin Relay Chain
+     * Bridge EFI from the Efinity Parachain to the Enjin Relay Chain
      * 
      * Parameters:
      * - `origin`: The account initiating the claim and from which EFI will be burned.
@@ -1074,7 +1074,7 @@ export class ClaimsMintEnjFromNativeEfiCall {
     }
 
     /**
-     * Bridge EFI from the Efinity parachain to the Enjin Relay Chain
+     * Bridge EFI from the Efinity Parachain to the Enjin Relay Chain
      * 
      * Parameters:
      * - `origin`: The account initiating the claim and from which EFI will be burned.
@@ -5804,7 +5804,7 @@ export class MarketplacePlaceBidCall {
      * - [`Error::BuyerIsSeller`] if the bidder is the seller of the listing
      * - [`Error::InactiveAuction`] if listing operates outside of specified start and end
      *   block
-     * - [`Error::InvalidPrice`] if price is less than mininum_price for a bid
+     * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
      */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Marketplace.place_bid') === 'ef3821a4c9f8f54d06f376b33812844522af03669204d7f987e47edffe72dcf3'
@@ -5825,7 +5825,7 @@ export class MarketplacePlaceBidCall {
      * - [`Error::BuyerIsSeller`] if the bidder is the seller of the listing
      * - [`Error::InactiveAuction`] if listing operates outside of specified start and end
      *   block
-     * - [`Error::InvalidPrice`] if price is less than mininum_price for a bid
+     * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
      */
     get asEfinityV3014(): {listingId: Uint8Array, price: bigint} {
         assert(this.isEfinityV3014)
@@ -5990,7 +5990,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get isEfinityV3014(): boolean {
@@ -6008,7 +6008,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get asEfinityV3014(): {collectionId: bigint, recipients: efinityV3014.Type_390[]} {
@@ -6027,7 +6027,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get isV500(): boolean {
@@ -6045,7 +6045,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get asV500(): {collectionId: bigint, recipients: v500.Type_380[]} {
@@ -6064,7 +6064,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get isV600(): boolean {
@@ -6082,7 +6082,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
     get asV600(): {collectionId: bigint, recipients: v600.Type_380[]} {
@@ -6667,7 +6667,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6689,7 +6689,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6712,7 +6712,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6734,7 +6734,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6757,7 +6757,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6779,7 +6779,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`

@@ -2,7 +2,7 @@ import { hexToU8a, u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance, Event as EventModel } from '../../model'
-import { encodeId, isAdressSS58 } from '../../common/tools'
+import { encodeId, isAddressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
     BalancesDepositEvent,
@@ -226,7 +226,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         if ('frozen' in accountData) {
             accounts.push({
                 id,
-                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                 nonce: accountInfo.nonce,
                 balance: new Balance({
                     transferable: accountData.free - accountData.frozen,
@@ -243,7 +243,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         } else if ('miscFrozen' in accountData) {
             accounts.push({
                 id,
-                address: isAdressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                 nonce: accountInfo.nonce,
                 balance: new Balance({
                     transferable: accountData.free - accountData.miscFrozen,

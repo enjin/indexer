@@ -2081,14 +2081,14 @@ export class DemocracySecondedEvent {
     }
 
     /**
-     * An account has secconded a proposal
+     * An account has seconded a proposal
      */
     get isEfinityV3014(): boolean {
         return this._chain.getEventHash('Democracy.Seconded') === '956e0986199802f7d7e337068d26fc51e710bdd0e5dd70631ef3328ea5baafe1'
     }
 
     /**
-     * An account has secconded a proposal
+     * An account has seconded a proposal
      */
     get asEfinityV3014(): {seconder: Uint8Array, propIndex: number} {
         assert(this.isEfinityV3014)

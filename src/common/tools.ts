@@ -28,7 +28,7 @@ export interface ItemBase {
     extrinsicHash: string | null | undefined
 }
 
-export function isAdressSS58(address: Uint8Array) {
+export function isAddressSS58(address: Uint8Array) {
     switch (address.length) {
         case 1:
         case 2:

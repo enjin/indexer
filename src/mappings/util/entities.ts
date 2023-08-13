@@ -1,7 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { Account, Balance, Listing, ListingStatus } from '../../model'
 import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
-import { encodeId, isAdressSS58 } from '../../common/tools'
+import { encodeId, isAddressSS58 } from '../../common/tools'
 
 export async function getOrCreateAccount(
     ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonContext,
@@ -15,7 +15,7 @@ export async function getOrCreateAccount(
     if (!account) {
         account = new Account({
             id: pkHex,
-            address: isAdressSS58(publicKey) ? encodeId(publicKey) : pkHex,
+            address: isAddressSS58(publicKey) ? encodeId(publicKey) : pkHex,
             balance: new Balance({
                 transferable: 0n,
                 free: 0n,

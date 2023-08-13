@@ -1492,14 +1492,14 @@ export class CouncilPrimeStorage extends StorageBase {
     }
 
     /**
-     *  The prime member that helps determine the default vote behavior in case of absentations.
+     *  The prime member that helps determine the default vote behavior in case of abstentions.
      */
     get isEfinityV3014(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
-     *  The prime member that helps determine the default vote behavior in case of absentations.
+     *  The prime member that helps determine the default vote behavior in case of abstentions.
      */
     get asEfinityV3014(): CouncilPrimeStorageEfinityV3014 {
         assert(this.isEfinityV3014)
@@ -1508,7 +1508,7 @@ export class CouncilPrimeStorage extends StorageBase {
 }
 
 /**
- *  The prime member that helps determine the default vote behavior in case of absentations.
+ *  The prime member that helps determine the default vote behavior in case of abstentions.
  */
 export interface CouncilPrimeStorageEfinityV3014 {
     get(): Promise<(Uint8Array | undefined)>
@@ -6225,14 +6225,14 @@ export class TechnicalCommitteePrimeStorage extends StorageBase {
     }
 
     /**
-     *  The prime member that helps determine the default vote behavior in case of absentations.
+     *  The prime member that helps determine the default vote behavior in case of abstentions.
      */
     get isEfinityV3014(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
-     *  The prime member that helps determine the default vote behavior in case of absentations.
+     *  The prime member that helps determine the default vote behavior in case of abstentions.
      */
     get asEfinityV3014(): TechnicalCommitteePrimeStorageEfinityV3014 {
         assert(this.isEfinityV3014)
@@ -6241,7 +6241,7 @@ export class TechnicalCommitteePrimeStorage extends StorageBase {
 }
 
 /**
- *  The prime member that helps determine the default vote behavior in case of absentations.
+ *  The prime member that helps determine the default vote behavior in case of abstentions.
  */
 export interface TechnicalCommitteePrimeStorageEfinityV3014 {
     get(): Promise<(Uint8Array | undefined)>
