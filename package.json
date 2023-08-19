@@ -35,7 +35,7 @@
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "ora": "^5.4.1",
-    "pg": "^8.11.2",
+    "pg": "^8.11.3",
     "type-graphql": "^1.2.0-rc.1"
   },
   "devDependencies": {
