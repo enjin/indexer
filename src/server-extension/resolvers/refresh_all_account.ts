@@ -5,7 +5,7 @@ import { fetchAccountsDetail } from '../../mappings/util/marketplace'
 import { Account } from '../../model'
 
 let lastCalled = 0
-const LIMIT = 500
+const LIMIT = 100
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
@@ -33,22 +33,23 @@ export class RefreshAllAccountResolver {
             // eslint-disable-next-line no-await-in-loop
             const data = await fetchAccountsDetail(ids)
 
-            if (!data) break
+            if (!data || data.length === 0) break
 
-            // eslint-disable-next-line no-await-in-loop
-            await manager.query(
-                `UPDATE account as a SET username = t.username, image = t.image, verified_at = t.verified_at FROM (VALUES${data
-                    .filter(isNotNull)
-                    .map(
-                        (a) => `(
-                    '${a.publicKey}',
-                    '${a.username}',
-                    '${a.image}',
-                    '${a.verifiedAt}'
+            const accountsToUpdate = data.filter(isNotNull)
+
+            if (accountsToUpdate.length !== 0) {
+                // eslint-disable-next-line no-await-in-loop
+                await manager.query(
+                    `UPDATE account as a SET username = t.username, image = t.image, verified_at = t.verified_at FROM (VALUES${accountsToUpdate
+                        .map(
+                            (a) => `('${a.publicKey}','${a.username}','${a.image}','${
+                                a.verifiedAt ? new Date(a.verifiedAt).getTime() : null
+                            }'
                 )`
-                    )
-                    .join(',')}) AS t(id, username, image, verified_at) WHERE a.id = t.id`
-            )
+                        )
+                        .join(',')}) AS t(id, username, image, verified_at) WHERE a.id = t.id`
+                )
+            }
         }
 
         return true
