@@ -260,7 +260,13 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         }
     }
 
-    await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
+    await ctx.store
+        .createQueryBuilder()
+        .insert()
+        .into(Account)
+        .values(accounts)
+        .orUpdate(['balance', 'nonce', 'username', 'image', 'verifiedAt'], ['id'])
+        .execute()
     accountsSet.clear()
 }
 
