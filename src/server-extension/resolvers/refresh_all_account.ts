@@ -49,10 +49,7 @@ export class RefreshAllAccountResolver {
                 // eslint-disable-next-line no-await-in-loop
                 await manager.query(
                     `UPDATE account as a SET username = t.username, image = t.image, verified_at = t.verified_at FROM (VALUES${accountsToUpdate
-                        .map(
-                            (a) => `(${a.publicKey},${a.username},${a.image},${a.verifiedAt})
-                )`
-                        )
+                        .map((a) => `(${a.publicKey},${a.username},${a.image},${a.verifiedAt})`)
                         .join(',')}) AS t(id, username, image, verified_at) WHERE a.id = t.id`
                 )
             }
