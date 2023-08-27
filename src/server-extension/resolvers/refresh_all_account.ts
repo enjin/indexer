@@ -35,7 +35,12 @@ export class RefreshAllAccountResolver {
 
             if (!data || data.length === 0) break
 
-            const accountsToUpdate = data.filter(isNotNull)
+            const accountsToUpdate = data.filter(isNotNull).map((a) => ({
+                publicKey: a.publicKey ? `'${a.publicKey}'` : null,
+                username: a.username ? `'${a.username}'` : null,
+                image: a.image ? `'${a.image}'` : null,
+                verifiedAt: a.verifiedAt ? `to_timestamp(${new Date(a.verifiedAt).getTime() / 1000})` : null,
+            }))
 
             // eslint-disable-next-line no-console
             console.log(`Updating ${accountsToUpdate.length} accounts, updated ${offset + LIMIT}/${count} so far`)
@@ -45,9 +50,7 @@ export class RefreshAllAccountResolver {
                 await manager.query(
                     `UPDATE account as a SET username = t.username, image = t.image, verified_at = t.verified_at FROM (VALUES${accountsToUpdate
                         .map(
-                            (a) => `('${a.publicKey}','${a.username}','${a.image}',to_timestamp(${
-                                a.verifiedAt ? new Date(a.verifiedAt).getTime() / 1000 : null
-                            })
+                            (a) => `(${a.publicKey},${a.username},${a.image},${a.verifiedAt})
                 )`
                         )
                         .join(',')}) AS t(id, username, image, verified_at) WHERE a.id = t.id`
