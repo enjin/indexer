@@ -265,7 +265,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         .insert()
         .into(Account)
         .values(accounts)
-        .orUpdate(['balance', 'nonce', 'username', 'image', 'verifiedAt'], ['id'])
+        .orUpdate(['balance', 'nonce', 'username', 'image', 'verified_at'], ['id'])
         .execute()
     accountsSet.clear()
 }

@@ -37,14 +37,17 @@ export class RefreshAllAccountResolver {
 
             const accountsToUpdate = data.filter(isNotNull)
 
+            // eslint-disable-next-line no-console
+            console.log(`Updating ${accountsToUpdate.length} accounts, updated ${offset + LIMIT}/${count} so far`)
+
             if (accountsToUpdate.length !== 0) {
                 // eslint-disable-next-line no-await-in-loop
                 await manager.query(
                     `UPDATE account as a SET username = t.username, image = t.image, verified_at = t.verified_at FROM (VALUES${accountsToUpdate
                         .map(
-                            (a) => `('${a.publicKey}','${a.username}','${a.image}','${
-                                a.verifiedAt ? new Date(a.verifiedAt).getTime() : null
-                            }'
+                            (a) => `('${a.publicKey}','${a.username}','${a.image}',to_timestamp(${
+                                a.verifiedAt ? new Date(a.verifiedAt).getTime() / 1000 : null
+                            })
                 )`
                         )
                         .join(',')}) AS t(id, username, image, verified_at) WHERE a.id = t.id`
