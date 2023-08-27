@@ -55,6 +55,9 @@ export class RefreshAllAccountResolver {
             }
         }
 
+        // eslint-disable-next-line no-console
+        console.log('Done updating accounts')
+
         return true
     }
 }
