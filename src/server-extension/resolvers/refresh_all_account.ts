@@ -39,7 +39,7 @@ export class RefreshAllAccountResolver {
                 publicKey: a.publicKey ? `'${a.publicKey}'` : 'NULL',
                 username: a.username ? `'${a.username}'` : 'NULL',
                 image: a.image ? `'${a.image}'` : 'NULL',
-                verifiedAt: a.verifiedAt ? `to_timestamp(${new Date(a.verifiedAt).getTime() / 1000})` : 'NULL',
+                verifiedAt: a.verifiedAt ? `to_timestamp(${a.verifiedAt.getTime() / 1000})` : 'NULL',
             }))
 
             // eslint-disable-next-line no-console
