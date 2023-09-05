@@ -6430,7 +6430,7 @@ export class MarketplacePlaceBidCall {
      * - [`Error::BuyerIsSeller`] if the bidder is the seller of the listing
      * - [`Error::InactiveAuction`] if listing operates outside of specified start and end
      *   block
-     * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
+     * - [`Error::InvalidPrice`] if price is less than mininum_price for a bid
      */
     get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.place_bid') === 'ef3821a4c9f8f54d06f376b33812844522af03669204d7f987e47edffe72dcf3'
@@ -6451,7 +6451,7 @@ export class MarketplacePlaceBidCall {
      * - [`Error::BuyerIsSeller`] if the bidder is the seller of the listing
      * - [`Error::InactiveAuction`] if listing operates outside of specified start and end
      *   block
-     * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
+     * - [`Error::InvalidPrice`] if price is less than mininum_price for a bid
      */
     get asMatrixV603(): {listingId: Uint8Array, price: bigint} {
         assert(this.isMatrixV603)
@@ -6873,7 +6873,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get isMatrixV603(): boolean {
@@ -6891,7 +6891,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get asMatrixV603(): {collectionId: bigint, recipients: matrixV603.Type_395[]} {
@@ -7845,7 +7845,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -7867,7 +7867,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`

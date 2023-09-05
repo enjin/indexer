@@ -43,7 +43,7 @@ export class Account {
     tokenEvents!: AccountTokenEvent[]
 
     @OneToMany_(() => Claim, e => e.account)
-    claimsEvents!: Claim[]
+    claims!: Claim[]
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     tokenValues!: bigint

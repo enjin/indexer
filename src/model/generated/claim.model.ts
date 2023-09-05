@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
+import {Event} from "./event.model"
 
 @Entity_()
 export class Claim {
@@ -18,16 +19,16 @@ export class Claim {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amount!: bigint
 
-    @Column_("text", {nullable: false})
-    extrinsicId!: string
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    efiSum!: bigint
 
-    @Column_("text", {nullable: false})
-    extrinsicHash!: string
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    enjSum!: bigint
+
+    @Column_("int4", {nullable: false})
+    count!: number
 
     @Index_()
-    @Column_("int4", {nullable: false})
-    blockNumber!: number
-
-    @Column_("text", {nullable: false})
-    blockHash!: string
+    @ManyToOne_(() => Event, {nullable: true})
+    event!: Event
 }

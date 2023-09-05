@@ -50,18 +50,6 @@ type Extrinsic @entity {
   participants: [String!]!
 }
 
-type Claim @entity {
-  id: ID!
-
-  account: Account! @index
-  amount: BigInt!
-
-  extrinsicId: String!
-  extrinsicHash: String!
-  blockNumber: Int! @index
-  blockHash: String!
-}
-
 type Event @entity {
   id: ID!
   extrinsic: Extrinsic
@@ -86,12 +74,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimedEnj
-
-type ClaimsClaimedEnj {
-  who: Account!
-  amount: BigInt!
-}
+  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimRequested | ClaimsClaimed
 
 type BalancesTransfer {
   from: Account!
@@ -246,6 +229,30 @@ type MultiTokensUnapproved {
   operator: Account!
 }
 
+type ClaimAccount {
+   type: AccountClaimType!
+   account: String!
+}
+
+type ClaimsClaimRequested {
+  who: ClaimAccount!
+  hash: String!
+  amount: BigInt!
+
+  isEfiToken: Boolean!
+  isEarlyBird: Boolean!
+}
+
+type ClaimsClaimed {
+  account: Account!
+
+  efiSum: BigInt!
+  enjSum: BigInt!
+
+  amount: BigInt!
+  exchangeRate: Int
+}
+
 type Balance {
   transferable: BigInt!
   free: BigInt!
@@ -268,7 +275,7 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
-  claimsEvents: [Claim] @derivedFrom(field: "account")
+  claims: [Claim] @derivedFrom(field: "account")
 
   # Extras
   tokenValues: BigInt!
@@ -634,4 +641,52 @@ type Listing @entity {
 
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum AccountClaimType {
+  Substrate
+  EVM
+}
+
+
+type ClaimRequest @entity {
+  id: ID!
+
+  account: ClaimAccount!
+  hash: String!
+  amount: BigInt!
+
+  isEfiToken: Boolean!
+  isEarlyBird: Boolean!
+  extrinsicIndex: Int
+
+  isClaimed: Boolean!
+
+  createdAt: DateTime!
+  createdBlock: Int!
+}
+
+type Claim @entity {
+  id: ID!
+
+  account: Account!
+  amount: BigInt!
+
+  efiSum: BigInt!
+  enjSum: BigInt!
+  count: Int!
+
+  event: Event!
+}
+
+type ClaimDetails @entity {
+  id: ID!
+
+  exchangeRate: Int
+  delayClaimsPeriod: Int
+  totalUnclaimedAmount: BigInt!
+
+  # constants
+  minEarlyBirdDelay: Int!
+  earlyBirdRewardRate: Int!
 }

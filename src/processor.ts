@@ -80,6 +80,10 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Balances.Slashed', eventOptions)
     .addEvent('Balances.Transfer', eventOptions)
     .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Claims.Claimed', eventOptions)
+    .addEvent('Claims.ClaimRequested', eventOptions)
+    .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
+    .addEvent('Claims.ExchangeRateSet', eventOptions)
     // eslint-disable-next-line sonarjs/no-duplicate-string
     .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Balances.BalanceSet', eventOptions)
@@ -89,7 +93,6 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Marketplace.ListingFilled', eventOptions)
     .addEvent('Marketplace.BidPlaced', eventOptions)
     .addEvent('Marketplace.AuctionFinalized', eventOptions)
-    .addEvent('Claims.ClaimedEnj', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
@@ -155,6 +158,14 @@ async function handleEvents(
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
             return map.balances.processor.save(ctx, block, item.event)
+        case 'Claims.ClaimRequested':
+            return map.claims.events.claimRequested(ctx, block, item)
+        case 'Claims.DelayTimeForClaimSet':
+            return map.claims.events.delayTimeForClaimSet(ctx, block, item)
+        case 'Claims.Claimed':
+            return map.claims.events.claimed(ctx, block, item)
+        case 'Claims.ExchangeRateSet':
+            return map.claims.events.exchangeRateSet(ctx, block, item)
         case 'Marketplace.ListingCreated':
             return map.marketplace.events.listingCreated(ctx, block, item)
         case 'Marketplace.ListingCancelled':
@@ -165,8 +176,6 @@ async function handleEvents(
             return map.marketplace.events.bidPlaced(ctx, block, item)
         case 'Marketplace.AuctionFinalized':
             return map.marketplace.events.auctionFinalized(ctx, block, item)
-        case 'Claims.ClaimedEnj':
-            return map.claims.events.claimedEnj(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
             return undefined
