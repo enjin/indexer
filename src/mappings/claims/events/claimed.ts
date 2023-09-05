@@ -77,8 +77,17 @@ export async function claimed(
         throw new Error(`No claim requests found for ${claimAccount}`)
     }
 
-    const efiSum = claimRequests.filter((request) => request.isEfiToken).reduce((sum, request) => sum + request.amount, 0n)
-    const enjSum = claimRequests.filter((request) => !request.isEfiToken).reduce((sum, request) => sum + request.amount, 0n)
+    const efiSum = claimRequests
+        .filter((request) => request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountClaimable, 0n)
+
+    const enjSum = claimRequests
+        .filter((request) => !request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountClaimable, 0n)
+
+    const efiBurned = claimRequests
+        .filter((request) => request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountBurned, 0n)
 
     let claim = await ctx.store.findOneBy(Claim, { account: { id: account.id } })
 
@@ -115,7 +124,7 @@ export async function claimed(
             amount: eventData.amount,
             efiSum,
             enjSum,
-            exchangeRate: claimDetails.exchangeRate,
+            efiBurned,
         }),
     })
 }

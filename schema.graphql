@@ -249,8 +249,9 @@ type ClaimsClaimed {
   efiSum: BigInt!
   enjSum: BigInt!
 
+  efiBurned: BigInt!
+
   amount: BigInt!
-  exchangeRate: Int
 }
 
 type Balance {

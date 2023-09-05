@@ -7,8 +7,8 @@ export class ClaimsClaimed {
     private _account!: string
     private _efiSum!: bigint
     private _enjSum!: bigint
+    private _efiBurned!: bigint
     private _amount!: bigint
-    private _exchangeRate!: number | undefined | null
 
     constructor(props?: Partial<Omit<ClaimsClaimed, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -16,8 +16,8 @@ export class ClaimsClaimed {
             this._account = marshal.string.fromJSON(json.account)
             this._efiSum = marshal.bigint.fromJSON(json.efiSum)
             this._enjSum = marshal.bigint.fromJSON(json.enjSum)
+            this._efiBurned = marshal.bigint.fromJSON(json.efiBurned)
             this._amount = marshal.bigint.fromJSON(json.amount)
-            this._exchangeRate = json.exchangeRate == null ? undefined : marshal.int.fromJSON(json.exchangeRate)
         }
     }
 
@@ -48,6 +48,15 @@ export class ClaimsClaimed {
         this._enjSum = value
     }
 
+    get efiBurned(): bigint {
+        assert(this._efiBurned != null, 'uninitialized access')
+        return this._efiBurned
+    }
+
+    set efiBurned(value: bigint) {
+        this._efiBurned = value
+    }
+
     get amount(): bigint {
         assert(this._amount != null, 'uninitialized access')
         return this._amount
@@ -57,22 +66,14 @@ export class ClaimsClaimed {
         this._amount = value
     }
 
-    get exchangeRate(): number | undefined | null {
-        return this._exchangeRate
-    }
-
-    set exchangeRate(value: number | undefined | null) {
-        this._exchangeRate = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             account: this.account,
             efiSum: marshal.bigint.toJSON(this.efiSum),
             enjSum: marshal.bigint.toJSON(this.enjSum),
+            efiBurned: marshal.bigint.toJSON(this.efiBurned),
             amount: marshal.bigint.toJSON(this.amount),
-            exchangeRate: this.exchangeRate,
         }
     }
 }
