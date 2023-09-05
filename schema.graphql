@@ -12,8 +12,6 @@ type ChainInfo @entity {
 
 type Marketplace {
   protocolFee: Float!
-  fixedPriceListingCount: Int!
-  auctionListingCount: Int!
   listingActiveDelay: Int!
   listingDeposit: BigInt!
   maxRoundingError: BigInt!

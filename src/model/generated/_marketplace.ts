@@ -3,8 +3,6 @@ import * as marshal from "./marshal"
 
 export class Marketplace {
     private _protocolFee!: number
-    private _fixedPriceListingCount!: number
-    private _auctionListingCount!: number
     private _listingActiveDelay!: number
     private _listingDeposit!: bigint
     private _maxRoundingError!: bigint
@@ -15,8 +13,6 @@ export class Marketplace {
         Object.assign(this, props)
         if (json != null) {
             this._protocolFee = marshal.float.fromJSON(json.protocolFee)
-            this._fixedPriceListingCount = marshal.int.fromJSON(json.fixedPriceListingCount)
-            this._auctionListingCount = marshal.int.fromJSON(json.auctionListingCount)
             this._listingActiveDelay = marshal.int.fromJSON(json.listingActiveDelay)
             this._listingDeposit = marshal.bigint.fromJSON(json.listingDeposit)
             this._maxRoundingError = marshal.bigint.fromJSON(json.maxRoundingError)
@@ -32,24 +28,6 @@ export class Marketplace {
 
     set protocolFee(value: number) {
         this._protocolFee = value
-    }
-
-    get fixedPriceListingCount(): number {
-        assert(this._fixedPriceListingCount != null, 'uninitialized access')
-        return this._fixedPriceListingCount
-    }
-
-    set fixedPriceListingCount(value: number) {
-        this._fixedPriceListingCount = value
-    }
-
-    get auctionListingCount(): number {
-        assert(this._auctionListingCount != null, 'uninitialized access')
-        return this._auctionListingCount
-    }
-
-    set auctionListingCount(value: number) {
-        this._auctionListingCount = value
     }
 
     get listingActiveDelay(): number {
@@ -100,8 +78,6 @@ export class Marketplace {
     toJSON(): object {
         return {
             protocolFee: this.protocolFee,
-            fixedPriceListingCount: this.fixedPriceListingCount,
-            auctionListingCount: this.auctionListingCount,
             listingActiveDelay: this.listingActiveDelay,
             listingDeposit: marshal.bigint.toJSON(this.listingDeposit),
             maxRoundingError: marshal.bigint.toJSON(this.maxRoundingError),
