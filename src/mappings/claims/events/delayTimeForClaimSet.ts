@@ -22,8 +22,6 @@ export async function delayTimeForClaimSet(
     block: SubstrateBlock,
     item: EventItem<'Claims.DelayTimeForClaimSet', { event: { args: true; extrinsic: true } }>
 ) {
-    if (!item.event.extrinsic) return undefined
-
     const eventData = getEventData(ctx, item.event)
 
     const claimDetails = new ClaimDetails({

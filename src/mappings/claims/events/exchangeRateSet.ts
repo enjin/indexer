@@ -22,8 +22,6 @@ export async function exchangeRateSet(
     block: SubstrateBlock,
     item: EventItem<'Claims.ExchangeRateSet', { event: { args: true; extrinsic: true } }>
 ) {
-    if (!item.event.extrinsic) return undefined
-
     const eventData = getEventData(ctx, item.event)
 
     const claimDetails = new ClaimDetails({
