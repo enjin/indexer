@@ -2,10 +2,13 @@ import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as matrixV603 from './matrixV603'
 import * as v500 from './v500'
+<<<<<<< HEAD
 import * as efinityV3014 from './efinityV3014'
+=======
+import * as v602 from './v602'
+>>>>>>> 7bcb92f (add events)
 import * as v600 from './v600'
 import * as v601 from './v601'
-import * as v602 from './v602'
 
 export class AuthorshipAuthorStorage extends StorageBase {
     protected getPrefix() {
@@ -748,7 +751,11 @@ export class ClaimsAccountNonceStorage extends StorageBase {
      *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
      *  claimed.
      */
+<<<<<<< HEAD
     get isMatrixV603(): boolean {
+=======
+    get isV602(): boolean {
+>>>>>>> 7bcb92f (add events)
         return this.getTypeHash() === 'b66e643893eeb22eb47e70e5963130466a65d7fdc06d6f4fefd82f3ba4c900bd'
     }
 
@@ -756,8 +763,13 @@ export class ClaimsAccountNonceStorage extends StorageBase {
      *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
      *  claimed.
      */
+<<<<<<< HEAD
     get asMatrixV603(): ClaimsAccountNonceStorageMatrixV603 {
         assert(this.isMatrixV603)
+=======
+    get asV602(): ClaimsAccountNonceStorageV602 {
+        assert(this.isV602)
+>>>>>>> 7bcb92f (add events)
         return this as any
     }
 }
@@ -766,7 +778,11 @@ export class ClaimsAccountNonceStorage extends StorageBase {
  *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
  *  claimed.
  */
+<<<<<<< HEAD
 export interface ClaimsAccountNonceStorageMatrixV603 {
+=======
+export interface ClaimsAccountNonceStorageV602 {
+>>>>>>> 7bcb92f (add events)
     get(key: Uint8Array): Promise<(number | undefined)>
     getAll(): Promise<number[]>
     getMany(keys: Uint8Array[]): Promise<(number | undefined)[]>
@@ -852,6 +868,21 @@ export class ClaimsClaimsStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'b59addc95e4ad12f850fe4129a0ee964077180ad25eacf666dc124f2f5e0f166'
+    }
+
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    get asV602(): ClaimsClaimsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -889,6 +920,26 @@ export interface ClaimsClaimsStorageV500 {
     getPairsPaged(pageSize: number, key: v500.Account): AsyncIterable<[k: v500.Account, v: bigint][]>
 }
 
+<<<<<<< HEAD
+=======
+/**
+ *  This stores claims. Maps an ethereum address to the vec of claim data.
+ */
+export interface ClaimsClaimsStorageV602 {
+    get(key: Uint8Array): Promise<(v602.ClaimData[] | undefined)>
+    getAll(): Promise<v602.ClaimData[][]>
+    getMany(keys: Uint8Array[]): Promise<(v602.ClaimData[] | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.ClaimData[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.ClaimData[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.ClaimData[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.ClaimData[]][]>
+}
+
+>>>>>>> 7bcb92f (add events)
 export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
     protected getPrefix() {
         return 'Claims'
@@ -901,15 +952,24 @@ export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
     /**
      *  Delay time in block numbers before the user could claim
      */
+<<<<<<< HEAD
     get isMatrixV603(): boolean {
+=======
+    get isV602(): boolean {
+>>>>>>> 7bcb92f (add events)
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
     /**
      *  Delay time in block numbers before the user could claim
      */
+<<<<<<< HEAD
     get asMatrixV603(): ClaimsDelayClaimsPeriodStorageMatrixV603 {
         assert(this.isMatrixV603)
+=======
+    get asV602(): ClaimsDelayClaimsPeriodStorageV602 {
+        assert(this.isV602)
+>>>>>>> 7bcb92f (add events)
         return this as any
     }
 }
@@ -917,7 +977,11 @@ export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
 /**
  *  Delay time in block numbers before the user could claim
  */
+<<<<<<< HEAD
 export interface ClaimsDelayClaimsPeriodStorageMatrixV603 {
+=======
+export interface ClaimsDelayClaimsPeriodStorageV602 {
+>>>>>>> 7bcb92f (add events)
     get(): Promise<(number | undefined)>
 }
 
@@ -959,6 +1023,21 @@ export class ClaimsExchangeRateStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
+    }
+
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    get asV602(): ClaimsExchangeRateStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -973,6 +1052,13 @@ export interface ClaimsExchangeRateStorageMatrixV603 {
  */
 export interface ClaimsExchangeRateStorageV500 {
     get(): Promise<(bigint | undefined)>
+}
+
+/**
+ *  Amount in ENJ equivalent to 1 EFI.
+ */
+export interface ClaimsExchangeRateStorageV602 {
+    get(): Promise<(number | undefined)>
 }
 
 export class ClaimsLatestBlockNumberStorage extends StorageBase {
@@ -1017,6 +1103,23 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Latest block numbers for Ethereum for which requests claim has been made by the
+     *  relayer.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
+    }
+
+    /**
+     *  Latest block numbers for Ethereum for which requests claim has been made by the
+     *  relayer.
+     */
+    get asV602(): ClaimsLatestBlockNumberStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -1033,6 +1136,14 @@ export interface ClaimsLatestBlockNumberStorageMatrixV603 {
  */
 export interface ClaimsLatestBlockNumberStorageV500 {
     get(): Promise<(v500.TrackedBlockNumbers | undefined)>
+}
+
+/**
+ *  Latest block numbers for Ethereum for which requests claim has been made by the
+ *  relayer.
+ */
+export interface ClaimsLatestBlockNumberStorageV602 {
+    get(): Promise<(number | undefined)>
 }
 
 export class ClaimsMaxEfiForEarlyBirdRewardsStorage extends StorageBase {
@@ -1144,15 +1255,24 @@ export class ClaimsTotalUnclaimedAmountStorage extends StorageBase {
     /**
      *  This is the total amount for which claims have been requested and are not yet claimed.
      */
+<<<<<<< HEAD
     get isMatrixV603(): boolean {
+=======
+    get isV602(): boolean {
+>>>>>>> 7bcb92f (add events)
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  This is the total amount for which claims have been requested and are not yet claimed.
      */
+<<<<<<< HEAD
     get asMatrixV603(): ClaimsTotalUnclaimedAmountStorageMatrixV603 {
         assert(this.isMatrixV603)
+=======
+    get asV602(): ClaimsTotalUnclaimedAmountStorageV602 {
+        assert(this.isV602)
+>>>>>>> 7bcb92f (add events)
         return this as any
     }
 }
@@ -1160,7 +1280,11 @@ export class ClaimsTotalUnclaimedAmountStorage extends StorageBase {
 /**
  *  This is the total amount for which claims have been requested and are not yet claimed.
  */
+<<<<<<< HEAD
 export interface ClaimsTotalUnclaimedAmountStorageMatrixV603 {
+=======
+export interface ClaimsTotalUnclaimedAmountStorageV602 {
+>>>>>>> 7bcb92f (add events)
     get(): Promise<bigint>
 }
 
@@ -1176,15 +1300,24 @@ export class ClaimsTransactionHashLookupStorage extends StorageBase {
     /**
      *  This stores transaction hash. Is used to check if transaction hash is already present
      */
+<<<<<<< HEAD
     get isMatrixV603(): boolean {
+=======
+    get isV602(): boolean {
+>>>>>>> 7bcb92f (add events)
         return this.getTypeHash() === '29735300dba5135be0e1e53d771089aba86ed92479018d68d31c9d66cb9816e3'
     }
 
     /**
      *  This stores transaction hash. Is used to check if transaction hash is already present
      */
+<<<<<<< HEAD
     get asMatrixV603(): ClaimsTransactionHashLookupStorageMatrixV603 {
         assert(this.isMatrixV603)
+=======
+    get asV602(): ClaimsTransactionHashLookupStorageV602 {
+        assert(this.isV602)
+>>>>>>> 7bcb92f (add events)
         return this as any
     }
 }
@@ -1192,7 +1325,11 @@ export class ClaimsTransactionHashLookupStorage extends StorageBase {
 /**
  *  This stores transaction hash. Is used to check if transaction hash is already present
  */
+<<<<<<< HEAD
 export interface ClaimsTransactionHashLookupStorageMatrixV603 {
+=======
+export interface ClaimsTransactionHashLookupStorageV602 {
+>>>>>>> 7bcb92f (add events)
     get(key: Uint8Array): Promise<(null | undefined)>
     getAll(): Promise<null[]>
     getMany(keys: Uint8Array[]): Promise<(null | undefined)[]>
@@ -1865,7 +2002,7 @@ export class CouncilProposalOfStorage extends StorageBase {
      *  Actual proposal for a given hash, if it's current.
      */
     get isV602(): boolean {
-        return this.getTypeHash() === '89559d3fb6f541bdf5075d1f4863bb5ac0e0acfed89282c2e8067b09a3b99f23'
+        return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
     }
 
     /**
@@ -2997,6 +3134,21 @@ export class MarketplaceInfoStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  Stores information about the marketplace
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'cf0eb405cb6ed3bb6861e38a8d936f67fa9f71862d7c3c2be2ca3f90d3ad8b3d'
+    }
+
+    /**
+     *  Stores information about the marketplace
+     */
+    get asV602(): MarketplaceInfoStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -3011,6 +3163,13 @@ export interface MarketplaceInfoStorageMatrixV603 {
  */
 export interface MarketplaceInfoStorageEfinityV3014 {
     get(): Promise<efinityV3014.MarketPlaceInfo>
+}
+
+/**
+ *  Stores information about the marketplace
+ */
+export interface MarketplaceInfoStorageV602 {
+    get(): Promise<v602.MarketPlaceInfo>
 }
 
 export class MarketplaceListingIdsByAccountIdStorage extends StorageBase {
@@ -3245,6 +3404,60 @@ export interface MatrixXcmMinimumWeightsStorageMatrixV603 {
     getPairs(key: matrixV603.XcmOperation): Promise<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
     getPairsPaged(pageSize: number, key: matrixV603.XcmOperation): AsyncIterable<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
+}
+
+export class MatrixXcmMinimumWeightsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MatrixXcm'
+    }
+
+    protected getName() {
+        return 'MinimumWeights'
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '54746c8f01b687fecc1a895c1db7ce3ffd9db2d7ab532bd2488b343309741009'
+    }
+
+    /**
+     *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
+     *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+     *  used for setting the minimum fee (in DOT) for statemint.
+     * 
+     *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+     */
+    get asV602(): MatrixXcmMinimumWeightsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  The `dest_weight` limit and fee for executing XCM msg sent by matrixXcm. Must be
+ *  sufficient, otherwise the execution of XCM msg on relaychain will fail. For example it is
+ *  used for setting the minimum fee (in DOT) for statemint.
+ * 
+ *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
+ */
+export interface MatrixXcmMinimumWeightsStorageV602 {
+    get(key: v602.XcmOperation): Promise<v602.MinimumWeightFeePair>
+    getAll(): Promise<v602.MinimumWeightFeePair[]>
+    getMany(keys: v602.XcmOperation[]): Promise<v602.MinimumWeightFeePair[]>
+    getKeys(): Promise<v602.XcmOperation[]>
+    getKeys(key: v602.XcmOperation): Promise<v602.XcmOperation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v602.XcmOperation[]>
+    getKeysPaged(pageSize: number, key: v602.XcmOperation): AsyncIterable<v602.XcmOperation[]>
+    getPairs(): Promise<[k: v602.XcmOperation, v: v602.MinimumWeightFeePair][]>
+    getPairs(key: v602.XcmOperation): Promise<[k: v602.XcmOperation, v: v602.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v602.XcmOperation, v: v602.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number, key: v602.XcmOperation): AsyncIterable<[k: v602.XcmOperation, v: v602.MinimumWeightFeePair][]>
 }
 
 export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
@@ -3565,6 +3778,144 @@ export interface MultiTokensEthereumTokensStorageMatrixV603 {
     getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
 }
 
+export class MultiTokensEthereumAccountsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'EthereumAccounts'
+    }
+
+    /**
+     *  Stores data for an ethereum address
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '7cc397680e440faaf2a40fafae4d9fde6957423c8489984029cd2e04818a92f7'
+    }
+
+    /**
+     *  Stores data for an ethereum address
+     */
+    get asV602(): MultiTokensEthereumAccountsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Stores data for an ethereum address
+ */
+export interface MultiTokensEthereumAccountsStorageV602 {
+    get(key: Uint8Array): Promise<(v602.EthereumAccount | undefined)>
+    getAll(): Promise<v602.EthereumAccount[]>
+    getMany(keys: Uint8Array[]): Promise<(v602.EthereumAccount | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v602.EthereumAccount][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.EthereumAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.EthereumAccount][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.EthereumAccount][]>
+}
+
+export class MultiTokensEthereumBalancesStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'EthereumBalances'
+    }
+
+    /**
+     *  Holds the ethereum balance for each token
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'c6d469a2bb1159ba1b3bfd48909f40e09449e74f982e2dee969f83c6e45d4ea9'
+    }
+
+    /**
+     *  Holds the ethereum balance for each token
+     */
+    get asV602(): MultiTokensEthereumBalancesStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Holds the ethereum balance for each token
+ */
+export interface MultiTokensEthereumBalancesStorageV602 {
+    get(key1: Uint8Array, key2: bigint, key3: bigint): Promise<(bigint | undefined)>
+    getAll(): Promise<bigint[]>
+    getMany(keys: [Uint8Array, bigint, bigint][]): Promise<(bigint | undefined)[]>
+    getKeys(): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array, key2: bigint): Promise<[Uint8Array, bigint, bigint][]>
+    getKeys(key1: Uint8Array, key2: bigint, key3: bigint): Promise<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[Uint8Array, bigint, bigint][]>
+    getPairs(): Promise<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairs(key1: Uint8Array, key2: bigint): Promise<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairs(key1: Uint8Array, key2: bigint, key3: bigint): Promise<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: bigint, key3: bigint): AsyncIterable<[k: [Uint8Array, bigint, bigint], v: bigint][]>
+}
+
+export class MultiTokensEthereumTokensStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'EthereumTokens'
+    }
+
+    /**
+     *  The token assets from ethereum
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '8862d6dd197aaeee063a1d9f6b6879d6d08545ad6f66ce3d357775bbceb00bc9'
+    }
+
+    /**
+     *  The token assets from ethereum
+     */
+    get asV602(): MultiTokensEthereumTokensStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  The token assets from ethereum
+ */
+export interface MultiTokensEthereumTokensStorageV602 {
+    get(key1: bigint, key2: bigint): Promise<(v602.EthereumToken | undefined)>
+    getAll(): Promise<v602.EthereumToken[]>
+    getMany(keys: [bigint, bigint][]): Promise<(v602.EthereumToken | undefined)[]>
+    getKeys(): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: v602.EthereumToken][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: v602.EthereumToken][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: v602.EthereumToken][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: v602.EthereumToken][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: v602.EthereumToken][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: v602.EthereumToken][]>
+}
+
 export class MultiTokensIdleOperationsStorage extends StorageBase {
     protected getPrefix() {
         return 'MultiTokens'
@@ -3712,6 +4063,48 @@ export class MultiTokensNativeCollectionIdsStorage extends StorageBase {
  *  Map of ethereum collection id to the native collection id
  */
 export interface MultiTokensNativeCollectionIdsStorageMatrixV603 {
+    get(key: bigint): Promise<(bigint | undefined)>
+    getAll(): Promise<bigint[]>
+    getMany(keys: bigint[]): Promise<(bigint | undefined)[]>
+    getKeys(): Promise<bigint[]>
+    getKeys(key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+    getPairs(): Promise<[k: bigint, v: bigint][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: bigint][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: bigint][]>
+}
+
+export class MultiTokensNativeCollectionIdsStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'NativeCollectionIds'
+    }
+
+    /**
+     *  Map of ethereum collection id to the native collection id
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '03ac0b80fdf641bd511733299fc9539a6f79a9c134c3b7d7af44cad8d25fa71a'
+    }
+
+    /**
+     *  Map of ethereum collection id to the native collection id
+     */
+    get asV602(): MultiTokensNativeCollectionIdsStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
+}
+
+/**
+ *  Map of ethereum collection id to the native collection id
+ */
+export interface MultiTokensNativeCollectionIdsStorageV602 {
     get(key: bigint): Promise<(bigint | undefined)>
     getAll(): Promise<bigint[]>
     getMany(keys: bigint[]): Promise<(bigint | undefined)[]>
@@ -3935,6 +4328,7 @@ export class MultiTokensUnmintableTokenIdsStorage extends StorageBase {
     }
 
     /**
+<<<<<<< HEAD
      *  These token ids can only be minted by calling `claim_token`
      */
     get isMatrixV603(): boolean {
@@ -3946,25 +4340,54 @@ export class MultiTokensUnmintableTokenIdsStorage extends StorageBase {
      */
     get asMatrixV603(): MultiTokensUnmintableTokenIdsStorageMatrixV603 {
         assert(this.isMatrixV603)
+=======
+     *  These token ids cannot be minted
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === 'd425451c3caec1f07a7ef5323427ee76c7b59839ca20d8c8ab5f0315d974b61c'
+    }
+
+    /**
+     *  These token ids cannot be minted
+     */
+    get asV602(): MultiTokensUnmintableTokenIdsStorageV602 {
+        assert(this.isV602)
+>>>>>>> 7bcb92f (add events)
         return this as any
     }
 }
 
 /**
+<<<<<<< HEAD
  *  These token ids can only be minted by calling `claim_token`
  */
 export interface MultiTokensUnmintableTokenIdsStorageMatrixV603 {
     get(key: bigint): Promise<(matrixV603.RangeInclusive | undefined)>
     getAll(): Promise<matrixV603.RangeInclusive[]>
     getMany(keys: bigint[]): Promise<(matrixV603.RangeInclusive | undefined)[]>
+=======
+ *  These token ids cannot be minted
+ */
+export interface MultiTokensUnmintableTokenIdsStorageV602 {
+    get(key: bigint): Promise<v602.RangeInclusive>
+    getAll(): Promise<v602.RangeInclusive[]>
+    getMany(keys: bigint[]): Promise<v602.RangeInclusive[]>
+>>>>>>> 7bcb92f (add events)
     getKeys(): Promise<bigint[]>
     getKeys(key: bigint): Promise<bigint[]>
     getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
     getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+<<<<<<< HEAD
     getPairs(): Promise<[k: bigint, v: matrixV603.RangeInclusive][]>
     getPairs(key: bigint): Promise<[k: bigint, v: matrixV603.RangeInclusive][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixV603.RangeInclusive][]>
     getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixV603.RangeInclusive][]>
+=======
+    getPairs(): Promise<[k: bigint, v: v602.RangeInclusive][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: v602.RangeInclusive][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: v602.RangeInclusive][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: v602.RangeInclusive][]>
+>>>>>>> 7bcb92f (add events)
 }
 
 export class MultisigMultisigsStorage extends StorageBase {
@@ -4724,6 +5147,33 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  The snapshot of some state related to messaging relevant to the current parachain as per
+     *  the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '2e08e09c21eea176bfd53411112b867efc3c3d71f51431e11288adfb3e3ede6f'
+    }
+
+    /**
+     *  The snapshot of some state related to messaging relevant to the current parachain as per
+     *  the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    get asV602(): ParachainSystemRelevantMessagingStateStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -4750,6 +5200,19 @@ export interface ParachainSystemRelevantMessagingStateStorageMatrixV603 {
  */
 export interface ParachainSystemRelevantMessagingStateStorageEfinityV3014 {
     get(): Promise<(efinityV3014.MessagingStateSnapshot | undefined)>
+}
+
+/**
+ *  The snapshot of some state related to messaging relevant to the current parachain as per
+ *  the relay parent.
+ * 
+ *  This field is meant to be updated each block with the validation data inherent. Therefore,
+ *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+ * 
+ *  This data is also absent from the genesis.
+ */
+export interface ParachainSystemRelevantMessagingStateStorageV602 {
+    get(): Promise<(v602.MessagingStateSnapshot | undefined)>
 }
 
 export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase {
@@ -5185,6 +5648,21 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    get isV602(): boolean {
+        return this.getTypeHash() === '1149837e63a49b75805a12d31afe81a1d8d4392ee13be03404f08d002d1c9928'
+    }
+
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    get asV602(): PolkadotXcmRemoteLockedFungiblesStorageV602 {
+        assert(this.isV602)
+        return this as any
+    }
 }
 
 /**
@@ -5235,6 +5713,31 @@ export interface PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
     getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
     getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
     getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+}
+
+/**
+ *  Fungible assets which we know are locked on a remote chain.
+ */
+export interface PolkadotXcmRemoteLockedFungiblesStorageV602 {
+    get(key1: number, key2: Uint8Array, key3: v602.VersionedAssetId): Promise<(v602.RemoteLockedFungibleRecord | undefined)>
+    getAll(): Promise<v602.RemoteLockedFungibleRecord[]>
+    getMany(keys: [number, Uint8Array, v602.VersionedAssetId][]): Promise<(v602.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeys(key1: number): Promise<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array, key3: v602.VersionedAssetId): Promise<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, v602.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v602.VersionedAssetId): AsyncIterable<[number, Uint8Array, v602.VersionedAssetId][]>
+    getPairs(): Promise<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array, key3: v602.VersionedAssetId): Promise<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v602.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, v602.VersionedAssetId], v: v602.RemoteLockedFungibleRecord][]>
 }
 
 export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
@@ -6499,7 +7002,7 @@ export class SystemEventsStorage extends StorageBase {
      *  just in case someone still reads them from within the runtime.
      */
     get isV602(): boolean {
-        return this.getTypeHash() === 'e1ee78d27d2150e8a2f93ff7bf8eecec264eabf963316e9e980901ba7fab01b2'
+        return this.getTypeHash() === '6790f0a756fabae6834af1181cbe018e42a97c6a43e3d2591686412a746f9b2c'
     }
 
     /**
@@ -7048,7 +7551,7 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
      *  Actual proposal for a given hash, if it's current.
      */
     get isV602(): boolean {
-        return this.getTypeHash() === '89559d3fb6f541bdf5075d1f4863bb5ac0e0acfed89282c2e8067b09a3b99f23'
+        return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
     }
 
     /**

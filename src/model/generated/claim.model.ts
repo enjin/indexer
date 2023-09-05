@@ -1,7 +1,6 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
-import {Event} from "./event.model"
 
 @Entity_()
 export class Claim {
@@ -27,8 +26,4 @@ export class Claim {
 
     @Column_("int4", {nullable: false})
     count!: number
-
-    @Index_()
-    @ManyToOne_(() => Event, {nullable: true})
-    event!: Event
 }

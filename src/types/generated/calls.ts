@@ -2,10 +2,13 @@ import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result, Option} from './support'
 import * as matrixV603 from './matrixV603'
 import * as v500 from './v500'
+<<<<<<< HEAD
 import * as efinityV3014 from './efinityV3014'
+=======
+import * as v602 from './v602'
+>>>>>>> 7bcb92f (add events)
 import * as v600 from './v600'
 import * as v601 from './v601'
-import * as v602 from './v602'
 
 export class BalancesForceSetBalanceCall {
     private readonly _chain: Chain
@@ -1013,6 +1016,69 @@ export class ClaimsClaimCall {
         assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Make a claim to collect your EFI.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address)
+     * 
+     * and `address` matches the `dest` account.
+     * 
+     * Parameters:
+     * - `dest`: The destination account to payout the claim.
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     * 
+     * <weight>
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to validate unsigned `claim` call.
+     * 
+     * Total Complexity: O(1)
+     * </weight>
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Claims.claim') === 'c6d14dccc555713bdf44b4d352cbee9695186c0e43c78a2f17735b65bbc25426'
+    }
+
+    /**
+     * Make a claim to collect your EFI.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address)
+     * 
+     * and `address` matches the `dest` account.
+     * 
+     * Parameters:
+     * - `dest`: The destination account to payout the claim.
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     * 
+     * <weight>
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to validate unsigned `claim` call.
+     * 
+     * Total Complexity: O(1)
+     * </weight>
+     */
+    get asV602(): {dest: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ClaimsClaimFromEfinityCall {
@@ -1244,6 +1310,39 @@ export class ClaimsMoveClaimCall {
         assert(this.isV500)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * `move_claim` moves the claim from one Ethereum address to another
+     * 
+     * Arguments:
+     * 
+     * * `old`: EthereumAddress,
+     * * `new`: EthereumAddress,
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * 
+     * Total Complexity: O(1)
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Claims.move_claim') === '391b7a792248e7221ffbf77c01942251d2928a4e2b37c8103704237e0d5f69b6'
+    }
+
+    /**
+     * `move_claim` moves the claim from one Ethereum address to another
+     * 
+     * Arguments:
+     * 
+     * * `old`: EthereumAddress,
+     * * `new`: EthereumAddress,
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * 
+     * Total Complexity: O(1)
+     */
+    get asV602(): {old: Uint8Array, new: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ClaimsRejectClaimsCall {
@@ -1340,6 +1439,43 @@ export class ClaimsRejectClaimsCall {
      */
     get asV500(): {batchData: [Uint8Array, (number | undefined)][]} {
         assert(this.isV500)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * `reject_claims` is a function that is called by ForceOrigin and allows to reject a batch
+     * of claims
+     * 
+     * Arguments:
+     * 
+     * * `batch_data`: A vector of user accounts and transaction hashes.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * And REMOVE the pending ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Claims.reject_claims') === 'ba8c7423005b3c776672afeea4787184e35d7635ce8a807d29ad34a56bb3ec3a'
+    }
+
+    /**
+     * `reject_claims` is a function that is called by ForceOrigin and allows to reject a batch
+     * of claims
+     * 
+     * Arguments:
+     * 
+     * * `batch_data`: A vector of user accounts and transaction hashes.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * And REMOVE the pending ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get asV602(): {batchData: v602.RejectData[]} {
+        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1446,6 +1582,96 @@ export class ClaimsRequestClaimsCall {
      */
     get asV500(): {blockNumber: number, batchData: v500.Claim[], chain: v500.Chain} {
         assert(this.isV500)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * `request_claims` is a function that allows a relayer to request claims for a batch of
+     * transactions
+     * 
+     * Parameters:
+     * 
+     * * `block_number`: The block number of Ethereum or Parachain block that contains the
+     *   transaction.
+     * * `batch_data`: A vector of EthereumTransactionDataOf structs.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Claims.request_claims') === '8651d50612fce74f8dc56916ca34482bfbf847715d78b6a5abe3e656171b63d0'
+    }
+
+    /**
+     * `request_claims` is a function that allows a relayer to request claims for a batch of
+     * transactions
+     * 
+     * Parameters:
+     * 
+     * * `block_number`: The block number of Ethereum or Parachain block that contains the
+     *   transaction.
+     * * `batch_data`: A vector of EthereumTransactionDataOf structs.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get asV602(): {blockNumber: number, batchData: v602.Claim[]} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class ClaimsSetDelayTimeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Claims.set_delay_time')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * This function sets a delay time for claims and requires a governance origin to execute.
+     * 
+     * Arguments:
+     * 
+     * * `delay_time`: The delay_time parameter is the number of blocks that must pass before a
+     * certain action can be taken. In this case, it is being used to set the delay time for
+     * claims in the governance pallet.
+     * 
+     * Returns:
+     * 
+     * either `Ok(())` if the delay time is successfully set, or an `Err` with a
+     * `DispatchError` if the delay time is less than 24 hours.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Claims.set_delay_time') === '9919843de279df806342c680fb041fef5bf53146b6b6c11827b8297e977076c8'
+    }
+
+    /**
+     * This function sets a delay time for claims and requires a governance origin to execute.
+     * 
+     * Arguments:
+     * 
+     * * `delay_time`: The delay_time parameter is the number of blocks that must pass before a
+     * certain action can be taken. In this case, it is being used to set the delay time for
+     * claims in the governance pallet.
+     * 
+     * Returns:
+     * 
+     * either `Ok(())` if the delay time is successfully set, or an `Err` with a
+     * `DispatchError` if the delay time is less than 24 hours.
+     */
+    get asV602(): {delayTime: number} {
+        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2469,7 +2695,7 @@ export class CouncilExecuteCall {
      * - `P` complexity of dispatching `proposal`
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Council.execute') === '42200a96ca0ad3184e9591f0d7f5892aff66f9f12198fcb806e1d22b72d800bc'
+        return this._chain.getCallHash('Council.execute') === '42e02516da5b061d1088373ba15312fb75350b4c460c86553b77632c49a1bfff'
     }
 
     /**
@@ -2802,7 +3028,7 @@ export class CouncilProposeCall {
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Council.propose') === '76cf450a5e2cc8f4a9da4604e748109d1a44da950b89749a9b498ecc46913f7c'
+        return this._chain.getCallHash('Council.propose') === 'ad8e807bb31ab0d0a1cc9796c09abc6d953cde11f68353038cb230910f45f5a9'
     }
 
     /**
@@ -4083,45 +4309,6 @@ export class EfinityUtilityBatchCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Dispatch a batch of calls.
-     * 
-     * May be called from any origin except [`None`].
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     * 
-     * # Errors
-     * 
-     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
-     */
-    get isV602(): boolean {
-        return this._chain.getCallHash('EfinityUtility.batch') === 'dd2a066a0172c7756e255e30b3d0481350b34530bd3695fa8f8f50cd672dc33a'
-    }
-
-    /**
-     * Dispatch a batch of calls.
-     * 
-     * May be called from any origin except [`None`].
-     * 
-     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
-     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
-     * If origin is root then the calls are dispatched without checking origin filter. (This
-     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     * 
-     * # Errors
-     * 
-     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
-     */
-    get asV602(): {calls: v602.Call[], continueOnFailure: boolean} {
-        assert(this.isV602)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class EfinityXcmForceSetMinimumWeightCall {
@@ -4530,7 +4717,7 @@ export class ExtrinsicPausePauseExtrinsicCall {
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === 'e639aa3f54af8bd93376fd3ad9cd38feab86a31aded929c4e4539f869dc7b524'
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === 'c5ca046c3e628825c4f962ecee1fb8f169fc9ec1170abc23027691646568f362'
     }
 
     /**
@@ -4743,7 +4930,7 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '56baa24c62d8a1ba4fb71f41a348b0e33e0806f0cb9ec4ce7db3293338e8299c'
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '1d150745e6ed925df16c2c548e329b7a5e8069f57fe385c83b6f156a72d9ab69'
     }
 
     /**
@@ -5034,7 +5221,7 @@ export class FuelTanksCreateFuelTankCall {
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === 'd52b14b52799457965a0bb0bc8cce79ae30c8cb95cc1fac2a41ea56b1d169147'
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '8a1d177d2d41d4dc5f95b0ef3afadb00553286606fe1f54f6189ca2f15550b1c'
     }
 
     /**
@@ -5269,7 +5456,7 @@ export class FuelTanksDispatchCall {
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch') === '9ec0b4d6b3bc8cf6c2a46cb688669119f38ecbdb89add4439b95091fc49c8055'
+        return this._chain.getCallHash('FuelTanks.dispatch') === 'b677705c3bf454beffbb1db35ce5a5c1eedf672d0e2a8fb60318fc872fdf9185'
     }
 
     /**
@@ -5282,7 +5469,7 @@ export class FuelTanksDispatchCall {
      *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
-    get asV602(): {tankId: v602.MultiAddress, ruleSetId: number, call: v602.Call, paysRemainingFee: boolean} {
+    get asV602(): {tankId: v602.MultiAddress, ruleSetId: number, call: v602.Call, settings: (v602.DispatchSettings | undefined)} {
         assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
@@ -5446,7 +5633,7 @@ export class FuelTanksDispatchAndTouchCall {
      * [add_account](Self::add_account)
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '9ec0b4d6b3bc8cf6c2a46cb688669119f38ecbdb89add4439b95091fc49c8055'
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'b677705c3bf454beffbb1db35ce5a5c1eedf672d0e2a8fb60318fc872fdf9185'
     }
 
     /**
@@ -5458,7 +5645,73 @@ export class FuelTanksDispatchAndTouchCall {
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
-    get asV602(): {tankId: v602.MultiAddress, ruleSetId: number, call: v602.Call, paysRemainingFee: boolean} {
+    get asV602(): {tankId: v602.MultiAddress, ruleSetId: number, call: v602.Call, settings: (v602.DispatchSettings | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class FuelTanksForceBatchAddAccountCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'FuelTanks.force_batch_add_account')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Sets the account storage for give tank_id and account
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_batch_add_account') === '273995af5a1f02d81e273bca153f6c53d34f81cabdebda6175f6bd071a905efe'
+    }
+
+    /**
+     * Sets the account storage for give tank_id and account
+     */
+    get asV602(): {owner: v602.MultiAddress, tankId: v602.MultiAddress, userIds: v602.MultiAddress[]} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class FuelTanksForceCreateFuelTankCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'FuelTanks.force_create_fuel_tank')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '9fba66045ffe9823498216d94cdbc8a05b718af3834bbcff41bb4664bc9ca23e'
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get asV602(): {owner: v602.MultiAddress, descriptor: v602.FuelTankDescriptor} {
         assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
@@ -5836,7 +6089,7 @@ export class FuelTanksInsertRuleSetCall {
      *   kind
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '7f35a41099a46811e66683a36960c6bf7beb366563fb09ee6df173036827f357'
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === 'df466f1c352194eb6e359ca229653c38d60917ad9c95b61fd8a70f0b1a53b65e'
     }
 
     /**
@@ -6402,6 +6655,88 @@ export class MarketplaceForcePlaceBidCall {
     }
 }
 
+export class MarketplaceForceCreateListingCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Marketplace.force_create_listing')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
+     * 
+     * # Parameters
+     * 
+     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
+     * a deposit if `seller` does not have enough.
+     * 
+     * # Errors
+     * 
+     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
+     * [`Config::ForceOrigin`]
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Marketplace.force_create_listing') === '740d5c8aa6c755cb69b094d1cae70ff2f50500c1d18fd8c66c8e1fd05539a640'
+    }
+
+    /**
+     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
+     * 
+     * # Parameters
+     * 
+     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
+     * a deposit if `seller` does not have enough.
+     * 
+     * # Errors
+     * 
+     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
+     * [`Config::ForceOrigin`]
+     */
+    get asV602(): {seller: v602.MultiAddress, makeAssetId: v602.AssetId, takeAssetId: v602.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v602.AuctionData | undefined), depositBacker: (v602.MultiAddress | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MarketplaceForcePlaceBidCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Marketplace.force_place_bid')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [create_listing](Self::place_bid), but allows specifying the `bidder` and can
+     * place a bid in an inactive auction. Only callable by [`Config::ForceOrigin`]. If
+     * `funds_backer` is `Some`, it will transfer balance if `bidder` does not have enough.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('Marketplace.force_place_bid') === 'f038fdae96c9c9a8410db371543e140cca23088d4bf30a7098c7f7b58efc2ae5'
+    }
+
+    /**
+     * Same as [create_listing](Self::place_bid), but allows specifying the `bidder` and can
+     * place a bid in an inactive auction. Only callable by [`Config::ForceOrigin`]. If
+     * `funds_backer` is `Some`, it will transfer balance if `bidder` does not have enough.
+     */
+    get asV602(): {bidder: v602.MultiAddress, listingId: Uint8Array, price: bigint, fundsBacker: (v602.MultiAddress | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class MarketplacePlaceBidCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -6749,6 +7084,263 @@ export class MatrixXcmTransferToParachainCall {
      */
     get asMatrixV603(): {paraId: matrixV603.ParachainId, beneficiary: matrixV603.Account, amount: bigint, destWeight: (bigint | undefined)} {
         assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixUtilityBatchCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixUtility.batch')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === 'd62ee8112ec3c60241093b56ae224901f16f92caeeede499a20acae888ba7ab7'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get asV602(): {calls: v602.Call[], continueOnFailure: boolean} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmForceSetMinimumWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.force_set_minimum_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MatrixXcm.force_set_minimum_weight') === '4c92aee9cd2c92a06e50e7ae691000178c9980b7f9c4e035739e193479d9f615'
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get asV602(): {xcmCall: v602.XcmOperation, xcmWeightFeeMisc: v602.MinimumWeightFeePair} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferAssetToParachainCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_asset_to_parachain')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
+     *   the asset.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_to_parachain') === '6e0995af8a1271406f286250994b7e96ef4e950ec17addde0aa13d7dcf06db7e'
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
+     *   the asset.
+     */
+    get asV602(): {paraId: v602.ParachainId, beneficiary: v602.Account, currencyId: v602.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferAssetWithFeeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_asset_with_fee')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
+     * the fee. This allows the transfer of custom assets like a non-fungible which
+     * cannot be used to pay fees.
+     * 
+     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
+     * parachain.
+     * 
+     * - `asset`: asset to transfer
+     * - `fee_asset`: asset to be used as fee
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `para_id`: destination parachain
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     * 
+     * # Errors
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_with_fee') === '253afe02afbaf582b39ed2b492eb0493066e690147b56578b4e8b20fb470b444'
+    }
+
+    /**
+     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
+     * the fee. This allows the transfer of custom assets like a non-fungible which
+     * cannot be used to pay fees.
+     * 
+     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
+     * parachain.
+     * 
+     * - `asset`: asset to transfer
+     * - `fee_asset`: asset to be used as fee
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `para_id`: destination parachain
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     * 
+     * # Errors
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get asV602(): {assetPair: v602.CurrencyIdAmountPair, feePair: v602.CurrencyIdAmountPair, paraId: v602.ParachainId, beneficiary: v602.Account, destWeight: (bigint | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferToParachainCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_to_parachain')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_to_parachain') === 'b78bfbeb395c8dfe84788045085ed4230266e12ad40559a5ed1fdf518db02770'
+    }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get asV602(): {paraId: v602.ParachainId, beneficiary: v602.Account, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7257,6 +7849,98 @@ export class MultiTokensClaimTokensCall {
     }
 }
 
+export class MultiTokensClaimCollectionsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.claim_collections')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Transfers ownership of collections to `destination` if the signature matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.claim_collections') === 'c2c9b14cf1920e63e88bb0ed4e4d7d24b7214a83d084075fadcc9df9fa04f151'
+    }
+
+    /**
+     * Transfers ownership of collections to `destination` if the signature matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get asV602(): {destination: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensClaimTokensCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.claim_tokens')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.claim_tokens') === 'c2c9b14cf1920e63e88bb0ed4e4d7d24b7214a83d084075fadcc9df9fa04f151'
+    }
+
+    get asV602(): {destination: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class MultiTokensCreateCollectionCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -7411,6 +8095,68 @@ export class MultiTokensForceBurnCall {
     }
 }
 
+export class MultiTokensForceApproveCollectionCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_approve_collection')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`approve_collection`](Self::approve_collection), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_approve_collection') === 'f65c0957959ad4ec841c3b60acfb570fb88ffcd77dcd55ff3a2274029b09f9a1'
+    }
+
+    /**
+     * Same as [`approve_collection`](Self::approve_collection), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get asV602(): {caller: v602.MultiAddress, collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceBurnCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_burn')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`burn`](Self::burn), but it is only callable by
+     * [`Config::ForceOrigin`]. Executes the burn by `caller`.
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_burn') === '7a5ae3200088a96708870831e59af4cf200480d821ce966c8b150a4623315305'
+    }
+
+    /**
+     * Same as [`burn`](Self::burn), but it is only callable by
+     * [`Config::ForceOrigin`]. Executes the burn by `caller`.
+     */
+    get asV602(): {caller: v602.MultiAddress, collectionId: bigint, params: v602.DefaultBurnParams} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class MultiTokensForceCreateCollectionCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -7504,6 +8250,66 @@ export class MultiTokensForceMintCall {
      */
     get asMatrixV603(): {caller: matrixV603.MultiAddress, recipient: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultMintParams, depositBacker: (matrixV603.MultiAddress | undefined)} {
         assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceFreezeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_freeze')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_freeze') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
+    }
+
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    get asV602(): {info: v602.Freeze} {
+        assert(this.isV602)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceMintCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_mint')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mint') === '6cf5f25d480cadca047bd92075c889f51eadee05fb17808aab0dbf485d3bcd38'
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get asV602(): {caller: v602.MultiAddress, recipient: v602.MultiAddress, collectionId: bigint, params: v602.DefaultMintParams, depositBacker: (v602.MultiAddress | undefined)} {
+        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7659,6 +8465,35 @@ export class MultiTokensForceSetNextCollectionIdCall {
      */
     get asMatrixV603(): {value: bigint} {
         assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceSetNextCollectionIdCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_set_next_collection_id')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Sets [`NextCollectionId`] to `value`. Only callable by [`Config::ForceOrigin`].
+     */
+    get isV602(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_set_next_collection_id') === 'd13cb91c3f61510beece366e7f7c2d0705f01d70f9bc28721d2437cd210a3372'
+    }
+
+    /**
+     * Sets [`NextCollectionId`] to `value`. Only callable by [`Config::ForceOrigin`].
+     */
+    get asV602(): {value: bigint} {
+        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9158,7 +9993,7 @@ export class MultisigAsMultiCall {
      *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi') === '1b8740cfcd16e554ca178a25cf7f6cee719d835f6afe16edd07ba004907fb0be'
+        return this._chain.getCallHash('Multisig.as_multi') === '753de76e027798fb10ef412018689caa169a5d49a8566d63b558955b6df0eb69'
     }
 
     /**
@@ -9445,7 +10280,7 @@ export class MultisigAsMultiThreshold1Call {
      * O(Z + C) where Z is the length of the call and C its execution weight.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === 'a1890c4cc7893697a8c420d4a1acb1292f666ac5f0efe066ec3259f873621d2e'
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '2272d53de8645af097228f5c68da02f4c6eb7cfbbd2865623e12152ca56b023c'
     }
 
     /**
@@ -10586,7 +11421,7 @@ export class SchedulerScheduleCall {
      * Anonymously schedule a task.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule') === '4341d2e25d51b16df59944be395bc67a56b8903ec5e8d9482e3bca6569fc0272'
+        return this._chain.getCallHash('Scheduler.schedule') === '9ead51e8789a3137eb65ffd312030d985839acb65959af94d041ddb3641c275e'
     }
 
     /**
@@ -10714,7 +11549,7 @@ export class SchedulerScheduleAfterCall {
      * Anonymously schedule a task after a delay.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_after') === '01602d72688debf53ae292218fab46efbd0b5ee1643f4e82371323753a065a58'
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'db1dd1a974333e3537ef8a7e9be7a7b3dff3645ba0fa5fec6f24a4abb9fb13d2'
     }
 
     /**
@@ -10818,7 +11653,7 @@ export class SchedulerScheduleNamedCall {
      * Schedule a named task.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named') === '4bc1685061026102f1434d99fff5d061999e935ccc51cfcdd6cb7bf2dfaf76b1'
+        return this._chain.getCallHash('Scheduler.schedule_named') === 'ff2f6192f36378a16f209b59270981bff1b4af822548f815e44f8059cf8d13cf'
     }
 
     /**
@@ -10946,7 +11781,7 @@ export class SchedulerScheduleNamedAfterCall {
      * Schedule a named task after a delay.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Scheduler.schedule_named_after') === '74eb740d000b4b8829f6658865b2000ed9d0823a4f44082c2ac72378ce19fca3'
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === 'e23744413dedb66d248707e0bb955cda96bc3ce3724aaaf5270aa6ee579c2cca'
     }
 
     /**
@@ -11231,31 +12066,6 @@ export class SudoSudoCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get isV602(): boolean {
-        return this._chain.getCallHash('Sudo.sudo') === 'f2b9b4f3f2e8201567112690b1bb594f3e2ec38535701b4aa70351c8e1dc0a0b'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get asV602(): {call: v602.Call} {
-        assert(this.isV602)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class SudoSudoAsCall {
@@ -11402,33 +12212,6 @@ export class SudoSudoAsCall {
         assert(this.isV601)
         return this._chain.decodeCall(this.call)
     }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-     * a given account.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get isV602(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_as') === '049919f288320607463893e5c6bddca5fd01295fdc6fd664b9b16c7adc001953'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
-     * a given account.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get asV602(): {who: v602.MultiAddress, call: v602.Call} {
-        assert(this.isV602)
-        return this._chain.decodeCall(this.call)
-    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -11569,35 +12352,6 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV601(): {call: v601.Call, weight: v601.Weight} {
         assert(this.isV601)
-        return this._chain.decodeCall(this.call)
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * This function does not check the weight of the call, and instead allows the
-     * Sudo user to specify the weight of the call.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get isV602(): boolean {
-        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '7eb0ab00c2f612a07bb7e31c065ec4cce63666967eecd7b73baddf70dcc17adf'
-    }
-
-    /**
-     * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * This function does not check the weight of the call, and instead allows the
-     * Sudo user to specify the weight of the call.
-     * 
-     * The dispatch origin for this call must be _Signed_.
-     * 
-     * ## Complexity
-     * - O(1).
-     */
-    get asV602(): {call: v602.Call, weight: v602.Weight} {
-        assert(this.isV602)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -12249,7 +13003,7 @@ export class TechnicalCommitteeExecuteCall {
      * - `P` complexity of dispatching `proposal`
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.execute') === '42200a96ca0ad3184e9591f0d7f5892aff66f9f12198fcb806e1d22b72d800bc'
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '42e02516da5b061d1088373ba15312fb75350b4c460c86553b77632c49a1bfff'
     }
 
     /**
@@ -12582,7 +13336,7 @@ export class TechnicalCommitteeProposeCall {
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('TechnicalCommittee.propose') === '76cf450a5e2cc8f4a9da4604e748109d1a44da950b89749a9b498ecc46913f7c'
+        return this._chain.getCallHash('TechnicalCommittee.propose') === 'ad8e807bb31ab0d0a1cc9796c09abc6d953cde11f68353038cb230910f45f5a9'
     }
 
     /**
@@ -13249,7 +14003,7 @@ export class UtilityAsDerivativeCall {
      * The dispatch origin for this call must be _Signed_.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.as_derivative') === '777c66328007a5bd1015c953dd7e098af367a050f49bd831a747761a3150de2b'
+        return this._chain.getCallHash('Utility.as_derivative') === 'a6ae93fcb456424eefc936c15801ab836f49a590a3d77b87ecdb3c6024840134'
     }
 
     /**
@@ -13558,7 +14312,7 @@ export class UtilityBatchCall {
      * event is deposited.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.batch') === 'df0d2425faf8eea0424c70a79ce2869335e38bfeec9c28c3ec2db8b6d60ce3cb'
+        return this._chain.getCallHash('Utility.batch') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
     }
 
     /**
@@ -13817,7 +14571,7 @@ export class UtilityBatchAllCall {
      * - O(C) where C is the number of calls to be batched.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.batch_all') === 'df0d2425faf8eea0424c70a79ce2869335e38bfeec9c28c3ec2db8b6d60ce3cb'
+        return this._chain.getCallHash('Utility.batch_all') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
     }
 
     /**
@@ -14012,7 +14766,7 @@ export class UtilityDispatchAsCall {
      * - O(1).
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.dispatch_as') === '355e70d82fd1df9fe280bfd74a101b21b8620758f893c035034549df11ca4147'
+        return this._chain.getCallHash('Utility.dispatch_as') === '53c74e412a2c7715329a8d9a5a1b15e10305868b02d52458849757df55fbd0d0'
     }
 
     /**
@@ -14259,7 +15013,7 @@ export class UtilityForceBatchCall {
      * - O(C) where C is the number of calls to be batched.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.force_batch') === 'df0d2425faf8eea0424c70a79ce2869335e38bfeec9c28c3ec2db8b6d60ce3cb'
+        return this._chain.getCallHash('Utility.force_batch') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
     }
 
     /**
@@ -14430,7 +15184,7 @@ export class UtilityWithWeightCall {
      * The dispatch origin for this call must be _Root_.
      */
     get isV602(): boolean {
-        return this._chain.getCallHash('Utility.with_weight') === '7eb0ab00c2f612a07bb7e31c065ec4cce63666967eecd7b73baddf70dcc17adf'
+        return this._chain.getCallHash('Utility.with_weight') === '6b8fa0c31b033249e6762551824f0cbd1bf3f0ff2a66b52380d09a37c08d8c7e'
     }
 
     /**

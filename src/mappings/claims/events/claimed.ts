@@ -21,8 +21,8 @@ import { getTotalUnclaimedAmount } from '../common'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsClaimedEvent(ctx, event)
 
-    if (data.isEnjinV100) {
-        return data.asEnjinV100
+    if (data.isV500) {
+        return data.asV500
     }
 
     throw new UnknownVersionError(data.constructor.name)

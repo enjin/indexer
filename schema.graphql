@@ -275,7 +275,6 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
-  claims: [Claim] @derivedFrom(field: "account")
 
   # Extras
   tokenValues: BigInt!
@@ -675,8 +674,6 @@ type Claim @entity {
   efiSum: BigInt!
   enjSum: BigInt!
   count: Int!
-
-  event: Event!
 }
 
 type ClaimDetails @entity {
