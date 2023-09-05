@@ -14,6 +14,7 @@
     "fix": "eslint src --ext .ts,.js --fix"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.405.0",
     "@polkadot/api": "^10.9.1",
     "@polkadot/keyring": "^12.4.2",
     "@polkadot/util": "^12.4.2",

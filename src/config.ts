@@ -3,7 +3,7 @@ import { ProcessorConfig } from './types/custom/processorConfig'
 const config: ProcessorConfig = {
     chainName: process.env.CHAIN_NAME || 'efinity',
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
-    chainStateHeight: process.env.CHAIN_STATE_HEIGHT ? parseInt(process.env.CHAIN_STATE_HEIGHT, 10) : 792000,
+    lastBlockHeight: process.env.LAST_BLOCK_HEIGHT ? parseInt(process.env.LAST_BLOCK_HEIGHT, 10) : 0,
     genesisHash: process.env.GENESIS_HASH || '0x335369975fced3fc22e23498da306a712f4fd964c957364d53c49cea9db8bc2f',
     rpc: process.env.CHAIN_RPC || 'wss://rpc.efinity.io',
     dataSource: {
@@ -21,6 +21,14 @@ const config: ProcessorConfig = {
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://beta.nft.io',
     shouldFetchAccounts: Boolean(process.env.FETCH_ACCOUNTS || false),
     sentryDsn: process.env.SENTRY_DSN,
+    amazonSns: {
+        topicArn: process.env.SNS_TOPIC_ARN || '',
+        region: process.env.SQS_REGION || '',
+        credentials: {
+            accessKeyId: process.env.SQS_ACCESS_KEY || '',
+            secretAccessKey: process.env.SQS_SECRET_KEY || '',
+        },
+    },
 }
 
 export default config
