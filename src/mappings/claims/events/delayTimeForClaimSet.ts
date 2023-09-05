@@ -5,7 +5,7 @@ import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { ClaimDetails } from '../../../model'
 import { ClaimsDelayTimeForClaimSetEvent } from '../../../types/generated/events'
-import { getEarlyBirdRewardRate, getMinEarlyBirdDelay, getTotalUnclaimedAmount } from '../common'
+import { getTotalUnclaimedAmount } from '../common'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsDelayTimeForClaimSetEvent(ctx, event)
@@ -30,8 +30,6 @@ export async function delayTimeForClaimSet(
         id: '0',
         delayClaimsPeriod: eventData.delayTime,
         totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
-        minEarlyBirdDelay: getMinEarlyBirdDelay(ctx),
-        earlyBirdRewardRate: getEarlyBirdRewardRate(ctx),
     })
 
     await ctx.store.save(ClaimDetails, claimDetails as any)

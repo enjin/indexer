@@ -5,13 +5,13 @@ import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { ClaimDetails } from '../../../model'
 import { ClaimsExchangeRateSetEvent } from '../../../types/generated/events'
-import { getEarlyBirdRewardRate, getMinEarlyBirdDelay, getTotalUnclaimedAmount } from '../common'
+import { getTotalUnclaimedAmount } from '../common'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsExchangeRateSetEvent(ctx, event)
 
-    if (data.isV104) {
-        return data.asV104
+    if (data.isV602) {
+        return data.asV602
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -30,8 +30,6 @@ export async function exchangeRateSet(
         id: '0',
         exchangeRate: eventData.exchangeRate,
         totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
-        minEarlyBirdDelay: getMinEarlyBirdDelay(ctx),
-        earlyBirdRewardRate: getEarlyBirdRewardRate(ctx),
     })
 
     await ctx.store.save(ClaimDetails, claimDetails as any)

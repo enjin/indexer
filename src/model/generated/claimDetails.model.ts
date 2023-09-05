@@ -18,10 +18,4 @@ export class ClaimDetails {
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     totalUnclaimedAmount!: bigint
-
-    @Column_("int4", {nullable: false})
-    minEarlyBirdDelay!: number
-
-    @Column_("int4", {nullable: false})
-    earlyBirdRewardRate!: number
 }
