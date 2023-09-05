@@ -227,16 +227,32 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         }
                     }
                 } else if (item.kind === 'call') {
-                    // eslint-disable-next-line no-continue
-                    if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
-
+                    if (
+                        item.call.parent != null ||
+                        ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
+                    ) {
+                        // eslint-disable-next-line no-continue
+                        continue
+                    }
                     const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
 
-                    const publicKey = (
-                        signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                            ? signature.address.value
-                            : signature.address
-                    ) as string
+                    let publicKey = ''
+                    let extrinsicSignature: any = {}
+
+                    if (!signature) {
+                        publicKey = item.call.args.dest
+                        extrinsicSignature = {
+                            address: item.call.args.dest,
+                            signature: item.call.args.ethereumSignature,
+                        }
+                    } else {
+                        publicKey = (
+                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                                ? signature.address.value
+                                : signature.address
+                        ) as string
+                        extrinsicSignature = signature
+                    }
 
                     // eslint-disable-next-line no-await-in-loop
                     const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
@@ -251,7 +267,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         pallet: callName[0],
                         method: callName[1],
                         args: call.args,
-                        signature,
+                        signature: extrinsicSignature,
                         signer,
                         nonce: signer.nonce,
                         tip,
