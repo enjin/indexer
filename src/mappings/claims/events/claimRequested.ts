@@ -20,8 +20,8 @@ import { getTotalUnclaimedAmount } from '../common'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsClaimRequestedEvent(ctx, event)
 
-    if (data.isV104) {
-        return data.asV104
+    if (data.isV602) {
+        return data.asV602
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -46,9 +46,9 @@ export async function claimRequested(
     const claim = new ClaimRequest({
         id: `${u8aToHex(eventData.who)}-${u8aToHex(eventData.transactionHash)}`,
         account,
-        amount: eventData.amount,
+        amountClaimable: eventData.amountClaimable,
+        amountBurned: eventData.amountBurned,
         hash: u8aToHex(eventData.transactionHash).toString(),
-        isEarlyBird: eventData.isEarlyBird,
         isEfiToken: eventData.isEfiToken,
         extrinsicIndex: item.event.extrinsic.indexInBlock,
         isClaimed: false,
@@ -69,9 +69,9 @@ export async function claimRequested(
         body: {
             who: account.account,
             accountType: account.type,
-            amount: eventData.amount,
+            amountClaimable: eventData.amountClaimable,
+            amountBurned: eventData.amountBurned,
             hash: u8aToHex(eventData.transactionHash).toString(),
-            isEarlyBird: eventData.isEarlyBird,
             isEfiToken: eventData.isEfiToken,
             extrinsic: item.event.extrinsic.id,
         },
@@ -82,9 +82,9 @@ export async function claimRequested(
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
             who: account,
-            amount: eventData.amount,
+            amountClaimable: eventData.amountClaimable,
+            amountBurned: eventData.amountBurned,
             hash: u8aToHex(eventData.transactionHash).toString(),
-            isEarlyBird: eventData.isEarlyBird,
             isEfiToken: eventData.isEfiToken,
         }),
     })

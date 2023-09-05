@@ -18,13 +18,13 @@ export class ClaimRequest {
     hash!: string
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    amount!: bigint
+    amountClaimable!: bigint
+
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    amountBurned!: bigint
 
     @Column_("bool", {nullable: false})
     isEfiToken!: boolean
-
-    @Column_("bool", {nullable: false})
-    isEarlyBird!: boolean
 
     @Column_("int4", {nullable: true})
     extrinsicIndex!: number | undefined | null

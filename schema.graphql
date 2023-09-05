@@ -237,10 +237,10 @@ type ClaimAccount {
 type ClaimsClaimRequested {
   who: ClaimAccount!
   hash: String!
-  amount: BigInt!
+  amountClaimable: BigInt!
+  amountBurned: BigInt!
 
   isEfiToken: Boolean!
-  isEarlyBird: Boolean!
 }
 
 type ClaimsClaimed {
@@ -653,10 +653,10 @@ type ClaimRequest @entity {
 
   account: ClaimAccount!
   hash: String!
-  amount: BigInt!
+  amountClaimable: BigInt!
+  amountBurned: BigInt!
 
   isEfiToken: Boolean!
-  isEarlyBird: Boolean!
   extrinsicIndex: Int
 
   isClaimed: Boolean!

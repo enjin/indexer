@@ -31,8 +31,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 function getDelayPeriod(ctx: CommonContext, block: SubstrateBlock) {
     const data = new ClaimsDelayClaimsPeriodStorage(ctx, block)
 
-    if (data.isEnjinV100) {
-        return data.asEnjinV100.get()
+    if (data.isV602) {
+        return data.asV602.get()
     }
 
     throw new UnknownVersionError(data.constructor.name)

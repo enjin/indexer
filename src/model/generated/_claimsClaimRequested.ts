@@ -6,18 +6,18 @@ export class ClaimsClaimRequested {
     public readonly isTypeOf = 'ClaimsClaimRequested'
     private _who!: ClaimAccount
     private _hash!: string
-    private _amount!: bigint
+    private _amountClaimable!: bigint
+    private _amountBurned!: bigint
     private _isEfiToken!: boolean
-    private _isEarlyBird!: boolean
 
     constructor(props?: Partial<Omit<ClaimsClaimRequested, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._who = new ClaimAccount(undefined, marshal.nonNull(json.who))
             this._hash = marshal.string.fromJSON(json.hash)
-            this._amount = marshal.bigint.fromJSON(json.amount)
+            this._amountClaimable = marshal.bigint.fromJSON(json.amountClaimable)
+            this._amountBurned = marshal.bigint.fromJSON(json.amountBurned)
             this._isEfiToken = marshal.boolean.fromJSON(json.isEfiToken)
-            this._isEarlyBird = marshal.boolean.fromJSON(json.isEarlyBird)
         }
     }
 
@@ -39,13 +39,22 @@ export class ClaimsClaimRequested {
         this._hash = value
     }
 
-    get amount(): bigint {
-        assert(this._amount != null, 'uninitialized access')
-        return this._amount
+    get amountClaimable(): bigint {
+        assert(this._amountClaimable != null, 'uninitialized access')
+        return this._amountClaimable
     }
 
-    set amount(value: bigint) {
-        this._amount = value
+    set amountClaimable(value: bigint) {
+        this._amountClaimable = value
+    }
+
+    get amountBurned(): bigint {
+        assert(this._amountBurned != null, 'uninitialized access')
+        return this._amountBurned
+    }
+
+    set amountBurned(value: bigint) {
+        this._amountBurned = value
     }
 
     get isEfiToken(): boolean {
@@ -57,23 +66,14 @@ export class ClaimsClaimRequested {
         this._isEfiToken = value
     }
 
-    get isEarlyBird(): boolean {
-        assert(this._isEarlyBird != null, 'uninitialized access')
-        return this._isEarlyBird
-    }
-
-    set isEarlyBird(value: boolean) {
-        this._isEarlyBird = value
-    }
-
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             who: this.who.toJSON(),
             hash: this.hash,
-            amount: marshal.bigint.toJSON(this.amount),
+            amountClaimable: marshal.bigint.toJSON(this.amountClaimable),
+            amountBurned: marshal.bigint.toJSON(this.amountBurned),
             isEfiToken: this.isEfiToken,
-            isEarlyBird: this.isEarlyBird,
         }
     }
 }
