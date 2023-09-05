@@ -10,8 +10,8 @@ import { getEarlyBirdRewardRate, getMinEarlyBirdDelay, getTotalUnclaimedAmount }
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsDelayTimeForClaimSetEvent(ctx, event)
 
-    if (data.isV104) {
-        return data.asV104
+    if (data.isV602) {
+        return data.asV602
     }
 
     throw new UnknownVersionError(data.constructor.name)
