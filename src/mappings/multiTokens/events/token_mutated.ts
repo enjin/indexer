@@ -21,8 +21,8 @@ import { TokenMarketBehavior } from '../../../types/generated/efinityV3014'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)
 
-    if (data.isEfinityV3014) {
-        const { collectionId, tokenId, mutation } = data.asEfinityV3014
+    if (data.isMatrixV603) {
+        const { collectionId, tokenId, mutation } = data.asMatrixV603
         return {
             collectionId,
             tokenId,

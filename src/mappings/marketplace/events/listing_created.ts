@@ -27,8 +27,8 @@ import { getOrCreateAccount } from '../../util/entities'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
 
-    if (data.isEfinityV3014) {
-        return data.asEfinityV3014
+    if (data.isMatrixV603) {
+        return data.asMatrixV603
     }
     throw new UnknownVersionError(data.constructor.name)
 }

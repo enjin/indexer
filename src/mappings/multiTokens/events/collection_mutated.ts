@@ -21,8 +21,8 @@ import { DefaultRoyalty } from '../../../types/generated/efinityV3014'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
-    if (data.isEfinityV3014) {
-        const { collectionId, mutation } = data.asEfinityV3014
+    if (data.isMatrixV603) {
+        const { collectionId, mutation } = data.asMatrixV603
 
         return {
             collectionId,
