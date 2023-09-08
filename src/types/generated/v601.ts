@@ -234,49 +234,6 @@ export interface DispatchRuleDescriptor_PermittedExtrinsics {
     value: Call[]
 }
 
-export interface Attribute {
-    value: Uint8Array
-    deposit: bigint
-}
-
-export interface CollectionAccount {
-    isFrozen: boolean
-    approvals: [Uint8Array, (number | undefined)][]
-    accountCount: number
-}
-
-export interface Collection {
-    owner: Uint8Array
-    policy: DefaultCollectionPolicy
-    tokenCount: bigint
-    attributeCount: number
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [AssetId, null][]
-}
-
-export interface TokenAccount {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
-}
-
-export interface Token {
-    supply: bigint
-    cap: (TokenCap | undefined)
-    freezeState: (FreezeState | undefined)
-    minimumBalance: bigint
-    sufficiency: Sufficiency
-    mintDeposit: bigint
-    attributeCount: number
-    marketBehavior: (TokenMarketBehavior | undefined)
-    listingForbidden: boolean
-    metadata: DefaultTokenMetadata
-}
-
 export interface Timepoint {
     height: number
     index: number
@@ -3971,85 +3928,6 @@ export interface RequireTokenRule {
     tokenId: bigint
 }
 
-export interface DefaultCollectionPolicy {
-    mint: DefaultMintPolicy
-    transfer: DefaultTransferPolicy
-    market: DefaultMarketPolicy
-}
-
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface Approval {
-    amount: bigint
-    expiration: (number | undefined)
-}
-
-export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
-
-export interface TokenCap_SingleMint {
-    __kind: 'SingleMint'
-}
-
-export interface TokenCap_Supply {
-    __kind: 'Supply'
-    value: bigint
-}
-
-export interface TokenCap_CollapsingSupply {
-    __kind: 'CollapsingSupply'
-    value: bigint
-}
-
-export type FreezeState = FreezeState_Permanent | FreezeState_Temporary | FreezeState_Never
-
-export interface FreezeState_Permanent {
-    __kind: 'Permanent'
-}
-
-export interface FreezeState_Temporary {
-    __kind: 'Temporary'
-}
-
-export interface FreezeState_Never {
-    __kind: 'Never'
-}
-
-export type Sufficiency = Sufficiency_Sufficient | Sufficiency_Insufficient
-
-export interface Sufficiency_Sufficient {
-    __kind: 'Sufficient'
-}
-
-export interface Sufficiency_Insufficient {
-    __kind: 'Insufficient'
-    unitPrice: bigint
-}
-
-export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
-
-export interface TokenMarketBehavior_HasRoyalty {
-    __kind: 'HasRoyalty'
-    value: DefaultRoyalty
-}
-
-export interface TokenMarketBehavior_IsCurrency {
-    __kind: 'IsCurrency'
-}
-
-export type DefaultTokenMetadata = DefaultTokenMetadata_Native | DefaultTokenMetadata_Foreign
-
-export interface DefaultTokenMetadata_Native {
-    __kind: 'Native'
-}
-
-export interface DefaultTokenMetadata_Foreign {
-    __kind: 'Foreign'
-    value: DefaultForeignTokenMetadata
-}
-
 export type RawOrigin = RawOrigin_Root | RawOrigin_Signed | RawOrigin_None
 
 export interface RawOrigin_Root {
@@ -4463,6 +4341,11 @@ export interface Account_EVM {
     value: Uint8Array
 }
 
+export interface AssetId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
 export interface CurrencyIdAmountPair {
     currencyId: AssetId
     amount: bigint
@@ -4580,6 +4463,49 @@ export interface AttributeKeyValuePair {
     value: Uint8Array
 }
 
+export interface Collection {
+    owner: Uint8Array
+    policy: DefaultCollectionPolicy
+    tokenCount: bigint
+    attributeCount: number
+    totalDeposit: bigint
+    explicitRoyaltyCurrencies: [AssetId, null][]
+}
+
+export interface Token {
+    supply: bigint
+    cap: (TokenCap | undefined)
+    freezeState: (FreezeState | undefined)
+    minimumBalance: bigint
+    sufficiency: Sufficiency
+    mintDeposit: bigint
+    attributeCount: number
+    marketBehavior: (TokenMarketBehavior | undefined)
+    listingForbidden: boolean
+    metadata: DefaultTokenMetadata
+}
+
+export interface Attribute {
+    value: Uint8Array
+    deposit: bigint
+}
+
+export interface CollectionAccount {
+    isFrozen: boolean
+    approvals: [Uint8Array, (number | undefined)][]
+    accountCount: number
+}
+
+export interface TokenAccount {
+    balance: bigint
+    reservedBalance: bigint
+    lockedBalance: bigint
+    namedReserves: [Uint8Array, bigint][]
+    locks: [Uint8Array, bigint][]
+    approvals: [Uint8Array, Approval][]
+    isFrozen: boolean
+}
+
 export interface PoolsMutation {
     community: Pool
     collator: Pool
@@ -4635,34 +4561,6 @@ export interface Consumption {
 export interface AuctionData {
     startBlock: number
     endBlock: number
-}
-
-export interface DefaultMintPolicy {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultTransferPolicy {
-    isFrozen: boolean
-}
-
-export interface DefaultMarketPolicy {
-    royalty: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultRoyalty {
-    beneficiary: Uint8Array
-    percentage: number
-}
-
-export interface DefaultForeignTokenMetadata {
-    decimalCount: number
-    name: Uint8Array
-    symbol: Uint8Array
-    location: (V3MultiLocation | undefined)
-    unitsPerSecond: (bigint | undefined)
-    premintedSupply: bigint
 }
 
 /**
@@ -8496,6 +8394,47 @@ export interface SufficiencyParam_Sufficient {
     minimumBalance: bigint
 }
 
+export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
+
+export interface TokenCap_SingleMint {
+    __kind: 'SingleMint'
+}
+
+export interface TokenCap_Supply {
+    __kind: 'Supply'
+    value: bigint
+}
+
+export interface TokenCap_CollapsingSupply {
+    __kind: 'CollapsingSupply'
+    value: bigint
+}
+
+export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
+
+export interface TokenMarketBehavior_HasRoyalty {
+    __kind: 'HasRoyalty'
+    value: DefaultRoyalty
+}
+
+export interface TokenMarketBehavior_IsCurrency {
+    __kind: 'IsCurrency'
+}
+
+export type FreezeState = FreezeState_Permanent | FreezeState_Temporary | FreezeState_Never
+
+export interface FreezeState_Permanent {
+    __kind: 'Permanent'
+}
+
+export interface FreezeState_Temporary {
+    __kind: 'Temporary'
+}
+
+export interface FreezeState_Never {
+    __kind: 'Never'
+}
+
 export interface ForeignTokenCreationParams {
     decimalCount: number
     name: Uint8Array
@@ -8525,6 +8464,39 @@ export interface FreezeType_TokenAccount {
     __kind: 'TokenAccount'
     tokenId: bigint
     accountId: Uint8Array
+}
+
+export interface DefaultCollectionPolicy {
+    mint: DefaultMintPolicy
+    transfer: DefaultTransferPolicy
+    market: DefaultMarketPolicy
+}
+
+export type Sufficiency = Sufficiency_Sufficient | Sufficiency_Insufficient
+
+export interface Sufficiency_Sufficient {
+    __kind: 'Sufficient'
+}
+
+export interface Sufficiency_Insufficient {
+    __kind: 'Insufficient'
+    unitPrice: bigint
+}
+
+export type DefaultTokenMetadata = DefaultTokenMetadata_Native | DefaultTokenMetadata_Foreign
+
+export interface DefaultTokenMetadata_Native {
+    __kind: 'Native'
+}
+
+export interface DefaultTokenMetadata_Foreign {
+    __kind: 'Foreign'
+    value: DefaultForeignTokenMetadata
+}
+
+export interface Approval {
+    amount: bigint
+    expiration: (number | undefined)
 }
 
 export interface Pool {
@@ -9206,6 +9178,34 @@ export interface DefaultMintPolicyDescriptor {
 
 export interface DefaultMarketPolicyDescriptor {
     royalty: (DefaultRoyalty | undefined)
+}
+
+export interface DefaultRoyalty {
+    beneficiary: Uint8Array
+    percentage: number
+}
+
+export interface DefaultMintPolicy {
+    maxTokenCount: (bigint | undefined)
+    maxTokenSupply: (bigint | undefined)
+    forceSingleMint: boolean
+}
+
+export interface DefaultTransferPolicy {
+    isFrozen: boolean
+}
+
+export interface DefaultMarketPolicy {
+    royalty: (DefaultRoyalty | undefined)
+}
+
+export interface DefaultForeignTokenMetadata {
+    decimalCount: number
+    name: Uint8Array
+    symbol: Uint8Array
+    location: (V3MultiLocation | undefined)
+    unitsPerSecond: (bigint | undefined)
+    premintedSupply: bigint
 }
 
 export type DispatchClass = DispatchClass_Normal | DispatchClass_Operational | DispatchClass_Mandatory

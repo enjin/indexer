@@ -1,7 +1,8 @@
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result, Option} from './support'
-import * as efinityV3014 from './efinityV3014'
+import * as matrixV603 from './matrixV603'
 import * as v500 from './v500'
+import * as efinityV3014 from './efinityV3014'
 import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
@@ -24,7 +25,7 @@ export class BalancesForceSetBalanceCall {
      * 
      * The dispatch origin for this call is `root`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.force_set_balance') === 'd0f1dc28aeba8805f92a7e983d0fba2621912dc1665264dd9c38cd3c0c912737'
     }
 
@@ -33,8 +34,8 @@ export class BalancesForceSetBalanceCall {
      * 
      * The dispatch origin for this call is `root`.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress, newFree: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress, newFree: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -56,7 +57,7 @@ export class BalancesForceTransferCall {
      * Exactly as `transfer_allow_death`, except the origin must be root and the source account
      * may be specified.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.force_transfer') === 'e5944fbe8224a17fe49f9c1d1d01efaf87fb1778fd39618512af54c9ba6f9dff'
     }
 
@@ -64,8 +65,8 @@ export class BalancesForceTransferCall {
      * Exactly as `transfer_allow_death`, except the origin must be root and the source account
      * may be specified.
      */
-    get asEfinityV3014(): {source: efinityV3014.MultiAddress, dest: efinityV3014.MultiAddress, value: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {source: matrixV603.MultiAddress, dest: matrixV603.MultiAddress, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -88,7 +89,7 @@ export class BalancesForceUnreserveCall {
      * 
      * Can only be called by ROOT.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.force_unreserve') === '30bc48977e2a7ad3fc8ac014948ded50fc54886bad9a1f65b02bb64f27d8a6be'
     }
 
@@ -97,8 +98,8 @@ export class BalancesForceUnreserveCall {
      * 
      * Can only be called by ROOT.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress, amount: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress, amount: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -167,7 +168,7 @@ export class BalancesSetBalanceDeprecatedCall {
      * 
      * WARNING: This call is DEPRECATED! Use `force_set_balance` instead.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.set_balance_deprecated') === 'cd8eaf83a985e64a94900c5c58bbc2bbd20e03f5d571cf6065020f1a4281ff19'
     }
 
@@ -179,8 +180,8 @@ export class BalancesSetBalanceDeprecatedCall {
      * 
      * WARNING: This call is DEPRECATED! Use `force_set_balance` instead.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress, newFree: bigint, oldReserved: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress, newFree: bigint, oldReserved: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -203,7 +204,7 @@ export class BalancesTransferCall {
      * 
      * WARNING: DEPRECATED! Will be released in approximately 3 months.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.transfer') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
     }
 
@@ -212,8 +213,8 @@ export class BalancesTransferCall {
      * 
      * WARNING: DEPRECATED! Will be released in approximately 3 months.
      */
-    get asEfinityV3014(): {dest: efinityV3014.MultiAddress, value: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.MultiAddress, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -248,7 +249,7 @@ export class BalancesTransferAllCall {
      *   transfer everything except at least the existential deposit, which will guarantee to
      *   keep the sender account alive (true).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.transfer_all') === '9c94c2ca9979f6551af6e123fb6b6ba14d026f862f9a023706f8f88c556b355f'
     }
 
@@ -269,8 +270,8 @@ export class BalancesTransferAllCall {
      *   transfer everything except at least the existential deposit, which will guarantee to
      *   keep the sender account alive (true).
      */
-    get asEfinityV3014(): {dest: efinityV3014.MultiAddress, keepAlive: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.MultiAddress, keepAlive: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -297,7 +298,7 @@ export class BalancesTransferAllowDeathCall {
      * 
      * The dispatch origin for this call must be `Signed` by the transactor.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.transfer_allow_death') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
     }
 
@@ -310,8 +311,8 @@ export class BalancesTransferAllowDeathCall {
      * 
      * The dispatch origin for this call must be `Signed` by the transactor.
      */
-    get asEfinityV3014(): {dest: efinityV3014.MultiAddress, value: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.MultiAddress, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -337,7 +338,7 @@ export class BalancesTransferKeepAliveCall {
      * 
      * [`transfer_allow_death`]: struct.Pallet.html#method.transfer
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.transfer_keep_alive') === 'fc85bea9d0d171982f66e8a55667d58dc9a1612bcafe84309942bf47e23e3094'
     }
 
@@ -349,8 +350,8 @@ export class BalancesTransferKeepAliveCall {
      * 
      * [`transfer_allow_death`]: struct.Pallet.html#method.transfer
      */
-    get asEfinityV3014(): {dest: efinityV3014.MultiAddress, value: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.MultiAddress, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -376,9 +377,9 @@ export class BalancesUpgradeAccountsCall {
      * 
      * This will waive the transaction fee if at least all but 10% of the accounts needed to
      * be upgraded. (We let some not have to be upgraded just in order to allow for the
-     * possibility of churn).
+     * possibililty of churn).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Balances.upgrade_accounts') === 'e074d5a93414f189b47fbb5d94c57b62cfb9e63808a3c94665eeb2cfe53be8df'
     }
 
@@ -390,10 +391,10 @@ export class BalancesUpgradeAccountsCall {
      * 
      * This will waive the transaction fee if at least all but 10% of the accounts needed to
      * be upgraded. (We let some not have to be upgraded just in order to allow for the
-     * possibility of churn).
+     * possibililty of churn).
      */
-    get asEfinityV3014(): {who: Uint8Array[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: Uint8Array[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -420,7 +421,7 @@ export class BountiesAcceptCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.accept_curator') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
     }
 
@@ -433,8 +434,8 @@ export class BountiesAcceptCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -461,7 +462,7 @@ export class BountiesApproveBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.approve_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
     }
 
@@ -474,8 +475,8 @@ export class BountiesApproveBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -505,7 +506,7 @@ export class BountiesAwardBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.award_bounty') === 'cfa73dafdcbe89b3b4e24bfc41cf4f3b1fcd9527b052ecc6549b6ac07b965606'
     }
 
@@ -521,8 +522,8 @@ export class BountiesAwardBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number, beneficiary: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number, beneficiary: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -550,7 +551,7 @@ export class BountiesClaimBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.claim_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
     }
 
@@ -564,8 +565,8 @@ export class BountiesClaimBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -594,7 +595,7 @@ export class BountiesCloseBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.close_bounty') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
     }
 
@@ -609,8 +610,8 @@ export class BountiesCloseBountyCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -639,7 +640,7 @@ export class BountiesExtendBountyExpiryCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.extend_bounty_expiry') === '710d6b76ffcee45bd9bffc1f299fa0b621450769559963379fa259c0f427f1bb'
     }
 
@@ -654,8 +655,8 @@ export class BountiesExtendBountyExpiryCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number, remark: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number, remark: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -687,7 +688,7 @@ export class BountiesProposeBountyCall {
      * - `value`: The total payment amount of this bounty, curator fee included.
      * - `description`: The description of this bounty.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.propose_bounty') === '6a012b4069a991972d0d3268cb20dfba3163919c325c7ebbe980b2dc15f1b1f5'
     }
 
@@ -705,8 +706,8 @@ export class BountiesProposeBountyCall {
      * - `value`: The total payment amount of this bounty, curator fee included.
      * - `description`: The description of this bounty.
      */
-    get asEfinityV3014(): {value: bigint, description: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {value: bigint, description: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -732,7 +733,7 @@ export class BountiesProposeCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.propose_curator') === 'db115713847ce9db3eac62037c4aefcca595bcd9aa876776d8fba64491d881d3'
     }
 
@@ -744,8 +745,8 @@ export class BountiesProposeCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number, curator: efinityV3014.MultiAddress, fee: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number, curator: matrixV603.MultiAddress, fee: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -782,7 +783,7 @@ export class BountiesUnassignCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Bounties.unassign_curator') === '77b779cfa161e4e6eeffa4c35f55ae2bd68aba06e4b5d48766892991c97064c9'
     }
 
@@ -805,8 +806,8 @@ export class BountiesUnassignCuratorCall {
      * ## Complexity
      * - O(1).
      */
-    get asEfinityV3014(): {bountyId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bountyId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -887,6 +888,69 @@ export class ClaimsClaimCall {
         assert(call.name === 'Claims.claim')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Make a claim to collect your EFI.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address)
+     * 
+     * and `address` matches the `dest` account.
+     * 
+     * Parameters:
+     * - `dest`: The destination account to payout the claim.
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     * 
+     * <weight>
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to validate unsigned `claim` call.
+     * 
+     * Total Complexity: O(1)
+     * </weight>
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Claims.claim') === 'c6d14dccc555713bdf44b4d352cbee9695186c0e43c78a2f17735b65bbc25426'
+    }
+
+    /**
+     * Make a claim to collect your EFI.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address)
+     * 
+     * and `address` matches the `dest` account.
+     * 
+     * Parameters:
+     * - `dest`: The destination account to payout the claim.
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     * 
+     * <weight>
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to validate unsigned `claim` call.
+     * 
+     * Total Complexity: O(1)
+     * </weight>
+     */
+    get asMatrixV603(): {dest: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -1022,7 +1086,7 @@ export class ClaimsMintClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get isV500(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Claims.mint_claim') === 'bd93629e146aeda1b31bc7c1c194470feee46b9e4aed4d426ce152fe4c633fce'
     }
 
@@ -1041,8 +1105,8 @@ export class ClaimsMintClaimCall {
      * Total Complexity: O(1)
      * </weight>
      */
-    get asV500(): {who: Uint8Array, value: bigint} {
-        assert(this.isV500)
+    get asMatrixV603(): {who: Uint8Array, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1061,7 +1125,7 @@ export class ClaimsMintEnjFromNativeEfiCall {
     }
 
     /**
-     * Bridge EFI from the Efinity Parachain to the Enjin Relay Chain
+     * Bridge EFI from the Efinity parachain to the Enjin Relay Chain
      * 
      * Parameters:
      * - `origin`: The account initiating the claim and from which EFI will be burned.
@@ -1074,7 +1138,7 @@ export class ClaimsMintEnjFromNativeEfiCall {
     }
 
     /**
-     * Bridge EFI from the Efinity Parachain to the Enjin Relay Chain
+     * Bridge EFI from the Efinity parachain to the Enjin Relay Chain
      * 
      * Parameters:
      * - `origin`: The account initiating the claim and from which EFI will be burned.
@@ -1099,6 +1163,39 @@ export class ClaimsMoveClaimCall {
         assert(call.name === 'Claims.move_claim')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * `move_claim` moves the claim from one Ethereum address to another
+     * 
+     * Arguments:
+     * 
+     * * `old`: EthereumAddress,
+     * * `new`: EthereumAddress,
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * 
+     * Total Complexity: O(1)
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Claims.move_claim') === '391b7a792248e7221ffbf77c01942251d2928a4e2b37c8103704237e0d5f69b6'
+    }
+
+    /**
+     * `move_claim` moves the claim from one Ethereum address to another
+     * 
+     * Arguments:
+     * 
+     * * `old`: EthereumAddress,
+     * * `new`: EthereumAddress,
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * 
+     * Total Complexity: O(1)
+     */
+    get asMatrixV603(): {old: Uint8Array, new: Uint8Array} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -1160,6 +1257,43 @@ export class ClaimsRejectClaimsCall {
         assert(call.name === 'Claims.reject_claims')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * `reject_claims` is a function that is called by ForceOrigin and allows to reject a batch
+     * of claims
+     * 
+     * Arguments:
+     * 
+     * * `batch_data`: A vector of user accounts and transaction hashes.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * And REMOVE the pending ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Claims.reject_claims') === 'ba8c7423005b3c776672afeea4787184e35d7635ce8a807d29ad34a56bb3ec3a'
+    }
+
+    /**
+     * `reject_claims` is a function that is called by ForceOrigin and allows to reject a batch
+     * of claims
+     * 
+     * Arguments:
+     * 
+     * * `batch_data`: A vector of user accounts and transaction hashes.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * And REMOVE the pending ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get asMatrixV603(): {batchData: matrixV603.RejectData[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -1229,6 +1363,45 @@ export class ClaimsRequestClaimsCall {
      * 
      * Parameters:
      * 
+     * * `block_number`: The block number of Ethereum or Parachain block that contains the
+     *   transaction.
+     * * `batch_data`: A vector of EthereumTransactionDataOf structs.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Claims.request_claims') === '8651d50612fce74f8dc56916ca34482bfbf847715d78b6a5abe3e656171b63d0'
+    }
+
+    /**
+     * `request_claims` is a function that allows a relayer to request claims for a batch of
+     * transactions
+     * 
+     * Parameters:
+     * 
+     * * `block_number`: The block number of Ethereum or Parachain block that contains the
+     *   transaction.
+     * * `batch_data`: A vector of EthereumTransactionDataOf structs.
+     * 
+     * The weight of this call is invariant over the input parameters.
+     * Weight includes logic to iterate over pending approval ETH transaction
+     * 
+     * Total Complexity: O(N)
+     */
+    get asMatrixV603(): {blockNumber: number, batchData: matrixV603.Claim[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * `request_claims` is a function that allows a relayer to request claims for a batch of
+     * transactions
+     * 
+     * Parameters:
+     * 
      * * `origin`: OriginFor<T>
      * * `block_number`: The block number of Ethereum or Parachain block that contains the
      *   transaction.
@@ -1277,6 +1450,57 @@ export class ClaimsRequestClaimsCall {
     }
 }
 
+export class ClaimsSetDelayTimeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Claims.set_delay_time')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * This function sets a delay time for claims and requires a governance origin to execute.
+     * 
+     * Arguments:
+     * 
+     * * `delay_time`: The delay_time parameter is the number of blocks that must pass before a
+     * certain action can be taken. In this case, it is being used to set the delay time for
+     * claims in the governance pallet.
+     * 
+     * Returns:
+     * 
+     * either `Ok(())` if the delay time is successfully set, or an `Err` with a
+     * `DispatchError` if the delay time is less than 24 hours.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Claims.set_delay_time') === '9919843de279df806342c680fb041fef5bf53146b6b6c11827b8297e977076c8'
+    }
+
+    /**
+     * This function sets a delay time for claims and requires a governance origin to execute.
+     * 
+     * Arguments:
+     * 
+     * * `delay_time`: The delay_time parameter is the number of blocks that must pass before a
+     * certain action can be taken. In this case, it is being used to set the delay time for
+     * claims in the governance pallet.
+     * 
+     * Returns:
+     * 
+     * either `Ok(())` if the delay time is successfully set, or an `Err` with a
+     * `DispatchError` if the delay time is less than 24 hours.
+     */
+    get asMatrixV603(): {delayTime: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class ClaimsSetExchangeRateCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -1291,49 +1515,37 @@ export class ClaimsSetExchangeRateCall {
     }
 
     /**
-     * `set_exchange_rate` is a function that can be called by Technical Committee or Root, and
+     * `set_exchange_rate` is a function that can be called by ForceOrigin and
      * it sets the exchange rate
      * 
      * Parameters:
      * 
-     * * `origin`: OriginFor<T>
      * * `numerator`: u128,
      * * `denominator`: u128,
      * 
-     * Returns:
-     * 
-     * DispatchResult
-     * <weight>
      * The weight of this call is invariant over the input parameters.
      * 
      * Total Complexity: O(1)
-     * </weight>
      */
-    get isV500(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Claims.set_exchange_rate') === 'da214b06a2cf61183fd833c1552f319c06e2eddcf08a00a207b203ca34682446'
     }
 
     /**
-     * `set_exchange_rate` is a function that can be called by Technical Committee or Root, and
+     * `set_exchange_rate` is a function that can be called by ForceOrigin and
      * it sets the exchange rate
      * 
      * Parameters:
      * 
-     * * `origin`: OriginFor<T>
      * * `numerator`: u128,
      * * `denominator`: u128,
      * 
-     * Returns:
-     * 
-     * DispatchResult
-     * <weight>
      * The weight of this call is invariant over the input parameters.
      * 
      * Total Complexity: O(1)
-     * </weight>
      */
-    get asV500(): {numerator: bigint, denominator: bigint} {
-        assert(this.isV500)
+    get asMatrixV603(): {numerator: bigint, denominator: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1361,7 +1573,7 @@ export class CollatorStakingForceSetCurrentMaxCandidatesCall {
      * 
      * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.force_set_current_max_candidates') === '310ae211a2124713dfde4d9d728ef98d0b24b616c3e5410d3181c5ef2e8ddade'
     }
 
@@ -1375,8 +1587,8 @@ export class CollatorStakingForceSetCurrentMaxCandidatesCall {
      * 
      * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
      */
-    get asEfinityV3014(): {maxCandidates: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {maxCandidates: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1399,7 +1611,7 @@ export class CollatorStakingForceSetMinCollatorStakeCall {
      * 
      * [`T::ForceOrigin`](Config::ForceOrigin) call only
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.force_set_min_collator_stake') === '06eff2469bc17d7aebdedd42c10947459c1f0d4fae809ce8e19728d9c971339c'
     }
 
@@ -1408,8 +1620,8 @@ export class CollatorStakingForceSetMinCollatorStakeCall {
      * 
      * [`T::ForceOrigin`](Config::ForceOrigin) call only
      */
-    get asEfinityV3014(): {minCollatorStake: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {minCollatorStake: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1438,7 +1650,7 @@ export class CollatorStakingJoinCandidatesCall {
      * - [`Error::NoAssociatedValidatorId`] if no associated validator ID for `AccountId`.
      * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.join_candidates') === 'f6b28a93d2ad8a91812f4261c4e03231091780b2314de37559af3b8f507099bc'
     }
 
@@ -1453,8 +1665,8 @@ export class CollatorStakingJoinCandidatesCall {
      * - [`Error::NoAssociatedValidatorId`] if no associated validator ID for `AccountId`.
      * - [`Error::TooManyCandidates`] if the number of candidates is already at the maximum.
      */
-    get asEfinityV3014(): {amount: bigint, rewardsCut: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {amount: bigint, rewardsCut: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1483,7 +1695,7 @@ export class CollatorStakingNominateCall {
      *   minimum.
      * - [`Error::TooManyNominations`] if there are too many nominations for the candidate.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.nominate') === '30f29e64cc7b4f99f08cb48567ffb4af918d57fe9455b7152205397218f72966'
     }
 
@@ -1498,8 +1710,8 @@ export class CollatorStakingNominateCall {
      *   minimum.
      * - [`Error::TooManyNominations`] if there are too many nominations for the candidate.
      */
-    get asEfinityV3014(): {collatorId: Uint8Array, amount: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collatorId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1526,7 +1738,7 @@ export class CollatorStakingRemoveNominationCall {
      * - [`Error::NominationDoesNotExist`] if the nomination does not exist.
      * - [`Error::TooManyCandidates`] if there are too many candidates in the set.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.remove_nomination') === '850c9ad9685e8b8f2587b1f9106e128c780b5d96e4560a40cf7d75d51543f181'
     }
 
@@ -1539,8 +1751,8 @@ export class CollatorStakingRemoveNominationCall {
      * - [`Error::NominationDoesNotExist`] if the nomination does not exist.
      * - [`Error::TooManyCandidates`] if there are too many candidates in the set.
      */
-    get asEfinityV3014(): {collatorId: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collatorId: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1567,7 +1779,7 @@ export class CollatorStakingSetInvulnerablesCall {
      * 
      * - [`Error::TooManyInvulnerables`] if the number of invulnerables exceeds the maximum
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.set_invulnerables') === 'f991968966792a125cac7c888dc7194239a215e624de7c15edbe7afe0e683c8a'
     }
 
@@ -1580,8 +1792,8 @@ export class CollatorStakingSetInvulnerablesCall {
      * 
      * - [`Error::TooManyInvulnerables`] if the number of invulnerables exceeds the maximum
      */
-    get asEfinityV3014(): {accounts: Uint8Array[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {accounts: Uint8Array[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1613,7 +1825,7 @@ export class CollatorStakingUnbondCall {
      * - [`Error::CannotUnbondInvulnerable`] cannot unbond an invulnerable collator.
      * - [`Error::ExitInProgress`] if unbonding for collator already in progress.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CollatorStaking.unbond') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -1631,8 +1843,8 @@ export class CollatorStakingUnbondCall {
      * - [`Error::CannotUnbondInvulnerable`] cannot unbond an invulnerable collator.
      * - [`Error::ExitInProgress`] if unbonding for collator already in progress.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1659,7 +1871,7 @@ export class CommunityPoolApproveProposalCall {
      * ## Complexity
      *  - O(1).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CommunityPool.approve_proposal') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
     }
 
@@ -1672,8 +1884,8 @@ export class CommunityPoolApproveProposalCall {
      * ## Complexity
      *  - O(1).
      */
-    get asEfinityV3014(): {proposalId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1699,7 +1911,7 @@ export class CommunityPoolProposeSpendCall {
      * ## Complexity
      * - O(1)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CommunityPool.propose_spend') === 'ffef9f31e8ae5085e7c0a55a685daef52218f0bf7083015ac904dafceedf09ee'
     }
 
@@ -1711,8 +1923,8 @@ export class CommunityPoolProposeSpendCall {
      * ## Complexity
      * - O(1)
      */
-    get asEfinityV3014(): {value: bigint, beneficiary: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {value: bigint, beneficiary: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1738,7 +1950,7 @@ export class CommunityPoolRejectProposalCall {
      * ## Complexity
      * - O(1)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CommunityPool.reject_proposal') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
     }
 
@@ -1750,8 +1962,8 @@ export class CommunityPoolRejectProposalCall {
      * ## Complexity
      * - O(1)
      */
-    get asEfinityV3014(): {proposalId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1784,7 +1996,7 @@ export class CommunityPoolRemoveApprovalCall {
      * i.e., the proposal has not been approved. This could also mean the proposal does not
      * exist altogether, thus there is no way it would have been approved in the first place.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CommunityPool.remove_approval') === 'd31c3c178e65331a6ccd6f8dca07268f945f39b38e51421afd1c9e1f5bc0f6c8'
     }
 
@@ -1803,8 +2015,8 @@ export class CommunityPoolRemoveApprovalCall {
      * i.e., the proposal has not been approved. This could also mean the proposal does not
      * exist altogether, thus there is no way it would have been approved in the first place.
      */
-    get asEfinityV3014(): {proposalId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1832,7 +2044,7 @@ export class CommunityPoolSpendCall {
      * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
      * beneficiary.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('CommunityPool.spend') === '18a5bcfd718b2b225ac128952f0fc34fff8371520e0ab5bac3a0ab20286b496d'
     }
 
@@ -1846,8 +2058,8 @@ export class CommunityPoolSpendCall {
      * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
      * beneficiary.
      */
-    get asEfinityV3014(): {amount: bigint, beneficiary: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {amount: bigint, beneficiary: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -1891,7 +2103,7 @@ export class CouncilCloseCall {
      *   - `P1` is the complexity of `proposal` preimage.
      *   - `P2` is proposal-count (code-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Council.close') === 'a88911953f51bddf0f0aeafa7caa7ca904d30cdb24f940ff177d2acf7088d3bd'
     }
 
@@ -1921,8 +2133,8 @@ export class CouncilCloseCall {
      *   - `P1` is the complexity of `proposal` preimage.
      *   - `P2` is proposal-count (code-bounded)
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array, index: number, proposalWeightBound: efinityV3014.Weight, lengthBound: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array, index: number, proposalWeightBound: matrixV603.Weight, lengthBound: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2043,7 +2255,7 @@ export class CouncilDisapproveProposalCall {
      * ## Complexity
      * O(P) where P is the number of max proposals
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Council.disapprove_proposal') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
@@ -2059,8 +2271,8 @@ export class CouncilDisapproveProposalCall {
      * ## Complexity
      * O(P) where P is the number of max proposals
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2076,6 +2288,37 @@ export class CouncilExecuteCall {
         assert(call.name === 'Council.execute')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Council.execute') === '42e02516da5b061d1088373ba15312fb75350b4c460c86553b77632c49a1bfff'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asMatrixV603(): {proposal: matrixV603.Call, lengthBound: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -2257,6 +2500,47 @@ export class CouncilProposeCall {
         assert(call.name === 'Council.propose')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Council.propose') === 'ad8e807bb31ab0d0a1cc9796c09abc6d953cde11f68353038cb230910f45f5a9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asMatrixV603(): {threshold: number, proposal: matrixV603.Call, lengthBound: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -2582,7 +2866,7 @@ export class CouncilSetMembersCall {
      *   - `N` new-members-count (code- and governance-bounded)
      *   - `P` proposals-count (code-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Council.set_members') === '71b7fcb1d8a62eff96a9ef006517578ce9189e6d931948a256a04ca75ff68d4a'
     }
 
@@ -2612,8 +2896,8 @@ export class CouncilSetMembersCall {
      *   - `N` new-members-count (code- and governance-bounded)
      *   - `P` proposals-count (code-bounded)
      */
-    get asEfinityV3014(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2642,7 +2926,7 @@ export class CouncilVoteCall {
      * ## Complexity
      * - `O(M)` where `M` is members-count (code- and governance-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Council.vote') === 'f8a1069a57f7b721f47c086d08b6838ae1a0c08f58caddb82428ba5f1407540f'
     }
 
@@ -2657,8 +2941,8 @@ export class CouncilVoteCall {
      * ## Complexity
      * - `O(M)` where `M` is members-count (code- and governance-bounded)
      */
-    get asEfinityV3014(): {proposal: Uint8Array, index: number, approve: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: Uint8Array, index: number, approve: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2693,7 +2977,7 @@ export class DemocracyBlacklistCall {
      * Weight: `O(p)` (though as this is an high-privilege dispatch, we assume it has a
      *   reasonable value).
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.blacklist') === '8d8922c0775adfb1df719211ab4fc6fb40b6cc8864038bcb1b544d9cf039b30a'
     }
 
@@ -2714,8 +2998,8 @@ export class DemocracyBlacklistCall {
      * Weight: `O(p)` (though as this is an high-privilege dispatch, we assume it has a
      *   reasonable value).
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array, maybeRefIndex: (number | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array, maybeRefIndex: (number | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2742,7 +3026,7 @@ export class DemocracyCancelProposalCall {
      * 
      * Weight: `O(p)` where `p = PublicProps::<T>::decode_len()`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.cancel_proposal') === '0e50c7564a4a7f4e6a09a0abcc8022f4445c064144d2318ed086e6080bee800d'
     }
 
@@ -2755,8 +3039,8 @@ export class DemocracyCancelProposalCall {
      * 
      * Weight: `O(p)` where `p = PublicProps::<T>::decode_len()`
      */
-    get asEfinityV3014(): {propIndex: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {propIndex: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2783,7 +3067,7 @@ export class DemocracyCancelReferendumCall {
      * 
      * # Weight: `O(1)`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.cancel_referendum') === 'efe4ecff834678ca8b73ea6e2f38e514997eb402e82da2ce4cf036008844a857'
     }
 
@@ -2796,8 +3080,8 @@ export class DemocracyCancelReferendumCall {
      * 
      * # Weight: `O(1)`.
      */
-    get asEfinityV3014(): {refIndex: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {refIndex: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2822,7 +3106,7 @@ export class DemocracyClearPublicProposalsCall {
      * 
      * Weight: `O(1)`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.clear_public_proposals') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -2833,8 +3117,8 @@ export class DemocracyClearPublicProposalsCall {
      * 
      * Weight: `O(1)`.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2874,7 +3158,7 @@ export class DemocracyDelegateCall {
      * Weight: `O(R)` where R is the number of referendums the voter delegating to has
      *   voted on. Weight is charged as if maximum votes.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.delegate') === '789db36a1c43e1ffdad52288f8573a492f529890632f51821e7bd1d74ba6cffc'
     }
 
@@ -2900,8 +3184,8 @@ export class DemocracyDelegateCall {
      * Weight: `O(R)` where R is the number of referendums the voter delegating to has
      *   voted on. Weight is charged as if maximum votes.
      */
-    get asEfinityV3014(): {to: efinityV3014.MultiAddress, conviction: efinityV3014.Conviction, balance: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {to: matrixV603.MultiAddress, conviction: matrixV603.Conviction, balance: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2929,7 +3213,7 @@ export class DemocracyEmergencyCancelCall {
      * 
      * Weight: `O(1)`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.emergency_cancel') === '8a84371403a09e2f8fc2aac80f5a8a53229b346c4b3859069867b8e656b13450'
     }
 
@@ -2943,8 +3227,8 @@ export class DemocracyEmergencyCancelCall {
      * 
      * Weight: `O(1)`.
      */
-    get asEfinityV3014(): {refIndex: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {refIndex: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -2970,7 +3254,7 @@ export class DemocracyExternalProposeCall {
      * 
      * - `proposal_hash`: The preimage hash of the proposal.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.external_propose') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
     }
 
@@ -2982,8 +3266,8 @@ export class DemocracyExternalProposeCall {
      * 
      * - `proposal_hash`: The preimage hash of the proposal.
      */
-    get asEfinityV3014(): {proposal: efinityV3014.Bounded} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: matrixV603.Bounded} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3014,7 +3298,7 @@ export class DemocracyExternalProposeDefaultCall {
      * 
      * Weight: `O(1)`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.external_propose_default') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
     }
 
@@ -3031,8 +3315,8 @@ export class DemocracyExternalProposeDefaultCall {
      * 
      * Weight: `O(1)`
      */
-    get asEfinityV3014(): {proposal: efinityV3014.Bounded} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: matrixV603.Bounded} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3063,7 +3347,7 @@ export class DemocracyExternalProposeMajorityCall {
      * 
      * Weight: `O(1)`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.external_propose_majority') === 'e44fb402f80afe0e08cb6de5a4ed457a1a66e080379319fd281acd81eaf457ac'
     }
 
@@ -3080,8 +3364,8 @@ export class DemocracyExternalProposeMajorityCall {
      * 
      * Weight: `O(1)`
      */
-    get asEfinityV3014(): {proposal: efinityV3014.Bounded} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: matrixV603.Bounded} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3117,7 +3401,7 @@ export class DemocracyFastTrackCall {
      * 
      * Weight: `O(1)`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.fast_track') === '27cb200e922e485b41e3150b3d7bf5e8624346f6ff1d78601373ba3d80689c89'
     }
 
@@ -3139,8 +3423,8 @@ export class DemocracyFastTrackCall {
      * 
      * Weight: `O(1)`
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array, votingPeriod: number, delay: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array, votingPeriod: number, delay: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3169,7 +3453,7 @@ export class DemocracyProposeCall {
      * 
      * Emits `Proposed`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.propose') === 'db924825c9fd40cb04a839b510db55dcdd425c7b06116ccd22d4834d1201e8db'
     }
 
@@ -3184,8 +3468,8 @@ export class DemocracyProposeCall {
      * 
      * Emits `Proposed`.
      */
-    get asEfinityV3014(): {proposal: efinityV3014.Bounded, value: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: matrixV603.Bounded, value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3220,7 +3504,7 @@ export class DemocracyRemoveOtherVoteCall {
      * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.remove_other_vote') === '43d317508cc3ba04dcadb411eb6499f25532d64ab5a169b27410116c72f40a26'
     }
 
@@ -3241,8 +3525,8 @@ export class DemocracyRemoveOtherVoteCall {
      * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    get asEfinityV3014(): {target: efinityV3014.MultiAddress, index: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {target: matrixV603.MultiAddress, index: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3289,7 +3573,7 @@ export class DemocracyRemoveVoteCall {
      * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.remove_vote') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
     }
 
@@ -3322,8 +3606,8 @@ export class DemocracyRemoveVoteCall {
      * Weight: `O(R + log R)` where R is the number of referenda that `target` has voted on.
      *   Weight is calculated for the maximum number of vote.
      */
-    get asEfinityV3014(): {index: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {index: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3349,7 +3633,7 @@ export class DemocracySecondCall {
      * 
      * - `proposal`: The index of the proposal to second.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.second') === '7ac80a800d6686f21181e7b5b45c8949dc5b807bc6ec111188c7c6850a21b898'
     }
 
@@ -3361,8 +3645,8 @@ export class DemocracySecondCall {
      * 
      * - `proposal`: The index of the proposal to second.
      */
-    get asEfinityV3014(): {proposal: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3397,7 +3681,7 @@ export class DemocracySetMetadataCall {
      * - `owner`: an identifier of a metadata owner.
      * - `maybe_hash`: The hash of an on-chain stored preimage. `None` to clear a metadata.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.set_metadata') === '8a33eb55343342fba9c677650a4010c3766a354183990db37b268b1fef0c72fe'
     }
 
@@ -3418,8 +3702,8 @@ export class DemocracySetMetadataCall {
      * - `owner`: an identifier of a metadata owner.
      * - `maybe_hash`: The hash of an on-chain stored preimage. `None` to clear a metadata.
      */
-    get asEfinityV3014(): {owner: efinityV3014.MetadataOwner, maybeHash: (Uint8Array | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {owner: matrixV603.MetadataOwner, maybeHash: (Uint8Array | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3451,7 +3735,7 @@ export class DemocracyUndelegateCall {
      * Weight: `O(R)` where R is the number of referendums the voter delegating to has
      *   voted on. Weight is charged as if maximum votes.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.undelegate') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -3469,8 +3753,8 @@ export class DemocracyUndelegateCall {
      * Weight: `O(R)` where R is the number of referendums the voter delegating to has
      *   voted on. Weight is charged as if maximum votes.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3497,7 +3781,7 @@ export class DemocracyUnlockCall {
      * 
      * Weight: `O(R)` with R number of vote of target.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.unlock') === '8142da248a3023c20f65ce8f6287f9eaf75336ab8815cb15537149abcdd0c20c'
     }
 
@@ -3510,8 +3794,8 @@ export class DemocracyUnlockCall {
      * 
      * Weight: `O(R)` with R number of vote of target.
      */
-    get asEfinityV3014(): {target: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {target: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3540,7 +3824,7 @@ export class DemocracyVetoExternalCall {
      * 
      * Weight: `O(V + log(V))` where V is number of `existing vetoers`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.veto_external') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
@@ -3555,8 +3839,8 @@ export class DemocracyVetoExternalCall {
      * 
      * Weight: `O(V + log(V))` where V is number of `existing vetoers`
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3583,7 +3867,7 @@ export class DemocracyVoteCall {
      * - `ref_index`: The index of the referendum to vote for.
      * - `vote`: The vote configuration.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Democracy.vote') === '3936a4cb49f77280bd94142d4ec458afcf5cb8a5e5b0d602b1b1530928021e28'
     }
 
@@ -3596,8 +3880,8 @@ export class DemocracyVoteCall {
      * - `ref_index`: The index of the referendum to vote for.
      * - `vote`: The vote configuration.
      */
-    get asEfinityV3014(): {refIndex: number, vote: efinityV3014.AccountVote} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {refIndex: number, vote: matrixV603.AccountVote} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -3618,15 +3902,15 @@ export class DmpQueueServiceOverweightCall {
     /**
      * Service a single overweight message.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('DmpQueue.service_overweight') === '80fae8875bf513efc1e06b7dac547fccfc1e5fc45888cc8afd9b43812cf51bf5'
     }
 
     /**
      * Service a single overweight message.
      */
-    get asEfinityV3014(): {index: bigint, weightLimit: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {index: bigint, weightLimit: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4070,6 +4354,41 @@ export class ExtrinsicPausePauseExtrinsicCall {
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === 'c5ca046c3e628825c4f962ecee1fb8f169fc9ec1170abc23027691646568f362'
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get asMatrixV603(): {call: matrixV603.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '89d5f7318d99cba24bd6831ffaeb8db417860136905f988fa488ca4f9b9d0ab3'
     }
@@ -4244,6 +4563,39 @@ export class ExtrinsicPauseResumeExtrinsicCall {
         assert(call.name === 'ExtrinsicPause.resume_extrinsic')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '1d150745e6ed925df16c2c548e329b7a5e8069f57fe385c83b6f156a72d9ab69'
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get asMatrixV603(): {call: matrixV603.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -4436,7 +4788,7 @@ export class FuelTanksAddAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountAlreadyExists`] if account at `user_id` already exists
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.add_account') === '6b49a9c6d7cc4fec142fc02f8f252f4fa0bd06e832d1e877b43f77b3d8ef27b3'
     }
 
@@ -4451,8 +4803,8 @@ export class FuelTanksAddAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountAlreadyExists`] if account at `user_id` already exists
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userId: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userId: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4478,7 +4830,7 @@ export class FuelTanksBatchAddAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountAlreadyExists`] if account at `user_id` already exists
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.batch_add_account') === 'e548a21f55c9e5bef7a56196dab640774174a939562687e1e6e32b377168ebb5'
     }
 
@@ -4490,8 +4842,8 @@ export class FuelTanksBatchAddAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountAlreadyExists`] if account at `user_id` already exists
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userIds: efinityV3014.MultiAddress[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userIds: matrixV603.MultiAddress[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4517,7 +4869,7 @@ export class FuelTanksBatchRemoveAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountNotFound`] if account at `user_id` does not exist
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.batch_remove_account') === 'e548a21f55c9e5bef7a56196dab640774174a939562687e1e6e32b377168ebb5'
     }
 
@@ -4529,8 +4881,8 @@ export class FuelTanksBatchRemoveAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountNotFound`] if account at `user_id` does not exist
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userIds: efinityV3014.MultiAddress[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userIds: matrixV603.MultiAddress[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4546,6 +4898,31 @@ export class FuelTanksCreateFuelTankCall {
         assert(call.name === 'FuelTanks.create_fuel_tank')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '8a1d177d2d41d4dc5f95b0ef3afadb00553286606fe1f54f6189ca2f15550b1c'
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get asMatrixV603(): {descriptor: matrixV603.FuelTankDescriptor} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -4700,7 +5077,7 @@ export class FuelTanksDestroyFuelTankCall {
      * - [`Error::DestroyUnfrozenTank`] if tank is not frozen
      * - [`Error::DestroyWithExistingAccounts`] if there are still accounts on the tank
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.destroy_fuel_tank') === '2b9b490c0171de9f8a3f945d1457a9a08933564a71b77cb634db2aa898e91e63'
     }
 
@@ -4717,8 +5094,8 @@ export class FuelTanksDestroyFuelTankCall {
      * - [`Error::DestroyUnfrozenTank`] if tank is not frozen
      * - [`Error::DestroyWithExistingAccounts`] if there are still accounts on the tank
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4734,6 +5111,35 @@ export class FuelTanksDispatchCall {
         assert(call.name === 'FuelTanks.dispatch')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === 'b677705c3bf454beffbb1db35ce5a5c1eedf672d0e2a8fb60318fc872fdf9185'
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, ruleSetId: number, call: matrixV603.Call, settings: (matrixV603.DispatchSettings | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -4904,6 +5310,33 @@ export class FuelTanksDispatchAndTouchCall {
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'b677705c3bf454beffbb1db35ce5a5c1eedf672d0e2a8fb60318fc872fdf9185'
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, ruleSetId: number, call: matrixV603.Call, settings: (matrixV603.DispatchSettings | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '2e2555a885017b00aaf280a6f7a6fb31e273d76a07f107780642964f8f6bffd4'
     }
@@ -5031,6 +5464,72 @@ export class FuelTanksDispatchAndTouchCall {
     }
 }
 
+export class FuelTanksForceBatchAddAccountCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'FuelTanks.force_batch_add_account')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Sets the account storage for give tank_id and account
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_batch_add_account') === '273995af5a1f02d81e273bca153f6c53d34f81cabdebda6175f6bd071a905efe'
+    }
+
+    /**
+     * Sets the account storage for give tank_id and account
+     */
+    get asMatrixV603(): {owner: matrixV603.MultiAddress, tankId: matrixV603.MultiAddress, userIds: matrixV603.MultiAddress[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class FuelTanksForceCreateFuelTankCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'FuelTanks.force_create_fuel_tank')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '9fba66045ffe9823498216d94cdbc8a05b718af3834bbcff41bb4664bc9ca23e'
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get asMatrixV603(): {owner: matrixV603.MultiAddress, descriptor: matrixV603.FuelTankDescriptor} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class FuelTanksForceSetConsumptionCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -5057,7 +5556,7 @@ export class FuelTanksForceSetConsumptionCall {
      * - [`Error::InvalidRuleSet`] if `rule_set_id` does not exist
      * - [`Error::MissingRequiredRule`] if `rule_set_id` does not have the required role
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.force_set_consumption') === '465df72f8d1b6dcfdd1b6a3bc9673a492b029ff7adea01f798ff0b1ae3e8dca4'
     }
 
@@ -5074,8 +5573,8 @@ export class FuelTanksForceSetConsumptionCall {
      * - [`Error::InvalidRuleSet`] if `rule_set_id` does not exist
      * - [`Error::MissingRequiredRule`] if `rule_set_id` does not have the required role
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userId: (efinityV3014.MultiAddress | undefined), ruleSetId: number, consumption: efinityV3014.Consumption} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userId: (matrixV603.MultiAddress | undefined), ruleSetId: number, consumption: matrixV603.Consumption} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5091,6 +5590,51 @@ export class FuelTanksInsertRuleSetCall {
         assert(call.name === 'FuelTanks.insert_rule_set')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === 'df466f1c352194eb6e359ca229653c38d60917ad9c95b61fd8a70f0b1a53b65e'
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, ruleSetId: number, rules: matrixV603.DispatchRuleDescriptor[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -5340,7 +5884,7 @@ export class FuelTanksMutateFuelTankCall {
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.mutate_fuel_tank') === '9c5fe3d87288410aa8a3827d63434bb6999ebb57c48bba28556304535ab68ca6'
     }
 
@@ -5352,8 +5896,8 @@ export class FuelTanksMutateFuelTankCall {
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, mutation: efinityV3014.DefaultTankMutation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, mutation: matrixV603.DefaultTankMutation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5381,7 +5925,7 @@ export class FuelTanksRemoveAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountNotFound`] if account at `user_id` does not exist
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.remove_account') === '6b49a9c6d7cc4fec142fc02f8f252f4fa0bd06e832d1e877b43f77b3d8ef27b3'
     }
 
@@ -5395,8 +5939,8 @@ export class FuelTanksRemoveAccountCall {
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountNotFound`] if account at `user_id` does not exist
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userId: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userId: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5427,7 +5971,7 @@ export class FuelTanksRemoveAccountRuleDataCall {
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
      * - [`Error::RuleNotFound`] if rule does not exist for `rule_kind`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.remove_account_rule_data') === 'd62fe8a27ba66b6d7b8ed9f74f289bdc41bebf234c0df25965f0147b92569176'
     }
 
@@ -5444,8 +5988,8 @@ export class FuelTanksRemoveAccountRuleDataCall {
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
      * - [`Error::RuleNotFound`] if rule does not exist for `rule_kind`
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, userId: efinityV3014.MultiAddress, ruleSetId: number, ruleKind: efinityV3014.DispatchRuleKind} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, userId: matrixV603.MultiAddress, ruleSetId: number, ruleKind: matrixV603.DispatchRuleKind} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5475,7 +6019,7 @@ export class FuelTanksRemoveRuleSetCall {
      * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
      *   account data
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.remove_rule_set') === 'f09ae45a5e0ac6e1a34b392a13e3d81deefc3581926451813030e95e15c397fb'
     }
 
@@ -5491,8 +6035,8 @@ export class FuelTanksRemoveRuleSetCall {
      * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
      *   account data
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, ruleSetId: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, ruleSetId: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5521,7 +6065,7 @@ export class FuelTanksScheduleMutateFreezeStateCall {
      * - [`Error::NoPermission`] if caller is not a fuel tank owner
      * - [`Error::FreezeQueueFull`] if the queue is full
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('FuelTanks.schedule_mutate_freeze_state') === '400d585823f6a5fce567d3e438bd1ddac0b7cc3662931a51424df14279fde426'
     }
 
@@ -5536,8 +6080,8 @@ export class FuelTanksScheduleMutateFreezeStateCall {
      * - [`Error::NoPermission`] if caller is not a fuel tank owner
      * - [`Error::FreezeQueueFull`] if the queue is full
      */
-    get asEfinityV3014(): {tankId: efinityV3014.MultiAddress, ruleSetId: (number | undefined), isFrozen: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {tankId: matrixV603.MultiAddress, ruleSetId: (number | undefined), isFrozen: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5567,7 +6111,7 @@ export class MarketplaceCancelListingCall {
      * - [`Error::ListingNotFound`] if the listing under `listing_id` does not exist
      * - [`Error::NoPermission`] if the listing seller is not the caller, `origin`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.cancel_listing') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
     }
 
@@ -5583,8 +6127,8 @@ export class MarketplaceCancelListingCall {
      * - [`Error::ListingNotFound`] if the listing under `listing_id` does not exist
      * - [`Error::NoPermission`] if the listing seller is not the caller, `origin`
      */
-    get asEfinityV3014(): {listingId: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {listingId: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5627,7 +6171,7 @@ export class MarketplaceCreateListingCall {
      * - [`Error::LowTokenBalance`] token balance is too low for reserve
      * - [`Error::ListingAlreadyExists`] if a listing with the same ID already exists
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.create_listing') === '78b7a393701f9f95d8413f0683f9a8071358025ff047a772b81cffc1c315d7b4'
     }
 
@@ -5656,8 +6200,8 @@ export class MarketplaceCreateListingCall {
      * - [`Error::LowTokenBalance`] token balance is too low for reserve
      * - [`Error::ListingAlreadyExists`] if a listing with the same ID already exists
      */
-    get asEfinityV3014(): {makeAssetId: efinityV3014.AssetId, takeAssetId: efinityV3014.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (efinityV3014.AuctionData | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {makeAssetId: matrixV603.AssetId, takeAssetId: matrixV603.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (matrixV603.AuctionData | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5694,7 +6238,7 @@ export class MarketplaceFillListingCall {
      *   required
      * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.fill_listing') === 'e370d131ef17581bf77299b58dd556c1a78d367f937bce7f44e290d100f7ed4d'
     }
 
@@ -5717,8 +6261,8 @@ export class MarketplaceFillListingCall {
      *   required
      * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
      */
-    get asEfinityV3014(): {listingId: Uint8Array, amount: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {listingId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5751,7 +6295,7 @@ export class MarketplaceFinalizeAuctionCall {
      * - [`Error::AuctionNotOver`] if the auction has not finished yet
      * - [`Error::TakeValueUnderMinimum`] if the take value is less than the minimum required
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.finalize_auction') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
     }
 
@@ -5770,8 +6314,90 @@ export class MarketplaceFinalizeAuctionCall {
      * - [`Error::AuctionNotOver`] if the auction has not finished yet
      * - [`Error::TakeValueUnderMinimum`] if the take value is less than the minimum required
      */
-    get asEfinityV3014(): {listingId: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {listingId: Uint8Array} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MarketplaceForceCreateListingCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Marketplace.force_create_listing')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
+     * 
+     * # Parameters
+     * 
+     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
+     * a deposit if `seller` does not have enough.
+     * 
+     * # Errors
+     * 
+     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
+     * [`Config::ForceOrigin`]
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Marketplace.force_create_listing') === '740d5c8aa6c755cb69b094d1cae70ff2f50500c1d18fd8c66c8e1fd05539a640'
+    }
+
+    /**
+     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
+     * 
+     * # Parameters
+     * 
+     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
+     * a deposit if `seller` does not have enough.
+     * 
+     * # Errors
+     * 
+     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
+     * [`Config::ForceOrigin`]
+     */
+    get asMatrixV603(): {seller: matrixV603.MultiAddress, makeAssetId: matrixV603.AssetId, takeAssetId: matrixV603.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (matrixV603.AuctionData | undefined), depositBacker: (matrixV603.MultiAddress | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MarketplaceForcePlaceBidCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Marketplace.force_place_bid')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [create_listing](Self::place_bid), but allows specifying the `bidder` and can
+     * place a bid in an inactive auction. Only callable by [`Config::ForceOrigin`]. If
+     * `funds_backer` is `Some`, it will transfer balance if `bidder` does not have enough.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Marketplace.force_place_bid') === 'f038fdae96c9c9a8410db371543e140cca23088d4bf30a7098c7f7b58efc2ae5'
+    }
+
+    /**
+     * Same as [create_listing](Self::place_bid), but allows specifying the `bidder` and can
+     * place a bid in an inactive auction. Only callable by [`Config::ForceOrigin`]. If
+     * `funds_backer` is `Some`, it will transfer balance if `bidder` does not have enough.
+     */
+    get asMatrixV603(): {bidder: matrixV603.MultiAddress, listingId: Uint8Array, price: bigint, fundsBacker: (matrixV603.MultiAddress | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5806,7 +6432,7 @@ export class MarketplacePlaceBidCall {
      *   block
      * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.place_bid') === 'ef3821a4c9f8f54d06f376b33812844522af03669204d7f987e47edffe72dcf3'
     }
 
@@ -5827,8 +6453,8 @@ export class MarketplacePlaceBidCall {
      *   block
      * - [`Error::InvalidPrice`] if price is less than minimum_price for a bid
      */
-    get asEfinityV3014(): {listingId: Uint8Array, price: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {listingId: Uint8Array, price: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5853,7 +6479,7 @@ export class MarketplaceSetProtocolFeeCall {
      * 
      * - `protocol_fee`: Percentage of fee to set
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Marketplace.set_protocol_fee') === '164c71fe8ee3317ae364f8c5528ba44b7eddb84e7a9a394e59bb344ad0ec2293'
     }
 
@@ -5864,8 +6490,265 @@ export class MarketplaceSetProtocolFeeCall {
      * 
      * - `protocol_fee`: Percentage of fee to set
      */
-    get asEfinityV3014(): {protocolFee: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {protocolFee: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixUtilityBatchCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixUtility.batch')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === 'd62ee8112ec3c60241093b56ae224901f16f92caeeede499a20acae888ba7ab7'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get asMatrixV603(): {calls: matrixV603.Call[], continueOnFailure: boolean} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmForceSetMinimumWeightCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.force_set_minimum_weight')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MatrixXcm.force_set_minimum_weight') === '4c92aee9cd2c92a06e50e7ae691000178c9980b7f9c4e035739e193479d9f615'
+    }
+
+    /**
+     * Update xcm fees amount to be used in xcm.Withdraw message
+     */
+    get asMatrixV603(): {xcmCall: matrixV603.XcmOperation, xcmWeightFeeMisc: matrixV603.MinimumWeightFeePair} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferAssetToParachainCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_asset_to_parachain')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
+     *   the asset.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_to_parachain') === '6e0995af8a1271406f286250994b7e96ef4e950ec17addde0aa13d7dcf06db7e'
+    }
+
+    /**
+     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
+     * 
+     * Note: `asset` needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `asset`: asset to transfer
+     * - `amount`: amount of `asset` to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
+     *   the asset.
+     */
+    get asMatrixV603(): {paraId: matrixV603.ParachainId, beneficiary: matrixV603.Account, currencyId: matrixV603.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferAssetWithFeeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_asset_with_fee')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
+     * the fee. This allows the transfer of custom assets like a non-fungible which
+     * cannot be used to pay fees.
+     * 
+     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
+     * parachain.
+     * 
+     * - `asset`: asset to transfer
+     * - `fee_asset`: asset to be used as fee
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `para_id`: destination parachain
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     * 
+     * # Errors
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_with_fee') === '253afe02afbaf582b39ed2b492eb0493066e690147b56578b4e8b20fb470b444'
+    }
+
+    /**
+     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
+     * the fee. This allows the transfer of custom assets like a non-fungible which
+     * cannot be used to pay fees.
+     * 
+     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
+     * parachain.
+     * 
+     * - `asset`: asset to transfer
+     * - `fee_asset`: asset to be used as fee
+     * - `beneficiary`: account to receive `asset` in destination parachain
+     * - `para_id`: destination parachain
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     * 
+     * # Errors
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get asMatrixV603(): {assetPair: matrixV603.CurrencyIdAmountPair, feePair: matrixV603.CurrencyIdAmountPair, paraId: matrixV603.ParachainId, beneficiary: matrixV603.Account, destWeight: (bigint | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MatrixXcmTransferToParachainCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MatrixXcm.transfer_to_parachain')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_to_parachain') === 'b78bfbeb395c8dfe84788045085ed4230266e12ad40559a5ed1fdf518db02770'
+    }
+
+    /**
+     * `origin` transfers `amount` of EFI to `beneficiary` on the `parachain`
+     * 
+     * Note: EFI needs to be registered as foreign token in destination parachain
+     * 
+     * - `para_id`: destination parachain
+     * - `beneficiary`: account to receive EFI in destination parachain
+     * - `amount`: amount of EFI to transfer
+     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
+     *   `None`
+     * 
+     * # Errors
+     * 
+     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
+     *   [`MultiLocation`]
+     */
+    get asMatrixV603(): {paraId: matrixV603.ParachainId, beneficiary: matrixV603.Account, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5894,7 +6777,7 @@ export class MultiTokensApproveCollectionCall {
      * - [`Error::CollectionAccountNotFound`] if the collection account does not exist
      * - [`Error::MaxApprovalsExceeded`] if approval count has exceeded the maximum
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.approve_collection') === '488accbd8a7ccff93c1ce6b5609ef67874c52cc8fc80b3b48a2cad226450c092'
     }
 
@@ -5909,8 +6792,8 @@ export class MultiTokensApproveCollectionCall {
      * - [`Error::CollectionAccountNotFound`] if the collection account does not exist
      * - [`Error::MaxApprovalsExceeded`] if approval count has exceeded the maximum
      */
-    get asEfinityV3014(): {collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5942,7 +6825,7 @@ export class MultiTokensApproveTokenCall {
      * - [`Error::WrongCurrentApprovedAmount`] if `current_amount` does not match the current
      *   approval amount
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.approve_token') === '7266369f860222731cfac3b4dc9f7b3eb8550de09ee165a184b933efc53cd27a'
     }
 
@@ -5960,8 +6843,8 @@ export class MultiTokensApproveTokenCall {
      * - [`Error::WrongCurrentApprovedAmount`] if `current_amount` does not match the current
      *   approval amount
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, amount: bigint, expiration: (number | undefined), currentAmount: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5993,7 +6876,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.batch_mint') === 'a16058ed34379e8771cf8a93bddd3cb8d2085ccd127fa7774deb7e52dcd8575d'
     }
 
@@ -6011,8 +6894,8 @@ export class MultiTokensBatchMintCall {
      * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
      *   token deposit
      */
-    get asEfinityV3014(): {collectionId: bigint, recipients: efinityV3014.Type_390[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, recipients: matrixV603.Type_395[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6027,7 +6910,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get isV500(): boolean {
@@ -6045,7 +6928,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get asV500(): {collectionId: bigint, recipients: v500.Type_380[]} {
@@ -6064,7 +6947,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get isV600(): boolean {
@@ -6082,7 +6965,7 @@ export class MultiTokensBatchMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      */
     get asV600(): {collectionId: bigint, recipients: v600.Type_380[]} {
@@ -6119,7 +7002,7 @@ export class MultiTokensBatchSetAttributeCall {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.batch_set_attribute') === '4cfb7f21da2d822f4ecafcb406f87d73d214d01ed04db425fb85b84a776512f4'
     }
 
@@ -6138,8 +7021,8 @@ export class MultiTokensBatchSetAttributeCall {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: (bigint | undefined), attributes: efinityV3014.AttributeKeyValuePair[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), attributes: matrixV603.AttributeKeyValuePair[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6166,7 +7049,7 @@ export class MultiTokensBatchTransferCall {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.batch_transfer') === 'b19d3917f5096e2cef3e73752e8a3bd0b5e30cadfc6a4ff16c68ce84082c1ce5'
     }
 
@@ -6179,8 +7062,8 @@ export class MultiTokensBatchTransferCall {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    get asEfinityV3014(): {collectionId: bigint, recipients: efinityV3014.Recipient[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, recipients: matrixV603.Recipient[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6208,8 +7091,10 @@ export class MultiTokensBurnCall {
      *   `tokens` of `collection`.
      * - [`Error::DepositUnreserveFailed`] if caller does not have enough reserved balance to
      *   unreserve
+     * - [`Error::DestroyForbiddenByAttributeCount`] if removing token from storage but the
+     *   attribute count is greater than zero
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.burn') === '5e518fd41f2e62474b4a1bae295d7c2b0bec3f70f20ccbfeb4517ee9e7984bc3'
     }
 
@@ -6223,9 +7108,151 @@ export class MultiTokensBurnCall {
      *   `tokens` of `collection`.
      * - [`Error::DepositUnreserveFailed`] if caller does not have enough reserved balance to
      *   unreserve
+     * - [`Error::DestroyForbiddenByAttributeCount`] if removing token from storage but the
+     *   attribute count is greater than zero
      */
-    get asEfinityV3014(): {collectionId: bigint, params: efinityV3014.DefaultBurnParams} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, params: matrixV603.DefaultBurnParams} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensClaimCollectionsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.claim_collections')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Transfers ownership of collections to `destination` if the signature matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.claim_collections') === 'c2c9b14cf1920e63e88bb0ed4e4d7d24b7214a83d084075fadcc9df9fa04f151'
+    }
+
+    /**
+     * Transfers ownership of collections to `destination` if the signature matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get asMatrixV603(): {destination: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensClaimTokensCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.claim_tokens')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Transfers balances of tokens to `destination` if the signature matches. Mints tokens if
+     * needed.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableTokensPerCall`]
+     * and it will reimburse weight for tokens under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive token balances
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.claim_tokens') === 'c2c9b14cf1920e63e88bb0ed4e4d7d24b7214a83d084075fadcc9df9fa04f151'
+    }
+
+    /**
+     * Transfers balances of tokens to `destination` if the signature matches. Mints tokens if
+     * needed.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableTokensPerCall`]
+     * and it will reimburse weight for tokens under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive token balances
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    get asMatrixV603(): {destination: Uint8Array, ethereumSignature: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6250,7 +7277,7 @@ export class MultiTokensCreateCollectionCall {
      * 
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.create_collection') === '2c5ffb5fc94633dce91583fb29da64fdda08ce309e89734aab20a62a8cbb3250'
     }
 
@@ -6261,8 +7288,8 @@ export class MultiTokensCreateCollectionCall {
      * 
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      */
-    get asEfinityV3014(): {descriptor: efinityV3014.DefaultCollectionDescriptor} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {descriptor: matrixV603.DefaultCollectionDescriptor} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6296,7 +7323,7 @@ export class MultiTokensDestroyCollectionCall {
      *   destroying
      * current number of collection attributes.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.destroy_collection') === '5213672185bfcdfd14c0e7c97d6a1d1c6244ef0903db4317a9b0bd4a1ab10375'
     }
 
@@ -6316,8 +7343,70 @@ export class MultiTokensDestroyCollectionCall {
      *   destroying
      * current number of collection attributes.
      */
-    get asEfinityV3014(): {collectionId: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceApproveCollectionCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_approve_collection')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`approve_collection`](Self::approve_collection), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_approve_collection') === 'f65c0957959ad4ec841c3b60acfb570fb88ffcd77dcd55ff3a2274029b09f9a1'
+    }
+
+    /**
+     * Same as [`approve_collection`](Self::approve_collection), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get asMatrixV603(): {caller: matrixV603.MultiAddress, collectionId: bigint, operator: Uint8Array, expiration: (number | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceBurnCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_burn')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`burn`](Self::burn), but it is only callable by
+     * [`Config::ForceOrigin`]. Executes the burn by `caller`.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_burn') === '7a5ae3200088a96708870831e59af4cf200480d821ce966c8b150a4623315305'
+    }
+
+    /**
+     * Same as [`burn`](Self::burn), but it is only callable by
+     * [`Config::ForceOrigin`]. Executes the burn by `caller`.
+     */
+    get asMatrixV603(): {caller: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultBurnParams} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6342,7 +7431,7 @@ export class MultiTokensForceCreateCollectionCall {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_create_collection') === '64f054ecc6931474221d23bfcfed0b8f345cfbdab3115fd062d513a374ecf698'
     }
 
@@ -6353,8 +7442,68 @@ export class MultiTokensForceCreateCollectionCall {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    get asEfinityV3014(): {owner: Uint8Array, collectionId: bigint, descriptor: efinityV3014.DefaultCollectionDescriptor} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {owner: Uint8Array, collectionId: bigint, descriptor: matrixV603.DefaultCollectionDescriptor} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceFreezeCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_freeze')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_freeze') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
+    }
+
+    /**
+     * Same as [`freeze`](Self::freeze), but it is callable by [`Config::ForceOrigin`]
+     */
+    get asMatrixV603(): {info: matrixV603.Freeze} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceMintCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_mint')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mint') === '6cf5f25d480cadca047bd92075c889f51eadee05fb17808aab0dbf485d3bcd38'
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get asMatrixV603(): {caller: matrixV603.MultiAddress, recipient: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultMintParams, depositBacker: (matrixV603.MultiAddress | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6380,7 +7529,7 @@ export class MultiTokensForceMutateCollectionCall {
      * 
      * Same as [`mutate_collection`](Self::mutate_collection)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
     }
 
@@ -6392,8 +7541,8 @@ export class MultiTokensForceMutateCollectionCall {
      * 
      * Same as [`mutate_collection`](Self::mutate_collection)
      */
-    get asEfinityV3014(): {collectionId: bigint, mutation: efinityV3014.DefaultCollectionMutation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, mutation: matrixV603.DefaultCollectionMutation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6414,15 +7563,15 @@ export class MultiTokensForceSetAttributeCall {
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_attribute') === '0c376373bedc267e8526ef4acf5c6c81f9faf25c7d1d5e610d39748132d3507f'
     }
 
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: (efinityV3014.Attribute | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: (matrixV603.Attribute | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6443,15 +7592,15 @@ export class MultiTokensForceSetCollectionCall {
     /**
      * Set the Collections storage to the given `value`, origin must be root
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_collection') === 'd75af3c3c47bd7f1909045c69b61ffb4bbd68459ef76923bcdbd9203caeb90d5'
     }
 
     /**
      * Set the Collections storage to the given `value`, origin must be root
      */
-    get asEfinityV3014(): {collectionId: bigint, value: (efinityV3014.Collection | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, value: (matrixV603.Collection | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6472,15 +7621,44 @@ export class MultiTokensForceSetCollectionAccountCall {
     /**
      * Set the CollectionAccounts storage to the given `value`, origin must be root
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_collection_account') === '9d50ec94aed5d50147723e89e22a9b159311680f9492c74e81d60a9d8c141683'
     }
 
     /**
      * Set the CollectionAccounts storage to the given `value`, origin must be root
      */
-    get asEfinityV3014(): {collectionId: bigint, accountId: efinityV3014.MultiAddress, value: (efinityV3014.CollectionAccount | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, accountId: matrixV603.MultiAddress, value: (matrixV603.CollectionAccount | undefined)} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
+export class MultiTokensForceSetNextCollectionIdCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'MultiTokens.force_set_next_collection_id')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * Sets [`NextCollectionId`] to `value`. Only callable by [`Config::ForceOrigin`].
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_set_next_collection_id') === 'd13cb91c3f61510beece366e7f7c2d0705f01d70f9bc28721d2437cd210a3372'
+    }
+
+    /**
+     * Sets [`NextCollectionId`] to `value`. Only callable by [`Config::ForceOrigin`].
+     */
+    get asMatrixV603(): {value: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6501,15 +7679,15 @@ export class MultiTokensForceSetTokenCall {
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_token') === '6b0347ff9d005a8b25bcce6f0402078cf4f797f3978343bdd92c89b66bcd5dc9'
     }
 
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: bigint, value: (efinityV3014.Token | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, value: (matrixV603.Token | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6560,15 +7738,15 @@ export class MultiTokensForceSetTokenAccountCall {
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_token_account') === 'bf35663d50dd3916b43afdc084f9827ad9764b0cd317f3ca102ce9251a909dad'
     }
 
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: bigint, accountId: efinityV3014.MultiAddress, value: (efinityV3014.TokenAccount | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: matrixV603.MultiAddress, value: (matrixV603.TokenAccount | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6594,7 +7772,7 @@ export class MultiTokensForceTransferCall {
      * 
      * Same as [`transfer`](Self::transfer)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.force_transfer') === '7eb6f59738c54c66d88f77215603bab748b9d4ed2bc404e7a6627743e91b27f6'
     }
 
@@ -6606,8 +7784,8 @@ export class MultiTokensForceTransferCall {
      * 
      * Same as [`transfer`](Self::transfer)
      */
-    get asEfinityV3014(): {source: efinityV3014.MultiAddress, destination: efinityV3014.MultiAddress, collectionId: bigint, params: efinityV3014.DefaultTransferParams} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {source: matrixV603.MultiAddress, destination: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultTransferParams} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6628,15 +7806,15 @@ export class MultiTokensFreezeCall {
     /**
      * Freeze collection, token or account
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.freeze') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
     }
 
     /**
      * Freeze collection, token or account
      */
-    get asEfinityV3014(): {info: efinityV3014.Freeze} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {info: matrixV603.Freeze} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6672,7 +7850,7 @@ export class MultiTokensMintCall {
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.mint') === '17e3c370d4720b5760710bed81f54d7f476ae6c39d3849de9837b9f718be4f32'
     }
 
@@ -6694,8 +7872,8 @@ export class MultiTokensMintCall {
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
      */
-    get asEfinityV3014(): {recipient: efinityV3014.MultiAddress, collectionId: bigint, params: efinityV3014.DefaultMintParams} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {recipient: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultMintParams} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6712,7 +7890,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6734,7 +7912,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6757,7 +7935,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6779,7 +7957,7 @@ export class MultiTokensMintCall {
      * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
      * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
      * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficent balance for
      *   token deposit
      * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
      *   mapped to another asset in `AssetIdsByLocation`
@@ -6811,7 +7989,7 @@ export class MultiTokensMutateCollectionCall {
      * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
     }
 
@@ -6823,8 +8001,8 @@ export class MultiTokensMutateCollectionCall {
      * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
      */
-    get asEfinityV3014(): {collectionId: bigint, mutation: efinityV3014.DefaultCollectionMutation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, mutation: matrixV603.DefaultCollectionMutation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6854,7 +8032,7 @@ export class MultiTokensMutateTokenCall {
      * - [`Error::TokenNotFound`] if Token does not exist
      * - [`Error::ConflictingLocation`] if the new location is already occupied
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.mutate_token') === 'b1df46e912bd6082a6796b61e3d5451b698e752c5aa782392bb97d3c78d81f3c'
     }
 
@@ -6870,8 +8048,8 @@ export class MultiTokensMutateTokenCall {
      * - [`Error::TokenNotFound`] if Token does not exist
      * - [`Error::ConflictingLocation`] if the new location is already occupied
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: bigint, mutation: efinityV3014.DefaultTokenMutation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, mutation: matrixV603.DefaultTokenMutation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6900,7 +8078,7 @@ export class MultiTokensRemoveAllAttributesCall {
      *   Token
      * - other errors from `remove_attribute`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.remove_all_attributes') === '721a13a18dab7748d2990b3b2edd4c1c6fbca833c064e8ae31bb2cec0c3aed84'
     }
 
@@ -6915,8 +8093,8 @@ export class MultiTokensRemoveAllAttributesCall {
      *   Token
      * - other errors from `remove_attribute`
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: (bigint | undefined), attributeCount: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), attributeCount: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6944,7 +8122,7 @@ export class MultiTokensRemoveAttributeCall {
      * - [`Error::NoPermission`] if `caller` is not the owner of the collection.
      * - `Underflow` if an attribute counter underflows
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.remove_attribute') === '5e8dda41d19b04f7e051283b9b20aed0a83222ef4bc596239942a512d10e143c'
     }
 
@@ -6958,8 +8136,8 @@ export class MultiTokensRemoveAttributeCall {
      * - [`Error::NoPermission`] if `caller` is not the owner of the collection.
      * - `Underflow` if an attribute counter underflows
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6990,7 +8168,7 @@ export class MultiTokensSetAttributeCall {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.set_attribute') === '1442e960b51ef446ff50fc6d27284693378495f9905ed8fbc35811b81dcf7c7b'
     }
 
@@ -7007,8 +8185,8 @@ export class MultiTokensSetAttributeCall {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7029,15 +8207,15 @@ export class MultiTokensThawCall {
     /**
      * Thaw collection, token or account
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.thaw') === '91882af67a1b185551af07d0e9518d72ab08e8c353579842070f87fc1e425820'
     }
 
     /**
      * Thaw collection, token or account
      */
-    get asEfinityV3014(): {info: efinityV3014.Freeze} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {info: matrixV603.Freeze} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7063,7 +8241,7 @@ export class MultiTokensTransferCall {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.transfer') === '3a904597294b52262716ac476178f413a640c58c5df5fdee9d6a42b369dab12a'
     }
 
@@ -7075,8 +8253,8 @@ export class MultiTokensTransferCall {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    get asEfinityV3014(): {recipient: efinityV3014.MultiAddress, collectionId: bigint, params: efinityV3014.DefaultTransferParams} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {recipient: matrixV603.MultiAddress, collectionId: bigint, params: matrixV603.DefaultTransferParams} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7101,7 +8279,7 @@ export class MultiTokensUnapproveCollectionCall {
      * 
      * - [`Error::CollectionAccountNotFound`] if the collection account cannot be found
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.unapprove_collection') === 'e5170bfdb3c4351aa216ff597896abe5ecc75ec89c47b522a97790870cc3b5ef'
     }
 
@@ -7112,8 +8290,8 @@ export class MultiTokensUnapproveCollectionCall {
      * 
      * - [`Error::CollectionAccountNotFound`] if the collection account cannot be found
      */
-    get asEfinityV3014(): {collectionId: bigint, operator: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, operator: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7138,7 +8316,7 @@ export class MultiTokensUnapproveTokenCall {
      * 
      * - [`Error::TokenAccountNotFound`] if the token account does not exist
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokens.unapprove_token') === 'bf808826dcdafcc9b31e08b287969eda26c2a350dbd9b501129943a436ab8854'
     }
 
@@ -7149,8 +8327,8 @@ export class MultiTokensUnapproveTokenCall {
      * 
      * - [`Error::TokenAccountNotFound`] if the token account does not exist
      */
-    get asEfinityV3014(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7180,7 +8358,7 @@ export class MultiTokensMigrationFinalizeCall {
      * # Errors
      * - [`Error::OnlyFinalizeOngoing`] if auction is not ongoing.
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.finalize') === '137977a56f38380f8d4ccd77b98084830ccd66df180fbb23d13a738621ab87b8'
     }
 
@@ -7196,8 +8374,8 @@ export class MultiTokensMigrationFinalizeCall {
      * # Errors
      * - [`Error::OnlyFinalizeOngoing`] if auction is not ongoing.
      */
-    get asV601(): {nextCollectionId: bigint} {
-        assert(this.isV601)
+    get asMatrixV603(): {nextCollectionId: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7218,15 +8396,15 @@ export class MultiTokensMigrationMigrateAttributesCall {
     /**
      * Migrates [`Attributes`] by setting attribute values for the specified list of attributes
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.migrate_attributes') === '38678b38b1093dceec6ad9eb431127466c58af938a8150a8c7ad7c37e5072de9'
     }
 
     /**
      * Migrates [`Attributes`] by setting attribute values for the specified list of attributes
      */
-    get asV601(): {attributes: [bigint, (bigint | undefined), Uint8Array, v601.Attribute][]} {
-        assert(this.isV601)
+    get asMatrixV603(): {attributes: [bigint, (bigint | undefined), Uint8Array, matrixV603.Attribute][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7247,15 +8425,15 @@ export class MultiTokensMigrationMigrateCollectionAccountsCall {
     /**
      * Migrates [`CollectionAccounts`] by setting values for the given accounts
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.migrate_collection_accounts') === '813084e51cd54ab7bfef8bf7e5059f31e0d2b9c12322cf69ce76a95e9699cac1'
     }
 
     /**
      * Migrates [`CollectionAccounts`] by setting values for the given accounts
      */
-    get asV601(): {accounts: [bigint, Uint8Array, v601.CollectionAccount][]} {
-        assert(this.isV601)
+    get asMatrixV603(): {accounts: [bigint, Uint8Array, matrixV603.CollectionAccount][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7276,15 +8454,15 @@ export class MultiTokensMigrationMigrateCollectionsCall {
     /**
      * Migrates [`Collections`] by setting values for the given collections
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.migrate_collections') === '37cd3868d6f3f9dbe259cd581888f07612dc8dd99faeda8210d75e8fac60889e'
     }
 
     /**
      * Migrates [`Collections`] by setting values for the given collections
      */
-    get asV601(): {collections: [bigint, v601.Collection][]} {
-        assert(this.isV601)
+    get asMatrixV603(): {collections: [bigint, matrixV603.Collection][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7305,15 +8483,15 @@ export class MultiTokensMigrationMigrateTokenAccountsCall {
     /**
      * Migrates [`TokenAccounts`] by setting values for the given accounts
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.migrate_token_accounts') === 'a8273c032ee74f21d24abe2440c005682abdfed982744ce56f3d7dbb682df9d1'
     }
 
     /**
      * Migrates [`TokenAccounts`] by setting values for the given accounts
      */
-    get asV601(): {accounts: [bigint, bigint, Uint8Array, v601.TokenAccount][]} {
-        assert(this.isV601)
+    get asMatrixV603(): {accounts: [bigint, bigint, Uint8Array, matrixV603.TokenAccount][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7334,15 +8512,15 @@ export class MultiTokensMigrationMigrateTokensCall {
     /**
      * Migrates [`Tokens`] by setting values for the given tokens
      */
-    get isV601(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('MultiTokensMigration.migrate_tokens') === '5a462e1cc4608c0590c2a56f5ea8ac6910e1ace1b917bfe39df97eff05101008'
     }
 
     /**
      * Migrates [`Tokens`] by setting values for the given tokens
      */
-    get asV601(): {tokens: [bigint, bigint, v601.Token][]} {
-        assert(this.isV601)
+    get asMatrixV603(): {tokens: [bigint, bigint, matrixV603.Token][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7392,7 +8570,7 @@ export class MultisigApproveAsMultiCall {
      * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
      *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Multisig.approve_as_multi') === '88561668497d8fdee3be21d28e6e68bc1cd9568f418501a4b294fe2b9803acb4'
     }
 
@@ -7428,8 +8606,8 @@ export class MultisigApproveAsMultiCall {
      * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
      *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
      */
-    get asEfinityV3014(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (efinityV3014.Timepoint | undefined), callHash: Uint8Array, maxWeight: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (matrixV603.Timepoint | undefined), callHash: Uint8Array, maxWeight: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7445,6 +8623,97 @@ export class MultisigAsMultiCall {
         assert(call.name === 'Multisig.as_multi')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '753de76e027798fb10ef412018689caa169a5d49a8566d63b558955b6df0eb69'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get asMatrixV603(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (matrixV603.Timepoint | undefined), call: matrixV603.Call, maxWeight: matrixV603.Weight} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -7966,6 +9235,43 @@ export class MultisigAsMultiThreshold1Call {
      * ## Complexity
      * O(Z + C) where Z is the length of the call and C its execution weight.
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '2272d53de8645af097228f5c68da02f4c6eb7cfbbd2865623e12152ca56b023c'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get asMatrixV603(): {otherSignatories: Uint8Array[], call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '645dc086f1a117f9eef7fbb4eb8a2f091ca305db69586b1b78f47868bb3bc69b'
     }
@@ -8198,7 +9504,7 @@ export class MultisigCancelAsMultiCall {
      * - I/O: 1 read `O(S)`, one remove.
      * - Storage: removes one item.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Multisig.cancel_as_multi') === '4ccc75a4f739c659f177e3df98fba2ea59ddade74c4ebccd51b2fc4c52e923af'
     }
 
@@ -8225,8 +9531,8 @@ export class MultisigCancelAsMultiCall {
      * - I/O: 1 read `O(S)`, one remove.
      * - Storage: removes one item.
      */
-    get asEfinityV3014(): {threshold: number, otherSignatories: Uint8Array[], timepoint: efinityV3014.Timepoint, callHash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {threshold: number, otherSignatories: Uint8Array[], timepoint: matrixV603.Timepoint, callHash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8247,15 +9553,15 @@ export class OrmlXcmSendAsSovereignCall {
     /**
      * Send an XCM message as parachain sovereign.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('OrmlXcm.send_as_sovereign') === '9c814457e6c06e355f17d8e2e59924a734ef38dfc7852490ba89fd5b845b6f48'
     }
 
     /**
      * Send an XCM message as parachain sovereign.
      */
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, message: efinityV3014.VersionedXcm} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, message: matrixV603.VersionedXcm} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8283,7 +9589,7 @@ export class ParachainSystemAuthorizeUpgradeCall {
      * 
      * This call requires Root origin.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('ParachainSystem.authorize_upgrade') === '5c55d10848d503323d2e442c7afe37bb9673cbd625584442853911cb797f840c'
     }
 
@@ -8297,8 +9603,8 @@ export class ParachainSystemAuthorizeUpgradeCall {
      * 
      * This call requires Root origin.
      */
-    get asEfinityV3014(): {codeHash: Uint8Array, checkVersion: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {codeHash: Uint8Array, checkVersion: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 
@@ -8365,7 +9671,7 @@ export class ParachainSystemEnactAuthorizedUpgradeCall {
      * 
      * All origins are allowed.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('ParachainSystem.enact_authorized_upgrade') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
     }
 
@@ -8380,8 +9686,8 @@ export class ParachainSystemEnactAuthorizedUpgradeCall {
      * 
      * All origins are allowed.
      */
-    get asEfinityV3014(): {code: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {code: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8410,7 +9716,7 @@ export class ParachainSystemSetValidationDataCall {
      * As a side effect, this function upgrades the current validation function
      * if the appropriate time has come.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('ParachainSystem.set_validation_data') === 'df843f97e4c625e033541d5f205c5889f3131bdb4549570310e924d96769c1cd'
     }
 
@@ -8425,8 +9731,8 @@ export class ParachainSystemSetValidationDataCall {
      * As a side effect, this function upgrades the current validation function
      * if the appropriate time has come.
      */
-    get asEfinityV3014(): {data: efinityV3014.ParachainInherentData} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {data: matrixV603.ParachainInherentData} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8444,12 +9750,12 @@ export class ParachainSystemSudoSendUpwardMessageCall {
         this.call = call
     }
 
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('ParachainSystem.sudo_send_upward_message') === '34457b6daded32ddc4ec3a5a21e34b9af8dcd7d190a5a7833fa8a7ed53b31206'
     }
 
-    get asEfinityV3014(): {message: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {message: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8480,7 +9786,7 @@ export class PolkadotXcmExecuteCall {
      * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
      * to completion; only that *some* of it was executed.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.execute') === 'a1da862b5d9db8fd6f3072da00ea4e66052f97b5dcfb87e58d49ca1fd1f1ef90'
     }
 
@@ -8497,8 +9803,8 @@ export class PolkadotXcmExecuteCall {
      * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
      * to completion; only that *some* of it was executed.
      */
-    get asEfinityV3014(): {message: efinityV3014.Type_347, maxWeight: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {message: matrixV603.Type_353, maxWeight: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8523,7 +9829,7 @@ export class PolkadotXcmForceDefaultXcmVersionCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_default_xcm_version') === 'd4bcd64cc4c940eafd14296ec6cbfb7d27e4ca42a4c7dab4c0b89f6c8102257e'
     }
 
@@ -8534,8 +9840,8 @@ export class PolkadotXcmForceDefaultXcmVersionCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
      */
-    get asEfinityV3014(): {maybeXcmVersion: (number | undefined)} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {maybeXcmVersion: (number | undefined)} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8559,7 +9865,7 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_subscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
     }
 
@@ -8569,8 +9875,8 @@ export class PolkadotXcmForceSubscribeVersionNotifyCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
-    get asEfinityV3014(): {location: efinityV3014.VersionedMultiLocation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {location: matrixV603.VersionedMultiLocation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8594,7 +9900,7 @@ export class PolkadotXcmForceSuspensionCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `suspended`: `true` to suspend, `false` to resume.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_suspension') === '8ed7e51efeeeccee1e0e2e2dca71da38a9e5bdab470452a56d790711652babc1'
     }
 
@@ -8604,8 +9910,8 @@ export class PolkadotXcmForceSuspensionCall {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `suspended`: `true` to suspend, `false` to resume.
      */
-    get asEfinityV3014(): {suspended: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {suspended: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8631,7 +9937,7 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_unsubscribe_version_notify') === '0448b7eed1a6d9cd0a489ea792df94cc3ce5a37e203f19b1a5a0c4516a8d696c'
     }
 
@@ -8643,8 +9949,8 @@ export class PolkadotXcmForceUnsubscribeVersionNotifyCall {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
-    get asEfinityV3014(): {location: efinityV3014.VersionedMultiLocation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {location: matrixV603.VersionedMultiLocation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8670,7 +9976,7 @@ export class PolkadotXcmForceXcmVersionCall {
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.force_xcm_version') === '998b5a56e7662d76955b41c2526c2219fe8304fec6501afa115db1bd705e7ff6'
     }
 
@@ -8682,8 +9988,8 @@ export class PolkadotXcmForceXcmVersionCall {
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
      */
-    get asEfinityV3014(): {location: efinityV3014.V3MultiLocation, xcmVersion: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {location: matrixV603.V3MultiLocation, xcmVersion: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8721,7 +10027,7 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.limited_reserve_transfer_assets') === 'c5f45c1775bd92c7b425f46c92a6891334f7df5ae2518cd2c0a106447da3bbd9'
     }
 
@@ -8745,8 +10051,8 @@ export class PolkadotXcmLimitedReserveTransferAssetsCall {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, beneficiary: efinityV3014.VersionedMultiLocation, assets: efinityV3014.VersionedMultiAssets, feeAssetItem: number, weightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, beneficiary: matrixV603.VersionedMultiLocation, assets: matrixV603.VersionedMultiAssets, feeAssetItem: number, weightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8783,7 +10089,7 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.limited_teleport_assets') === 'c5f45c1775bd92c7b425f46c92a6891334f7df5ae2518cd2c0a106447da3bbd9'
     }
 
@@ -8806,8 +10112,8 @@ export class PolkadotXcmLimitedTeleportAssetsCall {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, beneficiary: efinityV3014.VersionedMultiLocation, assets: efinityV3014.VersionedMultiAssets, feeAssetItem: number, weightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, beneficiary: matrixV603.VersionedMultiLocation, assets: matrixV603.VersionedMultiAssets, feeAssetItem: number, weightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8843,7 +10149,7 @@ export class PolkadotXcmReserveTransferAssetsCall {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.reserve_transfer_assets') === 'ebd99cece75c1b0fc48830527bc513cf672b8d0c6c0c505498bba5c8c5e1617c'
     }
 
@@ -8865,8 +10171,8 @@ export class PolkadotXcmReserveTransferAssetsCall {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, beneficiary: efinityV3014.VersionedMultiLocation, assets: efinityV3014.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, beneficiary: matrixV603.VersionedMultiLocation, assets: matrixV603.VersionedMultiAssets, feeAssetItem: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8884,12 +10190,12 @@ export class PolkadotXcmSendCall {
         this.call = call
     }
 
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.send') === '9c814457e6c06e355f17d8e2e59924a734ef38dfc7852490ba89fd5b845b6f48'
     }
 
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, message: efinityV3014.VersionedXcm} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, message: matrixV603.VersionedXcm} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8924,7 +10230,7 @@ export class PolkadotXcmTeleportAssetsCall {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('PolkadotXcm.teleport_assets') === 'ebd99cece75c1b0fc48830527bc513cf672b8d0c6c0c505498bba5c8c5e1617c'
     }
 
@@ -8945,8 +10251,8 @@ export class PolkadotXcmTeleportAssetsCall {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    get asEfinityV3014(): {dest: efinityV3014.VersionedMultiLocation, beneficiary: efinityV3014.VersionedMultiLocation, assets: efinityV3014.VersionedMultiAssets, feeAssetItem: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {dest: matrixV603.VersionedMultiLocation, beneficiary: matrixV603.VersionedMultiLocation, assets: matrixV603.VersionedMultiAssets, feeAssetItem: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8971,7 +10277,7 @@ export class PoolsMutatePoolsCall {
      * 
      * - [`Error::InvalidFeeShares`] if the fee shares do not add up to 100%
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Pools.mutate_pools') === '59397bde495bc4bf6e9ce90d9d117f187d090806cb3f83eb4b3669141aabffed'
     }
 
@@ -8982,8 +10288,8 @@ export class PoolsMutatePoolsCall {
      * 
      * - [`Error::InvalidFeeShares`] if the fee shares do not add up to 100%
      */
-    get asEfinityV3014(): {mutation: efinityV3014.PoolsMutation} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {mutation: matrixV603.PoolsMutation} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9007,7 +10313,7 @@ export class PreimageNotePreimageCall {
      * If the preimage was previously requested, no fees or deposits are taken for providing
      * the preimage. Otherwise, a deposit is taken proportional to the size of the preimage.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Preimage.note_preimage') === 'fb6f9f7fd683160ab20dcde42ca8f757bc13845dc544f497e534fcf19c270a46'
     }
 
@@ -9017,8 +10323,8 @@ export class PreimageNotePreimageCall {
      * If the preimage was previously requested, no fees or deposits are taken for providing
      * the preimage. Otherwise, a deposit is taken proportional to the size of the preimage.
      */
-    get asEfinityV3014(): {bytes: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {bytes: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9042,7 +10348,7 @@ export class PreimageRequestPreimageCall {
      * If the preimage requests has already been provided on-chain, we unreserve any deposit
      * a user may have paid, and take the control of the preimage out of their hands.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Preimage.request_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
@@ -9052,8 +10358,8 @@ export class PreimageRequestPreimageCall {
      * If the preimage requests has already been provided on-chain, we unreserve any deposit
      * a user may have paid, and take the control of the preimage out of their hands.
      */
-    get asEfinityV3014(): {hash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {hash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9079,7 +10385,7 @@ export class PreimageUnnotePreimageCall {
      * - `hash`: The hash of the preimage to be removed from the store.
      * - `len`: The length of the preimage of `hash`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Preimage.unnote_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
@@ -9091,8 +10397,8 @@ export class PreimageUnnotePreimageCall {
      * - `hash`: The hash of the preimage to be removed from the store.
      * - `len`: The length of the preimage of `hash`.
      */
-    get asEfinityV3014(): {hash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {hash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9115,7 +10421,7 @@ export class PreimageUnrequestPreimageCall {
      * 
      * NOTE: THIS MUST NOT BE CALLED ON `hash` MORE TIMES THAN `request_preimage`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Preimage.unrequest_preimage') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
@@ -9124,8 +10430,8 @@ export class PreimageUnrequestPreimageCall {
      * 
      * NOTE: THIS MUST NOT BE CALLED ON `hash` MORE TIMES THAN `request_preimage`.
      */
-    get asEfinityV3014(): {hash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {hash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9146,15 +10452,15 @@ export class SchedulerCancelCall {
     /**
      * Cancel an anonymously scheduled task.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Scheduler.cancel') === '4186e24556a58b04e04d6d697a530eedf78f255da1ba9d84df6511dd6d6465f7'
     }
 
     /**
      * Cancel an anonymously scheduled task.
      */
-    get asEfinityV3014(): {when: number, index: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {when: number, index: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9175,15 +10481,15 @@ export class SchedulerCancelNamedCall {
     /**
      * Cancel a named scheduled task.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Scheduler.cancel_named') === '2a01c4c05d6bf45e0dc267bd7f6e27df3b3e4b23af7982734357c4de87ef690c'
     }
 
     /**
      * Cancel a named scheduled task.
      */
-    get asEfinityV3014(): {id: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {id: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9199,6 +10505,21 @@ export class SchedulerScheduleCall {
         assert(call.name === 'Scheduler.schedule')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '9ead51e8789a3137eb65ffd312030d985839acb65959af94d041ddb3641c275e'
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get asMatrixV603(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -9288,6 +10609,21 @@ export class SchedulerScheduleAfterCall {
         assert(call.name === 'Scheduler.schedule_after')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'db1dd1a974333e3537ef8a7e9be7a7b3dff3645ba0fa5fec6f24a4abb9fb13d2'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get asMatrixV603(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -9406,6 +10742,21 @@ export class SchedulerScheduleNamedCall {
     /**
      * Schedule a named task.
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === 'ff2f6192f36378a16f209b59270981bff1b4af822548f815e44f8059cf8d13cf'
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get asMatrixV603(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task.
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Scheduler.schedule_named') === '271b2044deb0465fa8f0515442d8116370f57e105f39d044817883edada92a82'
     }
@@ -9490,6 +10841,21 @@ export class SchedulerScheduleNamedAfterCall {
         assert(call.name === 'Scheduler.schedule_named_after')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === 'e23744413dedb66d248707e0bb955cda96bc3ce3724aaaf5270aa6ee579c2cca'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get asMatrixV603(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -9619,7 +10985,7 @@ export class SessionPurgeKeysCall {
      * - `O(1)` in number of key types. Actual cost depends on the number of length of
      *   `T::Keys::key_ids()` which is fixed.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Session.purge_keys') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -9637,8 +11003,8 @@ export class SessionPurgeKeysCall {
      * - `O(1)` in number of key types. Actual cost depends on the number of length of
      *   `T::Keys::key_ids()` which is fixed.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9667,7 +11033,7 @@ export class SessionSetKeysCall {
      * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
      *   fixed.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Session.set_keys') === 'addd7c626f9aa937cd1834dc66bd024e3ceb303e43e64ebf3d8d267053cff2b5'
     }
 
@@ -9682,8 +11048,8 @@ export class SessionSetKeysCall {
      * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
      *   fixed.
      */
-    get asEfinityV3014(): {keys: efinityV3014.SessionKeys, proof: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {keys: matrixV603.SessionKeys, proof: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10255,7 +11621,7 @@ export class SystemKillPrefixCall {
      * **NOTE:** We rely on the Root origin to provide us the number of subkeys under
      * the prefix we are removing to accurately calculate the weight of this function.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.kill_prefix') === 'dfbadd42bee8b18fc81cf78683511061181cffbf7a8ebfd3e5719c389b373d93'
     }
 
@@ -10265,8 +11631,8 @@ export class SystemKillPrefixCall {
      * **NOTE:** We rely on the Root origin to provide us the number of subkeys under
      * the prefix we are removing to accurately calculate the weight of this function.
      */
-    get asEfinityV3014(): {prefix: Uint8Array, subkeys: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {prefix: Uint8Array, subkeys: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10287,15 +11653,15 @@ export class SystemKillStorageCall {
     /**
      * Kill some items from storage.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.kill_storage') === 'eac21dc14e927c003d9c634fb019d04128f71f8529d2914b10a56b85289c2c11'
     }
 
     /**
      * Kill some items from storage.
      */
-    get asEfinityV3014(): {keys: Uint8Array[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {keys: Uint8Array[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10316,21 +11682,19 @@ export class SystemRemarkCall {
     /**
      * Make some on-chain remark.
      * 
-     * ## Complexity
      * - `O(1)`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.remark') === 'f4e9b5b7572eeae92978087ece9b4f57cb5cab4f16baf5625bb9ec4a432bad63'
     }
 
     /**
      * Make some on-chain remark.
      * 
-     * ## Complexity
      * - `O(1)`
      */
-    get asEfinityV3014(): {remark: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {remark: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10351,15 +11715,15 @@ export class SystemRemarkWithEventCall {
     /**
      * Make some on-chain remark and emit event.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.remark_with_event') === 'f4e9b5b7572eeae92978087ece9b4f57cb5cab4f16baf5625bb9ec4a432bad63'
     }
 
     /**
      * Make some on-chain remark and emit event.
      */
-    get asEfinityV3014(): {remark: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {remark: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10379,22 +11743,16 @@ export class SystemSetCodeCall {
 
     /**
      * Set the new runtime code.
-     * 
-     * ## Complexity
-     * - `O(C + S)` where `C` length of `code` and `S` complexity of `can_set_code`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.set_code') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
     }
 
     /**
      * Set the new runtime code.
-     * 
-     * ## Complexity
-     * - `O(C + S)` where `C` length of `code` and `S` complexity of `can_set_code`
      */
-    get asEfinityV3014(): {code: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {code: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10414,22 +11772,16 @@ export class SystemSetCodeWithoutChecksCall {
 
     /**
      * Set the new runtime code without doing any checks of the given `code`.
-     * 
-     * ## Complexity
-     * - `O(C)` where `C` length of `code`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.set_code_without_checks') === '7bf3d4785d9be7a4872f39cbd3702a66e16f7ee01e4446fb4a05624dc0ec4c93'
     }
 
     /**
      * Set the new runtime code without doing any checks of the given `code`.
-     * 
-     * ## Complexity
-     * - `O(C)` where `C` length of `code`
      */
-    get asEfinityV3014(): {code: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {code: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10450,15 +11802,15 @@ export class SystemSetHeapPagesCall {
     /**
      * Set the number of pages in the WebAssembly environment's heap.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.set_heap_pages') === '130172e47c5e517627712b4d084768b98489d920284223ea8ef9c462339b5808'
     }
 
     /**
      * Set the number of pages in the WebAssembly environment's heap.
      */
-    get asEfinityV3014(): {pages: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {pages: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10479,15 +11831,15 @@ export class SystemSetStorageCall {
     /**
      * Set some items of storage.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('System.set_storage') === 'a4fb507615d69849afb1b2ee654006f9be48bb6e960a4674624d6e46e4382083'
     }
 
     /**
      * Set some items of storage.
      */
-    get asEfinityV3014(): {items: [Uint8Array, Uint8Array][]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {items: [Uint8Array, Uint8Array][]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10531,7 +11883,7 @@ export class TechnicalCommitteeCloseCall {
      *   - `P1` is the complexity of `proposal` preimage.
      *   - `P2` is proposal-count (code-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.close') === 'a88911953f51bddf0f0aeafa7caa7ca904d30cdb24f940ff177d2acf7088d3bd'
     }
 
@@ -10561,8 +11913,8 @@ export class TechnicalCommitteeCloseCall {
      *   - `P1` is the complexity of `proposal` preimage.
      *   - `P2` is proposal-count (code-bounded)
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array, index: number, proposalWeightBound: efinityV3014.Weight, lengthBound: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array, index: number, proposalWeightBound: matrixV603.Weight, lengthBound: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10683,7 +12035,7 @@ export class TechnicalCommitteeDisapproveProposalCall {
      * ## Complexity
      * O(P) where P is the number of max proposals
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.disapprove_proposal') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
@@ -10699,8 +12051,8 @@ export class TechnicalCommitteeDisapproveProposalCall {
      * ## Complexity
      * O(P) where P is the number of max proposals
      */
-    get asEfinityV3014(): {proposalHash: Uint8Array} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10716,6 +12068,37 @@ export class TechnicalCommitteeExecuteCall {
         assert(call.name === 'TechnicalCommittee.execute')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '42e02516da5b061d1088373ba15312fb75350b4c460c86553b77632c49a1bfff'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asMatrixV603(): {proposal: matrixV603.Call, lengthBound: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -10897,6 +12280,47 @@ export class TechnicalCommitteeProposeCall {
         assert(call.name === 'TechnicalCommittee.propose')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === 'ad8e807bb31ab0d0a1cc9796c09abc6d953cde11f68353038cb230910f45f5a9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asMatrixV603(): {threshold: number, proposal: matrixV603.Call, lengthBound: number} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -11222,7 +12646,7 @@ export class TechnicalCommitteeSetMembersCall {
      *   - `N` new-members-count (code- and governance-bounded)
      *   - `P` proposals-count (code-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.set_members') === '71b7fcb1d8a62eff96a9ef006517578ce9189e6d931948a256a04ca75ff68d4a'
     }
 
@@ -11252,8 +12676,8 @@ export class TechnicalCommitteeSetMembersCall {
      *   - `N` new-members-count (code- and governance-bounded)
      *   - `P` proposals-count (code-bounded)
      */
-    get asEfinityV3014(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {newMembers: Uint8Array[], prime: (Uint8Array | undefined), oldCount: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11282,7 +12706,7 @@ export class TechnicalCommitteeVoteCall {
      * ## Complexity
      * - `O(M)` where `M` is members-count (code- and governance-bounded)
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalCommittee.vote') === 'f8a1069a57f7b721f47c086d08b6838ae1a0c08f58caddb82428ba5f1407540f'
     }
 
@@ -11297,8 +12721,8 @@ export class TechnicalCommitteeVoteCall {
      * ## Complexity
      * - `O(M)` where `M` is members-count (code- and governance-bounded)
      */
-    get asEfinityV3014(): {proposal: Uint8Array, index: number, approve: boolean} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {proposal: Uint8Array, index: number, approve: boolean} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11321,7 +12745,7 @@ export class TechnicalMembershipAddMemberCall {
      * 
      * May only be called from `T::AddOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.add_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
     }
 
@@ -11330,8 +12754,8 @@ export class TechnicalMembershipAddMemberCall {
      * 
      * May only be called from `T::AddOrigin`.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11356,7 +12780,7 @@ export class TechnicalMembershipChangeKeyCall {
      * 
      * Prime membership is passed from the origin account to `new`, if extant.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.change_key') === 'e634aac3331d47a56ff572c52ad90a648769dfbf2c00d7bd44498b4ee41f6ac7'
     }
 
@@ -11367,8 +12791,8 @@ export class TechnicalMembershipChangeKeyCall {
      * 
      * Prime membership is passed from the origin account to `new`, if extant.
      */
-    get asEfinityV3014(): {new: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11391,7 +12815,7 @@ export class TechnicalMembershipClearPrimeCall {
      * 
      * May only be called from `T::PrimeOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.clear_prime') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -11400,8 +12824,8 @@ export class TechnicalMembershipClearPrimeCall {
      * 
      * May only be called from `T::PrimeOrigin`.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11424,7 +12848,7 @@ export class TechnicalMembershipRemoveMemberCall {
      * 
      * May only be called from `T::RemoveOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.remove_member') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
     }
 
@@ -11433,8 +12857,8 @@ export class TechnicalMembershipRemoveMemberCall {
      * 
      * May only be called from `T::RemoveOrigin`.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11458,7 +12882,7 @@ export class TechnicalMembershipResetMembersCall {
      * 
      * May only be called from `T::ResetOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.reset_members') === 'd8adca14f9b9cadeaf2b2e6dd47991d05cb423ce3a00dccbb9efa35e36f5a65a'
     }
 
@@ -11468,8 +12892,8 @@ export class TechnicalMembershipResetMembersCall {
      * 
      * May only be called from `T::ResetOrigin`.
      */
-    get asEfinityV3014(): {members: Uint8Array[]} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {members: Uint8Array[]} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11492,7 +12916,7 @@ export class TechnicalMembershipSetPrimeCall {
      * 
      * May only be called from `T::PrimeOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.set_prime') === '1642934df325db16ad3ad3f83bb2200cdde93b508c653dc7b78049e7e8d67223'
     }
 
@@ -11501,8 +12925,8 @@ export class TechnicalMembershipSetPrimeCall {
      * 
      * May only be called from `T::PrimeOrigin`.
      */
-    get asEfinityV3014(): {who: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {who: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11527,7 +12951,7 @@ export class TechnicalMembershipSwapMemberCall {
      * 
      * Prime membership is *not* passed from `remove` to `add`, if extant.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('TechnicalMembership.swap_member') === '5efd724fae29eef6393e039bf2dbfd2d5a3081770cc9cc8a80a1475fd6b40cf4'
     }
 
@@ -11538,8 +12962,8 @@ export class TechnicalMembershipSwapMemberCall {
      * 
      * Prime membership is *not* passed from `remove` to `add`, if extant.
      */
-    get asEfinityV3014(): {remove: efinityV3014.MultiAddress, add: efinityV3014.MultiAddress} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {remove: matrixV603.MultiAddress, add: matrixV603.MultiAddress} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11574,7 +12998,7 @@ export class TimestampSetCall {
      *   `on_finalize`)
      * - 1 event handler `on_timestamp_set`. Must be `O(1)`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('Timestamp.set') === '6a8b8ba2be107f0853b674eec0026cc440b314db44d0e2c59b36e353355aed14'
     }
 
@@ -11595,8 +13019,8 @@ export class TimestampSetCall {
      *   `on_finalize`)
      * - 1 event handler `on_timestamp_set`. Must be `O(1)`.
      */
-    get asEfinityV3014(): {now: bigint} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {now: bigint} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11612,6 +13036,45 @@ export class UtilityAsDerivativeCall {
         assert(call.name === 'Utility.as_derivative')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === 'a6ae93fcb456424eefc936c15801ab836f49a590a3d77b87ecdb3c6024840134'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asMatrixV603(): {index: number, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -11821,6 +13284,55 @@ export class UtilityBatchCall {
         assert(call.name === 'Utility.batch')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asMatrixV603(): {calls: matrixV603.Call[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -12103,6 +13615,45 @@ export class UtilityBatchAllCall {
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asMatrixV603(): {calls: matrixV603.Call[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Utility.batch_all') === 'c569c07ca9c663df017fb5cd3ca22f7798a6b6636a70a02585b4535c0d27d9e3'
     }
@@ -12311,6 +13862,31 @@ export class UtilityDispatchAsCall {
      * ## Complexity
      * - O(1).
      */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '53c74e412a2c7715329a8d9a5a1b15e10305868b02d52458849757df55fbd0d0'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asMatrixV603(): {asOrigin: matrixV603.OriginCaller, call: matrixV603.Call} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
     get isEfinityV3014(): boolean {
         return this._chain.getCallHash('Utility.dispatch_as') === 'e85bb5e718484575721059394c9dc19cc693901f0c7887df48a488af2d0deeaa'
     }
@@ -12464,6 +14040,45 @@ export class UtilityForceBatchCall {
         assert(call.name === 'Utility.force_batch')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'eb3ad78843bf54214839c3f44256e037b4e4403e22a9563f61476f89d61b709a'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asMatrixV603(): {calls: matrixV603.Call[]} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -12679,6 +14294,31 @@ export class UtilityWithWeightCall {
         assert(call.name === 'Utility.with_weight')
         this._chain = ctx._chain
         this.call = call
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isMatrixV603(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '6b8fa0c31b033249e6762551824f0cbd1bf3f0ff2a66b52380d09a37c08d8c7e'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asMatrixV603(): {call: matrixV603.Call, weight: matrixV603.Weight} {
+        assert(this.isMatrixV603)
+        return this._chain.decodeCall(this.call)
     }
 
     /**
@@ -13033,7 +14673,7 @@ export class XTokensTransferCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer') === '26df7f19916781e6746694066c0d24f7fef9a20367132a192147dc6c414af64c'
     }
 
@@ -13051,8 +14691,8 @@ export class XTokensTransferCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {currencyId: efinityV3014.AssetId, amount: bigint, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {currencyId: matrixV603.AssetId, amount: bigint, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13084,7 +14724,7 @@ export class XTokensTransferMultiassetCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer_multiasset') === 'a87b2931a2da31f4548173df0d164afbd7f9413f0b0a9373582011906fdc8ac9'
     }
 
@@ -13102,8 +14742,8 @@ export class XTokensTransferMultiassetCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {asset: efinityV3014.VersionedMultiAsset, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {asset: matrixV603.VersionedMultiAsset, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13144,7 +14784,7 @@ export class XTokensTransferMultiassetWithFeeCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer_multiasset_with_fee') === 'e1673c048436ca84c1278f4f2f8a12456b25e4911f3ec72d0295b843ed7a4c7f'
     }
 
@@ -13171,8 +14811,8 @@ export class XTokensTransferMultiassetWithFeeCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {asset: efinityV3014.VersionedMultiAsset, fee: efinityV3014.VersionedMultiAsset, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {asset: matrixV603.VersionedMultiAsset, fee: matrixV603.VersionedMultiAsset, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13207,7 +14847,7 @@ export class XTokensTransferMultiassetsCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer_multiassets') === 'b49a1a3bce05ffe02f0ac5efca4907e6bf7f963113419870a760a3013dc86495'
     }
 
@@ -13228,8 +14868,8 @@ export class XTokensTransferMultiassetsCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {assets: efinityV3014.VersionedMultiAssets, feeItem: number, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {assets: matrixV603.VersionedMultiAssets, feeItem: number, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13264,7 +14904,7 @@ export class XTokensTransferMulticurrenciesCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer_multicurrencies') === 'fa576588d6b62b5cf4c7bdd8bee764e1be7fc0c2fbe730e805ffd89ad1a3b1e6'
     }
 
@@ -13285,8 +14925,8 @@ export class XTokensTransferMulticurrenciesCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {currencies: [efinityV3014.AssetId, bigint][], feeItem: number, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {currencies: [matrixV603.AssetId, bigint][], feeItem: number, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13327,7 +14967,7 @@ export class XTokensTransferWithFeeCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XTokens.transfer_with_fee') === 'c05a522029f57db9f9e4ceeff8427cc674dd992c069c7798b3625e3d55e588cb'
     }
 
@@ -13354,8 +14994,8 @@ export class XTokensTransferWithFeeCall {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    get asEfinityV3014(): {currencyId: efinityV3014.AssetId, amount: bigint, fee: bigint, dest: efinityV3014.VersionedMultiLocation, destWeightLimit: efinityV3014.V3WeightLimit} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {currencyId: matrixV603.AssetId, amount: bigint, fee: bigint, dest: matrixV603.VersionedMultiLocation, destWeightLimit: matrixV603.V3WeightLimit} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13380,7 +15020,7 @@ export class XcmpQueueResumeXcmExecutionCall {
      * 
      * - `origin`: Must pass `ControllerOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.resume_xcm_execution') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -13391,8 +15031,8 @@ export class XcmpQueueResumeXcmExecutionCall {
      * 
      * - `origin`: Must pass `ControllerOrigin`.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13425,7 +15065,7 @@ export class XcmpQueueServiceOverweightCall {
      * Events:
      * - `OverweightServiced`: On success.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.service_overweight') === '80fae8875bf513efc1e06b7dac547fccfc1e5fc45888cc8afd9b43812cf51bf5'
     }
 
@@ -13444,8 +15084,8 @@ export class XcmpQueueServiceOverweightCall {
      * Events:
      * - `OverweightServiced`: On success.
      */
-    get asEfinityV3014(): {index: bigint, weightLimit: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {index: bigint, weightLimit: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13468,7 +15108,7 @@ export class XcmpQueueSuspendXcmExecutionCall {
      * 
      * - `origin`: Must pass `ControllerOrigin`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.suspend_xcm_execution') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
@@ -13477,8 +15117,8 @@ export class XcmpQueueSuspendXcmExecutionCall {
      * 
      * - `origin`: Must pass `ControllerOrigin`.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): null {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13503,7 +15143,7 @@ export class XcmpQueueUpdateDropThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.drop_threshold`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_drop_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
     }
 
@@ -13514,8 +15154,8 @@ export class XcmpQueueUpdateDropThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.drop_threshold`
      */
-    get asEfinityV3014(): {new: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13540,7 +15180,7 @@ export class XcmpQueueUpdateResumeThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.resume_threshold`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_resume_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
     }
 
@@ -13551,8 +15191,8 @@ export class XcmpQueueUpdateResumeThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.resume_threshold`
      */
-    get asEfinityV3014(): {new: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13577,7 +15217,7 @@ export class XcmpQueueUpdateSuspendThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.suspend_value`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_suspend_threshold') === '56549a8e90ef70438b73ca659a6b72776495b4c60df84463168d148f5c52d05d'
     }
 
@@ -13588,8 +15228,8 @@ export class XcmpQueueUpdateSuspendThresholdCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.suspend_value`
      */
-    get asEfinityV3014(): {new: number} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: number} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13613,7 +15253,7 @@ export class XcmpQueueUpdateThresholdWeightCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.threshold_weight`
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_threshold_weight') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
     }
 
@@ -13623,8 +15263,8 @@ export class XcmpQueueUpdateThresholdWeightCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.threshold_weight`
      */
-    get asEfinityV3014(): {new: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13649,7 +15289,7 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_weight_restrict_decay') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
     }
 
@@ -13660,8 +15300,8 @@ export class XcmpQueueUpdateWeightRestrictDecayCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.weight_restrict_decay`.
      */
-    get asEfinityV3014(): {new: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13686,7 +15326,7 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
      */
-    get isEfinityV3014(): boolean {
+    get isMatrixV603(): boolean {
         return this._chain.getCallHash('XcmpQueue.update_xcmp_max_individual_weight') === '75eef6f2cd3523e44f50db837d1610f4db03539037986ac2704c4a043d58ba81'
     }
 
@@ -13697,8 +15337,8 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
      * - `origin`: Must pass `Root`.
      * - `new`: Desired value for `QueueConfigData.xcmp_max_individual_weight`.
      */
-    get asEfinityV3014(): {new: efinityV3014.Weight} {
-        assert(this.isEfinityV3014)
+    get asMatrixV603(): {new: matrixV603.Weight} {
+        assert(this.isMatrixV603)
         return this._chain.decodeCall(this.call)
     }
 }

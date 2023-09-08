@@ -85,7 +85,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     if (call.name === 'EfinityUtility.batch') {
         const data = new EfinityUtilityBatchCall(ctx, call)
 
-        if (data.asEfinityV3014) {
+        if (data.isEfinityV3014) {
             const { calls } = data.asEfinityV3014
             const recipientCall = calls.find(
                 (r) =>
@@ -294,8 +294,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (data.isEfinityV3014) {
-            const { collectionId, recipients } = data.asEfinityV3014
+        if (data.isMatrixV603) {
+            const { collectionId, recipients } = data.asMatrixV603
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -398,9 +398,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 
     const data = new MultiTokensMintCall(ctx, call)
 
-    if (data.isEfinityV3014) {
-        const { collectionId } = data.asEfinityV3014
-        const recipient = data.asEfinityV3014.recipient.value as Uint8Array
+    if (data.isMatrixV603) {
+        const { collectionId } = data.asMatrixV603
+        const recipient = data.asMatrixV603.recipient.value as Uint8Array
         const params = data.asV600.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
@@ -491,8 +491,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenCreatedEvent(ctx, event)
 
-    if (data.isEfinityV3014) {
-        const { collectionId, tokenId, issuer, initialSupply } = data.asEfinityV3014
+    if (data.isMatrixV603) {
+        const { collectionId, tokenId, issuer, initialSupply } = data.asMatrixV603
         if (issuer.__kind === 'Signed') {
             return { collectionId, tokenId, issuer: issuer.value, initialSupply }
         }
