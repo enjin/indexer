@@ -2,5 +2,6 @@ import multiTokens from './multiTokens'
 import balances from './balances'
 import marketplace from './marketplace'
 import claims from './claims'
+import xcm from './xcm'
 
-export { multiTokens, balances, marketplace, claims }
+export { multiTokens, balances, marketplace, claims, xcm }

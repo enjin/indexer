@@ -72,12 +72,19 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimRequested | ClaimsClaimed
+  | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
 
 type BalancesTransfer {
   from: Account!
   to: Account!
   amount: BigInt!
+}
+
+type TeleportBalanceWithdrawn {
+  beneficiary: Account!
+  amount: BigInt!
+  account: Account!
+  destination: Int!
 }
 
 type MarketplaceAuctionFinalized {
