@@ -3,8 +3,8 @@ import {Chain, ChainContext, EventContext, Event, Result, Option} from './suppor
 import * as matrixV603 from './matrixV603'
 import * as efinityV3014 from './efinityV3014'
 import * as v500 from './v500'
-import * as v602 from './v602'
 import * as v600 from './v600'
+import * as v602 from './v602'
 
 export class BalancesBalanceSetEvent {
     private readonly _chain: Chain
@@ -970,124 +970,6 @@ export class ClaimsClaimRequestedEvent {
     }
 }
 
-export class ClaimsClaimMintedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Claims.ClaimMinted')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Claim has been minted for someone by the root. `[who, amount]`
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('Claims.ClaimMinted') === '43e3321e3408ebd2b7d4c70d42ffa076463495043e47ddb0fb1fbe3e105f5b2f'
-    }
-
-    /**
-     * Claim has been minted for someone by the root. `[who, amount]`
-     */
-    get asV602(): {who: Uint8Array, amount: bigint} {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class ClaimsClaimMovedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Claims.ClaimMoved')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Someone's claim has been moved to another address. `[old, new]`
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('Claims.ClaimMoved') === '391b7a792248e7221ffbf77c01942251d2928a4e2b37c8103704237e0d5f69b6'
-    }
-
-    /**
-     * Someone's claim has been moved to another address. `[old, new]`
-     */
-    get asV602(): {old: Uint8Array, new: Uint8Array} {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class ClaimsClaimRejectedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Claims.ClaimRejected')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Someone's claim has been rejected. `[account, transaction_hash]`
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('Claims.ClaimRejected') === '2206cf743f0862988a18f69a777471495cd397f0ddc561c6ca3dafb5ff4d9461'
-    }
-
-    /**
-     * Someone's claim has been rejected. `[account, transaction_hash]`
-     */
-    get asV602(): {account: Uint8Array, transactionHash: Uint8Array} {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class ClaimsClaimRequestedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Claims.ClaimRequested')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Claim has been requested by an account through the Relayer. `[who, amount,
-     * transaction_hash, is_efi_token]`
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('Claims.ClaimRequested') === '4ab27b2decd5085ef5a51ef5f958786f987606af4967d894cacd32321deed43a'
-    }
-
-    /**
-     * Claim has been requested by an account through the Relayer. `[who, amount,
-     * transaction_hash, is_efi_token]`
-     */
-    get asV602(): {who: Uint8Array, amountBurned: bigint, transactionHash: Uint8Array, isEfiToken: boolean, amountClaimable: bigint} {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
 export class ClaimsClaimedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -1177,24 +1059,15 @@ export class ClaimsDelayTimeForClaimSetEvent {
     /**
      * Delay time for claim is set. `[delay_time]`
      */
-<<<<<<< HEAD
     get isMatrixV603(): boolean {
-=======
-    get isV602(): boolean {
->>>>>>> 7bcb92f (add events)
         return this._chain.getEventHash('Claims.DelayTimeForClaimSet') === '9919843de279df806342c680fb041fef5bf53146b6b6c11827b8297e977076c8'
     }
 
     /**
      * Delay time for claim is set. `[delay_time]`
      */
-<<<<<<< HEAD
     get asMatrixV603(): {delayTime: number} {
         assert(this.isMatrixV603)
-=======
-    get asV602(): {delayTime: number} {
-        assert(this.isV602)
->>>>>>> 7bcb92f (add events)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1215,24 +1088,15 @@ export class ClaimsEthereumBlocksProcessedEvent {
     /**
      * Claims have been processed for the Ethereum block by the Relayer.
      */
-<<<<<<< HEAD
     get isMatrixV603(): boolean {
-=======
-    get isV602(): boolean {
->>>>>>> 7bcb92f (add events)
         return this._chain.getEventHash('Claims.EthereumBlocksProcessed') === '7eefc4ef9a2f34cfee29738715aa72fe2a31ffd39b1d2a62f1cef547b70ed1fd'
     }
 
     /**
      * Claims have been processed for the Ethereum block by the Relayer.
      */
-<<<<<<< HEAD
     get asMatrixV603(): {blockNumber: number} {
         assert(this.isMatrixV603)
-=======
-    get asV602(): {blockNumber: number} {
-        assert(this.isV602)
->>>>>>> 7bcb92f (add events)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1253,24 +1117,15 @@ export class ClaimsExchangeRateSetEvent {
     /**
      * Exchange rate is set. `[exchange_rate]`
      */
-<<<<<<< HEAD
     get isMatrixV603(): boolean {
-=======
-    get isV602(): boolean {
->>>>>>> 7bcb92f (add events)
         return this._chain.getEventHash('Claims.ExchangeRateSet') === 'e0ecf12467b2b7b1c63fa9fd99c3600e15ae004bf61becf84a11146e37f2aab6'
     }
 
     /**
      * Exchange rate is set. `[exchange_rate]`
      */
-<<<<<<< HEAD
     get asMatrixV603(): {exchangeRate: number} {
         assert(this.isMatrixV603)
-=======
-    get asV602(): {exchangeRate: number} {
-        assert(this.isV602)
->>>>>>> 7bcb92f (add events)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1888,13 +1743,13 @@ export class CouncilExecutedEvent {
      * A motion was executed; result will be `Ok` if it returned without error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Council.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+        return this._chain.getEventHash('Council.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
     }
 
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get asV602(): {proposalHash: Uint8Array, result: v602.Type_35} {
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -1962,13 +1817,13 @@ export class CouncilMemberExecutedEvent {
      * A single member did some action; result will be `Ok` if it returned without error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Council.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+        return this._chain.getEventHash('Council.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
     }
 
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get asV602(): {proposalHash: Uint8Array, result: v602.Type_35} {
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -2900,6 +2755,23 @@ export class EfinityUtilityBatchFailedEvent {
         assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchFailed') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
+    }
+
+    /**
+     * Batch of calls did not disptach completely.
+     * Index and error of the failing dispatch call is provided.
+     */
+    get asV602(): {index: number, error: v602.DispatchError} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class EfinityUtilityBatchPartiallyDispatchedEvent {
@@ -2946,6 +2818,23 @@ export class EfinityUtilityBatchPartiallyDispatchedEvent {
      */
     get asV500(): [number, v500.DispatchError][] {
         assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityUtility.BatchPartiallyDispatched') === 'e8822977bbce544338a2045c4a6d2fb3da534e0f4c11a56538e8e91418672714'
+    }
+
+    /**
+     * Batch of calls dispatched, but some calls resulted in error.
+     * Indexes and errors of failing dispatch calls are provided.
+     */
+    get asV602(): [number, v602.DispatchError][] {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3019,6 +2908,21 @@ export class EfinityXcmXcmTransferFailedEvent {
      */
     get asV500(): v500.DispatchError {
         assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('EfinityXcm.XcmTransferFailed') === '5747c908f53c720bf9e468f6e392edf8206d75a8d2648f3f939ac5ec008cd282'
+    }
+
+    /**
+     * XCM transfer failed
+     */
+    get asV602(): v602.DispatchError {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3348,7 +3252,7 @@ export class FuelTanksDispatchFailedEvent {
      * The dispatch of a call has failed
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'b8f1b16f9c4db0379c42ed84fb2c36157997ff8b65b02ad920fb41fe7628ac4b'
+        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'd9f757c05fd07f9e190422b766d54a656da3a7c9bdeada71be000f0b5172bf91'
     }
 
     /**
@@ -3625,7 +3529,7 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
      * The freeze state change for fuel tank or its rule set failed in `on_finalize`
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === '95b413ce19082ba4904572d53b5ac6dd39ebb3ff2ee7dffc9cff04790001d66f'
+        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === 'dc9ad6b566b745be5ed408d534ce44157f1ad4307a3ec1a29c489fe844ba12d6'
     }
 
     /**
@@ -3960,155 +3864,6 @@ export class MatrixXcmXcmTransferFailedEvent {
     }
 }
 
-export class MatrixUtilityBatchDispatchedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MatrixUtility.BatchDispatched')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Batch of calls dispatched without errors.
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MatrixUtility.BatchDispatched') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
-    }
-
-    /**
-     * Batch of calls dispatched without errors.
-     */
-    get asV602(): null {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class MatrixUtilityBatchFailedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MatrixUtility.BatchFailed')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Batch of calls did not disptach completely.
-     * Index and error of the failing dispatch call is provided.
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MatrixUtility.BatchFailed') === '031f8c01ddd9491965bf6e6671d70381e70d55e6028aab52a937d1c3afeecb9f'
-    }
-
-    /**
-     * Batch of calls did not disptach completely.
-     * Index and error of the failing dispatch call is provided.
-     */
-    get asV602(): {index: number, error: v602.DispatchError} {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class MatrixUtilityBatchPartiallyDispatchedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MatrixUtility.BatchPartiallyDispatched')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Batch of calls dispatched, but some calls resulted in error.
-     * Indexes and errors of failing dispatch calls are provided.
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MatrixUtility.BatchPartiallyDispatched') === '73fef2b0a3059aa581e79857a0da7fc5e83a4cb7be0461a34a22dfeca2677eb2'
-    }
-
-    /**
-     * Batch of calls dispatched, but some calls resulted in error.
-     * Indexes and errors of failing dispatch calls are provided.
-     */
-    get asV602(): [number, v602.DispatchError][] {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class MatrixXcmMinimumWeightUpdatedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MatrixXcm.MinimumWeightUpdated')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Xcm fee and weight updated
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MatrixXcm.MinimumWeightUpdated') === 'ddee43169b1685802d4c88cf9e594d83e84d3f8d552ef4ce07966262920e3e23'
-    }
-
-    /**
-     * Xcm fee and weight updated
-     */
-    get asV602(): v602.MinimumWeightFeePair {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class MatrixXcmXcmTransferFailedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MatrixXcm.XcmTransferFailed')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * XCM transfer failed
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MatrixXcm.XcmTransferFailed') === '22feff8edb6c336b74a2b2f9b7b0796b560bc710feff2a107e0d6676f9f9e0e7'
-    }
-
-    /**
-     * XCM transfer failed
-     */
-    get asV602(): v602.DispatchError {
-        assert(this.isV602)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
 export class MultiTokensApprovedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -4308,35 +4063,6 @@ export class MultiTokensClaimedTokensEvent {
      */
     get asMatrixV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, assetIds: matrixV603.AssetIdWithEth[], moreTokensRemain: boolean} {
         assert(this.isMatrixV603)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class MultiTokensClaimedCollectionsEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'MultiTokens.ClaimedCollections')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Collections were claimed
-     */
-    get isV602(): boolean {
-        return this._chain.getEventHash('MultiTokens.ClaimedCollections') === 'dae918bcb0da6f6f293d6cea13c426e40bb93db488e889dfc01af80444518607'
-    }
-
-    /**
-     * Collections were claimed
-     */
-    get asV602(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: bigint[]} {
-        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5477,13 +5203,13 @@ export class MultisigMultisigExecutedEvent {
      * A multisig operation has been executed.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Multisig.MultisigExecuted') === '9e0a225fbf5acad3beeb4abfce677050bfccaf660eedf13e97c1c4ecb39cfe13'
+        return this._chain.getEventHash('Multisig.MultisigExecuted') === 'a3dac12242761ae515c903986cd4d4bac07e81a7c3d28c6ddc9bb9faaa3196f1'
     }
 
     /**
      * A multisig operation has been executed.
      */
-    get asV602(): {approving: Uint8Array, timepoint: v602.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: v602.Type_35} {
+    get asV602(): {approving: Uint8Array, timepoint: v602.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -6807,13 +6533,13 @@ export class SchedulerDispatchedEvent {
      * Dispatched some task.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Scheduler.Dispatched') === '6eb5580f3023aa9d8b919b2e4d4c348b6d18e7b61b4d3362b70f19480d1767fc'
+        return this._chain.getEventHash('Scheduler.Dispatched') === '154dd24b4e6cd6cd4e2529e62ebb06fadb719be62866fec5887d179577869c45'
     }
 
     /**
      * Dispatched some task.
      */
-    get asV602(): {task: [number, number], id: (Uint8Array | undefined), result: v602.Type_35} {
+    get asV602(): {task: [number, number], id: (Uint8Array | undefined), result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -7008,6 +6734,21 @@ export class SudoSudidEvent {
         assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Sudo.Sudid') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV602(): {sudoResult: v602.Type_33} {
+        assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SudoSudoAsDoneEvent {
@@ -7050,6 +6791,21 @@ export class SudoSudoAsDoneEvent {
      */
     get asV500(): {sudoResult: v500.Type_32} {
         assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get isV602(): boolean {
+        return this._chain.getEventHash('Sudo.SudoAsDone') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
+    }
+
+    /**
+     * A sudo just took place. \[result\]
+     */
+    get asV602(): {sudoResult: v602.Type_33} {
+        assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7145,7 +6901,7 @@ export class SystemExtrinsicFailedEvent {
      * An extrinsic failed.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('System.ExtrinsicFailed') === '89ca818f689e3f6e085d8137a961f36cc94819777211c5c11cca985a448944b8'
+        return this._chain.getEventHash('System.ExtrinsicFailed') === '3dbd96eefe1aa593b278d8684042e23a6a118e379fb5699dd871cf28fb627cd6'
     }
 
     /**
@@ -7422,13 +7178,13 @@ export class TechnicalCommitteeExecutedEvent {
      * A motion was executed; result will be `Ok` if it returned without error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('TechnicalCommittee.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+        return this._chain.getEventHash('TechnicalCommittee.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
     }
 
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get asV602(): {proposalHash: Uint8Array, result: v602.Type_35} {
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -7496,13 +7252,13 @@ export class TechnicalCommitteeMemberExecutedEvent {
      * A single member did some action; result will be `Ok` if it returned without error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
     }
 
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get asV602(): {proposalHash: Uint8Array, result: v602.Type_35} {
+    get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -7960,7 +7716,7 @@ export class UtilityBatchInterruptedEvent {
      * well as the error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Utility.BatchInterrupted') === '031f8c01ddd9491965bf6e6671d70381e70d55e6028aab52a937d1c3afeecb9f'
+        return this._chain.getEventHash('Utility.BatchInterrupted') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
     }
 
     /**
@@ -8035,13 +7791,13 @@ export class UtilityDispatchedAsEvent {
      * A call was dispatched.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Utility.DispatchedAs') === 'ee56f7174dc1a4631da3e5b48f323193771be6a702fb2ff1ff40459869d34a0e'
+        return this._chain.getEventHash('Utility.DispatchedAs') === 'e6b126b1d10869892737f36b23109c1b51d3828aeab399104c160e9f275d8049'
     }
 
     /**
      * A call was dispatched.
      */
-    get asV602(): {result: v602.Type_35} {
+    get asV602(): {result: v602.Type_33} {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
@@ -8138,7 +7894,7 @@ export class UtilityItemFailedEvent {
      * A single item within a Batch of dispatches has completed with error.
      */
     get isV602(): boolean {
-        return this._chain.getEventHash('Utility.ItemFailed') === '4564a5412ce55535234d019dbd1d2999c5a9d6f452a565385d0c43e85d0dbf0b'
+        return this._chain.getEventHash('Utility.ItemFailed') === '3ea595fddebcb407af8f717186084e8c4f09481ff7bcc5d4cc97dcd83cddd616'
     }
 
     /**
