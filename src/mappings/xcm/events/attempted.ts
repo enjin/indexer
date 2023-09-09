@@ -23,8 +23,6 @@ export async function attempted(
     block: SubstrateBlock,
     item: EventItem<'PolkadotXcm.Attempted', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    console.log('attempted', item.event.call)
-
     if (!item.event.call) return undefined
 
     const callData = await getCallData(ctx, item.event.call)
