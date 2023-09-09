@@ -21,8 +21,8 @@ import { getTotalUnclaimedAmount } from '../common'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsClaimedEvent(ctx, event)
 
-    if (data.isV500) {
-        return data.asV500
+    if (data.isMatrixV603) {
+        return data.asMatrixV603
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -31,8 +31,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 function getDelayPeriod(ctx: CommonContext, block: SubstrateBlock) {
     const data = new ClaimsDelayClaimsPeriodStorage(ctx, block)
 
-    if (data.isV602) {
-        return data.asV602.get()
+    if (data.isMatrixV603) {
+        return data.asMatrixV603.get()
     }
 
     throw new UnknownVersionError(data.constructor.name)

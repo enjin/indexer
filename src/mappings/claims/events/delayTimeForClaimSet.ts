@@ -10,8 +10,8 @@ import { getTotalUnclaimedAmount } from '../common'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new ClaimsDelayTimeForClaimSetEvent(ctx, event)
 
-    if (data.isV602) {
-        return data.asV602
+    if (data.isMatrixV603) {
+        return data.asMatrixV603
     }
 
     throw new UnknownVersionError(data.constructor.name)
