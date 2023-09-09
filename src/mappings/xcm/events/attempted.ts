@@ -11,7 +11,7 @@ import { PolkadotXcmLimitedTeleportAssetsCall } from '../../../types/generated/c
 async function getCallData(ctx: CommonContext, call: Call) {
     const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
 
-    if (data.isMatrixV603) {
+    if (data.asMatrixV603) {
         return data.asMatrixV603
     }
 
@@ -23,6 +23,8 @@ export async function attempted(
     block: SubstrateBlock,
     item: EventItem<'PolkadotXcm.Attempted', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
+    console.log('attempted', item.event.call)
+
     if (!item.event.call) return undefined
 
     const callData = await getCallData(ctx, item.event.call)
@@ -35,8 +37,8 @@ export async function attempted(
     const beneficiaryInterior = callData.beneficiary.value.interior
     const assetsInterior = callData.assets.value.at(0)
 
-    if (destInterior.__kind === 'X1' && destInterior.value.__kind === 'Parachain') {
-        destination = destInterior.value.value
+    if (destInterior.__kind === 'Here') {
+        destination = 1
     }
 
     if (beneficiaryInterior.__kind === 'X1' && beneficiaryInterior.value.__kind === 'AccountId32') {
@@ -47,13 +49,13 @@ export async function attempted(
         assetsInterior &&
         assetsInterior.fun.__kind === 'Fungible' &&
         assetsInterior.id.__kind === 'Concrete' &&
-        assetsInterior.id.value.parents === 0
+        assetsInterior.id.value.interior.__kind === 'Here'
     ) {
         amount = assetsInterior.fun.value
     }
 
     if (destination === null || beneficiary === null || amount === null) {
-        return undefined
+        throw new Error('Invalid call data')
     }
 
     const account = await getOrCreateAccount(ctx, hexToU8a(item.event.extrinsic.signature?.address.value))
