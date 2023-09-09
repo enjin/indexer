@@ -46,6 +46,17 @@ import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 
 const BATCH_SIZE = 1000
 
+const block670000 = {
+    id: '670000-0',
+    height: 670000,
+    hash: '0x4ea163265963db6551c118d38a65a6898db014b2f50298f5eac73dcc0ee51632',
+    parentHash: '0x13150bb394609b675072edfa5562c9630ca9f8846f9877bb5a46117ce40f0b19',
+    timestamp: 1694160030311,
+    specId: '',
+    extrinsicsRoot: '',
+    stateRoot: '0xcdaad6646fd15dcdd5692ee09c209e9b0f87f2ae5a33b7a905d487aa55fc1549',
+}
+
 const spinner = ora()
 
 class Errors {
@@ -552,7 +563,7 @@ export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`)
 
     spinner.start('Syncing balances...')
-    await syncBalance(ctx, block)
+    await syncBalance(ctx, block670000)
     spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
