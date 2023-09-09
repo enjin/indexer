@@ -517,7 +517,8 @@ async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
 }
 
 async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const keys of getAccountsStorage(ctx, block).getKeysPaged(BATCH_SIZE)) {
+    const batchSize = 100
+    for await (const keys of getAccountsStorage(ctx, block).getKeysPaged(batchSize)) {
         await getAccountsMap(ctx, keys)
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
         await saveAccounts(ctx, block)
