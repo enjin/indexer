@@ -21,7 +21,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
 export async function attempted(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'XcmPallet.Attempted', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'PolkadotXcm.Attempted', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 

@@ -93,7 +93,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Marketplace.ListingFilled', eventOptions)
     .addEvent('Marketplace.BidPlaced', eventOptions)
     .addEvent('Marketplace.AuctionFinalized', eventOptions)
-    .addEvent('XcmPallet.Attempted', eventOptionsWithCall)
+    .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
@@ -177,7 +177,7 @@ async function handleEvents(
             return map.marketplace.events.bidPlaced(ctx, block, item)
         case 'Marketplace.AuctionFinalized':
             return map.marketplace.events.auctionFinalized(ctx, block, item)
-        case 'XcmPallet.Attempted':
+        case 'PolkadotXcm.Attempted':
             return map.xcm.events.attempted(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
