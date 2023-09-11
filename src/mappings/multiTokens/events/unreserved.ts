@@ -9,8 +9,8 @@ import { CommonContext } from '../../types/contexts'
 function getEventData(ctx: CommonContext, eventItem: Event) {
     const event = new MultiTokensUnreservedEvent(ctx, eventItem)
 
-    if (event.isMatrixV603) {
-        return event.asMatrixV603
+    if (event.isMatrixEnjinV603) {
+        return event.asMatrixEnjinV603
     }
 
     return null

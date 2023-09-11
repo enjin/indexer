@@ -1,6 +1,6 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
-import * as matrixV603 from './matrixV603'
+import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as efinityV3014 from './efinityV3014'
 import * as v500 from './v500'
 import * as v600 from './v600'
@@ -22,15 +22,15 @@ export class BalancesBalanceSetEvent {
     /**
      * A balance was set by root.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.BalanceSet') === '8c52e43e845654720e1db5c5bd166f80eb777baf474e93ce4d20fd385601a8fb'
     }
 
     /**
      * A balance was set by root.
      */
-    get asMatrixV603(): {who: Uint8Array, free: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, free: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -81,15 +81,15 @@ export class BalancesBurnedEvent {
     /**
      * Some amount was burned from an account.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Burned') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was burned from an account.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -110,15 +110,15 @@ export class BalancesDepositEvent {
     /**
      * Some amount was deposited (e.g. for transaction fees).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Deposit') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was deposited (e.g. for transaction fees).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -140,7 +140,7 @@ export class BalancesDustLostEvent {
      * An account was removed whose balance was non-zero but below ExistentialDeposit,
      * resulting in an outright loss.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.DustLost') === '504f155afb2789c50df19d1f747fb2dc0e99bf8b7623c30bdb5cf82029fec760'
     }
 
@@ -148,8 +148,8 @@ export class BalancesDustLostEvent {
      * An account was removed whose balance was non-zero but below ExistentialDeposit,
      * resulting in an outright loss.
      */
-    get asMatrixV603(): {account: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -170,15 +170,15 @@ export class BalancesEndowedEvent {
     /**
      * An account was created with some free balance.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Endowed') === '75951f685df19cbb5fdda09cf928a105518ceca9576d95bd18d4fac8802730ca'
     }
 
     /**
      * An account was created with some free balance.
      */
-    get asMatrixV603(): {account: Uint8Array, freeBalance: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, freeBalance: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -199,15 +199,15 @@ export class BalancesFrozenEvent {
     /**
      * Some balance was frozen.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Frozen') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was frozen.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -228,15 +228,15 @@ export class BalancesIssuedEvent {
     /**
      * Total issuance was increased by `amount`, creating a credit to be balanced.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Issued') === 'a3bdd43eed59e7b65720eef9b2dfe72389ca71ac9dbe7fe2874438aae4f18886'
     }
 
     /**
      * Total issuance was increased by `amount`, creating a credit to be balanced.
      */
-    get asMatrixV603(): {amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -257,15 +257,15 @@ export class BalancesLockedEvent {
     /**
      * Some balance was locked.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Locked') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was locked.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -286,15 +286,15 @@ export class BalancesMintedEvent {
     /**
      * Some amount was minted into an account.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Minted') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was minted into an account.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -315,15 +315,15 @@ export class BalancesRescindedEvent {
     /**
      * Total issuance was decreased by `amount`, creating a debt to be balanced.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Rescinded') === 'a3bdd43eed59e7b65720eef9b2dfe72389ca71ac9dbe7fe2874438aae4f18886'
     }
 
     /**
      * Total issuance was decreased by `amount`, creating a debt to be balanced.
      */
-    get asMatrixV603(): {amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -345,7 +345,7 @@ export class BalancesReserveRepatriatedEvent {
      * Some balance was moved from the reserve of the first account to the second account.
      * Final argument indicates the destination balance type.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.ReserveRepatriated') === '6232d50d422cea3a6fd21da36387df36d1d366405d0c589566c6de85c9cf541f'
     }
 
@@ -353,8 +353,8 @@ export class BalancesReserveRepatriatedEvent {
      * Some balance was moved from the reserve of the first account to the second account.
      * Final argument indicates the destination balance type.
      */
-    get asMatrixV603(): {from: Uint8Array, to: Uint8Array, amount: bigint, destinationStatus: matrixV603.BalanceStatus} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {from: Uint8Array, to: Uint8Array, amount: bigint, destinationStatus: matrixEnjinV603.BalanceStatus} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -375,15 +375,15 @@ export class BalancesReservedEvent {
     /**
      * Some balance was reserved (moved from free to reserved).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Reserved') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was reserved (moved from free to reserved).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -404,15 +404,15 @@ export class BalancesRestoredEvent {
     /**
      * Some amount was restored into an account.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Restored') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was restored into an account.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -433,15 +433,15 @@ export class BalancesSlashedEvent {
     /**
      * Some amount was removed from the account (e.g. for misbehavior).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Slashed') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was removed from the account (e.g. for misbehavior).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -462,15 +462,15 @@ export class BalancesSuspendedEvent {
     /**
      * Some amount was suspended from an account (it can be restored later).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Suspended') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was suspended from an account (it can be restored later).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -491,15 +491,15 @@ export class BalancesThawedEvent {
     /**
      * Some balance was thawed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Thawed') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was thawed.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -520,15 +520,15 @@ export class BalancesTransferEvent {
     /**
      * Transfer succeeded.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Transfer') === '0ffdf35c495114c2d42a8bf6c241483fd5334ca0198662e14480ad040f1e3a66'
     }
 
     /**
      * Transfer succeeded.
      */
-    get asMatrixV603(): {from: Uint8Array, to: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {from: Uint8Array, to: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -549,15 +549,15 @@ export class BalancesUnlockedEvent {
     /**
      * Some balance was unlocked.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Unlocked') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was unlocked.
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -578,15 +578,15 @@ export class BalancesUnreservedEvent {
     /**
      * Some balance was unreserved (moved from reserved to free).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Unreserved') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some balance was unreserved (moved from reserved to free).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -607,15 +607,15 @@ export class BalancesUpgradedEvent {
     /**
      * An account was upgraded.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Upgraded') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
     }
 
     /**
      * An account was upgraded.
      */
-    get asMatrixV603(): {who: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -636,15 +636,15 @@ export class BalancesWithdrawEvent {
     /**
      * Some amount was withdrawn from the account (e.g. for transaction fees).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Balances.Withdraw') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
 
     /**
      * Some amount was withdrawn from the account (e.g. for transaction fees).
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -665,15 +665,15 @@ export class BountiesBountyAwardedEvent {
     /**
      * A bounty is awarded to a beneficiary.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyAwarded') === '5314a4c20f133eee477b8b4ce9998238defda69cb2db9344567309c8e6badd90'
     }
 
     /**
      * A bounty is awarded to a beneficiary.
      */
-    get asMatrixV603(): {index: number, beneficiary: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number, beneficiary: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -694,15 +694,15 @@ export class BountiesBountyBecameActiveEvent {
     /**
      * A bounty proposal is funded and became active.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyBecameActive') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
     }
 
     /**
      * A bounty proposal is funded and became active.
      */
-    get asMatrixV603(): {index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -723,15 +723,15 @@ export class BountiesBountyCanceledEvent {
     /**
      * A bounty is cancelled.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyCanceled') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
     }
 
     /**
      * A bounty is cancelled.
      */
-    get asMatrixV603(): {index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -752,15 +752,15 @@ export class BountiesBountyClaimedEvent {
     /**
      * A bounty is claimed by beneficiary.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyClaimed') === 'fb4b26ccfabe9f649bfadde9c0bbee0816e9cf32c7384f2f21c03a852ec23f77'
     }
 
     /**
      * A bounty is claimed by beneficiary.
      */
-    get asMatrixV603(): {index: number, payout: bigint, beneficiary: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number, payout: bigint, beneficiary: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -781,15 +781,15 @@ export class BountiesBountyExtendedEvent {
     /**
      * A bounty expiry is extended.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyExtended') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
     }
 
     /**
      * A bounty expiry is extended.
      */
-    get asMatrixV603(): {index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -810,15 +810,15 @@ export class BountiesBountyProposedEvent {
     /**
      * New bounty proposal.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyProposed') === '25a99cc820e15400356f62165725d9d84847d859e62ca1e5fd6eb340dc5c217e'
     }
 
     /**
      * New bounty proposal.
      */
-    get asMatrixV603(): {index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -839,15 +839,15 @@ export class BountiesBountyRejectedEvent {
     /**
      * A bounty proposal was rejected; funds were slashed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Bounties.BountyRejected') === 'dc987b921ffaf859792cab48c45dff837e0f100cb2deeb83c24a11b61e50082e'
     }
 
     /**
      * A bounty proposal was rejected; funds were slashed.
      */
-    get asMatrixV603(): {index: number, bond: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number, bond: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -868,15 +868,15 @@ export class ClaimsClaimMintedEvent {
     /**
      * Claim has been minted for someone by the root. `[who, amount]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.ClaimMinted') === '43e3321e3408ebd2b7d4c70d42ffa076463495043e47ddb0fb1fbe3e105f5b2f'
     }
 
     /**
      * Claim has been minted for someone by the root. `[who, amount]`
      */
-    get asMatrixV603(): {who: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -897,15 +897,15 @@ export class ClaimsClaimMovedEvent {
     /**
      * Someone's claim has been moved to another address. `[old, new]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.ClaimMoved') === '391b7a792248e7221ffbf77c01942251d2928a4e2b37c8103704237e0d5f69b6'
     }
 
     /**
      * Someone's claim has been moved to another address. `[old, new]`
      */
-    get asMatrixV603(): {old: Uint8Array, new: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {old: Uint8Array, new: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -926,15 +926,15 @@ export class ClaimsClaimRejectedEvent {
     /**
      * Someone's claim has been rejected. `[account, transaction_hash]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.ClaimRejected') === '2206cf743f0862988a18f69a777471495cd397f0ddc561c6ca3dafb5ff4d9461'
     }
 
     /**
      * Someone's claim has been rejected. `[account, transaction_hash]`
      */
-    get asMatrixV603(): {account: Uint8Array, transactionHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, transactionHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -956,7 +956,7 @@ export class ClaimsClaimRequestedEvent {
      * Claim has been requested by an account through the Relayer. `[who, amount,
      * transaction_hash, is_efi_token]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.ClaimRequested') === '4ab27b2decd5085ef5a51ef5f958786f987606af4967d894cacd32321deed43a'
     }
 
@@ -964,8 +964,8 @@ export class ClaimsClaimRequestedEvent {
      * Claim has been requested by an account through the Relayer. `[who, amount,
      * transaction_hash, is_efi_token]`
      */
-    get asMatrixV603(): {who: Uint8Array, amountBurned: bigint, transactionHash: Uint8Array, isEfiToken: boolean, amountClaimable: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, amountBurned: bigint, transactionHash: Uint8Array, isEfiToken: boolean, amountClaimable: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -986,15 +986,15 @@ export class ClaimsClaimedEvent {
     /**
      * Someone claimed some ENJ2 from EFI. `[who, ethereum_address, amount]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.Claimed') === '90aceb8c762fb3641d6c1bacc267cf16591d3a8651141a6e852d3cf24a86f20d'
     }
 
     /**
      * Someone claimed some ENJ2 from EFI. `[who, ethereum_address, amount]`
      */
-    get asMatrixV603(): {who: Uint8Array, ethereumAddress: (Uint8Array | undefined), amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, ethereumAddress: (Uint8Array | undefined), amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1059,15 +1059,15 @@ export class ClaimsDelayTimeForClaimSetEvent {
     /**
      * Delay time for claim is set. `[delay_time]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.DelayTimeForClaimSet') === '9919843de279df806342c680fb041fef5bf53146b6b6c11827b8297e977076c8'
     }
 
     /**
      * Delay time for claim is set. `[delay_time]`
      */
-    get asMatrixV603(): {delayTime: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {delayTime: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1088,15 +1088,15 @@ export class ClaimsEthereumBlocksProcessedEvent {
     /**
      * Claims have been processed for the Ethereum block by the Relayer.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.EthereumBlocksProcessed') === '7eefc4ef9a2f34cfee29738715aa72fe2a31ffd39b1d2a62f1cef547b70ed1fd'
     }
 
     /**
      * Claims have been processed for the Ethereum block by the Relayer.
      */
-    get asMatrixV603(): {blockNumber: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {blockNumber: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1117,15 +1117,15 @@ export class ClaimsExchangeRateSetEvent {
     /**
      * Exchange rate is set. `[exchange_rate]`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Claims.ExchangeRateSet') === 'e0ecf12467b2b7b1c63fa9fd99c3600e15ae004bf61becf84a11146e37f2aab6'
     }
 
     /**
      * Exchange rate is set. `[exchange_rate]`
      */
-    get asMatrixV603(): {exchangeRate: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {exchangeRate: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1146,15 +1146,15 @@ export class CollatorStakingCandidateJoinedEvent {
     /**
      * A new candidate joined the list of candidates.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.CandidateJoined') === 'f3fde36c9684eb79de0a1b490535e0f48f04cf0a348860f884f7e2ead56e55d9'
     }
 
     /**
      * A new candidate joined the list of candidates.
      */
-    get asMatrixV603(): {accountId: Uint8Array, amount: bigint, rewardsCut: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array, amount: bigint, rewardsCut: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1175,15 +1175,15 @@ export class CollatorStakingCandidateRemovedEvent {
     /**
      * Candidate was removed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.CandidateRemoved') === '4c99ef39b683041b136506afc1f762bdcd37f0231162345da388897a103d3710'
     }
 
     /**
      * Candidate was removed.
      */
-    get asMatrixV603(): {accountId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1204,15 +1204,15 @@ export class CollatorStakingCollatorSelectedEvent {
     /**
      * A candidate has been selected to become a collator for the current round.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.CollatorSelected') === '4c99ef39b683041b136506afc1f762bdcd37f0231162345da388897a103d3710'
     }
 
     /**
      * A candidate has been selected to become a collator for the current round.
      */
-    get asMatrixV603(): {accountId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1233,15 +1233,15 @@ export class CollatorStakingNewInvulnerablesEvent {
     /**
      * A new list of invulnerables has been set by root.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.NewInvulnerables') === '4f4db85b7e763f702804fa793ac5cba68cfd546b497830a9c3c21dced2b91524'
     }
 
     /**
      * A new list of invulnerables has been set by root.
      */
-    get asMatrixV603(): {new: Uint8Array[]} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {new: Uint8Array[]} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1262,15 +1262,15 @@ export class CollatorStakingNominatedEvent {
     /**
      * A new nomination was registered for a specific candidate.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.Nominated') === 'e92f24d1473344b5c78de6cd4cb25c3583c8b45653e5ef7765a711cc41db99cd'
     }
 
     /**
      * A new nomination was registered for a specific candidate.
      */
-    get asMatrixV603(): {accountId: Uint8Array, collatorId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array, collatorId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1291,15 +1291,15 @@ export class CollatorStakingNominationRemovedEvent {
     /**
      * Nomination was removed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.NominationRemoved') === 'e92f24d1473344b5c78de6cd4cb25c3583c8b45653e5ef7765a711cc41db99cd'
     }
 
     /**
      * Nomination was removed.
      */
-    get asMatrixV603(): {accountId: Uint8Array, collatorId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array, collatorId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1320,15 +1320,15 @@ export class CollatorStakingRoundFinalizedEvent {
     /**
      * A new round was finalized
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CollatorStaking.RoundFinalized') === '0887503579c2b4b6d8d4a30bb0ed96879579c0d1adaa9d8219ee6a7e3025d4fd'
     }
 
     /**
      * A new round was finalized
      */
-    get asMatrixV603(): {number: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {number: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1349,15 +1349,15 @@ export class CommunityPoolAwardedEvent {
     /**
      * Some funds have been allocated.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Awarded') === '998b846fdf605dfbbe27d46b36b246537b990ed6d4deb2f0177d539b9dab3878'
     }
 
     /**
      * Some funds have been allocated.
      */
-    get asMatrixV603(): {proposalIndex: number, award: bigint, account: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number, award: bigint, account: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1378,15 +1378,15 @@ export class CommunityPoolBurntEvent {
     /**
      * Some of our funds have been burnt.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Burnt') === '9d1d11cb2e24085666bf949195a4030bd6e80ff41274d0386073977e7cd59a87'
     }
 
     /**
      * Some of our funds have been burnt.
      */
-    get asMatrixV603(): {burntFunds: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {burntFunds: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1407,15 +1407,15 @@ export class CommunityPoolDepositEvent {
     /**
      * Some funds have been deposited.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Deposit') === 'd74027ad27459f17d7446fef449271d1b0dc12b852c175623e871d009a661493'
     }
 
     /**
      * Some funds have been deposited.
      */
-    get asMatrixV603(): {value: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {value: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1436,15 +1436,15 @@ export class CommunityPoolProposedEvent {
     /**
      * New proposal.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Proposed') === 'e9ffb62c9cf38a8abb0e419c0655e66f4415cc9c0faa1066316d07cb033b8ff6'
     }
 
     /**
      * New proposal.
      */
-    get asMatrixV603(): {proposalIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1465,15 +1465,15 @@ export class CommunityPoolRejectedEvent {
     /**
      * A proposal was rejected; funds were slashed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Rejected') === 'f9b7fb646bc37c38ad87edfaa08a0ca293b38294934c1114934c7a8fe00b6b79'
     }
 
     /**
      * A proposal was rejected; funds were slashed.
      */
-    get asMatrixV603(): {proposalIndex: number, slashed: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number, slashed: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1494,15 +1494,15 @@ export class CommunityPoolRolloverEvent {
     /**
      * Spending has finished; this is the amount that rolls over until next spend.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Rollover') === 'c9e720e2b3ada12c617b4dcb70771c3afafb9e294bf362df01a9e129683a92dd'
     }
 
     /**
      * Spending has finished; this is the amount that rolls over until next spend.
      */
-    get asMatrixV603(): {rolloverBalance: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {rolloverBalance: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1523,15 +1523,15 @@ export class CommunityPoolSpendApprovedEvent {
     /**
      * A new spend proposal has been approved.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.SpendApproved') === 'fce90c02bffde89fb0e8723868aa8e94bfe9c1c48c5af8c34efd8ff5173184f9'
     }
 
     /**
      * A new spend proposal has been approved.
      */
-    get asMatrixV603(): {proposalIndex: number, amount: bigint, beneficiary: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number, amount: bigint, beneficiary: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1552,15 +1552,15 @@ export class CommunityPoolSpendingEvent {
     /**
      * We have ended a spend period and will now allocate funds.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.Spending') === 'b9f599ccbbe2e4fd1004f47546e1a3100bc78745b24ac47ac03ed16ca6266290'
     }
 
     /**
      * We have ended a spend period and will now allocate funds.
      */
-    get asMatrixV603(): {budgetRemaining: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {budgetRemaining: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1581,15 +1581,15 @@ export class CommunityPoolUpdatedInactiveEvent {
     /**
      * The inactive funds of the pallet have been updated.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CommunityPool.UpdatedInactive') === 'd25083f089d99f72f11dfcdd8481dbdc5c0c6d9c3369646530e2e08cd9f6bbba'
     }
 
     /**
      * The inactive funds of the pallet have been updated.
      */
-    get asMatrixV603(): {reactivated: bigint, deactivated: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {reactivated: bigint, deactivated: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1610,15 +1610,15 @@ export class CouncilApprovedEvent {
     /**
      * A motion was approved by the required threshold.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Approved') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
     /**
      * A motion was approved by the required threshold.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1639,15 +1639,15 @@ export class CouncilClosedEvent {
     /**
      * A proposal was closed because its threshold was reached or after its duration was up.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Closed') === '084e73926c22836c888c17e49053d3b72e2feaa904b8f0175d21fb5b800542f9'
     }
 
     /**
      * A proposal was closed because its threshold was reached or after its duration was up.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, yes: number, no: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, yes: number, no: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1668,15 +1668,15 @@ export class CouncilDisapprovedEvent {
     /**
      * A motion was not approved by the required threshold.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Disapproved') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
     /**
      * A motion was not approved by the required threshold.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1697,15 +1697,15 @@ export class CouncilExecutedEvent {
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
     }
 
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -1771,15 +1771,15 @@ export class CouncilMemberExecutedEvent {
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
     }
 
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -1846,7 +1846,7 @@ export class CouncilProposedEvent {
      * A motion (given hash) has been proposed (by given account) with a threshold (given
      * `MemberCount`).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Proposed') === '63978c884e95719fd416c8a38a2ec2ec5a691a58a28349d62b0173643f0d8262'
     }
 
@@ -1854,8 +1854,8 @@ export class CouncilProposedEvent {
      * A motion (given hash) has been proposed (by given account) with a threshold (given
      * `MemberCount`).
      */
-    get asMatrixV603(): {account: Uint8Array, proposalIndex: number, proposalHash: Uint8Array, threshold: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, proposalIndex: number, proposalHash: Uint8Array, threshold: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1877,7 +1877,7 @@ export class CouncilVotedEvent {
      * A motion (given hash) has been voted on by given account, leaving
      * a tally (yes votes and no votes given respectively as `MemberCount`).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Council.Voted') === 'b69e97272b7c060192bbc1a5e91692b0a8b905727af6d9eb5627b7857ede0846'
     }
 
@@ -1885,8 +1885,8 @@ export class CouncilVotedEvent {
      * A motion (given hash) has been voted on by given account, leaving
      * a tally (yes votes and no votes given respectively as `MemberCount`).
      */
-    get asMatrixV603(): {account: Uint8Array, proposalHash: Uint8Array, voted: boolean, yes: number, no: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, proposalHash: Uint8Array, voted: boolean, yes: number, no: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1908,7 +1908,7 @@ export class CumulusXcmExecutedDownwardEvent {
      * Downward message executed with the given outcome.
      * \[ id, outcome \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CumulusXcm.ExecutedDownward') === '0a5524dcf48d575bf19533e72499c1b6f08167113160e1bb190028315c81787f'
     }
 
@@ -1916,8 +1916,8 @@ export class CumulusXcmExecutedDownwardEvent {
      * Downward message executed with the given outcome.
      * \[ id, outcome \]
      */
-    get asMatrixV603(): [Uint8Array, matrixV603.V3Outcome] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [Uint8Array, matrixEnjinV603.V3Outcome] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1939,7 +1939,7 @@ export class CumulusXcmInvalidFormatEvent {
      * Downward message is invalid XCM.
      * \[ id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CumulusXcm.InvalidFormat') === '21ea0c8f2488eafafdea1de92b54cd17d8b1caff525e37616abf0ff93f11531d'
     }
 
@@ -1947,8 +1947,8 @@ export class CumulusXcmInvalidFormatEvent {
      * Downward message is invalid XCM.
      * \[ id \]
      */
-    get asMatrixV603(): Uint8Array {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): Uint8Array {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1970,7 +1970,7 @@ export class CumulusXcmUnsupportedVersionEvent {
      * Downward message is unsupported version of XCM.
      * \[ id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('CumulusXcm.UnsupportedVersion') === '21ea0c8f2488eafafdea1de92b54cd17d8b1caff525e37616abf0ff93f11531d'
     }
 
@@ -1978,8 +1978,8 @@ export class CumulusXcmUnsupportedVersionEvent {
      * Downward message is unsupported version of XCM.
      * \[ id \]
      */
-    get asMatrixV603(): Uint8Array {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): Uint8Array {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2000,15 +2000,15 @@ export class DemocracyBlacklistedEvent {
     /**
      * A proposal_hash has been blacklisted permanently.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Blacklisted') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
     /**
      * A proposal_hash has been blacklisted permanently.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2029,15 +2029,15 @@ export class DemocracyCancelledEvent {
     /**
      * A referendum has been cancelled.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Cancelled') === '8a84371403a09e2f8fc2aac80f5a8a53229b346c4b3859069867b8e656b13450'
     }
 
     /**
      * A referendum has been cancelled.
      */
-    get asMatrixV603(): {refIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {refIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2058,15 +2058,15 @@ export class DemocracyDelegatedEvent {
     /**
      * An account has delegated their vote to another account.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Delegated') === 'd8ff3867ebae06e6ac747a81d5397793d2a1994d97871736019b811a47b1be06'
     }
 
     /**
      * An account has delegated their vote to another account.
      */
-    get asMatrixV603(): {who: Uint8Array, target: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, target: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2087,15 +2087,15 @@ export class DemocracyExternalTabledEvent {
     /**
      * An external proposal has been tabled.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.ExternalTabled') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * An external proposal has been tabled.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2116,15 +2116,15 @@ export class DemocracyMetadataClearedEvent {
     /**
      * Metadata for a proposal or a referendum has been cleared.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.MetadataCleared') === '5973f98e3dfb93077820ad77490dd9fe605110b75a8f006f1565898a599055ab'
     }
 
     /**
      * Metadata for a proposal or a referendum has been cleared.
      */
-    get asMatrixV603(): {owner: matrixV603.MetadataOwner, hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {owner: matrixEnjinV603.MetadataOwner, hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2145,15 +2145,15 @@ export class DemocracyMetadataSetEvent {
     /**
      * Metadata for a proposal or a referendum has been set.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.MetadataSet') === '5973f98e3dfb93077820ad77490dd9fe605110b75a8f006f1565898a599055ab'
     }
 
     /**
      * Metadata for a proposal or a referendum has been set.
      */
-    get asMatrixV603(): {owner: matrixV603.MetadataOwner, hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {owner: matrixEnjinV603.MetadataOwner, hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2174,15 +2174,15 @@ export class DemocracyMetadataTransferredEvent {
     /**
      * Metadata has been transferred to new owner.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.MetadataTransferred') === '6a30d674b0ce2457e6cff0b5493fa843349fa6b51c1641c1ac02b3f35ebbb927'
     }
 
     /**
      * Metadata has been transferred to new owner.
      */
-    get asMatrixV603(): {prevOwner: matrixV603.MetadataOwner, owner: matrixV603.MetadataOwner, hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {prevOwner: matrixEnjinV603.MetadataOwner, owner: matrixEnjinV603.MetadataOwner, hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2203,15 +2203,15 @@ export class DemocracyNotPassedEvent {
     /**
      * A proposal has been rejected by referendum.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.NotPassed') === '8a84371403a09e2f8fc2aac80f5a8a53229b346c4b3859069867b8e656b13450'
     }
 
     /**
      * A proposal has been rejected by referendum.
      */
-    get asMatrixV603(): {refIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {refIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2232,15 +2232,15 @@ export class DemocracyPassedEvent {
     /**
      * A proposal has been approved by referendum.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Passed') === '8a84371403a09e2f8fc2aac80f5a8a53229b346c4b3859069867b8e656b13450'
     }
 
     /**
      * A proposal has been approved by referendum.
      */
-    get asMatrixV603(): {refIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {refIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2261,15 +2261,15 @@ export class DemocracyProposalCanceledEvent {
     /**
      * A proposal got canceled.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.ProposalCanceled') === '4229a060ed682a59f5b96a0a1d18ae4a471b42fbbe5beff110f3dbb41e7d7224'
     }
 
     /**
      * A proposal got canceled.
      */
-    get asMatrixV603(): {propIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {propIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2290,15 +2290,15 @@ export class DemocracyProposedEvent {
     /**
      * A motion has been proposed by a public account.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Proposed') === '02ae149915d453560f4d12074a380744b3bbb2fe4c235e963f440e2d79243477'
     }
 
     /**
      * A motion has been proposed by a public account.
      */
-    get asMatrixV603(): {proposalIndex: number, deposit: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number, deposit: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2319,15 +2319,15 @@ export class DemocracySecondedEvent {
     /**
      * An account has secconded a proposal
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Seconded') === '956e0986199802f7d7e337068d26fc51e710bdd0e5dd70631ef3328ea5baafe1'
     }
 
     /**
      * An account has secconded a proposal
      */
-    get asMatrixV603(): {seconder: Uint8Array, propIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {seconder: Uint8Array, propIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2348,15 +2348,15 @@ export class DemocracyStartedEvent {
     /**
      * A referendum has begun.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Started') === '663653944bacc0e562b015a412877b12c32bc62814b673192c550438bf618ab4'
     }
 
     /**
      * A referendum has begun.
      */
-    get asMatrixV603(): {refIndex: number, threshold: matrixV603.VoteThreshold} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {refIndex: number, threshold: matrixEnjinV603.VoteThreshold} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2377,15 +2377,15 @@ export class DemocracyTabledEvent {
     /**
      * A public proposal has been tabled for referendum vote.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Tabled') === '02ae149915d453560f4d12074a380744b3bbb2fe4c235e963f440e2d79243477'
     }
 
     /**
      * A public proposal has been tabled for referendum vote.
      */
-    get asMatrixV603(): {proposalIndex: number, deposit: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalIndex: number, deposit: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2406,15 +2406,15 @@ export class DemocracyUndelegatedEvent {
     /**
      * An account has cancelled a previous delegation operation.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Undelegated') === '7fb7672b764b0a4f0c4910fddefec0709628843df7ad0073a97eede13c53ca92'
     }
 
     /**
      * An account has cancelled a previous delegation operation.
      */
-    get asMatrixV603(): {account: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2435,15 +2435,15 @@ export class DemocracyVetoedEvent {
     /**
      * An external proposal has been vetoed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Vetoed') === '8c436495ac4c75fd20d25b6b1c1b2bbebbea576444eac1b5b7b15ecb833e5c4f'
     }
 
     /**
      * An external proposal has been vetoed.
      */
-    get asMatrixV603(): {who: Uint8Array, proposalHash: Uint8Array, until: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, proposalHash: Uint8Array, until: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2464,15 +2464,15 @@ export class DemocracyVotedEvent {
     /**
      * An account has voted in a referendum
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Democracy.Voted') === '1f7c6893e642faadc0fb2681a07f3aa74579a935cb93e932ab8fd8a9e9fe739c'
     }
 
     /**
      * An account has voted in a referendum
      */
-    get asMatrixV603(): {voter: Uint8Array, refIndex: number, vote: matrixV603.AccountVote} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {voter: Uint8Array, refIndex: number, vote: matrixEnjinV603.AccountVote} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2493,15 +2493,15 @@ export class DmpQueueExecutedDownwardEvent {
     /**
      * Downward message executed with the given outcome.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.ExecutedDownward') === 'bbdc5e15442f2bee7199707f9da66674b3ad89835c84687a406e183c7d31121e'
     }
 
     /**
      * Downward message executed with the given outcome.
      */
-    get asMatrixV603(): {messageId: Uint8Array, outcome: matrixV603.V3Outcome} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array, outcome: matrixEnjinV603.V3Outcome} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2522,15 +2522,15 @@ export class DmpQueueInvalidFormatEvent {
     /**
      * Downward message is invalid XCM.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.InvalidFormat') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
     }
 
     /**
      * Downward message is invalid XCM.
      */
-    get asMatrixV603(): {messageId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2551,15 +2551,15 @@ export class DmpQueueMaxMessagesExhaustedEvent {
     /**
      * The maximum number of downward messages was.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.MaxMessagesExhausted') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
     }
 
     /**
      * The maximum number of downward messages was.
      */
-    get asMatrixV603(): {messageId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2580,15 +2580,15 @@ export class DmpQueueOverweightEnqueuedEvent {
     /**
      * Downward message is overweight and was placed in the overweight queue.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.OverweightEnqueued') === '48bcfc366f324064903ddb05910b4d640e5483bb8166484d427fea6ec6716e87'
     }
 
     /**
      * Downward message is overweight and was placed in the overweight queue.
      */
-    get asMatrixV603(): {messageId: Uint8Array, overweightIndex: bigint, requiredWeight: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array, overweightIndex: bigint, requiredWeight: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2609,15 +2609,15 @@ export class DmpQueueOverweightServicedEvent {
     /**
      * Downward message from the overweight queue was executed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.OverweightServiced') === 'cbdd24f98e134531ca4f33efcf4821b24f3245563e8787df9ab5a61e3def65fe'
     }
 
     /**
      * Downward message from the overweight queue was executed.
      */
-    get asMatrixV603(): {overweightIndex: bigint, weightUsed: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {overweightIndex: bigint, weightUsed: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2638,15 +2638,15 @@ export class DmpQueueUnsupportedVersionEvent {
     /**
      * Downward message is unsupported version of XCM.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.UnsupportedVersion') === '6bcb1469518e8e7bacd0242af782ebd652887f65f7377a9b2d81ccea6505416e'
     }
 
     /**
      * Downward message is unsupported version of XCM.
      */
-    get asMatrixV603(): {messageId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2667,15 +2667,15 @@ export class DmpQueueWeightExhaustedEvent {
     /**
      * The weight limit for handling downward messages was reached.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('DmpQueue.WeightExhausted') === 'e2c32a245af45a14cf9180adc1d112198df722bb27ee76b5ea163138bb102466'
     }
 
     /**
      * The weight limit for handling downward messages was reached.
      */
-    get asMatrixV603(): {messageId: Uint8Array, remainingWeight: matrixV603.Weight, requiredWeight: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageId: Uint8Array, remainingWeight: matrixEnjinV603.Weight, requiredWeight: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2943,15 +2943,15 @@ export class ExtrinsicPauseExtrinsicPausedEvent {
     /**
      * Extrinsic is paused.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ExtrinsicPause.ExtrinsicPaused') === '6ef577cdfb00cd6410f53ba28c3235494d461bd891dc700de04b9b0006f06777'
     }
 
     /**
      * Extrinsic is paused.
      */
-    get asMatrixV603(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2972,15 +2972,15 @@ export class ExtrinsicPauseExtrinsicResumedEvent {
     /**
      * Extrinsic is resumed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ExtrinsicPause.ExtrinsicResumed') === '6ef577cdfb00cd6410f53ba28c3235494d461bd891dc700de04b9b0006f06777'
     }
 
     /**
      * Extrinsic is resumed
      */
-    get asMatrixV603(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {palletName: Uint8Array, extrinsicName: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3001,15 +3001,15 @@ export class ExtrinsicPausePalletPausedEvent {
     /**
      * All pallet extrinsics are paused.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ExtrinsicPause.PalletPaused') === '05a07cab9aa4011d0b711292d898fdb778885ca7cb3469b117d99d61976a52e1'
     }
 
     /**
      * All pallet extrinsics are paused.
      */
-    get asMatrixV603(): {palletName: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {palletName: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3030,15 +3030,15 @@ export class ExtrinsicPausePalletResumedEvent {
     /**
      * All pallet extrinsics are resumed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ExtrinsicPause.PalletResumed') === '05a07cab9aa4011d0b711292d898fdb778885ca7cb3469b117d99d61976a52e1'
     }
 
     /**
      * All pallet extrinsics are resumed.
      */
-    get asMatrixV603(): {palletName: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {palletName: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3059,15 +3059,15 @@ export class FuelTanksAccountAddedEvent {
     /**
      * An account was added to a [`FuelTank`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.AccountAdded') === 'eaba5f9eb5b376c10a9ee1aded196439de7b5045a6bdf4f20126a6ceada70754'
     }
 
     /**
      * An account was added to a [`FuelTank`]
      */
-    get asMatrixV603(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3088,15 +3088,15 @@ export class FuelTanksAccountRemovedEvent {
     /**
      * An account was removed from a [`FuelTank`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.AccountRemoved') === '43c705fb2ded534752f36760bbd7adf8ef7a48bb267a3e4ba8d013de6ebb2af7'
     }
 
     /**
      * An account was removed from a [`FuelTank`]
      */
-    get asMatrixV603(): {tankId: Uint8Array, userId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, userId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3118,7 +3118,7 @@ export class FuelTanksAccountRuleDataRemovedEvent {
      * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
      * [`RuleSetId`](Config::RuleSetId)
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.AccountRuleDataRemoved') === '5a236b56107bcad5eb7d987ef926899db96b36ea5b6671becf5e98d5053e95e7'
     }
 
@@ -3126,8 +3126,8 @@ export class FuelTanksAccountRuleDataRemovedEvent {
      * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
      * [`RuleSetId`](Config::RuleSetId)
      */
-    get asMatrixV603(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: matrixV603.DispatchRuleKind} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: matrixEnjinV603.DispatchRuleKind} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3148,15 +3148,15 @@ export class FuelTanksCallDispatchedEvent {
     /**
      * A call was dispatched through a [`FuelTank`].
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.CallDispatched') === 'c286719ddfc6a64566bdc115c4ace78fd41c94915f092887ef38021ae647e549'
     }
 
     /**
      * A call was dispatched through a [`FuelTank`].
      */
-    get asMatrixV603(): {caller: Uint8Array, tankId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {caller: Uint8Array, tankId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3177,15 +3177,15 @@ export class FuelTanksConsumptionSetEvent {
     /**
      * The consumption for an account was set for a rule set on a [`FuelTank`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.ConsumptionSet') === '060d3726c09d4bf39a8170bce46b0e962e6156f845c7aa3783726e37856cd0fe'
     }
 
     /**
      * The consumption for an account was set for a rule set on a [`FuelTank`]
      */
-    get asMatrixV603(): {tankId: Uint8Array, userId: (Uint8Array | undefined), ruleSetId: number, consumption: matrixV603.Consumption} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, userId: (Uint8Array | undefined), ruleSetId: number, consumption: matrixEnjinV603.Consumption} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3206,15 +3206,15 @@ export class FuelTanksDispatchFailedEvent {
     /**
      * The dispatch of a call has failed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'b8f1b16f9c4db0379c42ed84fb2c36157997ff8b65b02ad920fb41fe7628ac4b'
     }
 
     /**
      * The dispatch of a call has failed
      */
-    get asMatrixV603(): {tankId: Uint8Array, caller: Uint8Array, error: matrixV603.DispatchError} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, caller: Uint8Array, error: matrixEnjinV603.DispatchError} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -3280,15 +3280,15 @@ export class FuelTanksFreezeStateMutatedEvent {
     /**
      * The freeze state change for fuel tank or its rule set was executed in `on_finalize`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.FreezeStateMutated') === '487d487c4b8088c43cf90c0ffbee2c293b22157c580d0629a9657751820d3405'
     }
 
     /**
      * The freeze state change for fuel tank or its rule set was executed in `on_finalize`
      */
-    get asMatrixV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3309,15 +3309,15 @@ export class FuelTanksFuelTankCreatedEvent {
     /**
      * A new [`FuelTank`] was created.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.FuelTankCreated') === '5048d94dfd3a5170e9ea1d697d818d3166955fb933f983e64f3af4cd0e7b2c52'
     }
 
     /**
      * A new [`FuelTank`] was created.
      */
-    get asMatrixV603(): {owner: Uint8Array, name: Uint8Array, tankId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {owner: Uint8Array, name: Uint8Array, tankId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3338,15 +3338,15 @@ export class FuelTanksFuelTankDestroyedEvent {
     /**
      * A [`FuelTank`] was destroyed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.FuelTankDestroyed') === '4a9035be2f47fbe13a50c15f06b7abda8e85d0d8378fc409cc5492db6ff608d5'
     }
 
     /**
      * A [`FuelTank`] was destroyed
      */
-    get asMatrixV603(): {tankId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3367,15 +3367,15 @@ export class FuelTanksFuelTankMutatedEvent {
     /**
      * A [`FuelTank`] was mutated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.FuelTankMutated') === 'bd9b1c3917349e5b63b5cfa4994a2cfe8969b43bab28ae51dbafc0cfd500ceac'
     }
 
     /**
      * A [`FuelTank`] was mutated
      */
-    get asMatrixV603(): {tankId: Uint8Array, mutation: matrixV603.DefaultTankMutation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, mutation: matrixEnjinV603.DefaultTankMutation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3396,15 +3396,15 @@ export class FuelTanksMutateFreezeStateScheduledEvent {
     /**
      * The freeze state mutation for fuel tank or its rule set was scheduled
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.MutateFreezeStateScheduled') === '487d487c4b8088c43cf90c0ffbee2c293b22157c580d0629a9657751820d3405'
     }
 
     /**
      * The freeze state mutation for fuel tank or its rule set was scheduled
      */
-    get asMatrixV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3425,15 +3425,15 @@ export class FuelTanksRuleSetInsertedEvent {
     /**
      * A new rule set was added to [`FuelTank`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.RuleSetInserted') === 'f0c7cbfea12e67a5e10a71fb2103b883d2fdacdce7e9e339d55ea06b41087531'
     }
 
     /**
      * A new rule set was added to [`FuelTank`]
      */
-    get asMatrixV603(): {tankId: Uint8Array, ruleSetId: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3454,15 +3454,15 @@ export class FuelTanksRuleSetRemovedEvent {
     /**
      * A rule set was removed from [`FuelTank`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.RuleSetRemoved') === 'f0c7cbfea12e67a5e10a71fb2103b883d2fdacdce7e9e339d55ea06b41087531'
     }
 
     /**
      * A rule set was removed from [`FuelTank`]
      */
-    get asMatrixV603(): {tankId: Uint8Array, ruleSetId: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3483,15 +3483,15 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
     /**
      * The freeze state change for fuel tank or its rule set failed in `on_finalize`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === '95b413ce19082ba4904572d53b5ac6dd39ebb3ff2ee7dffc9cff04790001d66f'
     }
 
     /**
      * The freeze state change for fuel tank or its rule set failed in `on_finalize`
      */
-    get asMatrixV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: matrixV603.DispatchError} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: matrixEnjinV603.DispatchError} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -3557,15 +3557,15 @@ export class MarketplaceAuctionFinalizedEvent {
     /**
      * An auction was finalized
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.AuctionFinalized') === '85c874f079d7788c46e5ee8f064d0e75d1bee7e2b192276db015bf838a4226a7'
     }
 
     /**
      * An auction was finalized
      */
-    get asMatrixV603(): {listingId: Uint8Array, winningBid: (matrixV603.Bid | undefined), protocolFee: bigint, royalty: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {listingId: Uint8Array, winningBid: (matrixEnjinV603.Bid | undefined), protocolFee: bigint, royalty: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3586,15 +3586,15 @@ export class MarketplaceBidPlacedEvent {
     /**
      * A bid was placed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.BidPlaced') === '43772e41069f9311a69337de1da60bd0d625f0cbb2b82db1e5646defd34f6318'
     }
 
     /**
      * A bid was placed
      */
-    get asMatrixV603(): {listingId: Uint8Array, bid: matrixV603.Bid} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {listingId: Uint8Array, bid: matrixEnjinV603.Bid} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3615,15 +3615,15 @@ export class MarketplaceListingCancelledEvent {
     /**
      * A listing was cancelled
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.ListingCancelled') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
     }
 
     /**
      * A listing was cancelled
      */
-    get asMatrixV603(): {listingId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {listingId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3644,15 +3644,15 @@ export class MarketplaceListingCreatedEvent {
     /**
      * A listing was created
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.ListingCreated') === '396b87e5fef710b0fb92ab0a1d2f82c41b7ad217eaec1ac1b7c0b53b3d4e8449'
     }
 
     /**
      * A listing was created
      */
-    get asMatrixV603(): {listingId: Uint8Array, listing: matrixV603.Listing} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {listingId: Uint8Array, listing: matrixEnjinV603.Listing} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3673,15 +3673,15 @@ export class MarketplaceListingFilledEvent {
     /**
      * A listing was filled or partially filled
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.ListingFilled') === '3fb016766e57e5a9a1b2da399d304573a092435b3fea70b58bb10cdf6bacc899'
     }
 
     /**
      * A listing was filled or partially filled
      */
-    get asMatrixV603(): {listingId: Uint8Array, buyer: Uint8Array, amountFilled: bigint, amountRemaining: bigint, protocolFee: bigint, royalty: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {listingId: Uint8Array, buyer: Uint8Array, amountFilled: bigint, amountRemaining: bigint, protocolFee: bigint, royalty: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3702,15 +3702,15 @@ export class MarketplaceProtocolFeeSetEvent {
     /**
      * Protocol fee was set
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Marketplace.ProtocolFeeSet') === '164c71fe8ee3317ae364f8c5528ba44b7eddb84e7a9a394e59bb344ad0ec2293'
     }
 
     /**
      * Protocol fee was set
      */
-    get asMatrixV603(): {protocolFee: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {protocolFee: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3731,15 +3731,15 @@ export class MatrixUtilityBatchDispatchedEvent {
     /**
      * Batch of calls dispatched without errors.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MatrixUtility.BatchDispatched') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Batch of calls dispatched without errors.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3761,7 +3761,7 @@ export class MatrixUtilityBatchFailedEvent {
      * Batch of calls did not disptach completely.
      * Index and error of the failing dispatch call is provided.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MatrixUtility.BatchFailed') === '031f8c01ddd9491965bf6e6671d70381e70d55e6028aab52a937d1c3afeecb9f'
     }
 
@@ -3769,8 +3769,8 @@ export class MatrixUtilityBatchFailedEvent {
      * Batch of calls did not disptach completely.
      * Index and error of the failing dispatch call is provided.
      */
-    get asMatrixV603(): {index: number, error: matrixV603.DispatchError} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number, error: matrixEnjinV603.DispatchError} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3792,7 +3792,7 @@ export class MatrixUtilityBatchPartiallyDispatchedEvent {
      * Batch of calls dispatched, but some calls resulted in error.
      * Indexes and errors of failing dispatch calls are provided.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MatrixUtility.BatchPartiallyDispatched') === '73fef2b0a3059aa581e79857a0da7fc5e83a4cb7be0461a34a22dfeca2677eb2'
     }
 
@@ -3800,8 +3800,8 @@ export class MatrixUtilityBatchPartiallyDispatchedEvent {
      * Batch of calls dispatched, but some calls resulted in error.
      * Indexes and errors of failing dispatch calls are provided.
      */
-    get asMatrixV603(): [number, matrixV603.DispatchError][] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [number, matrixEnjinV603.DispatchError][] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3822,15 +3822,15 @@ export class MatrixXcmMinimumWeightUpdatedEvent {
     /**
      * Xcm fee and weight updated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MatrixXcm.MinimumWeightUpdated') === 'ddee43169b1685802d4c88cf9e594d83e84d3f8d552ef4ce07966262920e3e23'
     }
 
     /**
      * Xcm fee and weight updated
      */
-    get asMatrixV603(): matrixV603.MinimumWeightFeePair {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.MinimumWeightFeePair {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3851,15 +3851,15 @@ export class MatrixXcmXcmTransferFailedEvent {
     /**
      * XCM transfer failed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MatrixXcm.XcmTransferFailed') === '22feff8edb6c336b74a2b2f9b7b0796b560bc710feff2a107e0d6676f9f9e0e7'
     }
 
     /**
      * XCM transfer failed
      */
-    get asMatrixV603(): matrixV603.DispatchError {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.DispatchError {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3880,15 +3880,15 @@ export class MultiTokensApprovedEvent {
     /**
      * An approval took place. If `token_id` is `None`, it applies to the whole collection.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Approved') === 'be2c3db8582ba3e20a4c47b559208645f08eaef7453ba9dcf4fe7d6a8987b514'
     }
 
     /**
      * An approval took place. If `token_id` is `None`, it applies to the whole collection.
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array, amount: (bigint | undefined), expiration: (number | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array, amount: (bigint | undefined), expiration: (number | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3909,15 +3909,15 @@ export class MultiTokensAttributeRemovedEvent {
     /**
      * An attribute has been removed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.AttributeRemoved') === '4168a0c4eaad91f81c843978c2860e3e03730b7533206af99d8dc2200efdbec8'
     }
 
     /**
      * An attribute has been removed
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3938,15 +3938,15 @@ export class MultiTokensAttributeSetEvent {
     /**
      * New attribute has been set
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.AttributeSet') === 'd90964f28bdfc61e8bf4173cbde05cc375064aff638f0a40640ab04549efc4c2'
     }
 
     /**
      * New attribute has been set
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: (bigint | undefined), key: Uint8Array, value: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3967,15 +3967,15 @@ export class MultiTokensBalanceSetEvent {
     /**
      * The balance of an account was set
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.BalanceSet') === '3cb09b8a15d07b5683e760eecb82ebaa781774c145bd82cdac763cb6580b44e6'
     }
 
     /**
      * The balance of an account was set
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, balance: bigint, reservedBalance: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, balance: bigint, reservedBalance: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3996,15 +3996,15 @@ export class MultiTokensBurnedEvent {
     /**
      * Units of a token were burned
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Burned') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
     }
 
     /**
      * Units of a token were burned
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4025,15 +4025,15 @@ export class MultiTokensClaimedCollectionsEvent {
     /**
      * Collections were claimed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.ClaimedCollections') === '6a4b376096bdb8d85bb6c1e5fc18207e499f217fabc6ba19e104345b3579203c'
     }
 
     /**
      * Collections were claimed
      */
-    get asMatrixV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: matrixV603.CollectionIdPair[]} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: matrixEnjinV603.CollectionIdPair[]} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4054,15 +4054,15 @@ export class MultiTokensClaimedTokensEvent {
     /**
      * Tokens were claimed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.ClaimedTokens') === '41f1f7412e7bf39a8dccd8836c92086de2989704dd20200f9a036fc30e40a1fe'
     }
 
     /**
      * Tokens were claimed
      */
-    get asMatrixV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, assetIds: matrixV603.AssetIdWithEth[], moreTokensRemain: boolean} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, assetIds: matrixEnjinV603.AssetIdWithEth[], moreTokensRemain: boolean} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4083,15 +4083,15 @@ export class MultiTokensCollectionAccountCreatedEvent {
     /**
      * A new collection account was created
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionAccountCreated') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
     }
 
     /**
      * A new collection account was created
      */
-    get asMatrixV603(): {collectionId: bigint, accountId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, accountId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4112,15 +4112,15 @@ export class MultiTokensCollectionAccountDestroyedEvent {
     /**
      * A collection account was destroyed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionAccountDestroyed') === '7b4295cf1bd074614f172814d727e76bda047f9869c73df3042c6baeb8b314c7'
     }
 
     /**
      * A collection account was destroyed
      */
-    get asMatrixV603(): {collectionId: bigint, accountId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, accountId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4141,15 +4141,15 @@ export class MultiTokensCollectionAccountUpdatedEvent {
     /**
      * TokenAccount storage was set to `value`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionAccountUpdated') === '761f2e71ce8970aeaf77cbb18f15b12f4cea58113a28a6163bb7f0d7543998e0'
     }
 
     /**
      * TokenAccount storage was set to `value`
      */
-    get asMatrixV603(): {collectionId: bigint, accountId: Uint8Array, value: (matrixV603.CollectionAccount | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, accountId: Uint8Array, value: (matrixEnjinV603.CollectionAccount | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4170,15 +4170,15 @@ export class MultiTokensCollectionCreatedEvent {
     /**
      * A new collection was created
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionCreated') === '9f2f2f3af227369fdf6d6bca903e9d24ff2c10dbe8e2e81cc062779b6581c722'
     }
 
     /**
      * A new collection was created
      */
-    get asMatrixV603(): {collectionId: bigint, owner: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, owner: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4199,15 +4199,15 @@ export class MultiTokensCollectionDestroyedEvent {
     /**
      * A collection was destroyed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionDestroyed') === '6b20939f2a6c4c23adcb69631c659bbf68a4e266bd90733cacfec7f21ecfc491'
     }
 
     /**
      * A collection was destroyed.
      */
-    get asMatrixV603(): {collectionId: bigint, caller: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, caller: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4228,15 +4228,15 @@ export class MultiTokensCollectionMutatedEvent {
     /**
      * A collection was mutated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionMutated') === 'd7b85f625e23a04082ca1038b142ad4c56b4ebeb4ab61685f39f6c00eddb78f1'
     }
 
     /**
      * A collection was mutated
      */
-    get asMatrixV603(): {collectionId: bigint, mutation: matrixV603.DefaultCollectionMutation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, mutation: matrixEnjinV603.DefaultCollectionMutation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4257,15 +4257,15 @@ export class MultiTokensCollectionUpdatedEvent {
     /**
      * Collection storage was set to `value`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.CollectionUpdated') === '98bf9d540f024070954f2f94467d9e9b5cd79997861f988b682972dd34f2a757'
     }
 
     /**
      * Collection storage was set to `value`
      */
-    get asMatrixV603(): {collectionId: bigint, value: (matrixV603.Collection | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, value: (matrixEnjinV603.Collection | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4286,15 +4286,15 @@ export class MultiTokensDepositEvent {
     /**
      * Token units were deposited
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Deposit') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
     }
 
     /**
      * Token units were deposited
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4315,15 +4315,15 @@ export class MultiTokensFrozenEvent {
     /**
      * Collection, token or account was frozen
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Frozen') === '5cbc7fc4c80127d7f9f1d04214e275834ef6eb218526ecacd7cb52716bca5909'
     }
 
     /**
      * Collection, token or account was frozen
      */
-    get asMatrixV603(): matrixV603.Freeze {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.Freeze {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4344,15 +4344,15 @@ export class MultiTokensMigrationStatusUpdatedEvent {
     /**
      * Migration stage updated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.MigrationStatusUpdated') === 'b6a56869fab9a6ad06b131f71f90c0f5cc964731c5de07e117d06485e0c52538'
     }
 
     /**
      * Migration stage updated
      */
-    get asMatrixV603(): {stage: matrixV603.MigrationStage} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {stage: matrixEnjinV603.MigrationStage} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4373,15 +4373,15 @@ export class MultiTokensMintedEvent {
     /**
      * Units of a token were minted
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Minted') === 'f8fd3b51f96a65531998fe85506037a1c5256b97febbfad202a0a35882f49ae1'
     }
 
     /**
      * Units of a token were minted
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, issuer: matrixV603.RootOrSigned, recipient: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, issuer: matrixEnjinV603.RootOrSigned, recipient: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4402,15 +4402,15 @@ export class MultiTokensMovedReservesEvent {
     /**
      * Reserved token units were moved
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.MovedReserves') === 'cadd3cb8a7078a34cbd801afd6c7a96515df926a8e147d0f25ba435ee7ddc826'
     }
 
     /**
      * Reserved token units were moved
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, source: Uint8Array, destination: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, source: Uint8Array, destination: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4431,15 +4431,15 @@ export class MultiTokensNextCollectionIdUpdatedEvent {
     /**
      * NextCollectionId storage was set to `collection_id`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.NextCollectionIdUpdated') === '057e325ebb04166081a2c8cd2cc1f2a50181d12678c5d261d3e70e3fe9252db3'
     }
 
     /**
      * NextCollectionId storage was set to `collection_id`
      */
-    get asMatrixV603(): {collectionId: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4460,15 +4460,15 @@ export class MultiTokensReserveRepatriatedEvent {
     /**
      * Reserved token units were transferred
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.ReserveRepatriated') === 'cadd3cb8a7078a34cbd801afd6c7a96515df926a8e147d0f25ba435ee7ddc826'
     }
 
     /**
      * Reserved token units were transferred
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, source: Uint8Array, destination: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, source: Uint8Array, destination: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4489,15 +4489,15 @@ export class MultiTokensReservedEvent {
     /**
      * Token units were reserved
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Reserved') === '5b08871f0a712066681cb69f10ad44662f3687788ce875b5555feb36ddfbb358'
     }
 
     /**
      * Token units were reserved
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4518,15 +4518,15 @@ export class MultiTokensSlashedEvent {
     /**
      * An amount of tokens were slashed from account
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Slashed') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
     }
 
     /**
      * An amount of tokens were slashed from account
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4547,15 +4547,15 @@ export class MultiTokensThawedEvent {
     /**
      * Collection, token or account was unfrozen
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Thawed') === '5cbc7fc4c80127d7f9f1d04214e275834ef6eb218526ecacd7cb52716bca5909'
     }
 
     /**
      * Collection, token or account was unfrozen
      */
-    get asMatrixV603(): matrixV603.Freeze {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.Freeze {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4576,15 +4576,15 @@ export class MultiTokensTokenAccountCreatedEvent {
     /**
      * A new token account was created
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenAccountCreated') === '0cca0a7615506a78b65129d3424c22086426999e458decb2fb277f2a1aa1cb65'
     }
 
     /**
      * A new token account was created
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, balance: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, balance: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4605,15 +4605,15 @@ export class MultiTokensTokenAccountDestroyedEvent {
     /**
      * A token account was destroyed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenAccountDestroyed') === 'd3d24a0607b48c4ee8924ed762cb532aa6cf3a0d0410df546c31f4a14154c387'
     }
 
     /**
      * A token account was destroyed
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4634,15 +4634,15 @@ export class MultiTokensTokenAccountUpdatedEvent {
     /**
      * TokenAccount storage was set to `value`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenAccountUpdated') === '78c28a4a51bfd9571491a3bb97228440d55d52184c02bc47ea9237f39721b971'
     }
 
     /**
      * TokenAccount storage was set to `value`
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, value: (matrixV603.TokenAccount | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, value: (matrixEnjinV603.TokenAccount | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4663,15 +4663,15 @@ export class MultiTokensTokenCreatedEvent {
     /**
      * A token was created
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenCreated') === '119f558a8615f102588d5efe87fe923338791a100e0d848069f41e8db95e7a7e'
     }
 
     /**
      * A token was created
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, issuer: matrixV603.RootOrSigned, initialSupply: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, issuer: matrixEnjinV603.RootOrSigned, initialSupply: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4692,15 +4692,15 @@ export class MultiTokensTokenDestroyedEvent {
     /**
      * A token was destroyed
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenDestroyed') === 'cf1d93ed1d0b9ceef6268da8c9921584304700425bfb5edd986b2b7a7b02a021'
     }
 
     /**
      * A token was destroyed
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, caller: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, caller: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4721,15 +4721,15 @@ export class MultiTokensTokenMutatedEvent {
     /**
      * A token was mutated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenMutated') === '020a496ead997e5add19341a576048ad36de5c80d1ce3a9afe009a4332d54dca'
     }
 
     /**
      * A token was mutated
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, mutation: matrixV603.DefaultTokenMutation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, mutation: matrixEnjinV603.DefaultTokenMutation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4750,15 +4750,15 @@ export class MultiTokensTokenUpdatedEvent {
     /**
      * Token storage was set to `value`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.TokenUpdated') === 'bdfad0bec6d256ae0fde104ed92cdc20185613745dc8a4149ef923e312f22d5f'
     }
 
     /**
      * Token storage was set to `value`
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, value: (matrixV603.Token | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, value: (matrixEnjinV603.Token | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -4809,15 +4809,15 @@ export class MultiTokensTransferredEvent {
     /**
      * Units of a token were transferred
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Transferred') === 'c845e6a95391a8fa441a8156f9f87ac0df95affb6d9fce2cad53cb422fe1942a'
     }
 
     /**
      * Units of a token were transferred
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, from: Uint8Array, to: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, operator: Uint8Array, from: Uint8Array, to: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4838,15 +4838,15 @@ export class MultiTokensUnapprovedEvent {
     /**
      * An unapproval took place. If `token_id` is `None`, it applies to the collection.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Unapproved') === '668c5b2be0f408488a0422b461e10a6786cfe678bc278d2579b4a1d3a8635d49'
     }
 
     /**
      * An unapproval took place. If `token_id` is `None`, it applies to the collection.
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: (bigint | undefined), owner: Uint8Array, operator: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4867,15 +4867,15 @@ export class MultiTokensUnreservedEvent {
     /**
      * Token units were unreserved
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Unreserved') === '5b08871f0a712066681cb69f10ad44662f3687788ce875b5555feb36ddfbb358'
     }
 
     /**
      * Token units were unreserved
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint, reserveId: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4896,15 +4896,15 @@ export class MultiTokensWithdrawEvent {
     /**
      * Token units were withdrawn
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokens.Withdraw') === '93726bb340d1054b12581b1eaa725de5eb6895c3c530ab3823144764f737359a'
     }
 
     /**
      * Token units were withdrawn
      */
-    get asMatrixV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {collectionId: bigint, tokenId: bigint, accountId: Uint8Array, amount: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4925,15 +4925,15 @@ export class MultiTokensMigrationMigratedAttributesEvent {
     /**
      * Number of attributes have been migrated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigratedAttributes') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
     }
 
     /**
      * Number of attributes have been migrated
      */
-    get asMatrixV603(): number {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): number {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4954,15 +4954,15 @@ export class MultiTokensMigrationMigratedCollectionAccountsEvent {
     /**
      * Number of collection accounts have been migrated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigratedCollectionAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
     }
 
     /**
      * Number of collection accounts have been migrated
      */
-    get asMatrixV603(): number {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): number {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4983,15 +4983,15 @@ export class MultiTokensMigrationMigratedCollectionsEvent {
     /**
      * Number of collections that have been migrated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigratedCollections') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
     }
 
     /**
      * Number of collections that have been migrated
      */
-    get asMatrixV603(): number {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): number {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5012,15 +5012,15 @@ export class MultiTokensMigrationMigratedTokenAccountsEvent {
     /**
      * Number of token accounts have been migrated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigratedTokenAccounts') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
     }
 
     /**
      * Number of token accounts have been migrated
      */
-    get asMatrixV603(): number {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): number {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5041,15 +5041,15 @@ export class MultiTokensMigrationMigratedTokensEvent {
     /**
      * Number of tokens have been migrated
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigratedTokens') === '0a0f30b1ade5af5fade6413c605719d59be71340cf4884f65ee9858eb1c38f6c'
     }
 
     /**
      * Number of tokens have been migrated
      */
-    get asMatrixV603(): number {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): number {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5070,15 +5070,15 @@ export class MultiTokensMigrationMigrationFinishedEvent {
     /**
      * Indicates that the migration is finished
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('MultiTokensMigration.MigrationFinished') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Indicates that the migration is finished
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5099,15 +5099,15 @@ export class MultisigMultisigApprovalEvent {
     /**
      * A multisig operation has been approved by someone.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Multisig.MultisigApproval') === 'bc800106752cebb28b84cdca738856289d0ade8d1818c303bd3f2000695fbb28'
     }
 
     /**
      * A multisig operation has been approved by someone.
      */
-    get asMatrixV603(): {approving: Uint8Array, timepoint: matrixV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {approving: Uint8Array, timepoint: matrixEnjinV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5128,15 +5128,15 @@ export class MultisigMultisigCancelledEvent {
     /**
      * A multisig operation has been cancelled.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Multisig.MultisigCancelled') === 'b24b244f000fd9e834b0f8c6d23aa3931d80d5b1c70f0f9a0e28826f22125b21'
     }
 
     /**
      * A multisig operation has been cancelled.
      */
-    get asMatrixV603(): {cancelling: Uint8Array, timepoint: matrixV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {cancelling: Uint8Array, timepoint: matrixEnjinV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5157,15 +5157,15 @@ export class MultisigMultisigExecutedEvent {
     /**
      * A multisig operation has been executed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Multisig.MultisigExecuted') === '9e0a225fbf5acad3beeb4abfce677050bfccaf660eedf13e97c1c4ecb39cfe13'
     }
 
     /**
      * A multisig operation has been executed.
      */
-    get asMatrixV603(): {approving: Uint8Array, timepoint: matrixV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {approving: Uint8Array, timepoint: matrixEnjinV603.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -5231,15 +5231,15 @@ export class MultisigNewMultisigEvent {
     /**
      * A new multisig operation has begun.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Multisig.NewMultisig') === '137bdeb26018c08567fabc1c357d536046e92cc9fdf480339be5bc9e7e56d3be'
     }
 
     /**
      * A new multisig operation has begun.
      */
-    get asMatrixV603(): {approving: Uint8Array, multisig: Uint8Array, callHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {approving: Uint8Array, multisig: Uint8Array, callHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5260,15 +5260,15 @@ export class OrmlXcmSentEvent {
     /**
      * XCM message sent. \[to, message\]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('OrmlXcm.Sent') === '3a86f4dc1fd9ac7a9db26bfc04e4e976c06d6b089449fea20d7cfce98a4b3528'
     }
 
     /**
      * XCM message sent. \[to, message\]
      */
-    get asMatrixV603(): {to: matrixV603.V3MultiLocation, message: matrixV603.V3Instruction[]} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {to: matrixEnjinV603.V3MultiLocation, message: matrixEnjinV603.V3Instruction[]} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5289,15 +5289,15 @@ export class ParachainSystemDownwardMessagesProcessedEvent {
     /**
      * Downward messages were processed using the given weight.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.DownwardMessagesProcessed') === 'cf9eeacdba66ba832f6a2f98e5183e00967eed37902f126a525a42e65ffec630'
     }
 
     /**
      * Downward messages were processed using the given weight.
      */
-    get asMatrixV603(): {weightUsed: matrixV603.Weight, dmqHead: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {weightUsed: matrixEnjinV603.Weight, dmqHead: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5318,15 +5318,15 @@ export class ParachainSystemDownwardMessagesReceivedEvent {
     /**
      * Some downward messages have been received and will be processed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.DownwardMessagesReceived') === '1cdbdc8ac203922f95ae6ab3e8b98004e956389f7ec11480ec5633d29b48cf71'
     }
 
     /**
      * Some downward messages have been received and will be processed.
      */
-    get asMatrixV603(): {count: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {count: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5347,15 +5347,15 @@ export class ParachainSystemUpgradeAuthorizedEvent {
     /**
      * An upgrade has been authorized.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.UpgradeAuthorized') === '9e5c86c297bd88fae31bc40119e44695818ddc3ab8842b90daeb12771005c70d'
     }
 
     /**
      * An upgrade has been authorized.
      */
-    get asMatrixV603(): {codeHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {codeHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5376,15 +5376,15 @@ export class ParachainSystemUpwardMessageSentEvent {
     /**
      * An upward message was sent to the relay chain.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.UpwardMessageSent') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
     }
 
     /**
      * An upward message was sent to the relay chain.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5405,15 +5405,15 @@ export class ParachainSystemValidationFunctionAppliedEvent {
     /**
      * The validation function was applied as of the contained relay chain block number.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.ValidationFunctionApplied') === 'f35adbaa82c93636884997faedd16369ac498b9208d7c11f2233b9ef2aa4f092'
     }
 
     /**
      * The validation function was applied as of the contained relay chain block number.
      */
-    get asMatrixV603(): {relayChainBlockNum: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {relayChainBlockNum: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5434,15 +5434,15 @@ export class ParachainSystemValidationFunctionDiscardedEvent {
     /**
      * The relay-chain aborted the upgrade process.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.ValidationFunctionDiscarded') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * The relay-chain aborted the upgrade process.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5463,15 +5463,15 @@ export class ParachainSystemValidationFunctionStoredEvent {
     /**
      * The validation function has been scheduled to apply.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('ParachainSystem.ValidationFunctionStored') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * The validation function has been scheduled to apply.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5494,7 +5494,7 @@ export class PolkadotXcmAssetsClaimedEvent {
      * 
      * \[ hash, origin, assets \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.AssetsClaimed') === '31f92e7520747dddaef3e11b450bf3ace3a2df72f612e4237ea77faaffe7a16c'
     }
 
@@ -5503,8 +5503,8 @@ export class PolkadotXcmAssetsClaimedEvent {
      * 
      * \[ hash, origin, assets \]
      */
-    get asMatrixV603(): [Uint8Array, matrixV603.V3MultiLocation, matrixV603.VersionedMultiAssets] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [Uint8Array, matrixEnjinV603.V3MultiLocation, matrixEnjinV603.VersionedMultiAssets] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5527,7 +5527,7 @@ export class PolkadotXcmAssetsTrappedEvent {
      * 
      * \[ hash, origin, assets \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.AssetsTrapped') === '31f92e7520747dddaef3e11b450bf3ace3a2df72f612e4237ea77faaffe7a16c'
     }
 
@@ -5536,8 +5536,8 @@ export class PolkadotXcmAssetsTrappedEvent {
      * 
      * \[ hash, origin, assets \]
      */
-    get asMatrixV603(): [Uint8Array, matrixV603.V3MultiLocation, matrixV603.VersionedMultiAssets] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [Uint8Array, matrixEnjinV603.V3MultiLocation, matrixEnjinV603.VersionedMultiAssets] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5560,7 +5560,7 @@ export class PolkadotXcmAttemptedEvent {
      * 
      * \[ outcome \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.Attempted') === '9f44833a3470bf6416377180f3875a05cfa0cf60651f18f6456d9e12cbab7095'
     }
 
@@ -5569,8 +5569,8 @@ export class PolkadotXcmAttemptedEvent {
      * 
      * \[ outcome \]
      */
-    get asMatrixV603(): matrixV603.V3Outcome {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.V3Outcome {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5593,7 +5593,7 @@ export class PolkadotXcmFeesPaidEvent {
      * 
      * \[ paying location, fees \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.FeesPaid') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
     }
 
@@ -5602,8 +5602,8 @@ export class PolkadotXcmFeesPaidEvent {
      * 
      * \[ paying location, fees \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, matrixV603.V3MultiAsset[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiAsset[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5628,7 +5628,7 @@ export class PolkadotXcmInvalidQuerierEvent {
      * 
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.InvalidQuerier') === '7c1090f283eee877a7601bfed0fd6fc3ca831930ac944924347ca8a2c6bd92e3'
     }
 
@@ -5639,8 +5639,8 @@ export class PolkadotXcmInvalidQuerierEvent {
      * 
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint, matrixV603.V3MultiLocation, (matrixV603.V3MultiLocation | undefined)] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint, matrixEnjinV603.V3MultiLocation, (matrixEnjinV603.V3MultiLocation | undefined)] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5669,7 +5669,7 @@ export class PolkadotXcmInvalidQuerierVersionEvent {
      * 
      * \[ origin location, id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.InvalidQuerierVersion') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
     }
 
@@ -5684,8 +5684,8 @@ export class PolkadotXcmInvalidQuerierVersionEvent {
      * 
      * \[ origin location, id \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5710,7 +5710,7 @@ export class PolkadotXcmInvalidResponderEvent {
      * 
      * \[ origin location, id, expected location \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.InvalidResponder') === '3bf64d16d6fb5992c738643efff778414cc181e36377c106ab8130ca32b906de'
     }
 
@@ -5721,8 +5721,8 @@ export class PolkadotXcmInvalidResponderEvent {
      * 
      * \[ origin location, id, expected location \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint, (matrixV603.V3MultiLocation | undefined)] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint, (matrixEnjinV603.V3MultiLocation | undefined)] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5751,7 +5751,7 @@ export class PolkadotXcmInvalidResponderVersionEvent {
      * 
      * \[ origin location, id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.InvalidResponderVersion') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
     }
 
@@ -5766,8 +5766,8 @@ export class PolkadotXcmInvalidResponderVersionEvent {
      * 
      * \[ origin location, id \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5791,7 +5791,7 @@ export class PolkadotXcmNotifiedEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.Notified') === '142af28353c3fd45d5839ca78e03f5b0850e0cd92892c66cfb4438a39b1200cf'
     }
 
@@ -5801,8 +5801,8 @@ export class PolkadotXcmNotifiedEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get asMatrixV603(): [bigint, number, number] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [bigint, number, number] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5827,7 +5827,7 @@ export class PolkadotXcmNotifyDecodeFailedEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.NotifyDecodeFailed') === '142af28353c3fd45d5839ca78e03f5b0850e0cd92892c66cfb4438a39b1200cf'
     }
 
@@ -5838,8 +5838,8 @@ export class PolkadotXcmNotifyDecodeFailedEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get asMatrixV603(): [bigint, number, number] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [bigint, number, number] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5863,7 +5863,7 @@ export class PolkadotXcmNotifyDispatchErrorEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.NotifyDispatchError') === '142af28353c3fd45d5839ca78e03f5b0850e0cd92892c66cfb4438a39b1200cf'
     }
 
@@ -5873,8 +5873,8 @@ export class PolkadotXcmNotifyDispatchErrorEvent {
      * 
      * \[ id, pallet index, call index \]
      */
-    get asMatrixV603(): [bigint, number, number] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [bigint, number, number] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5899,7 +5899,7 @@ export class PolkadotXcmNotifyOverweightEvent {
      * 
      * \[ id, pallet index, call index, actual weight, max budgeted weight \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.NotifyOverweight') === '98a4f2faff58b2444156c088dd1e1b3efb6f82323dcf1a7c67d4d2e01b621c0d'
     }
 
@@ -5910,8 +5910,8 @@ export class PolkadotXcmNotifyOverweightEvent {
      * 
      * \[ id, pallet index, call index, actual weight, max budgeted weight \]
      */
-    get asMatrixV603(): [bigint, number, number, matrixV603.Weight, matrixV603.Weight] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [bigint, number, number, matrixEnjinV603.Weight, matrixEnjinV603.Weight] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5935,7 +5935,7 @@ export class PolkadotXcmNotifyTargetMigrationFailEvent {
      * 
      * \[ location, query ID \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.NotifyTargetMigrationFail') === '8266fa3a9f901885a47ef275cb4d4053fa3a36033a40564944a565ca686bb27d'
     }
 
@@ -5945,8 +5945,8 @@ export class PolkadotXcmNotifyTargetMigrationFailEvent {
      * 
      * \[ location, query ID \]
      */
-    get asMatrixV603(): [matrixV603.VersionedMultiLocation, bigint] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.VersionedMultiLocation, bigint] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5970,7 +5970,7 @@ export class PolkadotXcmNotifyTargetSendFailEvent {
      * 
      * \[ location, query ID, error \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.NotifyTargetSendFail') === '26c26186934c8414941ac6565c3465399a31fd237e9f48bcc04601c00427c6fc'
     }
 
@@ -5980,8 +5980,8 @@ export class PolkadotXcmNotifyTargetSendFailEvent {
      * 
      * \[ location, query ID, error \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint, matrixV603.V3Error] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint, matrixEnjinV603.V3Error] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6005,7 +6005,7 @@ export class PolkadotXcmResponseReadyEvent {
      * 
      * \[ id, response \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.ResponseReady') === '47e2336328ac2f8cffe468836a85755d501dbd3f9fe77c829ae5b5c5c33f5e9c'
     }
 
@@ -6015,8 +6015,8 @@ export class PolkadotXcmResponseReadyEvent {
      * 
      * \[ id, response \]
      */
-    get asMatrixV603(): [bigint, matrixV603.V3Response] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [bigint, matrixEnjinV603.V3Response] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6039,7 +6039,7 @@ export class PolkadotXcmResponseTakenEvent {
      * 
      * \[ id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.ResponseTaken') === '0e1caef0df80727d2768bc480792261a4e7615b57b3e8182c7f664f06c96a08e'
     }
 
@@ -6048,8 +6048,8 @@ export class PolkadotXcmResponseTakenEvent {
      * 
      * \[ id \]
      */
-    get asMatrixV603(): bigint {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): bigint {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6072,7 +6072,7 @@ export class PolkadotXcmSentEvent {
      * 
      * \[ origin, destination, message \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.Sent') === '8b71eb54444ef55962e90645805fd80535dfb12f572b41fdb1e093b7627b132d'
     }
 
@@ -6081,8 +6081,8 @@ export class PolkadotXcmSentEvent {
      * 
      * \[ origin, destination, message \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, matrixV603.V3MultiLocation, matrixV603.V3Instruction[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3Instruction[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6106,7 +6106,7 @@ export class PolkadotXcmSupportedVersionChangedEvent {
      * 
      * \[ location, XCM version \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.SupportedVersionChanged') === '9fb88093240cec5964187b6999557d2d8c4331f97b6c42c5664d30afbf50d7d4'
     }
 
@@ -6116,8 +6116,8 @@ export class PolkadotXcmSupportedVersionChangedEvent {
      * 
      * \[ location, XCM version \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, number] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, number] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6142,7 +6142,7 @@ export class PolkadotXcmUnexpectedResponseEvent {
      * 
      * \[ origin location, id \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.UnexpectedResponse') === 'b8a7ace58226e359dd4ed6ffcc01266723020043e3fad0900eec6eb6f910a91e'
     }
 
@@ -6153,8 +6153,8 @@ export class PolkadotXcmUnexpectedResponseEvent {
      * 
      * \[ origin location, id \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, bigint] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, bigint] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6179,7 +6179,7 @@ export class PolkadotXcmVersionChangeNotifiedEvent {
      * 
      * \[ destination, result, cost \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.VersionChangeNotified') === '3e656c216d68595d03592e62a70ad5d9d6a20b8a41bc0686433d36902cc47f08'
     }
 
@@ -6190,8 +6190,8 @@ export class PolkadotXcmVersionChangeNotifiedEvent {
      * 
      * \[ destination, result, cost \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, number, matrixV603.V3MultiAsset[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, number, matrixEnjinV603.V3MultiAsset[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6214,7 +6214,7 @@ export class PolkadotXcmVersionNotifyRequestedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.VersionNotifyRequested') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
     }
 
@@ -6223,8 +6223,8 @@ export class PolkadotXcmVersionNotifyRequestedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, matrixV603.V3MultiAsset[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiAsset[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6248,7 +6248,7 @@ export class PolkadotXcmVersionNotifyStartedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.VersionNotifyStarted') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
     }
 
@@ -6258,8 +6258,8 @@ export class PolkadotXcmVersionNotifyStartedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, matrixV603.V3MultiAsset[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiAsset[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6282,7 +6282,7 @@ export class PolkadotXcmVersionNotifyUnrequestedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('PolkadotXcm.VersionNotifyUnrequested') === '1e1917ab347c95883db9a398c08711e7ca09b4af3514b1b64b18534cb58a1f4e'
     }
 
@@ -6291,8 +6291,8 @@ export class PolkadotXcmVersionNotifyUnrequestedEvent {
      * 
      * \[ destination location, cost \]
      */
-    get asMatrixV603(): [matrixV603.V3MultiLocation, matrixV603.V3MultiAsset[]] {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): [matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiAsset[]] {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6313,15 +6313,15 @@ export class PoolsPoolsMutatedEvent {
     /**
      * Pools storage was modified by [`PoolsMutation`]
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Pools.PoolsMutated') === 'b16ffa04290d7cc517e7d6b466ba41ac23a91f050d81350d896bcb03eebd76b1'
     }
 
     /**
      * Pools storage was modified by [`PoolsMutation`]
      */
-    get asMatrixV603(): matrixV603.PoolsMutation {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): matrixEnjinV603.PoolsMutation {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6342,15 +6342,15 @@ export class PreimageClearedEvent {
     /**
      * A preimage has ben cleared.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Preimage.Cleared') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
     /**
      * A preimage has ben cleared.
      */
-    get asMatrixV603(): {hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6371,15 +6371,15 @@ export class PreimageNotedEvent {
     /**
      * A preimage has been noted.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Preimage.Noted') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
     /**
      * A preimage has been noted.
      */
-    get asMatrixV603(): {hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6400,15 +6400,15 @@ export class PreimageRequestedEvent {
     /**
      * A preimage has been requested.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Preimage.Requested') === '19b8576fc9fe9553b0b5ad154324ccae0d0d43fdccbdffddf2bb6066a9b37b5c'
     }
 
     /**
      * A preimage has been requested.
      */
-    get asMatrixV603(): {hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6429,15 +6429,15 @@ export class SchedulerCallUnavailableEvent {
     /**
      * The call for the provided hash was not found so the task has been aborted.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.CallUnavailable') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
     }
 
     /**
      * The call for the provided hash was not found so the task has been aborted.
      */
-    get asMatrixV603(): {task: [number, number], id: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6458,15 +6458,15 @@ export class SchedulerCanceledEvent {
     /**
      * Canceled some task.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.Canceled') === '4186e24556a58b04e04d6d697a530eedf78f255da1ba9d84df6511dd6d6465f7'
     }
 
     /**
      * Canceled some task.
      */
-    get asMatrixV603(): {when: number, index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {when: number, index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6487,15 +6487,15 @@ export class SchedulerDispatchedEvent {
     /**
      * Dispatched some task.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.Dispatched') === '6eb5580f3023aa9d8b919b2e4d4c348b6d18e7b61b4d3362b70f19480d1767fc'
     }
 
     /**
      * Dispatched some task.
      */
-    get asMatrixV603(): {task: [number, number], id: (Uint8Array | undefined), result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {task: [number, number], id: (Uint8Array | undefined), result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -6561,15 +6561,15 @@ export class SchedulerPeriodicFailedEvent {
     /**
      * The given task was unable to be renewed since the agenda is full at that block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.PeriodicFailed') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
     }
 
     /**
      * The given task was unable to be renewed since the agenda is full at that block.
      */
-    get asMatrixV603(): {task: [number, number], id: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6590,15 +6590,15 @@ export class SchedulerPermanentlyOverweightEvent {
     /**
      * The given task can never be executed since it is overweight.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.PermanentlyOverweight') === '3f8a02e4aab86c69eee850370e5a22ba709a5a92af04e5636b8cbc2a1920b477'
     }
 
     /**
      * The given task can never be executed since it is overweight.
      */
-    get asMatrixV603(): {task: [number, number], id: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {task: [number, number], id: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6619,15 +6619,15 @@ export class SchedulerScheduledEvent {
     /**
      * Scheduled some task.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Scheduler.Scheduled') === '4186e24556a58b04e04d6d697a530eedf78f255da1ba9d84df6511dd6d6465f7'
     }
 
     /**
      * Scheduled some task.
      */
-    get asMatrixV603(): {when: number, index: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {when: number, index: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6649,7 +6649,7 @@ export class SessionNewSessionEvent {
      * New session has happened. Note that the argument is the session index, not the
      * block number as the type might suggest.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Session.NewSession') === '75fa09d2d8b5fbcbe4f75feb6c886998092453010ae364a5b06b9bb6319f1086'
     }
 
@@ -6657,8 +6657,8 @@ export class SessionNewSessionEvent {
      * New session has happened. Note that the argument is the session index, not the
      * block number as the type might suggest.
      */
-    get asMatrixV603(): {sessionIndex: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {sessionIndex: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6826,15 +6826,15 @@ export class SystemCodeUpdatedEvent {
     /**
      * `:code` was updated.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.CodeUpdated') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * `:code` was updated.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6855,15 +6855,15 @@ export class SystemExtrinsicFailedEvent {
     /**
      * An extrinsic failed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.ExtrinsicFailed') === '89ca818f689e3f6e085d8137a961f36cc94819777211c5c11cca985a448944b8'
     }
 
     /**
      * An extrinsic failed.
      */
-    get asMatrixV603(): {dispatchError: matrixV603.DispatchError, dispatchInfo: matrixV603.DispatchInfo} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {dispatchError: matrixEnjinV603.DispatchError, dispatchInfo: matrixEnjinV603.DispatchInfo} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -6929,15 +6929,15 @@ export class SystemExtrinsicSuccessEvent {
     /**
      * An extrinsic completed successfully.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.ExtrinsicSuccess') === '6b78214e1591ecc2de1662ebf5ca93838612414a62415cde1cdd2962f8235a92'
     }
 
     /**
      * An extrinsic completed successfully.
      */
-    get asMatrixV603(): {dispatchInfo: matrixV603.DispatchInfo} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {dispatchInfo: matrixEnjinV603.DispatchInfo} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6958,15 +6958,15 @@ export class SystemKilledAccountEvent {
     /**
      * An account was reaped.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.KilledAccount') === '7fb7672b764b0a4f0c4910fddefec0709628843df7ad0073a97eede13c53ca92'
     }
 
     /**
      * An account was reaped.
      */
-    get asMatrixV603(): {account: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6987,15 +6987,15 @@ export class SystemNewAccountEvent {
     /**
      * A new account was created.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.NewAccount') === '7fb7672b764b0a4f0c4910fddefec0709628843df7ad0073a97eede13c53ca92'
     }
 
     /**
      * A new account was created.
      */
-    get asMatrixV603(): {account: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7016,15 +7016,15 @@ export class SystemRemarkedEvent {
     /**
      * On on-chain remark happened.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('System.Remarked') === 'c58b73482fe762a6dcca2f35266f0d1739333312cf7a50eea55c666d0cda6101'
     }
 
     /**
      * On on-chain remark happened.
      */
-    get asMatrixV603(): {sender: Uint8Array, hash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {sender: Uint8Array, hash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7045,15 +7045,15 @@ export class TechnicalCommitteeApprovedEvent {
     /**
      * A motion was approved by the required threshold.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Approved') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
     /**
      * A motion was approved by the required threshold.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7074,15 +7074,15 @@ export class TechnicalCommitteeClosedEvent {
     /**
      * A proposal was closed because its threshold was reached or after its duration was up.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Closed') === '084e73926c22836c888c17e49053d3b72e2feaa904b8f0175d21fb5b800542f9'
     }
 
     /**
      * A proposal was closed because its threshold was reached or after its duration was up.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, yes: number, no: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, yes: number, no: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7103,15 +7103,15 @@ export class TechnicalCommitteeDisapprovedEvent {
     /**
      * A motion was not approved by the required threshold.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Disapproved') === 'b8668610145a6851ad2d5b7dd4bfc15e29402d9a8558401ab955896007f866a5'
     }
 
     /**
      * A motion was not approved by the required threshold.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7132,15 +7132,15 @@ export class TechnicalCommitteeExecutedEvent {
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
     }
 
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7206,15 +7206,15 @@ export class TechnicalCommitteeMemberExecutedEvent {
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
     }
 
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    get asMatrixV603(): {proposalHash: Uint8Array, result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7281,7 +7281,7 @@ export class TechnicalCommitteeProposedEvent {
      * A motion (given hash) has been proposed (by given account) with a threshold (given
      * `MemberCount`).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Proposed') === '63978c884e95719fd416c8a38a2ec2ec5a691a58a28349d62b0173643f0d8262'
     }
 
@@ -7289,8 +7289,8 @@ export class TechnicalCommitteeProposedEvent {
      * A motion (given hash) has been proposed (by given account) with a threshold (given
      * `MemberCount`).
      */
-    get asMatrixV603(): {account: Uint8Array, proposalIndex: number, proposalHash: Uint8Array, threshold: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, proposalIndex: number, proposalHash: Uint8Array, threshold: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7312,7 +7312,7 @@ export class TechnicalCommitteeVotedEvent {
      * A motion (given hash) has been voted on by given account, leaving
      * a tally (yes votes and no votes given respectively as `MemberCount`).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Voted') === 'b69e97272b7c060192bbc1a5e91692b0a8b905727af6d9eb5627b7857ede0846'
     }
 
@@ -7320,8 +7320,8 @@ export class TechnicalCommitteeVotedEvent {
      * A motion (given hash) has been voted on by given account, leaving
      * a tally (yes votes and no votes given respectively as `MemberCount`).
      */
-    get asMatrixV603(): {account: Uint8Array, proposalHash: Uint8Array, voted: boolean, yes: number, no: number} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {account: Uint8Array, proposalHash: Uint8Array, voted: boolean, yes: number, no: number} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7342,15 +7342,15 @@ export class TechnicalMembershipDummyEvent {
     /**
      * Phantom member, never used.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.Dummy') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Phantom member, never used.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7371,15 +7371,15 @@ export class TechnicalMembershipKeyChangedEvent {
     /**
      * One of the members' keys changed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.KeyChanged') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * One of the members' keys changed.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7400,15 +7400,15 @@ export class TechnicalMembershipMemberAddedEvent {
     /**
      * The given member was added; see the transaction for who.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.MemberAdded') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * The given member was added; see the transaction for who.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7429,15 +7429,15 @@ export class TechnicalMembershipMemberRemovedEvent {
     /**
      * The given member was removed; see the transaction for who.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.MemberRemoved') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * The given member was removed; see the transaction for who.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7458,15 +7458,15 @@ export class TechnicalMembershipMembersResetEvent {
     /**
      * The membership was reset; see the transaction for who the new set is.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.MembersReset') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * The membership was reset; see the transaction for who the new set is.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7487,15 +7487,15 @@ export class TechnicalMembershipMembersSwappedEvent {
     /**
      * Two members were swapped; see the transaction for who.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TechnicalMembership.MembersSwapped') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Two members were swapped; see the transaction for who.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7517,7 +7517,7 @@ export class TransactionPaymentTransactionFeePaidEvent {
      * A transaction fee `actual_fee`, of which `tip` was added to the minimum inclusion fee,
      * has been paid by `who`.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('TransactionPayment.TransactionFeePaid') === 'f2e962e9996631445edecd62b0646df79871442a2d1a1a6e1f550a0b3a56b226'
     }
 
@@ -7525,8 +7525,8 @@ export class TransactionPaymentTransactionFeePaidEvent {
      * A transaction fee `actual_fee`, of which `tip` was added to the minimum inclusion fee,
      * has been paid by `who`.
      */
-    get asMatrixV603(): {who: Uint8Array, actualFee: bigint, tip: bigint} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {who: Uint8Array, actualFee: bigint, tip: bigint} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7547,15 +7547,15 @@ export class UnknownTokensDepositedEvent {
     /**
      * Deposit success.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('UnknownTokens.Deposited') === '56d763db65b5d2d0b08faf432352ea07b43e96d3748f93c593bf63f666b69808'
     }
 
     /**
      * Deposit success.
      */
-    get asMatrixV603(): {asset: matrixV603.V3MultiAsset, who: matrixV603.V3MultiLocation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {asset: matrixEnjinV603.V3MultiAsset, who: matrixEnjinV603.V3MultiLocation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7576,15 +7576,15 @@ export class UnknownTokensWithdrawnEvent {
     /**
      * Withdraw success.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('UnknownTokens.Withdrawn') === '56d763db65b5d2d0b08faf432352ea07b43e96d3748f93c593bf63f666b69808'
     }
 
     /**
      * Withdraw success.
      */
-    get asMatrixV603(): {asset: matrixV603.V3MultiAsset, who: matrixV603.V3MultiLocation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {asset: matrixEnjinV603.V3MultiAsset, who: matrixEnjinV603.V3MultiLocation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7605,15 +7605,15 @@ export class UtilityBatchCompletedEvent {
     /**
      * Batch of dispatches completed fully with no error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.BatchCompleted') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Batch of dispatches completed fully with no error.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7634,15 +7634,15 @@ export class UtilityBatchCompletedWithErrorsEvent {
     /**
      * Batch of dispatches completed but has errors.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.BatchCompletedWithErrors') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Batch of dispatches completed but has errors.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7664,7 +7664,7 @@ export class UtilityBatchInterruptedEvent {
      * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
      * well as the error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.BatchInterrupted') === '031f8c01ddd9491965bf6e6671d70381e70d55e6028aab52a937d1c3afeecb9f'
     }
 
@@ -7672,8 +7672,8 @@ export class UtilityBatchInterruptedEvent {
      * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
      * well as the error.
      */
-    get asMatrixV603(): {index: number, error: matrixV603.DispatchError} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: number, error: matrixEnjinV603.DispatchError} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7745,15 +7745,15 @@ export class UtilityDispatchedAsEvent {
     /**
      * A call was dispatched.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.DispatchedAs') === 'ee56f7174dc1a4631da3e5b48f323193771be6a702fb2ff1ff40459869d34a0e'
     }
 
     /**
      * A call was dispatched.
      */
-    get asMatrixV603(): {result: matrixV603.Type_35} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {result: matrixEnjinV603.Type_35} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7819,15 +7819,15 @@ export class UtilityItemCompletedEvent {
     /**
      * A single item within a Batch of dispatches has completed with no error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.ItemCompleted') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * A single item within a Batch of dispatches has completed with no error.
      */
-    get asMatrixV603(): null {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): null {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7848,15 +7848,15 @@ export class UtilityItemFailedEvent {
     /**
      * A single item within a Batch of dispatches has completed with error.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('Utility.ItemFailed') === '4564a5412ce55535234d019dbd1d2999c5a9d6f452a565385d0c43e85d0dbf0b'
     }
 
     /**
      * A single item within a Batch of dispatches has completed with error.
      */
-    get asMatrixV603(): {error: matrixV603.DispatchError} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {error: matrixEnjinV603.DispatchError} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -8009,15 +8009,15 @@ export class XTokensTransferredMultiAssetsEvent {
     /**
      * Transferred `MultiAsset` with fee.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XTokens.TransferredMultiAssets') === '15736a72848dcda33acde4ffd89efcf41166a311cefd45a3ccad9cf54e78a91d'
     }
 
     /**
      * Transferred `MultiAsset` with fee.
      */
-    get asMatrixV603(): {sender: Uint8Array, assets: matrixV603.V3MultiAsset[], fee: matrixV603.V3MultiAsset, dest: matrixV603.V3MultiLocation} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {sender: Uint8Array, assets: matrixEnjinV603.V3MultiAsset[], fee: matrixEnjinV603.V3MultiAsset, dest: matrixEnjinV603.V3MultiLocation} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8038,15 +8038,15 @@ export class XcmpQueueBadFormatEvent {
     /**
      * Bad XCM format used.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.BadFormat') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
     }
 
     /**
      * Bad XCM format used.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8067,15 +8067,15 @@ export class XcmpQueueBadVersionEvent {
     /**
      * Bad XCM version used.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.BadVersion') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
     }
 
     /**
      * Bad XCM version used.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8096,15 +8096,15 @@ export class XcmpQueueFailEvent {
     /**
      * Some XCM failed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.Fail') === 'add7b9cc246aa92449c7315a345573f307df55cd0b7e472982a726f0e1757cf0'
     }
 
     /**
      * Some XCM failed.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined), error: matrixV603.V3Error, weight: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined), error: matrixEnjinV603.V3Error, weight: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8125,15 +8125,15 @@ export class XcmpQueueOverweightEnqueuedEvent {
     /**
      * An XCM exceeded the individual message weight budget.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.OverweightEnqueued') === '2ab73de7ff203da5932102451076b4fa8c2ccd8d1073f98653bf4d6f0c768abb'
     }
 
     /**
      * An XCM exceeded the individual message weight budget.
      */
-    get asMatrixV603(): {sender: number, sentAt: number, index: bigint, required: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {sender: number, sentAt: number, index: bigint, required: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8154,15 +8154,15 @@ export class XcmpQueueOverweightServicedEvent {
     /**
      * An XCM from the overweight queue was executed with the given actual weight used.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.OverweightServiced') === '329a8814d84fbfabe17575c913cc1d0e29db3f8ce21b25c6e90d9e54913d763b'
     }
 
     /**
      * An XCM from the overweight queue was executed with the given actual weight used.
      */
-    get asMatrixV603(): {index: bigint, used: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {index: bigint, used: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8183,15 +8183,15 @@ export class XcmpQueueSuccessEvent {
     /**
      * Some XCM was executed ok.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.Success') === 'b84e46a58fb78d04c8748c4d236302e83484bfad9ec3579aa4e8f336f0efaca8'
     }
 
     /**
      * Some XCM was executed ok.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined), weight: matrixV603.Weight} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined), weight: matrixEnjinV603.Weight} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -8212,15 +8212,15 @@ export class XcmpQueueXcmpMessageSentEvent {
     /**
      * An HRMP message was sent to a sibling parachain.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this._chain.getEventHash('XcmpQueue.XcmpMessageSent') === 'ccbb82ba01a4d742bdd34e545836a89f2c435428f6887f28ce1ecf0166419df1'
     }
 
     /**
      * An HRMP message was sent to a sibling parachain.
      */
-    get asMatrixV603(): {messageHash: (Uint8Array | undefined)} {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): {messageHash: (Uint8Array | undefined)} {
+        assert(this.isMatrixEnjinV603)
         return this._chain.decodeEvent(this.event)
     }
 }

@@ -22,8 +22,8 @@ import { getBestListing } from '../../util/entities'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceAuctionFinalizedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { listingId, winningBid, protocolFee, royalty } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { listingId, winningBid, protocolFee, royalty } = data.asMatrixEnjinV603
         return { listingId, winningBid, protocolFee, royalty }
     }
     throw new UnknownVersionError(data.constructor.name)

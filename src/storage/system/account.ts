@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../common/errors'
 import { decodeId } from '../../common/tools'
-import { AccountInfo } from '../../types/generated/matrixV603'
+import { AccountInfo } from '../../types/generated/matrixEnjinV603'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { BlockContext } from '../../types/generated/support'
 
@@ -8,8 +8,8 @@ async function getStorageData(ctx: BlockContext, accounts: Uint8Array[]): Promis
     const storage = new SystemAccountStorage(ctx)
     if (!storage.isExists) return undefined
 
-    if (storage.isMatrixV603) {
-        return storage.asMatrixV603.getMany(accounts)
+    if (storage.isExists) {
+        return storage.asMatrixEnjinV603.getMany(accounts)
     }
 
     throw new UnknownVersionError(storage.constructor.name)

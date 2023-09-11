@@ -16,8 +16,8 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new BalancesTransferEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { from, to, amount } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { from, to, amount } = data.asMatrixEnjinV603
         return { from, to, amount }
     }
 

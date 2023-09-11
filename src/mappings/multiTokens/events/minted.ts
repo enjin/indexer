@@ -29,8 +29,8 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensMintedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { collectionId, tokenId, issuer, recipient, amount } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { collectionId, tokenId, issuer, recipient, amount } = data.asMatrixEnjinV603
         if (issuer.__kind === 'Signed') {
             return { collectionId, tokenId, issuer: issuer.value, recipient, amount }
         }

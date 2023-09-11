@@ -23,8 +23,8 @@ interface EventData {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionDestroyedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { collectionId, caller } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { collectionId, caller } = data.asMatrixEnjinV603
         return { collectionId, caller }
     }
     throw new UnknownVersionError(data.constructor.name)

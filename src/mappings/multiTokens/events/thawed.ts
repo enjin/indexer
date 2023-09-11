@@ -20,8 +20,8 @@ import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generat
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensThawedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { collectionId, freezeType } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { collectionId, freezeType } = data.asMatrixEnjinV603
 
         if (freezeType.__kind === 'Collection') {
             return {

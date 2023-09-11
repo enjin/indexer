@@ -1,6 +1,6 @@
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
-import * as matrixV603 from './matrixV603'
+import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as v500 from './v500'
 import * as efinityV3014 from './efinityV3014'
 import * as v600 from './v600'
@@ -19,15 +19,15 @@ export class AuthorshipAuthorStorage extends StorageBase {
     /**
      *  Author of current block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
      *  Author of current block.
      */
-    get asMatrixV603(): AuthorshipAuthorStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): AuthorshipAuthorStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -35,7 +35,7 @@ export class AuthorshipAuthorStorage extends StorageBase {
 /**
  *  Author of current block.
  */
-export interface AuthorshipAuthorStorageMatrixV603 {
+export interface AuthorshipAuthorStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -74,7 +74,7 @@ export class BalancesAccountStorage extends StorageBase {
      *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
      *  NOTE: This is only used in the case that this pallet is used to store balances.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '12d9e780c790f66e9c340b94cabd98da447e1087819d4acb4b1fe22bbb2783fb'
     }
 
@@ -104,8 +104,8 @@ export class BalancesAccountStorage extends StorageBase {
      *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
      *  NOTE: This is only used in the case that this pallet is used to store balances.
      */
-    get asMatrixV603(): BalancesAccountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesAccountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -258,18 +258,18 @@ export class BalancesAccountStorage extends StorageBase {
  *  `Balances` pallet, which uses a `StorageMap` to store balances data only.
  *  NOTE: This is only used in the case that this pallet is used to store balances.
  */
-export interface BalancesAccountStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.AccountData>
-    getAll(): Promise<matrixV603.AccountData[]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.AccountData[]>
+export interface BalancesAccountStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.AccountData>
+    getAll(): Promise<matrixEnjinV603.AccountData[]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.AccountData[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.AccountData][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.AccountData][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.AccountData][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.AccountData][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.AccountData][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.AccountData][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.AccountData][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.AccountData][]>
 }
 
 /**
@@ -364,15 +364,15 @@ export class BalancesFreezesStorage extends StorageBase {
     /**
      *  Freeze locks on account balances.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
     }
 
     /**
      *  Freeze locks on account balances.
      */
-    get asMatrixV603(): BalancesFreezesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesFreezesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -380,18 +380,18 @@ export class BalancesFreezesStorage extends StorageBase {
 /**
  *  Freeze locks on account balances.
  */
-export interface BalancesFreezesStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.IdAmount[]>
-    getAll(): Promise<matrixV603.IdAmount[][]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.IdAmount[][]>
+export interface BalancesFreezesStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.IdAmount[]>
+    getAll(): Promise<matrixEnjinV603.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.IdAmount[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
 }
 
 export class BalancesHoldsStorage extends StorageBase {
@@ -406,15 +406,15 @@ export class BalancesHoldsStorage extends StorageBase {
     /**
      *  Holds on account balances.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '687d129c824d7b23d1f21a471b19c3fed952e35b64e5de19f549851d1c3f7f91'
     }
 
     /**
      *  Holds on account balances.
      */
-    get asMatrixV603(): BalancesHoldsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesHoldsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -422,18 +422,18 @@ export class BalancesHoldsStorage extends StorageBase {
 /**
  *  Holds on account balances.
  */
-export interface BalancesHoldsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.IdAmount[]>
-    getAll(): Promise<matrixV603.IdAmount[][]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.IdAmount[][]>
+export interface BalancesHoldsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.IdAmount[]>
+    getAll(): Promise<matrixEnjinV603.IdAmount[][]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.IdAmount[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.IdAmount[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.IdAmount[]][]>
 }
 
 export class BalancesInactiveIssuanceStorage extends StorageBase {
@@ -448,15 +448,15 @@ export class BalancesInactiveIssuanceStorage extends StorageBase {
     /**
      *  The total units of outstanding deactivated balance in the system.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The total units of outstanding deactivated balance in the system.
      */
-    get asMatrixV603(): BalancesInactiveIssuanceStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesInactiveIssuanceStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -464,7 +464,7 @@ export class BalancesInactiveIssuanceStorage extends StorageBase {
 /**
  *  The total units of outstanding deactivated balance in the system.
  */
-export interface BalancesInactiveIssuanceStorageMatrixV603 {
+export interface BalancesInactiveIssuanceStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -481,7 +481,7 @@ export class BalancesLocksStorage extends StorageBase {
      *  Any liquidity locks on some account balances.
      *  NOTE: Should only be accessed when setting, changing and freeing a lock.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'e393b3a20a6d47aee703c898fda1db02fffe128e4692a5861f416ecc67b13a86'
     }
 
@@ -489,8 +489,8 @@ export class BalancesLocksStorage extends StorageBase {
      *  Any liquidity locks on some account balances.
      *  NOTE: Should only be accessed when setting, changing and freeing a lock.
      */
-    get asMatrixV603(): BalancesLocksStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesLocksStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -499,18 +499,18 @@ export class BalancesLocksStorage extends StorageBase {
  *  Any liquidity locks on some account balances.
  *  NOTE: Should only be accessed when setting, changing and freeing a lock.
  */
-export interface BalancesLocksStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.BalanceLock[]>
-    getAll(): Promise<matrixV603.BalanceLock[][]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.BalanceLock[][]>
+export interface BalancesLocksStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.BalanceLock[]>
+    getAll(): Promise<matrixEnjinV603.BalanceLock[][]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.BalanceLock[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.BalanceLock[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.BalanceLock[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.BalanceLock[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.BalanceLock[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.BalanceLock[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.BalanceLock[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.BalanceLock[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.BalanceLock[]][]>
 }
 
 export class BalancesReservesStorage extends StorageBase {
@@ -525,15 +525,15 @@ export class BalancesReservesStorage extends StorageBase {
     /**
      *  Named reserves on some account balances.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '474ab364918936227f04514c303c572bb070961f30f593f2cbb3e25426aba37a'
     }
 
     /**
      *  Named reserves on some account balances.
      */
-    get asMatrixV603(): BalancesReservesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesReservesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -541,18 +541,18 @@ export class BalancesReservesStorage extends StorageBase {
 /**
  *  Named reserves on some account balances.
  */
-export interface BalancesReservesStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.ReserveData[]>
-    getAll(): Promise<matrixV603.ReserveData[][]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.ReserveData[][]>
+export interface BalancesReservesStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.ReserveData[]>
+    getAll(): Promise<matrixEnjinV603.ReserveData[][]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.ReserveData[][]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.ReserveData[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.ReserveData[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.ReserveData[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.ReserveData[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.ReserveData[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.ReserveData[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.ReserveData[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.ReserveData[]][]>
 }
 
 export class BalancesTotalIssuanceStorage extends StorageBase {
@@ -567,15 +567,15 @@ export class BalancesTotalIssuanceStorage extends StorageBase {
     /**
      *  The total units issued in the system.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The total units issued in the system.
      */
-    get asMatrixV603(): BalancesTotalIssuanceStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BalancesTotalIssuanceStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -583,7 +583,7 @@ export class BalancesTotalIssuanceStorage extends StorageBase {
 /**
  *  The total units issued in the system.
  */
-export interface BalancesTotalIssuanceStorageMatrixV603 {
+export interface BalancesTotalIssuanceStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -599,15 +599,15 @@ export class BountiesBountiesStorage extends StorageBase {
     /**
      *  Bounties that have been made.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '3a079681beba8ee49f179fd6134858f2cef778fb7ad21438c15303b8dda5c6fd'
     }
 
     /**
      *  Bounties that have been made.
      */
-    get asMatrixV603(): BountiesBountiesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BountiesBountiesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -615,18 +615,18 @@ export class BountiesBountiesStorage extends StorageBase {
 /**
  *  Bounties that have been made.
  */
-export interface BountiesBountiesStorageMatrixV603 {
-    get(key: number): Promise<(matrixV603.Bounty | undefined)>
-    getAll(): Promise<matrixV603.Bounty[]>
-    getMany(keys: number[]): Promise<(matrixV603.Bounty | undefined)[]>
+export interface BountiesBountiesStorageMatrixEnjinV603 {
+    get(key: number): Promise<(matrixEnjinV603.Bounty | undefined)>
+    getAll(): Promise<matrixEnjinV603.Bounty[]>
+    getMany(keys: number[]): Promise<(matrixEnjinV603.Bounty | undefined)[]>
     getKeys(): Promise<number[]>
     getKeys(key: number): Promise<number[]>
     getKeysPaged(pageSize: number): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: matrixV603.Bounty][]>
-    getPairs(key: number): Promise<[k: number, v: matrixV603.Bounty][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixV603.Bounty][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixV603.Bounty][]>
+    getPairs(): Promise<[k: number, v: matrixEnjinV603.Bounty][]>
+    getPairs(key: number): Promise<[k: number, v: matrixEnjinV603.Bounty][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixEnjinV603.Bounty][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixEnjinV603.Bounty][]>
 }
 
 export class BountiesBountyApprovalsStorage extends StorageBase {
@@ -641,15 +641,15 @@ export class BountiesBountyApprovalsStorage extends StorageBase {
     /**
      *  Bounty indices that have been approved but not yet funded.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a9f6979e68cec9d5834e7d077129aa05e8b477f326cb009049d2178afbea14f0'
     }
 
     /**
      *  Bounty indices that have been approved but not yet funded.
      */
-    get asMatrixV603(): BountiesBountyApprovalsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BountiesBountyApprovalsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -657,7 +657,7 @@ export class BountiesBountyApprovalsStorage extends StorageBase {
 /**
  *  Bounty indices that have been approved but not yet funded.
  */
-export interface BountiesBountyApprovalsStorageMatrixV603 {
+export interface BountiesBountyApprovalsStorageMatrixEnjinV603 {
     get(): Promise<number[]>
 }
 
@@ -673,15 +673,15 @@ export class BountiesBountyCountStorage extends StorageBase {
     /**
      *  Number of bounty proposals that have been made.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  Number of bounty proposals that have been made.
      */
-    get asMatrixV603(): BountiesBountyCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BountiesBountyCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -689,7 +689,7 @@ export class BountiesBountyCountStorage extends StorageBase {
 /**
  *  Number of bounty proposals that have been made.
  */
-export interface BountiesBountyCountStorageMatrixV603 {
+export interface BountiesBountyCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -705,15 +705,15 @@ export class BountiesBountyDescriptionsStorage extends StorageBase {
     /**
      *  The description of each bounty.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8aa11675e28f46f0e4b233018893c1979e42c43f64a290aecd81221cbc7f6e92'
     }
 
     /**
      *  The description of each bounty.
      */
-    get asMatrixV603(): BountiesBountyDescriptionsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): BountiesBountyDescriptionsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -721,7 +721,7 @@ export class BountiesBountyDescriptionsStorage extends StorageBase {
 /**
  *  The description of each bounty.
  */
-export interface BountiesBountyDescriptionsStorageMatrixV603 {
+export interface BountiesBountyDescriptionsStorageMatrixEnjinV603 {
     get(key: number): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: number[]): Promise<(Uint8Array | undefined)[]>
@@ -748,7 +748,7 @@ export class ClaimsAccountNonceStorage extends StorageBase {
      *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
      *  claimed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'b66e643893eeb22eb47e70e5963130466a65d7fdc06d6f4fefd82f3ba4c900bd'
     }
 
@@ -756,8 +756,8 @@ export class ClaimsAccountNonceStorage extends StorageBase {
      *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
      *  claimed.
      */
-    get asMatrixV603(): ClaimsAccountNonceStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsAccountNonceStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -766,7 +766,7 @@ export class ClaimsAccountNonceStorage extends StorageBase {
  *  This stores nonce for each Ethereum account, which will increment every time when ENJ2 are
  *  claimed.
  */
-export interface ClaimsAccountNonceStorageMatrixV603 {
+export interface ClaimsAccountNonceStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<(number | undefined)>
     getAll(): Promise<number[]>
     getMany(keys: Uint8Array[]): Promise<(number | undefined)[]>
@@ -824,15 +824,15 @@ export class ClaimsClaimsStorage extends StorageBase {
     /**
      *  This stores claims. Maps an ethereum address to the vec of claim data.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'b59addc95e4ad12f850fe4129a0ee964077180ad25eacf666dc124f2f5e0f166'
     }
 
     /**
      *  This stores claims. Maps an ethereum address to the vec of claim data.
      */
-    get asMatrixV603(): ClaimsClaimsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsClaimsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -857,18 +857,18 @@ export class ClaimsClaimsStorage extends StorageBase {
 /**
  *  This stores claims. Maps an ethereum address to the vec of claim data.
  */
-export interface ClaimsClaimsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.ClaimData[] | undefined)>
-    getAll(): Promise<matrixV603.ClaimData[][]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.ClaimData[] | undefined)[]>
+export interface ClaimsClaimsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.ClaimData[] | undefined)>
+    getAll(): Promise<matrixEnjinV603.ClaimData[][]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.ClaimData[] | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.ClaimData[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.ClaimData[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.ClaimData[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.ClaimData[]][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.ClaimData[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.ClaimData[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.ClaimData[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.ClaimData[]][]>
 }
 
 /**
@@ -901,15 +901,15 @@ export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
     /**
      *  Delay time in block numbers before the user could claim
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
     /**
      *  Delay time in block numbers before the user could claim
      */
-    get asMatrixV603(): ClaimsDelayClaimsPeriodStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsDelayClaimsPeriodStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -917,7 +917,7 @@ export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
 /**
  *  Delay time in block numbers before the user could claim
  */
-export interface ClaimsDelayClaimsPeriodStorageMatrixV603 {
+export interface ClaimsDelayClaimsPeriodStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -933,15 +933,15 @@ export class ClaimsExchangeRateStorage extends StorageBase {
     /**
      *  Amount in ENJ equivalent to 1 EFI.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
     /**
      *  Amount in ENJ equivalent to 1 EFI.
      */
-    get asMatrixV603(): ClaimsExchangeRateStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsExchangeRateStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -964,7 +964,7 @@ export class ClaimsExchangeRateStorage extends StorageBase {
 /**
  *  Amount in ENJ equivalent to 1 EFI.
  */
-export interface ClaimsExchangeRateStorageMatrixV603 {
+export interface ClaimsExchangeRateStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -988,7 +988,7 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
      *  Latest block numbers for Ethereum for which requests claim has been made by the
      *  relayer.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
@@ -996,8 +996,8 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
      *  Latest block numbers for Ethereum for which requests claim has been made by the
      *  relayer.
      */
-    get asMatrixV603(): ClaimsLatestBlockNumberStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsLatestBlockNumberStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -1023,7 +1023,7 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
  *  Latest block numbers for Ethereum for which requests claim has been made by the
  *  relayer.
  */
-export interface ClaimsLatestBlockNumberStorageMatrixV603 {
+export interface ClaimsLatestBlockNumberStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -1144,15 +1144,15 @@ export class ClaimsTotalUnclaimedAmountStorage extends StorageBase {
     /**
      *  This is the total amount for which claims have been requested and are not yet claimed.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  This is the total amount for which claims have been requested and are not yet claimed.
      */
-    get asMatrixV603(): ClaimsTotalUnclaimedAmountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsTotalUnclaimedAmountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1160,7 +1160,7 @@ export class ClaimsTotalUnclaimedAmountStorage extends StorageBase {
 /**
  *  This is the total amount for which claims have been requested and are not yet claimed.
  */
-export interface ClaimsTotalUnclaimedAmountStorageMatrixV603 {
+export interface ClaimsTotalUnclaimedAmountStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -1176,15 +1176,15 @@ export class ClaimsTransactionHashLookupStorage extends StorageBase {
     /**
      *  This stores transaction hash. Is used to check if transaction hash is already present
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '29735300dba5135be0e1e53d771089aba86ed92479018d68d31c9d66cb9816e3'
     }
 
     /**
      *  This stores transaction hash. Is used to check if transaction hash is already present
      */
-    get asMatrixV603(): ClaimsTransactionHashLookupStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ClaimsTransactionHashLookupStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1192,7 +1192,7 @@ export class ClaimsTransactionHashLookupStorage extends StorageBase {
 /**
  *  This stores transaction hash. Is used to check if transaction hash is already present
  */
-export interface ClaimsTransactionHashLookupStorageMatrixV603 {
+export interface ClaimsTransactionHashLookupStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<(null | undefined)>
     getAll(): Promise<null[]>
     getMany(keys: Uint8Array[]): Promise<(null | undefined)[]>
@@ -1218,15 +1218,15 @@ export class CollatorStakingCandidatesStorage extends StorageBase {
     /**
      *  The current set of candidates for collation.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
     }
 
     /**
      *  The current set of candidates for collation.
      */
-    get asMatrixV603(): CollatorStakingCandidatesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingCandidatesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1234,8 +1234,8 @@ export class CollatorStakingCandidatesStorage extends StorageBase {
 /**
  *  The current set of candidates for collation.
  */
-export interface CollatorStakingCandidatesStorageMatrixV603 {
-    get(): Promise<matrixV603.Collator[]>
+export interface CollatorStakingCandidatesStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Collator[]>
 }
 
 export class CollatorStakingCollatorExitsStorage extends StorageBase {
@@ -1250,15 +1250,15 @@ export class CollatorStakingCollatorExitsStorage extends StorageBase {
     /**
      *  The list of collators who requested an exit.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'dc1fabbf37ff4a03bb9bd2d05fd2211c29428d60c37ffa71e74ce64db501eb06'
     }
 
     /**
      *  The list of collators who requested an exit.
      */
-    get asMatrixV603(): CollatorStakingCollatorExitsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingCollatorExitsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1266,7 +1266,7 @@ export class CollatorStakingCollatorExitsStorage extends StorageBase {
 /**
  *  The list of collators who requested an exit.
  */
-export interface CollatorStakingCollatorExitsStorageMatrixV603 {
+export interface CollatorStakingCollatorExitsStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<(number | undefined)>
     getAll(): Promise<number[]>
     getMany(keys: Uint8Array[]): Promise<(number | undefined)[]>
@@ -1292,15 +1292,15 @@ export class CollatorStakingCollatorsStorage extends StorageBase {
     /**
      *  The current set of collators
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
     }
 
     /**
      *  The current set of collators
      */
-    get asMatrixV603(): CollatorStakingCollatorsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingCollatorsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1308,8 +1308,8 @@ export class CollatorStakingCollatorsStorage extends StorageBase {
 /**
  *  The current set of collators
  */
-export interface CollatorStakingCollatorsStorageMatrixV603 {
-    get(): Promise<matrixV603.Collator[]>
+export interface CollatorStakingCollatorsStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Collator[]>
 }
 
 export class CollatorStakingCurrentRoundStorage extends StorageBase {
@@ -1324,15 +1324,15 @@ export class CollatorStakingCurrentRoundStorage extends StorageBase {
     /**
      *  The current round information.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '55f635cb275994673c2b749928c20c824098d354b6ce574fd0854fccb2dfd74e'
     }
 
     /**
      *  The current round information.
      */
-    get asMatrixV603(): CollatorStakingCurrentRoundStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingCurrentRoundStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1340,8 +1340,8 @@ export class CollatorStakingCurrentRoundStorage extends StorageBase {
 /**
  *  The current round information.
  */
-export interface CollatorStakingCurrentRoundStorageMatrixV603 {
-    get(): Promise<matrixV603.Round>
+export interface CollatorStakingCurrentRoundStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Round>
 }
 
 export class CollatorStakingDesiredCandidatesCountStorage extends StorageBase {
@@ -1356,15 +1356,15 @@ export class CollatorStakingDesiredCandidatesCountStorage extends StorageBase {
     /**
      *  The current candidate limit, must be within 0 and [`MaxCandidates`](Config::MaxCandidates)
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The current candidate limit, must be within 0 and [`MaxCandidates`](Config::MaxCandidates)
      */
-    get asMatrixV603(): CollatorStakingDesiredCandidatesCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingDesiredCandidatesCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1372,7 +1372,7 @@ export class CollatorStakingDesiredCandidatesCountStorage extends StorageBase {
 /**
  *  The current candidate limit, must be within 0 and [`MaxCandidates`](Config::MaxCandidates)
  */
-export interface CollatorStakingDesiredCandidatesCountStorageMatrixV603 {
+export interface CollatorStakingDesiredCandidatesCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -1391,7 +1391,7 @@ export class CollatorStakingInvulnerablesStorage extends StorageBase {
      *  This is the list of collators who are invulnerable to being ejected from collation
      *  either by unbonding or by having less stake.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '35c5711ece77e8bf668805f5771fb7a2fac84ca2d4e88fa1475f8e8f5f814787'
     }
 
@@ -1401,8 +1401,8 @@ export class CollatorStakingInvulnerablesStorage extends StorageBase {
      *  This is the list of collators who are invulnerable to being ejected from collation
      *  either by unbonding or by having less stake.
      */
-    get asMatrixV603(): CollatorStakingInvulnerablesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingInvulnerablesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1413,8 +1413,8 @@ export class CollatorStakingInvulnerablesStorage extends StorageBase {
  *  This is the list of collators who are invulnerable to being ejected from collation
  *  either by unbonding or by having less stake.
  */
-export interface CollatorStakingInvulnerablesStorageMatrixV603 {
-    get(): Promise<matrixV603.Collator[]>
+export interface CollatorStakingInvulnerablesStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Collator[]>
 }
 
 export class CollatorStakingMinCollatorStakeStorage extends StorageBase {
@@ -1429,15 +1429,15 @@ export class CollatorStakingMinCollatorStakeStorage extends StorageBase {
     /**
      *  The min stake amount for collators
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The min stake amount for collators
      */
-    get asMatrixV603(): CollatorStakingMinCollatorStakeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingMinCollatorStakeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1445,7 +1445,7 @@ export class CollatorStakingMinCollatorStakeStorage extends StorageBase {
 /**
  *  The min stake amount for collators
  */
-export interface CollatorStakingMinCollatorStakeStorageMatrixV603 {
+export interface CollatorStakingMinCollatorStakeStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -1463,7 +1463,7 @@ export class CollatorStakingNominatorsStorage extends StorageBase {
      * 
      *  Each nominator is allowed to nominate one collator.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '11643981c5f057df403241a3175aad7384102829be78567ad40af375e54362df'
     }
 
@@ -1472,8 +1472,8 @@ export class CollatorStakingNominatorsStorage extends StorageBase {
      * 
      *  Each nominator is allowed to nominate one collator.
      */
-    get asMatrixV603(): CollatorStakingNominatorsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingNominatorsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1483,18 +1483,18 @@ export class CollatorStakingNominatorsStorage extends StorageBase {
  * 
  *  Each nominator is allowed to nominate one collator.
  */
-export interface CollatorStakingNominatorsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Nomination | undefined)>
-    getAll(): Promise<matrixV603.Nomination[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Nomination | undefined)[]>
+export interface CollatorStakingNominatorsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Nomination | undefined)>
+    getAll(): Promise<matrixEnjinV603.Nomination[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Nomination | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Nomination][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Nomination][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Nomination][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Nomination][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Nomination][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Nomination][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Nomination][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Nomination][]>
 }
 
 export class CollatorStakingSessionInfoStorage extends StorageBase {
@@ -1509,15 +1509,15 @@ export class CollatorStakingSessionInfoStorage extends StorageBase {
     /**
      *  The session info of collators including produced blocks and uptime
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '158926fcec32bbcafd0b7803e082429e4e807c32a63362ded7d2c8c3c9e95edb'
     }
 
     /**
      *  The session info of collators including produced blocks and uptime
      */
-    get asMatrixV603(): CollatorStakingSessionInfoStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CollatorStakingSessionInfoStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1525,22 +1525,22 @@ export class CollatorStakingSessionInfoStorage extends StorageBase {
 /**
  *  The session info of collators including produced blocks and uptime
  */
-export interface CollatorStakingSessionInfoStorageMatrixV603 {
-    get(key1: Uint8Array, key2: number): Promise<matrixV603.CollatorSessionInfo>
-    getAll(): Promise<matrixV603.CollatorSessionInfo[]>
-    getMany(keys: [Uint8Array, number][]): Promise<matrixV603.CollatorSessionInfo[]>
+export interface CollatorStakingSessionInfoStorageMatrixEnjinV603 {
+    get(key1: Uint8Array, key2: number): Promise<matrixEnjinV603.CollatorSessionInfo>
+    getAll(): Promise<matrixEnjinV603.CollatorSessionInfo[]>
+    getMany(keys: [Uint8Array, number][]): Promise<matrixEnjinV603.CollatorSessionInfo[]>
     getKeys(): Promise<[Uint8Array, number][]>
     getKeys(key1: Uint8Array): Promise<[Uint8Array, number][]>
     getKeys(key1: Uint8Array, key2: number): Promise<[Uint8Array, number][]>
     getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, number][]>
     getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, number][]>
     getKeysPaged(pageSize: number, key1: Uint8Array, key2: number): AsyncIterable<[Uint8Array, number][]>
-    getPairs(): Promise<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
-    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
-    getPairs(key1: Uint8Array, key2: number): Promise<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array, key2: number): AsyncIterable<[k: [Uint8Array, number], v: matrixV603.CollatorSessionInfo][]>
+    getPairs(): Promise<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
+    getPairs(key1: Uint8Array, key2: number): Promise<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: number): AsyncIterable<[k: [Uint8Array, number], v: matrixEnjinV603.CollatorSessionInfo][]>
 }
 
 export class CommunityPoolApprovalsStorage extends StorageBase {
@@ -1555,15 +1555,15 @@ export class CommunityPoolApprovalsStorage extends StorageBase {
     /**
      *  Proposal indices that have been approved but not yet awarded.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a9f6979e68cec9d5834e7d077129aa05e8b477f326cb009049d2178afbea14f0'
     }
 
     /**
      *  Proposal indices that have been approved but not yet awarded.
      */
-    get asMatrixV603(): CommunityPoolApprovalsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CommunityPoolApprovalsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1571,7 +1571,7 @@ export class CommunityPoolApprovalsStorage extends StorageBase {
 /**
  *  Proposal indices that have been approved but not yet awarded.
  */
-export interface CommunityPoolApprovalsStorageMatrixV603 {
+export interface CommunityPoolApprovalsStorageMatrixEnjinV603 {
     get(): Promise<number[]>
 }
 
@@ -1587,15 +1587,15 @@ export class CommunityPoolDeactivatedStorage extends StorageBase {
     /**
      *  The amount which has been reported as inactive to Currency.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  The amount which has been reported as inactive to Currency.
      */
-    get asMatrixV603(): CommunityPoolDeactivatedStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CommunityPoolDeactivatedStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1603,7 +1603,7 @@ export class CommunityPoolDeactivatedStorage extends StorageBase {
 /**
  *  The amount which has been reported as inactive to Currency.
  */
-export interface CommunityPoolDeactivatedStorageMatrixV603 {
+export interface CommunityPoolDeactivatedStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -1619,15 +1619,15 @@ export class CommunityPoolProposalCountStorage extends StorageBase {
     /**
      *  Number of proposals that have been made.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  Number of proposals that have been made.
      */
-    get asMatrixV603(): CommunityPoolProposalCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CommunityPoolProposalCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1635,7 +1635,7 @@ export class CommunityPoolProposalCountStorage extends StorageBase {
 /**
  *  Number of proposals that have been made.
  */
-export interface CommunityPoolProposalCountStorageMatrixV603 {
+export interface CommunityPoolProposalCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -1651,15 +1651,15 @@ export class CommunityPoolProposalsStorage extends StorageBase {
     /**
      *  Proposals that have been made.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '7641e66c93ee52b69acfed5b20da999d04ba6a21fac610732405be939e87d4b7'
     }
 
     /**
      *  Proposals that have been made.
      */
-    get asMatrixV603(): CommunityPoolProposalsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CommunityPoolProposalsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1667,18 +1667,18 @@ export class CommunityPoolProposalsStorage extends StorageBase {
 /**
  *  Proposals that have been made.
  */
-export interface CommunityPoolProposalsStorageMatrixV603 {
-    get(key: number): Promise<(matrixV603.Proposal | undefined)>
-    getAll(): Promise<matrixV603.Proposal[]>
-    getMany(keys: number[]): Promise<(matrixV603.Proposal | undefined)[]>
+export interface CommunityPoolProposalsStorageMatrixEnjinV603 {
+    get(key: number): Promise<(matrixEnjinV603.Proposal | undefined)>
+    getAll(): Promise<matrixEnjinV603.Proposal[]>
+    getMany(keys: number[]): Promise<(matrixEnjinV603.Proposal | undefined)[]>
     getKeys(): Promise<number[]>
     getKeys(key: number): Promise<number[]>
     getKeysPaged(pageSize: number): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: matrixV603.Proposal][]>
-    getPairs(key: number): Promise<[k: number, v: matrixV603.Proposal][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixV603.Proposal][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixV603.Proposal][]>
+    getPairs(): Promise<[k: number, v: matrixEnjinV603.Proposal][]>
+    getPairs(key: number): Promise<[k: number, v: matrixEnjinV603.Proposal][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixEnjinV603.Proposal][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixEnjinV603.Proposal][]>
 }
 
 export class CouncilMembersStorage extends StorageBase {
@@ -1693,15 +1693,15 @@ export class CouncilMembersStorage extends StorageBase {
     /**
      *  The current members of the collective. This is stored sorted (just by value).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The current members of the collective. This is stored sorted (just by value).
      */
-    get asMatrixV603(): CouncilMembersStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilMembersStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1709,7 +1709,7 @@ export class CouncilMembersStorage extends StorageBase {
 /**
  *  The current members of the collective. This is stored sorted (just by value).
  */
-export interface CouncilMembersStorageMatrixV603 {
+export interface CouncilMembersStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -1725,15 +1725,15 @@ export class CouncilPrimeStorage extends StorageBase {
     /**
      *  The prime member that helps determine the default vote behavior in case of absentations.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
      *  The prime member that helps determine the default vote behavior in case of absentations.
      */
-    get asMatrixV603(): CouncilPrimeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilPrimeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1741,7 +1741,7 @@ export class CouncilPrimeStorage extends StorageBase {
 /**
  *  The prime member that helps determine the default vote behavior in case of absentations.
  */
-export interface CouncilPrimeStorageMatrixV603 {
+export interface CouncilPrimeStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -1757,15 +1757,15 @@ export class CouncilProposalCountStorage extends StorageBase {
     /**
      *  Proposals so far.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  Proposals so far.
      */
-    get asMatrixV603(): CouncilProposalCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilProposalCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -1773,7 +1773,7 @@ export class CouncilProposalCountStorage extends StorageBase {
 /**
  *  Proposals so far.
  */
-export interface CouncilProposalCountStorageMatrixV603 {
+export interface CouncilProposalCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -1789,15 +1789,15 @@ export class CouncilProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
     }
 
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get asMatrixV603(): CouncilProposalOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilProposalOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -1880,18 +1880,18 @@ export class CouncilProposalOfStorage extends StorageBase {
 /**
  *  Actual proposal for a given hash, if it's current.
  */
-export interface CouncilProposalOfStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Call | undefined)>
-    getAll(): Promise<matrixV603.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Call | undefined)[]>
+export interface CouncilProposalOfStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Call | undefined)>
+    getAll(): Promise<matrixEnjinV603.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Call | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Call][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
 }
 
 /**
@@ -1991,15 +1991,15 @@ export class CouncilProposalsStorage extends StorageBase {
     /**
      *  The hashes of the active proposals.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The hashes of the active proposals.
      */
-    get asMatrixV603(): CouncilProposalsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilProposalsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2007,7 +2007,7 @@ export class CouncilProposalsStorage extends StorageBase {
 /**
  *  The hashes of the active proposals.
  */
-export interface CouncilProposalsStorageMatrixV603 {
+export interface CouncilProposalsStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -2023,15 +2023,15 @@ export class CouncilVotingStorage extends StorageBase {
     /**
      *  Votes on a given proposal, if it is ongoing.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8674aeb71b725705ae08d0cc723a5b29396e1f9ed56e4adcf4602c361e693cd7'
     }
 
     /**
      *  Votes on a given proposal, if it is ongoing.
      */
-    get asMatrixV603(): CouncilVotingStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): CouncilVotingStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2039,18 +2039,18 @@ export class CouncilVotingStorage extends StorageBase {
 /**
  *  Votes on a given proposal, if it is ongoing.
  */
-export interface CouncilVotingStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Votes | undefined)>
-    getAll(): Promise<matrixV603.Votes[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Votes | undefined)[]>
+export interface CouncilVotingStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Votes | undefined)>
+    getAll(): Promise<matrixEnjinV603.Votes[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Votes | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Votes][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
 }
 
 export class DemocracyBlacklistStorage extends StorageBase {
@@ -2066,7 +2066,7 @@ export class DemocracyBlacklistStorage extends StorageBase {
      *  A record of who vetoed what. Maps proposal hash to a possible existent block number
      *  (until when it may not be resubmitted) and who vetoed it.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '4662be06b687a34e496fd51dc08b342dcaf96f230c937bc993b5e44373a90d1c'
     }
 
@@ -2074,8 +2074,8 @@ export class DemocracyBlacklistStorage extends StorageBase {
      *  A record of who vetoed what. Maps proposal hash to a possible existent block number
      *  (until when it may not be resubmitted) and who vetoed it.
      */
-    get asMatrixV603(): DemocracyBlacklistStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyBlacklistStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2084,7 +2084,7 @@ export class DemocracyBlacklistStorage extends StorageBase {
  *  A record of who vetoed what. Maps proposal hash to a possible existent block number
  *  (until when it may not be resubmitted) and who vetoed it.
  */
-export interface DemocracyBlacklistStorageMatrixV603 {
+export interface DemocracyBlacklistStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<([number, Uint8Array[]] | undefined)>
     getAll(): Promise<[number, Uint8Array[]][]>
     getMany(keys: Uint8Array[]): Promise<([number, Uint8Array[]] | undefined)[]>
@@ -2110,15 +2110,15 @@ export class DemocracyCancellationsStorage extends StorageBase {
     /**
      *  Record of all proposals that have been subject to emergency cancellation.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'ab0be9e2464670e9cf9991160d40979b3c2b03b59072e7d5023129d90356f1f4'
     }
 
     /**
      *  Record of all proposals that have been subject to emergency cancellation.
      */
-    get asMatrixV603(): DemocracyCancellationsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyCancellationsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2126,7 +2126,7 @@ export class DemocracyCancellationsStorage extends StorageBase {
 /**
  *  Record of all proposals that have been subject to emergency cancellation.
  */
-export interface DemocracyCancellationsStorageMatrixV603 {
+export interface DemocracyCancellationsStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<boolean>
     getAll(): Promise<boolean[]>
     getMany(keys: Uint8Array[]): Promise<boolean[]>
@@ -2154,7 +2154,7 @@ export class DemocracyDepositOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: Safe, as increasing integer keys are safe.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '103e29949f153721c94022e4909ca1a4e147451b6be4f1cf605cbc601e16f4fb'
     }
 
@@ -2163,8 +2163,8 @@ export class DemocracyDepositOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: Safe, as increasing integer keys are safe.
      */
-    get asMatrixV603(): DemocracyDepositOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyDepositOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2174,7 +2174,7 @@ export class DemocracyDepositOfStorage extends StorageBase {
  * 
  *  TWOX-NOTE: Safe, as increasing integer keys are safe.
  */
-export interface DemocracyDepositOfStorageMatrixV603 {
+export interface DemocracyDepositOfStorageMatrixEnjinV603 {
     get(key: number): Promise<([Uint8Array[], bigint] | undefined)>
     getAll(): Promise<[Uint8Array[], bigint][]>
     getMany(keys: number[]): Promise<([Uint8Array[], bigint] | undefined)[]>
@@ -2201,7 +2201,7 @@ export class DemocracyLastTabledWasExternalStorage extends StorageBase {
      *  True if the last referendum tabled was submitted externally. False if it was a public
      *  proposal.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
@@ -2209,8 +2209,8 @@ export class DemocracyLastTabledWasExternalStorage extends StorageBase {
      *  True if the last referendum tabled was submitted externally. False if it was a public
      *  proposal.
      */
-    get asMatrixV603(): DemocracyLastTabledWasExternalStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyLastTabledWasExternalStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2219,7 +2219,7 @@ export class DemocracyLastTabledWasExternalStorage extends StorageBase {
  *  True if the last referendum tabled was submitted externally. False if it was a public
  *  proposal.
  */
-export interface DemocracyLastTabledWasExternalStorageMatrixV603 {
+export interface DemocracyLastTabledWasExternalStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -2236,7 +2236,7 @@ export class DemocracyLowestUnbakedStorage extends StorageBase {
      *  The lowest referendum index representing an unbaked referendum. Equal to
      *  `ReferendumCount` if there isn't a unbaked referendum.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
@@ -2244,8 +2244,8 @@ export class DemocracyLowestUnbakedStorage extends StorageBase {
      *  The lowest referendum index representing an unbaked referendum. Equal to
      *  `ReferendumCount` if there isn't a unbaked referendum.
      */
-    get asMatrixV603(): DemocracyLowestUnbakedStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyLowestUnbakedStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2254,7 +2254,7 @@ export class DemocracyLowestUnbakedStorage extends StorageBase {
  *  The lowest referendum index representing an unbaked referendum. Equal to
  *  `ReferendumCount` if there isn't a unbaked referendum.
  */
-export interface DemocracyLowestUnbakedStorageMatrixV603 {
+export interface DemocracyLowestUnbakedStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -2275,7 +2275,7 @@ export class DemocracyMetadataOfStorage extends StorageBase {
      *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
      *  large preimages.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a67a07e9fffcce1c75e0f4b23d9fdf10851d6031a73b67c731af0a1b8e2197e2'
     }
 
@@ -2287,8 +2287,8 @@ export class DemocracyMetadataOfStorage extends StorageBase {
      *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
      *  large preimages.
      */
-    get asMatrixV603(): DemocracyMetadataOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyMetadataOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2301,18 +2301,18 @@ export class DemocracyMetadataOfStorage extends StorageBase {
  *  Consider a garbage collection for a metadata of finished referendums to `unrequest` (remove)
  *  large preimages.
  */
-export interface DemocracyMetadataOfStorageMatrixV603 {
-    get(key: matrixV603.MetadataOwner): Promise<(Uint8Array | undefined)>
+export interface DemocracyMetadataOfStorageMatrixEnjinV603 {
+    get(key: matrixEnjinV603.MetadataOwner): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
-    getMany(keys: matrixV603.MetadataOwner[]): Promise<(Uint8Array | undefined)[]>
-    getKeys(): Promise<matrixV603.MetadataOwner[]>
-    getKeys(key: matrixV603.MetadataOwner): Promise<matrixV603.MetadataOwner[]>
-    getKeysPaged(pageSize: number): AsyncIterable<matrixV603.MetadataOwner[]>
-    getKeysPaged(pageSize: number, key: matrixV603.MetadataOwner): AsyncIterable<matrixV603.MetadataOwner[]>
-    getPairs(): Promise<[k: matrixV603.MetadataOwner, v: Uint8Array][]>
-    getPairs(key: matrixV603.MetadataOwner): Promise<[k: matrixV603.MetadataOwner, v: Uint8Array][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixV603.MetadataOwner, v: Uint8Array][]>
-    getPairsPaged(pageSize: number, key: matrixV603.MetadataOwner): AsyncIterable<[k: matrixV603.MetadataOwner, v: Uint8Array][]>
+    getMany(keys: matrixEnjinV603.MetadataOwner[]): Promise<(Uint8Array | undefined)[]>
+    getKeys(): Promise<matrixEnjinV603.MetadataOwner[]>
+    getKeys(key: matrixEnjinV603.MetadataOwner): Promise<matrixEnjinV603.MetadataOwner[]>
+    getKeysPaged(pageSize: number): AsyncIterable<matrixEnjinV603.MetadataOwner[]>
+    getKeysPaged(pageSize: number, key: matrixEnjinV603.MetadataOwner): AsyncIterable<matrixEnjinV603.MetadataOwner[]>
+    getPairs(): Promise<[k: matrixEnjinV603.MetadataOwner, v: Uint8Array][]>
+    getPairs(key: matrixEnjinV603.MetadataOwner): Promise<[k: matrixEnjinV603.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixEnjinV603.MetadataOwner, v: Uint8Array][]>
+    getPairsPaged(pageSize: number, key: matrixEnjinV603.MetadataOwner): AsyncIterable<[k: matrixEnjinV603.MetadataOwner, v: Uint8Array][]>
 }
 
 export class DemocracyNextExternalStorage extends StorageBase {
@@ -2330,7 +2330,7 @@ export class DemocracyNextExternalStorage extends StorageBase {
      *  - `LastTabledWasExternal` is `false`; or
      *  - `PublicProps` is empty.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '5ae273b3f6176aae8ebabb6d92e749499c9e5de5bc8e85ade788f86e508314ea'
     }
 
@@ -2340,8 +2340,8 @@ export class DemocracyNextExternalStorage extends StorageBase {
      *  - `LastTabledWasExternal` is `false`; or
      *  - `PublicProps` is empty.
      */
-    get asMatrixV603(): DemocracyNextExternalStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyNextExternalStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2352,8 +2352,8 @@ export class DemocracyNextExternalStorage extends StorageBase {
  *  - `LastTabledWasExternal` is `false`; or
  *  - `PublicProps` is empty.
  */
-export interface DemocracyNextExternalStorageMatrixV603 {
-    get(): Promise<([matrixV603.Bounded, matrixV603.VoteThreshold] | undefined)>
+export interface DemocracyNextExternalStorageMatrixEnjinV603 {
+    get(): Promise<([matrixEnjinV603.Bounded, matrixEnjinV603.VoteThreshold] | undefined)>
 }
 
 export class DemocracyPublicPropCountStorage extends StorageBase {
@@ -2368,15 +2368,15 @@ export class DemocracyPublicPropCountStorage extends StorageBase {
     /**
      *  The number of (public) proposals that have been made so far.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The number of (public) proposals that have been made so far.
      */
-    get asMatrixV603(): DemocracyPublicPropCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyPublicPropCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2384,7 +2384,7 @@ export class DemocracyPublicPropCountStorage extends StorageBase {
 /**
  *  The number of (public) proposals that have been made so far.
  */
-export interface DemocracyPublicPropCountStorageMatrixV603 {
+export interface DemocracyPublicPropCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -2400,15 +2400,15 @@ export class DemocracyPublicPropsStorage extends StorageBase {
     /**
      *  The public proposals. Unsorted. The second item is the proposal.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '3472d1c9441381a2b9709395dfc47ee60b049d41fbd71ce557eb1a61ef656bec'
     }
 
     /**
      *  The public proposals. Unsorted. The second item is the proposal.
      */
-    get asMatrixV603(): DemocracyPublicPropsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyPublicPropsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2416,8 +2416,8 @@ export class DemocracyPublicPropsStorage extends StorageBase {
 /**
  *  The public proposals. Unsorted. The second item is the proposal.
  */
-export interface DemocracyPublicPropsStorageMatrixV603 {
-    get(): Promise<[number, matrixV603.Bounded, Uint8Array][]>
+export interface DemocracyPublicPropsStorageMatrixEnjinV603 {
+    get(): Promise<[number, matrixEnjinV603.Bounded, Uint8Array][]>
 }
 
 export class DemocracyReferendumCountStorage extends StorageBase {
@@ -2432,15 +2432,15 @@ export class DemocracyReferendumCountStorage extends StorageBase {
     /**
      *  The next free referendum index, aka the number of referenda started so far.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The next free referendum index, aka the number of referenda started so far.
      */
-    get asMatrixV603(): DemocracyReferendumCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyReferendumCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2448,7 +2448,7 @@ export class DemocracyReferendumCountStorage extends StorageBase {
 /**
  *  The next free referendum index, aka the number of referenda started so far.
  */
-export interface DemocracyReferendumCountStorageMatrixV603 {
+export interface DemocracyReferendumCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -2466,7 +2466,7 @@ export class DemocracyReferendumInfoOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE as indexes are not under an attacker’s control.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'ba926738202889ee118b1f40d70a1edbd71f0893c703c708a73330af6ca468e1'
     }
 
@@ -2475,8 +2475,8 @@ export class DemocracyReferendumInfoOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE as indexes are not under an attacker’s control.
      */
-    get asMatrixV603(): DemocracyReferendumInfoOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyReferendumInfoOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2486,18 +2486,18 @@ export class DemocracyReferendumInfoOfStorage extends StorageBase {
  * 
  *  TWOX-NOTE: SAFE as indexes are not under an attacker’s control.
  */
-export interface DemocracyReferendumInfoOfStorageMatrixV603 {
-    get(key: number): Promise<(matrixV603.ReferendumInfo | undefined)>
-    getAll(): Promise<matrixV603.ReferendumInfo[]>
-    getMany(keys: number[]): Promise<(matrixV603.ReferendumInfo | undefined)[]>
+export interface DemocracyReferendumInfoOfStorageMatrixEnjinV603 {
+    get(key: number): Promise<(matrixEnjinV603.ReferendumInfo | undefined)>
+    getAll(): Promise<matrixEnjinV603.ReferendumInfo[]>
+    getMany(keys: number[]): Promise<(matrixEnjinV603.ReferendumInfo | undefined)[]>
     getKeys(): Promise<number[]>
     getKeys(key: number): Promise<number[]>
     getKeysPaged(pageSize: number): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: matrixV603.ReferendumInfo][]>
-    getPairs(key: number): Promise<[k: number, v: matrixV603.ReferendumInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixV603.ReferendumInfo][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixV603.ReferendumInfo][]>
+    getPairs(): Promise<[k: number, v: matrixEnjinV603.ReferendumInfo][]>
+    getPairs(key: number): Promise<[k: number, v: matrixEnjinV603.ReferendumInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: matrixEnjinV603.ReferendumInfo][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: matrixEnjinV603.ReferendumInfo][]>
 }
 
 export class DemocracyVotingOfStorage extends StorageBase {
@@ -2515,7 +2515,7 @@ export class DemocracyVotingOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '95f82dfc66c624a327b91f77d863a0608d8641c62fc61b1c0067319d4045fc77'
     }
 
@@ -2525,8 +2525,8 @@ export class DemocracyVotingOfStorage extends StorageBase {
      * 
      *  TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway.
      */
-    get asMatrixV603(): DemocracyVotingOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DemocracyVotingOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2537,18 +2537,18 @@ export class DemocracyVotingOfStorage extends StorageBase {
  * 
  *  TWOX-NOTE: SAFE as `AccountId`s are crypto hashes anyway.
  */
-export interface DemocracyVotingOfStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.Voting>
-    getAll(): Promise<matrixV603.Voting[]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.Voting[]>
+export interface DemocracyVotingOfStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.Voting>
+    getAll(): Promise<matrixEnjinV603.Voting[]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.Voting[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Voting][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Voting][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Voting][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Voting][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Voting][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Voting][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Voting][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Voting][]>
 }
 
 export class DmpQueueConfigurationStorage extends StorageBase {
@@ -2563,15 +2563,15 @@ export class DmpQueueConfigurationStorage extends StorageBase {
     /**
      *  The configuration.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'd4ff4c68d7b5a5db6603b6449fa2fc5fa9ccb53292dd0c03e9b6a4920c6e75f9'
     }
 
     /**
      *  The configuration.
      */
-    get asMatrixV603(): DmpQueueConfigurationStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DmpQueueConfigurationStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2579,8 +2579,8 @@ export class DmpQueueConfigurationStorage extends StorageBase {
 /**
  *  The configuration.
  */
-export interface DmpQueueConfigurationStorageMatrixV603 {
-    get(): Promise<matrixV603.ConfigData>
+export interface DmpQueueConfigurationStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.ConfigData>
 }
 
 export class DmpQueueCounterForOverweightStorage extends StorageBase {
@@ -2595,15 +2595,15 @@ export class DmpQueueCounterForOverweightStorage extends StorageBase {
     /**
      * Counter for the related counted storage map
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      * Counter for the related counted storage map
      */
-    get asMatrixV603(): DmpQueueCounterForOverweightStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DmpQueueCounterForOverweightStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2611,7 +2611,7 @@ export class DmpQueueCounterForOverweightStorage extends StorageBase {
 /**
  * Counter for the related counted storage map
  */
-export interface DmpQueueCounterForOverweightStorageMatrixV603 {
+export interface DmpQueueCounterForOverweightStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -2627,15 +2627,15 @@ export class DmpQueueOverweightStorage extends StorageBase {
     /**
      *  The overweight messages.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '02b70c9350fc19f8edcf45c5eb6332933141453267579d97f6eece480cbaa4d4'
     }
 
     /**
      *  The overweight messages.
      */
-    get asMatrixV603(): DmpQueueOverweightStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DmpQueueOverweightStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2643,7 +2643,7 @@ export class DmpQueueOverweightStorage extends StorageBase {
 /**
  *  The overweight messages.
  */
-export interface DmpQueueOverweightStorageMatrixV603 {
+export interface DmpQueueOverweightStorageMatrixEnjinV603 {
     get(key: bigint): Promise<([number, Uint8Array] | undefined)>
     getAll(): Promise<[number, Uint8Array][]>
     getMany(keys: bigint[]): Promise<([number, Uint8Array] | undefined)[]>
@@ -2669,15 +2669,15 @@ export class DmpQueuePageIndexStorage extends StorageBase {
     /**
      *  The page index.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'cad43146ccd742f66da886b2f77b13d96d2c4de637fbb965a7493a2f16c99189'
     }
 
     /**
      *  The page index.
      */
-    get asMatrixV603(): DmpQueuePageIndexStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DmpQueuePageIndexStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2685,8 +2685,8 @@ export class DmpQueuePageIndexStorage extends StorageBase {
 /**
  *  The page index.
  */
-export interface DmpQueuePageIndexStorageMatrixV603 {
-    get(): Promise<matrixV603.PageIndexData>
+export interface DmpQueuePageIndexStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.PageIndexData>
 }
 
 export class DmpQueuePagesStorage extends StorageBase {
@@ -2701,15 +2701,15 @@ export class DmpQueuePagesStorage extends StorageBase {
     /**
      *  The queue pages.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0b9460c8234ca1e6341c95066d20ac8d7e79e3a9b2def20c9450f88ef0ab1b1d'
     }
 
     /**
      *  The queue pages.
      */
-    get asMatrixV603(): DmpQueuePagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): DmpQueuePagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2717,7 +2717,7 @@ export class DmpQueuePagesStorage extends StorageBase {
 /**
  *  The queue pages.
  */
-export interface DmpQueuePagesStorageMatrixV603 {
+export interface DmpQueuePagesStorageMatrixEnjinV603 {
     get(key: number): Promise<[number, Uint8Array][]>
     getAll(): Promise<[number, Uint8Array][][]>
     getMany(keys: number[]): Promise<[number, Uint8Array][][]>
@@ -2800,7 +2800,7 @@ export class ExtrinsicPausePausedExtrinsicsStorage extends StorageBase {
      *  The key is tuple with the name of the pallet and the extrinsic name and value is
      *  an Option<()> which is None if the extrinsic is not paused and Some(()) if it is.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '9914d71a2b43fa7da00c957184ae8b79abfcf4e6a63fb1b814680e322156164c'
     }
 
@@ -2810,8 +2810,8 @@ export class ExtrinsicPausePausedExtrinsicsStorage extends StorageBase {
      *  The key is tuple with the name of the pallet and the extrinsic name and value is
      *  an Option<()> which is None if the extrinsic is not paused and Some(()) if it is.
      */
-    get asMatrixV603(): ExtrinsicPausePausedExtrinsicsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ExtrinsicPausePausedExtrinsicsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2822,18 +2822,18 @@ export class ExtrinsicPausePausedExtrinsicsStorage extends StorageBase {
  *  The key is tuple with the name of the pallet and the extrinsic name and value is
  *  an Option<()> which is None if the extrinsic is not paused and Some(()) if it is.
  */
-export interface ExtrinsicPausePausedExtrinsicsStorageMatrixV603 {
-    get(key: matrixV603.ExtrinsicInfo): Promise<(null | undefined)>
+export interface ExtrinsicPausePausedExtrinsicsStorageMatrixEnjinV603 {
+    get(key: matrixEnjinV603.ExtrinsicInfo): Promise<(null | undefined)>
     getAll(): Promise<null[]>
-    getMany(keys: matrixV603.ExtrinsicInfo[]): Promise<(null | undefined)[]>
-    getKeys(): Promise<matrixV603.ExtrinsicInfo[]>
-    getKeys(key: matrixV603.ExtrinsicInfo): Promise<matrixV603.ExtrinsicInfo[]>
-    getKeysPaged(pageSize: number): AsyncIterable<matrixV603.ExtrinsicInfo[]>
-    getKeysPaged(pageSize: number, key: matrixV603.ExtrinsicInfo): AsyncIterable<matrixV603.ExtrinsicInfo[]>
-    getPairs(): Promise<[k: matrixV603.ExtrinsicInfo, v: null][]>
-    getPairs(key: matrixV603.ExtrinsicInfo): Promise<[k: matrixV603.ExtrinsicInfo, v: null][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixV603.ExtrinsicInfo, v: null][]>
-    getPairsPaged(pageSize: number, key: matrixV603.ExtrinsicInfo): AsyncIterable<[k: matrixV603.ExtrinsicInfo, v: null][]>
+    getMany(keys: matrixEnjinV603.ExtrinsicInfo[]): Promise<(null | undefined)[]>
+    getKeys(): Promise<matrixEnjinV603.ExtrinsicInfo[]>
+    getKeys(key: matrixEnjinV603.ExtrinsicInfo): Promise<matrixEnjinV603.ExtrinsicInfo[]>
+    getKeysPaged(pageSize: number): AsyncIterable<matrixEnjinV603.ExtrinsicInfo[]>
+    getKeysPaged(pageSize: number, key: matrixEnjinV603.ExtrinsicInfo): AsyncIterable<matrixEnjinV603.ExtrinsicInfo[]>
+    getPairs(): Promise<[k: matrixEnjinV603.ExtrinsicInfo, v: null][]>
+    getPairs(key: matrixEnjinV603.ExtrinsicInfo): Promise<[k: matrixEnjinV603.ExtrinsicInfo, v: null][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixEnjinV603.ExtrinsicInfo, v: null][]>
+    getPairsPaged(pageSize: number, key: matrixEnjinV603.ExtrinsicInfo): AsyncIterable<[k: matrixEnjinV603.ExtrinsicInfo, v: null][]>
 }
 
 export class FuelTanksAccountsStorage extends StorageBase {
@@ -2848,15 +2848,15 @@ export class FuelTanksAccountsStorage extends StorageBase {
     /**
      *  Mapping of Fuel Tanks and their user Accounts to account data
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '01245446ad097e0a27bc7d677ff4084b3e43dd7bf1f408c6295b2c4b9b742aa1'
     }
 
     /**
      *  Mapping of Fuel Tanks and their user Accounts to account data
      */
-    get asMatrixV603(): FuelTanksAccountsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): FuelTanksAccountsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2864,22 +2864,22 @@ export class FuelTanksAccountsStorage extends StorageBase {
 /**
  *  Mapping of Fuel Tanks and their user Accounts to account data
  */
-export interface FuelTanksAccountsStorageMatrixV603 {
-    get(key1: Uint8Array, key2: Uint8Array): Promise<(matrixV603.UserAccount | undefined)>
-    getAll(): Promise<matrixV603.UserAccount[]>
-    getMany(keys: [Uint8Array, Uint8Array][]): Promise<(matrixV603.UserAccount | undefined)[]>
+export interface FuelTanksAccountsStorageMatrixEnjinV603 {
+    get(key1: Uint8Array, key2: Uint8Array): Promise<(matrixEnjinV603.UserAccount | undefined)>
+    getAll(): Promise<matrixEnjinV603.UserAccount[]>
+    getMany(keys: [Uint8Array, Uint8Array][]): Promise<(matrixEnjinV603.UserAccount | undefined)[]>
     getKeys(): Promise<[Uint8Array, Uint8Array][]>
     getKeys(key1: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
     getKeys(key1: Uint8Array, key2: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
-    getPairs(): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
-    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
-    getPairs(key1: Uint8Array, key2: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.UserAccount][]>
+    getPairs(): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
+    getPairs(key1: Uint8Array, key2: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.UserAccount][]>
 }
 
 export class FuelTanksFreezeQueueStorage extends StorageBase {
@@ -2895,7 +2895,7 @@ export class FuelTanksFreezeQueueStorage extends StorageBase {
      *  The queue for fuel tank and rule set freezing
      *  Composed of (`tank_id`, `rule_set_id`, new `is_frozen` value)
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '6417b6c5aebb64849792349d17be222d1c212c6254e5517ec62f89a5e5e14ddc'
     }
 
@@ -2903,8 +2903,8 @@ export class FuelTanksFreezeQueueStorage extends StorageBase {
      *  The queue for fuel tank and rule set freezing
      *  Composed of (`tank_id`, `rule_set_id`, new `is_frozen` value)
      */
-    get asMatrixV603(): FuelTanksFreezeQueueStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): FuelTanksFreezeQueueStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2913,8 +2913,8 @@ export class FuelTanksFreezeQueueStorage extends StorageBase {
  *  The queue for fuel tank and rule set freezing
  *  Composed of (`tank_id`, `rule_set_id`, new `is_frozen` value)
  */
-export interface FuelTanksFreezeQueueStorageMatrixV603 {
-    get(): Promise<matrixV603.FreezeQueueItem[]>
+export interface FuelTanksFreezeQueueStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.FreezeQueueItem[]>
 }
 
 export class FuelTanksTanksStorage extends StorageBase {
@@ -2929,15 +2929,15 @@ export class FuelTanksTanksStorage extends StorageBase {
     /**
      *  Mapping of Fuel Tanks accounts to their data
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '170c8c92a3afd2eb9f5df09f52871255ecd25233f0e5b53f9e504a5d16ca3478'
     }
 
     /**
      *  Mapping of Fuel Tanks accounts to their data
      */
-    get asMatrixV603(): FuelTanksTanksStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): FuelTanksTanksStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -2945,18 +2945,18 @@ export class FuelTanksTanksStorage extends StorageBase {
 /**
  *  Mapping of Fuel Tanks accounts to their data
  */
-export interface FuelTanksTanksStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.FuelTank | undefined)>
-    getAll(): Promise<matrixV603.FuelTank[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.FuelTank | undefined)[]>
+export interface FuelTanksTanksStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.FuelTank | undefined)>
+    getAll(): Promise<matrixEnjinV603.FuelTank[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.FuelTank | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.FuelTank][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.FuelTank][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.FuelTank][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.FuelTank][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.FuelTank][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.FuelTank][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.FuelTank][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.FuelTank][]>
 }
 
 export class MarketplaceInfoStorage extends StorageBase {
@@ -2971,15 +2971,15 @@ export class MarketplaceInfoStorage extends StorageBase {
     /**
      *  Stores information about the marketplace
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'cf0eb405cb6ed3bb6861e38a8d936f67fa9f71862d7c3c2be2ca3f90d3ad8b3d'
     }
 
     /**
      *  Stores information about the marketplace
      */
-    get asMatrixV603(): MarketplaceInfoStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MarketplaceInfoStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -3002,8 +3002,8 @@ export class MarketplaceInfoStorage extends StorageBase {
 /**
  *  Stores information about the marketplace
  */
-export interface MarketplaceInfoStorageMatrixV603 {
-    get(): Promise<matrixV603.MarketPlaceInfo>
+export interface MarketplaceInfoStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.MarketPlaceInfo>
 }
 
 /**
@@ -3163,15 +3163,15 @@ export class MarketplaceListingsStorage extends StorageBase {
     /**
      *  Listings by ID
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'e51936bd4e8b63920dc0b1c10bbd1672cd077197cb65f17e9eba1f1a57c36335'
     }
 
     /**
      *  Listings by ID
      */
-    get asMatrixV603(): MarketplaceListingsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MarketplaceListingsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3179,18 +3179,18 @@ export class MarketplaceListingsStorage extends StorageBase {
 /**
  *  Listings by ID
  */
-export interface MarketplaceListingsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Listing | undefined)>
-    getAll(): Promise<matrixV603.Listing[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Listing | undefined)[]>
+export interface MarketplaceListingsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Listing | undefined)>
+    getAll(): Promise<matrixEnjinV603.Listing[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Listing | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Listing][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Listing][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Listing][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Listing][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
 }
 
 export class MatrixXcmMinimumWeightsStorage extends StorageBase {
@@ -3209,7 +3209,7 @@ export class MatrixXcmMinimumWeightsStorage extends StorageBase {
      * 
      *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '54746c8f01b687fecc1a895c1db7ce3ffd9db2d7ab532bd2488b343309741009'
     }
 
@@ -3220,8 +3220,8 @@ export class MatrixXcmMinimumWeightsStorage extends StorageBase {
      * 
      *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
      */
-    get asMatrixV603(): MatrixXcmMinimumWeightsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MatrixXcmMinimumWeightsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3233,18 +3233,18 @@ export class MatrixXcmMinimumWeightsStorage extends StorageBase {
  * 
  *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
  */
-export interface MatrixXcmMinimumWeightsStorageMatrixV603 {
-    get(key: matrixV603.XcmOperation): Promise<matrixV603.MinimumWeightFeePair>
-    getAll(): Promise<matrixV603.MinimumWeightFeePair[]>
-    getMany(keys: matrixV603.XcmOperation[]): Promise<matrixV603.MinimumWeightFeePair[]>
-    getKeys(): Promise<matrixV603.XcmOperation[]>
-    getKeys(key: matrixV603.XcmOperation): Promise<matrixV603.XcmOperation[]>
-    getKeysPaged(pageSize: number): AsyncIterable<matrixV603.XcmOperation[]>
-    getKeysPaged(pageSize: number, key: matrixV603.XcmOperation): AsyncIterable<matrixV603.XcmOperation[]>
-    getPairs(): Promise<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
-    getPairs(key: matrixV603.XcmOperation): Promise<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
-    getPairsPaged(pageSize: number, key: matrixV603.XcmOperation): AsyncIterable<[k: matrixV603.XcmOperation, v: matrixV603.MinimumWeightFeePair][]>
+export interface MatrixXcmMinimumWeightsStorageMatrixEnjinV603 {
+    get(key: matrixEnjinV603.XcmOperation): Promise<matrixEnjinV603.MinimumWeightFeePair>
+    getAll(): Promise<matrixEnjinV603.MinimumWeightFeePair[]>
+    getMany(keys: matrixEnjinV603.XcmOperation[]): Promise<matrixEnjinV603.MinimumWeightFeePair[]>
+    getKeys(): Promise<matrixEnjinV603.XcmOperation[]>
+    getKeys(key: matrixEnjinV603.XcmOperation): Promise<matrixEnjinV603.XcmOperation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<matrixEnjinV603.XcmOperation[]>
+    getKeysPaged(pageSize: number, key: matrixEnjinV603.XcmOperation): AsyncIterable<matrixEnjinV603.XcmOperation[]>
+    getPairs(): Promise<[k: matrixEnjinV603.XcmOperation, v: matrixEnjinV603.MinimumWeightFeePair][]>
+    getPairs(key: matrixEnjinV603.XcmOperation): Promise<[k: matrixEnjinV603.XcmOperation, v: matrixEnjinV603.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixEnjinV603.XcmOperation, v: matrixEnjinV603.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number, key: matrixEnjinV603.XcmOperation): AsyncIterable<[k: matrixEnjinV603.XcmOperation, v: matrixEnjinV603.MinimumWeightFeePair][]>
 }
 
 export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
@@ -3259,15 +3259,15 @@ export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
     /**
      *  Map of Locations to AssetIds of Foreign Tokens
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '7920f1b519a7f965b522a230108d367f65586e4e31d2aa9d94778fd4f0aab869'
     }
 
     /**
      *  Map of Locations to AssetIds of Foreign Tokens
      */
-    get asMatrixV603(): MultiTokensAssetIdsByLocationStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensAssetIdsByLocationStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3275,18 +3275,18 @@ export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
 /**
  *  Map of Locations to AssetIds of Foreign Tokens
  */
-export interface MultiTokensAssetIdsByLocationStorageMatrixV603 {
-    get(key: matrixV603.V3MultiLocation): Promise<(matrixV603.AssetId | undefined)>
-    getAll(): Promise<matrixV603.AssetId[]>
-    getMany(keys: matrixV603.V3MultiLocation[]): Promise<(matrixV603.AssetId | undefined)[]>
-    getKeys(): Promise<matrixV603.V3MultiLocation[]>
-    getKeys(key: matrixV603.V3MultiLocation): Promise<matrixV603.V3MultiLocation[]>
-    getKeysPaged(pageSize: number): AsyncIterable<matrixV603.V3MultiLocation[]>
-    getKeysPaged(pageSize: number, key: matrixV603.V3MultiLocation): AsyncIterable<matrixV603.V3MultiLocation[]>
-    getPairs(): Promise<[k: matrixV603.V3MultiLocation, v: matrixV603.AssetId][]>
-    getPairs(key: matrixV603.V3MultiLocation): Promise<[k: matrixV603.V3MultiLocation, v: matrixV603.AssetId][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixV603.V3MultiLocation, v: matrixV603.AssetId][]>
-    getPairsPaged(pageSize: number, key: matrixV603.V3MultiLocation): AsyncIterable<[k: matrixV603.V3MultiLocation, v: matrixV603.AssetId][]>
+export interface MultiTokensAssetIdsByLocationStorageMatrixEnjinV603 {
+    get(key: matrixEnjinV603.V3MultiLocation): Promise<(matrixEnjinV603.AssetId | undefined)>
+    getAll(): Promise<matrixEnjinV603.AssetId[]>
+    getMany(keys: matrixEnjinV603.V3MultiLocation[]): Promise<(matrixEnjinV603.AssetId | undefined)[]>
+    getKeys(): Promise<matrixEnjinV603.V3MultiLocation[]>
+    getKeys(key: matrixEnjinV603.V3MultiLocation): Promise<matrixEnjinV603.V3MultiLocation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<matrixEnjinV603.V3MultiLocation[]>
+    getKeysPaged(pageSize: number, key: matrixEnjinV603.V3MultiLocation): AsyncIterable<matrixEnjinV603.V3MultiLocation[]>
+    getPairs(): Promise<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
+    getPairs(key: matrixEnjinV603.V3MultiLocation): Promise<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
+    getPairsPaged(pageSize: number, key: matrixEnjinV603.V3MultiLocation): AsyncIterable<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
 }
 
 export class MultiTokensAttributesStorage extends StorageBase {
@@ -3301,15 +3301,15 @@ export class MultiTokensAttributesStorage extends StorageBase {
     /**
      *  Metadata of collections and tokens.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a746a93405e250d7e804277de85e59649a8d0f26dcdbc38249cee2190785886d'
     }
 
     /**
      *  Metadata of collections and tokens.
      */
-    get asMatrixV603(): MultiTokensAttributesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensAttributesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3317,10 +3317,10 @@ export class MultiTokensAttributesStorage extends StorageBase {
 /**
  *  Metadata of collections and tokens.
  */
-export interface MultiTokensAttributesStorageMatrixV603 {
-    get(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<(matrixV603.Attribute | undefined)>
-    getAll(): Promise<matrixV603.Attribute[]>
-    getMany(keys: [bigint, (bigint | undefined), Uint8Array][]): Promise<(matrixV603.Attribute | undefined)[]>
+export interface MultiTokensAttributesStorageMatrixEnjinV603 {
+    get(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<(matrixEnjinV603.Attribute | undefined)>
+    getAll(): Promise<matrixEnjinV603.Attribute[]>
+    getMany(keys: [bigint, (bigint | undefined), Uint8Array][]): Promise<(matrixEnjinV603.Attribute | undefined)[]>
     getKeys(): Promise<[bigint, (bigint | undefined), Uint8Array][]>
     getKeys(key1: bigint): Promise<[bigint, (bigint | undefined), Uint8Array][]>
     getKeys(key1: bigint, key2: (bigint | undefined)): Promise<[bigint, (bigint | undefined), Uint8Array][]>
@@ -3329,14 +3329,14 @@ export interface MultiTokensAttributesStorageMatrixV603 {
     getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, (bigint | undefined), Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: (bigint | undefined)): AsyncIterable<[bigint, (bigint | undefined), Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: (bigint | undefined), key3: Uint8Array): AsyncIterable<[bigint, (bigint | undefined), Uint8Array][]>
-    getPairs(): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairs(key1: bigint, key2: (bigint | undefined)): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairs(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: (bigint | undefined)): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: (bigint | undefined), key3: Uint8Array): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixV603.Attribute][]>
+    getPairs(): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairs(key1: bigint, key2: (bigint | undefined)): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairs(key1: bigint, key2: (bigint | undefined), key3: Uint8Array): Promise<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: (bigint | undefined)): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: (bigint | undefined), key3: Uint8Array): AsyncIterable<[k: [bigint, (bigint | undefined), Uint8Array], v: matrixEnjinV603.Attribute][]>
 }
 
 export class MultiTokensCollectionAccountsStorage extends StorageBase {
@@ -3351,15 +3351,15 @@ export class MultiTokensCollectionAccountsStorage extends StorageBase {
     /**
      *  Stores information for an account per collection
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'b46672e82d7bfd0dfb77b459f54edcb3814fab36fcd1e60c5702769a7fd5b155'
     }
 
     /**
      *  Stores information for an account per collection
      */
-    get asMatrixV603(): MultiTokensCollectionAccountsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensCollectionAccountsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3367,22 +3367,22 @@ export class MultiTokensCollectionAccountsStorage extends StorageBase {
 /**
  *  Stores information for an account per collection
  */
-export interface MultiTokensCollectionAccountsStorageMatrixV603 {
-    get(key1: bigint, key2: Uint8Array): Promise<(matrixV603.CollectionAccount | undefined)>
-    getAll(): Promise<matrixV603.CollectionAccount[]>
-    getMany(keys: [bigint, Uint8Array][]): Promise<(matrixV603.CollectionAccount | undefined)[]>
+export interface MultiTokensCollectionAccountsStorageMatrixEnjinV603 {
+    get(key1: bigint, key2: Uint8Array): Promise<(matrixEnjinV603.CollectionAccount | undefined)>
+    getAll(): Promise<matrixEnjinV603.CollectionAccount[]>
+    getMany(keys: [bigint, Uint8Array][]): Promise<(matrixEnjinV603.CollectionAccount | undefined)[]>
     getKeys(): Promise<[bigint, Uint8Array][]>
     getKeys(key1: bigint): Promise<[bigint, Uint8Array][]>
     getKeys(key1: bigint, key2: Uint8Array): Promise<[bigint, Uint8Array][]>
     getKeysPaged(pageSize: number): AsyncIterable<[bigint, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[bigint, Uint8Array][]>
-    getPairs(): Promise<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
-    getPairs(key1: bigint, key2: Uint8Array): Promise<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[k: [bigint, Uint8Array], v: matrixV603.CollectionAccount][]>
+    getPairs(): Promise<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
+    getPairs(key1: bigint, key2: Uint8Array): Promise<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: Uint8Array): AsyncIterable<[k: [bigint, Uint8Array], v: matrixEnjinV603.CollectionAccount][]>
 }
 
 export class MultiTokensCollectionsStorage extends StorageBase {
@@ -3397,15 +3397,15 @@ export class MultiTokensCollectionsStorage extends StorageBase {
     /**
      *  The collections in existence and their ownership details.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'e505bb38c2f05501278271d4d92422c32c38f8976d079eddae5a656ea2e00d3e'
     }
 
     /**
      *  The collections in existence and their ownership details.
      */
-    get asMatrixV603(): MultiTokensCollectionsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensCollectionsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3413,18 +3413,18 @@ export class MultiTokensCollectionsStorage extends StorageBase {
 /**
  *  The collections in existence and their ownership details.
  */
-export interface MultiTokensCollectionsStorageMatrixV603 {
-    get(key: bigint): Promise<(matrixV603.Collection | undefined)>
-    getAll(): Promise<matrixV603.Collection[]>
-    getMany(keys: bigint[]): Promise<(matrixV603.Collection | undefined)[]>
+export interface MultiTokensCollectionsStorageMatrixEnjinV603 {
+    get(key: bigint): Promise<(matrixEnjinV603.Collection | undefined)>
+    getAll(): Promise<matrixEnjinV603.Collection[]>
+    getMany(keys: bigint[]): Promise<(matrixEnjinV603.Collection | undefined)[]>
     getKeys(): Promise<bigint[]>
     getKeys(key: bigint): Promise<bigint[]>
     getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
     getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
-    getPairs(): Promise<[k: bigint, v: matrixV603.Collection][]>
-    getPairs(key: bigint): Promise<[k: bigint, v: matrixV603.Collection][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixV603.Collection][]>
-    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixV603.Collection][]>
+    getPairs(): Promise<[k: bigint, v: matrixEnjinV603.Collection][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: matrixEnjinV603.Collection][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixEnjinV603.Collection][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixEnjinV603.Collection][]>
 }
 
 export class MultiTokensEthereumAccountsStorage extends StorageBase {
@@ -3439,15 +3439,15 @@ export class MultiTokensEthereumAccountsStorage extends StorageBase {
     /**
      *  Stores data for an ethereum address
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '7cc397680e440faaf2a40fafae4d9fde6957423c8489984029cd2e04818a92f7'
     }
 
     /**
      *  Stores data for an ethereum address
      */
-    get asMatrixV603(): MultiTokensEthereumAccountsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensEthereumAccountsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3455,18 +3455,18 @@ export class MultiTokensEthereumAccountsStorage extends StorageBase {
 /**
  *  Stores data for an ethereum address
  */
-export interface MultiTokensEthereumAccountsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.EthereumAccount | undefined)>
-    getAll(): Promise<matrixV603.EthereumAccount[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.EthereumAccount | undefined)[]>
+export interface MultiTokensEthereumAccountsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.EthereumAccount | undefined)>
+    getAll(): Promise<matrixEnjinV603.EthereumAccount[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.EthereumAccount | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.EthereumAccount][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.EthereumAccount][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.EthereumAccount][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.EthereumAccount][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.EthereumAccount][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.EthereumAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.EthereumAccount][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.EthereumAccount][]>
 }
 
 export class MultiTokensEthereumBalancesStorage extends StorageBase {
@@ -3481,15 +3481,15 @@ export class MultiTokensEthereumBalancesStorage extends StorageBase {
     /**
      *  Holds the ethereum balance for each token
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'c6d469a2bb1159ba1b3bfd48909f40e09449e74f982e2dee969f83c6e45d4ea9'
     }
 
     /**
      *  Holds the ethereum balance for each token
      */
-    get asMatrixV603(): MultiTokensEthereumBalancesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensEthereumBalancesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3497,7 +3497,7 @@ export class MultiTokensEthereumBalancesStorage extends StorageBase {
 /**
  *  Holds the ethereum balance for each token
  */
-export interface MultiTokensEthereumBalancesStorageMatrixV603 {
+export interface MultiTokensEthereumBalancesStorageMatrixEnjinV603 {
     get(key1: Uint8Array, key2: bigint, key3: bigint): Promise<(bigint | undefined)>
     getAll(): Promise<bigint[]>
     getMany(keys: [Uint8Array, bigint, bigint][]): Promise<(bigint | undefined)[]>
@@ -3531,15 +3531,15 @@ export class MultiTokensEthereumTokensStorage extends StorageBase {
     /**
      *  The token assets from ethereum
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8862d6dd197aaeee063a1d9f6b6879d6d08545ad6f66ce3d357775bbceb00bc9'
     }
 
     /**
      *  The token assets from ethereum
      */
-    get asMatrixV603(): MultiTokensEthereumTokensStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensEthereumTokensStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3547,22 +3547,22 @@ export class MultiTokensEthereumTokensStorage extends StorageBase {
 /**
  *  The token assets from ethereum
  */
-export interface MultiTokensEthereumTokensStorageMatrixV603 {
-    get(key1: bigint, key2: bigint): Promise<(matrixV603.EthereumToken | undefined)>
-    getAll(): Promise<matrixV603.EthereumToken[]>
-    getMany(keys: [bigint, bigint][]): Promise<(matrixV603.EthereumToken | undefined)[]>
+export interface MultiTokensEthereumTokensStorageMatrixEnjinV603 {
+    get(key1: bigint, key2: bigint): Promise<(matrixEnjinV603.EthereumToken | undefined)>
+    getAll(): Promise<matrixEnjinV603.EthereumToken[]>
+    getMany(keys: [bigint, bigint][]): Promise<(matrixEnjinV603.EthereumToken | undefined)[]>
     getKeys(): Promise<[bigint, bigint][]>
     getKeys(key1: bigint): Promise<[bigint, bigint][]>
     getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
     getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(): Promise<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixV603.EthereumToken][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.EthereumToken][]>
 }
 
 export class MultiTokensIdleOperationsStorage extends StorageBase {
@@ -3609,15 +3609,15 @@ export class MultiTokensMigrationStatusStorage extends StorageBase {
     /**
      *  Status of the current multi-block migration
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'b774eae9b764e58709b24f1cf13f47feebc5721c1a9d4e0ed22e4d0aaff8a169'
     }
 
     /**
      *  Status of the current multi-block migration
      */
-    get asMatrixV603(): MultiTokensMigrationStatusStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensMigrationStatusStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3625,8 +3625,8 @@ export class MultiTokensMigrationStatusStorage extends StorageBase {
 /**
  *  Status of the current multi-block migration
  */
-export interface MultiTokensMigrationStatusStorageMatrixV603 {
-    get(): Promise<matrixV603.MigrationStage>
+export interface MultiTokensMigrationStatusStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.MigrationStage>
 }
 
 export class MultiTokensMigrationsStorage extends StorageBase {
@@ -3645,7 +3645,7 @@ export class MultiTokensMigrationsStorage extends StorageBase {
      *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
      *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '63315d583f765c75d71965bc03cd236f3e328b0d0c36349716dd7e18cb40721d'
     }
 
@@ -3656,8 +3656,8 @@ export class MultiTokensMigrationsStorage extends StorageBase {
      *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
      *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
      */
-    get asMatrixV603(): MultiTokensMigrationsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensMigrationsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3669,18 +3669,18 @@ export class MultiTokensMigrationsStorage extends StorageBase {
  *  Key is the storage prefix, value is the status of migration and last iterated key, if any.
  *  i.e `["MultiTokens", "TokenAccounts"] -> (collection_id, token_id, account_id)`
  */
-export interface MultiTokensMigrationsStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Migration | undefined)>
-    getAll(): Promise<matrixV603.Migration[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Migration | undefined)[]>
+export interface MultiTokensMigrationsStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Migration | undefined)>
+    getAll(): Promise<matrixEnjinV603.Migration[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Migration | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Migration][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Migration][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Migration][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Migration][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Migration][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Migration][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Migration][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Migration][]>
 }
 
 export class MultiTokensNativeCollectionIdsStorage extends StorageBase {
@@ -3695,15 +3695,15 @@ export class MultiTokensNativeCollectionIdsStorage extends StorageBase {
     /**
      *  Map of ethereum collection id to the native collection id
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '03ac0b80fdf641bd511733299fc9539a6f79a9c134c3b7d7af44cad8d25fa71a'
     }
 
     /**
      *  Map of ethereum collection id to the native collection id
      */
-    get asMatrixV603(): MultiTokensNativeCollectionIdsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensNativeCollectionIdsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3711,7 +3711,7 @@ export class MultiTokensNativeCollectionIdsStorage extends StorageBase {
 /**
  *  Map of ethereum collection id to the native collection id
  */
-export interface MultiTokensNativeCollectionIdsStorageMatrixV603 {
+export interface MultiTokensNativeCollectionIdsStorageMatrixEnjinV603 {
     get(key: bigint): Promise<(bigint | undefined)>
     getAll(): Promise<bigint[]>
     getMany(keys: bigint[]): Promise<(bigint | undefined)[]>
@@ -3737,15 +3737,15 @@ export class MultiTokensNextCollectionIdStorage extends StorageBase {
     /**
      *  Sequencer for collectionID generators.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
     /**
      *  Sequencer for collectionID generators.
      */
-    get asMatrixV603(): MultiTokensNextCollectionIdStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensNextCollectionIdStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3753,7 +3753,7 @@ export class MultiTokensNextCollectionIdStorage extends StorageBase {
 /**
  *  Sequencer for collectionID generators.
  */
-export interface MultiTokensNextCollectionIdStorageMatrixV603 {
+export interface MultiTokensNextCollectionIdStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -3769,15 +3769,15 @@ export class MultiTokensTokenAccountsStorage extends StorageBase {
     /**
      *  Accounts per token
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '022fd18d40c53146908df260f1461b3e2a5e157129bb9cf34fd0207c0910c0a9'
     }
 
     /**
      *  Accounts per token
      */
-    get asMatrixV603(): MultiTokensTokenAccountsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensTokenAccountsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3785,10 +3785,10 @@ export class MultiTokensTokenAccountsStorage extends StorageBase {
 /**
  *  Accounts per token
  */
-export interface MultiTokensTokenAccountsStorageMatrixV603 {
-    get(key1: bigint, key2: bigint, key3: Uint8Array): Promise<(matrixV603.TokenAccount | undefined)>
-    getAll(): Promise<matrixV603.TokenAccount[]>
-    getMany(keys: [bigint, bigint, Uint8Array][]): Promise<(matrixV603.TokenAccount | undefined)[]>
+export interface MultiTokensTokenAccountsStorageMatrixEnjinV603 {
+    get(key1: bigint, key2: bigint, key3: Uint8Array): Promise<(matrixEnjinV603.TokenAccount | undefined)>
+    getAll(): Promise<matrixEnjinV603.TokenAccount[]>
+    getMany(keys: [bigint, bigint, Uint8Array][]): Promise<(matrixEnjinV603.TokenAccount | undefined)[]>
     getKeys(): Promise<[bigint, bigint, Uint8Array][]>
     getKeys(key1: bigint): Promise<[bigint, bigint, Uint8Array][]>
     getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint, Uint8Array][]>
@@ -3797,14 +3797,14 @@ export interface MultiTokensTokenAccountsStorageMatrixV603 {
     getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[bigint, bigint, Uint8Array][]>
-    getPairs(): Promise<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairs(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixV603.TokenAccount][]>
+    getPairs(): Promise<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairs(key1: bigint, key2: bigint, key3: Uint8Array): Promise<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint, key3: Uint8Array): AsyncIterable<[k: [bigint, bigint, Uint8Array], v: matrixEnjinV603.TokenAccount][]>
 }
 
 export class MultiTokensTokensStorage extends StorageBase {
@@ -3819,15 +3819,15 @@ export class MultiTokensTokensStorage extends StorageBase {
     /**
      *  Tokens storage
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '459387852b7c4d57e0769b6472defe27e00a6384a006f2d282c25b921828e149'
     }
 
     /**
      *  Tokens storage
      */
-    get asMatrixV603(): MultiTokensTokensStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensTokensStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -3865,22 +3865,22 @@ export class MultiTokensTokensStorage extends StorageBase {
 /**
  *  Tokens storage
  */
-export interface MultiTokensTokensStorageMatrixV603 {
-    get(key1: bigint, key2: bigint): Promise<(matrixV603.Token | undefined)>
-    getAll(): Promise<matrixV603.Token[]>
-    getMany(keys: [bigint, bigint][]): Promise<(matrixV603.Token | undefined)[]>
+export interface MultiTokensTokensStorageMatrixEnjinV603 {
+    get(key1: bigint, key2: bigint): Promise<(matrixEnjinV603.Token | undefined)>
+    getAll(): Promise<matrixEnjinV603.Token[]>
+    getMany(keys: [bigint, bigint][]): Promise<(matrixEnjinV603.Token | undefined)[]>
     getKeys(): Promise<[bigint, bigint][]>
     getKeys(key1: bigint): Promise<[bigint, bigint][]>
     getKeys(key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
     getKeysPaged(pageSize: number): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, key1: bigint): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(): Promise<[k: [bigint, bigint], v: matrixV603.Token][]>
-    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: matrixV603.Token][]>
-    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixV603.Token][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: matrixV603.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixV603.Token][]>
-    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixV603.Token][]>
+    getPairs(): Promise<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
+    getPairs(key1: bigint): Promise<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
+    getPairs(key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
+    getPairsPaged(pageSize: number, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: matrixEnjinV603.Token][]>
 }
 
 /**
@@ -3937,15 +3937,15 @@ export class MultiTokensUnmintableTokenIdsStorage extends StorageBase {
     /**
      *  These token ids can only be minted by calling `claim_token`
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0d4d9ebe1fd4a49e1a98cae9e4f2da1f4465c6dbdbc2902d364eefd30c55ef87'
     }
 
     /**
      *  These token ids can only be minted by calling `claim_token`
      */
-    get asMatrixV603(): MultiTokensUnmintableTokenIdsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultiTokensUnmintableTokenIdsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3953,18 +3953,18 @@ export class MultiTokensUnmintableTokenIdsStorage extends StorageBase {
 /**
  *  These token ids can only be minted by calling `claim_token`
  */
-export interface MultiTokensUnmintableTokenIdsStorageMatrixV603 {
-    get(key: bigint): Promise<(matrixV603.RangeInclusive | undefined)>
-    getAll(): Promise<matrixV603.RangeInclusive[]>
-    getMany(keys: bigint[]): Promise<(matrixV603.RangeInclusive | undefined)[]>
+export interface MultiTokensUnmintableTokenIdsStorageMatrixEnjinV603 {
+    get(key: bigint): Promise<(matrixEnjinV603.RangeInclusive | undefined)>
+    getAll(): Promise<matrixEnjinV603.RangeInclusive[]>
+    getMany(keys: bigint[]): Promise<(matrixEnjinV603.RangeInclusive | undefined)[]>
     getKeys(): Promise<bigint[]>
     getKeys(key: bigint): Promise<bigint[]>
     getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
     getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
-    getPairs(): Promise<[k: bigint, v: matrixV603.RangeInclusive][]>
-    getPairs(key: bigint): Promise<[k: bigint, v: matrixV603.RangeInclusive][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixV603.RangeInclusive][]>
-    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixV603.RangeInclusive][]>
+    getPairs(): Promise<[k: bigint, v: matrixEnjinV603.RangeInclusive][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: matrixEnjinV603.RangeInclusive][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixEnjinV603.RangeInclusive][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixEnjinV603.RangeInclusive][]>
 }
 
 export class MultisigMultisigsStorage extends StorageBase {
@@ -3979,15 +3979,15 @@ export class MultisigMultisigsStorage extends StorageBase {
     /**
      *  The set of open multisig operations.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'b65d340f044c1216d5b13f831064204fe7a82b1bb66e6bf6cc01b1b5a3f1606a'
     }
 
     /**
      *  The set of open multisig operations.
      */
-    get asMatrixV603(): MultisigMultisigsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): MultisigMultisigsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -3995,22 +3995,22 @@ export class MultisigMultisigsStorage extends StorageBase {
 /**
  *  The set of open multisig operations.
  */
-export interface MultisigMultisigsStorageMatrixV603 {
-    get(key1: Uint8Array, key2: Uint8Array): Promise<(matrixV603.Multisig | undefined)>
-    getAll(): Promise<matrixV603.Multisig[]>
-    getMany(keys: [Uint8Array, Uint8Array][]): Promise<(matrixV603.Multisig | undefined)[]>
+export interface MultisigMultisigsStorageMatrixEnjinV603 {
+    get(key1: Uint8Array, key2: Uint8Array): Promise<(matrixEnjinV603.Multisig | undefined)>
+    getAll(): Promise<matrixEnjinV603.Multisig[]>
+    getMany(keys: [Uint8Array, Uint8Array][]): Promise<(matrixEnjinV603.Multisig | undefined)[]>
     getKeys(): Promise<[Uint8Array, Uint8Array][]>
     getKeys(key1: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
     getKeys(key1: Uint8Array, key2: Uint8Array): Promise<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
     getKeysPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[Uint8Array, Uint8Array][]>
-    getPairs(): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
-    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
-    getPairs(key1: Uint8Array, key2: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
-    getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixV603.Multisig][]>
+    getPairs(): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
+    getPairs(key1: Uint8Array, key2: Uint8Array): Promise<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: Uint8Array): AsyncIterable<[k: [Uint8Array, Uint8Array], v: matrixEnjinV603.Multisig][]>
 }
 
 export class ParachainInfoParachainIdStorage extends StorageBase {
@@ -4022,17 +4022,17 @@ export class ParachainInfoParachainIdStorage extends StorageBase {
         return 'ParachainId'
     }
 
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
-    get asMatrixV603(): ParachainInfoParachainIdStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainInfoParachainIdStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
 
-export interface ParachainInfoParachainIdStorageMatrixV603 {
+export interface ParachainInfoParachainIdStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -4049,7 +4049,7 @@ export class ParachainSystemAnnouncedHrmpMessagesPerCandidateStorage extends Sto
      *  The number of HRMP messages we observed in `on_initialize` and thus used that number for
      *  announcing the weight of `on_initialize` and `on_finalize`.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
@@ -4057,8 +4057,8 @@ export class ParachainSystemAnnouncedHrmpMessagesPerCandidateStorage extends Sto
      *  The number of HRMP messages we observed in `on_initialize` and thus used that number for
      *  announcing the weight of `on_initialize` and `on_finalize`.
      */
-    get asMatrixV603(): ParachainSystemAnnouncedHrmpMessagesPerCandidateStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemAnnouncedHrmpMessagesPerCandidateStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4067,7 +4067,7 @@ export class ParachainSystemAnnouncedHrmpMessagesPerCandidateStorage extends Sto
  *  The number of HRMP messages we observed in `on_initialize` and thus used that number for
  *  announcing the weight of `on_initialize` and `on_finalize`.
  */
-export interface ParachainSystemAnnouncedHrmpMessagesPerCandidateStorageMatrixV603 {
+export interface ParachainSystemAnnouncedHrmpMessagesPerCandidateStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -4083,15 +4083,15 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
     /**
      *  The next authorized upgrade, if there is one.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '901f6f87c9fafe3d3f61c36b45b24a63a90d51ae151f2b4a361d3c5611ffb723'
     }
 
     /**
      *  The next authorized upgrade, if there is one.
      */
-    get asMatrixV603(): ParachainSystemAuthorizedUpgradeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemAuthorizedUpgradeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -4129,8 +4129,8 @@ export class ParachainSystemAuthorizedUpgradeStorage extends StorageBase {
 /**
  *  The next authorized upgrade, if there is one.
  */
-export interface ParachainSystemAuthorizedUpgradeStorageMatrixV603 {
-    get(): Promise<(matrixV603.CodeUpgradeAuthorization | undefined)>
+export interface ParachainSystemAuthorizedUpgradeStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.CodeUpgradeAuthorization | undefined)>
 }
 
 /**
@@ -4161,7 +4161,7 @@ export class ParachainSystemCustomValidationHeadDataStorage extends StorageBase 
      * 
      *  See [`Pallet::set_custom_validation_head_data`] for more information.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '9d37db61fb40fc6c377391f52a7b349395407634d45b47a8943ab5ccf47e31e4'
     }
 
@@ -4170,8 +4170,8 @@ export class ParachainSystemCustomValidationHeadDataStorage extends StorageBase 
      * 
      *  See [`Pallet::set_custom_validation_head_data`] for more information.
      */
-    get asMatrixV603(): ParachainSystemCustomValidationHeadDataStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemCustomValidationHeadDataStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4181,7 +4181,7 @@ export class ParachainSystemCustomValidationHeadDataStorage extends StorageBase 
  * 
  *  See [`Pallet::set_custom_validation_head_data`] for more information.
  */
-export interface ParachainSystemCustomValidationHeadDataStorageMatrixV603 {
+export interface ParachainSystemCustomValidationHeadDataStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -4197,15 +4197,15 @@ export class ParachainSystemDidSetValidationCodeStorage extends StorageBase {
     /**
      *  Were the validation data set to notify the relay chain?
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  Were the validation data set to notify the relay chain?
      */
-    get asMatrixV603(): ParachainSystemDidSetValidationCodeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemDidSetValidationCodeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4213,7 +4213,7 @@ export class ParachainSystemDidSetValidationCodeStorage extends StorageBase {
 /**
  *  Were the validation data set to notify the relay chain?
  */
-export interface ParachainSystemDidSetValidationCodeStorageMatrixV603 {
+export interface ParachainSystemDidSetValidationCodeStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -4234,7 +4234,7 @@ export class ParachainSystemHostConfigurationStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '76792d33ff147d490bc5f8e4454e476c4ef71aae7021fd1a44f96974f263af9b'
     }
 
@@ -4246,8 +4246,8 @@ export class ParachainSystemHostConfigurationStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get asMatrixV603(): ParachainSystemHostConfigurationStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemHostConfigurationStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4260,8 +4260,8 @@ export class ParachainSystemHostConfigurationStorage extends StorageBase {
  * 
  *  This data is also absent from the genesis.
  */
-export interface ParachainSystemHostConfigurationStorageMatrixV603 {
-    get(): Promise<(matrixV603.V4AbridgedHostConfiguration | undefined)>
+export interface ParachainSystemHostConfigurationStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.V4AbridgedHostConfiguration | undefined)>
 }
 
 export class ParachainSystemHrmpOutboundMessagesStorage extends StorageBase {
@@ -4278,7 +4278,7 @@ export class ParachainSystemHrmpOutboundMessagesStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0330a7423804895204dc06607d196d45bbec59edfd3f4f38c868daa9e880928c'
     }
 
@@ -4287,8 +4287,8 @@ export class ParachainSystemHrmpOutboundMessagesStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get asMatrixV603(): ParachainSystemHrmpOutboundMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemHrmpOutboundMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4298,8 +4298,8 @@ export class ParachainSystemHrmpOutboundMessagesStorage extends StorageBase {
  * 
  *  This will be cleared in `on_initialize` of each new block.
  */
-export interface ParachainSystemHrmpOutboundMessagesStorageMatrixV603 {
-    get(): Promise<matrixV603.OutboundHrmpMessage[]>
+export interface ParachainSystemHrmpOutboundMessagesStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.OutboundHrmpMessage[]>
 }
 
 export class ParachainSystemHrmpWatermarkStorage extends StorageBase {
@@ -4316,7 +4316,7 @@ export class ParachainSystemHrmpWatermarkStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
@@ -4325,8 +4325,8 @@ export class ParachainSystemHrmpWatermarkStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get asMatrixV603(): ParachainSystemHrmpWatermarkStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemHrmpWatermarkStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4336,7 +4336,7 @@ export class ParachainSystemHrmpWatermarkStorage extends StorageBase {
  * 
  *  This will be cleared in `on_initialize` of each new block.
  */
-export interface ParachainSystemHrmpWatermarkStorageMatrixV603 {
+export interface ParachainSystemHrmpWatermarkStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -4355,7 +4355,7 @@ export class ParachainSystemLastDmqMqcHeadStorage extends StorageBase {
      *  This value is loaded before and saved after processing inbound downward messages carried
      *  by the system inherent.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '146c0d1dce070e2a43f497c479248a882f4ed48937203ea336e85dcf2fa0ec6c'
     }
 
@@ -4365,8 +4365,8 @@ export class ParachainSystemLastDmqMqcHeadStorage extends StorageBase {
      *  This value is loaded before and saved after processing inbound downward messages carried
      *  by the system inherent.
      */
-    get asMatrixV603(): ParachainSystemLastDmqMqcHeadStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemLastDmqMqcHeadStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4377,7 +4377,7 @@ export class ParachainSystemLastDmqMqcHeadStorage extends StorageBase {
  *  This value is loaded before and saved after processing inbound downward messages carried
  *  by the system inherent.
  */
-export interface ParachainSystemLastDmqMqcHeadStorageMatrixV603 {
+export interface ParachainSystemLastDmqMqcHeadStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array>
 }
 
@@ -4396,7 +4396,7 @@ export class ParachainSystemLastHrmpMqcHeadsStorage extends StorageBase {
      *  This value is loaded before and saved after processing inbound downward messages carried
      *  by the system inherent.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '26057692e067e44d8eec686a8711f8b87a11679701c3afa133f7b9da8f327999'
     }
 
@@ -4406,8 +4406,8 @@ export class ParachainSystemLastHrmpMqcHeadsStorage extends StorageBase {
      *  This value is loaded before and saved after processing inbound downward messages carried
      *  by the system inherent.
      */
-    get asMatrixV603(): ParachainSystemLastHrmpMqcHeadsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemLastHrmpMqcHeadsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4418,7 +4418,7 @@ export class ParachainSystemLastHrmpMqcHeadsStorage extends StorageBase {
  *  This value is loaded before and saved after processing inbound downward messages carried
  *  by the system inherent.
  */
-export interface ParachainSystemLastHrmpMqcHeadsStorageMatrixV603 {
+export interface ParachainSystemLastHrmpMqcHeadsStorageMatrixEnjinV603 {
     get(): Promise<[number, Uint8Array][]>
 }
 
@@ -4434,15 +4434,15 @@ export class ParachainSystemLastRelayChainBlockNumberStorage extends StorageBase
     /**
      *  The relay chain block number associated with the last parachain block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The relay chain block number associated with the last parachain block.
      */
-    get asMatrixV603(): ParachainSystemLastRelayChainBlockNumberStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemLastRelayChainBlockNumberStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4450,7 +4450,7 @@ export class ParachainSystemLastRelayChainBlockNumberStorage extends StorageBase
 /**
  *  The relay chain block number associated with the last parachain block.
  */
-export interface ParachainSystemLastRelayChainBlockNumberStorageMatrixV603 {
+export interface ParachainSystemLastRelayChainBlockNumberStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -4470,7 +4470,7 @@ export class ParachainSystemNewValidationCodeStorage extends StorageBase {
      *  This will be cleared in `on_initialize` of each new block if no other pallet already set
      *  the value.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '9d37db61fb40fc6c377391f52a7b349395407634d45b47a8943ab5ccf47e31e4'
     }
 
@@ -4481,8 +4481,8 @@ export class ParachainSystemNewValidationCodeStorage extends StorageBase {
      *  This will be cleared in `on_initialize` of each new block if no other pallet already set
      *  the value.
      */
-    get asMatrixV603(): ParachainSystemNewValidationCodeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemNewValidationCodeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4494,7 +4494,7 @@ export class ParachainSystemNewValidationCodeStorage extends StorageBase {
  *  This will be cleared in `on_initialize` of each new block if no other pallet already set
  *  the value.
  */
-export interface ParachainSystemNewValidationCodeStorageMatrixV603 {
+export interface ParachainSystemNewValidationCodeStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -4510,15 +4510,15 @@ export class ParachainSystemPendingUpwardMessagesStorage extends StorageBase {
     /**
      *  Upward messages that are still pending and not yet send to the relay chain.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '69b64a98b95b35e85f746389396240a8c70e1dca686229dc8d8a0812c030037a'
     }
 
     /**
      *  Upward messages that are still pending and not yet send to the relay chain.
      */
-    get asMatrixV603(): ParachainSystemPendingUpwardMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemPendingUpwardMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4526,7 +4526,7 @@ export class ParachainSystemPendingUpwardMessagesStorage extends StorageBase {
 /**
  *  Upward messages that are still pending and not yet send to the relay chain.
  */
-export interface ParachainSystemPendingUpwardMessagesStorageMatrixV603 {
+export interface ParachainSystemPendingUpwardMessagesStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -4547,7 +4547,7 @@ export class ParachainSystemPendingValidationCodeStorage extends StorageBase {
      * 
      *  [well_known_keys::CODE]: sp_core::storage::well_known_keys::CODE
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8199405308c9981e32f632f64a8758ba69af0e625da26ff6d6670b81cc1f1647'
     }
 
@@ -4559,8 +4559,8 @@ export class ParachainSystemPendingValidationCodeStorage extends StorageBase {
      * 
      *  [well_known_keys::CODE]: sp_core::storage::well_known_keys::CODE
      */
-    get asMatrixV603(): ParachainSystemPendingValidationCodeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemPendingValidationCodeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4573,7 +4573,7 @@ export class ParachainSystemPendingValidationCodeStorage extends StorageBase {
  * 
  *  [well_known_keys::CODE]: sp_core::storage::well_known_keys::CODE
  */
-export interface ParachainSystemPendingValidationCodeStorageMatrixV603 {
+export interface ParachainSystemPendingValidationCodeStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array>
 }
 
@@ -4591,7 +4591,7 @@ export class ParachainSystemProcessedDownwardMessagesStorage extends StorageBase
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
@@ -4600,8 +4600,8 @@ export class ParachainSystemProcessedDownwardMessagesStorage extends StorageBase
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get asMatrixV603(): ParachainSystemProcessedDownwardMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemProcessedDownwardMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4611,7 +4611,7 @@ export class ParachainSystemProcessedDownwardMessagesStorage extends StorageBase
  * 
  *  This will be cleared in `on_initialize` of each new block.
  */
-export interface ParachainSystemProcessedDownwardMessagesStorageMatrixV603 {
+export interface ParachainSystemProcessedDownwardMessagesStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -4632,7 +4632,7 @@ export class ParachainSystemRelayStateProofStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '38f79414b788123884c7cc1e6c6ca89331d3264f4bdcf6dff4501d6b20966908'
     }
 
@@ -4644,8 +4644,8 @@ export class ParachainSystemRelayStateProofStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get asMatrixV603(): ParachainSystemRelayStateProofStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemRelayStateProofStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4658,8 +4658,8 @@ export class ParachainSystemRelayStateProofStorage extends StorageBase {
  * 
  *  This data is also absent from the genesis.
  */
-export interface ParachainSystemRelayStateProofStorageMatrixV603 {
-    get(): Promise<(matrixV603.StorageProof | undefined)>
+export interface ParachainSystemRelayStateProofStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.StorageProof | undefined)>
 }
 
 export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
@@ -4680,7 +4680,7 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2e08e09c21eea176bfd53411112b867efc3c3d71f51431e11288adfb3e3ede6f'
     }
 
@@ -4693,8 +4693,8 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get asMatrixV603(): ParachainSystemRelevantMessagingStateStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemRelevantMessagingStateStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -4735,8 +4735,8 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
  * 
  *  This data is also absent from the genesis.
  */
-export interface ParachainSystemRelevantMessagingStateStorageMatrixV603 {
-    get(): Promise<(matrixV603.MessagingStateSnapshot | undefined)>
+export interface ParachainSystemRelevantMessagingStateStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.MessagingStateSnapshot | undefined)>
 }
 
 /**
@@ -4765,7 +4765,7 @@ export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase
      *  The weight we reserve at the beginning of the block for processing DMP messages. This
      *  overrides the amount set in the Config trait.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'dc2423472ad10592a09d90b772d976445ca94322bfee920a1f8332063411718c'
     }
 
@@ -4773,8 +4773,8 @@ export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase
      *  The weight we reserve at the beginning of the block for processing DMP messages. This
      *  overrides the amount set in the Config trait.
      */
-    get asMatrixV603(): ParachainSystemReservedDmpWeightOverrideStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemReservedDmpWeightOverrideStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4783,8 +4783,8 @@ export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase
  *  The weight we reserve at the beginning of the block for processing DMP messages. This
  *  overrides the amount set in the Config trait.
  */
-export interface ParachainSystemReservedDmpWeightOverrideStorageMatrixV603 {
-    get(): Promise<(matrixV603.Weight | undefined)>
+export interface ParachainSystemReservedDmpWeightOverrideStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.Weight | undefined)>
 }
 
 export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBase {
@@ -4800,7 +4800,7 @@ export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBas
      *  The weight we reserve at the beginning of the block for processing XCMP messages. This
      *  overrides the amount set in the Config trait.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'dc2423472ad10592a09d90b772d976445ca94322bfee920a1f8332063411718c'
     }
 
@@ -4808,8 +4808,8 @@ export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBas
      *  The weight we reserve at the beginning of the block for processing XCMP messages. This
      *  overrides the amount set in the Config trait.
      */
-    get asMatrixV603(): ParachainSystemReservedXcmpWeightOverrideStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemReservedXcmpWeightOverrideStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4818,8 +4818,8 @@ export class ParachainSystemReservedXcmpWeightOverrideStorage extends StorageBas
  *  The weight we reserve at the beginning of the block for processing XCMP messages. This
  *  overrides the amount set in the Config trait.
  */
-export interface ParachainSystemReservedXcmpWeightOverrideStorageMatrixV603 {
-    get(): Promise<(matrixV603.Weight | undefined)>
+export interface ParachainSystemReservedXcmpWeightOverrideStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.Weight | undefined)>
 }
 
 export class ParachainSystemUpgradeRestrictionSignalStorage extends StorageBase {
@@ -4840,7 +4840,7 @@ export class ParachainSystemUpgradeRestrictionSignalStorage extends StorageBase 
      *  relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is
      *  set after the inherent.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2236db14165f1386be95c2e72a22524bdd6b93f6d64e4b0b39d54e03f1f1bee2'
     }
 
@@ -4853,8 +4853,8 @@ export class ParachainSystemUpgradeRestrictionSignalStorage extends StorageBase 
      *  relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is
      *  set after the inherent.
      */
-    get asMatrixV603(): ParachainSystemUpgradeRestrictionSignalStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemUpgradeRestrictionSignalStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4868,8 +4868,8 @@ export class ParachainSystemUpgradeRestrictionSignalStorage extends StorageBase 
  *  relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is
  *  set after the inherent.
  */
-export interface ParachainSystemUpgradeRestrictionSignalStorageMatrixV603 {
-    get(): Promise<(matrixV603.V4UpgradeRestriction | undefined)>
+export interface ParachainSystemUpgradeRestrictionSignalStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.V4UpgradeRestriction | undefined)>
 }
 
 export class ParachainSystemUpwardMessagesStorage extends StorageBase {
@@ -4886,7 +4886,7 @@ export class ParachainSystemUpwardMessagesStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '69b64a98b95b35e85f746389396240a8c70e1dca686229dc8d8a0812c030037a'
     }
 
@@ -4895,8 +4895,8 @@ export class ParachainSystemUpwardMessagesStorage extends StorageBase {
      * 
      *  This will be cleared in `on_initialize` of each new block.
      */
-    get asMatrixV603(): ParachainSystemUpwardMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemUpwardMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4906,7 +4906,7 @@ export class ParachainSystemUpwardMessagesStorage extends StorageBase {
  * 
  *  This will be cleared in `on_initialize` of each new block.
  */
-export interface ParachainSystemUpwardMessagesStorageMatrixV603 {
+export interface ParachainSystemUpwardMessagesStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -4924,7 +4924,7 @@ export class ParachainSystemValidationDataStorage extends StorageBase {
      *  This value is expected to be set only once per block and it's never stored
      *  in the trie.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'fb37759067a991bce599d3fbe39ee38b99d63716a96357c3a39bf04c66e2579d'
     }
 
@@ -4933,8 +4933,8 @@ export class ParachainSystemValidationDataStorage extends StorageBase {
      *  This value is expected to be set only once per block and it's never stored
      *  in the trie.
      */
-    get asMatrixV603(): ParachainSystemValidationDataStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): ParachainSystemValidationDataStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4944,8 +4944,8 @@ export class ParachainSystemValidationDataStorage extends StorageBase {
  *  This value is expected to be set only once per block and it's never stored
  *  in the trie.
  */
-export interface ParachainSystemValidationDataStorageMatrixV603 {
-    get(): Promise<(matrixV603.V4PersistedValidationData | undefined)>
+export interface ParachainSystemValidationDataStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.V4PersistedValidationData | undefined)>
 }
 
 export class PolkadotXcmAssetTrapsStorage extends StorageBase {
@@ -4963,7 +4963,7 @@ export class PolkadotXcmAssetTrapsStorage extends StorageBase {
      *  Key is the blake2 256 hash of (origin, versioned `MultiAssets`) pair. Value is the number of
      *  times this pair has been trapped (usually just 1 if it exists at all).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '25f0d63900988134e6767c7fe398885c0448fd3bd7a0d8ff90cf6b33a482cebd'
     }
 
@@ -4973,8 +4973,8 @@ export class PolkadotXcmAssetTrapsStorage extends StorageBase {
      *  Key is the blake2 256 hash of (origin, versioned `MultiAssets`) pair. Value is the number of
      *  times this pair has been trapped (usually just 1 if it exists at all).
      */
-    get asMatrixV603(): PolkadotXcmAssetTrapsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmAssetTrapsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -4985,7 +4985,7 @@ export class PolkadotXcmAssetTrapsStorage extends StorageBase {
  *  Key is the blake2 256 hash of (origin, versioned `MultiAssets`) pair. Value is the number of
  *  times this pair has been trapped (usually just 1 if it exists at all).
  */
-export interface PolkadotXcmAssetTrapsStorageMatrixV603 {
+export interface PolkadotXcmAssetTrapsStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<number>
     getAll(): Promise<number[]>
     getMany(keys: Uint8Array[]): Promise<number[]>
@@ -5011,15 +5011,15 @@ export class PolkadotXcmCurrentMigrationStorage extends StorageBase {
     /**
      *  The current migration's stage, if any.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '59e487b7d451459fc1f76b51279b7db0b09ff9d3906a0cafa428954a73be0c50'
     }
 
     /**
      *  The current migration's stage, if any.
      */
-    get asMatrixV603(): PolkadotXcmCurrentMigrationStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmCurrentMigrationStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5027,8 +5027,8 @@ export class PolkadotXcmCurrentMigrationStorage extends StorageBase {
 /**
  *  The current migration's stage, if any.
  */
-export interface PolkadotXcmCurrentMigrationStorageMatrixV603 {
-    get(): Promise<(matrixV603.VersionMigrationStage | undefined)>
+export interface PolkadotXcmCurrentMigrationStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.VersionMigrationStage | undefined)>
 }
 
 export class PolkadotXcmLockedFungiblesStorage extends StorageBase {
@@ -5043,15 +5043,15 @@ export class PolkadotXcmLockedFungiblesStorage extends StorageBase {
     /**
      *  Fungible assets which we know are locked on this chain.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '83620d989e5dd77ea5cdf77e62586d64ad0b7ace0ba3b24d7f207643583d77cc'
     }
 
     /**
      *  Fungible assets which we know are locked on this chain.
      */
-    get asMatrixV603(): PolkadotXcmLockedFungiblesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmLockedFungiblesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5059,18 +5059,18 @@ export class PolkadotXcmLockedFungiblesStorage extends StorageBase {
 /**
  *  Fungible assets which we know are locked on this chain.
  */
-export interface PolkadotXcmLockedFungiblesStorageMatrixV603 {
-    get(key: Uint8Array): Promise<([bigint, matrixV603.VersionedMultiLocation][] | undefined)>
-    getAll(): Promise<[bigint, matrixV603.VersionedMultiLocation][][]>
-    getMany(keys: Uint8Array[]): Promise<([bigint, matrixV603.VersionedMultiLocation][] | undefined)[]>
+export interface PolkadotXcmLockedFungiblesStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<([bigint, matrixEnjinV603.VersionedMultiLocation][] | undefined)>
+    getAll(): Promise<[bigint, matrixEnjinV603.VersionedMultiLocation][][]>
+    getMany(keys: Uint8Array[]): Promise<([bigint, matrixEnjinV603.VersionedMultiLocation][] | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: [bigint, matrixV603.VersionedMultiLocation][]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: [bigint, matrixV603.VersionedMultiLocation][]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: [bigint, matrixV603.VersionedMultiLocation][]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: [bigint, matrixV603.VersionedMultiLocation][]][]>
+    getPairs(): Promise<[k: Uint8Array, v: [bigint, matrixEnjinV603.VersionedMultiLocation][]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: [bigint, matrixEnjinV603.VersionedMultiLocation][]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: [bigint, matrixEnjinV603.VersionedMultiLocation][]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: [bigint, matrixEnjinV603.VersionedMultiLocation][]][]>
 }
 
 export class PolkadotXcmQueriesStorage extends StorageBase {
@@ -5085,15 +5085,15 @@ export class PolkadotXcmQueriesStorage extends StorageBase {
     /**
      *  The ongoing queries.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'c33614a63099009a42799d8206979c61fd1a7b5d142259a57bdcbc726105e8f1'
     }
 
     /**
      *  The ongoing queries.
      */
-    get asMatrixV603(): PolkadotXcmQueriesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmQueriesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5101,18 +5101,18 @@ export class PolkadotXcmQueriesStorage extends StorageBase {
 /**
  *  The ongoing queries.
  */
-export interface PolkadotXcmQueriesStorageMatrixV603 {
-    get(key: bigint): Promise<(matrixV603.QueryStatus | undefined)>
-    getAll(): Promise<matrixV603.QueryStatus[]>
-    getMany(keys: bigint[]): Promise<(matrixV603.QueryStatus | undefined)[]>
+export interface PolkadotXcmQueriesStorageMatrixEnjinV603 {
+    get(key: bigint): Promise<(matrixEnjinV603.QueryStatus | undefined)>
+    getAll(): Promise<matrixEnjinV603.QueryStatus[]>
+    getMany(keys: bigint[]): Promise<(matrixEnjinV603.QueryStatus | undefined)[]>
     getKeys(): Promise<bigint[]>
     getKeys(key: bigint): Promise<bigint[]>
     getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
     getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
-    getPairs(): Promise<[k: bigint, v: matrixV603.QueryStatus][]>
-    getPairs(key: bigint): Promise<[k: bigint, v: matrixV603.QueryStatus][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixV603.QueryStatus][]>
-    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixV603.QueryStatus][]>
+    getPairs(): Promise<[k: bigint, v: matrixEnjinV603.QueryStatus][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: matrixEnjinV603.QueryStatus][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixEnjinV603.QueryStatus][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixEnjinV603.QueryStatus][]>
 }
 
 export class PolkadotXcmQueryCounterStorage extends StorageBase {
@@ -5127,15 +5127,15 @@ export class PolkadotXcmQueryCounterStorage extends StorageBase {
     /**
      *  The latest available query index.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '95ff4f914f08e149ddbe1ae2dcb1743bbf9aaae69d04c486e1a398cacfcca06a'
     }
 
     /**
      *  The latest available query index.
      */
-    get asMatrixV603(): PolkadotXcmQueryCounterStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmQueryCounterStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5143,7 +5143,7 @@ export class PolkadotXcmQueryCounterStorage extends StorageBase {
 /**
  *  The latest available query index.
  */
-export interface PolkadotXcmQueryCounterStorageMatrixV603 {
+export interface PolkadotXcmQueryCounterStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -5159,15 +5159,15 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1149837e63a49b75805a12d31afe81a1d8d4392ee13be03404f08d002d1c9928'
     }
 
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get asMatrixV603(): PolkadotXcmRemoteLockedFungiblesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmRemoteLockedFungiblesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -5190,26 +5190,26 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
 /**
  *  Fungible assets which we know are locked on a remote chain.
  */
-export interface PolkadotXcmRemoteLockedFungiblesStorageMatrixV603 {
-    get(key1: number, key2: Uint8Array, key3: matrixV603.VersionedAssetId): Promise<(matrixV603.RemoteLockedFungibleRecord | undefined)>
-    getAll(): Promise<matrixV603.RemoteLockedFungibleRecord[]>
-    getMany(keys: [number, Uint8Array, matrixV603.VersionedAssetId][]): Promise<(matrixV603.RemoteLockedFungibleRecord | undefined)[]>
-    getKeys(): Promise<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeys(key1: number): Promise<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array, key3: matrixV603.VersionedAssetId): Promise<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: matrixV603.VersionedAssetId): AsyncIterable<[number, Uint8Array, matrixV603.VersionedAssetId][]>
-    getPairs(): Promise<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number): Promise<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array, key3: matrixV603.VersionedAssetId): Promise<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: matrixV603.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, matrixV603.VersionedAssetId], v: matrixV603.RemoteLockedFungibleRecord][]>
+export interface PolkadotXcmRemoteLockedFungiblesStorageMatrixEnjinV603 {
+    get(key1: number, key2: Uint8Array, key3: matrixEnjinV603.VersionedAssetId): Promise<(matrixEnjinV603.RemoteLockedFungibleRecord | undefined)>
+    getAll(): Promise<matrixEnjinV603.RemoteLockedFungibleRecord[]>
+    getMany(keys: [number, Uint8Array, matrixEnjinV603.VersionedAssetId][]): Promise<(matrixEnjinV603.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeys(key1: number): Promise<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array, key3: matrixEnjinV603.VersionedAssetId): Promise<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: matrixEnjinV603.VersionedAssetId): AsyncIterable<[number, Uint8Array, matrixEnjinV603.VersionedAssetId][]>
+    getPairs(): Promise<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array, key3: matrixEnjinV603.VersionedAssetId): Promise<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: matrixEnjinV603.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, matrixEnjinV603.VersionedAssetId], v: matrixEnjinV603.RemoteLockedFungibleRecord][]>
 }
 
 /**
@@ -5250,7 +5250,7 @@ export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
      *  Default version to encode XCM when latest version of destination is unknown. If `None`,
      *  then the destinations whose XCM version is unknown are considered unreachable.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
@@ -5258,8 +5258,8 @@ export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
      *  Default version to encode XCM when latest version of destination is unknown. If `None`,
      *  then the destinations whose XCM version is unknown are considered unreachable.
      */
-    get asMatrixV603(): PolkadotXcmSafeXcmVersionStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmSafeXcmVersionStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5268,7 +5268,7 @@ export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
  *  Default version to encode XCM when latest version of destination is unknown. If `None`,
  *  then the destinations whose XCM version is unknown are considered unreachable.
  */
-export interface PolkadotXcmSafeXcmVersionStorageMatrixV603 {
+export interface PolkadotXcmSafeXcmVersionStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -5284,15 +5284,15 @@ export class PolkadotXcmSupportedVersionStorage extends StorageBase {
     /**
      *  The Latest versions that we know various locations support.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0e2aec9a2da85831b6c7f06cf2ebb00fa3489433254df2ecc1d89a9f142d7859'
     }
 
     /**
      *  The Latest versions that we know various locations support.
      */
-    get asMatrixV603(): PolkadotXcmSupportedVersionStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmSupportedVersionStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5300,22 +5300,22 @@ export class PolkadotXcmSupportedVersionStorage extends StorageBase {
 /**
  *  The Latest versions that we know various locations support.
  */
-export interface PolkadotXcmSupportedVersionStorageMatrixV603 {
-    get(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<(number | undefined)>
+export interface PolkadotXcmSupportedVersionStorageMatrixEnjinV603 {
+    get(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<(number | undefined)>
     getAll(): Promise<number[]>
-    getMany(keys: [number, matrixV603.VersionedMultiLocation][]): Promise<(number | undefined)[]>
-    getKeys(): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getPairs(): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
-    getPairs(key1: number): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
-    getPairs(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
-    getPairsPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: number][]>
+    getMany(keys: [number, matrixEnjinV603.VersionedMultiLocation][]): Promise<(number | undefined)[]>
+    getKeys(): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
+    getPairs(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
+    getPairsPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: number][]>
 }
 
 export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
@@ -5332,7 +5332,7 @@ export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
      *  the `u32` counter is the number of times that a send to the destination has been attempted,
      *  which is used as a prioritization.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1861bd13354557dc519a64b8d53a95cd897ff993484c969af972f15ebe14ed22'
     }
 
@@ -5341,8 +5341,8 @@ export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
      *  the `u32` counter is the number of times that a send to the destination has been attempted,
      *  which is used as a prioritization.
      */
-    get asMatrixV603(): PolkadotXcmVersionDiscoveryQueueStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmVersionDiscoveryQueueStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5352,8 +5352,8 @@ export class PolkadotXcmVersionDiscoveryQueueStorage extends StorageBase {
  *  the `u32` counter is the number of times that a send to the destination has been attempted,
  *  which is used as a prioritization.
  */
-export interface PolkadotXcmVersionDiscoveryQueueStorageMatrixV603 {
-    get(): Promise<[matrixV603.VersionedMultiLocation, number][]>
+export interface PolkadotXcmVersionDiscoveryQueueStorageMatrixEnjinV603 {
+    get(): Promise<[matrixEnjinV603.VersionedMultiLocation, number][]>
 }
 
 export class PolkadotXcmVersionNotifiersStorage extends StorageBase {
@@ -5368,15 +5368,15 @@ export class PolkadotXcmVersionNotifiersStorage extends StorageBase {
     /**
      *  All locations that we have requested version notifications from.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2e570d6a39a9644e69bdccf883c25d1723f752493a252d530fc3667560486716'
     }
 
     /**
      *  All locations that we have requested version notifications from.
      */
-    get asMatrixV603(): PolkadotXcmVersionNotifiersStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmVersionNotifiersStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5384,22 +5384,22 @@ export class PolkadotXcmVersionNotifiersStorage extends StorageBase {
 /**
  *  All locations that we have requested version notifications from.
  */
-export interface PolkadotXcmVersionNotifiersStorageMatrixV603 {
-    get(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<(bigint | undefined)>
+export interface PolkadotXcmVersionNotifiersStorageMatrixEnjinV603 {
+    get(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<(bigint | undefined)>
     getAll(): Promise<bigint[]>
-    getMany(keys: [number, matrixV603.VersionedMultiLocation][]): Promise<(bigint | undefined)[]>
-    getKeys(): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getPairs(): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
-    getPairs(key1: number): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
-    getPairs(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
-    getPairsPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: bigint][]>
+    getMany(keys: [number, matrixEnjinV603.VersionedMultiLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
+    getPairs(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
+    getPairsPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: bigint][]>
 }
 
 export class PolkadotXcmVersionNotifyTargetsStorage extends StorageBase {
@@ -5415,7 +5415,7 @@ export class PolkadotXcmVersionNotifyTargetsStorage extends StorageBase {
      *  The target locations that are subscribed to our version changes, as well as the most recent
      *  of our versions we informed them of.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '080bdd3fd57ea1cba05e6b46642e4860965e8f150a64cc9d5bafc6eebd6207fb'
     }
 
@@ -5423,8 +5423,8 @@ export class PolkadotXcmVersionNotifyTargetsStorage extends StorageBase {
      *  The target locations that are subscribed to our version changes, as well as the most recent
      *  of our versions we informed them of.
      */
-    get asMatrixV603(): PolkadotXcmVersionNotifyTargetsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmVersionNotifyTargetsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5433,22 +5433,22 @@ export class PolkadotXcmVersionNotifyTargetsStorage extends StorageBase {
  *  The target locations that are subscribed to our version changes, as well as the most recent
  *  of our versions we informed them of.
  */
-export interface PolkadotXcmVersionNotifyTargetsStorageMatrixV603 {
-    get(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<([bigint, matrixV603.Weight, number] | undefined)>
-    getAll(): Promise<[bigint, matrixV603.Weight, number][]>
-    getMany(keys: [number, matrixV603.VersionedMultiLocation][]): Promise<([bigint, matrixV603.Weight, number] | undefined)[]>
-    getKeys(): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeys(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getKeysPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[number, matrixV603.VersionedMultiLocation][]>
-    getPairs(): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
-    getPairs(key1: number): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
-    getPairs(key1: number, key2: matrixV603.VersionedMultiLocation): Promise<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
-    getPairsPaged(pageSize: number, key1: number, key2: matrixV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixV603.VersionedMultiLocation], v: [bigint, matrixV603.Weight, number]][]>
+export interface PolkadotXcmVersionNotifyTargetsStorageMatrixEnjinV603 {
+    get(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<([bigint, matrixEnjinV603.Weight, number] | undefined)>
+    getAll(): Promise<[bigint, matrixEnjinV603.Weight, number][]>
+    getMany(keys: [number, matrixEnjinV603.VersionedMultiLocation][]): Promise<([bigint, matrixEnjinV603.Weight, number] | undefined)[]>
+    getKeys(): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeys(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getKeysPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[number, matrixEnjinV603.VersionedMultiLocation][]>
+    getPairs(): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
+    getPairs(key1: number): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
+    getPairs(key1: number, key2: matrixEnjinV603.VersionedMultiLocation): Promise<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
+    getPairsPaged(pageSize: number, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: [bigint, matrixEnjinV603.Weight, number]][]>
 }
 
 export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
@@ -5463,15 +5463,15 @@ export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
     /**
      *  Global suspension state of the XCM executor.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  Global suspension state of the XCM executor.
      */
-    get asMatrixV603(): PolkadotXcmXcmExecutionSuspendedStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PolkadotXcmXcmExecutionSuspendedStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5479,7 +5479,7 @@ export class PolkadotXcmXcmExecutionSuspendedStorage extends StorageBase {
 /**
  *  Global suspension state of the XCM executor.
  */
-export interface PolkadotXcmXcmExecutionSuspendedStorageMatrixV603 {
+export interface PolkadotXcmXcmExecutionSuspendedStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -5495,15 +5495,15 @@ export class PoolsPoolsStorage extends StorageBase {
     /**
      *  Information about the pools
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'c34074cd3c393bbbf499a52d01b17aab7f4b9ef8d114a6f1153dba4c76f48632'
     }
 
     /**
      *  Information about the pools
      */
-    get asMatrixV603(): PoolsPoolsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PoolsPoolsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5511,8 +5511,8 @@ export class PoolsPoolsStorage extends StorageBase {
 /**
  *  Information about the pools
  */
-export interface PoolsPoolsStorageMatrixV603 {
-    get(): Promise<[Uint8Array, matrixV603.Pool][]>
+export interface PoolsPoolsStorageMatrixEnjinV603 {
+    get(): Promise<[Uint8Array, matrixEnjinV603.Pool][]>
 }
 
 export class PreimagePreimageForStorage extends StorageBase {
@@ -5524,17 +5524,17 @@ export class PreimagePreimageForStorage extends StorageBase {
         return 'PreimageFor'
     }
 
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '55fa1a08a9fac4bcf15d53fce590e3fb5af7fbc408ac4b8e1ed28f5f8a242534'
     }
 
-    get asMatrixV603(): PreimagePreimageForStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PreimagePreimageForStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
 
-export interface PreimagePreimageForStorageMatrixV603 {
+export interface PreimagePreimageForStorageMatrixEnjinV603 {
     get(key: [Uint8Array, number]): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [Uint8Array, number][]): Promise<(Uint8Array | undefined)[]>
@@ -5560,15 +5560,15 @@ export class PreimageStatusForStorage extends StorageBase {
     /**
      *  The request status of a given hash.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '16647d6a818ed8802ff108ffe98014d8de07d069008bb466b26b7367e684d574'
     }
 
     /**
      *  The request status of a given hash.
      */
-    get asMatrixV603(): PreimageStatusForStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): PreimageStatusForStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5576,18 +5576,18 @@ export class PreimageStatusForStorage extends StorageBase {
 /**
  *  The request status of a given hash.
  */
-export interface PreimageStatusForStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.RequestStatus | undefined)>
-    getAll(): Promise<matrixV603.RequestStatus[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.RequestStatus | undefined)[]>
+export interface PreimageStatusForStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.RequestStatus | undefined)>
+    getAll(): Promise<matrixEnjinV603.RequestStatus[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.RequestStatus | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.RequestStatus][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.RequestStatus][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.RequestStatus][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.RequestStatus][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.RequestStatus][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.RequestStatus][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.RequestStatus][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.RequestStatus][]>
 }
 
 export class SchedulerAgendaStorage extends StorageBase {
@@ -5602,15 +5602,15 @@ export class SchedulerAgendaStorage extends StorageBase {
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '6fe031a319b530f979b7d99af729c9762ca4fc70785d6631d8088992a71ae701'
     }
 
     /**
      *  Items to be executed, indexed by the block number that they should be executed on.
      */
-    get asMatrixV603(): SchedulerAgendaStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SchedulerAgendaStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5618,18 +5618,18 @@ export class SchedulerAgendaStorage extends StorageBase {
 /**
  *  Items to be executed, indexed by the block number that they should be executed on.
  */
-export interface SchedulerAgendaStorageMatrixV603 {
-    get(key: number): Promise<(matrixV603.Scheduled | undefined)[]>
-    getAll(): Promise<(matrixV603.Scheduled | undefined)[][]>
-    getMany(keys: number[]): Promise<(matrixV603.Scheduled | undefined)[][]>
+export interface SchedulerAgendaStorageMatrixEnjinV603 {
+    get(key: number): Promise<(matrixEnjinV603.Scheduled | undefined)[]>
+    getAll(): Promise<(matrixEnjinV603.Scheduled | undefined)[][]>
+    getMany(keys: number[]): Promise<(matrixEnjinV603.Scheduled | undefined)[][]>
     getKeys(): Promise<number[]>
     getKeys(key: number): Promise<number[]>
     getKeysPaged(pageSize: number): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
-    getPairs(): Promise<[k: number, v: (matrixV603.Scheduled | undefined)[]][]>
-    getPairs(key: number): Promise<[k: number, v: (matrixV603.Scheduled | undefined)[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (matrixV603.Scheduled | undefined)[]][]>
-    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (matrixV603.Scheduled | undefined)[]][]>
+    getPairs(): Promise<[k: number, v: (matrixEnjinV603.Scheduled | undefined)[]][]>
+    getPairs(key: number): Promise<[k: number, v: (matrixEnjinV603.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: (matrixEnjinV603.Scheduled | undefined)[]][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: (matrixEnjinV603.Scheduled | undefined)[]][]>
 }
 
 export class SchedulerIncompleteSinceStorage extends StorageBase {
@@ -5641,17 +5641,17 @@ export class SchedulerIncompleteSinceStorage extends StorageBase {
         return 'IncompleteSince'
     }
 
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
-    get asMatrixV603(): SchedulerIncompleteSinceStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SchedulerIncompleteSinceStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
 
-export interface SchedulerIncompleteSinceStorageMatrixV603 {
+export interface SchedulerIncompleteSinceStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -5670,7 +5670,7 @@ export class SchedulerLookupStorage extends StorageBase {
      *  For v3 -> v4 the previously unbounded identities are Blake2-256 hashed to form the v4
      *  identities.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2072b6dc95511eafaaa8d3c8e8abab0becedb083c12e24f0be979006686149cd'
     }
 
@@ -5680,8 +5680,8 @@ export class SchedulerLookupStorage extends StorageBase {
      *  For v3 -> v4 the previously unbounded identities are Blake2-256 hashed to form the v4
      *  identities.
      */
-    get asMatrixV603(): SchedulerLookupStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SchedulerLookupStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5692,7 +5692,7 @@ export class SchedulerLookupStorage extends StorageBase {
  *  For v3 -> v4 the previously unbounded identities are Blake2-256 hashed to form the v4
  *  identities.
  */
-export interface SchedulerLookupStorageMatrixV603 {
+export interface SchedulerLookupStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<([number, number] | undefined)>
     getAll(): Promise<[number, number][]>
     getMany(keys: Uint8Array[]): Promise<([number, number] | undefined)[]>
@@ -5718,15 +5718,15 @@ export class SessionCurrentIndexStorage extends StorageBase {
     /**
      *  Current index of the session.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  Current index of the session.
      */
-    get asMatrixV603(): SessionCurrentIndexStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionCurrentIndexStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5734,7 +5734,7 @@ export class SessionCurrentIndexStorage extends StorageBase {
 /**
  *  Current index of the session.
  */
-export interface SessionCurrentIndexStorageMatrixV603 {
+export interface SessionCurrentIndexStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -5754,7 +5754,7 @@ export class SessionDisabledValidatorsStorage extends StorageBase {
      *  disabled using binary search. It gets cleared when `on_session_ending` returns
      *  a new set of identities.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a9f6979e68cec9d5834e7d077129aa05e8b477f326cb009049d2178afbea14f0'
     }
 
@@ -5765,8 +5765,8 @@ export class SessionDisabledValidatorsStorage extends StorageBase {
      *  disabled using binary search. It gets cleared when `on_session_ending` returns
      *  a new set of identities.
      */
-    get asMatrixV603(): SessionDisabledValidatorsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionDisabledValidatorsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5778,7 +5778,7 @@ export class SessionDisabledValidatorsStorage extends StorageBase {
  *  disabled using binary search. It gets cleared when `on_session_ending` returns
  *  a new set of identities.
  */
-export interface SessionDisabledValidatorsStorageMatrixV603 {
+export interface SessionDisabledValidatorsStorageMatrixEnjinV603 {
     get(): Promise<number[]>
 }
 
@@ -5794,15 +5794,15 @@ export class SessionKeyOwnerStorage extends StorageBase {
     /**
      *  The owner of a key. The key is the `KeyTypeId` + the encoded key.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '20cf09ea865a34d19d79cca4e3df7a5a719547bdf984f5ab8eb811d55da822e5'
     }
 
     /**
      *  The owner of a key. The key is the `KeyTypeId` + the encoded key.
      */
-    get asMatrixV603(): SessionKeyOwnerStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionKeyOwnerStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5810,7 +5810,7 @@ export class SessionKeyOwnerStorage extends StorageBase {
 /**
  *  The owner of a key. The key is the `KeyTypeId` + the encoded key.
  */
-export interface SessionKeyOwnerStorageMatrixV603 {
+export interface SessionKeyOwnerStorageMatrixEnjinV603 {
     get(key: [Uint8Array, Uint8Array]): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [Uint8Array, Uint8Array][]): Promise<(Uint8Array | undefined)[]>
@@ -5836,15 +5836,15 @@ export class SessionNextKeysStorage extends StorageBase {
     /**
      *  The next session keys for a validator.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2f670cd584e15d58095cb717f2ec5413369ec61a1d09b68212a36ac0523e456b'
     }
 
     /**
      *  The next session keys for a validator.
      */
-    get asMatrixV603(): SessionNextKeysStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionNextKeysStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5852,18 +5852,18 @@ export class SessionNextKeysStorage extends StorageBase {
 /**
  *  The next session keys for a validator.
  */
-export interface SessionNextKeysStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.SessionKeys | undefined)>
-    getAll(): Promise<matrixV603.SessionKeys[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.SessionKeys | undefined)[]>
+export interface SessionNextKeysStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.SessionKeys | undefined)>
+    getAll(): Promise<matrixEnjinV603.SessionKeys[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.SessionKeys | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.SessionKeys][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.SessionKeys][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.SessionKeys][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.SessionKeys][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.SessionKeys][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.SessionKeys][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.SessionKeys][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.SessionKeys][]>
 }
 
 export class SessionQueuedChangedStorage extends StorageBase {
@@ -5879,7 +5879,7 @@ export class SessionQueuedChangedStorage extends StorageBase {
      *  True if the underlying economic identities or weighting behind the validators
      *  has changed in the queued validator set.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
@@ -5887,8 +5887,8 @@ export class SessionQueuedChangedStorage extends StorageBase {
      *  True if the underlying economic identities or weighting behind the validators
      *  has changed in the queued validator set.
      */
-    get asMatrixV603(): SessionQueuedChangedStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionQueuedChangedStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5897,7 +5897,7 @@ export class SessionQueuedChangedStorage extends StorageBase {
  *  True if the underlying economic identities or weighting behind the validators
  *  has changed in the queued validator set.
  */
-export interface SessionQueuedChangedStorageMatrixV603 {
+export interface SessionQueuedChangedStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -5914,7 +5914,7 @@ export class SessionQueuedKeysStorage extends StorageBase {
      *  The queued keys for the next session. When the next session begins, these keys
      *  will be used to determine the validator's session keys.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '932bfec933e0f3e31ccbf8c6fe92f26e726dddd47f6a44fd88e96d56054aa98a'
     }
 
@@ -5922,8 +5922,8 @@ export class SessionQueuedKeysStorage extends StorageBase {
      *  The queued keys for the next session. When the next session begins, these keys
      *  will be used to determine the validator's session keys.
      */
-    get asMatrixV603(): SessionQueuedKeysStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionQueuedKeysStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5932,8 +5932,8 @@ export class SessionQueuedKeysStorage extends StorageBase {
  *  The queued keys for the next session. When the next session begins, these keys
  *  will be used to determine the validator's session keys.
  */
-export interface SessionQueuedKeysStorageMatrixV603 {
-    get(): Promise<[Uint8Array, matrixV603.SessionKeys][]>
+export interface SessionQueuedKeysStorageMatrixEnjinV603 {
+    get(): Promise<[Uint8Array, matrixEnjinV603.SessionKeys][]>
 }
 
 export class SessionValidatorsStorage extends StorageBase {
@@ -5948,15 +5948,15 @@ export class SessionValidatorsStorage extends StorageBase {
     /**
      *  The current set of validators.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The current set of validators.
      */
-    get asMatrixV603(): SessionValidatorsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SessionValidatorsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -5964,7 +5964,7 @@ export class SessionValidatorsStorage extends StorageBase {
 /**
  *  The current set of validators.
  */
-export interface SessionValidatorsStorageMatrixV603 {
+export interface SessionValidatorsStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -6012,15 +6012,15 @@ export class SystemAccountStorage extends StorageBase {
     /**
      *  The full account information for a particular account ID.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
     }
 
     /**
      *  The full account information for a particular account ID.
      */
-    get asMatrixV603(): SystemAccountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemAccountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -6058,18 +6058,18 @@ export class SystemAccountStorage extends StorageBase {
 /**
  *  The full account information for a particular account ID.
  */
-export interface SystemAccountStorageMatrixV603 {
-    get(key: Uint8Array): Promise<matrixV603.AccountInfo>
-    getAll(): Promise<matrixV603.AccountInfo[]>
-    getMany(keys: Uint8Array[]): Promise<matrixV603.AccountInfo[]>
+export interface SystemAccountStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<matrixEnjinV603.AccountInfo>
+    getAll(): Promise<matrixEnjinV603.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<matrixEnjinV603.AccountInfo[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.AccountInfo][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.AccountInfo][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.AccountInfo][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.AccountInfo][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.AccountInfo][]>
 }
 
 /**
@@ -6118,15 +6118,15 @@ export class SystemAllExtrinsicsLenStorage extends StorageBase {
     /**
      *  Total length (in bytes) for all extrinsics put together, for the current block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
     /**
      *  Total length (in bytes) for all extrinsics put together, for the current block.
      */
-    get asMatrixV603(): SystemAllExtrinsicsLenStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemAllExtrinsicsLenStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6134,7 +6134,7 @@ export class SystemAllExtrinsicsLenStorage extends StorageBase {
 /**
  *  Total length (in bytes) for all extrinsics put together, for the current block.
  */
-export interface SystemAllExtrinsicsLenStorageMatrixV603 {
+export interface SystemAllExtrinsicsLenStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -6150,15 +6150,15 @@ export class SystemBlockHashStorage extends StorageBase {
     /**
      *  Map of block numbers to block hashes.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '06f5703796027f4b198d4ffd50b721273430d8ff663660646793873168f9df17'
     }
 
     /**
      *  Map of block numbers to block hashes.
      */
-    get asMatrixV603(): SystemBlockHashStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemBlockHashStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6166,7 +6166,7 @@ export class SystemBlockHashStorage extends StorageBase {
 /**
  *  Map of block numbers to block hashes.
  */
-export interface SystemBlockHashStorageMatrixV603 {
+export interface SystemBlockHashStorageMatrixEnjinV603 {
     get(key: number): Promise<Uint8Array>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: number[]): Promise<Uint8Array[]>
@@ -6192,15 +6192,15 @@ export class SystemBlockWeightStorage extends StorageBase {
     /**
      *  The current weight for the block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b5ecb31f1f780ce8b20535384ce7b3159da495c9f1cbf13a2f253ccb02ae175'
     }
 
     /**
      *  The current weight for the block.
      */
-    get asMatrixV603(): SystemBlockWeightStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemBlockWeightStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6208,8 +6208,8 @@ export class SystemBlockWeightStorage extends StorageBase {
 /**
  *  The current weight for the block.
  */
-export interface SystemBlockWeightStorageMatrixV603 {
-    get(): Promise<matrixV603.PerDispatchClass>
+export interface SystemBlockWeightStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.PerDispatchClass>
 }
 
 export class SystemDigestStorage extends StorageBase {
@@ -6224,15 +6224,15 @@ export class SystemDigestStorage extends StorageBase {
     /**
      *  Digest of the current block, also part of the block header.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '6edb48fd53810bda6cc1015d69e4aacd63966970836398edb4a47cec0bf3fa85'
     }
 
     /**
      *  Digest of the current block, also part of the block header.
      */
-    get asMatrixV603(): SystemDigestStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemDigestStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6240,8 +6240,8 @@ export class SystemDigestStorage extends StorageBase {
 /**
  *  Digest of the current block, also part of the block header.
  */
-export interface SystemDigestStorageMatrixV603 {
-    get(): Promise<matrixV603.Digest>
+export interface SystemDigestStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Digest>
 }
 
 export class SystemEventCountStorage extends StorageBase {
@@ -6256,15 +6256,15 @@ export class SystemEventCountStorage extends StorageBase {
     /**
      *  The number of events in the `Events<T>` list.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The number of events in the `Events<T>` list.
      */
-    get asMatrixV603(): SystemEventCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemEventCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6272,7 +6272,7 @@ export class SystemEventCountStorage extends StorageBase {
 /**
  *  The number of events in the `Events<T>` list.
  */
-export interface SystemEventCountStorageMatrixV603 {
+export interface SystemEventCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -6297,7 +6297,7 @@ export class SystemEventTopicsStorage extends StorageBase {
      *  the `EventIndex` then in case if the topic has the same contents on the next block
      *  no notification will be triggered thus the event might be lost.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'd5ef37ba3daec264a9dcba5a29bf5b2ff23eb80b912936f924f44a8db557c58d'
     }
 
@@ -6313,8 +6313,8 @@ export class SystemEventTopicsStorage extends StorageBase {
      *  the `EventIndex` then in case if the topic has the same contents on the next block
      *  no notification will be triggered thus the event might be lost.
      */
-    get asMatrixV603(): SystemEventTopicsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemEventTopicsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6331,7 +6331,7 @@ export class SystemEventTopicsStorage extends StorageBase {
  *  the `EventIndex` then in case if the topic has the same contents on the next block
  *  no notification will be triggered thus the event might be lost.
  */
-export interface SystemEventTopicsStorageMatrixV603 {
+export interface SystemEventTopicsStorageMatrixEnjinV603 {
     get(key: Uint8Array): Promise<[number, number][]>
     getAll(): Promise<[number, number][][]>
     getMany(keys: Uint8Array[]): Promise<[number, number][][]>
@@ -6363,7 +6363,7 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a57dd21e7aeaa4b8e9f0e55f1f48c7e44e142ba9a66bb9c49a3cdf88a9cc9c46'
     }
 
@@ -6376,8 +6376,8 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    get asMatrixV603(): SystemEventsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemEventsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -6526,8 +6526,8 @@ export class SystemEventsStorage extends StorageBase {
  *  Events have a large in-memory size. Box the events to not go out-of-memory
  *  just in case someone still reads them from within the runtime.
  */
-export interface SystemEventsStorageMatrixV603 {
-    get(): Promise<matrixV603.EventRecord[]>
+export interface SystemEventsStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.EventRecord[]>
 }
 
 /**
@@ -6607,15 +6607,15 @@ export class SystemExecutionPhaseStorage extends StorageBase {
     /**
      *  The execution phase of the block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0ad1e323fa21971add5b3b0cc709a6e02dc7c64db7d344c1a67ec0227969ae75'
     }
 
     /**
      *  The execution phase of the block.
      */
-    get asMatrixV603(): SystemExecutionPhaseStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemExecutionPhaseStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6623,8 +6623,8 @@ export class SystemExecutionPhaseStorage extends StorageBase {
 /**
  *  The execution phase of the block.
  */
-export interface SystemExecutionPhaseStorageMatrixV603 {
-    get(): Promise<(matrixV603.Phase | undefined)>
+export interface SystemExecutionPhaseStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.Phase | undefined)>
 }
 
 export class SystemExtrinsicCountStorage extends StorageBase {
@@ -6639,15 +6639,15 @@ export class SystemExtrinsicCountStorage extends StorageBase {
     /**
      *  Total extrinsics count for the current block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
     }
 
     /**
      *  Total extrinsics count for the current block.
      */
-    get asMatrixV603(): SystemExtrinsicCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemExtrinsicCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6655,7 +6655,7 @@ export class SystemExtrinsicCountStorage extends StorageBase {
 /**
  *  Total extrinsics count for the current block.
  */
-export interface SystemExtrinsicCountStorageMatrixV603 {
+export interface SystemExtrinsicCountStorageMatrixEnjinV603 {
     get(): Promise<(number | undefined)>
 }
 
@@ -6671,15 +6671,15 @@ export class SystemExtrinsicDataStorage extends StorageBase {
     /**
      *  Extrinsics data for the current block (maps an extrinsic's index to its data).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f278d7d239e9ac4cbb0509cc885124fd45c3f5b75452aba0391701e1a886debb'
     }
 
     /**
      *  Extrinsics data for the current block (maps an extrinsic's index to its data).
      */
-    get asMatrixV603(): SystemExtrinsicDataStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemExtrinsicDataStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6687,7 +6687,7 @@ export class SystemExtrinsicDataStorage extends StorageBase {
 /**
  *  Extrinsics data for the current block (maps an extrinsic's index to its data).
  */
-export interface SystemExtrinsicDataStorageMatrixV603 {
+export interface SystemExtrinsicDataStorageMatrixEnjinV603 {
     get(key: number): Promise<Uint8Array>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: number[]): Promise<Uint8Array[]>
@@ -6713,15 +6713,15 @@ export class SystemLastRuntimeUpgradeStorage extends StorageBase {
     /**
      *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'e03e445e7a7694163bede3a772a8a347abf7a3a00424fbafec75f819d6173a17'
     }
 
     /**
      *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
      */
-    get asMatrixV603(): SystemLastRuntimeUpgradeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemLastRuntimeUpgradeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6729,8 +6729,8 @@ export class SystemLastRuntimeUpgradeStorage extends StorageBase {
 /**
  *  Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
  */
-export interface SystemLastRuntimeUpgradeStorageMatrixV603 {
-    get(): Promise<(matrixV603.LastRuntimeUpgradeInfo | undefined)>
+export interface SystemLastRuntimeUpgradeStorageMatrixEnjinV603 {
+    get(): Promise<(matrixEnjinV603.LastRuntimeUpgradeInfo | undefined)>
 }
 
 export class SystemNumberStorage extends StorageBase {
@@ -6745,15 +6745,15 @@ export class SystemNumberStorage extends StorageBase {
     /**
      *  The current block number being processed. Set by `execute_block`.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  The current block number being processed. Set by `execute_block`.
      */
-    get asMatrixV603(): SystemNumberStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemNumberStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6761,7 +6761,7 @@ export class SystemNumberStorage extends StorageBase {
 /**
  *  The current block number being processed. Set by `execute_block`.
  */
-export interface SystemNumberStorageMatrixV603 {
+export interface SystemNumberStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -6777,15 +6777,15 @@ export class SystemParentHashStorage extends StorageBase {
     /**
      *  Hash of the previous block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '146c0d1dce070e2a43f497c479248a882f4ed48937203ea336e85dcf2fa0ec6c'
     }
 
     /**
      *  Hash of the previous block.
      */
-    get asMatrixV603(): SystemParentHashStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemParentHashStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6793,7 +6793,7 @@ export class SystemParentHashStorage extends StorageBase {
 /**
  *  Hash of the previous block.
  */
-export interface SystemParentHashStorageMatrixV603 {
+export interface SystemParentHashStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array>
 }
 
@@ -6810,7 +6810,7 @@ export class SystemUpgradedToTripleRefCountStorage extends StorageBase {
      *  True if we have upgraded so that AccountInfo contains three types of `RefCount`. False
      *  (default) if not.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
@@ -6818,8 +6818,8 @@ export class SystemUpgradedToTripleRefCountStorage extends StorageBase {
      *  True if we have upgraded so that AccountInfo contains three types of `RefCount`. False
      *  (default) if not.
      */
-    get asMatrixV603(): SystemUpgradedToTripleRefCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemUpgradedToTripleRefCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6828,7 +6828,7 @@ export class SystemUpgradedToTripleRefCountStorage extends StorageBase {
  *  True if we have upgraded so that AccountInfo contains three types of `RefCount`. False
  *  (default) if not.
  */
-export interface SystemUpgradedToTripleRefCountStorageMatrixV603 {
+export interface SystemUpgradedToTripleRefCountStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -6844,15 +6844,15 @@ export class SystemUpgradedToU32RefCountStorage extends StorageBase {
     /**
      *  True if we have upgraded so that `type RefCount` is `u32`. False (default) if not.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  True if we have upgraded so that `type RefCount` is `u32`. False (default) if not.
      */
-    get asMatrixV603(): SystemUpgradedToU32RefCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): SystemUpgradedToU32RefCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6860,7 +6860,7 @@ export class SystemUpgradedToU32RefCountStorage extends StorageBase {
 /**
  *  True if we have upgraded so that `type RefCount` is `u32`. False (default) if not.
  */
-export interface SystemUpgradedToU32RefCountStorageMatrixV603 {
+export interface SystemUpgradedToU32RefCountStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -6876,15 +6876,15 @@ export class TechnicalCommitteeMembersStorage extends StorageBase {
     /**
      *  The current members of the collective. This is stored sorted (just by value).
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The current members of the collective. This is stored sorted (just by value).
      */
-    get asMatrixV603(): TechnicalCommitteeMembersStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteeMembersStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6892,7 +6892,7 @@ export class TechnicalCommitteeMembersStorage extends StorageBase {
 /**
  *  The current members of the collective. This is stored sorted (just by value).
  */
-export interface TechnicalCommitteeMembersStorageMatrixV603 {
+export interface TechnicalCommitteeMembersStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -6908,15 +6908,15 @@ export class TechnicalCommitteePrimeStorage extends StorageBase {
     /**
      *  The prime member that helps determine the default vote behavior in case of absentations.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
      *  The prime member that helps determine the default vote behavior in case of absentations.
      */
-    get asMatrixV603(): TechnicalCommitteePrimeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteePrimeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6924,7 +6924,7 @@ export class TechnicalCommitteePrimeStorage extends StorageBase {
 /**
  *  The prime member that helps determine the default vote behavior in case of absentations.
  */
-export interface TechnicalCommitteePrimeStorageMatrixV603 {
+export interface TechnicalCommitteePrimeStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -6940,15 +6940,15 @@ export class TechnicalCommitteeProposalCountStorage extends StorageBase {
     /**
      *  Proposals so far.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      *  Proposals so far.
      */
-    get asMatrixV603(): TechnicalCommitteeProposalCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteeProposalCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -6956,7 +6956,7 @@ export class TechnicalCommitteeProposalCountStorage extends StorageBase {
 /**
  *  Proposals so far.
  */
-export interface TechnicalCommitteeProposalCountStorageMatrixV603 {
+export interface TechnicalCommitteeProposalCountStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -6972,15 +6972,15 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
     }
 
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get asMatrixV603(): TechnicalCommitteeProposalOfStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteeProposalOfStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 
@@ -7063,18 +7063,18 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
 /**
  *  Actual proposal for a given hash, if it's current.
  */
-export interface TechnicalCommitteeProposalOfStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Call | undefined)>
-    getAll(): Promise<matrixV603.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Call | undefined)[]>
+export interface TechnicalCommitteeProposalOfStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Call | undefined)>
+    getAll(): Promise<matrixEnjinV603.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Call | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Call][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
 }
 
 /**
@@ -7174,15 +7174,15 @@ export class TechnicalCommitteeProposalsStorage extends StorageBase {
     /**
      *  The hashes of the active proposals.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The hashes of the active proposals.
      */
-    get asMatrixV603(): TechnicalCommitteeProposalsStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteeProposalsStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7190,7 +7190,7 @@ export class TechnicalCommitteeProposalsStorage extends StorageBase {
 /**
  *  The hashes of the active proposals.
  */
-export interface TechnicalCommitteeProposalsStorageMatrixV603 {
+export interface TechnicalCommitteeProposalsStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -7206,15 +7206,15 @@ export class TechnicalCommitteeVotingStorage extends StorageBase {
     /**
      *  Votes on a given proposal, if it is ongoing.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8674aeb71b725705ae08d0cc723a5b29396e1f9ed56e4adcf4602c361e693cd7'
     }
 
     /**
      *  Votes on a given proposal, if it is ongoing.
      */
-    get asMatrixV603(): TechnicalCommitteeVotingStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalCommitteeVotingStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7222,18 +7222,18 @@ export class TechnicalCommitteeVotingStorage extends StorageBase {
 /**
  *  Votes on a given proposal, if it is ongoing.
  */
-export interface TechnicalCommitteeVotingStorageMatrixV603 {
-    get(key: Uint8Array): Promise<(matrixV603.Votes | undefined)>
-    getAll(): Promise<matrixV603.Votes[]>
-    getMany(keys: Uint8Array[]): Promise<(matrixV603.Votes | undefined)[]>
+export interface TechnicalCommitteeVotingStorageMatrixEnjinV603 {
+    get(key: Uint8Array): Promise<(matrixEnjinV603.Votes | undefined)>
+    getAll(): Promise<matrixEnjinV603.Votes[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV603.Votes | undefined)[]>
     getKeys(): Promise<Uint8Array[]>
     getKeys(key: Uint8Array): Promise<Uint8Array[]>
     getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
     getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixV603.Votes][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixV603.Votes][]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Votes][]>
 }
 
 export class TechnicalMembershipMembersStorage extends StorageBase {
@@ -7248,15 +7248,15 @@ export class TechnicalMembershipMembersStorage extends StorageBase {
     /**
      *  The current membership, stored as an ordered Vec.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f5df25eadcdffaa0d2a68b199d671d3921ca36a7b70d22d57506dca52b4b5895'
     }
 
     /**
      *  The current membership, stored as an ordered Vec.
      */
-    get asMatrixV603(): TechnicalMembershipMembersStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalMembershipMembersStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7264,7 +7264,7 @@ export class TechnicalMembershipMembersStorage extends StorageBase {
 /**
  *  The current membership, stored as an ordered Vec.
  */
-export interface TechnicalMembershipMembersStorageMatrixV603 {
+export interface TechnicalMembershipMembersStorageMatrixEnjinV603 {
     get(): Promise<Uint8Array[]>
 }
 
@@ -7280,15 +7280,15 @@ export class TechnicalMembershipPrimeStorage extends StorageBase {
     /**
      *  The current prime member, if one exists.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
      *  The current prime member, if one exists.
      */
-    get asMatrixV603(): TechnicalMembershipPrimeStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TechnicalMembershipPrimeStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7296,7 +7296,7 @@ export class TechnicalMembershipPrimeStorage extends StorageBase {
 /**
  *  The current prime member, if one exists.
  */
-export interface TechnicalMembershipPrimeStorageMatrixV603 {
+export interface TechnicalMembershipPrimeStorageMatrixEnjinV603 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -7312,15 +7312,15 @@ export class TimestampDidUpdateStorage extends StorageBase {
     /**
      *  Did the timestamp get updated in this block?
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  Did the timestamp get updated in this block?
      */
-    get asMatrixV603(): TimestampDidUpdateStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TimestampDidUpdateStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7328,7 +7328,7 @@ export class TimestampDidUpdateStorage extends StorageBase {
 /**
  *  Did the timestamp get updated in this block?
  */
-export interface TimestampDidUpdateStorageMatrixV603 {
+export interface TimestampDidUpdateStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -7344,15 +7344,15 @@ export class TimestampNowStorage extends StorageBase {
     /**
      *  Current time for the current block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '95ff4f914f08e149ddbe1ae2dcb1743bbf9aaae69d04c486e1a398cacfcca06a'
     }
 
     /**
      *  Current time for the current block.
      */
-    get asMatrixV603(): TimestampNowStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TimestampNowStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7360,7 +7360,7 @@ export class TimestampNowStorage extends StorageBase {
 /**
  *  Current time for the current block.
  */
-export interface TimestampNowStorageMatrixV603 {
+export interface TimestampNowStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -7373,17 +7373,17 @@ export class TransactionPaymentNextFeeMultiplierStorage extends StorageBase {
         return 'NextFeeMultiplier'
     }
 
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
     }
 
-    get asMatrixV603(): TransactionPaymentNextFeeMultiplierStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TransactionPaymentNextFeeMultiplierStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
 
-export interface TransactionPaymentNextFeeMultiplierStorageMatrixV603 {
+export interface TransactionPaymentNextFeeMultiplierStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -7396,18 +7396,18 @@ export class TransactionPaymentStorageVersionStorage extends StorageBase {
         return 'StorageVersion'
     }
 
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '7a0b9b43fb3e876cfa92bb4b00e569ef9a82972b0600c8a8570e064c7e3890fd'
     }
 
-    get asMatrixV603(): TransactionPaymentStorageVersionStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): TransactionPaymentStorageVersionStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
 
-export interface TransactionPaymentStorageVersionStorageMatrixV603 {
-    get(): Promise<matrixV603.Releases>
+export interface TransactionPaymentStorageVersionStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.Releases>
 }
 
 export class VestingVestingSchedulesStorage extends StorageBase {
@@ -7470,15 +7470,15 @@ export class XcmpQueueCounterForOverweightStorage extends StorageBase {
     /**
      * Counter for the related counted storage map
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '81bbbe8e62451cbcc227306706c919527aa2538970bd6d67a9969dd52c257d02'
     }
 
     /**
      * Counter for the related counted storage map
      */
-    get asMatrixV603(): XcmpQueueCounterForOverweightStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueCounterForOverweightStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7486,7 +7486,7 @@ export class XcmpQueueCounterForOverweightStorage extends StorageBase {
 /**
  * Counter for the related counted storage map
  */
-export interface XcmpQueueCounterForOverweightStorageMatrixV603 {
+export interface XcmpQueueCounterForOverweightStorageMatrixEnjinV603 {
     get(): Promise<number>
 }
 
@@ -7502,15 +7502,15 @@ export class XcmpQueueInboundXcmpMessagesStorage extends StorageBase {
     /**
      *  Inbound aggregate XCMP messages. It can only be one per ParaId/block.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '7bf0d83d361216e18f7bca971cbf4fbd433158d3be6ac33fe278fb6d9bfb0469'
     }
 
     /**
      *  Inbound aggregate XCMP messages. It can only be one per ParaId/block.
      */
-    get asMatrixV603(): XcmpQueueInboundXcmpMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueInboundXcmpMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7518,7 +7518,7 @@ export class XcmpQueueInboundXcmpMessagesStorage extends StorageBase {
 /**
  *  Inbound aggregate XCMP messages. It can only be one per ParaId/block.
  */
-export interface XcmpQueueInboundXcmpMessagesStorageMatrixV603 {
+export interface XcmpQueueInboundXcmpMessagesStorageMatrixEnjinV603 {
     get(key1: number, key2: number): Promise<Uint8Array>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [number, number][]): Promise<Uint8Array[]>
@@ -7548,15 +7548,15 @@ export class XcmpQueueInboundXcmpStatusStorage extends StorageBase {
     /**
      *  Status of the inbound XCMP channels.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '9463adeec55c62de9270b726721d07d1258e861fc23bcadc753e06286f1e9d94'
     }
 
     /**
      *  Status of the inbound XCMP channels.
      */
-    get asMatrixV603(): XcmpQueueInboundXcmpStatusStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueInboundXcmpStatusStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7564,8 +7564,8 @@ export class XcmpQueueInboundXcmpStatusStorage extends StorageBase {
 /**
  *  Status of the inbound XCMP channels.
  */
-export interface XcmpQueueInboundXcmpStatusStorageMatrixV603 {
-    get(): Promise<matrixV603.InboundChannelDetails[]>
+export interface XcmpQueueInboundXcmpStatusStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.InboundChannelDetails[]>
 }
 
 export class XcmpQueueOutboundXcmpMessagesStorage extends StorageBase {
@@ -7580,15 +7580,15 @@ export class XcmpQueueOutboundXcmpMessagesStorage extends StorageBase {
     /**
      *  The messages outbound in a given XCMP channel.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f8f791196403322746e9b911cdffc1dfb7880ff624b4765b5515d8264f7df7b2'
     }
 
     /**
      *  The messages outbound in a given XCMP channel.
      */
-    get asMatrixV603(): XcmpQueueOutboundXcmpMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueOutboundXcmpMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7596,7 +7596,7 @@ export class XcmpQueueOutboundXcmpMessagesStorage extends StorageBase {
 /**
  *  The messages outbound in a given XCMP channel.
  */
-export interface XcmpQueueOutboundXcmpMessagesStorageMatrixV603 {
+export interface XcmpQueueOutboundXcmpMessagesStorageMatrixEnjinV603 {
     get(key1: number, key2: number): Promise<Uint8Array>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [number, number][]): Promise<Uint8Array[]>
@@ -7631,7 +7631,7 @@ export class XcmpQueueOutboundXcmpStatusStorage extends StorageBase {
      *  case of the need to send a high-priority signal message this block.
      *  The bool is true if there is a signal message waiting to be sent.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '0803a0634571a8cfdaa8b16757a06e235664ceb84c144cf0d5953fd2dd0f7f3a'
     }
 
@@ -7643,8 +7643,8 @@ export class XcmpQueueOutboundXcmpStatusStorage extends StorageBase {
      *  case of the need to send a high-priority signal message this block.
      *  The bool is true if there is a signal message waiting to be sent.
      */
-    get asMatrixV603(): XcmpQueueOutboundXcmpStatusStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueOutboundXcmpStatusStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7657,8 +7657,8 @@ export class XcmpQueueOutboundXcmpStatusStorage extends StorageBase {
  *  case of the need to send a high-priority signal message this block.
  *  The bool is true if there is a signal message waiting to be sent.
  */
-export interface XcmpQueueOutboundXcmpStatusStorageMatrixV603 {
-    get(): Promise<matrixV603.OutboundChannelDetails[]>
+export interface XcmpQueueOutboundXcmpStatusStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.OutboundChannelDetails[]>
 }
 
 export class XcmpQueueOverweightStorage extends StorageBase {
@@ -7676,7 +7676,7 @@ export class XcmpQueueOverweightStorage extends StorageBase {
      *  These message stay in this storage map until they are manually dispatched via
      *  `service_overweight`.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2eb096a3f66cc2d3a7f63f9f097c63bad7d960c4949a759a34865c7919f65122'
     }
 
@@ -7686,8 +7686,8 @@ export class XcmpQueueOverweightStorage extends StorageBase {
      *  These message stay in this storage map until they are manually dispatched via
      *  `service_overweight`.
      */
-    get asMatrixV603(): XcmpQueueOverweightStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueOverweightStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7698,7 +7698,7 @@ export class XcmpQueueOverweightStorage extends StorageBase {
  *  These message stay in this storage map until they are manually dispatched via
  *  `service_overweight`.
  */
-export interface XcmpQueueOverweightStorageMatrixV603 {
+export interface XcmpQueueOverweightStorageMatrixEnjinV603 {
     get(key: bigint): Promise<([number, number, Uint8Array] | undefined)>
     getAll(): Promise<[number, number, Uint8Array][]>
     getMany(keys: bigint[]): Promise<([number, number, Uint8Array] | undefined)[]>
@@ -7725,7 +7725,7 @@ export class XcmpQueueOverweightCountStorage extends StorageBase {
      *  The number of overweight messages ever recorded in `Overweight`. Also doubles as the next
      *  available free overweight index.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '95ff4f914f08e149ddbe1ae2dcb1743bbf9aaae69d04c486e1a398cacfcca06a'
     }
 
@@ -7733,8 +7733,8 @@ export class XcmpQueueOverweightCountStorage extends StorageBase {
      *  The number of overweight messages ever recorded in `Overweight`. Also doubles as the next
      *  available free overweight index.
      */
-    get asMatrixV603(): XcmpQueueOverweightCountStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueOverweightCountStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7743,7 +7743,7 @@ export class XcmpQueueOverweightCountStorage extends StorageBase {
  *  The number of overweight messages ever recorded in `Overweight`. Also doubles as the next
  *  available free overweight index.
  */
-export interface XcmpQueueOverweightCountStorageMatrixV603 {
+export interface XcmpQueueOverweightCountStorageMatrixEnjinV603 {
     get(): Promise<bigint>
 }
 
@@ -7759,15 +7759,15 @@ export class XcmpQueueQueueConfigStorage extends StorageBase {
     /**
      *  The configuration which controls the dynamics of the outbound queue.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '2a88389b0d97d3253b6e1cdc0a2e938907eda23917d9d2a7dcb76b96b945d7c1'
     }
 
     /**
      *  The configuration which controls the dynamics of the outbound queue.
      */
-    get asMatrixV603(): XcmpQueueQueueConfigStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueQueueConfigStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7775,8 +7775,8 @@ export class XcmpQueueQueueConfigStorage extends StorageBase {
 /**
  *  The configuration which controls the dynamics of the outbound queue.
  */
-export interface XcmpQueueQueueConfigStorageMatrixV603 {
-    get(): Promise<matrixV603.QueueConfigData>
+export interface XcmpQueueQueueConfigStorageMatrixEnjinV603 {
+    get(): Promise<matrixEnjinV603.QueueConfigData>
 }
 
 export class XcmpQueueQueueSuspendedStorage extends StorageBase {
@@ -7791,15 +7791,15 @@ export class XcmpQueueQueueSuspendedStorage extends StorageBase {
     /**
      *  Whether or not the XCMP queue is suspended from executing incoming XCMs or not.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === '1b6fbf1674d189f761a7ac63093bf5c755bf073dd9d9f0dbe657289f92575db5'
     }
 
     /**
      *  Whether or not the XCMP queue is suspended from executing incoming XCMs or not.
      */
-    get asMatrixV603(): XcmpQueueQueueSuspendedStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueQueueSuspendedStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7807,7 +7807,7 @@ export class XcmpQueueQueueSuspendedStorage extends StorageBase {
 /**
  *  Whether or not the XCMP queue is suspended from executing incoming XCMs or not.
  */
-export interface XcmpQueueQueueSuspendedStorageMatrixV603 {
+export interface XcmpQueueQueueSuspendedStorageMatrixEnjinV603 {
     get(): Promise<boolean>
 }
 
@@ -7823,15 +7823,15 @@ export class XcmpQueueSignalMessagesStorage extends StorageBase {
     /**
      *  Any signal messages waiting to be sent.
      */
-    get isMatrixV603(): boolean {
+    get isMatrixEnjinV603(): boolean {
         return this.getTypeHash() === 'f278d7d239e9ac4cbb0509cc885124fd45c3f5b75452aba0391701e1a886debb'
     }
 
     /**
      *  Any signal messages waiting to be sent.
      */
-    get asMatrixV603(): XcmpQueueSignalMessagesStorageMatrixV603 {
-        assert(this.isMatrixV603)
+    get asMatrixEnjinV603(): XcmpQueueSignalMessagesStorageMatrixEnjinV603 {
+        assert(this.isMatrixEnjinV603)
         return this as any
     }
 }
@@ -7839,7 +7839,7 @@ export class XcmpQueueSignalMessagesStorage extends StorageBase {
 /**
  *  Any signal messages waiting to be sent.
  */
-export interface XcmpQueueSignalMessagesStorageMatrixV603 {
+export interface XcmpQueueSignalMessagesStorageMatrixEnjinV603 {
     get(key: number): Promise<Uint8Array>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: number[]): Promise<Uint8Array[]>
