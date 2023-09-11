@@ -28,8 +28,6 @@ export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
         ? null
         : new Marketplace({
               protocolFee: marketplace.protocolFee,
-              fixedPriceListingCount: marketplace.fixedPriceListingCount,
-              auctionListingCount: marketplace.auctionListingCount,
               listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
               listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
               maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),

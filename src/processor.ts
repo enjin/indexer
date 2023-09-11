@@ -80,6 +80,10 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Balances.Slashed', eventOptions)
     .addEvent('Balances.Transfer', eventOptions)
     .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Claims.Claimed', eventOptions)
+    .addEvent('Claims.ClaimRequested', eventOptions)
+    .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
+    .addEvent('Claims.ExchangeRateSet', eventOptions)
     // eslint-disable-next-line sonarjs/no-duplicate-string
     .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Balances.BalanceSet', eventOptions)
@@ -89,7 +93,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Marketplace.ListingFilled', eventOptions)
     .addEvent('Marketplace.BidPlaced', eventOptions)
     .addEvent('Marketplace.AuctionFinalized', eventOptions)
-    .addEvent('Claims.ClaimedEnj', eventOptions)
+    .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
@@ -155,6 +159,14 @@ async function handleEvents(
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
             return map.balances.processor.save(ctx, block, item.event)
+        case 'Claims.ClaimRequested':
+            return map.claims.events.claimRequested(ctx, block, item)
+        case 'Claims.DelayTimeForClaimSet':
+            return map.claims.events.delayTimeForClaimSet(ctx, block, item)
+        case 'Claims.Claimed':
+            return map.claims.events.claimed(ctx, block, item)
+        case 'Claims.ExchangeRateSet':
+            return map.claims.events.exchangeRateSet(ctx, block, item)
         case 'Marketplace.ListingCreated':
             return map.marketplace.events.listingCreated(ctx, block, item)
         case 'Marketplace.ListingCancelled':
@@ -165,8 +177,8 @@ async function handleEvents(
             return map.marketplace.events.bidPlaced(ctx, block, item)
         case 'Marketplace.AuctionFinalized':
             return map.marketplace.events.auctionFinalized(ctx, block, item)
-        case 'Claims.ClaimedEnj':
-            return map.claims.events.claimedEnj(ctx, block, item)
+        case 'PolkadotXcm.Attempted':
+            return map.xcm.events.attempted(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
             return undefined
@@ -218,16 +230,32 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         }
                     }
                 } else if (item.kind === 'call') {
-                    // eslint-disable-next-line no-continue
-                    if (item.call.parent != null || item.extrinsic.signature?.address == null) continue
-
+                    if (
+                        item.call.parent != null ||
+                        ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
+                    ) {
+                        // eslint-disable-next-line no-continue
+                        continue
+                    }
                     const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
 
-                    const publicKey = (
-                        signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                            ? signature.address.value
-                            : signature.address
-                    ) as string
+                    let publicKey = ''
+                    let extrinsicSignature: any = {}
+
+                    if (!signature) {
+                        publicKey = item.call.args.dest
+                        extrinsicSignature = {
+                            address: item.call.args.dest,
+                            signature: item.call.args.ethereumSignature,
+                        }
+                    } else {
+                        publicKey = (
+                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                                ? signature.address.value
+                                : signature.address
+                        ) as string
+                        extrinsicSignature = signature
+                    }
 
                     // eslint-disable-next-line no-await-in-loop
                     const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
@@ -242,7 +270,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         pallet: callName[0],
                         method: callName[1],
                         args: call.args,
-                        signature,
+                        signature: extrinsicSignature,
                         signer,
                         nonce: signer.nonce,
                         tip,
@@ -308,7 +336,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
         }
 
         const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-        if (lastBlock.height > config.chainStateHeight) {
+        if (lastBlock.height > config.lastBlockHeight - 200) {
             import('./handleJobs')
             await chainState(ctx as unknown as CommonContext, lastBlock)
         }

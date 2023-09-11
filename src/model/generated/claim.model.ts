@@ -18,16 +18,12 @@ export class Claim {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amount!: bigint
 
-    @Column_("text", {nullable: false})
-    extrinsicId!: string
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    efiSum!: bigint
 
-    @Column_("text", {nullable: false})
-    extrinsicHash!: string
+    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    enjSum!: bigint
 
-    @Index_()
     @Column_("int4", {nullable: false})
-    blockNumber!: number
-
-    @Column_("text", {nullable: false})
-    blockHash!: string
+    count!: number
 }

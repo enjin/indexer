@@ -90,3 +90,7 @@ export function safeString(s: string) {
 export function safeJson(data: any) {
     return JSON.parse(JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value)))
 }
+
+export function safeJsonString(data: any) {
+    return JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
+}

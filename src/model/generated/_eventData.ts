@@ -23,9 +23,11 @@ import {MarketplaceListingCancelled} from "./_marketplaceListingCancelled"
 import {MarketplaceListingCreated} from "./_marketplaceListingCreated"
 import {MarketplaceListingFilled} from "./_marketplaceListingFilled"
 import {BalancesTransfer} from "./_balancesTransfer"
-import {ClaimsClaimedEnj} from "./_claimsClaimedEnj"
+import {TeleportBalanceWithdrawn} from "./_teleportBalanceWithdrawn"
+import {ClaimsClaimRequested} from "./_claimsClaimRequested"
+import {ClaimsClaimed} from "./_claimsClaimed"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | ClaimsClaimedEnj
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -54,7 +56,9 @@ export function fromJsonEventData(json: any): EventData {
         case 'MarketplaceListingCreated': return new MarketplaceListingCreated(undefined, json)
         case 'MarketplaceListingFilled': return new MarketplaceListingFilled(undefined, json)
         case 'BalancesTransfer': return new BalancesTransfer(undefined, json)
-        case 'ClaimsClaimedEnj': return new ClaimsClaimedEnj(undefined, json)
+        case 'TeleportBalanceWithdrawn': return new TeleportBalanceWithdrawn(undefined, json)
+        case 'ClaimsClaimRequested': return new ClaimsClaimRequested(undefined, json)
+        case 'ClaimsClaimed': return new ClaimsClaimed(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }

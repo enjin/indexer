@@ -11,7 +11,7 @@ enum HandlerParams {
 export interface ProcessorConfig {
     chainName: string
     prefix: number | string
-    chainStateHeight: number
+    lastBlockHeight: number
     genesisHash: string
     rpc: string
     dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[HandlerParams.NAME]
@@ -24,5 +24,13 @@ export interface ProcessorConfig {
     redisPort: number
     marketplaceUrl: string
     shouldFetchAccounts: boolean
-    sentryDsn?: string
+    sentryDsn?: string,
+    amazonSns: {
+        topicArn: string
+        region: string
+        credentials: {
+            accessKeyId: string
+            secretAccessKey: string
+        }
+    }
 }
