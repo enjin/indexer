@@ -12,8 +12,8 @@ import config from '../../../config'
 async function getCallData(ctx: CommonContext, call: Call) {
     const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
 
-    if (data.asMatrixV603) {
-        return data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
     throw new UnknownVersionError(data.constructor.name)

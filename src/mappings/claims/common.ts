@@ -6,8 +6,8 @@ import { ClaimsTotalUnclaimedAmountStorage } from '../../types/generated/storage
 export function getTotalUnclaimedAmount(ctx: CommonContext, block: SubstrateBlock) {
     const data = new ClaimsTotalUnclaimedAmountStorage(ctx, block)
 
-    if (data.isMatrixV603) {
-        return data.asMatrixV603.get()
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.get()
     }
 
     throw new UnknownVersionError(data.constructor.name)
