@@ -39,8 +39,8 @@ function metadataParser(metadata: Metadata, attribute: Attribute) {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensAttributeRemovedEvent(ctx, event)
 
-    if (data.asMatrixV603) {
-        return data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
     throw new UnknownVersionError(data.constructor.name)
 }

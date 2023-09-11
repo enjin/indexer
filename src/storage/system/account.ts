@@ -1,6 +1,6 @@
 import { UnknownVersionError } from '../../common/errors'
 import { decodeId } from '../../common/tools'
-import { AccountInfo } from '../../types/generated/matrixV603'
+import { AccountInfo } from '../../types/generated/matrixEnjinV603'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { BlockContext } from '../../types/generated/support'
 
