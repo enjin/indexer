@@ -84,7 +84,7 @@ type TeleportBalanceWithdrawn {
   beneficiary: Account!
   amount: BigInt!
   account: Account!
-  destination: Int!
+  destination: String!
 }
 
 type MarketplaceAuctionFinalized {

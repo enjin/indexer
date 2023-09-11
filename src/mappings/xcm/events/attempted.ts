@@ -7,6 +7,7 @@ import { Call } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { PolkadotXcmLimitedTeleportAssetsCall } from '../../../types/generated/calls'
+import config from '../../../config'
 
 async function getCallData(ctx: CommonContext, call: Call) {
     const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
@@ -27,7 +28,7 @@ export async function attempted(
 
     const callData = await getCallData(ctx, item.event.call)
 
-    let destination: number | null = null
+    let destination: string | null = null
     let beneficiary: Uint8Array | null = null
     let amount: bigint | null = null
 
@@ -36,7 +37,7 @@ export async function attempted(
     const assetsInterior = callData.assets.value.at(0)
 
     if (destInterior.__kind === 'Here') {
-        destination = 1
+        destination = config.chainName.startsWith('canary') ? 'canary-relaychain' : 'enjin-relaychain'
     }
 
     if (beneficiaryInterior.__kind === 'X1' && beneficiaryInterior.value.__kind === 'AccountId32') {

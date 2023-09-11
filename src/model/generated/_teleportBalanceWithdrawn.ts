@@ -7,7 +7,7 @@ export class TeleportBalanceWithdrawn {
     private _beneficiary!: string
     private _amount!: bigint
     private _account!: string
-    private _destination!: number
+    private _destination!: string
 
     constructor(props?: Partial<Omit<TeleportBalanceWithdrawn, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
@@ -15,7 +15,7 @@ export class TeleportBalanceWithdrawn {
             this._beneficiary = marshal.string.fromJSON(json.beneficiary)
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._account = marshal.string.fromJSON(json.account)
-            this._destination = marshal.int.fromJSON(json.destination)
+            this._destination = marshal.string.fromJSON(json.destination)
         }
     }
 
@@ -46,12 +46,12 @@ export class TeleportBalanceWithdrawn {
         this._account = value
     }
 
-    get destination(): number {
+    get destination(): string {
         assert(this._destination != null, 'uninitialized access')
         return this._destination
     }
 
-    set destination(value: number) {
+    set destination(value: string) {
         this._destination = value
     }
 
