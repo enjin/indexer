@@ -3,6 +3,7 @@ import {Chain, ChainContext, EventContext, Event, Result, Option} from './suppor
 import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as efinityV3014 from './efinityV3014'
 import * as v500 from './v500'
+import * as v604 from './v604'
 import * as v600 from './v600'
 import * as v602 from './v602'
 
@@ -1753,6 +1754,21 @@ export class CouncilExecutedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Council.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV604(): {proposalHash: Uint8Array, result: v604.Type_35} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class CouncilMemberExecutedEvent {
@@ -1825,6 +1841,21 @@ export class CouncilMemberExecutedEvent {
      */
     get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Council.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV604(): {proposalHash: Uint8Array, result: v604.Type_35} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3262,6 +3293,21 @@ export class FuelTanksDispatchFailedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'b8f1b16f9c4db0379c42ed84fb2c36157997ff8b65b02ad920fb41fe7628ac4b'
+    }
+
+    /**
+     * The dispatch of a call has failed
+     */
+    get asV604(): {tankId: Uint8Array, caller: Uint8Array, error: v604.DispatchError} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class FuelTanksFreezeStateMutatedEvent {
@@ -3537,6 +3583,21 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
      */
     get asV602(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: v602.DispatchError} {
         assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === '95b413ce19082ba4904572d53b5ac6dd39ebb3ff2ee7dffc9cff04790001d66f'
+    }
+
+    /**
+     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
+     */
+    get asV604(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: v604.DispatchError} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5213,6 +5274,21 @@ export class MultisigMultisigExecutedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Multisig.MultisigExecuted') === '9e0a225fbf5acad3beeb4abfce677050bfccaf660eedf13e97c1c4ecb39cfe13'
+    }
+
+    /**
+     * A multisig operation has been executed.
+     */
+    get asV604(): {approving: Uint8Array, timepoint: v604.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: v604.Type_35} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultisigNewMultisigEvent {
@@ -6543,6 +6619,21 @@ export class SchedulerDispatchedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Dispatched some task.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Scheduler.Dispatched') === '6eb5580f3023aa9d8b919b2e4d4c348b6d18e7b61b4d3362b70f19480d1767fc'
+    }
+
+    /**
+     * Dispatched some task.
+     */
+    get asV604(): {task: [number, number], id: (Uint8Array | undefined), result: v604.Type_35} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SchedulerPeriodicFailedEvent {
@@ -6911,6 +7002,21 @@ export class SystemExtrinsicFailedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * An extrinsic failed.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('System.ExtrinsicFailed') === '89ca818f689e3f6e085d8137a961f36cc94819777211c5c11cca985a448944b8'
+    }
+
+    /**
+     * An extrinsic failed.
+     */
+    get asV604(): {dispatchError: v604.DispatchError, dispatchInfo: v604.DispatchInfo} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class SystemExtrinsicSuccessEvent {
@@ -7188,6 +7294,21 @@ export class TechnicalCommitteeExecutedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.Executed') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+    }
+
+    /**
+     * A motion was executed; result will be `Ok` if it returned without error.
+     */
+    get asV604(): {proposalHash: Uint8Array, result: v604.Type_35} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TechnicalCommitteeMemberExecutedEvent {
@@ -7260,6 +7381,21 @@ export class TechnicalCommitteeMemberExecutedEvent {
      */
     get asV602(): {proposalHash: Uint8Array, result: v602.Type_33} {
         assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === '6820679ab2706380fa3eaa694e707b2dd6bcd901fb46cdcafbea7b2f05d8feba'
+    }
+
+    /**
+     * A single member did some action; result will be `Ok` if it returned without error.
+     */
+    get asV604(): {proposalHash: Uint8Array, result: v604.Type_35} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7727,6 +7863,23 @@ export class UtilityBatchInterruptedEvent {
         assert(this.isV602)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Utility.BatchInterrupted') === '031f8c01ddd9491965bf6e6671d70381e70d55e6028aab52a937d1c3afeecb9f'
+    }
+
+    /**
+     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
+     * well as the error.
+     */
+    get asV604(): {index: number, error: v604.DispatchError} {
+        assert(this.isV604)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class UtilityDispatchedAsEvent {
@@ -7799,6 +7952,21 @@ export class UtilityDispatchedAsEvent {
      */
     get asV602(): {result: v602.Type_33} {
         assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Utility.DispatchedAs') === 'ee56f7174dc1a4631da3e5b48f323193771be6a702fb2ff1ff40459869d34a0e'
+    }
+
+    /**
+     * A call was dispatched.
+     */
+    get asV604(): {result: v604.Type_35} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -7902,6 +8070,21 @@ export class UtilityItemFailedEvent {
      */
     get asV602(): {error: v602.DispatchError} {
         assert(this.isV602)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('Utility.ItemFailed') === '4564a5412ce55535234d019dbd1d2999c5a9d6f452a565385d0c43e85d0dbf0b'
+    }
+
+    /**
+     * A single item within a Batch of dispatches has completed with error.
+     */
+    get asV604(): {error: v604.DispatchError} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 }

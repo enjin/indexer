@@ -2,6 +2,7 @@ import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as v500 from './v500'
+import * as v604 from './v604'
 import * as efinityV3014 from './efinityV3014'
 import * as v600 from './v600'
 import * as v601 from './v601'
@@ -852,6 +853,21 @@ export class ClaimsClaimsStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === 'b59addc95e4ad12f850fe4129a0ee964077180ad25eacf666dc124f2f5e0f166'
+    }
+
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    get asV604(): ClaimsClaimsStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -887,6 +903,23 @@ export interface ClaimsClaimsStorageV500 {
     getPairs(key: v500.Account): Promise<[k: v500.Account, v: bigint][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: v500.Account, v: bigint][]>
     getPairsPaged(pageSize: number, key: v500.Account): AsyncIterable<[k: v500.Account, v: bigint][]>
+}
+
+/**
+ *  This stores claims. Maps an ethereum address to the vec of claim data.
+ */
+export interface ClaimsClaimsStorageV604 {
+    get(key: Uint8Array): Promise<(v604.ClaimData[] | undefined)>
+    getAll(): Promise<v604.ClaimData[][]>
+    getMany(keys: Uint8Array[]): Promise<(v604.ClaimData[] | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v604.ClaimData[]][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v604.ClaimData[]][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v604.ClaimData[]][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v604.ClaimData[]][]>
 }
 
 export class ClaimsDelayClaimsPeriodStorage extends StorageBase {
@@ -959,6 +992,21 @@ export class ClaimsExchangeRateStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
+    }
+
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    get asV604(): ClaimsExchangeRateStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -973,6 +1021,13 @@ export interface ClaimsExchangeRateStorageMatrixEnjinV603 {
  */
 export interface ClaimsExchangeRateStorageV500 {
     get(): Promise<(bigint | undefined)>
+}
+
+/**
+ *  Amount in ENJ equivalent to 1 EFI.
+ */
+export interface ClaimsExchangeRateStorageV604 {
+    get(): Promise<(number | undefined)>
 }
 
 export class ClaimsLatestBlockNumberStorage extends StorageBase {
@@ -1017,6 +1072,23 @@ export class ClaimsLatestBlockNumberStorage extends StorageBase {
         assert(this.isV500)
         return this as any
     }
+
+    /**
+     *  Latest block numbers for Ethereum for which requests claim has been made by the
+     *  relayer.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === 'a926ad48d1a07d1162c5fdb99f3f6cef39c7c5a115a92ff9ccf0357bae4bf2ed'
+    }
+
+    /**
+     *  Latest block numbers for Ethereum for which requests claim has been made by the
+     *  relayer.
+     */
+    get asV604(): ClaimsLatestBlockNumberStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -1033,6 +1105,14 @@ export interface ClaimsLatestBlockNumberStorageMatrixEnjinV603 {
  */
 export interface ClaimsLatestBlockNumberStorageV500 {
     get(): Promise<(v500.TrackedBlockNumbers | undefined)>
+}
+
+/**
+ *  Latest block numbers for Ethereum for which requests claim has been made by the
+ *  relayer.
+ */
+export interface ClaimsLatestBlockNumberStorageV604 {
+    get(): Promise<(number | undefined)>
 }
 
 export class ClaimsMaxEfiForEarlyBirdRewardsStorage extends StorageBase {
@@ -1875,6 +1955,21 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV602)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV604(): CouncilProposalOfStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -1977,6 +2072,23 @@ export interface CouncilProposalOfStorageV602 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV604 {
+    get(key: Uint8Array): Promise<(v604.Call | undefined)>
+    getAll(): Promise<v604.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v604.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v604.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v604.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v604.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v604.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -2997,6 +3109,21 @@ export class MarketplaceInfoStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  Stores information about the marketplace
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === 'cf0eb405cb6ed3bb6861e38a8d936f67fa9f71862d7c3c2be2ca3f90d3ad8b3d'
+    }
+
+    /**
+     *  Stores information about the marketplace
+     */
+    get asV604(): MarketplaceInfoStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -3011,6 +3138,13 @@ export interface MarketplaceInfoStorageMatrixEnjinV603 {
  */
 export interface MarketplaceInfoStorageEfinityV3014 {
     get(): Promise<efinityV3014.MarketPlaceInfo>
+}
+
+/**
+ *  Stores information about the marketplace
+ */
+export interface MarketplaceInfoStorageV604 {
+    get(): Promise<v604.MarketPlaceInfo>
 }
 
 export class MarketplaceListingIdsByAccountIdStorage extends StorageBase {
@@ -4724,6 +4858,33 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  The snapshot of some state related to messaging relevant to the current parachain as per
+     *  the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === '2e08e09c21eea176bfd53411112b867efc3c3d71f51431e11288adfb3e3ede6f'
+    }
+
+    /**
+     *  The snapshot of some state related to messaging relevant to the current parachain as per
+     *  the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    get asV604(): ParachainSystemRelevantMessagingStateStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -4750,6 +4911,19 @@ export interface ParachainSystemRelevantMessagingStateStorageMatrixEnjinV603 {
  */
 export interface ParachainSystemRelevantMessagingStateStorageEfinityV3014 {
     get(): Promise<(efinityV3014.MessagingStateSnapshot | undefined)>
+}
+
+/**
+ *  The snapshot of some state related to messaging relevant to the current parachain as per
+ *  the relay parent.
+ * 
+ *  This field is meant to be updated each block with the validation data inherent. Therefore,
+ *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+ * 
+ *  This data is also absent from the genesis.
+ */
+export interface ParachainSystemRelevantMessagingStateStorageV604 {
+    get(): Promise<(v604.MessagingStateSnapshot | undefined)>
 }
 
 export class ParachainSystemReservedDmpWeightOverrideStorage extends StorageBase {
@@ -5185,6 +5359,21 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
         assert(this.isEfinityV3014)
         return this as any
     }
+
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === '1149837e63a49b75805a12d31afe81a1d8d4392ee13be03404f08d002d1c9928'
+    }
+
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    get asV604(): PolkadotXcmRemoteLockedFungiblesStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -5235,6 +5424,31 @@ export interface PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
     getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
     getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
     getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+}
+
+/**
+ *  Fungible assets which we know are locked on a remote chain.
+ */
+export interface PolkadotXcmRemoteLockedFungiblesStorageV604 {
+    get(key1: number, key2: Uint8Array, key3: v604.VersionedAssetId): Promise<(v604.RemoteLockedFungibleRecord | undefined)>
+    getAll(): Promise<v604.RemoteLockedFungibleRecord[]>
+    getMany(keys: [number, Uint8Array, v604.VersionedAssetId][]): Promise<(v604.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeys(key1: number): Promise<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array, key3: v604.VersionedAssetId): Promise<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, v604.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v604.VersionedAssetId): AsyncIterable<[number, Uint8Array, v604.VersionedAssetId][]>
+    getPairs(): Promise<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array, key3: v604.VersionedAssetId): Promise<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v604.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, v604.VersionedAssetId], v: v604.RemoteLockedFungibleRecord][]>
 }
 
 export class PolkadotXcmSafeXcmVersionStorage extends StorageBase {
@@ -6515,6 +6729,33 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV602)
         return this as any
     }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === 'a57dd21e7aeaa4b8e9f0e55f1f48c7e44e142ba9a66bb9c49a3cdf88a9cc9c46'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV604(): SystemEventsStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -6593,6 +6834,19 @@ export interface SystemEventsStorageV601 {
  */
 export interface SystemEventsStorageV602 {
     get(): Promise<v602.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV604 {
+    get(): Promise<v604.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -7058,6 +7312,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV602)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV604(): boolean {
+        return this.getTypeHash() === '0680d52b00893a9eee04d808550083d1825242f42b231ff4d1db8b8e4c2be611'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV604(): TechnicalCommitteeProposalOfStorageV604 {
+        assert(this.isV604)
+        return this as any
+    }
 }
 
 /**
@@ -7160,6 +7429,23 @@ export interface TechnicalCommitteeProposalOfStorageV602 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v602.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v602.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV604 {
+    get(key: Uint8Array): Promise<(v604.Call | undefined)>
+    getAll(): Promise<v604.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v604.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v604.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v604.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v604.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v604.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {
