@@ -110,7 +110,7 @@ async function getAccountsMap(
 function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
-    if (collectionStorage.isMatrixV603) {
+    if (collectionStorage.is) {
         return collectionStorage.asMatrixV603
     }
 
