@@ -294,8 +294,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
-        if (data.isMatrixV603) {
-            const { collectionId, recipients } = data.asMatrixV603
+        if (data.isMatrixEnjinV603) {
+            const { collectionId, recipients } = data.asMatrixEnjinV603
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -398,9 +398,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 
     const data = new MultiTokensMintCall(ctx, call)
 
-    if (data.isMatrixV603) {
-        const { collectionId } = data.asMatrixV603
-        const recipient = data.asMatrixV603.recipient.value as Uint8Array
+    if (data.isMatrixEnjinV603) {
+        const { collectionId } = data.asMatrixEnjinV603
+        const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
         const params = data.asV600.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
@@ -491,8 +491,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenCreatedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { collectionId, tokenId, issuer, initialSupply } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { collectionId, tokenId, issuer, initialSupply } = data.asMatrixEnjinV603
         if (issuer.__kind === 'Signed') {
             return { collectionId, tokenId, issuer: issuer.value, initialSupply }
         }

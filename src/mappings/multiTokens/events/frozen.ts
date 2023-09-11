@@ -20,8 +20,8 @@ import { Event } from '../../../types/generated/support'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensFrozenEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        const { collectionId, freezeType } = data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        const { collectionId, freezeType } = data.asMatrixEnjinV603
 
         if (freezeType.__kind === 'Collection') {
             return {

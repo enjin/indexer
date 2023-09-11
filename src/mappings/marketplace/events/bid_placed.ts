@@ -22,8 +22,8 @@ import { getBestListing, getOrCreateAccount } from '../../util/entities'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        return data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
     throw new UnknownVersionError(data.constructor.name)
 }

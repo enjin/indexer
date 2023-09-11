@@ -19,8 +19,8 @@ import { CommonContext } from '../../types/contexts'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensApprovedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        return data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
     throw new UnknownVersionError(data.constructor.name)

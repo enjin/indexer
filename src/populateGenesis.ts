@@ -110,8 +110,8 @@ async function getAccountsMap(
 function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
-    if (collectionStorage.is) {
-        return collectionStorage.asMatrixV603
+    if (collectionStorage.isMatrixEnjinV603) {
+        return collectionStorage.asMatrixEnjinV603
     }
 
     throw new Error('Unsupported version')
@@ -120,8 +120,8 @@ function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
     const balanceAccountStorage = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
 
-    if (balanceAccountStorage.isMatrixV603) {
-        return balanceAccountStorage.asMatrixV603
+    if (balanceAccountStorage.isMatrixEnjinV603) {
+        return balanceAccountStorage.asMatrixEnjinV603
     }
 
     throw new Error('Unsupported version')
@@ -130,8 +130,8 @@ function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock)
 function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
     const tokensStorage = new Storage.MultiTokensTokensStorage(ctx, block)
 
-    if (tokensStorage.isMatrixV603) {
-        return tokensStorage.asMatrixV603
+    if (tokensStorage.isMatrixEnjinV603) {
+        return tokensStorage.asMatrixEnjinV603
     }
 
     if (tokensStorage.isV600) {
@@ -148,8 +148,8 @@ function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
     const tokenAccountsStorage = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
 
-    if (tokenAccountsStorage.isMatrixV603) {
-        return tokenAccountsStorage.asMatrixV603
+    if (tokenAccountsStorage.isMatrixEnjinV603) {
+        return tokenAccountsStorage.asMatrixEnjinV603
     }
 
     throw new Error('Unsupported version')
@@ -158,8 +158,8 @@ function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
     const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
 
-    if (attributeStorage.isMatrixV603) {
-        return attributeStorage.asMatrixV603
+    if (attributeStorage.isMatrixEnjinV603) {
+        return attributeStorage.asMatrixEnjinV603
     }
 
     throw new Error('Unsupported version')
@@ -168,8 +168,8 @@ function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
     const listingStorage = new Storage.MarketplaceListingsStorage(ctx, block)
 
-    if (listingStorage.isMatrixV603) {
-        return listingStorage.asMatrixV603
+    if (listingStorage.isMatrixEnjinV603) {
+        return listingStorage.asMatrixEnjinV603
     }
 
     throw new Error('Unsupported version')
@@ -178,8 +178,8 @@ function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
 function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
     const accountStorage = new Storage.SystemAccountStorage(ctx, block)
 
-    if (accountStorage.isMatrixV603) {
-        return accountStorage.asMatrixV603
+    if (accountStorage.isMatrixEnjinV603) {
+        return accountStorage.asMatrixEnjinV603
     }
 
     if (accountStorage.isV602) {

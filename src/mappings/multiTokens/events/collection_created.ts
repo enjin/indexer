@@ -40,11 +40,11 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 async function getCallData(ctx: CommonContext, call: Call) {
     if (call.name === 'MultiTokens.force_create_collection') {
         const data = new MultiTokensForceCreateCollectionCall(ctx, call)
-        if (data.isMatrixV603) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixV603.descriptor.policy.mint
-            const royalty = data.asMatrixV603.descriptor.policy.market?.royalty
+        if (data.isMatrixEnjinV603) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV603.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asMatrixV603.descriptor
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
 
             return {
                 maxTokenCount,
@@ -58,11 +58,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
     } else {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
 
-        if (data.isMatrixV603) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixV603.descriptor.policy.mint
-            const royalty = data.asMatrixV603.descriptor.policy.market?.royalty
+        if (data.isMatrixEnjinV603) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV603.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asMatrixV603.descriptor
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
 
             return {
                 maxTokenCount,
@@ -80,8 +80,8 @@ async function getCallData(ctx: CommonContext, call: Call) {
 function getEventData(ctx: CommonContext, event: Event): EventData {
     const data = new MultiTokensCollectionCreatedEvent(ctx, event)
 
-    if (data.isMatrixV603) {
-        return data.asMatrixV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
     throw new UnknownVersionError(event.constructor.name)
 }
