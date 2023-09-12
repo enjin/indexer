@@ -10,12 +10,9 @@ const apiPromise = ApiPromise.create({ provider: wsProvider })
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
-    const apiAt = await api.at(block.hash)
+    // const apiAt = await api.at(block.hash)
 
-    const [runtime, marketplace] = await Promise.all<any>([
-        api.rpc.state.getRuntimeVersion(block.hash),
-        config.chainName === 'canary-matrixchain' ? { protocolFee: 25_000000 } : apiAt.query.marketplace?.info(),
-    ])
+    const [runtime] = await Promise.all<any>([api.rpc.state.getRuntimeVersion(block.hash)])
 
     state.genesisHash = config.genesisHash
     state.transactionVersion = runtime.transactionVersion
@@ -25,7 +22,7 @@ export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
     state.timestamp = new Date(block.timestamp)
     state.marketplace = new Marketplace({
-        protocolFee: marketplace.protocolFee,
+        protocolFee: 25_000000,
         listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
         listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
         maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
