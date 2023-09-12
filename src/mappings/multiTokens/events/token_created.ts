@@ -428,7 +428,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     if (data.isMatrixEnjinV603) {
         const { collectionId } = data.asMatrixEnjinV603
         const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
-        const params = data.asV600.params as DefaultMintParamsCreateToken_v500
+        const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
         const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
