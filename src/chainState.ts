@@ -10,12 +10,11 @@ const apiPromise = ApiPromise.create({ provider: wsProvider })
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
-    // const apiAt = await api.at(block.hash)
+    const apiAt = await api.at(block.hash)
 
-    const [runtime] = await Promise.all<any>([
+    const [runtime, marketplace] = await Promise.all<any>([
         api.rpc.state.getRuntimeVersion(block.hash),
-        // TODO: The storage was not migrated and thus we can't decode this value
-        // apiAt.query.marketplace?.info(),
+        config.chainName === 'canary-matrixchain' ? { protocolFee: 25_000000 } : apiAt.query.marketplace?.info(),
     ])
 
     state.genesisHash = config.genesisHash
@@ -26,7 +25,7 @@ export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
     state.timestamp = new Date(block.timestamp)
     state.marketplace = new Marketplace({
-        protocolFee: 2.5,
+        protocolFee: marketplace.protocolFee,
         listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
         listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
         maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
