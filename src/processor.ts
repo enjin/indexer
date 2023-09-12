@@ -13,6 +13,7 @@ import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
 import { populateGenesis } from './populateGenesis'
+import { updateClaimDetails } from './mappings/claims/common'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -214,6 +215,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                     // eslint-disable-next-line no-await-in-loop
                     await populateGenesis(ctx as unknown as CommonContext, block.header)
                 }
+
+                // eslint-disable-next-line no-await-in-loop
+                await updateClaimDetails(ctx as unknown as CommonContext, block.header)
             }
 
             // eslint-disable-next-line no-restricted-syntax
