@@ -20,12 +20,12 @@ import {
     TokenCapSupply,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-import { TokenCap as TokenCap_v3014, TokenMarketBehavior } from '../../../types/generated/efinityV3014'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
     FreezeState as FreezeState_v500,
     MultiTokensCall_mint as MultiTokensCall_mint_v500,
     SufficiencyParam_Sufficient,
+    TokenMarketBehavior,
 } from '../../../types/generated/v500'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
@@ -36,8 +36,9 @@ import {
     MultiTokensForceMintCall,
     MultiTokensMintCall,
 } from '../../../types/generated/calls'
+import { TokenCap } from '../../../types/generated/matrixEnjinV603'
 
-export function getCapType(cap: TokenCap_v3014) {
+export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
         return new TokenCapSupply({
             type: CapType.Supply,
@@ -46,7 +47,6 @@ export function getCapType(cap: TokenCap_v3014) {
     }
 
     // TODO: add collapsing
-
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
     })
@@ -89,47 +89,6 @@ async function getBehavior(
 async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typeof getEventData>) {
     if (call.name === 'EfinityUtility.batch') {
         const data = new EfinityUtilityBatchCall(ctx, call)
-
-        if (data.isEfinityV3014) {
-            const { calls } = data.asEfinityV3014
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    r.value.__kind === 'mint' &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
 
         if (data.isV601) {
             const { calls } = data.asV601

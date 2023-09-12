@@ -38,7 +38,7 @@ import {
     ListingStatusType,
     ListingStatus,
 } from './model'
-import { getCapType, getFreezeState } from './mappings/multiTokens/events/token_created'
+import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { getMetadata } from './mappings/util/metadata'

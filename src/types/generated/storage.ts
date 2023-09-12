@@ -2,11 +2,10 @@ import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as v500 from './v500'
-import * as v604 from './v604'
-import * as efinityV3014 from './efinityV3014'
 import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
+import * as v604 from './v604'
 
 export class AuthorshipAuthorStorage extends StorageBase {
     protected getPrefix() {
@@ -1115,38 +1114,6 @@ export interface ClaimsLatestBlockNumberStorageV604 {
     get(): Promise<(number | undefined)>
 }
 
-export class ClaimsMaxEfiForEarlyBirdRewardsStorage extends StorageBase {
-    protected getPrefix() {
-        return 'Claims'
-    }
-
-    protected getName() {
-        return 'MaxEfiForEarlyBirdRewards'
-    }
-
-    /**
-     *  Stores maximum eligible EFI for early bird bonus
-     */
-    get isEfinityV3014(): boolean {
-        return this.getTypeHash() === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
-    }
-
-    /**
-     *  Stores maximum eligible EFI for early bird bonus
-     */
-    get asEfinityV3014(): ClaimsMaxEfiForEarlyBirdRewardsStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
-        return this as any
-    }
-}
-
-/**
- *  Stores maximum eligible EFI for early bird bonus
- */
-export interface ClaimsMaxEfiForEarlyBirdRewardsStorageEfinityV3014 {
-    get(): Promise<bigint>
-}
-
 export class ClaimsPendingApprovalsStorage extends StorageBase {
     protected getPrefix() {
         return 'Claims'
@@ -1884,21 +1851,6 @@ export class CouncilProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isEfinityV3014(): boolean {
-        return this.getTypeHash() === '55b93fe51dc259c64e7ccd6364c69a6ff7c5dcacfd08498dc55059727da4938d'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asEfinityV3014(): CouncilProposalOfStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
-        return this as any
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
     get isV500(): boolean {
         return this.getTypeHash() === '6cde8e9630d410c635d38d4e132dcdeddc5fd40211867012e22267dd19cd2cf1'
     }
@@ -1987,23 +1939,6 @@ export interface CouncilProposalOfStorageMatrixEnjinV603 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface CouncilProposalOfStorageEfinityV3014 {
-    get(key: Uint8Array): Promise<(efinityV3014.Call | undefined)>
-    getAll(): Promise<efinityV3014.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(efinityV3014.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
 }
 
 /**
@@ -2859,7 +2794,7 @@ export class EfinityXcmMinimumWeightsStorage extends StorageBase {
      * 
      *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '54746c8f01b687fecc1a895c1db7ce3ffd9db2d7ab532bd2488b343309741009'
     }
 
@@ -2870,8 +2805,8 @@ export class EfinityXcmMinimumWeightsStorage extends StorageBase {
      * 
      *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
      */
-    get asEfinityV3014(): EfinityXcmMinimumWeightsStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): EfinityXcmMinimumWeightsStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -2883,18 +2818,18 @@ export class EfinityXcmMinimumWeightsStorage extends StorageBase {
  * 
  *  XcmWeightFee: map: XcmOperation => MinimumWeightFeePair
  */
-export interface EfinityXcmMinimumWeightsStorageEfinityV3014 {
-    get(key: efinityV3014.XcmOperation): Promise<efinityV3014.MinimumWeightFeePair>
-    getAll(): Promise<efinityV3014.MinimumWeightFeePair[]>
-    getMany(keys: efinityV3014.XcmOperation[]): Promise<efinityV3014.MinimumWeightFeePair[]>
-    getKeys(): Promise<efinityV3014.XcmOperation[]>
-    getKeys(key: efinityV3014.XcmOperation): Promise<efinityV3014.XcmOperation[]>
-    getKeysPaged(pageSize: number): AsyncIterable<efinityV3014.XcmOperation[]>
-    getKeysPaged(pageSize: number, key: efinityV3014.XcmOperation): AsyncIterable<efinityV3014.XcmOperation[]>
-    getPairs(): Promise<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
-    getPairs(key: efinityV3014.XcmOperation): Promise<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
-    getPairsPaged(pageSize: number, key: efinityV3014.XcmOperation): AsyncIterable<[k: efinityV3014.XcmOperation, v: efinityV3014.MinimumWeightFeePair][]>
+export interface EfinityXcmMinimumWeightsStorageV500 {
+    get(key: v500.XcmOperation): Promise<v500.MinimumWeightFeePair>
+    getAll(): Promise<v500.MinimumWeightFeePair[]>
+    getMany(keys: v500.XcmOperation[]): Promise<v500.MinimumWeightFeePair[]>
+    getKeys(): Promise<v500.XcmOperation[]>
+    getKeys(key: v500.XcmOperation): Promise<v500.XcmOperation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v500.XcmOperation[]>
+    getKeysPaged(pageSize: number, key: v500.XcmOperation): AsyncIterable<v500.XcmOperation[]>
+    getPairs(): Promise<[k: v500.XcmOperation, v: v500.MinimumWeightFeePair][]>
+    getPairs(key: v500.XcmOperation): Promise<[k: v500.XcmOperation, v: v500.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v500.XcmOperation, v: v500.MinimumWeightFeePair][]>
+    getPairsPaged(pageSize: number, key: v500.XcmOperation): AsyncIterable<[k: v500.XcmOperation, v: v500.MinimumWeightFeePair][]>
 }
 
 export class ExtrinsicPausePausedExtrinsicsStorage extends StorageBase {
@@ -3098,15 +3033,15 @@ export class MarketplaceInfoStorage extends StorageBase {
     /**
      *  Stores information about the marketplace
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '8f3079a34bccec98eddaa087299c671597b9b6c0401ca8c900734ef257151b13'
     }
 
     /**
      *  Stores information about the marketplace
      */
-    get asEfinityV3014(): MarketplaceInfoStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): MarketplaceInfoStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 
@@ -3136,8 +3071,8 @@ export interface MarketplaceInfoStorageMatrixEnjinV603 {
 /**
  *  Stores information about the marketplace
  */
-export interface MarketplaceInfoStorageEfinityV3014 {
-    get(): Promise<efinityV3014.MarketPlaceInfo>
+export interface MarketplaceInfoStorageV500 {
+    get(): Promise<v500.MarketPlaceInfo>
 }
 
 /**
@@ -3159,15 +3094,15 @@ export class MarketplaceListingIdsByAccountIdStorage extends StorageBase {
     /**
      *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '33e12ad309c02112b5ea505c6e3e739ba83921bfe6bed7e5eb08d21907895180'
     }
 
     /**
      *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
      */
-    get asEfinityV3014(): MarketplaceListingIdsByAccountIdStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): MarketplaceListingIdsByAccountIdStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -3175,7 +3110,7 @@ export class MarketplaceListingIdsByAccountIdStorage extends StorageBase {
 /**
  *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
  */
-export interface MarketplaceListingIdsByAccountIdStorageEfinityV3014 {
+export interface MarketplaceListingIdsByAccountIdStorageV500 {
     get(key1: Uint8Array, key2: Uint8Array): Promise<(null | undefined)>
     getAll(): Promise<null[]>
     getMany(keys: [Uint8Array, Uint8Array][]): Promise<(null | undefined)[]>
@@ -3205,15 +3140,15 @@ export class MarketplaceListingIdsByMakeAssetStorage extends StorageBase {
     /**
      *  Listing Ids by make asset's collection id and token id
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === 'cc5df187f7a6ddcd474c0c1e410e8d72bd71954d4b2ad06da5882588a225356a'
     }
 
     /**
      *  Listing Ids by make asset's collection id and token id
      */
-    get asEfinityV3014(): MarketplaceListingIdsByMakeAssetStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): MarketplaceListingIdsByMakeAssetStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -3221,7 +3156,7 @@ export class MarketplaceListingIdsByMakeAssetStorage extends StorageBase {
 /**
  *  Listing Ids by make asset's collection id and token id
  */
-export interface MarketplaceListingIdsByMakeAssetStorageEfinityV3014 {
+export interface MarketplaceListingIdsByMakeAssetStorageV500 {
     get(key1: bigint, key2: bigint): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]>
@@ -3251,15 +3186,15 @@ export class MarketplaceListingIdsByTakeAssetStorage extends StorageBase {
     /**
      *  Listing Ids by take asset's collection id and token id
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === 'cc5df187f7a6ddcd474c0c1e410e8d72bd71954d4b2ad06da5882588a225356a'
     }
 
     /**
      *  Listing Ids by take asset's collection id and token id
      */
-    get asEfinityV3014(): MarketplaceListingIdsByTakeAssetStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): MarketplaceListingIdsByTakeAssetStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -3267,7 +3202,7 @@ export class MarketplaceListingIdsByTakeAssetStorage extends StorageBase {
 /**
  *  Listing Ids by take asset's collection id and token id
  */
-export interface MarketplaceListingIdsByTakeAssetStorageEfinityV3014 {
+export interface MarketplaceListingIdsByTakeAssetStorageV500 {
     get(key1: bigint, key2: bigint): Promise<(Uint8Array | undefined)>
     getAll(): Promise<Uint8Array[]>
     getMany(keys: [bigint, bigint][]): Promise<(Uint8Array | undefined)[]>
@@ -3711,15 +3646,15 @@ export class MultiTokensIdleOperationsStorage extends StorageBase {
     /**
      *  Pending operations to be executed on [`Hooks::on_idle`].
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === 'ec6db42c13dba4897e1ce4c4d70fe8bb97c8e9d28f3b74c9fb0c50aa25ec55e1'
     }
 
     /**
      *  Pending operations to be executed on [`Hooks::on_idle`].
      */
-    get asEfinityV3014(): MultiTokensIdleOperationsStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): MultiTokensIdleOperationsStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -3727,8 +3662,8 @@ export class MultiTokensIdleOperationsStorage extends StorageBase {
 /**
  *  Pending operations to be executed on [`Hooks::on_idle`].
  */
-export interface MultiTokensIdleOperationsStorageEfinityV3014 {
-    get(): Promise<efinityV3014.WeightedIdleOperation[]>
+export interface MultiTokensIdleOperationsStorageV500 {
+    get(): Promise<v500.WeightedIdleOperation[]>
 }
 
 export class MultiTokensMigrationStatusStorage extends StorageBase {
@@ -4841,7 +4776,7 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '24e0311e0ec9634d6acff6e06aa83b4bd4c57957b8f7525bf0dd22f0a73d7b09'
     }
 
@@ -4854,8 +4789,8 @@ export class ParachainSystemRelevantMessagingStateStorage extends StorageBase {
      * 
      *  This data is also absent from the genesis.
      */
-    get asEfinityV3014(): ParachainSystemRelevantMessagingStateStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): ParachainSystemRelevantMessagingStateStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 
@@ -4909,8 +4844,8 @@ export interface ParachainSystemRelevantMessagingStateStorageMatrixEnjinV603 {
  * 
  *  This data is also absent from the genesis.
  */
-export interface ParachainSystemRelevantMessagingStateStorageEfinityV3014 {
-    get(): Promise<(efinityV3014.MessagingStateSnapshot | undefined)>
+export interface ParachainSystemRelevantMessagingStateStorageV500 {
+    get(): Promise<(v500.MessagingStateSnapshot | undefined)>
 }
 
 /**
@@ -5348,15 +5283,15 @@ export class PolkadotXcmRemoteLockedFungiblesStorage extends StorageBase {
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '32350375a3f683ddfbcb5dbc0bc4773d1d5aa9c2f1f2e358dced4492be76a541'
     }
 
     /**
      *  Fungible assets which we know are locked on a remote chain.
      */
-    get asEfinityV3014(): PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): PolkadotXcmRemoteLockedFungiblesStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 
@@ -5404,26 +5339,26 @@ export interface PolkadotXcmRemoteLockedFungiblesStorageMatrixEnjinV603 {
 /**
  *  Fungible assets which we know are locked on a remote chain.
  */
-export interface PolkadotXcmRemoteLockedFungiblesStorageEfinityV3014 {
-    get(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<(efinityV3014.RemoteLockedFungibleRecord | undefined)>
-    getAll(): Promise<efinityV3014.RemoteLockedFungibleRecord[]>
-    getMany(keys: [number, Uint8Array, efinityV3014.VersionedAssetId][]): Promise<(efinityV3014.RemoteLockedFungibleRecord | undefined)[]>
-    getKeys(): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeys(key1: number): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeys(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[number, Uint8Array, efinityV3014.VersionedAssetId][]>
-    getPairs(): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairs(key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): Promise<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
-    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: efinityV3014.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, efinityV3014.VersionedAssetId], v: efinityV3014.RemoteLockedFungibleRecord][]>
+export interface PolkadotXcmRemoteLockedFungiblesStorageV500 {
+    get(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<(v500.RemoteLockedFungibleRecord | undefined)>
+    getAll(): Promise<v500.RemoteLockedFungibleRecord[]>
+    getMany(keys: [number, Uint8Array, v500.VersionedAssetId][]): Promise<(v500.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeys(key1: number): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeys(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): AsyncIterable<[number, Uint8Array, v500.VersionedAssetId][]>
+    getPairs(): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairs(key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): Promise<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array, key3: v500.VersionedAssetId): AsyncIterable<[k: [number, Uint8Array, v500.VersionedAssetId], v: v500.RemoteLockedFungibleRecord][]>
 }
 
 /**
@@ -6194,15 +6129,15 @@ export class SudoKeyStorage extends StorageBase {
     /**
      *  The `AccountId` of the sudo key.
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this.getTypeHash() === '8620bdc4f360add1f8e58e488bdba4fa9b6dab86ecdd1c942b8d9de43ede38e5'
     }
 
     /**
      *  The `AccountId` of the sudo key.
      */
-    get asEfinityV3014(): SudoKeyStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
+    get asV500(): SudoKeyStorageV500 {
+        assert(this.isV500)
         return this as any
     }
 }
@@ -6210,7 +6145,7 @@ export class SudoKeyStorage extends StorageBase {
 /**
  *  The `AccountId` of the sudo key.
  */
-export interface SudoKeyStorageEfinityV3014 {
+export interface SudoKeyStorageV500 {
     get(): Promise<(Uint8Array | undefined)>
 }
 
@@ -6604,33 +6539,6 @@ export class SystemEventsStorage extends StorageBase {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    get isEfinityV3014(): boolean {
-        return this.getTypeHash() === 'cc511fb88fb3c573ce4bbe26f8662a53bd4e39e3c663fb39824ed94a8f5a1ca7'
-    }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
-    get asEfinityV3014(): SystemEventsStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
-        return this as any
-    }
-
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
     get isV500(): boolean {
         return this.getTypeHash() === 'c2bf473ffa588f7b22c332d1777f77f07e6c74d8e4e536160007c88d1615f6f6'
     }
@@ -6769,19 +6677,6 @@ export class SystemEventsStorage extends StorageBase {
  */
 export interface SystemEventsStorageMatrixEnjinV603 {
     get(): Promise<matrixEnjinV603.EventRecord[]>
-}
-
-/**
- *  Events deposited for the current block.
- * 
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- * 
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface SystemEventsStorageEfinityV3014 {
-    get(): Promise<efinityV3014.EventRecord[]>
 }
 
 /**
@@ -7241,21 +7136,6 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
-    get isEfinityV3014(): boolean {
-        return this.getTypeHash() === '55b93fe51dc259c64e7ccd6364c69a6ff7c5dcacfd08498dc55059727da4938d'
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
-    get asEfinityV3014(): TechnicalCommitteeProposalOfStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
-        return this as any
-    }
-
-    /**
-     *  Actual proposal for a given hash, if it's current.
-     */
     get isV500(): boolean {
         return this.getTypeHash() === '6cde8e9630d410c635d38d4e132dcdeddc5fd40211867012e22267dd19cd2cf1'
     }
@@ -7344,23 +7224,6 @@ export interface TechnicalCommitteeProposalOfStorageMatrixEnjinV603 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Call][]>
-}
-
-/**
- *  Actual proposal for a given hash, if it's current.
- */
-export interface TechnicalCommitteeProposalOfStorageEfinityV3014 {
-    get(key: Uint8Array): Promise<(efinityV3014.Call | undefined)>
-    getAll(): Promise<efinityV3014.Call[]>
-    getMany(keys: Uint8Array[]): Promise<(efinityV3014.Call | undefined)[]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.Call][]>
 }
 
 /**
@@ -7694,54 +7557,6 @@ export class TransactionPaymentStorageVersionStorage extends StorageBase {
 
 export interface TransactionPaymentStorageVersionStorageMatrixEnjinV603 {
     get(): Promise<matrixEnjinV603.Releases>
-}
-
-export class VestingVestingSchedulesStorage extends StorageBase {
-    protected getPrefix() {
-        return 'Vesting'
-    }
-
-    protected getName() {
-        return 'VestingSchedules'
-    }
-
-    /**
-     *  Vesting schedules of an account.
-     * 
-     *  VestingSchedules: map AccountId => Vec<VestingSchedule>
-     */
-    get isEfinityV3014(): boolean {
-        return this.getTypeHash() === 'd1025301ffa60f04c50bb1007ecb356d52103dd9c366150de1ba80c6e043ac2f'
-    }
-
-    /**
-     *  Vesting schedules of an account.
-     * 
-     *  VestingSchedules: map AccountId => Vec<VestingSchedule>
-     */
-    get asEfinityV3014(): VestingVestingSchedulesStorageEfinityV3014 {
-        assert(this.isEfinityV3014)
-        return this as any
-    }
-}
-
-/**
- *  Vesting schedules of an account.
- * 
- *  VestingSchedules: map AccountId => Vec<VestingSchedule>
- */
-export interface VestingVestingSchedulesStorageEfinityV3014 {
-    get(key: Uint8Array): Promise<efinityV3014.VestingSchedule[]>
-    getAll(): Promise<efinityV3014.VestingSchedule[][]>
-    getMany(keys: Uint8Array[]): Promise<efinityV3014.VestingSchedule[][]>
-    getKeys(): Promise<Uint8Array[]>
-    getKeys(key: Uint8Array): Promise<Uint8Array[]>
-    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
-    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
-    getPairs(): Promise<[k: Uint8Array, v: efinityV3014.VestingSchedule[]][]>
-    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: efinityV3014.VestingSchedule[]][]>
-    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: efinityV3014.VestingSchedule[]][]>
-    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: efinityV3014.VestingSchedule[]][]>
 }
 
 export class XcmpQueueCounterForOverweightStorage extends StorageBase {

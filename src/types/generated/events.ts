@@ -1,11 +1,10 @@
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
-import * as efinityV3014 from './efinityV3014'
 import * as v500 from './v500'
-import * as v604 from './v604'
 import * as v600 from './v600'
 import * as v602 from './v602'
+import * as v604 from './v604'
 
 export class BalancesBalanceSetEvent {
     private readonly _chain: Chain
@@ -1016,21 +1015,6 @@ export class ClaimsClaimedEnjEvent {
     /**
      * A user burned EFI in order to begin a claim of ENJ.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Claims.ClaimedEnj') === '371fca57711fec548f87cba70985c04cdb1ba3bb2aebb99c99d408eff713f447'
-    }
-
-    /**
-     * A user burned EFI in order to begin a claim of ENJ.
-     */
-    get asEfinityV3014(): {who: Uint8Array, amount: bigint, earlyBirdAmount: bigint} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A user burned EFI in order to begin a claim of ENJ.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Claims.ClaimedEnj') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
     }
@@ -1713,21 +1697,6 @@ export class CouncilExecutedEvent {
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Council.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
-    }
-
-    /**
-     * A motion was executed; result will be `Ok` if it returned without error.
-     */
-    get asEfinityV3014(): {proposalHash: Uint8Array, result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A motion was executed; result will be `Ok` if it returned without error.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Council.Executed') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
     }
@@ -1796,21 +1765,6 @@ export class CouncilMemberExecutedEvent {
      */
     get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
         assert(this.isMatrixEnjinV603)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A single member did some action; result will be `Ok` if it returned without error.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Council.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
-    }
-
-    /**
-     * A single member did some action; result will be `Ok` if it returned without error.
-     */
-    get asEfinityV3014(): {proposalHash: Uint8Array, result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -2727,15 +2681,15 @@ export class EfinityUtilityBatchDispatchedEvent {
     /**
      * Batch of calls dispatched without errors.
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this._chain.getEventHash('EfinityUtility.BatchDispatched') === '01f2f9c28aa1d4d36a81ff042620b6677d25bf07c2bf4acc37b58658778a4fca'
     }
 
     /**
      * Batch of calls dispatched without errors.
      */
-    get asEfinityV3014(): null {
-        assert(this.isEfinityV3014)
+    get asV500(): null {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2751,23 +2705,6 @@ export class EfinityUtilityBatchFailedEvent {
         assert(event.name === 'EfinityUtility.BatchFailed')
         this._chain = ctx._chain
         this.event = event
-    }
-
-    /**
-     * Batch of calls did not disptach completely.
-     * Index and error of the failing dispatch call is provided.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('EfinityUtility.BatchFailed') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
-    }
-
-    /**
-     * Batch of calls did not disptach completely.
-     * Index and error of the failing dispatch call is provided.
-     */
-    get asEfinityV3014(): {index: number, error: efinityV3014.DispatchError} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
     }
 
     /**
@@ -2822,23 +2759,6 @@ export class EfinityUtilityBatchPartiallyDispatchedEvent {
      * Batch of calls dispatched, but some calls resulted in error.
      * Indexes and errors of failing dispatch calls are provided.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('EfinityUtility.BatchPartiallyDispatched') === 'e8822977bbce544338a2045c4a6d2fb3da534e0f4c11a56538e8e91418672714'
-    }
-
-    /**
-     * Batch of calls dispatched, but some calls resulted in error.
-     * Indexes and errors of failing dispatch calls are provided.
-     */
-    get asEfinityV3014(): [number, efinityV3014.DispatchError][] {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * Batch of calls dispatched, but some calls resulted in error.
-     * Indexes and errors of failing dispatch calls are provided.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('EfinityUtility.BatchPartiallyDispatched') === 'e8c77d115afb36887234bd760d38cb5959e266bb65d886545ef622726fe13b48'
     }
@@ -2886,15 +2806,15 @@ export class EfinityXcmMinimumWeightUpdatedEvent {
     /**
      * Xcm fee and weight updated
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this._chain.getEventHash('EfinityXcm.MinimumWeightUpdated') === 'ddee43169b1685802d4c88cf9e594d83e84d3f8d552ef4ce07966262920e3e23'
     }
 
     /**
      * Xcm fee and weight updated
      */
-    get asEfinityV3014(): efinityV3014.MinimumWeightFeePair {
-        assert(this.isEfinityV3014)
+    get asV500(): v500.MinimumWeightFeePair {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -2910,21 +2830,6 @@ export class EfinityXcmXcmTransferFailedEvent {
         assert(event.name === 'EfinityXcm.XcmTransferFailed')
         this._chain = ctx._chain
         this.event = event
-    }
-
-    /**
-     * XCM transfer failed
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('EfinityXcm.XcmTransferFailed') === '5747c908f53c720bf9e468f6e392edf8206d75a8d2648f3f939ac5ec008cd282'
-    }
-
-    /**
-     * XCM transfer failed
-     */
-    get asEfinityV3014(): efinityV3014.DispatchError {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
     }
 
     /**
@@ -3252,21 +3157,6 @@ export class FuelTanksDispatchFailedEvent {
     /**
      * The dispatch of a call has failed
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'd9f757c05fd07f9e190422b766d54a656da3a7c9bdeada71be000f0b5172bf91'
-    }
-
-    /**
-     * The dispatch of a call has failed
-     */
-    get asEfinityV3014(): {tankId: Uint8Array, caller: Uint8Array, error: efinityV3014.DispatchError} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * The dispatch of a call has failed
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('FuelTanks.DispatchFailed') === 'f970b8f37c9a8c766c85b1f637a0df7bb53adc91cec3f125a4bb1ff5b20ad335'
     }
@@ -3538,21 +3428,6 @@ export class FuelTanksScheduleMutateFreezeStateFailedEvent {
      */
     get asMatrixEnjinV603(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: matrixEnjinV603.DispatchError} {
         assert(this.isMatrixEnjinV603)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('FuelTanks.ScheduleMutateFreezeStateFailed') === 'dc9ad6b566b745be5ed408d534ce44157f1ad4307a3ec1a29c489fe844ba12d6'
-    }
-
-    /**
-     * The freeze state change for fuel tank or its rule set failed in `on_finalize`
-     */
-    get asEfinityV3014(): {tankId: Uint8Array, ruleSetId: (number | undefined), isFrozen: boolean, error: efinityV3014.DispatchError} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -5233,21 +5108,6 @@ export class MultisigMultisigExecutedEvent {
     /**
      * A multisig operation has been executed.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Multisig.MultisigExecuted') === 'a3dac12242761ae515c903986cd4d4bac07e81a7c3d28c6ddc9bb9faaa3196f1'
-    }
-
-    /**
-     * A multisig operation has been executed.
-     */
-    get asEfinityV3014(): {approving: Uint8Array, timepoint: efinityV3014.Timepoint, multisig: Uint8Array, callHash: Uint8Array, result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A multisig operation has been executed.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Multisig.MultisigExecuted') === '303cb15b241c821ed02efcceb1d8f92a11e2a124e8eef73810b68e2592455034'
     }
@@ -6578,21 +6438,6 @@ export class SchedulerDispatchedEvent {
     /**
      * Dispatched some task.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Scheduler.Dispatched') === '154dd24b4e6cd6cd4e2529e62ebb06fadb719be62866fec5887d179577869c45'
-    }
-
-    /**
-     * Dispatched some task.
-     */
-    get asEfinityV3014(): {task: [number, number], id: (Uint8Array | undefined), result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * Dispatched some task.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Scheduler.Dispatched') === 'b67102cc706599639b8e52e776b81c51142dad43652e91e7e72197b7df9a63f4'
     }
@@ -6770,15 +6615,15 @@ export class SudoKeyChangedEvent {
     /**
      * The \[sudoer\] just switched identity; the old key is supplied if one existed.
      */
-    get isEfinityV3014(): boolean {
+    get isV500(): boolean {
         return this._chain.getEventHash('Sudo.KeyChanged') === 'b94a7a753f8f0b026120555f1f1c70878235307461e256807cb791dad15244c2'
     }
 
     /**
      * The \[sudoer\] just switched identity; the old key is supplied if one existed.
      */
-    get asEfinityV3014(): {oldSudoer: (Uint8Array | undefined)} {
-        assert(this.isEfinityV3014)
+    get asV500(): {oldSudoer: (Uint8Array | undefined)} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -6794,21 +6639,6 @@ export class SudoSudidEvent {
         assert(event.name === 'Sudo.Sudid')
         this._chain = ctx._chain
         this.event = event
-    }
-
-    /**
-     * A sudo just took place. \[result\]
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Sudo.Sudid') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
-    }
-
-    /**
-     * A sudo just took place. \[result\]
-     */
-    get asEfinityV3014(): {sudoResult: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
     }
 
     /**
@@ -6853,21 +6683,6 @@ export class SudoSudoAsDoneEvent {
         assert(event.name === 'Sudo.SudoAsDone')
         this._chain = ctx._chain
         this.event = event
-    }
-
-    /**
-     * A sudo just took place. \[result\]
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Sudo.SudoAsDone') === '46f705cf78f55862454e1c96cbd85624469e65d9c879c6278cf4b6428bc723a4'
-    }
-
-    /**
-     * A sudo just took place. \[result\]
-     */
-    get asEfinityV3014(): {sudoResult: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
     }
 
     /**
@@ -6955,21 +6770,6 @@ export class SystemExtrinsicFailedEvent {
      */
     get asMatrixEnjinV603(): {dispatchError: matrixEnjinV603.DispatchError, dispatchInfo: matrixEnjinV603.DispatchInfo} {
         assert(this.isMatrixEnjinV603)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * An extrinsic failed.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('System.ExtrinsicFailed') === '3dbd96eefe1aa593b278d8684042e23a6a118e379fb5699dd871cf28fb627cd6'
-    }
-
-    /**
-     * An extrinsic failed.
-     */
-    get asEfinityV3014(): {dispatchError: efinityV3014.DispatchError, dispatchInfo: efinityV3014.DispatchInfo} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7253,21 +7053,6 @@ export class TechnicalCommitteeExecutedEvent {
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('TechnicalCommittee.Executed') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
-    }
-
-    /**
-     * A motion was executed; result will be `Ok` if it returned without error.
-     */
-    get asEfinityV3014(): {proposalHash: Uint8Array, result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A motion was executed; result will be `Ok` if it returned without error.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('TechnicalCommittee.Executed') === 'e4ddba6fedfd1d730b14622cc84321978192b87a473c4fee1f401e1a07add330'
     }
@@ -7336,21 +7121,6 @@ export class TechnicalCommitteeMemberExecutedEvent {
      */
     get asMatrixEnjinV603(): {proposalHash: Uint8Array, result: matrixEnjinV603.Type_35} {
         assert(this.isMatrixEnjinV603)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A single member did some action; result will be `Ok` if it returned without error.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('TechnicalCommittee.MemberExecuted') === 'c0a7075d1db65c853af68dee8fccfd68bc709058c1c831fa5759250c8549e688'
-    }
-
-    /**
-     * A single member did some action; result will be `Ok` if it returned without error.
-     */
-    get asEfinityV3014(): {proposalHash: Uint8Array, result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -7817,23 +7587,6 @@ export class UtilityBatchInterruptedEvent {
      * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
      * well as the error.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Utility.BatchInterrupted') === '55aa3365272ab00b66790b493c7489ead9e9c34bdcad0b48ee9755d3bd0d725e'
-    }
-
-    /**
-     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
-     * well as the error.
-     */
-    get asEfinityV3014(): {index: number, error: efinityV3014.DispatchError} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
-     * well as the error.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Utility.BatchInterrupted') === '14dbb9456065a44deeed159d4dbd21796ec92754c0494d698c9bcc529d0f7279'
     }
@@ -7907,21 +7660,6 @@ export class UtilityDispatchedAsEvent {
      */
     get asMatrixEnjinV603(): {result: matrixEnjinV603.Type_35} {
         assert(this.isMatrixEnjinV603)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A call was dispatched.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Utility.DispatchedAs') === 'e6b126b1d10869892737f36b23109c1b51d3828aeab399104c160e9f275d8049'
-    }
-
-    /**
-     * A call was dispatched.
-     */
-    get asEfinityV3014(): {result: efinityV3014.Type_33} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -8031,21 +7769,6 @@ export class UtilityItemFailedEvent {
     /**
      * A single item within a Batch of dispatches has completed with error.
      */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Utility.ItemFailed') === '3ea595fddebcb407af8f717186084e8c4f09481ff7bcc5d4cc97dcd83cddd616'
-    }
-
-    /**
-     * A single item within a Batch of dispatches has completed with error.
-     */
-    get asEfinityV3014(): {error: efinityV3014.DispatchError} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-
-    /**
-     * A single item within a Batch of dispatches has completed with error.
-     */
     get isV500(): boolean {
         return this._chain.getEventHash('Utility.ItemFailed') === '58463e011dfd19c6786d4056e9e9452b33b4cb0fcf9c6e8c032e8ad7d16b0d34'
     }
@@ -8085,93 +7808,6 @@ export class UtilityItemFailedEvent {
      */
     get asV604(): {error: v604.DispatchError} {
         assert(this.isV604)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class VestingClaimedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Vesting.Claimed')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Claimed vesting.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Vesting.Claimed') === 'e84a34a6a3d577b31f16557bd304282f4fe4cbd7115377f4687635dc48e52ba5'
-    }
-
-    /**
-     * Claimed vesting.
-     */
-    get asEfinityV3014(): {who: Uint8Array, amount: bigint} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class VestingVestingScheduleAddedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Vesting.VestingScheduleAdded')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Added new vesting schedule.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Vesting.VestingScheduleAdded') === '18422c66dedd030e21a5567fde05a68ab5ad4ffff5f9fdcd73f3d18dcb91873c'
-    }
-
-    /**
-     * Added new vesting schedule.
-     */
-    get asEfinityV3014(): {from: Uint8Array, to: Uint8Array, vestingSchedule: efinityV3014.VestingSchedule} {
-        assert(this.isEfinityV3014)
-        return this._chain.decodeEvent(this.event)
-    }
-}
-
-export class VestingVestingSchedulesUpdatedEvent {
-    private readonly _chain: Chain
-    private readonly event: Event
-
-    constructor(ctx: EventContext)
-    constructor(ctx: ChainContext, event: Event)
-    constructor(ctx: EventContext, event?: Event) {
-        event = event || ctx.event
-        assert(event.name === 'Vesting.VestingSchedulesUpdated')
-        this._chain = ctx._chain
-        this.event = event
-    }
-
-    /**
-     * Updated vesting schedules.
-     */
-    get isEfinityV3014(): boolean {
-        return this._chain.getEventHash('Vesting.VestingSchedulesUpdated') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
-    }
-
-    /**
-     * Updated vesting schedules.
-     */
-    get asEfinityV3014(): {who: Uint8Array} {
-        assert(this.isEfinityV3014)
         return this._chain.decodeEvent(this.event)
     }
 }

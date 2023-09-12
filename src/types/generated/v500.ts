@@ -69,6 +69,11 @@ export interface DispatchError_Unavailable {
     __kind: 'Unavailable'
 }
 
+export interface MinimumWeightFeePair {
+    minimumWeight: Weight
+    fee: bigint
+}
+
 export interface Token {
     supply: bigint
     cap: (TokenCap | undefined)
@@ -306,6 +311,41 @@ export interface Call_EfinityUtility {
     value: EfinityUtilityCall
 }
 
+export type XcmOperation = XcmOperation_XTokensTransfer | XcmOperation_ParachainFee
+
+export interface XcmOperation_XTokensTransfer {
+    __kind: 'XTokensTransfer'
+}
+
+export interface XcmOperation_ParachainFee {
+    __kind: 'ParachainFee'
+    value: V3MultiLocation
+}
+
+export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
+
+export interface ParachainId_Acala {
+    __kind: 'Acala'
+}
+
+export interface ParachainId_Moonbeam {
+    __kind: 'Moonbeam'
+}
+
+export interface ParachainId_Statemint {
+    __kind: 'Statemint'
+}
+
+export interface AssetId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export interface CurrencyIdAmountPair {
+    currencyId: AssetId
+    amount: bigint
+}
+
 export interface FuelTankDescriptor {
     name: Uint8Array
     userAccountManagement: (UserAccountManagement | undefined)
@@ -435,6 +475,38 @@ export interface TrackedBlockNumbers {
 export interface TransactionData {
     account: Account
     amount: bigint
+}
+
+export interface MarketPlaceInfo {
+    protocolFee: number
+    fixedPriceListingCount: number
+    auctionListingCount: number
+}
+
+export interface WeightedIdleOperation {
+    operation: IdleOperation
+    estimatedWeight: Weight
+}
+
+export interface MessagingStateSnapshot {
+    dmqMqcHead: Uint8Array
+    relayDispatchQueueSize: [number, number]
+    ingressChannels: [number, V2AbridgedHrmpChannel][]
+    egressChannels: [number, V2AbridgedHrmpChannel][]
+}
+
+export type VersionedAssetId = VersionedAssetId_V3
+
+export interface VersionedAssetId_V3 {
+    __kind: 'V3'
+    value: V3AssetId
+}
+
+export interface RemoteLockedFungibleRecord {
+    amount: bigint
+    owner: VersionedMultiLocation
+    locker: VersionedMultiLocation
+    users: number
 }
 
 export interface AccountInfo {
@@ -4362,6 +4434,11 @@ export interface EfinityUtilityCall_batch {
     continueOnFailure: boolean
 }
 
+export interface V3MultiLocation {
+    parents: number
+    interior: V3Junctions
+}
+
 export interface UserAccountManagement {
     tankReservesExistentialDeposit: boolean
     tankReservesAccountCreationDeposit: boolean
@@ -4490,6 +4567,48 @@ export interface Type_302_SiblingParachain {
 }
 
 export type Void = never
+
+export type IdleOperation = IdleOperation_DeleteAttributes
+
+export interface IdleOperation_DeleteAttributes {
+    __kind: 'DeleteAttributes'
+    collectionId: bigint
+    tokenId: (bigint | undefined)
+    attributeCount: number
+}
+
+export interface V2AbridgedHrmpChannel {
+    maxCapacity: number
+    maxTotalSize: number
+    maxMessageSize: number
+    msgCount: number
+    totalSize: number
+    mqcHead: (Uint8Array | undefined)
+}
+
+export type V3AssetId = V3AssetId_Concrete | V3AssetId_Abstract
+
+export interface V3AssetId_Concrete {
+    __kind: 'Concrete'
+    value: V3MultiLocation
+}
+
+export interface V3AssetId_Abstract {
+    __kind: 'Abstract'
+    value: Uint8Array
+}
+
+export type VersionedMultiLocation = VersionedMultiLocation_V2 | VersionedMultiLocation_V3
+
+export interface VersionedMultiLocation_V2 {
+    __kind: 'V2'
+    value: V2MultiLocation
+}
+
+export interface VersionedMultiLocation_V3 {
+    __kind: 'V3'
+    value: V3MultiLocation
+}
 
 export type Phase = Phase_ApplyExtrinsic | Phase_Finalization | Phase_Initialization
 
@@ -4756,18 +4875,6 @@ export interface SessionKeys {
     pools: Uint8Array
 }
 
-export type VersionedMultiLocation = VersionedMultiLocation_V2 | VersionedMultiLocation_V3
-
-export interface VersionedMultiLocation_V2 {
-    __kind: 'V2'
-    value: V2MultiLocation
-}
-
-export interface VersionedMultiLocation_V3 {
-    __kind: 'V3'
-    value: V3MultiLocation
-}
-
 export type VersionedXcm = VersionedXcm_V2 | VersionedXcm_V3
 
 export interface VersionedXcm_V2 {
@@ -4804,11 +4911,6 @@ export interface Type_338_V3 {
     value: Type_345[]
 }
 
-export interface V3MultiLocation {
-    parents: number
-    interior: V3Junctions
-}
-
 export type V3WeightLimit = V3WeightLimit_Unlimited | V3WeightLimit_Limited
 
 export interface V3WeightLimit_Unlimited {
@@ -4818,46 +4920,6 @@ export interface V3WeightLimit_Unlimited {
 export interface V3WeightLimit_Limited {
     __kind: 'Limited'
     value: Weight
-}
-
-export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
-
-export interface ParachainId_Acala {
-    __kind: 'Acala'
-}
-
-export interface ParachainId_Moonbeam {
-    __kind: 'Moonbeam'
-}
-
-export interface ParachainId_Statemint {
-    __kind: 'Statemint'
-}
-
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface CurrencyIdAmountPair {
-    currencyId: AssetId
-    amount: bigint
-}
-
-export type XcmOperation = XcmOperation_XTokensTransfer | XcmOperation_ParachainFee
-
-export interface XcmOperation_XTokensTransfer {
-    __kind: 'XTokensTransfer'
-}
-
-export interface XcmOperation_ParachainFee {
-    __kind: 'ParachainFee'
-    value: V3MultiLocation
-}
-
-export interface MinimumWeightFeePair {
-    minimumWeight: Weight
-    fee: bigint
 }
 
 export type VersionedMultiAsset = VersionedMultiAsset_V2 | VersionedMultiAsset_V3
@@ -5009,6 +5071,57 @@ export interface Consumption {
 export interface AuctionData {
     startBlock: number
     endBlock: number
+}
+
+export type V3Junctions = V3Junctions_Here | V3Junctions_X1 | V3Junctions_X2 | V3Junctions_X3 | V3Junctions_X4 | V3Junctions_X5 | V3Junctions_X6 | V3Junctions_X7 | V3Junctions_X8
+
+export interface V3Junctions_Here {
+    __kind: 'Here'
+}
+
+export interface V3Junctions_X1 {
+    __kind: 'X1'
+    value: V3Junction
+}
+
+export interface V3Junctions_X2 {
+    __kind: 'X2'
+    value: [V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X3 {
+    __kind: 'X3'
+    value: [V3Junction, V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X4 {
+    __kind: 'X4'
+    value: [V3Junction, V3Junction, V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X5 {
+    __kind: 'X5'
+    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X6 {
+    __kind: 'X6'
+    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X7 {
+    __kind: 'X7'
+    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
+}
+
+export interface V3Junctions_X8 {
+    __kind: 'X8'
+    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
+}
+
+export interface V2MultiLocation {
+    parents: number
+    interior: V2Junctions
 }
 
 /**
@@ -7821,11 +7934,6 @@ export interface InboundHrmpMessage {
     data: Uint8Array
 }
 
-export interface V2MultiLocation {
-    parents: number
-    interior: V2Junctions
-}
-
 export type V2Instruction = V2Instruction_WithdrawAsset | V2Instruction_ReserveAssetDeposited | V2Instruction_ReceiveTeleportedAsset | V2Instruction_QueryResponse | V2Instruction_TransferAsset | V2Instruction_TransferReserveAsset | V2Instruction_Transact | V2Instruction_HrmpNewChannelOpenRequest | V2Instruction_HrmpChannelAccepted | V2Instruction_HrmpChannelClosing | V2Instruction_ClearOrigin | V2Instruction_DescendOrigin | V2Instruction_ReportError | V2Instruction_DepositAsset | V2Instruction_DepositReserveAsset | V2Instruction_ExchangeAsset | V2Instruction_InitiateReserveWithdraw | V2Instruction_InitiateTeleport | V2Instruction_QueryHolding | V2Instruction_BuyExecution | V2Instruction_RefundSurplus | V2Instruction_SetErrorHandler | V2Instruction_SetAppendix | V2Instruction_ClearError | V2Instruction_ClaimAsset | V2Instruction_Trap | V2Instruction_SubscribeVersion | V2Instruction_UnsubscribeVersion
 
 export interface V2Instruction_WithdrawAsset {
@@ -8716,52 +8824,6 @@ export interface Type_345_UnpaidExecution {
     checkOrigin: (V3MultiLocation | undefined)
 }
 
-export type V3Junctions = V3Junctions_Here | V3Junctions_X1 | V3Junctions_X2 | V3Junctions_X3 | V3Junctions_X4 | V3Junctions_X5 | V3Junctions_X6 | V3Junctions_X7 | V3Junctions_X8
-
-export interface V3Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V3Junctions_X1 {
-    __kind: 'X1'
-    value: V3Junction
-}
-
-export interface V3Junctions_X2 {
-    __kind: 'X2'
-    value: [V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X3 {
-    __kind: 'X3'
-    value: [V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X4 {
-    __kind: 'X4'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X5 {
-    __kind: 'X5'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X6 {
-    __kind: 'X6'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X7 {
-    __kind: 'X7'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X8 {
-    __kind: 'X8'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
 export interface DefaultCollectionPolicyDescriptor {
     mint: DefaultMintPolicyDescriptor
     market: DefaultMarketPolicyDescriptor
@@ -8858,6 +8920,108 @@ export interface Type_207_NoMutation {
 export interface Type_207_SomeMutation {
     __kind: 'SomeMutation'
     value: (UserAccountManagement | undefined)
+}
+
+export type V3Junction = V3Junction_Parachain | V3Junction_AccountId32 | V3Junction_AccountIndex64 | V3Junction_AccountKey20 | V3Junction_PalletInstance | V3Junction_GeneralIndex | V3Junction_GeneralKey | V3Junction_OnlyChild | V3Junction_Plurality | V3Junction_GlobalConsensus
+
+export interface V3Junction_Parachain {
+    __kind: 'Parachain'
+    value: number
+}
+
+export interface V3Junction_AccountId32 {
+    __kind: 'AccountId32'
+    network: (V3NetworkId | undefined)
+    id: Uint8Array
+}
+
+export interface V3Junction_AccountIndex64 {
+    __kind: 'AccountIndex64'
+    network: (V3NetworkId | undefined)
+    index: bigint
+}
+
+export interface V3Junction_AccountKey20 {
+    __kind: 'AccountKey20'
+    network: (V3NetworkId | undefined)
+    key: Uint8Array
+}
+
+export interface V3Junction_PalletInstance {
+    __kind: 'PalletInstance'
+    value: number
+}
+
+export interface V3Junction_GeneralIndex {
+    __kind: 'GeneralIndex'
+    value: bigint
+}
+
+export interface V3Junction_GeneralKey {
+    __kind: 'GeneralKey'
+    length: number
+    data: Uint8Array
+}
+
+export interface V3Junction_OnlyChild {
+    __kind: 'OnlyChild'
+}
+
+export interface V3Junction_Plurality {
+    __kind: 'Plurality'
+    id: V3BodyId
+    part: V3BodyPart
+}
+
+export interface V3Junction_GlobalConsensus {
+    __kind: 'GlobalConsensus'
+    value: V3NetworkId
+}
+
+export type V2Junctions = V2Junctions_Here | V2Junctions_X1 | V2Junctions_X2 | V2Junctions_X3 | V2Junctions_X4 | V2Junctions_X5 | V2Junctions_X6 | V2Junctions_X7 | V2Junctions_X8
+
+export interface V2Junctions_Here {
+    __kind: 'Here'
+}
+
+export interface V2Junctions_X1 {
+    __kind: 'X1'
+    value: V2Junction
+}
+
+export interface V2Junctions_X2 {
+    __kind: 'X2'
+    value: [V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X3 {
+    __kind: 'X3'
+    value: [V2Junction, V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X4 {
+    __kind: 'X4'
+    value: [V2Junction, V2Junction, V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X5 {
+    __kind: 'X5'
+    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X6 {
+    __kind: 'X6'
+    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X7 {
+    __kind: 'X7'
+    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
+}
+
+export interface V2Junctions_X8 {
+    __kind: 'X8'
+    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
 }
 
 export type BalanceStatus = BalanceStatus_Free | BalanceStatus_Reserved
@@ -9145,52 +9309,6 @@ export interface Bid {
     price: bigint
 }
 
-export type V2Junctions = V2Junctions_Here | V2Junctions_X1 | V2Junctions_X2 | V2Junctions_X3 | V2Junctions_X4 | V2Junctions_X5 | V2Junctions_X6 | V2Junctions_X7 | V2Junctions_X8
-
-export interface V2Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V2Junctions_X1 {
-    __kind: 'X1'
-    value: V2Junction
-}
-
-export interface V2Junctions_X2 {
-    __kind: 'X2'
-    value: [V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X3 {
-    __kind: 'X3'
-    value: [V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X4 {
-    __kind: 'X4'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X5 {
-    __kind: 'X5'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X6 {
-    __kind: 'X6'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X7 {
-    __kind: 'X7'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X8 {
-    __kind: 'X8'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
 export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
 
 export interface V2Response_Null {
@@ -9291,62 +9409,6 @@ export interface V3MaybeErrorCode_TruncatedError {
     value: Uint8Array
 }
 
-export type V3Junction = V3Junction_Parachain | V3Junction_AccountId32 | V3Junction_AccountIndex64 | V3Junction_AccountKey20 | V3Junction_PalletInstance | V3Junction_GeneralIndex | V3Junction_GeneralKey | V3Junction_OnlyChild | V3Junction_Plurality | V3Junction_GlobalConsensus
-
-export interface V3Junction_Parachain {
-    __kind: 'Parachain'
-    value: number
-}
-
-export interface V3Junction_AccountId32 {
-    __kind: 'AccountId32'
-    network: (V3NetworkId | undefined)
-    id: Uint8Array
-}
-
-export interface V3Junction_AccountIndex64 {
-    __kind: 'AccountIndex64'
-    network: (V3NetworkId | undefined)
-    index: bigint
-}
-
-export interface V3Junction_AccountKey20 {
-    __kind: 'AccountKey20'
-    network: (V3NetworkId | undefined)
-    key: Uint8Array
-}
-
-export interface V3Junction_PalletInstance {
-    __kind: 'PalletInstance'
-    value: number
-}
-
-export interface V3Junction_GeneralIndex {
-    __kind: 'GeneralIndex'
-    value: bigint
-}
-
-export interface V3Junction_GeneralKey {
-    __kind: 'GeneralKey'
-    length: number
-    data: Uint8Array
-}
-
-export interface V3Junction_OnlyChild {
-    __kind: 'OnlyChild'
-}
-
-export interface V3Junction_Plurality {
-    __kind: 'Plurality'
-    id: V3BodyId
-    part: V3BodyPart
-}
-
-export interface V3Junction_GlobalConsensus {
-    __kind: 'GlobalConsensus'
-    value: V3NetworkId
-}
-
 export type V3NetworkId = V3NetworkId_ByGenesis | V3NetworkId_ByFork | V3NetworkId_Polkadot | V3NetworkId_Kusama | V3NetworkId_Westend | V3NetworkId_Rococo | V3NetworkId_Wococo | V3NetworkId_Ethereum | V3NetworkId_BitcoinCore | V3NetworkId_BitcoinCash
 
 export interface V3NetworkId_ByGenesis {
@@ -9417,18 +9479,6 @@ export interface V2Fungibility_NonFungible {
     value: V2AssetInstance
 }
 
-export type V3AssetId = V3AssetId_Concrete | V3AssetId_Abstract
-
-export interface V3AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V3MultiLocation
-}
-
-export interface V3AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Uint8Array
-}
-
 export type V3Fungibility = V3Fungibility_Fungible | V3Fungibility_NonFungible
 
 export interface V3Fungibility_Fungible {
@@ -9465,50 +9515,77 @@ export interface DefaultMarketPolicy {
     royalty: (DefaultRoyalty | undefined)
 }
 
-export interface V3PalletInfo {
-    index: number
-    name: Uint8Array
-    moduleName: Uint8Array
-    major: number
-    minor: number
-    patch: number
+export type V3BodyId = V3BodyId_Unit | V3BodyId_Moniker | V3BodyId_Index | V3BodyId_Executive | V3BodyId_Technical | V3BodyId_Legislative | V3BodyId_Judicial | V3BodyId_Defense | V3BodyId_Administration | V3BodyId_Treasury
+
+export interface V3BodyId_Unit {
+    __kind: 'Unit'
 }
 
-export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
-
-export interface FeeSide_NoFee {
-    __kind: 'NoFee'
+export interface V3BodyId_Moniker {
+    __kind: 'Moniker'
+    value: Uint8Array
 }
 
-export interface FeeSide_Make {
-    __kind: 'Make'
+export interface V3BodyId_Index {
+    __kind: 'Index'
+    value: number
 }
 
-export interface FeeSide_Take {
-    __kind: 'Take'
+export interface V3BodyId_Executive {
+    __kind: 'Executive'
 }
 
-export type ListingData = ListingData_FixedPrice | ListingData_Auction
-
-export interface ListingData_FixedPrice {
-    __kind: 'FixedPrice'
+export interface V3BodyId_Technical {
+    __kind: 'Technical'
 }
 
-export interface ListingData_Auction {
-    __kind: 'Auction'
-    value: AuctionData
+export interface V3BodyId_Legislative {
+    __kind: 'Legislative'
 }
 
-export type ListingState = ListingState_FixedPrice | ListingState_Auction
-
-export interface ListingState_FixedPrice {
-    __kind: 'FixedPrice'
-    amountFilled: bigint
+export interface V3BodyId_Judicial {
+    __kind: 'Judicial'
 }
 
-export interface ListingState_Auction {
-    __kind: 'Auction'
-    value: AuctionState
+export interface V3BodyId_Defense {
+    __kind: 'Defense'
+}
+
+export interface V3BodyId_Administration {
+    __kind: 'Administration'
+}
+
+export interface V3BodyId_Treasury {
+    __kind: 'Treasury'
+}
+
+export type V3BodyPart = V3BodyPart_Voice | V3BodyPart_Members | V3BodyPart_Fraction | V3BodyPart_AtLeastProportion | V3BodyPart_MoreThanProportion
+
+export interface V3BodyPart_Voice {
+    __kind: 'Voice'
+}
+
+export interface V3BodyPart_Members {
+    __kind: 'Members'
+    count: number
+}
+
+export interface V3BodyPart_Fraction {
+    __kind: 'Fraction'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_AtLeastProportion {
+    __kind: 'AtLeastProportion'
+    nom: number
+    denom: number
+}
+
+export interface V3BodyPart_MoreThanProportion {
+    __kind: 'MoreThanProportion'
+    nom: number
+    denom: number
 }
 
 export type V2Junction = V2Junction_Parachain | V2Junction_AccountId32 | V2Junction_AccountIndex64 | V2Junction_AccountKey20 | V2Junction_PalletInstance | V2Junction_GeneralIndex | V2Junction_GeneralKey | V2Junction_OnlyChild | V2Junction_Plurality
@@ -9559,6 +9636,52 @@ export interface V2Junction_Plurality {
     __kind: 'Plurality'
     id: V2BodyId
     part: V2BodyPart
+}
+
+export interface V3PalletInfo {
+    index: number
+    name: Uint8Array
+    moduleName: Uint8Array
+    major: number
+    minor: number
+    patch: number
+}
+
+export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
+
+export interface FeeSide_NoFee {
+    __kind: 'NoFee'
+}
+
+export interface FeeSide_Make {
+    __kind: 'Make'
+}
+
+export interface FeeSide_Take {
+    __kind: 'Take'
+}
+
+export type ListingData = ListingData_FixedPrice | ListingData_Auction
+
+export interface ListingData_FixedPrice {
+    __kind: 'FixedPrice'
+}
+
+export interface ListingData_Auction {
+    __kind: 'Auction'
+    value: AuctionData
+}
+
+export type ListingState = ListingState_FixedPrice | ListingState_Auction
+
+export interface ListingState_FixedPrice {
+    __kind: 'FixedPrice'
+    amountFilled: bigint
+}
+
+export interface ListingState_Auction {
+    __kind: 'Auction'
+    value: AuctionState
 }
 
 export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
@@ -9705,79 +9828,6 @@ export interface V3WildMultiAsset_AllOfCounted {
     count: number
 }
 
-export type V3BodyId = V3BodyId_Unit | V3BodyId_Moniker | V3BodyId_Index | V3BodyId_Executive | V3BodyId_Technical | V3BodyId_Legislative | V3BodyId_Judicial | V3BodyId_Defense | V3BodyId_Administration | V3BodyId_Treasury
-
-export interface V3BodyId_Unit {
-    __kind: 'Unit'
-}
-
-export interface V3BodyId_Moniker {
-    __kind: 'Moniker'
-    value: Uint8Array
-}
-
-export interface V3BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V3BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V3BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V3BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V3BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V3BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V3BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V3BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export type V3BodyPart = V3BodyPart_Voice | V3BodyPart_Members | V3BodyPart_Fraction | V3BodyPart_AtLeastProportion | V3BodyPart_MoreThanProportion
-
-export interface V3BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export interface V3BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V3BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
 export type V2AssetInstance = V2AssetInstance_Undefined | V2AssetInstance_Index | V2AssetInstance_Array4 | V2AssetInstance_Array8 | V2AssetInstance_Array16 | V2AssetInstance_Array32 | V2AssetInstance_Blob
 
 export interface V2AssetInstance_Undefined {
@@ -9843,10 +9893,6 @@ export interface V3AssetInstance_Array16 {
 export interface V3AssetInstance_Array32 {
     __kind: 'Array32'
     value: Uint8Array
-}
-
-export interface AuctionState {
-    highBid: (Bid | undefined)
 }
 
 export type V2NetworkId = V2NetworkId_Any | V2NetworkId_Named | V2NetworkId_Polkadot | V2NetworkId_Kusama
@@ -9939,6 +9985,10 @@ export interface V2BodyPart_MoreThanProportion {
     __kind: 'MoreThanProportion'
     nom: number
     denom: number
+}
+
+export interface AuctionState {
+    highBid: (Bid | undefined)
 }
 
 export type V2WildFungibility = V2WildFungibility_Fungible | V2WildFungibility_NonFungible

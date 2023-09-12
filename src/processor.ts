@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node'
 import { RewriteFrames } from '@sentry/integrations'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
-import { createEfiToken } from './createEfiToken'
+import { createEnjToken } from './createEnjToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
@@ -208,7 +208,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
             if (block.header.height === 1) {
                 // eslint-disable-next-line no-await-in-loop
-                await createEfiToken(ctx as unknown as CommonContext, block.header)
+                await createEnjToken(ctx as unknown as CommonContext, block.header)
                 // eslint-disable-next-line no-await-in-loop
                 await chainState(ctx as unknown as CommonContext, block.header)
                 if (Number(config.prefix) === 1110) {
