@@ -20,8 +20,8 @@ export const computeTraits = async (collectionId: string) => {
         throw new Error('Collection ID not provided.')
     }
 
-    traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+    /* traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
         console.log('Closing connection as Redis is not available')
         traitsQueue.close(true)
-    })
+    }) */
 }
