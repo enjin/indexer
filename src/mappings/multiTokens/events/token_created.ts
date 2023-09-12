@@ -30,7 +30,12 @@ import {
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { EfinityUtilityBatchCall, MultiTokensBatchMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
+import {
+    EfinityUtilityBatchCall,
+    MultiTokensBatchMintCall,
+    MultiTokensForceMintCall,
+    MultiTokensMintCall,
+} from '../../../types/generated/calls'
 
 export function getCapType(cap: TokenCap_v3014) {
     if (cap.__kind === CapType.Supply) {
@@ -355,70 +360,75 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         throw new UnknownVersionError(data.constructor.name)
     }
 
-    const data = new MultiTokensMintCall(ctx, call)
+    let data: MultiTokensMintCall | MultiTokensForceMintCall
+    if (call.name === 'MultiTokens.force_mint') {
+        data = new MultiTokensForceMintCall(ctx, call)
+    } else {
+        data = new MultiTokensMintCall(ctx, call)
+
+        if (data.isV600) {
+            const { collectionId } = data.asV600
+            const recipient = data.asV600.recipient.value as Uint8Array
+            const params = data.asV600.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (data.isV500) {
+            const { collectionId } = data.asV500
+            const recipient = data.asV500.recipient.value as Uint8Array
+            const params = data.asV500.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+    }
 
     if (data.isMatrixEnjinV603) {
         const { collectionId } = data.asMatrixEnjinV603
         const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
         const params = data.asV600.params as DefaultMintParamsCreateToken_v500
-        const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-        const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-        let unitPrice: bigint | null = 10_000_000_000_000_000n
-        let minimumBalance = 1n
-
-        if (params.sufficiency.__kind === 'Sufficient') {
-            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-            unitPrice = null
-        }
-
-        return {
-            recipient,
-            collectionId,
-            tokenId: params.tokenId,
-            initialSupply: params.initialSupply,
-            minimumBalance,
-            unitPrice,
-            cap,
-            behavior,
-            freezeState,
-            listingForbidden: params.listingForbidden ?? false,
-        }
-    }
-
-    if (data.isV600) {
-        const { collectionId } = data.asV600
-        const recipient = data.asV600.recipient.value as Uint8Array
-        const params = data.asV600.params as DefaultMintParamsCreateToken_v500
-        const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-        const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-        let unitPrice: bigint | null = 10_000_000_000_000_000n
-        let minimumBalance = 1n
-
-        if (params.sufficiency.__kind === 'Sufficient') {
-            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-            unitPrice = null
-        }
-
-        return {
-            recipient,
-            collectionId,
-            tokenId: params.tokenId,
-            initialSupply: params.initialSupply,
-            minimumBalance,
-            unitPrice,
-            cap,
-            behavior,
-            freezeState,
-            listingForbidden: params.listingForbidden ?? false,
-        }
-    }
-
-    if (data.isV500) {
-        const { collectionId } = data.asV500
-        const recipient = data.asV500.recipient.value as Uint8Array
-        const params = data.asV500.params as DefaultMintParamsCreateToken_v500
         const cap = params.cap ? getCapType(params.cap) : null
         const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
         const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null

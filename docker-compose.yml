@@ -72,7 +72,7 @@ services:
     depends_on:
       - archive_db
     command: [
-      "-e", "wss://archive.rpc.efinity.io",
+      "-e", "ws://host.docker.internal:39115",
       "-c", "40",
       "--out", "postgres://root@archive_db:26257/defaultdb"
     ]
