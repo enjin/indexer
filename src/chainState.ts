@@ -10,11 +10,12 @@ const apiPromise = ApiPromise.create({ provider: wsProvider })
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     const state = new ChainInfo({ id: block.hash })
     const api = await apiPromise
-    const apiAt = await api.at(block.hash)
+    // const apiAt = await api.at(block.hash)
 
-    const [runtime, marketplace] = await Promise.all<any>([
+    const [runtime] = await Promise.all<any>([
         api.rpc.state.getRuntimeVersion(block.hash),
-        apiAt.query.marketplace?.info(),
+        // TODO: The storage was not migrated and thus we can't decode this value
+        // apiAt.query.marketplace?.info(),
     ])
 
     state.genesisHash = config.genesisHash
@@ -24,16 +25,14 @@ export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     state.blockHash = block.hash
     state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
     state.timestamp = new Date(block.timestamp)
-    state.marketplace = !marketplace
-        ? null
-        : new Marketplace({
-              protocolFee: marketplace.protocolFee,
-              listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
-              listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
-              maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
-              maxSaltLength: Number(api.consts.marketplace.maxSaltLength.toString()),
-              minimumBidIncreasePercentage: Number(api.consts.marketplace.minimumBidIncreasePercentage.toString()),
-          })
+    state.marketplace = new Marketplace({
+        protocolFee: 2.5,
+        listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
+        listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
+        maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
+        maxSaltLength: Number(api.consts.marketplace.maxSaltLength.toString()),
+        minimumBidIncreasePercentage: Number(api.consts.marketplace.minimumBidIncreasePercentage.toString()),
+    })
 
     await ctx.store.save(state)
 }
