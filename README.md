@@ -20,7 +20,8 @@
 
 The Enjin Matrixchain Indexer is a Squid that serves processed blockchain data for other applications and dApps that require a more performant approach to retrieve the data as well as filtering, sorting, and relationships.
 
-> [!NOTE]  
+> [!NOTE]
+<!-- markdown-link-check-disable-next-line -->
 > You can find a hosted version of this indexer available at Subsquid Aquarium in the following URL: https://squid.subsquid.io/matrixchain/graphql
 
 ### What is a Squid?
