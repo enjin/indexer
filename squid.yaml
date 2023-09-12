@@ -1,5 +1,5 @@
 manifestVersion: subsquid.io/v0.1
-name: enjin-matrixchain
+name: matrixchain
 version: 3000
 description: |-
   An explorer-like indexer for the Enjin Matrixchain.
