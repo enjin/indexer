@@ -89,13 +89,13 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
+            // token.metadata = await getMetadata(token.metadata, attribute)
             await ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
+            // collection.metadata = await getMetadata(collection.metadata, attribute)
             await ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
@@ -117,14 +117,14 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
+            // token.metadata = await getMetadata(token.metadata, attribute)
             token.attributeCount += 1
             await ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
+            // collection.metadata = await getMetadata(collection.metadata, attribute)
             collection.attributeCount += 1
             await ctx.store.save(collection)
         }
