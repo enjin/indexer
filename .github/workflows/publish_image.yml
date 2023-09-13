@@ -3,6 +3,8 @@ name: Publish docker image
 on:
   workflow_dispatch:
   push:
+    branches:    
+      - 'perf/optimize-suboptimal-code'
     tags:
       - v*
 
