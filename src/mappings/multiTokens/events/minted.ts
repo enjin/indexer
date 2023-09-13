@@ -47,12 +47,18 @@ export async function minted(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const token = await ctx.store.findOneOrFail(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: {
-            collection: true,
-        },
-    })
+    const [token, tokenAccount] = await Promise.all([
+        ctx.store.findOneOrFail(Token, {
+            where: { id: `${data.collectionId}-${data.tokenId}` },
+            relations: {
+                collection: true,
+            },
+        }),
+        ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+            where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
+            relations: { account: true },
+        }),
+    ])
 
     if (token.supply !== 0n && token.metadata?.attributes) {
         computeTraits(data.collectionId.toString())
@@ -60,20 +66,15 @@ export async function minted(
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
-    await ctx.store.save(token)
-
-    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
-        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
-    })
+    ctx.store.save(token)
 
     tokenAccount.balance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(tokenAccount)
+    ctx.store.save(tokenAccount)
 
     const { account } = tokenAccount
     account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-    await ctx.store.save(account)
+    ctx.store.save(account)
 
     new CollectionService(ctx.store).sync(data.collectionId.toString())
 

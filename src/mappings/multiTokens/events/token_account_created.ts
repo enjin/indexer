@@ -33,34 +33,32 @@ export async function tokenAccountCreated(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
-    const token = await ctx.store.findOneOrFail<Token>(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-    })
-    const account = await getOrCreateAccount(ctx, data.accountId)
+    const collection = new Collection({ id: data.collectionId.toString() })
+    const token = new Token({ id: `${data.collectionId}-${data.tokenId}` })
 
-    let collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
-    })
+    const [account, collectionAccount] = await Promise.all([
+        getOrCreateAccount(ctx, data.accountId),
+        ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+            where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+        }),
+    ])
 
     if (!collectionAccount) {
-        collectionAccount = new CollectionAccount({
+        const newCA = new CollectionAccount({
             id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
             isFrozen: false,
             approvals: null,
-            accountCount: 0,
+            accountCount: 1,
             account,
             collection,
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, collectionAccount as any)
+        ctx.store.insert(CollectionAccount, newCA as any)
+    } else {
+        collectionAccount.accountCount += 1
+        ctx.store.save(collectionAccount)
     }
-
-    collectionAccount.accountCount += 1
-    await ctx.store.save(collectionAccount)
 
     const tokenAccount = new TokenAccount({
         id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
@@ -78,7 +76,7 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(TokenAccount, tokenAccount as any)
+    ctx.store.insert(TokenAccount, tokenAccount as any)
 
     return new EventModel({
         id: item.event.id,

@@ -36,28 +36,25 @@ export async function collectionAccountCreated(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
-
-    const account = await getOrCreateAccount(ctx, data.accountId)
-
-    let collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
-    })
+    const [account, collectionAccount] = await Promise.all([
+        getOrCreateAccount(ctx, data.accountId),
+        ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+            where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+        }),
+    ])
 
     if (!collectionAccount) {
-        collectionAccount = new CollectionAccount({
+        const newAccount = new CollectionAccount({
             id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
             isFrozen: false,
             approvals: null,
             accountCount: 0,
             account,
-            collection,
+            collection: new Collection({ id: data.collectionId.toString() }),
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, collectionAccount as any)
+        ctx.store.insert(CollectionAccount, newAccount as any)
     }
 
     return new EventModel({

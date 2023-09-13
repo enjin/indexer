@@ -35,14 +35,14 @@ export async function tokenAccountDestroyed(
     })
     if (collectionAccount) {
         collectionAccount.accountCount -= 1
-        await ctx.store.save(collectionAccount)
+        ctx.store.save(collectionAccount)
     }
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
     })
     if (tokenAccount) {
-        await ctx.store.remove(tokenAccount)
+        ctx.store.remove(tokenAccount)
     }
 
     return new EventModel({

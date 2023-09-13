@@ -47,48 +47,37 @@ export async function tokenDestroyed(
     })
 
     if (token) {
-        const attributes = await ctx.store.find(Attribute, {
-            where: {
-                token: {
-                    id: token.id,
-                },
-            },
-        })
-
-        await ctx.store
-            .getRepository(ListingStatus)
-            .query(
-                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                [token.id]
-            )
-
-        const makeListings = await ctx.store.findBy(Listing, {
-            makeAssetId: {
-                id: token.id,
-            },
-        })
-        const takeListings = await ctx.store.findBy(Listing, {
-            takeAssetId: {
-                id: token.id,
-            },
-        })
-        token.bestListing = null
-        token.recentListing = null
-        await ctx.store.save(token)
-
-        const listings = [...makeListings, ...takeListings]
         // TODO: We are removing all events that are related to this token.
         // We should only update the events that have relationship so it is null.
         // await ctx.store.delete(Event, { tokenId: token.id })
         await Promise.all([
-            await ctx.store.remove(listings),
-            await ctx.store.delete(TraitToken, { token: { id: token.id } }),
-            await ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
-            await ctx.store.remove(attributes),
+            ctx.store
+                .getRepository(ListingStatus)
+                .query(
+                    'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                    [token.id]
+                ),
+            ctx.store.delete(Listing, {
+                makeAssetId: {
+                    id: token.id,
+                },
+            }),
+            ctx.store.delete(Listing, {
+                takeAssetId: {
+                    id: token.id,
+                },
+            }),
+            ctx.store.delete(TraitToken, { token: { id: token.id } }),
+            ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
+            ctx.store.delete(Attribute, {
+                token: {
+                    id: token.id,
+                },
+            }),
         ])
     }
 
-    await ctx.store.remove(token)
+    ctx.store.remove(token)
     new CollectionService(ctx.store).sync(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
 

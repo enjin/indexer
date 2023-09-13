@@ -44,7 +44,7 @@ export async function reserved(
 
         tokenAccount.updatedAt = new Date(block.timestamp)
 
-        await ctx.store.save(tokenAccount)
+        ctx.store.save(tokenAccount)
     }
 
     return undefined

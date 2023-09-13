@@ -38,23 +38,15 @@ export async function collectionDestroyed(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
-    const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-        where: { collection: { id: collection.id } },
-    })
+    const collectionId = data.collectionId.toString()
 
-    const attributes = await ctx.store.find(Attribute, {
-        where: {
-            collection: { id: collection.id },
-        },
-    })
+    await Promise.all([
+        ctx.store.delete(Trait, { collection: { id: collectionId } }),
+        ctx.store.delete(RoyaltyCurrency, { collection: { id: collectionId } }),
+        ctx.store.delete(Attribute, { collection: { id: collectionId } }),
+    ])
 
-    await ctx.store.delete(Trait, { collection: { id: collection.id } })
-    await ctx.store.remove(royaltyCurrencies)
-    await ctx.store.remove(attributes)
-    await ctx.store.remove(collection)
+    ctx.store.delete(Collection, { id: collectionId })
 
     return new EventModel({
         id: item.event.id,

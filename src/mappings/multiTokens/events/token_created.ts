@@ -525,15 +525,17 @@ export async function tokenCreated(
     const eventData = getEventData(ctx, item.event)
 
     if (item.event.call) {
-        const callData = await getCallData(ctx, item.event.call, eventData)
-        if (!eventData || !callData) return undefined
+        const [callData, collection] = await Promise.all([
+            getCallData(ctx, item.event.call, eventData),
+            ctx.store.findOneOrFail<Collection>(Collection, {
+                where: { id: eventData.collectionId.toString() },
+                relations: {
+                    attributes: true,
+                },
+            }),
+        ])
 
-        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-            where: { id: eventData.collectionId.toString() },
-            relations: {
-                attributes: true,
-            },
-        })
+        if (!eventData || !callData) return undefined
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null
@@ -554,7 +556,7 @@ export async function tokenCreated(
                 })
 
                 if (otherTokens.length > 0) {
-                    await ctx.store.save(otherTokens)
+                    ctx.store.save(otherTokens)
                 }
             }
         }
@@ -578,7 +580,7 @@ export async function tokenCreated(
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
+        ctx.store.insert(Token, token as any)
 
         return new EventModel({
             id: item.event.id,

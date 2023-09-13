@@ -76,7 +76,7 @@ export async function collectionMutated(
         })
 
         if (data.explicitRoyaltyCurrencies.length === 0) {
-            await ctx.store.remove(royaltyCurrencies)
+            ctx.store.remove(royaltyCurrencies)
         } else {
             for (const currency of data.explicitRoyaltyCurrencies) {
                 const rc = royaltyCurrencies.find(
@@ -102,11 +102,11 @@ export async function collectionMutated(
                 // eslint-disable-next-line no-await-in-loop
                 await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
             }
-            await ctx.store.remove(royaltyCurrencies)
+            ctx.store.remove(royaltyCurrencies)
         }
     }
 
-    await ctx.store.save(collection)
+    ctx.store.save(collection)
 
     return new EventModel({
         id: item.event.id,

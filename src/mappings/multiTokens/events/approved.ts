@@ -52,7 +52,7 @@ export async function approved(
 
         tokenAccount.approvals = approvals
         tokenAccount.updatedAt = new Date(block.timestamp)
-        await ctx.store.save(tokenAccount)
+        ctx.store.save(tokenAccount)
     } else {
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
@@ -68,7 +68,7 @@ export async function approved(
 
         collectionAccount.approvals = approvals
         collectionAccount.updatedAt = new Date(block.timestamp)
-        await ctx.store.save(collectionAccount)
+        ctx.store.save(collectionAccount)
     }
 
     return new EventModel({

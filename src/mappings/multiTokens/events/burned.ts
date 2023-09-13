@@ -44,36 +44,36 @@ export async function burned(
 
     const address = u8aToHex(data.accountId)
 
-    const tokenAccount = await ctx.store.findOne(TokenAccount, {
-        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
-    })
+    const [tokenAccount, token] = await Promise.all([
+        ctx.store.findOne(TokenAccount, {
+            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+            relations: { account: true },
+        }),
+        ctx.store.findOne(Token, {
+            where: { id: `${data.collectionId}-${data.tokenId}` },
+        }),
+    ])
 
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
         tokenAccount.updatedAt = new Date(block.timestamp)
-        await ctx.store.save(tokenAccount)
+        ctx.store.save(tokenAccount)
     }
-
-    const token = await ctx.store.findOne(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-    })
 
     if (token) {
         token.supply -= data.amount
-        await ctx.store.save(token)
 
         if (token.metadata?.attributes) {
             computeTraits(data.collectionId.toString())
         }
-
+        ctx.store.save(token)
         new CollectionService(ctx.store).sync(data.collectionId.toString())
     }
 
     if (tokenAccount && token) {
         const { account } = tokenAccount
         account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-        await ctx.store.save(account)
+        ctx.store.save(account)
     }
 
     const event = new EventModel({

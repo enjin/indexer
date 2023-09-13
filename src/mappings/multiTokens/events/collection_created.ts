@@ -129,10 +129,10 @@ export async function collectionCreated(
     if (!item.event.call) return undefined
 
     const eventData = getEventData(ctx, item.event)
-    const callData = await getCallData(ctx, item.event.call)
-    if (!eventData || !callData) return undefined
 
-    const account = await getOrCreateAccount(ctx, eventData.owner)
+    const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
+
+    if (!eventData || !callData) return undefined
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         collectionId: eventData.collectionId,
@@ -165,20 +165,18 @@ export async function collectionCreated(
 
     await ctx.store.save(collection)
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const currency of callData.explicitRoyaltyCurrencies) {
-        // eslint-disable-next-line no-await-in-loop
-        const token = await ctx.store.findOneOrFail<Token>(Token, {
-            where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
+    const royaltyPromises = callData.explicitRoyaltyCurrencies
+        .map((currency) => {
+            const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
+            return new RoyaltyCurrency({
+                id: `${collection.id}-${tokenId}`,
+                collection,
+                token: new Token({ id: `${collection.id}-${tokenId}` }),
+            })
         })
-        const royaltyCurrency = new RoyaltyCurrency({
-            id: `${collection.id}-${token.id}`,
-            collection,
-            token,
-        })
-        // eslint-disable-next-line no-await-in-loop
-        await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
-    }
+        .map((rc) => ctx.store.insert(RoyaltyCurrency, rc as any))
+
+    Promise.all(royaltyPromises)
 
     return new EventModel({
         id: item.event.id,

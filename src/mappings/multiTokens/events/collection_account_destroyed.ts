@@ -34,7 +34,7 @@ export async function collectionAccountDestroyed(
         where: { id: `${data.collectionId}-${address}` },
     })
     if (collectionAccount) {
-        await ctx.store.remove(collectionAccount)
+        ctx.store.remove(collectionAccount)
     }
 
     return new EventModel({

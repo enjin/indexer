@@ -38,9 +38,19 @@ export async function attributeSet(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    let collection = await ctx.store.findOne<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
+    const key = safeString(Buffer.from(data.key).toString())
+    const value = safeString(Buffer.from(data.value).toString())
+    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
+
+    let [attribute, collection] = await Promise.all([
+        ctx.store.findOne<Attribute>(Attribute, {
+            where: { id: attributeId },
+        }),
+        ctx.store.findOne<Collection>(Collection, {
+            where: { id: data.collectionId.toString() },
+        }),
+    ])
     if (!collection) {
         collection = new Collection({
             id: data.collectionId.toString(),
@@ -73,15 +83,6 @@ export async function attributeSet(
         })
     }
 
-    const key = safeString(Buffer.from(data.key).toString())
-    const value = safeString(Buffer.from(data.value).toString())
-    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
-    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
-
-    let attribute = await ctx.store.findOne<Attribute>(Attribute, {
-        where: { id: attributeId },
-    })
-
     if (attribute) {
         attribute.value = value
         attribute.updatedAt = new Date(block.timestamp)
@@ -90,13 +91,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             token.metadata = await getMetadata(token.metadata, attribute)
-            await ctx.store.save(token)
+            ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.metadata = await getMetadata(collection.metadata, attribute)
-            await ctx.store.save(collection)
+            ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
     } else {
@@ -111,7 +112,7 @@ export async function attributeSet(
             updatedAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Attribute, attribute as any)
+        ctx.store.insert(Attribute, attribute as any)
 
         if (token) {
             if (!token.metadata) {
@@ -119,14 +120,14 @@ export async function attributeSet(
             }
             token.metadata = await getMetadata(token.metadata, attribute)
             token.attributeCount += 1
-            await ctx.store.save(token)
+            ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.metadata = await getMetadata(collection.metadata, attribute)
             collection.attributeCount += 1
-            await ctx.store.save(collection)
+            ctx.store.save(collection)
         }
     }
     if (token && token.metadata?.attributes) {

@@ -73,7 +73,7 @@ export async function attributeRemoved(
             }
 
             token.attributeCount -= 1
-            await ctx.store.save(token)
+            ctx.store.save(token)
 
             computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
@@ -99,10 +99,10 @@ export async function attributeRemoved(
                 collection.metadata = metadataParser(collection.metadata, a, null)
             }
             collection.attributeCount -= 1
-            await ctx.store.save(collection)
+            ctx.store.save(collection)
         }
 
-        await ctx.store.remove(attribute)
+        ctx.store.remove(attribute)
     }
 
     return new EventModel({
