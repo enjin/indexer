@@ -167,9 +167,8 @@ export async function collectionCreated(
 
     const royaltyPromises = callData.explicitRoyaltyCurrencies
         .map((currency) => {
-            const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
             return new RoyaltyCurrency({
-                id: tokenId,
+                id: `${collection.id}-${tokenId}`,
                 collection,
                 token: new Token({ id: tokenId }),
             })
