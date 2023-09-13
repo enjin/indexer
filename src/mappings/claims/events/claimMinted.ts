@@ -23,8 +23,6 @@ export async function claimMinted(
     block: SubstrateBlock,
     item: EventItem<'Claims.ClaimMinted', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.extrinsic) return undefined
-
     const eventData = getEventData(ctx, item.event)
 
     if (!eventData) return undefined
@@ -41,7 +39,7 @@ export async function claimMinted(
         amountBurned: 0n,
         hash: null,
         isEfiToken: false,
-        extrinsicIndex: item.event.extrinsic.indexInBlock,
+        extrinsicIndex: block.height,
         isClaimed: false,
         createdBlock: block.height,
         createdAt: new Date(block.timestamp),

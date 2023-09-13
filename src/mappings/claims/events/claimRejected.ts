@@ -23,9 +23,8 @@ export async function claimRejected(
     block: SubstrateBlock,
     item: EventItem<'Claims.ClaimRejected', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.extrinsic) return undefined
-
     const eventData = getEventData(ctx, item.event)
+
     if (!eventData) return undefined
 
     const claimREeq = await ctx.store.findOneByOrFail(ClaimRequest, { hash: u8aToHex(eventData.transactionHash).toString() })
