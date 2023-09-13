@@ -211,6 +211,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             const extrinsics: Extrinsic[] = []
             const events: Event[] = []
             const accountTokenEvents: AccountTokenEvent[] = []
+            console.log('Before inserting block')
 
             if (block.header.height === 1) {
                 // eslint-disable-next-line no-await-in-loop
@@ -229,6 +230,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             // eslint-disable-next-line no-restricted-syntax
             for (const item of block.items) {
                 if (item.kind === 'event') {
+                    console.log(`Before inserting one event ${item.name}`)
                     // eslint-disable-next-line no-await-in-loop
                     const event = await handleEvents(ctx as unknown as CommonContext, block.header, item)
                     if (event) {
@@ -240,6 +242,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         }
                     }
                 } else if (item.kind === 'call') {
+                    console.log(`Before inserting call ${item.name}`)
                     if (
                         item.call.parent != null ||
                         ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
@@ -268,7 +271,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                     }
 
                     // eslint-disable-next-line no-await-in-loop
+                    console.log('Before creating accounts')
                     const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                    console.log('After creating accounts')
                     const callName = call.name.split('.')
 
                     const extrinsic = new Extrinsic({
@@ -295,6 +300,7 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
 
                     // If fee empty search for the withdrawal event
                     if (!fee) {
+                        console.log('Before inserting fee')
                         // eslint-disable-next-line no-restricted-syntax
                         for (const eventItem of block.items) {
                             if (eventItem.name !== 'Balances.Withdraw') {
@@ -339,15 +345,20 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             }
 
             // eslint-disable-next-line no-await-in-loop
+            console.log('Before inserting balances')
             await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+            console.log('Before inserting extrinsic')
             _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
+            console.log('Before inserting events')
             _.chunk(events, 500).forEach((chunk) => ctx.store.insert(Event, chunk as any))
+            console.log('Before inserting account token events')
             _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
         }
 
         const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
         if (lastBlock.height > config.lastBlockHeight - 200) {
             // import('./handleJobs')
+            console.log('Before inserting chain state')
             await chainState(ctx as unknown as CommonContext, lastBlock)
         }
     } catch (error) {
