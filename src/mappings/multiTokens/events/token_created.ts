@@ -481,17 +481,17 @@ export async function tokenCreated(
         const callData = await getCallData(ctx, item.event.call, eventData)
         if (!eventData || !callData) return undefined
 
-        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-            where: { id: eventData.collectionId.toString() },
-            relations: {
-                attributes: true,
-            },
-        })
+        // const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        //     where: { id: eventData.collectionId.toString() },
+        //     relations: {
+        //         attributes: true,
+        //     },
+        // })
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         // let metadata: Metadata | null | undefined = null
-        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
-        if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
+        // const collectionUri = collection.attributes.find((e) => e.key === 'uri')
+        // if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
             // metadata = await getMetadata(new Metadata(), collectionUri)
             // if (metadata) {
             //     const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
@@ -510,7 +510,7 @@ export async function tokenCreated(
             //         await ctx.store.save(otherTokens)
             //     }
             // }
-        }
+        // }
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
@@ -524,7 +524,7 @@ export async function tokenCreated(
             unitPrice: callData.unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
-            collection,
+            collection: new Collection({ id: eventData.collectionId.toString() }),
             metadata: null,
             nonFungible: false,
             listingForbidden: callData.listingForbidden,
