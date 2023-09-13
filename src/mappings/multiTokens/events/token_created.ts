@@ -27,7 +27,6 @@ import {
     MultiTokensCall_mint as MultiTokensCall_mint_v500,
     SufficiencyParam_Sufficient,
 } from '../../../types/generated/v500'
-import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import {

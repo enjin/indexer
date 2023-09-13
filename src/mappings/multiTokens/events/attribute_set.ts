@@ -13,7 +13,6 @@ import {
     MultiTokensAttributeSet,
     Token,
 } from '../../../model'
-import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
