@@ -91,13 +91,11 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             enqueueMetadata(token, token.metadata, attribute)
-            ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             enqueueMetadata(collection, collection.metadata, attribute)
-            ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
     } else {
