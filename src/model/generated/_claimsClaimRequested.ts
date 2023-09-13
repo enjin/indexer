@@ -5,7 +5,7 @@ import {ClaimAccount} from "./_claimAccount"
 export class ClaimsClaimRequested {
     public readonly isTypeOf = 'ClaimsClaimRequested'
     private _who!: ClaimAccount
-    private _hash!: string
+    private _hash!: string | undefined | null
     private _amountClaimable!: bigint
     private _amountBurned!: bigint
     private _isEfiToken!: boolean
@@ -14,7 +14,7 @@ export class ClaimsClaimRequested {
         Object.assign(this, props)
         if (json != null) {
             this._who = new ClaimAccount(undefined, marshal.nonNull(json.who))
-            this._hash = marshal.string.fromJSON(json.hash)
+            this._hash = json.hash == null ? undefined : marshal.string.fromJSON(json.hash)
             this._amountClaimable = marshal.bigint.fromJSON(json.amountClaimable)
             this._amountBurned = marshal.bigint.fromJSON(json.amountBurned)
             this._isEfiToken = marshal.boolean.fromJSON(json.isEfiToken)
@@ -30,12 +30,11 @@ export class ClaimsClaimRequested {
         this._who = value
     }
 
-    get hash(): string {
-        assert(this._hash != null, 'uninitialized access')
+    get hash(): string | undefined | null {
         return this._hash
     }
 
-    set hash(value: string) {
+    set hash(value: string | undefined | null) {
         this._hash = value
     }
 

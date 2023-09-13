@@ -241,7 +241,7 @@ type ClaimAccount {
 
 type ClaimsClaimRequested {
   who: ClaimAccount!
-  hash: String!
+  hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
 
@@ -658,7 +658,7 @@ type ClaimRequest @entity {
   id: ID!
 
   account: ClaimAccount!
-  hash: String!
+  hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
 
