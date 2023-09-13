@@ -1,7 +1,8 @@
 import Axios from 'axios'
 import https from 'https'
 import { safeString } from '../../common/tools'
-import { Attribute, Metadata, MetadataMedia } from '../../model'
+import { Attribute, Collection, Metadata, MetadataMedia, Token } from '../../model'
+import { CommonContext } from '../types/contexts'
 
 type Media = {
     url: string
@@ -192,4 +193,28 @@ async function processMetadata(metadata: Metadata, attribute: Attribute | null) 
 
 export async function getMetadata(metadata: Metadata, attribute: Attribute | null): Promise<Metadata> {
     return processMetadata(metadata, attribute)
+}
+
+type QueueType = {
+    entity: Collection | Token
+    data: Metadata
+}
+const queue: QueueType[] = []
+
+export async function enqueueMetadata(entity: Collection | Token, metadata: Metadata, attribute: Attribute | null): Promise<any> {
+    const data = await processMetadata(metadata, attribute)
+    queue.push({ entity, data })
+}
+
+export async function processQueue(ctx: CommonContext) {
+    while (queue.length > 0) {
+        const items = queue.splice(0, 100)
+        // eslint-disable-next-line no-await-in-loop
+        await Promise.all(
+            items.map(async (item) => {
+                item.entity.metadata = item.data
+                return ctx.store.save(item.entity)
+            })
+        )
+    }
 }

@@ -14,6 +14,7 @@ import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
 import { populateGenesis } from './populateGenesis'
 import { updateClaimDetails } from './mappings/claims/common'
+import { processQueue } from './mappings/util/metadata'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -247,10 +248,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 if (Number(config.prefix) === 1110) {
                     // eslint-disable-next-line no-await-in-loop
                     await populateGenesis(ctx as unknown as CommonContext, block.header)
+                    // eslint-disable-next-line no-await-in-loop
+                    await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                 }
-
-                // eslint-disable-next-line no-await-in-loop
-                await updateClaimDetails(ctx as unknown as CommonContext, block.header)
             }
 
             // eslint-disable-next-line no-restricted-syntax
@@ -370,6 +370,8 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
             _.chunk(events, 500).forEach((chunk) => ctx.store.insert(Event, chunk as any))
             _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
+            // eslint-disable-next-line no-await-in-loop
+            await processQueue(ctx as unknown as CommonContext)
         }
 
         const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

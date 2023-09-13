@@ -41,7 +41,7 @@ import {
 import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
-import { getMetadata } from './mappings/util/metadata'
+import { enqueueMetadata } from './mappings/util/metadata'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 
 const BATCH_SIZE = 1000
@@ -427,7 +427,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
                 if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
                     const token = new Token({ id, metadata: new Metadata() })
-                    token.metadata = await getMetadata(token.metadata as Metadata, attribute)
+                    enqueueMetadata(token, token.metadata as Metadata, attribute)
                     await ctx.store.save(token)
                 }
 
@@ -446,7 +446,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
             if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
                 const collection = new Collection({ id, metadata: new Metadata() })
-                collection.metadata = await getMetadata(collection.metadata as Metadata, attribute)
+                enqueueMetadata(collection, collection.metadata as Metadata, attribute)
                 await ctx.store.save(collection)
             }
 

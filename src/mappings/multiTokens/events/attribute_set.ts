@@ -13,7 +13,7 @@ import {
     MultiTokensAttributeSet,
     Token,
 } from '../../../model'
-import { getMetadata } from '../../util/metadata'
+import { enqueueMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
@@ -90,13 +90,13 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
+            enqueueMetadata(token, token.metadata, attribute)
             ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
+            enqueueMetadata(collection, collection.metadata, attribute)
             ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
@@ -118,14 +118,14 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
+            enqueueMetadata(token, token.metadata, attribute)
             token.attributeCount += 1
             ctx.store.save(token)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
+            enqueueMetadata(collection, collection.metadata, attribute)
             collection.attributeCount += 1
             ctx.store.save(collection)
         }
