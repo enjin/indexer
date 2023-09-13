@@ -58,10 +58,10 @@ export async function auctionFinalized(
             listing,
             createdAt: new Date(block.timestamp),
         })
-        await ctx.store.save(sale)
+        ctx.store.save(sale)
     }
+
     listing.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(listing)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
@@ -70,7 +70,6 @@ export async function auctionFinalized(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
 
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -78,10 +77,14 @@ export async function auctionFinalized(
         if (bestListing) {
             listing.makeAssetId.bestListing = bestListing
         }
-        await ctx.store.save(listing.makeAssetId)
+        ctx.store.save(listing.makeAssetId)
     }
 
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    await Promise.all([
+        ctx.store.insert(ListingStatus, listingStatus as any),
+        ctx.store.save(listing),
+        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
+    ])
 
     const event = new EventModel({
         id: item.event.id,

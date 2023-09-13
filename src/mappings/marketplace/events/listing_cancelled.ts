@@ -45,7 +45,6 @@ export async function listingCancelled(
         },
     })
     listing.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(listing)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
@@ -54,7 +53,6 @@ export async function listingCancelled(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
 
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -62,10 +60,14 @@ export async function listingCancelled(
         if (bestListing) {
             listing.makeAssetId.bestListing = bestListing
         }
-        await ctx.store.save(listing.makeAssetId)
+        ctx.store.save(listing.makeAssetId)
     }
 
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    Promise.all([
+        ctx.store.insert(ListingStatus, listingStatus as any),
+        ctx.store.save(listing),
+        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
+    ])
 
     const event = new EventModel({
         id: item.event.id,

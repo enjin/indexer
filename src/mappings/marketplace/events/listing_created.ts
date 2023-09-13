@@ -42,18 +42,20 @@ export async function listingCreated(
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
-    const makeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
-        where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
-        relations: {
-            collection: true,
-            bestListing: true,
-        },
-    })
-    const takeAssetId = await ctx.store.findOneOrFail<Token>(Token, {
-        where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
-    })
+    const [makeAssetId, takeAssetId, account] = await Promise.all([
+        ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
+            relations: {
+                collection: true,
+                bestListing: true,
+            },
+        }),
+        ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
+        }),
+        getOrCreateAccount(ctx, data.listing.seller),
+    ])
 
-    const account = await getOrCreateAccount(ctx, data.listing.seller)
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
         data.listing.data.__kind === ListingType.FixedPrice
@@ -87,8 +89,6 @@ export async function listingCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(Listing, listing as any)
-
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
         type: ListingStatusType.Active,
@@ -96,16 +96,18 @@ export async function listingCreated(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
-    await ctx.store.insert(ListingStatus, listingStatus as any)
-
     // update best listing
     if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
         makeAssetId.bestListing = listing
     }
     makeAssetId.recentListing = listing
-    await ctx.store.save(makeAssetId)
 
-    new CollectionService(ctx.store).sync(makeAssetId.collection.id)
+    Promise.all([
+        ctx.store.insert(Listing, listing as any),
+        ctx.store.insert(ListingStatus, listingStatus as any),
+        ctx.store.save(makeAssetId),
+        new CollectionService(ctx.store).sync(makeAssetId.collection.id),
+    ])
 
     const event = new EventModel({
         id: item.event.id,

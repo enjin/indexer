@@ -37,16 +37,19 @@ export async function bidPlaced(
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
-        where: { id: listingId },
-        relations: {
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
+    const [listing, account] = await Promise.all([
+        ctx.store.findOneOrFail<Listing>(Listing, {
+            where: { id: listingId },
+            relations: {
+                makeAssetId: {
+                    collection: true,
+                    bestListing: true,
+                },
             },
-        },
-    })
-    const account = await getOrCreateAccount(ctx, data.bid.bidder)
+        }),
+        getOrCreateAccount(ctx, data.bid.bidder),
+    ])
+
     const bid = new Bid({
         id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
         bidder: account,
@@ -61,21 +64,21 @@ export async function bidPlaced(
         listingType: ListingType.Auction,
         highBid: bid.id,
     })
-
-    await ctx.store.save(bid)
-
     listing.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(listing)
 
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         if (bestListing?.id !== listing.id) {
             listing.makeAssetId.bestListing = bestListing
-            await ctx.store.save(listing.makeAssetId)
+            ctx.store.save(listing.makeAssetId)
         }
     }
 
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    Promise.all([
+        ctx.store.save(bid),
+        ctx.store.save(listing),
+        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
+    ])
 
     const event = new EventModel({
         id: item.event.id,
