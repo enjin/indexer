@@ -41,7 +41,6 @@ import {
 import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
-import { enqueueMetadata } from './mappings/util/metadata'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 
 const BATCH_SIZE = 1000
