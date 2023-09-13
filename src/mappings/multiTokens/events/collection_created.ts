@@ -169,9 +169,9 @@ export async function collectionCreated(
         .map((currency) => {
             const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
             return new RoyaltyCurrency({
-                id: `${collection.id}-${tokenId}`,
+                id: tokenId,
                 collection,
-                token: new Token({ id: `${collection.id}-${tokenId}` }),
+                token: new Token({ id: tokenId }),
             })
         })
         .map((rc) => ctx.store.insert(RoyaltyCurrency, rc as any))
