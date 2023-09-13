@@ -1,4 +1,5 @@
 export * from './claimed'
 export * from './claimRequested'
+export * from './claimRejected'
 export * from './exchangeRateSet'
 export * from './delayTimeForClaimSet'

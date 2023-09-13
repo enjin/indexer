@@ -84,6 +84,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Claims.ClaimRequested', eventOptions)
     .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
     .addEvent('Claims.ExchangeRateSet', eventOptions)
+    .addEvent('Claims.ClaimRejected', eventOptions)
     // eslint-disable-next-line sonarjs/no-duplicate-string
     .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Balances.BalanceSet', eventOptions)
@@ -161,6 +162,8 @@ async function handleEvents(
             return map.balances.processor.save(ctx, block, item.event)
         case 'Claims.ClaimRequested':
             return map.claims.events.claimRequested(ctx, block, item)
+        case 'Claims.ClaimRejected':
+            return map.claims.events.claimRejected(ctx, block, item)
         case 'Claims.DelayTimeForClaimSet':
             return map.claims.events.delayTimeForClaimSet(ctx, block, item)
         case 'Claims.Claimed':
