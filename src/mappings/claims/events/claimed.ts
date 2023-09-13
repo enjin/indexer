@@ -54,24 +54,26 @@ export async function claimed(
     const claimAccount = u8aToHex(eventData.ethereumAddress).toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
-
-    claimDetails.totalUnclaimedAmount = await getTotalUnclaimedAmount(ctx, block)
-
     const period = claimDetails.delayClaimsPeriod || (await getDelayPeriod(ctx, block))
 
     if (!period) {
         throw new Error('Delay period is not set')
     }
 
-    const claimRequests = await ctx.store
-        .getRepository(ClaimRequest)
-        .createQueryBuilder('request')
-        .where('request.account ::jsonb @> :account', {
-            account: { type: AccountClaimType.EVM, account: claimAccount },
-        })
-        .andWhere('request.isClaimed = false')
-        .andWhere('request.createdBlock < :block', { block: block.height - period })
-        .getMany()
+    const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
+        getTotalUnclaimedAmount(ctx, block),
+        ctx.store
+            .getRepository(ClaimRequest)
+            .createQueryBuilder('request')
+            .where('request.account ::jsonb @> :account', {
+                account: { type: AccountClaimType.EVM, account: claimAccount },
+            })
+            .andWhere('request.isClaimed = false')
+            .andWhere('request.createdBlock < :block', { block: block.height - period })
+            .getMany(),
+        ctx.store.findOneBy(Claim, { account: { id: account.id } }),
+    ])
+    claimDetails.totalUnclaimedAmount = totalUnclaimedAmount
 
     if (claimRequests.length === 0) {
         throw new Error(`No claim requests found for ${claimAccount}`)
@@ -89,10 +91,10 @@ export async function claimed(
         .filter((request) => request.isEfiToken)
         .reduce((sum, request) => sum + request.amountBurned, 0n)
 
-    let claim = await ctx.store.findOneBy(Claim, { account: { id: account.id } })
+    let updatedClaim: Claim
 
     if (!claim) {
-        claim = new Claim({
+        updatedClaim = new Claim({
             id: account.id,
             account,
             enjSum: 0n,
@@ -100,15 +102,17 @@ export async function claimed(
             amount: 0n,
             count: 0,
         })
+    } else {
+        updatedClaim = claim
     }
 
-    claim.efiSum += efiSum
-    claim.enjSum += enjSum
-    claim.amount += eventData.amount
-    claim.count += 1
+    updatedClaim.efiSum += efiSum
+    updatedClaim.enjSum += enjSum
+    updatedClaim.amount += eventData.amount
+    updatedClaim.count += 1
 
     await Promise.all([
-        ctx.store.save(claim),
+        ctx.store.save(updatedClaim),
         ctx.store.save(claimDetails),
         ctx.store.save(
             ClaimRequest,
