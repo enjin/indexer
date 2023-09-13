@@ -427,7 +427,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
                 if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
                     const token = new Token({ id, metadata: new Metadata() })
-                    enqueueMetadata(token, token.metadata as Metadata, attribute)
+                    // enqueueMetadata(token, token.metadata as Metadata, attribute)
                     await ctx.store.save(token)
                 }
 
@@ -446,7 +446,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
             if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
                 const collection = new Collection({ id, metadata: new Metadata() })
-                enqueueMetadata(collection, collection.metadata as Metadata, attribute)
+                // enqueueMetadata(collection, collection.metadata as Metadata, attribute)
                 await ctx.store.save(collection)
             }
 

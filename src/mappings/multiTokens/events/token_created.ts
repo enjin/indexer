@@ -32,7 +32,6 @@ import {
     TokenCap,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
-import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import {
@@ -541,7 +540,7 @@ export async function tokenCreated(
         let metadata: Metadata | null | undefined = null
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
         if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
-            metadata = await getMetadata(new Metadata(), collectionUri)
+            metadata = await new Metadata()
             if (metadata) {
                 const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
                     where: { id: eventData.collectionId.toString() },
