@@ -14,8 +14,8 @@ export class ClaimRequest {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new ClaimAccount(undefined, obj)}, nullable: false})
     account!: ClaimAccount
 
-    @Column_("text", {nullable: false})
-    hash!: string
+    @Column_("text", {nullable: true})
+    hash!: string | undefined | null
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     amountClaimable!: bigint
