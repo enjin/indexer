@@ -489,28 +489,27 @@ export async function tokenCreated(
         })
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
-        let metadata: Metadata | null | undefined = null
+        // let metadata: Metadata | null | undefined = null
         const collectionUri = collection.attributes.find((e) => e.key === 'uri')
         if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
             // metadata = await getMetadata(new Metadata(), collectionUri)
-            metadata = new Metadata()
-            if (metadata) {
-                const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
-                    where: { id: eventData.collectionId.toString() },
-                    relations: {
-                        tokens: true,
-                    },
-                })
-
-                const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
-                    e.metadata = metadata
-                    return e
-                })
-
-                if (otherTokens.length > 0) {
-                    await ctx.store.save(otherTokens)
-                }
-            }
+            // if (metadata) {
+            //     const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
+            //         where: { id: eventData.collectionId.toString() },
+            //         relations: {
+            //             tokens: true,
+            //         },
+            //     })
+            //
+            //     const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
+            //         e.metadata = metadata
+            //         return e
+            //     })
+            //
+            //     if (otherTokens.length > 0) {
+            //         await ctx.store.save(otherTokens)
+            //     }
+            // }
         }
 
         const token = new Token({
