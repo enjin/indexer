@@ -1,21 +1,21 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { CommonContext } from './mappings/types/contexts'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { CapType, Collection, CollectionStats, MintPolicy, Token, TokenCapSupply, TransferPolicy } from './model'
+import { Collection, CollectionStats, MintPolicy, Token, TransferPolicy } from './model'
+import { isMainnet } from './common/tools'
 
-export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) {
-    const efi = await ctx.store.findOneBy(Token, { id: '0-0' })
+export async function createEnjToken(ctx: CommonContext, block: SubstrateBlock) {
+    const enj = await ctx.store.findOneBy(Token, { id: '0-0' })
 
-    if (!efi) {
+    if (!enj) {
+        const supply = isMainnet() ? 1_550_001_200_000_000_000_000_000n : 3_000_002_000_000_000_000_000_000n
         const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
         const collection = new Collection({
             id: '0',
             collectionId: 0n,
             owner: account,
             mintPolicy: new MintPolicy({
-                maxTokenCount: 1n,
-                maxTokenSupply: 2_000_000_000n,
-                forceSingleMint: true,
+                forceSingleMint: false,
             }),
             transferPolicy: new TransferPolicy({
                 isFrozen: false,
@@ -26,7 +26,7 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
                 highestSale: null,
                 tokenCount: 1,
                 salesCount: 0,
-                supply: 2_000_000_000n,
+                supply,
                 marketCap: 0n,
                 volume: 0n,
             }),
@@ -42,13 +42,10 @@ export async function createEfiToken(ctx: CommonContext, block: SubstrateBlock) 
         const token = new Token({
             id: `0-0`,
             tokenId: 0n,
-            supply: 2_000_000_000n,
+            supply,
             isFrozen: false,
             minimumBalance: 1n,
-            cap: new TokenCapSupply({
-                type: CapType.Supply,
-                supply: 2_000_000_000n,
-            }),
+            cap: null,
             listingForbidden: true,
             unitPrice: 1n,
             mintDeposit: 1n,

@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
-name: efinity
-version: 2125
+name: matrixchain
+version: 3000
 description: |-
-  An explorer-like indexer for the Efinity network.
+  An explorer-like indexer for the Enjin Matrixchain.
 
 build:
 
@@ -14,9 +14,13 @@ deploy:
         log_min_duration_statement: 5000
   secrets:
     - SELECTED_CHAIN
+    - CHAIN_NAME
+    - CHAIN_PREFIX
+    - GENESIS_HASH
+    - CHAIN_RPC
     - ARCHIVE_ENDPOINT
-    - EFINITY_ENDPOINT
-    - CHAIN_STATE_HEIGHT
+    - CHAIN_ENDPOINT
+    - LAST_BLOCK_HEIGHT
     - FETCH_ACCOUNTS
   processor:
     cmd: [ "node", "lib/processor" ]

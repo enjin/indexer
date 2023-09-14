@@ -33,10 +33,10 @@ EXPOSE 3000
 EXPOSE 4000
 
 
-FROM squid AS efinity-indexer
+FROM squid AS matrixchain-indexer
 
 LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
-LABEL org.opencontainers.image.description="Efinity Blockchain Indexer"
+LABEL org.opencontainers.image.description="Enjin Matrixchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
 
 COPY --chmod=0755 start.sh .

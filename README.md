@@ -1,7 +1,7 @@
-# Efinity Indexer - A Squid for Efinity
+# Enjin Matrixchain Indexer
 
 <p align="center">
-	<img src="https://user-images.githubusercontent.com/6452260/174344030-f2c3a03a-19f5-44f5-a80e-03adb26a41f4.png">
+	<img src="https://assets-global.website-files.com/60f57c496975b84c29335fb7/60f58bd888a6e86e3ff69551_Enjin.svg" alt="Enjin Logo" width="100%">
 </p>
 
 <div align="center">
@@ -9,7 +9,7 @@
 [![Discord](https://img.shields.io/discord/783393889548501023)](https://discord.gg/EUKexwF5RM)
 [![Medium](https://img.shields.io/badge/Medium-gray?logo=medium)](https://medium.com/@enjin)
 <!-- markdown-link-check-disable-next-line -->
-[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fefinityio)](https://twitter.com/efinityio)
+[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fenjin)](https://twitter.com/enjin)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=social)](https://youtube.com/c/EnjinTV)
 [![Blog URL](https://img.shields.io/badge/-blog-blue)](https://enjin.io/blog)
 [![Podcast](https://img.shields.io/badge/-podcast-informational)](https://open.spotify.com/show/2COWzhR7C7SSoBxsqAK3ee)
@@ -18,10 +18,11 @@
 
 ## Introduction
 
-The Efinity Indexer is a Squid that serves processed blockchain data for other applications and dApps that require a more performant approach to retrieve the data as well as filtering, sorting, and relationships.
+The Enjin Matrixchain Indexer is a Squid that serves processed blockchain data for other applications and dApps that require a more performant approach to retrieve the data as well as filtering, sorting, and relationships.
 
-> [!NOTE]  
-> You can find a hosted version of this indexer available at Subsquid Aquarium in the following URL: https://squid.subsquid.io/efinity/graphql
+> [!NOTE]
+<!-- markdown-link-check-disable-next-line -->
+> You can find a hosted version of this indexer available at Subsquid Aquarium in the following URL: https://squid.subsquid.io/matrixchain/graphql
 
 ### What is a Squid?
 
@@ -31,9 +32,9 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 ## Prerequisites
 
-- Node 16.x
-- Docker
+- Node 18.x
 - NPM
+- Docker
 
 ## Quick-start (using Docker)
 
@@ -57,14 +58,14 @@ The indexer is composed of 7 containers
 The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
-npx squid-substrate-metadata-explorer --chain wss://archive.rpc.efinity.io --out typegen/efinityVersions.jsonl
+npx squid-substrate-metadata-explorer --chain wss://archive.matrix.blockchain.io --out typegen/matrixVersion.jsonl
 ```
 
-In this indexer we use all the metadata of **Efinity** and **Devfinity** so make sure you save them and use the proper WSS endpoint to gather them.
+In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Matrixchain** so make sure you save them and use the proper WSS endpoint to gather them.
 
 ## Typegen
 
-The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadata from **Efinity** and **Devfinity** into a single file. Then you can use the following command:
+The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadata from **Enjin Matrixchain** and **Canary Matrixchain** into a single file. Then you can use the following command:
 
 ```bash
 npx squid-substrate-typegen typegen/typegen.json

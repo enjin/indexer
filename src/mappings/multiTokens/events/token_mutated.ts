@@ -16,7 +16,7 @@ import { Event } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { TokenMarketBehavior } from '../../../types/generated/efinityV3014'
+import { TokenMarketBehavior } from '../../../types/generated/v500'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTokenMutatedEvent(ctx, event)

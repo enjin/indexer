@@ -4,6 +4,9 @@ import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
 
+export function isMainnet() {
+    return config.chainName === 'enjin-matrixchain'
+}
 export function isValidAddress(address: any) {
     try {
         encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))

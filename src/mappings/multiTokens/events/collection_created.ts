@@ -19,7 +19,7 @@ import {
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { DefaultRoyalty } from '../../../types/generated/efinityV3014'
+import { DefaultRoyalty } from '../../../types/generated/v500'
 
 interface EventData {
     collectionId: bigint
