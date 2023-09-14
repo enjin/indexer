@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
-import type { EntityManager } from 'typeorm'
+import { IsNull, type EntityManager } from 'typeorm'
 import { BigInteger } from '@subsquid/graphql-server'
-import { Collection, Metadata, Token } from '../../model'
+import { Attribute, Collection, Metadata, Token } from '../../model'
 import { getMetadata } from '../../mappings/util/metadata'
 import { computeTraits } from '../../jobs/compute-traits'
 import { CollectionService } from '../../services'
@@ -37,13 +37,14 @@ export class RefreshMetadataResolver {
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
         let resource!: Collection | Token | null
+        let attributes: Attribute[] = []
 
         if (!tokenId) {
             resource = await manager.findOne(Collection, {
                 where: { id: collectionId },
-                relations: {
-                    attributes: true,
-                },
+            })
+            attributes = await manager.find(Attribute, {
+                where: { collection: { id: collectionId }, token: IsNull() },
             })
         } else {
             resource = await manager.findOne(Token, {
@@ -57,6 +58,8 @@ export class RefreshMetadataResolver {
                     attributes: true,
                 },
             })
+
+            attributes = resource?.attributes ?? []
         }
 
         if (!resource) {
@@ -65,8 +68,8 @@ export class RefreshMetadataResolver {
         if (!resource.metadata) {
             resource.metadata = new Metadata()
         }
-        resource.metadata = await getMetadata(resource.metadata, resource.attributes.find((a) => a.key === 'uri') ?? null)
-        const syncAttributesPromise = resource.attributes
+        resource.metadata = await getMetadata(resource.metadata, attributes.find((a) => a.key === 'uri') ?? null)
+        const syncAttributesPromise = attributes
             .filter((a) => a.key !== 'uri')
             .map(async (a) => {
                 if (resource && resource.metadata) {
