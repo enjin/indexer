@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { IsNull } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
 import {
@@ -14,26 +15,12 @@ import {
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { computeTraits } from '../../../jobs/compute-traits'
+import { metadataParser } from '../../util/metadata'
 
 interface EventData {
     collectionId: bigint
     tokenId: bigint | undefined
     key: Uint8Array
-}
-
-function metadataParser(metadata: Metadata, attribute: Attribute) {
-    if (attribute.key === 'name') {
-        metadata.name = null
-    } else if (attribute.key === 'description') {
-        metadata.description = null
-    } else if (attribute.key === 'fallback_image') {
-        metadata.fallbackImage = null
-    } else if (attribute.key === 'external_url') {
-        metadata.externalUrl = null
-    } else if (['image', 'imageUrl', 'media', 'mediaUrl'].includes(attribute.key)) {
-        metadata.media = null
-    }
-    return metadata
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
@@ -67,25 +54,50 @@ export async function attributeRemoved(
         if (attribute.token) {
             const token = await ctx.store.findOneOrFail<Token>(Token, {
                 where: { id: `${data.collectionId}-${data.tokenId}` },
+                relations: {
+                    attributes: true,
+                },
             })
 
-            if (!token.metadata) {
+            if (!token.metadata || attribute.key === 'uri') {
                 token.metadata = new Metadata()
             }
-            token.metadata = metadataParser(token.metadata, attribute)
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const a of token.attributes) {
+                if (a.key === attribute.key) {
+                    // eslint-disable-next-line no-continue
+                    continue
+                }
+                token.metadata = metadataParser(token.metadata, a, null)
+            }
+
             token.attributeCount -= 1
             await ctx.store.save(token)
 
             computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
-            const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-                where: { id: data.collectionId.toString() },
-            })
+            const [collection, attributes] = await Promise.all([
+                ctx.store.findOneOrFail<Collection>(Collection, {
+                    where: { id: data.collectionId.toString() },
+                }),
+                await ctx.store.find(Attribute, {
+                    where: { collection: { id: data.collectionId.toString() }, token: IsNull() },
+                }),
+            ])
 
-            if (!collection.metadata) {
+            if (!collection.metadata || attribute.key === 'uri') {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = metadataParser(collection.metadata, attribute)
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const a of attributes) {
+                if (a.key === attribute.key) {
+                    // eslint-disable-next-line no-continue
+                    continue
+                }
+                collection.metadata = metadataParser(collection.metadata, a, null)
+            }
             collection.attributeCount -= 1
             await ctx.store.save(collection)
         }

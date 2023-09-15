@@ -106,7 +106,7 @@ function parseArrayAttributes(
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-function metadataParser(
+export function metadataParser(
     metadata: Metadata,
     attribute: Attribute,
     externalMetadata: {
