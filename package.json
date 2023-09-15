@@ -19,7 +19,7 @@
     "@polkadot/keyring": "^12.5.1",
     "@polkadot/util": "^12.5.1",
     "@polkadot/util-crypto": "^12.5.1",
-    "@sentry/integrations": "^7.68.0",
+    "@sentry/integrations": "^7.69.0",
     "@sentry/node": "^7.69.0",
     "@subsquid/archive-registry": "^3.2.0",
     "@subsquid/cli": "^2.5.0",
