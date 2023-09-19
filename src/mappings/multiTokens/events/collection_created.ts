@@ -86,26 +86,24 @@ async function getCallData(ctx: CommonContext, call: Call) {
             data = new FuelTanksDispatchAndTouchCall(ctx, call)
         }
 
-        if (data.isMatrixEnjinV603) {
-            if (
-                data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
-                data.asMatrixEnjinV603.call.value.__kind === 'create_collection'
-            ) {
-                const { descriptor } = data.asMatrixEnjinV603.call.value
-                const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
-                const royalty = descriptor.policy.market?.royalty
-                const market = royalty ? await getMarket(ctx, royalty) : null
-                const { explicitRoyaltyCurrencies } = descriptor
+        if (
+            data.isMatrixEnjinV603 &&
+            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV603.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asMatrixEnjinV603.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
 
-                return {
-                    maxTokenCount,
-                    maxTokenSupply,
-                    forceSingleMint,
-                    market,
-                    explicitRoyaltyCurrencies,
-                }
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
             }
-            throw new UnknownVersionError(data.constructor.name)
         }
 
         throw new UnknownVersionError(data.constructor.name)

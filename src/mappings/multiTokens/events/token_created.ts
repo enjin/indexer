@@ -27,16 +27,22 @@ import {
     SufficiencyParam_Sufficient,
     TokenMarketBehavior,
 } from '../../../types/generated/v500'
+import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v600 } from '../../../types/generated/v600'
+import {
+    TokenCap,
+    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
+} from '../../../types/generated/matrixEnjinV603'
 import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import {
     EfinityUtilityBatchCall,
+    FuelTanksDispatchAndTouchCall,
+    FuelTanksDispatchCall,
     MultiTokensBatchMintCall,
     MultiTokensForceMintCall,
     MultiTokensMintCall,
 } from '../../../types/generated/calls'
-import { TokenCap } from '../../../types/generated/matrixEnjinV603'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
@@ -223,7 +229,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
                 const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -256,7 +262,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const params = recipientCall.params as DefaultMintParamsCreateToken_v600
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
                 const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -290,6 +296,87 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             if (recipientCall) {
                 const recipient = recipientCall.accountId
                 const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
+        throw new UnknownVersionError(data.constructor.name)
+    }
+
+    if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
+        let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
+        if (call.name === 'FuelTanks.dispatch') {
+            data = new FuelTanksDispatchCall(ctx, call)
+        } else {
+            data = new FuelTanksDispatchAndTouchCall(ctx, call)
+        }
+
+        if (
+            data.isMatrixEnjinV603 &&
+            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
+            (data.asMatrixEnjinV603.call.value.__kind === 'mint' || data.asMatrixEnjinV603.call.value.__kind === 'force_mint')
+        ) {
+            const { collectionId } = data.asMatrixEnjinV603.call.value
+            const recipient = data.asMatrixEnjinV603.call.value.recipient.value as Uint8Array
+            const params = data.asMatrixEnjinV603.call.value.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (
+            data.isMatrixEnjinV603 &&
+            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV603.call.value.__kind === 'batch_mint'
+        ) {
+            const { collectionId, recipients } = data.asMatrixEnjinV603.call.value
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
                 const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
