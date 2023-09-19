@@ -109,7 +109,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
         throw new UnknownVersionError(data.constructor.name)
     }
 
-    throw new UnknownVersionError(call.name)
+    throw new Error(`${call.name} is not supported`)
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
