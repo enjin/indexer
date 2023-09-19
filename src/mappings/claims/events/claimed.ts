@@ -121,6 +121,7 @@ export async function claimed(
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new ClaimsClaimed({
             account: account.id,
+            ethAccount: u8aToHex(eventData.who).toString(),
             amount: eventData.amount,
             efiSum,
             enjSum,
