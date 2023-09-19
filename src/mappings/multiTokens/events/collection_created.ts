@@ -128,8 +128,6 @@ export async function collectionCreated(
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 
-    if (item.event.call.name === 'FuelTanks.dispatch_and_touch') return undefined
-
     const eventData = getEventData(ctx, item.event)
     const callData = await getCallData(ctx, item.event.call)
     if (!eventData || !callData) return undefined
