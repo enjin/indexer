@@ -690,3 +690,37 @@ type ClaimDetails @entity {
   delayClaimsPeriod: Int
   totalUnclaimedAmount: BigInt!
 }
+
+type FuelTankWhitelistedCallers {
+  accounts: [String!]!
+}
+
+type FuelTankRequireToken {
+  collectionId: BigInt!
+  tokenId: BigInt
+}
+
+union FuelTankAccountRule = FuelTankWhitelistedCallers | FuelTankRequireToken
+
+type FuelTankAccountRules @entity {
+  id: ID!
+  tank: FuelTank!
+  rule: FuelTankAccountRule!
+}
+
+type FuelTankUserAccountManagement {
+    tankReservesExistentialDeposit: Boolean
+    tankReservesAccountCreationDeposit: Boolean
+}
+
+type FuelTank @entity {
+  id: ID!
+
+  tankAccount: Account!
+  name: String!
+  owner: Account!
+  providesDeposit: Boolean!
+
+  userAccountManagement: FuelTankUserAccountManagement
+  accountRules: [FuelTankAccountRules] @derivedFrom(field: "tank")
+}
