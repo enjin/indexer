@@ -720,6 +720,7 @@ type FuelTank @entity {
   name: String!
   owner: Account!
   providesDeposit: Boolean!
+  isFrozen: Boolean!
 
   userAccountManagement: FuelTankUserAccountManagement
   accountRules: [FuelTankAccountRules] @derivedFrom(field: "tank")

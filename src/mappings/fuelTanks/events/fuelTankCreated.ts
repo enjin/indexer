@@ -47,7 +47,5 @@ export async function fuelTankCreated(
     const callData = getCallData(ctx, item.event.call)
     if (!eventData || !callData) return undefined
 
-    callData.descriptor.accountRules
-
     return undefined
 }
