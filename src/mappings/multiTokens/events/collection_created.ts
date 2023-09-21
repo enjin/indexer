@@ -1,8 +1,13 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
-import { MultiTokensCreateCollectionCall, MultiTokensForceCreateCollectionCall } from '../../../types/generated/calls'
+import {
+    FuelTanksDispatchAndTouchCall,
+    FuelTanksDispatchCall,
+    MultiTokensCreateCollectionCall,
+    MultiTokensForceCreateCollectionCall,
+} from '../../../types/generated/calls'
 import {
     Collection,
     CollectionStats,
@@ -55,7 +60,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
             }
         }
         throw new UnknownVersionError(data.constructor.name)
-    } else {
+    } else if (call.name === 'MultiTokens.create_collection') {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
 
         if (data.isMatrixEnjinV603) {
@@ -72,9 +77,39 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+        throw new UnknownVersionError(data.constructor.name)
+    } else if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
+        let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
+        if (call.name === 'FuelTanks.dispatch') {
+            data = new FuelTanksDispatchCall(ctx, call)
+        } else {
+            data = new FuelTanksDispatchAndTouchCall(ctx, call)
+        }
+
+        if (
+            data.isMatrixEnjinV603 &&
+            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV603.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asMatrixEnjinV603.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
 
         throw new UnknownVersionError(data.constructor.name)
     }
+
+    throw new UnsupportedCallError(call.name)
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
