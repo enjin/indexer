@@ -51,7 +51,7 @@ export async function claimed(
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const claimAccount = u8aToHex(eventData.ethereumAddress).toString()
+    const claimAccount = u8aToHex(eventData.ethereumAddress).toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
 

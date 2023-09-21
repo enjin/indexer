@@ -40,7 +40,7 @@ export async function claimRequested(
 
     const account = new ClaimAccount({
         type: AccountClaimType.EVM,
-        account: u8aToHex(eventData.who).toString(),
+        account: u8aToHex(eventData.who).toLowerCase(),
     })
 
     const claim = new ClaimRequest({
