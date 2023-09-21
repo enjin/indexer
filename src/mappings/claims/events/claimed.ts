@@ -51,7 +51,7 @@ export async function claimed(
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const claimAccount = u8aToHex(eventData.ethereumAddress || eventData.who).toString()
+    const claimAccount = u8aToHex(eventData.ethereumAddress).toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
 
@@ -121,6 +121,7 @@ export async function claimed(
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         data: new ClaimsClaimed({
             account: account.id,
+            ethAccount: claimAccount,
             amount: eventData.amount,
             efiSum,
             enjSum,
