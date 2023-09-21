@@ -1,9 +1,17 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToString } from '@polkadot/util'
+import { u8aToHex, u8aToString } from '@polkadot/util'
+import { randomBytes } from 'crypto'
 import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksFuelTankCreatedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTank, FuelTankAccountRules, FuelTankUserAccountManagement } from '../../../model'
+import {
+    Event as EventModel,
+    FuelTank,
+    FuelTankAccountRules,
+    FuelTankUserAccountManagement,
+    RequireToken,
+    WhitelistedCallers,
+} from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
@@ -76,10 +84,27 @@ export async function fuelTankCreated(
 
     if (callData.descriptor.ruleSets.length > 0) {
         callData.descriptor.accountRules.forEach(async (rule) => {
-            rule.__kind = 'FuelTankAccountRule'
-            new FuelTankAccountRules({
-                ru
+            let accountRule: WhitelistedCallers | RequireToken
+            if (rule.__kind === WhitelistedCallers.prototype.isTypeOf) {
+                accountRule = new WhitelistedCallers({
+                    accounts: rule.value.map((account) => u8aToHex(account)),
+                })
+            } else if (rule.__kind === RequireToken.prototype.isTypeOf) {
+                accountRule = new RequireToken({
+                    tokenId: rule.value.tokenId,
+                    collectionId: rule.value.collectionId,
+                })
+            } else {
+                throw new Error('Unknown rule type')
+            }
+
+            const accountRuleModel = new FuelTankAccountRules({
+                tank: fuelTank,
+                rule: accountRule,
+                id: `${fuelTank.id}-${accountRule.constructor.name}-${randomBytes(5).toString('hex')}`,
             })
+
+            ctx.store.save(accountRuleModel)
         })
     }
 
