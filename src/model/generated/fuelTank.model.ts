@@ -27,6 +27,9 @@ export class FuelTank {
     @Column_("bool", {nullable: false})
     providesDeposit!: boolean
 
+    @Column_("bool", {nullable: false})
+    isFrozen!: boolean
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new FuelTankUserAccountManagement(undefined, obj)}, nullable: true})
     userAccountManagement!: FuelTankUserAccountManagement | undefined | null
 
