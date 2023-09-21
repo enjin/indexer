@@ -1,12 +1,12 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 
-export class FuelTankRequireToken {
-    public readonly isTypeOf = 'FuelTankRequireToken'
+export class RequireToken {
+    public readonly isTypeOf = 'RequireToken'
     private _collectionId!: bigint
     private _tokenId!: bigint | undefined | null
 
-    constructor(props?: Partial<Omit<FuelTankRequireToken, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<RequireToken, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._collectionId = marshal.bigint.fromJSON(json.collectionId)

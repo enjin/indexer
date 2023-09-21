@@ -1,11 +1,11 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 
-export class FuelTankWhitelistedCallers {
-    public readonly isTypeOf = 'FuelTankWhitelistedCallers'
+export class WhitelistedCallers {
+    public readonly isTypeOf = 'WhitelistedCallers'
     private _accounts!: (string)[]
 
-    constructor(props?: Partial<Omit<FuelTankWhitelistedCallers, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<WhitelistedCallers, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._accounts = marshal.fromList(json.accounts, val => marshal.string.fromJSON(val))

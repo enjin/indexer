@@ -691,21 +691,21 @@ type ClaimDetails @entity {
   totalUnclaimedAmount: BigInt!
 }
 
-type FuelTankWhitelistedCallers {
+type WhitelistedCallers {
   accounts: [String!]!
 }
 
-type FuelTankRequireToken {
+type RequireToken {
   collectionId: BigInt!
   tokenId: BigInt
 }
 
-union FuelTankAccountRule = FuelTankWhitelistedCallers | FuelTankRequireToken
+union AccountRule = WhitelistedCallers | RequireToken
 
 type FuelTankAccountRules @entity {
   id: ID!
   tank: FuelTank!
-  rule: FuelTankAccountRule!
+  rule: AccountRule!
 }
 
 type FuelTankUserAccountManagement {

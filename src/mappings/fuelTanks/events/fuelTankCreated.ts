@@ -3,7 +3,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToString } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksFuelTankCreatedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTank, FuelTankUserAccountManagement } from '../../../model'
+import { Event as EventModel, FuelTank, FuelTankAccountRules, FuelTankUserAccountManagement } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
@@ -71,6 +71,17 @@ export async function fuelTankCreated(
         providesDeposit: callData.descriptor.providesDeposit,
         userAccountManagement,
     })
+
+    await ctx.store.save(fuelTank)
+
+    if (callData.descriptor.ruleSets.length > 0) {
+        callData.descriptor.accountRules.forEach(async (rule) => {
+            rule.__kind = 'FuelTankAccountRule'
+            new FuelTankAccountRules({
+                ru
+            })
+        })
+    }
 
     return undefined
 }
