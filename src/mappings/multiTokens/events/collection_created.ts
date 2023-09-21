@@ -1,6 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
     FuelTanksDispatchAndTouchCall,
@@ -109,7 +109,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
         throw new UnknownVersionError(data.constructor.name)
     }
 
-    throw new Error(`${call.name} is not supported`)
+    throw new UnsupportedCallError(call.name)
 }
 
 function getEventData(ctx: CommonContext, event: Event): EventData {
