@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {FuelTankUserAccountManagement} from "./_fuelTankUserAccountManagement"
 import {FuelTankAccountRules} from "./fuelTankAccountRules.model"
+import {FuelTankRuleSet} from "./fuelTankRuleSet.model"
 
 @Entity_()
 export class FuelTank {
@@ -35,4 +36,7 @@ export class FuelTank {
 
     @OneToMany_(() => FuelTankAccountRules, e => e.tank)
     accountRules!: FuelTankAccountRules[]
+
+    @OneToMany_(() => FuelTankRuleSet, e => e.tank)
+    ruleSets!: FuelTankRuleSet[]
 }
