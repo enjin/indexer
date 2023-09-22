@@ -754,9 +754,8 @@ type FuelTankRuleSet @entity {
   requireToken: RequireToken
   permittedCalls: PermittedCalls
   permittedExtrinsics: PermittedExtrinsics
-  
-}
 
+}
 
 type FuelTank @entity {
   id: ID!

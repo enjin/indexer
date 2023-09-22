@@ -8,6 +8,7 @@ import {
     Event as EventModel,
     FuelTank,
     FuelTankAccountRules,
+    FuelTankRuleSet,
     FuelTankUserAccountManagement,
     RequireToken,
     WhitelistedCallers,
@@ -16,6 +17,31 @@ import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
+import { DispatchRuleDescriptor } from '../../../types/generated/matrixEnjinV603'
+
+function rulesToMap(rules: DispatchRuleDescriptor[]) {
+    let whitelistedCallers;
+    let whitelistedCollections;
+    let maxFuelBurnPerTransaction;
+    let userFuelBudget;
+    let tankFuelBudget;
+    let requireToken;
+    let permittedCalls;
+    let permittedExtrinsics;
+
+
+    export {
+        whitelistedCallers,
+        whitelistedCollections,
+        maxFuelBurnPerTransaction,
+        userFuelBudget,
+        tankFuelBudget,
+        requireToken,
+        permittedCalls,
+        permittedExtrinsics,
+    }
+
+}
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new FuelTanksFuelTankCreatedEvent(ctx, event)
@@ -82,12 +108,12 @@ export async function fuelTankCreated(
 
     await ctx.store.save(fuelTank)
 
-    if (callData.descriptor.ruleSets.length > 0) {
+    if (callData.descriptor.accountRules.length > 0) {
         callData.descriptor.accountRules.forEach(async (rule) => {
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === WhitelistedCallers.prototype.isTypeOf) {
                 accountRule = new WhitelistedCallers({
-                    accounts: rule.value.map((account) => u8aToHex(account)),
+                    value: rule.value.map((account) => u8aToHex(account)),
                 })
             } else if (rule.__kind === RequireToken.prototype.isTypeOf) {
                 accountRule = new RequireToken({
@@ -105,6 +131,29 @@ export async function fuelTankCreated(
             })
 
             ctx.store.save(accountRuleModel)
+        })
+    }
+
+    if (callData.descriptor.ruleSets.length > 0) {
+        callData.descriptor.ruleSets.forEach(async (ruleSet) => {
+            const [index, rules] = ruleSet
+
+            rules.forEach(async (rule) => {
+                if(rule.__kind === 'WhitelistedCallers'){
+                    rule.value.map((account) => u8aToHex(account))
+                }
+            })
+
+
+            const ruleSetModel = new FuelTankRuleSet({
+                id: `${fuelTank.id}-rule-${index}`,
+                tank: fuelTank,
+                index,
+                isFrozen: false,
+                whitelistedCallers: 
+            })
+
+            ctx.store.save(ruleSetModel)
         })
     }
 
