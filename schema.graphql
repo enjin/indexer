@@ -753,7 +753,7 @@ type FuelTankRuleSet @entity {
   tankFuelBudget: TankFuelBudget
   requireToken: RequireToken
   permittedCalls: PermittedCalls
-  permittedExtrinsics: PermittedExtrinsics
+  permittedExtrinsics: [PermittedExtrinsics]
 
 }
 

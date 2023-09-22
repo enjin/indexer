@@ -50,6 +50,6 @@ export class FuelTankRuleSet {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new PermittedCalls(undefined, obj)}, nullable: true})
     permittedCalls!: PermittedCalls | undefined | null
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new PermittedExtrinsics(undefined, obj)}, nullable: true})
-    permittedExtrinsics!: PermittedExtrinsics | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new PermittedExtrinsics(undefined, val))}, nullable: true})
+    permittedExtrinsics!: (PermittedExtrinsics | undefined | null)[] | undefined | null
 }

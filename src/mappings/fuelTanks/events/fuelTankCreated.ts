@@ -10,27 +10,58 @@ import {
     FuelTankAccountRules,
     FuelTankRuleSet,
     FuelTankUserAccountManagement,
+    MaxFuelBurnPerTransaction,
+    PermittedCalls,
+    PermittedExtrinsics,
     RequireToken,
+    TankFuelBudget,
+    UserFuelBudget,
     WhitelistedCallers,
+    WhitelistedCollections,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
 import { DispatchRuleDescriptor } from '../../../types/generated/matrixEnjinV603'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../../types/generated/v602'
 
-function rulesToMap(rules: DispatchRuleDescriptor[]) {
-    let whitelistedCallers;
-    let whitelistedCollections;
-    let maxFuelBurnPerTransaction;
-    let userFuelBudget;
-    let tankFuelBudget;
-    let requireToken;
-    let permittedCalls;
-    let permittedExtrinsics;
+function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
+    let whitelistedCallers: WhitelistedCallers | undefined
+    let whitelistedCollections: WhitelistedCollections | undefined
+    let maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction | undefined
+    let userFuelBudget: UserFuelBudget | undefined
+    let tankFuelBudget: TankFuelBudget | undefined
+    let requireToken: RequireToken | undefined
+    let permittedCalls: PermittedCalls | undefined
+    let permittedExtrinsics: PermittedExtrinsics[] | undefined
 
+    rules.forEach((rule) => {
+        if (rule.__kind === 'WhitelistedCallers') {
+            whitelistedCallers = new WhitelistedCallers({ value: rule.value.map((account) => u8aToHex(account)) })
+        } else if (rule.__kind === 'WhitelistedCollections') {
+            whitelistedCollections = new WhitelistedCollections({ value: rule.value })
+        } else if (rule.__kind === 'MaxFuelBurnPerTransaction') {
+            maxFuelBurnPerTransaction = new MaxFuelBurnPerTransaction({ value: rule.value })
+        } else if (rule.__kind === 'UserFuelBudget') {
+            userFuelBudget = new UserFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
+        } else if (rule.__kind === 'TankFuelBudget') {
+            tankFuelBudget = new TankFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
+        } else if (rule.__kind === 'RequireToken') {
+            requireToken = new RequireToken({
+                tokenId: rule.value.tokenId,
+                collectionId: rule.value.collectionId,
+            })
+        } else if (rule.__kind === 'PermittedCalls') {
+            permittedCalls = new PermittedCalls({ value: rule.value.map((call) => u8aToHex(call)) })
+        } else if (rule.__kind === 'PermittedExtrinsics') {
+            permittedExtrinsics = rule.value.map(
+                (r) => new PermittedExtrinsics({ extrinsicName: r.__kind, palletName: r.value.__kind })
+            )
+        }
+    })
 
-    export {
+    return {
         whitelistedCallers,
         whitelistedCollections,
         maxFuelBurnPerTransaction,
@@ -40,7 +71,6 @@ function rulesToMap(rules: DispatchRuleDescriptor[]) {
         permittedCalls,
         permittedExtrinsics,
     }
-
 }
 
 function getEventData(ctx: CommonContext, event: Event) {
@@ -138,19 +168,30 @@ export async function fuelTankCreated(
         callData.descriptor.ruleSets.forEach(async (ruleSet) => {
             const [index, rules] = ruleSet
 
-            rules.forEach(async (rule) => {
-                if(rule.__kind === 'WhitelistedCallers'){
-                    rule.value.map((account) => u8aToHex(account))
-                }
-            })
-
+            const {
+                whitelistedCallers,
+                whitelistedCollections,
+                maxFuelBurnPerTransaction,
+                userFuelBudget,
+                tankFuelBudget,
+                requireToken,
+                permittedCalls,
+                permittedExtrinsics,
+            } = rulesToMap(rules)
 
             const ruleSetModel = new FuelTankRuleSet({
                 id: `${fuelTank.id}-rule-${index}`,
                 tank: fuelTank,
                 index,
                 isFrozen: false,
-                whitelistedCallers: 
+                whitelistedCallers,
+                whitelistedCollections,
+                maxFuelBurnPerTransaction,
+                userFuelBudget,
+                tankFuelBudget,
+                requireToken,
+                permittedCalls,
+                permittedExtrinsics,
             })
 
             ctx.store.save(ruleSetModel)
