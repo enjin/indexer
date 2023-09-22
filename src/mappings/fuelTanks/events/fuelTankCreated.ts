@@ -25,6 +25,7 @@ import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
 import { DispatchRuleDescriptor } from '../../../types/generated/matrixEnjinV603'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../../types/generated/v602'
+import { safeJson } from '../../../common/tools'
 
 function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
     let whitelistedCallers: WhitelistedCallers | undefined
@@ -56,7 +57,7 @@ function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602
             permittedCalls = new PermittedCalls({ value: rule.value.map((call) => u8aToHex(call)) })
         } else if (rule.__kind === 'PermittedExtrinsics') {
             permittedExtrinsics = rule.value.map(
-                (r) => new PermittedExtrinsics({ extrinsicName: r.__kind, palletName: r.value.__kind })
+                (r) => new PermittedExtrinsics({ extrinsicName: r.__kind, palletName: r.value.__kind, raw: safeJson(r.value) })
             )
         }
     })

@@ -725,6 +725,7 @@ type PermittedCalls {
 type PermittedExtrinsics {
   palletName: String
   extrinsicName: String
+  raw: JSON
 }
 
 union AccountRule = WhitelistedCallers | RequireToken
