@@ -182,7 +182,7 @@ export async function fuelTankCreated(
             } = rulesToMap(rules)
 
             const ruleSetModel = new FuelTankRuleSet({
-                id: `${fuelTank.id}-rule-${index}`,
+                id: `${fuelTank.id}-${index}`,
                 tank: fuelTank,
                 index,
                 isFrozen: false,
