@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksFuelTankMutatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
@@ -28,10 +28,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 export async function fuelTankMutated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'FuelTanks.FuelTankMutated', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'FuelTanks.FuelTankMutated', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
-
     const eventData = getEventData(ctx, item.event)
     if (!eventData) return undefined
 
