@@ -735,6 +735,15 @@ type FuelTankUserAccountManagement {
   tankReservesAccountCreationDeposit: Boolean
 }
 
+type FuelTankUserAccounts @entity {
+  id: ID!
+  tank: FuelTank!
+  account: Account!
+
+  tankDeposit: BigInt!
+  userDeposit: BigInt!
+}
+
 type FuelTankAccountRules @entity {
   id: ID!
   tank: FuelTank!
@@ -766,7 +775,9 @@ type FuelTank @entity {
   owner: Account!
   providesDeposit: Boolean!
   isFrozen: Boolean!
+  accountCount: Int!
 
+  userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
   userAccountManagement: FuelTankUserAccountManagement
   accountRules: [FuelTankAccountRules] @derivedFrom(field: "tank")
   ruleSets: [FuelTankRuleSet] @derivedFrom(field: "tank")

@@ -133,6 +133,7 @@ export async function fuelTankCreated(
         name: u8aToString(eventData.name),
         owner,
         isFrozen: false,
+        accountCount: 0,
         providesDeposit: callData.descriptor.providesDeposit,
         userAccountManagement,
     })
