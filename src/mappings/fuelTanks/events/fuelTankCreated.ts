@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
 import { FuelTanksFuelTankCreatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
@@ -10,69 +10,14 @@ import {
     FuelTankAccountRules,
     FuelTankRuleSet,
     FuelTankUserAccountManagement,
-    MaxFuelBurnPerTransaction,
-    PermittedCalls,
-    PermittedExtrinsics,
     RequireToken,
-    TankFuelBudget,
-    UserFuelBudget,
     WhitelistedCallers,
-    WhitelistedCollections,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
-import { DispatchRuleDescriptor } from '../../../types/generated/matrixEnjinV603'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../../types/generated/v602'
-import { safeJson } from '../../../common/tools'
-
-function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
-    let whitelistedCallers: WhitelistedCallers | undefined
-    let whitelistedCollections: WhitelistedCollections | undefined
-    let maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction | undefined
-    let userFuelBudget: UserFuelBudget | undefined
-    let tankFuelBudget: TankFuelBudget | undefined
-    let requireToken: RequireToken | undefined
-    let permittedCalls: PermittedCalls | undefined
-    let permittedExtrinsics: PermittedExtrinsics[] | undefined
-
-    rules.forEach((rule) => {
-        if (rule.__kind === 'WhitelistedCallers') {
-            whitelistedCallers = new WhitelistedCallers({ value: rule.value.map((account) => u8aToHex(account)) })
-        } else if (rule.__kind === 'WhitelistedCollections') {
-            whitelistedCollections = new WhitelistedCollections({ value: rule.value })
-        } else if (rule.__kind === 'MaxFuelBurnPerTransaction') {
-            maxFuelBurnPerTransaction = new MaxFuelBurnPerTransaction({ value: rule.value })
-        } else if (rule.__kind === 'UserFuelBudget') {
-            userFuelBudget = new UserFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
-        } else if (rule.__kind === 'TankFuelBudget') {
-            tankFuelBudget = new TankFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
-        } else if (rule.__kind === 'RequireToken') {
-            requireToken = new RequireToken({
-                tokenId: rule.value.tokenId,
-                collectionId: rule.value.collectionId,
-            })
-        } else if (rule.__kind === 'PermittedCalls') {
-            permittedCalls = new PermittedCalls({ value: rule.value.map((call) => u8aToHex(call)) })
-        } else if (rule.__kind === 'PermittedExtrinsics') {
-            permittedExtrinsics = rule.value.map(
-                (r) => new PermittedExtrinsics({ extrinsicName: r.__kind, palletName: r.value.__kind, raw: safeJson(r.value) })
-            )
-        }
-    })
-
-    return {
-        whitelistedCallers,
-        whitelistedCollections,
-        maxFuelBurnPerTransaction,
-        userFuelBudget,
-        tankFuelBudget,
-        requireToken,
-        permittedCalls,
-        permittedExtrinsics,
-    }
-}
+import { rulesToMap } from '../common'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new FuelTanksFuelTankCreatedEvent(ctx, event)
@@ -107,7 +52,7 @@ export async function fuelTankCreated(
     block: SubstrateBlock,
     item: EventItem<'FuelTanks.FuelTankCreated', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new Error('Call is not defined')
+    if (!item.event.call) throw new CallNotDefinedError()
 
     const eventData = getEventData(ctx, item.event)
 
