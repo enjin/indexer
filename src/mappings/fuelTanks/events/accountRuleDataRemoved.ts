@@ -17,7 +17,7 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-const uc = <T extends string>(x: T) => (x.charAt(0).toUpperCase() + x.slice(1)) as Uncapitalize<T>
+const uc = <T extends string>(x: T) => (x.charAt(0).toLowerCase() + x.slice(1)) as Uncapitalize<T>
 
 export async function accountRuleDataRemoved(
     ctx: CommonContext,

@@ -1,5 +1,6 @@
 export * from './accountAdded'
 export * from './accountRemoved'
+export * from './accountRuleDataRemoved'
 export * from './freezeStateMutated'
 export * from './fuelTankCreated'
 export * from './fuelTankDestroyed'
