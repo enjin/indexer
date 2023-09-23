@@ -97,6 +97,15 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Marketplace.BidPlaced', eventOptions)
     .addEvent('Marketplace.AuctionFinalized', eventOptions)
     .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
+    .addEvent('FuelTanks.AccountAdded', eventOptions)
+    .addEvent('FuelTanks.AccountRemoved', eventOptions)
+    .addEvent('FuelTanks.AccountRuleDataRemoved', eventOptions)
+    .addEvent('FuelTanks.FreezeStateMutated', eventOptions)
+    .addEvent('FuelTanks.FuelTankCreated', eventOptionsWithCall)
+    .addEvent('FuelTanks.FuelTankDestroyed', eventOptions)
+    .addEvent('FuelTanks.FuelTankMutated', eventOptions)
+    .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
+    .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 export type Context = BatchContext<EntityManager, Item>
@@ -186,6 +195,24 @@ async function handleEvents(
             return map.marketplace.events.auctionFinalized(ctx, block, item)
         case 'PolkadotXcm.Attempted':
             return map.xcm.events.attempted(ctx, block, item)
+        case 'FuelTanks.AccountAdded':
+            return map.fuelTanks.events.accountAdded(ctx, block, item)
+        case 'FuelTanks.AccountRemoved':
+            return map.fuelTanks.events.accountRemoved(ctx, block, item)
+        case 'FuelTanks.AccountRuleDataRemoved':
+            return map.fuelTanks.events.accountRuleDataRemoved(ctx, block, item)
+        case 'FuelTanks.FreezeStateMutated':
+            return map.fuelTanks.events.freezeStateMutated(ctx, block, item)
+        case 'FuelTanks.FuelTankCreated':
+            return map.fuelTanks.events.fuelTankCreated(ctx, block, item)
+        case 'FuelTanks.FuelTankDestroyed':
+            return map.fuelTanks.events.fuelTankDestroyed(ctx, block, item)
+        case 'FuelTanks.FuelTankMutated':
+            return map.fuelTanks.events.fuelTankMutated(ctx, block, item)
+        case 'FuelTanks.RuleSetInserted':
+            return map.fuelTanks.events.ruleSetInserted(ctx, block, item)
+        case 'FuelTanks.RuleSetRemoved':
+            return map.fuelTanks.events.ruleSetRemoved(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
             return undefined
