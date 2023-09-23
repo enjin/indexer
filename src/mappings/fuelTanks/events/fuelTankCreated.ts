@@ -20,6 +20,7 @@ import { CommonContext } from '../../types/contexts'
 import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
 import { rulesToMap } from '../common'
+import { safeJsonString } from '../../../common/tools'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new FuelTanksFuelTankCreatedEvent(ctx, event)
@@ -90,17 +91,17 @@ export async function fuelTankCreated(
     if (callData.descriptor.accountRules.length > 0) {
         callData.descriptor.accountRules.forEach(async (rule) => {
             let accountRule: WhitelistedCallers | RequireToken
-            if (rule.__kind === WhitelistedCallers.prototype.isTypeOf) {
+            if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
                     value: rule.value.map((account) => u8aToHex(account)),
                 })
-            } else if (rule.__kind === RequireToken.prototype.isTypeOf) {
+            } else if (rule.__kind === 'RequireToken') {
                 accountRule = new RequireToken({
                     tokenId: rule.value.tokenId,
                     collectionId: rule.value.collectionId,
                 })
             } else {
-                throw new Error('Unknown rule type')
+                throw new Error(`Unknown rule type :${safeJsonString(rule)}`)
             }
 
             const accountRuleModel = new FuelTankAccountRules({
