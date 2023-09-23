@@ -3,7 +3,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex } from '@polkadot/util'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
 import { FuelTanksRuleSetInsertedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTankRuleSet } from '../../../model'
+import { Event as EventModel, FuelTank, FuelTankRuleSet } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { FuelTanksInsertRuleSetCall } from '../../../types/generated/calls'
@@ -65,6 +65,7 @@ export async function ruleSetInserted(
     const ruleSet = new FuelTankRuleSet({
         id: `${tankId}-${eventData.ruleSetId}`,
         index: eventData.ruleSetId,
+        tank: new FuelTank({ id: tankId }),
         isFrozen: false,
         whitelistedCallers,
         whitelistedCollections,
