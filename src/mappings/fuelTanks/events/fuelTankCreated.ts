@@ -6,8 +6,10 @@ import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors
 import { FuelTanksFuelTankCreatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
+    Extrinsic,
     FuelTank,
     FuelTankAccountRules,
+    FuelTankCreated,
     FuelTankRuleSet,
     FuelTankUserAccountManagement,
     RequireToken,
@@ -145,5 +147,13 @@ export async function fuelTankCreated(
         })
     }
 
-    return undefined
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new FuelTankCreated({
+            tank: fuelTank.id,
+            owner: owner.id,
+            name: u8aToString(eventData.name),
+        }),
+    })
 }

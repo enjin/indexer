@@ -3,7 +3,14 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksFuelTankDestroyedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTank, FuelTankAccountRules, FuelTankRuleSet } from '../../../model'
+import {
+    Event as EventModel,
+    Extrinsic,
+    FuelTank,
+    FuelTankDestroyed,
+    FuelTankAccountRules,
+    FuelTankRuleSet,
+} from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 
@@ -35,5 +42,11 @@ export async function fuelTankDestroyed(
 
     ctx.store.delete(FuelTank, { tank: { id: tankId } })
 
-    return undefined
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new FuelTankDestroyed({
+            tank: tankId,
+        }),
+    })
 }

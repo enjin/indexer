@@ -73,6 +73,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | FuelTankCreated | FuelTankDestroyed
 
 type BalancesTransfer {
   from: Account!
@@ -244,20 +245,26 @@ type ClaimsClaimRequested {
   hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
-
   isEfiToken: Boolean!
 }
 
 type ClaimsClaimed {
   account: Account!
   ethAccount: Account
-
   efiSum: BigInt!
   enjSum: BigInt!
-
   efiBurned: BigInt!
-
   amount: BigInt!
+}
+
+type FuelTankCreated {
+  tank: String!
+  name: String!
+  owner: Account!
+}
+
+type FuelTankDestroyed {
+  tank: String!
 }
 
 type Balance {
