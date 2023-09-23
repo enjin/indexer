@@ -58,11 +58,11 @@ export async function fuelTankMutated(
 
         eventData.mutation.accountRules.forEach(async (rule) => {
             let accountRule: WhitelistedCallers | RequireToken
-            if (rule.__kind === WhitelistedCallers.prototype.isTypeOf) {
+            if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
                     value: rule.value.map((account) => u8aToHex(account)),
                 })
-            } else if (rule.__kind === RequireToken.prototype.isTypeOf) {
+            } else if (rule.__kind === 'RequireToken') {
                 accountRule = new RequireToken({
                     tokenId: rule.value.tokenId,
                     collectionId: rule.value.collectionId,
