@@ -28,17 +28,22 @@ export async function accountAdded(
     if (!eventData) return undefined
 
     const tankId = u8aToHex(eventData.tankId)
-    const account = await getOrCreateAccount(ctx, eventData.userId)
+    const [tank, account] = await Promise.all([
+        ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
+        getOrCreateAccount(ctx, eventData.userId),
+    ])
 
     const fuelAccount = new FuelTankUserAccounts({
         id: `${tankId}-${account.id}`,
-        tank: new FuelTank({ id: tankId }),
+        tank,
         account,
         tankDeposit: eventData.tankDeposit,
         userDeposit: eventData.userDeposit,
     })
+    tank.accountCount += 1
 
     ctx.store.save(fuelAccount)
+    ctx.store.save(tank)
 
     return undefined
 }
