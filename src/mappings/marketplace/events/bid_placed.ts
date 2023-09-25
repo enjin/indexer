@@ -4,6 +4,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
 import {
+    Account,
     AccountTokenEvent,
     AuctionState,
     Bid,
@@ -28,10 +29,39 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceBidPlaced({
+            listing: listing.id,
+            bid: `${listing.id}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: new Token({ id: listing.makeAssetId.id }),
+            from: account,
+            event,
+        }),
+    ]
+}
+
 export async function bidPlaced(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -49,6 +79,7 @@ export async function bidPlaced(
         }),
         getOrCreateAccount(ctx, data.bid.bidder),
     ])
+    if (skipSave) return getEvent(item, data, listing, account)
 
     const bid = new Bid({
         id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
@@ -80,24 +111,5 @@ export async function bidPlaced(
         new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
     ])
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceBidPlaced({
-            listing: listing.id,
-            bid: bid.id,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token: new Token({ id: listing.makeAssetId.id }),
-            from: bid.bidder,
-            event,
-        }),
-    ]
+    return getEvent(item, data, listing, account)
 }

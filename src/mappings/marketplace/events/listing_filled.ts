@@ -30,10 +30,43 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceListingFilled({
+            listing: listing.id,
+            buyer: u8aToHex(data.buyer),
+            amountFilled: data.amountFilled,
+            amountRemaining: data.amountRemaining,
+            protocolFee: data.protocolFee,
+            royalty: data.royalty,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: listing.makeAssetId,
+            from: listing.seller,
+            to: new Account({ id: u8aToHex(data.buyer) }),
+            event,
+        }),
+    ]
+}
+
 export async function listingFilled(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -49,6 +82,8 @@ export async function listingFilled(
             },
         },
     })
+
+    if (skipSave) return getEvent(item, data, listing)
 
     listing.state = new FixedPriceState({
         listingType: ListingType.FixedPrice,
@@ -91,29 +126,5 @@ export async function listingFilled(
         new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
     ])
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceListingFilled({
-            listing: listing.id,
-            buyer: u8aToHex(data.buyer),
-            amountFilled: data.amountFilled,
-            amountRemaining: data.amountRemaining,
-            protocolFee: data.protocolFee,
-            royalty: data.royalty,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token: listing.makeAssetId,
-            from: listing.seller,
-            to: new Account({ id: u8aToHex(data.buyer) }),
-            event,
-        }),
-    ]
+    return getEvent(item, data, listing)
 }

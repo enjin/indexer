@@ -25,10 +25,36 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceListingCancelled({
+            listing: listing.id,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: listing.makeAssetId,
+            from: listing.seller,
+            event,
+        }),
+    ]
+}
+
 export async function listingCancelled(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -44,6 +70,9 @@ export async function listingCancelled(
             },
         },
     })
+
+    if (skipSave) return getEvent(item, listing)
+
     listing.updatedAt = new Date(block.timestamp)
 
     const listingStatus = new ListingStatus({
@@ -69,23 +98,5 @@ export async function listingCancelled(
         new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
     ])
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceListingCancelled({
-            listing: listing.id,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token: listing.makeAssetId,
-            from: listing.seller,
-            event,
-        }),
-    ]
+    return getEvent(item, listing)
 }
