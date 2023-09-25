@@ -52,8 +52,8 @@ export async function ruleSetInserted(
     const tankId = u8aToHex(eventData.tankId)
     const ruleSetId = `${tankId}-${eventData.ruleSetId}`
 
-    await ctx.store.delete(FuelTankRuleSet, { id: ruleSetId })
     await ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleSetId } })
+    await ctx.store.delete(FuelTankRuleSet, { id: ruleSetId })
 
     const {
         whitelistedCallers,
@@ -79,14 +79,13 @@ export async function ruleSetInserted(
         requireToken,
         permittedCalls,
     })
+    await ctx.store.save(ruleSet)
 
     if (permittedExtrinsics && permittedExtrinsics.length > 0) {
         permittedExtrinsics.forEach((permittedExtrinsic) => {
             ctx.store.save(permittedExtrinsic)
         })
     }
-
-    await ctx.store.save(ruleSet)
 
     return undefined
 }

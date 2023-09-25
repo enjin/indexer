@@ -141,10 +141,14 @@ export async function fuelTankCreated(
                 tankFuelBudget,
                 requireToken,
                 permittedCalls,
-                permittedExtrinsics,
             })
-
             ctx.store.save(ruleSetModel)
+
+            if (permittedExtrinsics && permittedExtrinsics.length > 0) {
+                permittedExtrinsics.forEach((permittedExtrinsic) => {
+                    ctx.store.save(permittedExtrinsic)
+                })
+            }
         })
     }
 
