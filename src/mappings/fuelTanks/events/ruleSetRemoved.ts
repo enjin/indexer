@@ -3,7 +3,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksRuleSetRemovedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTankRuleSet } from '../../../model'
+import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 
@@ -28,6 +28,7 @@ export async function ruleSetRemoved(
 
     const ruleId = `${u8aToHex(eventData.tankId)}-${eventData.ruleSetId}`
 
+    await ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleId } })
     ctx.store.delete(FuelTankRuleSet, { id: ruleId })
 
     return undefined
