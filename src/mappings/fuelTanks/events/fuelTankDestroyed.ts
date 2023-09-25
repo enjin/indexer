@@ -10,6 +10,7 @@ import {
     FuelTankDestroyed,
     FuelTankAccountRules,
     FuelTankRuleSet,
+    PermittedExtrinsics,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
@@ -35,6 +36,7 @@ export async function fuelTankDestroyed(
 
     const tankId = u8aToHex(eventData.tankId)
 
+    await ctx.store.delete(PermittedExtrinsics, { ruleSet: { tank: { id: tankId } } })
     await Promise.all([
         ctx.store.delete(FuelTankRuleSet, { tank: { id: tankId } }),
         ctx.store.delete(FuelTankAccountRules, { tank: { id: tankId } }),
