@@ -42,7 +42,7 @@ export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | Dis
             permittedExtrinsics = rule.value.map(
                 (r) =>
                     new PermittedExtrinsics({
-                        id: `${rule}-${index}`,
+                        id: `${ruleId}-${index}`,
                         ruleSet: new FuelTankRuleSet({ id: ruleId }),
                         extrinsicName: r.__kind,
                         palletName: r.value.__kind,
