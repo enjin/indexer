@@ -702,10 +702,6 @@ type WhitelistedCallers {
   value: [String!]!
 }
 
-type WhitelistedCollections {
-  value: [BigInt!]!
-}
-
 type MaxFuelBurnPerTransaction {
   value: BigInt!
 }
@@ -725,11 +721,10 @@ type RequireToken {
   tokenId: BigInt
 }
 
-type PermittedCalls {
-  value: [String!]!
-}
+type PermittedExtrinsics @entity {
+  id: ID!
 
-type PermittedExtrinsics {
+  ruleSet: FuelTankRuleSet!
   palletName: String
   extrinsicName: String
   raw: JSON
@@ -763,14 +758,14 @@ type FuelTankRuleSet @entity {
   tank: FuelTank!
   isFrozen: Boolean!
 
-  whitelistedCallers: WhitelistedCallers
-  whitelistedCollections: WhitelistedCollections
+  whitelistedCallers: [String!]!
+  whitelistedCollections: [String]!
   maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction
   userFuelBudget: UserFuelBudget
   tankFuelBudget: TankFuelBudget
   requireToken: RequireToken
-  permittedCalls: PermittedCalls
-  permittedExtrinsics: [PermittedExtrinsics]
+  permittedCalls: [String!]!
+  permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 
 type FuelTank @entity {
