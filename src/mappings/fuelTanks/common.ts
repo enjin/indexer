@@ -40,9 +40,9 @@ export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | Dis
             permittedCalls = rule.value.map((call) => u8aToHex(call))
         } else if (rule.__kind === 'PermittedExtrinsics') {
             permittedExtrinsics = rule.value.map(
-                (r) =>
+                (r, i) =>
                     new PermittedExtrinsics({
-                        id: `${ruleId}-${index}`,
+                        id: `${ruleId}-${index}-${i}`,
                         ruleSet: new FuelTankRuleSet({ id: ruleId }),
                         extrinsicName: r.__kind,
                         palletName: r.value.__kind,

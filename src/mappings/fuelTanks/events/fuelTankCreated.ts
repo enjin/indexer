@@ -142,7 +142,8 @@ export async function fuelTankCreated(
                 requireToken,
                 permittedCalls,
             })
-            ctx.store.save(ruleSetModel)
+
+            await ctx.store.save(ruleSetModel)
 
             if (permittedExtrinsics && permittedExtrinsics.length > 0) {
                 permittedExtrinsics.forEach((permittedExtrinsic) => {
