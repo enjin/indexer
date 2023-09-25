@@ -2,14 +2,12 @@ import { u8aToHex } from '@polkadot/util'
 import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV603'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../types/generated/v602'
 import {
-    WhitelistedCallers,
-    WhitelistedCollections,
     MaxFuelBurnPerTransaction,
     UserFuelBudget,
     TankFuelBudget,
     RequireToken,
-    PermittedCalls,
     PermittedExtrinsics,
+    FuelTankRuleSet,
 } from '../../model'
 
 function toJSON(data: any) {
@@ -26,21 +24,21 @@ function toJSON(data: any) {
     )
 }
 
-export function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
-    let whitelistedCallers: WhitelistedCallers | undefined
-    let whitelistedCollections: WhitelistedCollections | undefined
+export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
+    let whitelistedCallers: string[] | undefined
+    let whitelistedCollections: string[] | undefined
     let maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction | undefined
     let userFuelBudget: UserFuelBudget | undefined
     let tankFuelBudget: TankFuelBudget | undefined
     let requireToken: RequireToken | undefined
-    let permittedCalls: PermittedCalls | undefined
+    let permittedCalls: string[] | undefined
     let permittedExtrinsics: PermittedExtrinsics[] | undefined
 
-    rules.forEach((rule) => {
+    rules.forEach((rule, index) => {
         if (rule.__kind === 'WhitelistedCallers') {
-            whitelistedCallers = new WhitelistedCallers({ value: rule.value.map((account) => u8aToHex(account)) })
+            whitelistedCallers = rule.value.map((account) => u8aToHex(account))
         } else if (rule.__kind === 'WhitelistedCollections') {
-            whitelistedCollections = new WhitelistedCollections({ value: rule.value })
+            whitelistedCollections = rule.value.map((c) => c.toString())
         } else if (rule.__kind === 'MaxFuelBurnPerTransaction') {
             maxFuelBurnPerTransaction = new MaxFuelBurnPerTransaction({ value: rule.value })
         } else if (rule.__kind === 'UserFuelBudget') {
@@ -53,10 +51,17 @@ export function rulesToMap(rules: DispatchRuleDescriptor[] | DispatchRuleDescrip
                 collectionId: rule.value.collectionId,
             })
         } else if (rule.__kind === 'PermittedCalls') {
-            permittedCalls = new PermittedCalls({ value: rule.value.map((call) => u8aToHex(call)) })
+            permittedCalls = rule.value.map((call) => u8aToHex(call))
         } else if (rule.__kind === 'PermittedExtrinsics') {
             permittedExtrinsics = rule.value.map(
-                (r) => new PermittedExtrinsics({ extrinsicName: r.__kind, palletName: r.value.__kind, raw: toJSON(r.value) })
+                (r) =>
+                    new PermittedExtrinsics({
+                        id: `${rule}-${index}`,
+                        ruleSet: new FuelTankRuleSet({ id: ruleId }),
+                        extrinsicName: r.__kind,
+                        palletName: r.value.__kind,
+                        raw: toJSON(r.value),
+                    })
             )
         }
     })

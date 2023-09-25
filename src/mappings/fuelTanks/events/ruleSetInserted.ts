@@ -50,6 +50,12 @@ export async function ruleSetInserted(
     if (!eventData || !callData) return undefined
 
     const tankId = u8aToHex(eventData.tankId)
+    const ruleSetId = `${tankId}-${eventData.ruleSetId}`
+
+    await Promise.all([
+        ctx.store.delete(FuelTankRuleSet, { id: ruleSetId }),
+        ctx.store.delete(FuelTank, { ruleSet: { id: ruleSetId } }),
+    ])
 
     const {
         whitelistedCallers,
@@ -60,10 +66,10 @@ export async function ruleSetInserted(
         requireToken,
         permittedCalls,
         permittedExtrinsics,
-    } = rulesToMap(callData.rules)
+    } = rulesToMap(ruleSetId, callData.rules)
 
     const ruleSet = new FuelTankRuleSet({
-        id: `${tankId}-${eventData.ruleSetId}`,
+        id: ruleSetId,
         index: eventData.ruleSetId,
         tank: new FuelTank({ id: tankId }),
         isFrozen: false,
@@ -74,8 +80,13 @@ export async function ruleSetInserted(
         tankFuelBudget,
         requireToken,
         permittedCalls,
-        permittedExtrinsics,
     })
+
+    if (permittedExtrinsics && permittedExtrinsics.length > 0) {
+        permittedExtrinsics.forEach((permittedExtrinsic) => {
+            ctx.store.save(permittedExtrinsic)
+        })
+    }
 
     await ctx.store.save(ruleSet)
 
