@@ -10,20 +10,6 @@ import {
     FuelTankRuleSet,
 } from '../../model'
 
-function toJSON(data: any) {
-    JSON.parse(
-        JSON.stringify(data, (key, value) => {
-            if (typeof value === 'bigint') {
-                return value.toString()
-            }
-            if (value instanceof Uint8Array) {
-                return u8aToHex(value)
-            }
-            return value
-        })
-    )
-}
-
 export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -60,7 +46,6 @@ export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | Dis
                         ruleSet: new FuelTankRuleSet({ id: ruleId }),
                         extrinsicName: r.__kind,
                         palletName: r.value.__kind,
-                        raw: toJSON(r.value),
                     })
             )
         }

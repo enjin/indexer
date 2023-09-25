@@ -19,7 +19,4 @@ export class PermittedExtrinsics {
 
     @Column_("text", {nullable: true})
     extrinsicName!: string | undefined | null
-
-    @Column_("jsonb", {nullable: true})
-    raw!: unknown | undefined | null
 }

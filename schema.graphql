@@ -727,7 +727,6 @@ type PermittedExtrinsics @entity {
   ruleSet: FuelTankRuleSet!
   palletName: String
   extrinsicName: String
-  raw: JSON
 }
 
 union AccountRule = WhitelistedCallers | RequireToken
