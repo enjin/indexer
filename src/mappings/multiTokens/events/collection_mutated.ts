@@ -35,6 +35,14 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionMutated(),
+    })
+}
+
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({
@@ -49,10 +57,13 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
 export async function collectionMutated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item)
 
     const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -108,9 +119,5 @@ export async function collectionMutated(
 
     ctx.store.save(collection)
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionMutated(),
-    })
+    return getEvent(item)
 }

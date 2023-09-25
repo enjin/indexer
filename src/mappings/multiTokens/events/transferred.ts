@@ -3,7 +3,15 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
-import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token, TokenAccount } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTransferred,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 
@@ -16,13 +24,48 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        data: new MultiTokensTransferred({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            token: `${data.collectionId}-${data.tokenId}`,
+            operator: u8aToHex(data.operator),
+            from: u8aToHex(data.from),
+            to: u8aToHex(data.to),
+            amount: data.amount,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            from: new Account({ id: u8aToHex(data.from) }),
+            to: new Account({ id: u8aToHex(data.to) }),
+            event,
+            token: new Token({ id: event.tokenId as string }),
+        }),
+    ]
+}
+
 export async function transferred(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const fromAddress = u8aToHex(data.from)
     const toAddress = u8aToHex(data.to)
@@ -58,34 +101,5 @@ export async function transferred(
         ctx.store.save(account)
     }
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensTransferred({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            operator: u8aToHex(data.operator),
-            from: fromAddress,
-            to: toAddress,
-            amount: data.amount,
-        }),
-    })
-
-    if (fromTokenAccount) {
-        return [
-            event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                from: fromTokenAccount.account,
-                to: toTokenAccount?.account,
-                event,
-                token: new Token({ id: event.tokenId as string }),
-            }),
-        ]
-    }
-
-    return event
+    return getEvent(item, data)
 }

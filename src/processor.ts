@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a } from '@polkadot/util'
@@ -12,7 +13,7 @@ import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
-import { populateGenesis } from './populateGenesis'
+import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 
 Sentry.init({
@@ -113,21 +114,22 @@ export type Context = BatchContext<EntityManager, Item>
 async function handleEvents(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: Item
+    item: Item,
+    skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
         case 'MultiTokens.Approved':
-            return map.multiTokens.events.approved(ctx, block, item)
+            return map.multiTokens.events.approved(ctx, block, item, skipSave)
         case 'MultiTokens.AttributeRemoved':
-            return map.multiTokens.events.attributeRemoved(ctx, block, item)
+            return map.multiTokens.events.attributeRemoved(ctx, block, item, skipSave)
         case 'MultiTokens.AttributeSet':
-            return map.multiTokens.events.attributeSet(ctx, block, item)
+            return map.multiTokens.events.attributeSet(ctx, block, item,skipSave)
         case 'MultiTokens.Burned':
-            return map.multiTokens.events.burned(ctx, block, item)
+            return map.multiTokens.events.burned(ctx, block, item,skipSave)
         case 'MultiTokens.CollectionAccountCreated':
-            return map.multiTokens.events.collectionAccountCreated(ctx, block, item)
+            return map.multiTokens.events.collectionAccountCreated(ctx, block, item,skipSave)
         case 'MultiTokens.CollectionAccountDestroyed':
-            return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item)
+            return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item,skipSave)
         case 'MultiTokens.CollectionCreated':
             return map.multiTokens.events.collectionCreated(ctx, block, item)
         case 'MultiTokens.CollectionDestroyed':
@@ -240,16 +242,14 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             const accountTokenEvents: AccountTokenEvent[] = []
 
             if (block.header.height === 1) {
-                // eslint-disable-next-line no-await-in-loop
                 await createEnjToken(ctx as unknown as CommonContext, block.header)
-                // eslint-disable-next-line no-await-in-loop
                 await chainState(ctx as unknown as CommonContext, block.header)
+
                 if (Number(config.prefix) === 1110) {
-                    // eslint-disable-next-line no-await-in-loop
-                    await populateGenesis(ctx as unknown as CommonContext, block.header)
-                    // eslint-disable-next-line no-await-in-loop
                     await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                 }
+
+                await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
             }
 
             // eslint-disable-next-line no-restricted-syntax

@@ -19,10 +19,13 @@ function getEventData(ctx: CommonContext, eventItem: Event) {
 export async function unreserved(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Unreserved', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Unreserved', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ) {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return undefined
 
     const tokenAccount = await ctx.store.findOneOrFail(TokenAccount, {
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },

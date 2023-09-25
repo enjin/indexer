@@ -515,11 +515,30 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        data: new MultiTokensTokenCreated({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            issuer: u8aToHex(data.issuer),
+            initialSupply: data.initialSupply,
+        }),
+    })
+}
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function tokenCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
@@ -535,6 +554,8 @@ export async function tokenCreated(
         ])
 
         if (!eventData || !callData) return undefined
+
+        if (skipSave) return getEvent(item, eventData)
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null
@@ -581,18 +602,7 @@ export async function tokenCreated(
 
         ctx.store.insert(Token, token as any)
 
-        return new EventModel({
-            id: item.event.id,
-            extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-            collectionId: eventData.collectionId.toString(),
-            tokenId: token.id,
-            data: new MultiTokensTokenCreated({
-                collectionId: eventData.collectionId,
-                tokenId: eventData.tokenId,
-                issuer: u8aToHex(eventData.issuer),
-                initialSupply: eventData.initialSupply,
-            }),
-        })
+        return getEvent(item, eventData)
     }
 
     return undefined

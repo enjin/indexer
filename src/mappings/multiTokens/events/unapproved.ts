@@ -24,13 +24,34 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensUnapproved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            owner: u8aToHex(data.owner),
+            operator: u8aToHex(data.operator),
+        }),
+    })
+}
+
 export async function unapproved(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const address = u8aToHex(data.owner)
 
@@ -56,16 +77,5 @@ export async function unapproved(
         ctx.store.save(collectionAccount)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensUnapproved({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            owner: address,
-            operator: u8aToHex(data.operator),
-        }),
-    })
+    return getEvent(item, data)
 }

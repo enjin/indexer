@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
@@ -121,18 +122,35 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionCreated({
+            collectionId: data.collectionId,
+            owner: u8aToHex(data.owner),
+        }),
+    })
+}
+
 export async function collectionCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 
     const eventData = getEventData(ctx, item.event)
+    if (!eventData) return undefined
 
+    if (skipSave) return getEvent(item, eventData)
     const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
 
-    if (!eventData || !callData) return undefined
+    if (!callData) return undefined
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         collectionId: eventData.collectionId,
@@ -178,12 +196,5 @@ export async function collectionCreated(
 
     Promise.all(royaltyPromises)
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionCreated({
-            collectionId: eventData.collectionId,
-            owner: account.id,
-        }),
-    })
+    return getEvent(item, eventData)
 }

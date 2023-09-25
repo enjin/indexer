@@ -65,13 +65,29 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensThawed(),
+    })
+}
+
 export async function thawed(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     if (data.tokenAccount) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
@@ -106,11 +122,5 @@ export async function thawed(
         ctx.store.save(collection)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensThawed(),
-    })
+    return getEvent(item, data)
 }

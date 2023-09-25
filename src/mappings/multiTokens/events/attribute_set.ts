@@ -28,14 +28,35 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensAttributeSet({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: safeString(Buffer.from(data.key).toString()),
+            value: safeString(Buffer.from(data.value).toString()),
+        }),
+    })
+}
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function attributeSet(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const key = safeString(Buffer.from(data.key).toString())
     const value = safeString(Buffer.from(data.value).toString())
@@ -129,16 +150,5 @@ export async function attributeSet(
         computeTraits(collection.id)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensAttributeSet({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            key,
-            value,
-        }),
-    })
+    return getEvent(item, data)
 }

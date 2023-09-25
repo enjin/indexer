@@ -28,13 +28,30 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionAccountCreated({
+            collectionId: data.collectionId,
+            account: u8aToHex(data.accountId),
+        }),
+    })
+}
+
 export async function collectionAccountCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionAccountCreated', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const [account, collectionAccount] = await Promise.all([
         getOrCreateAccount(ctx, data.accountId),
@@ -57,12 +74,5 @@ export async function collectionAccountCreated(
         ctx.store.insert(CollectionAccount, newAccount as any)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionAccountCreated({
-            collectionId: data.collectionId,
-            account: account.id,
-        }),
-    })
+    return getEvent(item, data)
 }

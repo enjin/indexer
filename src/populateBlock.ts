@@ -5,6 +5,7 @@ import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import ora from 'ora'
+import axios from 'axios'
 import { CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
 import config from './config'
@@ -42,6 +43,7 @@ import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
+import { UnknownVersionError } from './common/errors'
 
 const BATCH_SIZE = 1000
 
@@ -95,90 +97,115 @@ async function getAccountsMap(
     return map
 }
 
-function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
+async function getBlock(height: number) {
+    const query = `query Block($height: Int){
+        result: batch( fromBlock:$height, limit:1, includeAllBlocks:true){
+          header{
+            id
+            height
+            hash
+            specId
+            stateRoot
+            parentHash
+            timestamp
+          }
+        }
+      }`
 
-    if (collectionStorage.isMatrixEnjinV603) {
-        return collectionStorage.asMatrixEnjinV603
+    const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
+        query,
+        variables: {
+            height,
+        },
+    })
+
+    return data.data.result[0].header
+}
+
+function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const data = new Storage.MultiTokensCollectionsStorage(ctx, block)
+
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const balanceAccountStorage = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
+    const data = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
 
-    if (balanceAccountStorage.isMatrixEnjinV603) {
-        return balanceAccountStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const tokensStorage = new Storage.MultiTokensTokensStorage(ctx, block)
+    const data = new Storage.MultiTokensTokensStorage(ctx, block)
 
-    if (tokensStorage.isMatrixEnjinV603) {
-        return tokensStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    if (tokensStorage.isV600) {
-        return tokensStorage.asV600
+    if (data.isV600) {
+        return data.asV600
     }
 
-    if (tokensStorage.isV500) {
-        return tokensStorage.asV500
+    if (data.isV500) {
+        return data.asV500
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const tokenAccountsStorage = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
+    const data = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
 
-    if (tokenAccountsStorage.isMatrixEnjinV603) {
-        return tokenAccountsStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
+    const data = new Storage.MultiTokensAttributesStorage(ctx, block)
 
-    if (attributeStorage.isMatrixEnjinV603) {
-        return attributeStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const listingStorage = new Storage.MarketplaceListingsStorage(ctx, block)
+    const data = new Storage.MarketplaceListingsStorage(ctx, block)
 
-    if (listingStorage.isMatrixEnjinV603) {
-        return listingStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const accountStorage = new Storage.SystemAccountStorage(ctx, block)
+    const data = new Storage.SystemAccountStorage(ctx, block)
 
-    if (accountStorage.isMatrixEnjinV603) {
-        return accountStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    if (accountStorage.isV602) {
-        return accountStorage.asV602
+    if (data.isV602) {
+        return data.asV602
     }
 
-    if (accountStorage.isV500) {
-        return accountStorage.asV500
+    if (data.isV500) {
+        return data.asV500
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
@@ -524,9 +551,9 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
-export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock) {
+async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
-    spinner.info('Syncing collections...')
+    spinner.start('Syncing collections...')
     await syncCollection(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
@@ -556,4 +583,10 @@ export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock)
     spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
+}
+
+export async function populateBlock(ctx: CommonContext, block: number) {
+    const substrateBlock = await getBlock(block)
+    spinner.info(`Syncing block ${block} with hash ${substrateBlock.hash}`)
+    await populateBlockInternal(ctx, substrateBlock)
 }

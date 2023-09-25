@@ -34,15 +34,58 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>,
+    token: Token | null
+): [EventModel, AccountTokenEvent] | undefined | EventModel {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: token ? token.id : null,
+        data: new MultiTokensBurned({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            token: token ? token.id : null,
+            account: u8aToHex(data.accountId),
+            amount: data.amount,
+        }),
+    })
+
+    if (token) {
+        return [
+            event,
+            new AccountTokenEvent({
+                id: item.event.id,
+                token,
+                from: new Account({ id: u8aToHex(data.accountId) }),
+                event,
+            }),
+        ]
+    }
+
+    return event
+}
+
 export async function burned(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = getEventData(ctx, item.event)
     if (!data || data.amount === 0n) return undefined
 
     const address = u8aToHex(data.accountId)
+
+    if (skipSave) {
+        const token = await ctx.store.findOne(Token, {
+            where: { id: `${data.collectionId}-${data.tokenId}` },
+        })
+
+        return getEvent(item, data, token)
+    }
 
     const [tokenAccount, token] = await Promise.all([
         ctx.store.findOne(TokenAccount, {
@@ -76,31 +119,5 @@ export async function burned(
         ctx.store.save(account)
     }
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: token ? token.id : null,
-        data: new MultiTokensBurned({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: token ? token.id : null,
-            account: address,
-            amount: data.amount,
-        }),
-    })
-
-    if (token) {
-        return [
-            event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                token,
-                from: new Account({ id: address }),
-                event,
-            }),
-        ]
-    }
-
-    return event
+    return getEvent(item, data, token)
 }

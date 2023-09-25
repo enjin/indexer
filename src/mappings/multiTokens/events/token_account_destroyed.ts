@@ -22,13 +22,33 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.TokenAccountDestroyed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensTokenAccountDestroyed({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            accountId: u8aToHex(data.accountId),
+        }),
+    })
+}
+
 export async function tokenAccountDestroyed(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenAccountDestroyed', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.TokenAccountDestroyed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
@@ -45,15 +65,5 @@ export async function tokenAccountDestroyed(
         ctx.store.remove(tokenAccount)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensTokenAccountDestroyed({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            accountId: u8aToHex(data.accountId),
-        }),
-    })
+    return getEvent(item, data)
 }

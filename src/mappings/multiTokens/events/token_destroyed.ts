@@ -34,13 +34,33 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        data: new MultiTokensTokenDestroyed({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            caller: u8aToHex(data.caller),
+        }),
+    })
+}
+
 export async function tokenDestroyed(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.TokenDestroyed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const token = await ctx.store.findOneOrFail<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -81,15 +101,5 @@ export async function tokenDestroyed(
     new CollectionService(ctx.store).sync(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: token.id,
-        data: new MultiTokensTokenDestroyed({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            caller: u8aToHex(data.caller),
-        }),
-    })
+    return getEvent(item, data)
 }

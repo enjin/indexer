@@ -39,13 +39,47 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        data: new MultiTokensMinted({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            token: `${data.collectionId}-${data.tokenId}`,
+            issuer: u8aToHex(data.issuer),
+            recipient: u8aToHex(data.recipient),
+            amount: data.amount,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
+            from: new Account({ id: u8aToHex(data.issuer) }),
+            to: new Account({ id: u8aToHex(data.recipient) }),
+            event,
+        }),
+    ]
+}
+
 export async function minted(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const [token, tokenAccount] = await Promise.all([
         ctx.store.findOneOrFail(Token, {
@@ -78,29 +112,5 @@ export async function minted(
 
     new CollectionService(ctx.store).sync(data.collectionId.toString())
 
-    const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: token.id,
-        data: new MultiTokensMinted({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: token.id,
-            issuer: u8aToHex(data.issuer),
-            recipient: u8aToHex(data.recipient),
-            amount: data.amount,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token,
-            from: new Account({ id: u8aToHex(data.issuer) }),
-            to: new Account({ id: u8aToHex(data.recipient) }),
-            event,
-        }),
-    ]
+    return getEvent(item, data)
 }

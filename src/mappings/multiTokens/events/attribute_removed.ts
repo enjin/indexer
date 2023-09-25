@@ -32,13 +32,33 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensAttributeRemoved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: Buffer.from(data.key).toString(),
+        }),
+    })
+}
+
 export async function attributeRemoved(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
@@ -104,16 +124,5 @@ export async function attributeRemoved(
 
         ctx.store.remove(attribute)
     }
-
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensAttributeRemoved({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            key: Buffer.from(data.key).toString(),
-        }),
-    })
+    return getEvent(item, data)
 }

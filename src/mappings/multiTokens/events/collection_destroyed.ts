@@ -30,13 +30,30 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionDestroyed({
+            collectionId: data.collectionId,
+            caller: u8aToHex(data.caller),
+        }),
+    })
+}
+
 export async function collectionDestroyed(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const collectionId = data.collectionId.toString()
 
@@ -48,12 +65,5 @@ export async function collectionDestroyed(
 
     ctx.store.delete(Collection, { id: collectionId })
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionDestroyed({
-            collectionId: data.collectionId,
-            caller: u8aToHex(data.caller),
-        }),
-    })
+    return getEvent(item, data)
 }
