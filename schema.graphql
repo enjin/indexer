@@ -758,13 +758,13 @@ type FuelTankRuleSet @entity {
   tank: FuelTank!
   isFrozen: Boolean!
 
-  whitelistedCallers: [String!]!
-  whitelistedCollections: [String]!
+  whitelistedCallers: [String!]
+  whitelistedCollections: [String]
   maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction
   userFuelBudget: UserFuelBudget
   tankFuelBudget: TankFuelBudget
   requireToken: RequireToken
-  permittedCalls: [String!]!
+  permittedCalls: [String!]
   permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 

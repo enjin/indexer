@@ -127,7 +127,7 @@ export async function fuelTankCreated(
                 requireToken,
                 permittedCalls,
                 permittedExtrinsics,
-            } = rulesToMap(rules)
+            } = rulesToMap(`${fuelTank.id}-${index}`, rules)
 
             const ruleSetModel = new FuelTankRuleSet({
                 id: `${fuelTank.id}-${index}`,

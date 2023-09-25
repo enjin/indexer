@@ -3,7 +3,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { FuelTanksAccountRuleDataRemovedEvent } from '../../../types/generated/events'
-import { Event as EventModel, FuelTankRuleSet } from '../../../model'
+import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 
@@ -34,7 +34,11 @@ export async function accountRuleDataRemoved(
 
     if (eventData.ruleKind) {
         const kind = eventData.ruleKind.__kind
-        ruleSet[uc(kind)] = undefined
+        if (kind === 'PermittedExtrinsics') {
+            ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleId } })
+        } else {
+            ruleSet[uc(kind)] = undefined
+        }
     }
 
     ctx.store.save(ruleSet)

@@ -26,11 +26,11 @@ export class FuelTankRuleSet {
     @Column_("bool", {nullable: false})
     isFrozen!: boolean
 
-    @Column_("text", {array: true, nullable: false})
-    whitelistedCallers!: (string)[]
+    @Column_("text", {array: true, nullable: true})
+    whitelistedCallers!: (string)[] | undefined | null
 
-    @Column_("text", {array: true, nullable: false})
-    whitelistedCollections!: (string | undefined | null)[]
+    @Column_("text", {array: true, nullable: true})
+    whitelistedCollections!: (string | undefined | null)[] | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MaxFuelBurnPerTransaction(undefined, obj)}, nullable: true})
     maxFuelBurnPerTransaction!: MaxFuelBurnPerTransaction | undefined | null
@@ -44,8 +44,8 @@ export class FuelTankRuleSet {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new RequireToken(undefined, obj)}, nullable: true})
     requireToken!: RequireToken | undefined | null
 
-    @Column_("text", {array: true, nullable: false})
-    permittedCalls!: (string)[]
+    @Column_("text", {array: true, nullable: true})
+    permittedCalls!: (string)[] | undefined | null
 
     @OneToMany_(() => PermittedExtrinsics, e => e.ruleSet)
     permittedExtrinsics!: PermittedExtrinsics[]
