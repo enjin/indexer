@@ -123,43 +123,43 @@ async function handleEvents(
         case 'MultiTokens.AttributeRemoved':
             return map.multiTokens.events.attributeRemoved(ctx, block, item, skipSave)
         case 'MultiTokens.AttributeSet':
-            return map.multiTokens.events.attributeSet(ctx, block, item,skipSave)
+            return map.multiTokens.events.attributeSet(ctx, block, item, skipSave)
         case 'MultiTokens.Burned':
-            return map.multiTokens.events.burned(ctx, block, item,skipSave)
+            return map.multiTokens.events.burned(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionAccountCreated':
-            return map.multiTokens.events.collectionAccountCreated(ctx, block, item,skipSave)
+            return map.multiTokens.events.collectionAccountCreated(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionAccountDestroyed':
-            return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item,skipSave)
+            return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionCreated':
-            return map.multiTokens.events.collectionCreated(ctx, block, item)
+            return map.multiTokens.events.collectionCreated(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionDestroyed':
-            return map.multiTokens.events.collectionDestroyed(ctx, block, item)
+            return map.multiTokens.events.collectionDestroyed(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionMutated':
-            return map.multiTokens.events.collectionMutated(ctx, block, item)
+            return map.multiTokens.events.collectionMutated(ctx, block, item, skipSave)
         case 'MultiTokens.Frozen':
-            return map.multiTokens.events.frozen(ctx, block, item)
+            return map.multiTokens.events.frozen(ctx, block, item, skipSave)
         case 'MultiTokens.Minted':
-            return map.multiTokens.events.minted(ctx, block, item)
+            return map.multiTokens.events.minted(ctx, block, item, skipSave)
         case 'MultiTokens.Reserved':
-            return map.multiTokens.events.reserved(ctx, block, item)
+            return map.multiTokens.events.reserved(ctx, block, item, skipSave)
         case 'MultiTokens.Thawed':
-            return map.multiTokens.events.thawed(ctx, block, item)
+            return map.multiTokens.events.thawed(ctx, block, item, skipSave)
         case 'MultiTokens.TokenAccountCreated':
-            return map.multiTokens.events.tokenAccountCreated(ctx, block, item)
+            return map.multiTokens.events.tokenAccountCreated(ctx, block, item, skipSave)
         case 'MultiTokens.TokenAccountDestroyed':
-            return map.multiTokens.events.tokenAccountDestroyed(ctx, block, item)
+            return map.multiTokens.events.tokenAccountDestroyed(ctx, block, item, skipSave)
         case 'MultiTokens.TokenCreated':
-            return map.multiTokens.events.tokenCreated(ctx, block, item)
+            return map.multiTokens.events.tokenCreated(ctx, block, item, skipSave)
         case 'MultiTokens.TokenDestroyed':
-            return map.multiTokens.events.tokenDestroyed(ctx, block, item)
+            return map.multiTokens.events.tokenDestroyed(ctx, block, item, skipSave)
         case 'MultiTokens.TokenMutated':
-            return map.multiTokens.events.tokenMutated(ctx, block, item)
+            return map.multiTokens.events.tokenMutated(ctx, block, item, skipSave)
         case 'MultiTokens.Transferred':
-            return map.multiTokens.events.transferred(ctx, block, item)
+            return map.multiTokens.events.transferred(ctx, block, item, skipSave)
         case 'MultiTokens.Unapproved':
-            return map.multiTokens.events.unapproved(ctx, block, item)
+            return map.multiTokens.events.unapproved(ctx, block, item, skipSave)
         case 'MultiTokens.Unreserved':
-            return map.multiTokens.events.unreserved(ctx, block, item)
+            return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
         case 'Balances.Transfer':
             await map.balances.processor.save(ctx, block, item.event)
             return map.balances.events.transfer(ctx, block, item)

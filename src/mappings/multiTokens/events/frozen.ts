@@ -85,10 +85,13 @@ function getEvent(
 export async function frozen(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     if (data.tokenAccount) {
         const address = u8aToHex(data.tokenAccount)
