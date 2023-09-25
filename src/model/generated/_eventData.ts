@@ -26,8 +26,10 @@ import {BalancesTransfer} from "./_balancesTransfer"
 import {TeleportBalanceWithdrawn} from "./_teleportBalanceWithdrawn"
 import {ClaimsClaimRequested} from "./_claimsClaimRequested"
 import {ClaimsClaimed} from "./_claimsClaimed"
+import {FuelTankCreated} from "./_fuelTankCreated"
+import {FuelTankDestroyed} from "./_fuelTankDestroyed"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -59,6 +61,8 @@ export function fromJsonEventData(json: any): EventData {
         case 'TeleportBalanceWithdrawn': return new TeleportBalanceWithdrawn(undefined, json)
         case 'ClaimsClaimRequested': return new ClaimsClaimRequested(undefined, json)
         case 'ClaimsClaimed': return new ClaimsClaimed(undefined, json)
+        case 'FuelTankCreated': return new FuelTankCreated(undefined, json)
+        case 'FuelTankDestroyed': return new FuelTankDestroyed(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }

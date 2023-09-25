@@ -73,6 +73,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | FuelTankCreated | FuelTankDestroyed
 
 type BalancesTransfer {
   from: Account!
@@ -244,20 +245,26 @@ type ClaimsClaimRequested {
   hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
-
   isEfiToken: Boolean!
 }
 
 type ClaimsClaimed {
   account: Account!
   ethAccount: Account
-
   efiSum: BigInt!
   enjSum: BigInt!
-
   efiBurned: BigInt!
-
   amount: BigInt!
+}
+
+type FuelTankCreated {
+  tank: String!
+  name: String!
+  owner: Account!
+}
+
+type FuelTankDestroyed {
+  tank: String!
 }
 
 type Balance {
@@ -689,4 +696,89 @@ type ClaimDetails @entity {
   exchangeRate: Int
   delayClaimsPeriod: Int
   totalUnclaimedAmount: BigInt!
+}
+
+type WhitelistedCallers {
+  value: [String!]!
+}
+
+type MaxFuelBurnPerTransaction {
+  value: BigInt!
+}
+
+type UserFuelBudget {
+  amount: BigInt
+  resetPeriod: Int
+}
+
+type TankFuelBudget {
+  amount: BigInt
+  resetPeriod: Int
+}
+
+type RequireToken {
+  collectionId: BigInt!
+  tokenId: BigInt
+}
+
+type PermittedExtrinsics @entity {
+  id: ID!
+
+  ruleSet: FuelTankRuleSet!
+  palletName: String
+  extrinsicName: String
+}
+
+union AccountRule = WhitelistedCallers | RequireToken
+
+type FuelTankUserAccountManagement {
+  tankReservesExistentialDeposit: Boolean
+  tankReservesAccountCreationDeposit: Boolean
+}
+
+type FuelTankUserAccounts @entity {
+  id: ID!
+  tank: FuelTank!
+  account: Account!
+
+  tankDeposit: BigInt!
+  userDeposit: BigInt!
+}
+
+type FuelTankAccountRules @entity {
+  id: ID!
+  tank: FuelTank!
+  rule: AccountRule!
+}
+
+type FuelTankRuleSet @entity {
+  id: ID!
+  index: Int!
+  tank: FuelTank!
+  isFrozen: Boolean!
+
+  whitelistedCallers: [String!]
+  whitelistedCollections: [String]
+  maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction
+  userFuelBudget: UserFuelBudget
+  tankFuelBudget: TankFuelBudget
+  requireToken: RequireToken
+  permittedCalls: [String!]
+  permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
+}
+
+type FuelTank @entity {
+  id: ID!
+
+  tankAccount: Account!
+  name: String!
+  owner: Account!
+  providesDeposit: Boolean!
+  isFrozen: Boolean!
+  accountCount: Int!
+
+  userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
+  userAccountManagement: FuelTankUserAccountManagement
+  accountRules: [FuelTankAccountRules] @derivedFrom(field: "tank")
+  ruleSets: [FuelTankRuleSet] @derivedFrom(field: "tank")
 }

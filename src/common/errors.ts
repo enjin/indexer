@@ -10,3 +10,9 @@ export class UnsupportedCallError extends Error {
         super(`${name} is not supported`)
     }
 }
+
+export class CallNotDefinedError extends Error {
+    constructor() {
+        super('Call is not defined')
+    }
+}
