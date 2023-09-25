@@ -68,7 +68,7 @@ export async function bidPlaced(
 
     const listingId = Buffer.from(data.listingId).toString('hex')
     const [listing, account] = await Promise.all([
-        ctx.store.findOneOrFail<Listing>(Listing, {
+        ctx.store.findOne<Listing>(Listing, {
             where: { id: listingId },
             relations: {
                 makeAssetId: {
@@ -79,6 +79,9 @@ export async function bidPlaced(
         }),
         getOrCreateAccount(ctx, data.bid.bidder),
     ])
+
+    if (!listing) return undefined
+
     if (skipSave) return getEvent(item, data, listing, account)
 
     const bid = new Bid({

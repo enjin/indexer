@@ -270,7 +270,14 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     accountsSet.clear()
 }
 
-export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
+export async function save(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    event: Event,
+    skipSave: boolean
+): Promise<EventModel | undefined> {
+    if (skipSave) return undefined
+
     processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(u8aToHex(id)))
 
     return undefined

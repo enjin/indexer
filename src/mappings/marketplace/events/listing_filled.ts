@@ -72,7 +72,7 @@ export async function listingFilled(
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -82,6 +82,8 @@ export async function listingFilled(
             },
         },
     })
+
+    if (!listing) return undefined
 
     if (skipSave) return getEvent(item, data, listing)
 

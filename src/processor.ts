@@ -161,7 +161,7 @@ async function handleEvents(
         case 'MultiTokens.Unreserved':
             return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
         case 'Balances.Transfer':
-            await map.balances.processor.save(ctx, block, item.event)
+            await map.balances.processor.save(ctx, block, item.event, skipSave)
             return map.balances.events.transfer(ctx, block, item)
         case 'Balances.BalanceSet':
         case 'Balances.Deposit':
@@ -172,7 +172,7 @@ async function handleEvents(
         case 'Balances.ReserveRepatriated':
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
-            return map.balances.processor.save(ctx, block, item.event)
+            return map.balances.processor.save(ctx, block, item.event, skipSave)
         case 'Claims.ClaimRequested':
             return map.claims.events.claimRequested(ctx, block, item)
         case 'Claims.ClaimRejected':
@@ -186,15 +186,15 @@ async function handleEvents(
         case 'Claims.ExchangeRateSet':
             return map.claims.events.exchangeRateSet(ctx, block, item)
         case 'Marketplace.ListingCreated':
-            return map.marketplace.events.listingCreated(ctx, block, item)
+            return map.marketplace.events.listingCreated(ctx, block, item, skipSave)
         case 'Marketplace.ListingCancelled':
-            return map.marketplace.events.listingCancelled(ctx, block, item)
+            return map.marketplace.events.listingCancelled(ctx, block, item, skipSave)
         case 'Marketplace.ListingFilled':
-            return map.marketplace.events.listingFilled(ctx, block, item)
+            return map.marketplace.events.listingFilled(ctx, block, item, skipSave)
         case 'Marketplace.BidPlaced':
-            return map.marketplace.events.bidPlaced(ctx, block, item)
+            return map.marketplace.events.bidPlaced(ctx, block, item, skipSave)
         case 'Marketplace.AuctionFinalized':
-            return map.marketplace.events.auctionFinalized(ctx, block, item)
+            return map.marketplace.events.auctionFinalized(ctx, block, item, skipSave)
         case 'PolkadotXcm.Attempted':
             return map.xcm.events.attempted(ctx, block, item)
         case 'FuelTanks.AccountAdded':
@@ -256,7 +256,12 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
             for (const item of block.items) {
                 if (item.kind === 'event') {
                     // eslint-disable-next-line no-await-in-loop
-                    const event = await handleEvents(ctx as unknown as CommonContext, block.header, item)
+                    const event = await handleEvents(
+                        ctx as unknown as CommonContext,
+                        block.header,
+                        item,
+                        block.header.height <= config.lastBlockHeight
+                    )
                     if (event) {
                         if (Array.isArray(event)) {
                             events.push(event[0])

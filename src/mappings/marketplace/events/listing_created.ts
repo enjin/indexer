@@ -68,22 +68,24 @@ export async function listingCreated(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
-
-    if (skipSave) return getEvent(item, data)
     const listingId = Buffer.from(data.listingId).toString('hex')
     const [makeAssetId, takeAssetId, account] = await Promise.all([
-        ctx.store.findOneOrFail<Token>(Token, {
+        ctx.store.findOne<Token>(Token, {
             where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
             relations: {
                 collection: true,
                 bestListing: true,
             },
         }),
-        ctx.store.findOneOrFail<Token>(Token, {
+        ctx.store.findOne<Token>(Token, {
             where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
         }),
         getOrCreateAccount(ctx, data.listing.seller),
     ])
+
+    if (!makeAssetId || !takeAssetId) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =

@@ -79,20 +79,21 @@ export async function minted(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
+    const token = await ctx.store.findOne(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
+    })
+
+    if (!token) return undefined
+
     if (skipSave) return getEvent(item, data)
 
-    const [token, tokenAccount] = await Promise.all([
-        ctx.store.findOneOrFail(Token, {
-            where: { id: `${data.collectionId}-${data.tokenId}` },
-            relations: {
-                collection: true,
-            },
-        }),
-        ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
-            where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
-            relations: { account: true },
-        }),
-    ])
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
+    })
 
     if (token.supply !== 0n && token.metadata?.attributes) {
         computeTraits(data.collectionId.toString())
