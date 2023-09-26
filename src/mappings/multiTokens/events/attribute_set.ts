@@ -115,7 +115,7 @@ export async function attributeSet(
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            ctx.store.save(token)
+            ctx.store.save(collection)
         }
         await ctx.store.save(attribute)
     } else {

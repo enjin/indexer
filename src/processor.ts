@@ -252,6 +252,10 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
             }
 
+            if (block.header.height === config.lastBlockHeight) {
+                // sync all collections
+            }
+
             // eslint-disable-next-line no-restricted-syntax
             for (const item of block.items) {
                 if (item.kind === 'event') {
@@ -262,7 +266,6 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         item,
                         block.header.height <= config.lastBlockHeight
                     )
-                    // console.log(item.name)
 
                     if (event) {
                         if (Array.isArray(event)) {

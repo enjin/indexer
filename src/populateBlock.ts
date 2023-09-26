@@ -483,6 +483,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
     for await (const pairs of getListingStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
         await getAccountsMap(
@@ -574,9 +575,9 @@ async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) 
     await syncAttributes(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
 
-    spinner.start('Syncing listings...')
+    /*  spinner.start('Syncing listings...')
     await syncListings(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`) */
 
     spinner.start('Syncing balances...')
     await syncBalance(ctx, block)
