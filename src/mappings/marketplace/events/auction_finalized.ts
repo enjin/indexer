@@ -16,8 +16,8 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { getBestListing } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceAuctionFinalizedEvent(ctx, event)
@@ -117,7 +117,7 @@ export async function auctionFinalized(
 
     await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
 
-    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing)
 }

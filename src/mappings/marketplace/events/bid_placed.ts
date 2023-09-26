@@ -17,8 +17,8 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { getBestListing, getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceBidPlacedEvent(ctx, event)
@@ -108,7 +108,7 @@ export async function bidPlaced(
 
     Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
-    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing, account)
 }

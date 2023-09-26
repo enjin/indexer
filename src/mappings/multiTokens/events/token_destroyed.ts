@@ -16,8 +16,9 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
+
 import { computeTraits } from '../../../jobs/compute-traits'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 interface EventData {
     collectionId: bigint
@@ -98,7 +99,7 @@ export async function tokenDestroyed(
     }
 
     ctx.store.remove(token)
-    new CollectionService(ctx.store).sync(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
 
     return getEvent(item, data)

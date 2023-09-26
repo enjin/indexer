@@ -15,9 +15,9 @@ import {
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 interface EventData {
     collectionId: bigint
@@ -116,7 +116,7 @@ export async function minted(
     account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
     ctx.store.save(account)
 
-    new CollectionService(ctx.store).sync(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)
 }

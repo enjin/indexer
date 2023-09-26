@@ -17,9 +17,9 @@ import {
     MarketplaceListingFilled,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingFilledEvent(ctx, event)
@@ -122,9 +122,7 @@ export async function listingFilled(
 
     Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
-    if (!skipSave) {
-        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
-    }
+    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing)
 }

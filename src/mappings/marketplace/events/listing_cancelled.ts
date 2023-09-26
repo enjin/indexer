@@ -12,9 +12,9 @@ import {
     MarketplaceListingCancelled,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCancelledEvent(ctx, event)
@@ -94,7 +94,7 @@ export async function listingCancelled(
 
     Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
 
-    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, listing)
 }

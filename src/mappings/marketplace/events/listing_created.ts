@@ -22,9 +22,9 @@ import {
     Token,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
@@ -137,7 +137,7 @@ export async function listingCreated(
     ])
 
     if (!skipSave) {
-        await new CollectionService(ctx.store).sync(data.listing.makeAssetId.collectionId.toString())
+        await syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
     }
 
     return getEvent(item, data)
