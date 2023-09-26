@@ -44,8 +44,8 @@ export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | Dis
                     new PermittedExtrinsics({
                         id: `${ruleId}-${index}-${i}`,
                         ruleSet: new FuelTankRuleSet({ id: ruleId }),
-                        extrinsicName: r.__kind,
-                        palletName: r.value.__kind,
+                        palletName: r.__kind,
+                        extrinsicName: r.value.__kind,
                     })
             )
         }
