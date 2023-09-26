@@ -4,7 +4,7 @@ import { redisConfig } from './common'
 export type JobData = { collectionId: string }
 
 export const collectionStats = new Queue<JobData>('collectionStats', {
-    defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
+    defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
     redis: redisConfig,
 })
 
