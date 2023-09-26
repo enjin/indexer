@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import isPlainObject from 'lodash/isPlainObject'
 import { createHash } from 'crypto'
-import connection from './connection'
-import { Collection, Token, Trait, TraitToken } from './model'
-import { traitsQueue, JobData } from './jobs/compute-traits'
+import connection from '../connection'
+import { Collection, Token, Trait, TraitToken } from '../model'
+import { traitsQueue, JobData } from '../jobs/compute-traits'
 
 type TraitValueMap = Map<string, { count: bigint }>
 
@@ -17,7 +17,7 @@ traitsQueue.process(async (job, done) => {
         throw new Error('Collection ID not provided.')
     }
 
-    console.log(`Processing job ${job.id} for collection ${job.data.collectionId}`)
+    console.log(`Processing traits job ${job.id} for collection ${job.data.collectionId}`)
 
     if (!connection.isInitialized) {
         await connection.initialize().catch((err) => {

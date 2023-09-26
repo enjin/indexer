@@ -15,7 +15,7 @@ import {
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { computeTraits } from '../../../jobs/compute-traits'
-import { CollectionService } from '../../../services/collection'
+import { CollectionService } from '../../../job-handlers/collection-stats'
 import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {

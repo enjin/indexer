@@ -1,22 +1,20 @@
-/* eslint-disable no-console */
-/* eslint-disable max-len */
 import Queue from 'bull'
 import { redisConfig } from './common'
 
 export type JobData = { collectionId: string }
 
-export const traitsQueue = new Queue<JobData>('traitsQueue', {
+export const collectionStats = new Queue<JobData>('collectionStats', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
 })
 
-export const computeTraits = async (collectionId: string) => {
+export const syncCollectionStats = async (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
 
-    /* traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+    collectionStats.add({ collectionId }, { jobId: collectionId }).catch(() => {
         console.log('Closing connection as Redis is not available')
-        traitsQueue.close(true)
-    }) */
+        collectionStats.close(true)
+    })
 }

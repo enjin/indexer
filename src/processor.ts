@@ -233,160 +233,165 @@ function getParticipants(args: any, signer: string): string[] {
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-processor.run(new FullTypeormDatabase(), async (ctx) => {
-    try {
-        // eslint-disable-next-line no-restricted-syntax
-        for (const block of ctx.blocks) {
-            const extrinsics: Extrinsic[] = []
-            const events: Event[] = []
-            const accountTokenEvents: AccountTokenEvent[] = []
-
-            if (block.header.height === 1) {
-                await createEnjToken(ctx as unknown as CommonContext, block.header)
-                await chainState(ctx as unknown as CommonContext, block.header)
-
-                if (Number(config.prefix) === 1110) {
-                    await updateClaimDetails(ctx as unknown as CommonContext, block.header)
-                }
-
-                await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
-            }
-
-            if (block.header.height === config.lastBlockHeight) {
-                // sync all collections
-            }
-
+processor.run(
+    new FullTypeormDatabase({
+        isolationLevel: 'REPEATABLE READ',
+    }),
+    async (ctx) => {
+        try {
             // eslint-disable-next-line no-restricted-syntax
-            for (const item of block.items) {
-                if (item.kind === 'event') {
-                    // eslint-disable-next-line no-await-in-loop
-                    const event = await handleEvents(
-                        ctx as unknown as CommonContext,
-                        block.header,
-                        item,
-                        block.header.height <= config.lastBlockHeight
-                    )
+            for (const block of ctx.blocks) {
+                const extrinsics: Extrinsic[] = []
+                const events: Event[] = []
+                const accountTokenEvents: AccountTokenEvent[] = []
 
-                    if (event) {
-                        if (Array.isArray(event)) {
-                            events.push(event[0])
-                            accountTokenEvents.push(event[1])
-                        } else {
-                            events.push(event)
-                        }
-                    }
-                } else if (item.kind === 'call') {
-                    if (
-                        item.call.parent != null ||
-                        ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
-                    ) {
-                        // eslint-disable-next-line no-continue
-                        continue
-                    }
-                    const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+                if (block.header.height === 1) {
+                    await createEnjToken(ctx as unknown as CommonContext, block.header)
+                    await chainState(ctx as unknown as CommonContext, block.header)
 
-                    let publicKey = ''
-                    let extrinsicSignature: any = {}
-
-                    if (!signature) {
-                        publicKey = item.call.args.dest
-                        extrinsicSignature = {
-                            address: item.call.args.dest,
-                            signature: item.call.args.ethereumSignature,
-                        }
-                    } else {
-                        publicKey = (
-                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                                ? signature.address.value
-                                : signature.address
-                        ) as string
-                        extrinsicSignature = signature
+                    if (Number(config.prefix) === 1110) {
+                        await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                     }
 
-                    // eslint-disable-next-line no-await-in-loop
-                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
-                    const callName = call.name.split('.')
-
-                    const extrinsic = new Extrinsic({
-                        id,
-                        hash,
-                        blockNumber: block.header.height,
-                        blockHash: block.header.hash,
-                        success,
-                        pallet: callName[0],
-                        method: callName[1],
-                        args: call.args,
-                        signature: extrinsicSignature,
-                        signer,
-                        nonce: signer.nonce,
-                        tip,
-                        error,
-                        fee: new Fee({
-                            amount: fee,
-                            who: signer.id,
-                        }),
-                        createdAt: new Date(block.header.timestamp),
-                        participants: getParticipants(call.args, publicKey),
-                    })
-
-                    // If fee empty search for the withdrawal event
-                    if (!fee) {
-                        // eslint-disable-next-line no-restricted-syntax
-                        for (const eventItem of block.items) {
-                            if (eventItem.name !== 'Balances.Withdraw') {
-                                // eslint-disable-next-line no-continue
-                                continue
-                            }
-
-                            if (eventItem.event.extrinsic?.id !== extrinsic.id) {
-                                // eslint-disable-next-line no-continue
-                                continue
-                            }
-
-                            // eslint-disable-next-line no-await-in-loop
-                            const feeAmount = await map.balances.events.withdraw(
-                                ctx as unknown as CommonContext,
-                                block.header,
-                                eventItem
-                            )
-
-                            if (extrinsic.fee && feeAmount) {
-                                extrinsic.fee.amount = feeAmount
-                                break
-                            }
-                        }
-                    }
-
-                    // Hotfix for adding listing seller to participant
-                    if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
-                        const listingId = call.args.listingId.toString()
-                        // eslint-disable-next-line no-await-in-loop
-                        const listing = await ctx.store.findOne(Listing, {
-                            where: { id: hexStripPrefix(listingId) },
-                            relations: { seller: true },
-                        })
-                        if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
-                            extrinsic.participants.push(listing.seller.id)
-                        }
-                    }
-
-                    extrinsics.push(extrinsic)
+                    await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
                 }
+
+                if (block.header.height === config.lastBlockHeight) {
+                    // sync all collections
+                }
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const item of block.items) {
+                    if (item.kind === 'event') {
+                        // eslint-disable-next-line no-await-in-loop
+                        const event = await handleEvents(
+                            ctx as unknown as CommonContext,
+                            block.header,
+                            item,
+                            block.header.height <= config.lastBlockHeight
+                        )
+
+                        if (event) {
+                            if (Array.isArray(event)) {
+                                events.push(event[0])
+                                accountTokenEvents.push(event[1])
+                            } else {
+                                events.push(event)
+                            }
+                        }
+                    } else if (item.kind === 'call') {
+                        if (
+                            item.call.parent != null ||
+                            ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
+                        ) {
+                            // eslint-disable-next-line no-continue
+                            continue
+                        }
+                        const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+
+                        let publicKey = ''
+                        let extrinsicSignature: any = {}
+
+                        if (!signature) {
+                            publicKey = item.call.args.dest
+                            extrinsicSignature = {
+                                address: item.call.args.dest,
+                                signature: item.call.args.ethereumSignature,
+                            }
+                        } else {
+                            publicKey = (
+                                signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                                    ? signature.address.value
+                                    : signature.address
+                            ) as string
+                            extrinsicSignature = signature
+                        }
+
+                        // eslint-disable-next-line no-await-in-loop
+                        const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                        const callName = call.name.split('.')
+
+                        const extrinsic = new Extrinsic({
+                            id,
+                            hash,
+                            blockNumber: block.header.height,
+                            blockHash: block.header.hash,
+                            success,
+                            pallet: callName[0],
+                            method: callName[1],
+                            args: call.args,
+                            signature: extrinsicSignature,
+                            signer,
+                            nonce: signer.nonce,
+                            tip,
+                            error,
+                            fee: new Fee({
+                                amount: fee,
+                                who: signer.id,
+                            }),
+                            createdAt: new Date(block.header.timestamp),
+                            participants: getParticipants(call.args, publicKey),
+                        })
+
+                        // If fee empty search for the withdrawal event
+                        if (!fee) {
+                            // eslint-disable-next-line no-restricted-syntax
+                            for (const eventItem of block.items) {
+                                if (eventItem.name !== 'Balances.Withdraw') {
+                                    // eslint-disable-next-line no-continue
+                                    continue
+                                }
+
+                                if (eventItem.event.extrinsic?.id !== extrinsic.id) {
+                                    // eslint-disable-next-line no-continue
+                                    continue
+                                }
+
+                                // eslint-disable-next-line no-await-in-loop
+                                const feeAmount = await map.balances.events.withdraw(
+                                    ctx as unknown as CommonContext,
+                                    block.header,
+                                    eventItem
+                                )
+
+                                if (extrinsic.fee && feeAmount) {
+                                    extrinsic.fee.amount = feeAmount
+                                    break
+                                }
+                            }
+                        }
+
+                        // Hotfix for adding listing seller to participant
+                        if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
+                            const listingId = call.args.listingId.toString()
+                            // eslint-disable-next-line no-await-in-loop
+                            const listing = await ctx.store.findOne(Listing, {
+                                where: { id: hexStripPrefix(listingId) },
+                                relations: { seller: true },
+                            })
+                            if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
+                                extrinsic.participants.push(listing.seller.id)
+                            }
+                        }
+
+                        extrinsics.push(extrinsic)
+                    }
+                }
+
+                await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
+                _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
+                _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
             }
 
-            await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-            _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
-            _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
-            _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
+            const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+            if (lastBlock.height > config.lastBlockHeight - 200) {
+                // import('./handleJobs')
+                await chainState(ctx as unknown as CommonContext, lastBlock)
+            }
+        } catch (error) {
+            Sentry.captureException(error)
+            throw error
         }
-
-        const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-        if (lastBlock.height > config.lastBlockHeight - 200) {
-            // import('./handleJobs')
-            await chainState(ctx as unknown as CommonContext, lastBlock)
-        }
-    } catch (error) {
-        Sentry.captureException(error)
-        throw error
     }
-})
+)
