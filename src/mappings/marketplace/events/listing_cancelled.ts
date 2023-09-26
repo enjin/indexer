@@ -73,8 +73,6 @@ export async function listingCancelled(
 
     if (!listing) return undefined
 
-    if (skipSave) return getEvent(item, listing)
-
     listing.updatedAt = new Date(block.timestamp)
 
     const listingStatus = new ListingStatus({
@@ -94,11 +92,9 @@ export async function listingCancelled(
         ctx.store.save(listing.makeAssetId)
     }
 
-    Promise.all([
-        ctx.store.insert(ListingStatus, listingStatus as any),
-        ctx.store.save(listing),
-        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
-    ])
+    Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
+
+    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return getEvent(item, listing)
 }

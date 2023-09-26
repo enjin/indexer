@@ -80,9 +80,7 @@ export async function bidPlaced(
         getOrCreateAccount(ctx, data.bid.bidder),
     ])
 
-    if (!listing) return undefined
-
-    if (skipSave) return getEvent(item, data, listing, account)
+    if (!listing || !listing.makeAssetId) return undefined
 
     const bid = new Bid({
         id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
@@ -108,11 +106,9 @@ export async function bidPlaced(
         }
     }
 
-    Promise.all([
-        ctx.store.save(bid),
-        ctx.store.save(listing),
-        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
-    ])
+    Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+
+    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing, account)
 }

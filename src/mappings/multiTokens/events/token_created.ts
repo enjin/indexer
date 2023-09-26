@@ -1,9 +1,11 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
+import { IsNull } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
+    Attribute,
     CapType,
     Collection,
     Event as EventModel,
@@ -545,13 +547,13 @@ export async function tokenCreated(
     if (skipSave && item.event.call) return getEvent(item, eventData)
 
     if (item.event.call) {
-        const [callData, collection] = await Promise.all([
+        const [callData, collection, collectionUri] = await Promise.all([
             getCallData(ctx, item.event.call, eventData),
-            ctx.store.findOneOrFail<Collection>(Collection, {
+            ctx.store.findOneOrFail(Collection, {
                 where: { id: eventData.collectionId.toString() },
-                relations: {
-                    attributes: true,
-                },
+            }),
+            ctx.store.findOne(Attribute, {
+                where: { key: 'uri', token: IsNull(), collection: { id: eventData.collectionId.toString() } },
             }),
         ])
 
@@ -559,7 +561,6 @@ export async function tokenCreated(
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null
-        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
         if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
             metadata = await new Metadata()
             if (metadata) {

@@ -14,6 +14,7 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTransferredEvent(ctx, event)
@@ -65,7 +66,11 @@ export async function transferred(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) {
+        getOrCreateAccount(ctx, data.from)
+        getOrCreateAccount(ctx, data.to)
+        return getEvent(item, data)
+    }
 
     const fromAddress = u8aToHex(data.from)
     const toAddress = u8aToHex(data.to)

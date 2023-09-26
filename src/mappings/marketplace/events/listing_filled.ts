@@ -83,9 +83,7 @@ export async function listingFilled(
         },
     })
 
-    if (!listing) return undefined
-
-    if (skipSave) return getEvent(item, data, listing)
+    if (!listing || !listing.makeAssetId) return undefined
 
     listing.state = new FixedPriceState({
         listingType: ListingType.FixedPrice,
@@ -122,11 +120,11 @@ export async function listingFilled(
         ctx.store.save(listing.makeAssetId)
     }
 
-    Promise.all([
-        ctx.store.save(listing),
-        ctx.store.save(sale),
-        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
-    ])
+    Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
+
+    if (!skipSave) {
+        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
+    }
 
     return getEvent(item, data, listing)
 }

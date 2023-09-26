@@ -3,11 +3,20 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensBurned,
+    Token,
+    TokenAccount,
+} from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { CollectionService } from '../../../services/collection'
+import { getOrCreateAccount } from '../../util/entities'
 
 interface EventData {
     collectionId: bigint
@@ -28,7 +37,8 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 
 function getEvent(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
+    data: ReturnType<typeof getEventData>,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
@@ -44,7 +54,7 @@ function getEvent(
         }),
     })
 
-    /*  if (token) {
+    if (token) {
         return [
             event,
             new AccountTokenEvent({
@@ -54,7 +64,7 @@ function getEvent(
                 event,
             }),
         ]
-    } */
+    }
 
     return event
 }
@@ -71,6 +81,7 @@ export async function burned(
     const address = u8aToHex(data.accountId)
 
     if (skipSave) {
+        getOrCreateAccount(ctx, data.accountId)
         return getEvent(item, data)
     }
 

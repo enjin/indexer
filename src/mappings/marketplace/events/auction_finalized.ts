@@ -80,12 +80,8 @@ export async function auctionFinalized(
         },
     })
 
-    if (!listing) {
+    if (!listing || !listing.makeAssetId) {
         return undefined
-    }
-
-    if (skipSave) {
-        return getEvent(item, data, listing)
     }
 
     if (data.winningBid) {
@@ -119,11 +115,9 @@ export async function auctionFinalized(
         ctx.store.save(listing.makeAssetId)
     }
 
-    await Promise.all([
-        ctx.store.insert(ListingStatus, listingStatus as any),
-        ctx.store.save(listing),
-        new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id),
-    ])
+    await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
+
+    if (!skipSave) new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing)
 }

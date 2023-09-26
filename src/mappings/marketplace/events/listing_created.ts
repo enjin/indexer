@@ -64,7 +64,7 @@ export async function listingCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>,
-    skipSave: boolean
+    skipSave = false
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -73,7 +73,6 @@ export async function listingCreated(
         ctx.store.findOne<Token>(Token, {
             where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
             relations: {
-                collection: true,
                 bestListing: true,
             },
         }),
@@ -84,8 +83,6 @@ export async function listingCreated(
     ])
 
     if (!makeAssetId || !takeAssetId) return undefined
-
-    if (skipSave) return getEvent(item, data)
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
     const listingData =
@@ -137,8 +134,11 @@ export async function listingCreated(
         ctx.store.insert(Listing, listing as any),
         ctx.store.insert(ListingStatus, listingStatus as any),
         ctx.store.save(makeAssetId),
-        new CollectionService(ctx.store).sync(makeAssetId.collection.id),
     ])
+
+    if (!skipSave) {
+        await new CollectionService(ctx.store).sync(data.listing.makeAssetId.collectionId.toString())
+    }
 
     return getEvent(item, data)
 }
