@@ -3,15 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensBurned,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { computeTraits } from '../../../jobs/compute-traits'
@@ -36,24 +28,23 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 
 function getEvent(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>,
-    token: Token | null
+    data: ReturnType<typeof getEventData>
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: token ? token.id : null,
+        tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensBurned({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: token ? token.id : null,
+            token: `${data.collectionId}-${data.tokenId}`,
             account: u8aToHex(data.accountId),
             amount: data.amount,
         }),
     })
 
-    if (token) {
+    /*  if (token) {
         return [
             event,
             new AccountTokenEvent({
@@ -63,7 +54,7 @@ function getEvent(
                 event,
             }),
         ]
-    }
+    } */
 
     return event
 }
@@ -80,11 +71,7 @@ export async function burned(
     const address = u8aToHex(data.accountId)
 
     if (skipSave) {
-        const token = await ctx.store.findOne(Token, {
-            where: { id: `${data.collectionId}-${data.tokenId}` },
-        })
-
-        return getEvent(item, data, token)
+        return getEvent(item, data)
     }
 
     const [tokenAccount, token] = await Promise.all([
@@ -119,5 +106,5 @@ export async function burned(
         ctx.store.save(account)
     }
 
-    return getEvent(item, data, token)
+    return getEvent(item, data)
 }

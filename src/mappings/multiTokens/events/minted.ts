@@ -3,15 +3,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensMinted,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../../model'
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
@@ -42,7 +34,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 function getEvent(
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>
-): [EventModel, AccountTokenEvent] | undefined {
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
@@ -58,7 +50,9 @@ function getEvent(
         }),
     })
 
-    return [
+    return event
+
+    /* return [
         event,
         new AccountTokenEvent({
             id: item.event.id,
@@ -67,7 +61,7 @@ function getEvent(
             to: new Account({ id: u8aToHex(data.recipient) }),
             event,
         }),
-    ]
+    ] */
 }
 
 export async function minted(
@@ -75,9 +69,11 @@ export async function minted(
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
     skipSave: boolean
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -87,8 +83,6 @@ export async function minted(
     })
 
     if (!token) return undefined
-
-    if (skipSave) return getEvent(item, data)
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },

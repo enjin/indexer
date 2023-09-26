@@ -542,6 +542,8 @@ export async function tokenCreated(
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
+    if (skipSave && item.event.call) return getEvent(item, eventData)
+
     if (item.event.call) {
         const [callData, collection] = await Promise.all([
             getCallData(ctx, item.event.call, eventData),
@@ -554,8 +556,6 @@ export async function tokenCreated(
         ])
 
         if (!eventData || !callData) return undefined
-
-        if (skipSave) return getEvent(item, eventData)
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null

@@ -8,6 +8,7 @@ export class CollectionService {
      (SELECT count(*) FROM "listing_status" AS "listing_status" WHERE "listing_status"."type" = 'Active' AND "listing_status"."listing_id" = "listing"."id") = (SELECT count(*) FROM "listing_status" AS "listing_status_1" WHERE "listing_status_1"."listing_id" = "listing"."id")`
 
     async sync(collectionId: string) {
+        return false
         if (!collectionId) throw new Error('null collectionId not allowed')
 
         const promises = [

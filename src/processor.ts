@@ -252,6 +252,9 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                 await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
             }
 
+            console.log(`Processing block ${block.header.height}: ${block.items.length} events`)
+
+            console.time('handleEvents')
             // eslint-disable-next-line no-restricted-syntax
             for (const item of block.items) {
                 if (item.kind === 'event') {
@@ -262,6 +265,8 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                         item,
                         block.header.height <= config.lastBlockHeight
                     )
+                   // console.log(item.name)
+
                     if (event) {
                         if (Array.isArray(event)) {
                             events.push(event[0])
@@ -368,13 +373,14 @@ processor.run(new FullTypeormDatabase(), async (ctx) => {
                     extrinsics.push(extrinsic)
                 }
             }
+            console.timeEnd('handleEvents')
 
-            // eslint-disable-next-line no-await-in-loop
+            console.time('save')
             await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-            _.chunk(extrinsics, 500).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
-            _.chunk(events, 500).forEach((chunk) => ctx.store.insert(Event, chunk as any))
-            _.chunk(accountTokenEvents, 500).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
-            // eslint-disable-next-line no-await-in-loop
+            _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
+            _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
+            _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
+            console.timeEnd('save')
         }
 
         const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
