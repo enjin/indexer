@@ -18,8 +18,8 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
-    metadataQueue.process(50, metadataHandler)
-    collectionStatsQueue.process(20, collectionStatsHandler)
+    metadataQueue.process(20, metadataHandler)
+    collectionStatsQueue.process(10, collectionStatsHandler)
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
@@ -45,7 +45,7 @@ async function main() {
 
     // other configurations of your server
 
-    app.listen(6000, () => {
+    app.listen(9090, () => {
         // eslint-disable-next-line no-console
         console.log('Running on 6000...')
     })

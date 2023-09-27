@@ -63,7 +63,7 @@ services:
     build:
       context: .
     ports:
-      - "6000:6000"
+      - "9090:9090"
     volumes:
       - .env:/squid/.env
     depends_on:
