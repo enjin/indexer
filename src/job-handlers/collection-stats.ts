@@ -11,7 +11,7 @@ async function main() {
             throw err
         })
     }
-    collectionStats.process(20, async (job, done) => {
+    collectionStats.process(10, async (job, done) => {
         if (!job.data.collectionId) {
             throw new Error('Collection ID not provided.')
         }

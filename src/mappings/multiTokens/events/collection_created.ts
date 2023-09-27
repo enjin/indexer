@@ -147,7 +147,10 @@ export async function collectionCreated(
     const eventData = getEventData(ctx, item.event)
     if (!eventData) return undefined
 
-    if (skipSave) return getEvent(item, eventData)
+    if (skipSave) {
+        ctx.store.update(Collection, { id: eventData.collectionId.toString() }, { createdAt: new Date(block.timestamp) })
+        return getEvent(item, eventData)
+    }
     const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
 
     if (!callData) return undefined

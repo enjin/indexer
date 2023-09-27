@@ -544,7 +544,14 @@ export async function tokenCreated(
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
-    if (skipSave && item.event.call) return getEvent(item, eventData)
+    if (skipSave && item.event.call) {
+        ctx.store.update(
+            Token,
+            { id: `${eventData.collectionId}-${eventData.tokenId}` },
+            { createdAt: new Date(block.timestamp) }
+        )
+        return getEvent(item, eventData)
+    }
 
     if (item.event.call) {
         const [callData, collection, collectionUri] = await Promise.all([

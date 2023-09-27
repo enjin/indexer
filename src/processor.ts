@@ -259,6 +259,7 @@ processor.run(
                     }
 
                     await metadataQueue.pause()
+
                     await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
 
                     metadataQueue.resume()
