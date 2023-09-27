@@ -72,5 +72,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     await em.update(Collection, { id: collectionId }, { stats })
 
-    done()
+    done(null, { id: collectionId })
 }

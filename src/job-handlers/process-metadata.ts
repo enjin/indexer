@@ -93,5 +93,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     await em.save(resource)
 
-    done()
+    done(null, { id: jobData.resourceId })
 }

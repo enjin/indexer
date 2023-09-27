@@ -9,6 +9,7 @@ async function main() {
         })
     }
 
+    // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
     metadataQueue.process(20, `${__dirname}/process-metadata.js`)
