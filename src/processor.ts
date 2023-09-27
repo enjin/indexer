@@ -267,7 +267,6 @@ function getParticipants(args: any, signer: string): string[] {
     return [signer]
 }
 
-console.time('processor_at_height')
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(
     new FullTypeormDatabase({
@@ -296,7 +295,6 @@ processor.run(
 
                 if (block.header.height === config.lastBlockHeight) {
                     metadataQueue.resume()
-                    console.timeEnd('processor_at_height')
                     syncAllCollections()
                 }
 

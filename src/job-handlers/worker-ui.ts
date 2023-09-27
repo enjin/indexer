@@ -38,5 +38,6 @@ app.use('/', serverAdapter.getRouter())
 // other configurations of your server
 
 app.listen(6000, () => {
+    // eslint-disable-next-line no-console
     console.log('Running on 6000...')
 })

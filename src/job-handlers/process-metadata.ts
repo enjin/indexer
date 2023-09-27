@@ -44,6 +44,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         return
     }
 
+    // eslint-disable-next-line no-console
     console.log('Processing metadata for', resource.id)
 
     const uriAttribute = attributes.find((a) => a.key === 'uri')
