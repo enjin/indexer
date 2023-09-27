@@ -5,7 +5,7 @@ import { Collection } from '../model'
 
 export type JobData = { collectionId: string }
 
-export const collectionStats = new Queue<JobData>('collectionStatsQueue', {
+export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
     defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
     redis: redisConfig,
     settings: {
@@ -18,9 +18,9 @@ export const syncCollectionStats = async (collectionId: string) => {
         throw new Error('Collection ID not provided.')
     }
 
-    collectionStats.add({ collectionId }, { jobId: collectionId }).catch(() => {
+    collectionStatsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
         console.log('Closing connection as Redis is not available')
-        collectionStats.close(true)
+        collectionStatsQueue.close(true)
     })
 }
 

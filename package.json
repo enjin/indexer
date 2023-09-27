@@ -11,7 +11,6 @@
     "processor:debug": "node -r dotenv/config lib/processor.js",
     "query-node:start": "squid-graphql-server --subscriptions",
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
-    "worker:ui":"node -r dotenv/config lib/job-handlers/worker-ui.js",
     "lint": "eslint src --ext .ts,.js",
     "fix": "eslint src --ext .ts,.js --fix"
   },
