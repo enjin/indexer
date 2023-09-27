@@ -17,7 +17,6 @@ import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
-import './job-handlers/handler'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -272,7 +271,7 @@ console.time('processor_at_height')
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(
     new FullTypeormDatabase({
-        isolationLevel: 'REPEATABLE READ',
+        isolationLevel: 'READ COMMITTED',
     }),
     async (ctx) => {
         try {
@@ -293,11 +292,10 @@ processor.run(
                     await metadataQueue.pause()
 
                     await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
-
-                    metadataQueue.resume()
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
+                    metadataQueue.resume()
                     console.timeEnd('processor_at_height')
                     syncAllCollections()
                 }
@@ -432,6 +430,7 @@ processor.run(
                 await chainState(ctx as unknown as CommonContext, lastBlock)
             }
         } catch (error) {
+            metadataQueue.resume()
             Sentry.captureException(error)
             throw error
         }

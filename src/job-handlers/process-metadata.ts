@@ -44,6 +44,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         return
     }
 
+    console.log('Processing metadata for', resource.id)
+
     const uriAttribute = attributes.find((a) => a.key === 'uri')
     let externalMetadata: any = {}
     let metadata = new Metadata()

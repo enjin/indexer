@@ -14,8 +14,8 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
-    metadataQueue.process(20, metadataHandler)
-    collectionStats.process(10, collectionStatsHandler)
+    metadataQueue.process(50, metadataHandler)
+    collectionStats.process(20, collectionStatsHandler)
 }
 
 main()
