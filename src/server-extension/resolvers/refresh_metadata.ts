@@ -1,12 +1,12 @@
 /* eslint-disable max-classes-per-file */
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
-import { IsNull, type EntityManager } from 'typeorm'
+import { type EntityManager } from 'typeorm'
 import { BigInteger } from '@subsquid/graphql-server'
-import { Attribute, Collection, Metadata, Token } from '../../model'
-import { getMetadata } from '../../mappings/util/metadata'
+import { Collection, Token } from '../../model'
 import { computeTraits } from '../../jobs/compute-traits'
 import { syncCollectionStats } from '../../jobs/collection-stats'
+import { processMetadata } from '../../jobs/process-metadata'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',
@@ -37,14 +37,10 @@ export class RefreshMetadataResolver {
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
         let resource!: Collection | Token | null
-        let attributes: Attribute[] = []
 
         if (!tokenId) {
             resource = await manager.findOne(Collection, {
                 where: { id: collectionId },
-            })
-            attributes = await manager.find(Attribute, {
-                where: { collection: { id: collectionId }, token: IsNull() },
             })
         } else {
             resource = await manager.findOne(Token, {
@@ -58,37 +54,18 @@ export class RefreshMetadataResolver {
                     attributes: true,
                 },
             })
-
-            attributes = resource?.attributes ?? []
         }
 
         if (!resource) {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
-        if (!resource.metadata) {
-            resource.metadata = new Metadata()
-        }
-        resource.metadata = await getMetadata(resource.metadata, attributes.find((a) => a.key === 'uri') ?? null)
-        const syncAttributesPromise = attributes
-            .filter((a) => a.key !== 'uri')
-            .map(async (a) => {
-                if (resource && resource.metadata) {
-                    resource.metadata = await getMetadata(resource.metadata, a)
-                }
-            })
 
-        await Promise.all(syncAttributesPromise)
-        try {
-            await manager.save(resource)
-        } catch (error) {
-            if (error instanceof Error) {
-                return { status: RefreshMetadataResponseStatus.ERROR, error: error.message }
-            }
-            return { status: RefreshMetadataResponseStatus.ERROR, error: 'Unknown error' }
-        }
-        syncCollectionStats(collectionId)
+        processMetadata(resource.id, tokenId ? 'token' : 'collection', true)
 
-        computeTraits(collectionId)
+        if (!tokenId) {
+            syncCollectionStats(collectionId)
+            computeTraits(collectionId)
+        }
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }
