@@ -13,6 +13,12 @@ type MetadataType = {
 }
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
+    if (!connection.isInitialized) {
+        await connection.initialize().catch((err) => {
+            throw err
+        })
+    }
+
     const em = connection.manager
     const jobData = job.data
 

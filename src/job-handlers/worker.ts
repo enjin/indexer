@@ -5,8 +5,6 @@ import { ExpressAdapter } from '@bull-board/express'
 import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
-import metadataHandler from './process-metadata'
-import collectionStatsHandler from './collection-stats'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -18,8 +16,8 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
-    metadataQueue.process(20, metadataHandler)
-    collectionStatsQueue.process(10, collectionStatsHandler)
+    metadataQueue.process(80, `${__dirname}/process-metadata.js`)
+    collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
@@ -47,7 +45,7 @@ async function main() {
 
     app.listen(9090, () => {
         // eslint-disable-next-line no-console
-        console.log('Running on 6000...')
+        console.log('Running on 9090...')
     })
 }
 
