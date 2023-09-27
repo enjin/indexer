@@ -6,6 +6,9 @@ type JobData = { resourceId: string; type: 'token' | 'collection'; force: boolea
 export const metadataQueue = new Queue<JobData>('metadataQueue', {
     defaultJobOptions: { delay: 1000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
+    settings: {
+        maxStalledCount: 3,
+    },
 })
 
 export const processMetadata = async (resourceId: string, type: JobData['type'], force = false) => {

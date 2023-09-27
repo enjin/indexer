@@ -6,6 +6,9 @@ export type JobData = { collectionId: string }
 export const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
+    settings: {
+        maxStalledCount: 3,
+    },
 })
 
 export const computeTraits = async (collectionId: string) => {
