@@ -11,8 +11,8 @@ async function main() {
 
     console.info('handling jobs...')
 
-    metadataQueue.process(20, './process-metadata.js')
-    collectionStats.process(10, './collection-stats.js')
+    metadataQueue.process(20, `${__dirname}/process-metadata.js`)
+    collectionStats.process(10, `${__dirname}/collection-stats.js`)
 }
 
 main()
