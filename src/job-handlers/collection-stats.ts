@@ -15,7 +15,6 @@ async function main() {
         if (!job.data.collectionId) {
             throw new Error('Collection ID not provided.')
         }
-        console.log(`Processing collection-stats job ${job.id} for collection ${job.data.collectionId}`)
 
         if (!connection.isInitialized) {
             await connection.initialize().catch((err) => {

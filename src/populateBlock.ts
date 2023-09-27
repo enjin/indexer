@@ -303,6 +303,8 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 
         await ctx.store.insert(CollectionAccount, collectionAccounts as any)
     }
+
+    return true
 }
 
 async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
@@ -439,6 +441,8 @@ async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
 
         await ctx.store.insert(TokenAccount, tokenAccounts as any)
     }
+
+    return true
 }
 
 async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
@@ -494,6 +498,8 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
         await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
     }
+
+    return true
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -563,6 +569,8 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
         await saveAccounts(ctx, block)
     }
+
+    return true
 }
 
 async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
@@ -571,29 +579,19 @@ async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) 
     await syncCollection(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
-    spinner.start('Syncing collection accounts...')
-    await syncCollectionAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
-
     spinner.start('Syncing tokens...')
     await syncTokens(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    spinner.start('Syncing token accounts...')
-    await syncTokenAccounts(ctx, block)
+    spinner.start('Syncing token/collection accounts...')
+    await Promise.all([syncTokenAccounts(ctx, block), syncCollectionAccounts(ctx, block)])
     spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     spinner.start('Syncing attributes...')
     spinner.text = 'Syncing attributes... (can take a while)'
-    await syncAttributes(ctx, block)
+    await Promise.all([syncAttributes(ctx, block), syncBalance(ctx, block)])
     spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
-
-    /*  spinner.start('Syncing listings...')
-    await syncListings(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`) */
-
-    spinner.start('Syncing balances...')
-    await syncBalance(ctx, block)
     spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
