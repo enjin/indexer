@@ -3,8 +3,8 @@ import { redisConfig } from './common'
 
 type JobData = { resourceId: string; type: 'token' | 'collection'; force: boolean }
 
-export const metadataQueue = new Queue<JobData>('traitsQueue', {
-    defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
+export const metadataQueue = new Queue<JobData>('metadataQueue', {
+    defaultJobOptions: { delay: 1000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
 })
 

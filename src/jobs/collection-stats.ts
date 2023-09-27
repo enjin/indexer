@@ -5,7 +5,7 @@ import { Collection } from '../model'
 
 export type JobData = { collectionId: string }
 
-export const collectionStats = new Queue<JobData>('collectionStats', {
+export const collectionStats = new Queue<JobData>('collectionStatsQueue', {
     defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
     redis: redisConfig,
 })

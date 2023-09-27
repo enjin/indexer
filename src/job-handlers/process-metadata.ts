@@ -11,7 +11,7 @@ type MetadataType = {
     last_updated_at: Date
 }
 
-metadataQueue.process(async (job, done) => {
+metadataQueue.process(200, async (job, done) => {
     if (!connection.isInitialized) {
         await connection.initialize().catch((err) => {
             throw err
@@ -48,7 +48,7 @@ metadataQueue.process(async (job, done) => {
     if (!resource) {
         return
     }
-    console.log(`Processing resource job ${job.id} for collection ${resource.id}`)
+    console.log(`Processing resource job ${job.id}`)
 
     const uriAttribute = attributes.find((a) => a.key === 'uri')
     let externalMetadata: any = {}
@@ -101,3 +101,5 @@ metadataQueue.process(async (job, done) => {
 
     done()
 })
+
+console.log('Metadata queue registered')

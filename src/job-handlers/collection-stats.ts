@@ -5,7 +5,7 @@ import connection from '../connection'
 const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND
 (SELECT count(*) FROM "listing_status" AS "listing_status" WHERE "listing_status"."type" = 'Active' AND "listing_status"."listing_id" = "listing"."id") = (SELECT count(*) FROM "listing_status" AS "listing_status_1" WHERE "listing_status_1"."listing_id" = "listing"."id")`
 
-collectionStats.process(async (job, done) => {
+collectionStats.process(50, async (job, done) => {
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')
     }

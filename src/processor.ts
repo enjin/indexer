@@ -16,6 +16,7 @@ import { CommonContext } from './mappings/types/contexts'
 import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
+import { metadataQueue } from './jobs/process-metadata'
 
 import('./job-handlers/process-metadata')
 import('./job-handlers/collection-stats')
@@ -257,7 +258,10 @@ processor.run(
                         await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                     }
 
+                    await metadataQueue.pause()
                     await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
+
+                    metadataQueue.resume()
                 }
 
                 if (block.header.height === config.lastBlockHeight) {

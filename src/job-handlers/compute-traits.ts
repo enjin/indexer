@@ -12,7 +12,7 @@ const hash = (str: string) => {
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-traitsQueue.process(async (job, done) => {
+traitsQueue.process(10, async (job, done) => {
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')
     }

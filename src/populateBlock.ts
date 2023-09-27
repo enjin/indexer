@@ -44,6 +44,7 @@ import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 import { UnknownVersionError } from './common/errors'
+import { processMetadata } from './jobs/process-metadata'
 
 const BATCH_SIZE = 1000
 
@@ -264,7 +265,13 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
             })
         })
 
-        await Promise.all(collectionsPromise).then((collections) => ctx.store.insert(Collection, collections as any))
+        await Promise.all(collectionsPromise)
+            .then((collections) => ctx.store.insert(Collection, collections as any))
+            .then((r) => {
+                r.identifiers.forEach((t) => {
+                    processMetadata(t.id, 'collection')
+                })
+            })
     }
 }
 
@@ -359,8 +366,10 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
 
         await Promise.all(tokensPromise)
             .then((tokens) => ctx.store.insert(Token, tokens as any))
-            .then((t) => {
-                console.log(t)
+            .then((r) => {
+                r.identifiers.forEach((t) => {
+                    processMetadata(t.id, 'token')
+                })
             })
     }
 }
