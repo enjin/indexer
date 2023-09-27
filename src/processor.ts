@@ -15,6 +15,10 @@ import { getOrCreateAccount } from './mappings/util/entities'
 import { CommonContext } from './mappings/types/contexts'
 import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
+import { syncAllCollections } from './jobs/collection-stats'
+
+import('./job-handlers/process-metadata')
+import('./job-handlers/collection-stats')
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -257,7 +261,7 @@ processor.run(
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
-                    // sync all collections
+                    syncAllCollections()
                 }
 
                 // eslint-disable-next-line no-restricted-syntax

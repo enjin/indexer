@@ -18,6 +18,7 @@ import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
 import { computeTraits } from '../../../jobs/compute-traits'
+import { processMetadata } from '../../../jobs/process-metadata'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensAttributeSetEvent(ctx, event)
@@ -110,12 +111,14 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            ctx.store.save(token)
+            await ctx.store.save(token)
+            processMetadata(collection.id, 'token')
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            ctx.store.save(collection)
+            await ctx.store.save(collection)
+            processMetadata(collection.id, 'collection')
         }
         await ctx.store.save(attribute)
     } else {
@@ -137,13 +140,15 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             token.attributeCount += 1
-            ctx.store.save(token)
+            await ctx.store.save(token)
+            processMetadata(collection.id, 'token')
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
-            ctx.store.save(collection)
+            await ctx.store.save(collection)
+            processMetadata(collection.id, 'collection')
         }
     }
     if (token && token.metadata?.attributes) {

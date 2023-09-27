@@ -357,7 +357,11 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
             return token
         })
 
-        await Promise.all(tokensPromise).then((tokens) => ctx.store.insert(Token, tokens as any))
+        await Promise.all(tokensPromise)
+            .then((tokens) => ctx.store.insert(Token, tokens as any))
+            .then((t) => {
+                console.log(t)
+            })
     }
 }
 

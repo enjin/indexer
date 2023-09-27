@@ -48,6 +48,7 @@ metadataQueue.process(async (job, done) => {
     if (!resource) {
         return
     }
+    console.log(`Processing resource job ${job.id} for collection ${resource.id}`)
 
     const uriAttribute = attributes.find((a) => a.key === 'uri')
     let externalMetadata: any = {}
