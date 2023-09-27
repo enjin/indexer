@@ -52,11 +52,44 @@ const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
     .setBlockRange(config.blockRange || { from: 0 })
     .addCall('*', {
+        range: {
+            from: 0,
+            to: 17000,
+        },
         data: {
             call: true,
             extrinsic: true,
-        } as const,
-    } as const)
+        },
+    })
+    .addCall('*', {
+        range: {
+            from: 17001,
+            to: 17500,
+        },
+        data: {
+            call: true,
+            extrinsic: true,
+        },
+    })
+    .addCall('*', {
+        range: {
+            from: 17501,
+            to: 18000,
+        },
+        data: {
+            call: true,
+            extrinsic: true,
+        },
+    })
+    .addCall('*', {
+        range: {
+            from: 18001,
+        },
+        data: {
+            call: true,
+            extrinsic: true,
+        },
+    })
     .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
     .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
     .addEvent('MultiTokens.CollectionMutated', eventOptions)

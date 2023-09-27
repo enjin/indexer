@@ -1,6 +1,8 @@
 import connection from '../connection'
 import { collectionStats } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
+import metadataHandler from './process-metadata'
+import collectionStatsHandler from './collection-stats'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -12,8 +14,8 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
-    metadataQueue.process(20, `${__dirname}/process-metadata.js`)
-    collectionStats.process(10, `${__dirname}/collection-stats.js`)
+    metadataQueue.process(20, metadataHandler)
+    collectionStats.process(10, collectionStatsHandler)
 }
 
 main()
