@@ -19,12 +19,6 @@ traitsQueue.process(10, async (job, done) => {
 
     console.log(`Processing traits job ${job.id} for collection ${job.data.collectionId}`)
 
-    if (!connection.isInitialized) {
-        await connection.initialize().catch((err) => {
-            throw err
-        })
-    }
-
     const em = connection.manager
 
     const traitTypeMap = new Map<string, TraitValueMap>()

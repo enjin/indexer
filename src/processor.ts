@@ -17,9 +17,7 @@ import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
-
-import('./job-handlers/process-metadata')
-import('./job-handlers/collection-stats')
+import './job-handlers/handler'
 
 Sentry.init({
     dsn: config.sentryDsn,
