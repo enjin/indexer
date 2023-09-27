@@ -27,9 +27,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     if (jobData.type === 'collection') {
         resource = await em.findOne(Collection, {
             where: { id: jobData.resourceId },
-            relations: {
-                attributes: true,
-            },
         })
         attributes = await em.find(Attribute, {
             where: { collection: { id: jobData.resourceId }, token: IsNull() },
@@ -47,6 +44,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     if (!resource) {
+        done(null, 'Resource not found')
         return
     }
 

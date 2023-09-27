@@ -6,7 +6,7 @@ import { Collection } from '../model'
 export type JobData = { collectionId: string }
 
 export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
-    defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
+    defaultJobOptions: { delay: 1000, attempts: 1 },
     redis: redisConfig,
     settings: {
         maxStalledCount: 3,
