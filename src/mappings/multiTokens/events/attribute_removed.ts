@@ -2,15 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
-import {
-    Attribute,
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    Metadata,
-    MultiTokensAttributeRemoved,
-    Token,
-} from '../../../model'
+import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { processMetadata } from '../../../jobs/process-metadata'
@@ -73,10 +65,6 @@ export async function attributeRemoved(
             const token = await ctx.store.findOneOrFail<Token>(Token, {
                 where: { id: `${data.collectionId}-${data.tokenId}` },
             })
-
-            if (!token.metadata || attribute.key === 'uri') {
-                token.metadata = new Metadata()
-            }
 
             token.attributeCount -= 1
             await ctx.store.save(token)
