@@ -27,7 +27,12 @@ async function main() {
     serverAdapter.setBasePath('/')
 
     createBullBoard({
-        queues: [new BullAdapter(collectionStatsQueue), new BullAdapter(metadataQueue)],
+        queues: [
+            new BullAdapter(metadataQueue),
+            new BullAdapter(collectionStatsQueue),
+            new BullAdapter(fetchAccountQueue),
+            new BullAdapter(traitsQueue),
+        ],
         serverAdapter,
         options: {
             uiConfig: {
