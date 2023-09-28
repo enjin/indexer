@@ -6,6 +6,7 @@ import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
 import { fetchAccountQueue } from '../jobs/fetch-account'
+import { traitsQueue } from '../jobs/compute-traits'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -17,6 +18,7 @@ async function main() {
     // eslint-disable-next-line no-console
     console.info('handling jobs...')
 
+    traitsQueue.process(5, `${__dirname}/compute-traits.js`)
     metadataQueue.process(80, `${__dirname}/process-metadata.js`)
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
     fetchAccountQueue.process(2, `${__dirname}/fetch-account.js`)
