@@ -288,13 +288,13 @@ processor.run(
                         await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                     }
 
-                    await metadataQueue.pause()
+                    await metadataQueue.pause().catch(() => {})
 
                     await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
-                    metadataQueue.resume()
+                    metadataQueue.resume().catch(() => {})
                     syncAllCollections()
                 }
 
