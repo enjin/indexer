@@ -79,9 +79,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     const traitsToSave: Trait[] = []
 
-    console.log('traitTypeMap', traitTypeMap)
-    console.log('tokenTraitMap', tokenTraitMap)
-
     traitTypeMap.forEach((traitValueMap, traitType) => {
         traitValueMap.forEach((count, value) => {
             traitsToSave.push(
