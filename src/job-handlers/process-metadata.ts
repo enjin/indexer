@@ -65,16 +65,18 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 if (response.length > 0) {
                     await connection.query(
                         'update metadata.metadata set metadata = $1, uri = $2, last_updated_at = NOW() where id = $3',
-                        [externalMetadata, uriAttribute.value, jobData.resourceId]
+                        [externalResponse, uriAttribute.value, jobData.resourceId]
                     )
                 } else {
                     await connection.query(
                         'insert into metadata.metadata (id, metadata, uri, last_updated_at) values ($1, $2, $3, NOW())',
-                        [jobData.resourceId, externalMetadata, uriAttribute.value]
+                        [jobData.resourceId, externalResponse, uriAttribute.value]
                     )
                 }
 
                 externalMetadata = externalResponse
+            } else if (response.length > 0) {
+                externalMetadata = response[0].metadata
             }
         }
 

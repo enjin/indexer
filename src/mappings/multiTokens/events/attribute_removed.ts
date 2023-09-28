@@ -68,7 +68,7 @@ export async function attributeRemoved(
 
             token.attributeCount -= 1
             await ctx.store.save(token)
-            processMetadata(token.id, 'token')
+            processMetadata(token.id, 'token', true)
         } else if (attribute.collection) {
             const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
@@ -76,7 +76,7 @@ export async function attributeRemoved(
 
             collection.attributeCount -= 1
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection')
+            processMetadata(collection.id, 'collection', true)
         }
 
         ctx.store.remove(attribute)
