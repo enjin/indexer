@@ -347,6 +347,12 @@ type TraitToken @entity {
   token: Token!
 }
 
+type CollectionFlags {
+  hiddenForLegalReasons: Boolean!
+  featured: Boolean!
+  verified: Boolean!
+}
+
 type Collection @entity {
   id: ID!
   collectionId: BigInt! @index
@@ -372,6 +378,8 @@ type Collection @entity {
   # Extras
   metadata: Metadata
   createdAt: DateTime!
+  flags: CollectionFlags
+  hidden: Boolean!
 
   # Marketplace analytics
   stats: CollectionStats!

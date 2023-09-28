@@ -11,6 +11,7 @@ import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Trait} from "./trait.model"
 import {Metadata} from "./_metadata"
+import {CollectionFlags} from "./_collectionFlags"
 import {CollectionStats} from "./_collectionStats"
 
 @Entity_()
@@ -74,6 +75,12 @@ export class Collection {
 
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
+
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: true})
+    flags!: CollectionFlags | undefined | null
+
+    @Column_("bool", {nullable: false})
+    hidden!: boolean
 
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})
     stats!: CollectionStats

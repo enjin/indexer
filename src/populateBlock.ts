@@ -28,7 +28,6 @@ import {
     TokenLock,
     TokenApproval,
     Attribute,
-    Metadata,
     Listing,
     FeeSide,
     FixedPriceData,
@@ -256,6 +255,7 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                     marketCap: 0n,
                     volume: 0n,
                 }),
+                hidden: false,
                 burnPolicy: null,
                 attributePolicy: null,
                 attributeCount: data.attributeCount,
@@ -468,12 +468,6 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                     updatedAt: new Date(block.timestamp),
                 })
 
-                if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
-                    const token = new Token({ id, metadata: new Metadata() })
-                    // enqueueMetadata(token, token.metadata as Metadata, attribute)
-                    await ctx.store.save(token)
-                }
-
                 return attribute
             }
 
@@ -486,12 +480,6 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                 createdAt: new Date(block.timestamp),
                 updatedAt: new Date(block.timestamp),
             })
-
-            if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
-                const collection = new Collection({ id, metadata: new Metadata() })
-                // enqueueMetadata(collection, collection.metadata as Metadata, attribute)
-                await ctx.store.save(collection)
-            }
 
             return attribute
         })

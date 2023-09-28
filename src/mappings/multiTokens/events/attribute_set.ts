@@ -90,6 +90,7 @@ export async function attributeSet(
                 marketCap: 0n,
                 volume: 0n,
             }),
+            hidden: false,
             attributeCount: 0,
             totalDeposit: 0n,
             createdAt: new Date(block.timestamp),

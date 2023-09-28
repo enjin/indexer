@@ -30,6 +30,7 @@ export async function createEnjToken(ctx: CommonContext, block: SubstrateBlock) 
                 marketCap: 0n,
                 volume: 0n,
             }),
+            hidden: false,
             burnPolicy: null,
             attributePolicy: null,
             attributeCount: 0,
