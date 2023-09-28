@@ -5,6 +5,7 @@ import { ExpressAdapter } from '@bull-board/express'
 import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
+import { fetchAccountQueue } from '../jobs/fetch-account'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -18,6 +19,7 @@ async function main() {
 
     metadataQueue.process(80, `${__dirname}/process-metadata.js`)
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
+    fetchAccountQueue.process(2, `${__dirname}/fetch-account.js`)
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')

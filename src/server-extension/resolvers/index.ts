@@ -4,7 +4,6 @@ import { TokenSalesHistoryResolver } from './token_sales_history'
 import { VerifyMessageResolver } from './verify_message'
 import { TopCollectionResolver } from './top_collections'
 import { MyTokensResolver } from './my_tokens'
-import { RefreshAllAccountResolver } from './refresh_all_account'
 import { ClaimsAccountNonceResolver } from './claims_account_nonce'
 
 export {
@@ -12,7 +11,6 @@ export {
     VerifyMessageResolver,
     RefreshMetadataResolver,
     RefreshAccountResolver,
-    RefreshAllAccountResolver,
     TopCollectionResolver,
     MyTokensResolver,
     ClaimsAccountNonceResolver,
