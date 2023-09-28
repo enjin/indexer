@@ -20,10 +20,6 @@ export type AddressVerification = {
 }
 export async function fetchAccountsDetail(ids: string[]) {
     try {
-        if (!config.shouldFetchAccounts) {
-            return ids.map(() => null)
-        }
-
         const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
