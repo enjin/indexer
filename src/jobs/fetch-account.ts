@@ -1,7 +1,7 @@
 import Queue from 'bull'
 import { redisConfig } from './common'
 
-export type JobData = { ids: string[] }
+export type JobData = { ids: `0x${string}`[] }
 
 export const fetchAccountQueue = new Queue<JobData>('fetchAccountQueue', {
     defaultJobOptions: { attempts: 3, removeOnComplete: 5 },
@@ -11,7 +11,7 @@ export const fetchAccountQueue = new Queue<JobData>('fetchAccountQueue', {
     },
 })
 
-export const fetchAccountsDetail = async (ids: string[]) => {
+export const fetchAccountsDetail = async (ids: `0x${string}`[]) => {
     fetchAccountQueue.add({ ids }).catch(() => {
         // eslint-disable-next-line no-console
         console.log('Closing connection as Redis is not available')

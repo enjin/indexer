@@ -35,5 +35,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     await em.save(accounts)
 
-    done()
+    done(null, data)
 }

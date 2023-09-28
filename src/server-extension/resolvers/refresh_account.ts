@@ -3,6 +3,7 @@ import { Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'
+import { u8aToHex } from '@polkadot/util'
 import { fetchAccountsDetail } from '../../jobs/fetch-account'
 
 @Resolver()
@@ -19,13 +20,14 @@ export class RefreshAccountResolver {
             throw new Error('Too many accounts to refresh')
         }
 
-        ids.forEach((id) => {
+        const pks = ids.map((id) => {
             if (!decodeAddress(id)) {
                 throw new Error(`Invalid address ${id}`)
             }
+            return u8aToHex(decodeAddress(id))
         })
 
-        await fetchAccountsDetail(ids)
+        await fetchAccountsDetail(pks)
 
         return true
     }
