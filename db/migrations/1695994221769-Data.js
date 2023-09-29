@@ -1,5 +1,5 @@
-module.exports = class Data1695913378553 {
-    name = 'Data1695913378553'
+module.exports = class Data1695994221769 {
+    name = 'Data1695994221769'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -12,7 +12,7 @@ module.exports = class Data1695913378553 {
         await db.query(`CREATE INDEX "IDX_62d62253f33062b0e42352aab8" ON "attribute" ("key") `)
         await db.query(`CREATE INDEX "IDX_adaba2bde1f917be8521c42ebc" ON "attribute" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_8c947bde2aea695c9257d1eea8" ON "attribute" ("token_id") `)
-        await db.query(`CREATE TABLE "bid" ("id" character varying NOT NULL, "price" numeric NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "bidder_id" character varying, "listing_id" character varying, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "bid" ("id" character varying NOT NULL, "price" numeric NOT NULL, "height" integer NOT NULL, "extrinsic_hash" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "bidder_id" character varying, "listing_id" character varying, CONSTRAINT "PK_ed405dda320051aca2dcb1a50bb" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_e7618559409a903a897164156b" ON "bid" ("bidder_id") `)
         await db.query(`CREATE INDEX "IDX_facdd38f7948fbdd281063419b" ON "bid" ("listing_id") `)
         await db.query(`CREATE TABLE "listing_status" ("id" character varying NOT NULL, "type" character varying(9) NOT NULL, "height" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "listing_id" character varying, CONSTRAINT "PK_0524b292b49efd99751063f6ebc" PRIMARY KEY ("id"))`)
@@ -70,7 +70,7 @@ module.exports = class Data1695913378553 {
         await db.query(`CREATE TABLE "fuel_tank" ("id" character varying NOT NULL, "name" text NOT NULL, "provides_deposit" boolean NOT NULL, "is_frozen" boolean NOT NULL, "account_count" integer NOT NULL, "user_account_management" jsonb, "tank_account_id" character varying, "owner_id" character varying, CONSTRAINT "PK_00990856c313237086f9389784b" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_5a60f57b95f697e2ac75964762" ON "fuel_tank" ("tank_account_id") `)
         await db.query(`CREATE INDEX "IDX_3d8d58541e0377421fefa87b4e" ON "fuel_tank" ("owner_id") `)
-        await db.query(`CREATE TABLE "fuel_tank_rule_set" ("id" character varying NOT NULL, "index" integer NOT NULL, "is_frozen" boolean NOT NULL, "whitelisted_callers" text array, "whitelisted_collections" text array, "max_fuel_burn_per_transaction" jsonb, "user_fuel_budget" jsonb, "tank_fuel_budget" jsonb, "require_token" jsonb, "permitted_calls" text array, "tank_id" character varying, CONSTRAINT "PK_6f08fe8ff628100f82f54f3744a" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "fuel_tank_rule_set" ("id" character varying NOT NULL, "index" integer NOT NULL, "is_frozen" boolean NOT NULL, "is_permitted_extrinsics_empty" boolean NOT NULL, "whitelisted_callers" text array, "whitelisted_collections" text array, "max_fuel_burn_per_transaction" jsonb, "user_fuel_budget" jsonb, "tank_fuel_budget" jsonb, "require_token" jsonb, "permitted_calls" text array, "tank_id" character varying, CONSTRAINT "PK_6f08fe8ff628100f82f54f3744a" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_2af9817108e7de3cec526c836d" ON "fuel_tank_rule_set" ("tank_id") `)
         await db.query(`CREATE TABLE "permitted_extrinsics" ("id" character varying NOT NULL, "pallet_name" text, "extrinsic_name" text, "rule_set_id" character varying, CONSTRAINT "PK_5d473dd868ed25e8453852ec101" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_c12039a3ab3d643d126afb709d" ON "permitted_extrinsics" ("rule_set_id") `)
