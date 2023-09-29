@@ -2,6 +2,7 @@ import Queue from 'bull'
 import { redisConfig } from './common'
 import connection from '../connection'
 import { Collection } from '../model'
+import { computeTraits } from './compute-traits'
 
 export type JobData = { collectionId: string }
 
@@ -40,5 +41,6 @@ export async function syncAllCollections() {
 
     collections.forEach((collection) => {
         syncCollectionStats(collection.id)
+        computeTraits(collection.id)
     })
 }
