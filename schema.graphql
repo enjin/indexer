@@ -765,6 +765,9 @@ type FuelTankRuleSet @entity {
   tank: FuelTank!
   isFrozen: Boolean!
 
+  #for ease
+  isPermittedExtrinsicsEmpty: Boolean!
+
   whitelistedCallers: [String!]
   whitelistedCollections: [String]
   maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction

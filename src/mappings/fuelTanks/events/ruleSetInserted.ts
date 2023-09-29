@@ -69,6 +69,7 @@ export async function ruleSetInserted(
     const ruleSet = new FuelTankRuleSet({
         id: ruleSetId,
         index: eventData.ruleSetId,
+        isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
         tank: new FuelTank({ id: tankId }),
         isFrozen: false,
         whitelistedCallers,
