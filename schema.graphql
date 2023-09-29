@@ -605,6 +605,7 @@ type Bid @entity {
   # Extras
   listing: Listing!
   height: Int!
+  extrinsicHash: String
 
   createdAt: DateTime!
 }

@@ -88,6 +88,7 @@ export async function bidPlaced(
         price: data.bid.price,
         listing,
         height: block.height,
+        extrinsicHash: item.event.extrinsic?.hash,
         createdAt: new Date(block.timestamp),
     })
 
