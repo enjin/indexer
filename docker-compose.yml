@@ -37,6 +37,7 @@ services:
       - .env:/squid/.env
     depends_on:
       - indexer_db
+      - indexer_worker
 
   indexer_graphql:
     container_name: indexer_graphql
@@ -68,7 +69,7 @@ services:
       - .env:/squid/.env
     depends_on:
       - indexer_db
-      - indexer_processor
+      - indexer_redis
 
   archive_db:
     container_name: archive_db
