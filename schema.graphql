@@ -250,7 +250,7 @@ type ClaimsClaimRequested {
 
 type ClaimsClaimed {
   account: Account!
-  ethAccount: Account
+  ethAccount: String
   efiSum: BigInt!
   enjSum: BigInt!
   efiBurned: BigInt!
