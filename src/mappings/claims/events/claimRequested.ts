@@ -52,6 +52,7 @@ export async function claimRequested(
         isEfiToken: eventData.isEfiToken,
         extrinsicIndex: item.event.extrinsic.indexInBlock,
         isClaimed: false,
+        isRejected: false,
         createdBlock: block.height,
         createdAt: new Date(block.timestamp),
     })
