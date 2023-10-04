@@ -32,6 +32,9 @@ export class ClaimRequest {
     @Column_("bool", {nullable: false})
     isClaimed!: boolean
 
+    @Column_("bool", {nullable: false})
+    isRejected!: boolean
+
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 

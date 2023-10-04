@@ -684,6 +684,8 @@ type ClaimRequest @entity {
 
   isClaimed: Boolean!
 
+  isRejected: Boolean!
+
   createdAt: DateTime!
   createdBlock: Int!
 }
