@@ -100,4 +100,28 @@ async function main() {
     }
 }
 
-main()
+const processEnix = async () => {
+    const collectionId = '2095'
+    refreshMetadata(collectionId)
+    console.log('processin enix metadata...')
+    let tokenOffset = 0
+    let tokenData = await fetchTokens(collectionId, tokenOffset)
+
+    let { tokens } = tokenData.data
+    while (tokens.length > 0) {
+        tokenOffset += 1000
+        // eslint-disable-next-line no-await-in-loop
+        tokenData = await fetchTokens(collectionId, tokenOffset)
+        tokens = tokenData.data.tokens
+
+        tokens.forEach(async (token: any) => {
+            await refreshMetadata(collectionId, token.tokenId)
+        })
+    }
+}
+
+if (process.argv[2] === 'enix') {
+    processEnix()
+} else {
+    main()
+}
