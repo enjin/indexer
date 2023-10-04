@@ -41,6 +41,7 @@ export async function claimMinted(
         isEfiToken: false,
         extrinsicIndex: block.height,
         isClaimed: false,
+        isRejected: false,
         createdBlock: block.height,
         createdAt: new Date(block.timestamp),
     })
