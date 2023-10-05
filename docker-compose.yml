@@ -107,6 +107,7 @@ services:
       RUST_LOG: "actix_web=info,actix_server=info"
     command: [
       "--database-url", "postgres://root@archive_db:26257/defaultdb",
+      "--scan-start-value", "100"
     ]
     ports:
       - "8888:8000"

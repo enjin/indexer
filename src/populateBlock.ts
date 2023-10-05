@@ -119,6 +119,10 @@ async function getBlock(height: number) {
         },
     })
 
+    if (data.data.result.length === 0) {
+        throw new Error(`Can not start processor because block:${height} is not present in archive db, Please sync ingest first.`)
+    }
+
     return data.data.result[0].header
 }
 
