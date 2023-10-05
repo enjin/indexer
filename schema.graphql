@@ -675,7 +675,7 @@ type ClaimRequest @entity {
   id: ID!
 
   account: ClaimAccount!
-  hash: String
+  hash: String @unique
   amountClaimable: BigInt!
   amountBurned: BigInt!
 
