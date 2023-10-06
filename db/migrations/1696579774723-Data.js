@@ -1,5 +1,5 @@
-module.exports = class Data1695994221769 {
-    name = 'Data1695994221769'
+module.exports = class Data1696579774723 {
+    name = 'Data1696579774723'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -58,7 +58,8 @@ module.exports = class Data1695994221769 {
         await db.query(`CREATE INDEX "IDX_1f45de0713a55049009e8e8127" ON "extrinsic" ("hash") `)
         await db.query(`CREATE INDEX "IDX_142f352835c698a35eacbeb2f5" ON "extrinsic" ("block_number") `)
         await db.query(`CREATE INDEX "IDX_886be421c92f221ac8234c6624" ON "extrinsic" ("signer_id") `)
-        await db.query(`CREATE TABLE "claim_request" ("id" character varying NOT NULL, "account" jsonb NOT NULL, "hash" text, "amount_claimable" numeric NOT NULL, "amount_burned" numeric NOT NULL, "is_efi_token" boolean NOT NULL, "extrinsic_index" integer, "is_claimed" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "created_block" integer NOT NULL, CONSTRAINT "PK_2bc42faa6b816885c7ab31b2ccf" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "claim_request" ("id" character varying NOT NULL, "account" jsonb NOT NULL, "hash" text, "amount_claimable" numeric NOT NULL, "amount_burned" numeric NOT NULL, "is_efi_token" boolean NOT NULL, "extrinsic_index" integer, "is_claimed" boolean NOT NULL, "is_rejected" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "created_block" integer NOT NULL, CONSTRAINT "PK_2bc42faa6b816885c7ab31b2ccf" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE UNIQUE INDEX "IDX_0cc84b92a53558f6d4dcbf4874" ON "claim_request" ("hash") `)
         await db.query(`CREATE TABLE "claim" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "efi_sum" numeric NOT NULL, "enj_sum" numeric NOT NULL, "count" integer NOT NULL, "account_id" character varying, CONSTRAINT "PK_466b305cc2e591047fa1ce58f81" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_f1b34350a4500236d1f9e788cd" ON "claim" ("account_id") `)
         await db.query(`CREATE TABLE "claim_details" ("id" character varying NOT NULL, "exchange_rate" integer, "delay_claims_period" integer, "total_unclaimed_amount" numeric NOT NULL, CONSTRAINT "PK_6ad8d63cb66db1408935cfb4e54" PRIMARY KEY ("id"))`)
@@ -172,6 +173,7 @@ module.exports = class Data1695994221769 {
         await db.query(`DROP INDEX "public"."IDX_142f352835c698a35eacbeb2f5"`)
         await db.query(`DROP INDEX "public"."IDX_886be421c92f221ac8234c6624"`)
         await db.query(`DROP TABLE "claim_request"`)
+        await db.query(`DROP INDEX "public"."IDX_0cc84b92a53558f6d4dcbf4874"`)
         await db.query(`DROP TABLE "claim"`)
         await db.query(`DROP INDEX "public"."IDX_f1b34350a4500236d1f9e788cd"`)
         await db.query(`DROP TABLE "claim_details"`)
