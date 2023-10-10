@@ -38,11 +38,9 @@ export class RefreshMetadataResolver {
         const manager = await this.tx()
         let resource!: Collection | Token | null
 
-        if (!tokenId) {
-            resource = await manager.findOne(Collection, {
-                where: { id: collectionId },
-            })
-        } else {
+        const isToken = tokenId !== null && tokenId !== undefined
+
+        if (isToken) {
             resource = await manager.findOne(Token, {
                 where: {
                     tokenId,
@@ -50,9 +48,10 @@ export class RefreshMetadataResolver {
                         id: collectionId,
                     },
                 },
-                relations: {
-                    attributes: true,
-                },
+            })
+        } else {
+            resource = await manager.findOne(Collection, {
+                where: { id: collectionId },
             })
         }
 
@@ -60,9 +59,9 @@ export class RefreshMetadataResolver {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
 
-        processMetadata(resource.id, tokenId ? 'token' : 'collection', true)
+        processMetadata(resource.id, isToken ? 'token' : 'collection', true)
 
-        if (!tokenId) {
+        if (!isToken) {
             syncCollectionStats(collectionId)
             computeTraits(collectionId)
         }
