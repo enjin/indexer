@@ -59,7 +59,7 @@ export async function approved(
 
     const address = u8aToHex(data.owner)
 
-    if (data.tokenId) {
+    if (data.tokenId !== undefined) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })

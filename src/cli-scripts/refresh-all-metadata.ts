@@ -23,7 +23,7 @@ const REFRESH_METADATA_QUERY = `query RefreshMetadata($collectionId: String!, $t
     }
   }`
 
-const INDEXER_URL = process.env.INDEXER_URL || 'https://blockchain-matrix-indexer.stg.enjops.com'
+const INDEXER_URL = process.env.INDEXER_URL || 'https://blockchain-matrix-indexer.prod.enjops.com'
 
 const fetchCollections = async (offset: number) => {
     const { data } = await axios.post(`${INDEXER_URL}/graphql`, {
@@ -90,6 +90,7 @@ async function processAll() {
                     tokens = tokenData.data.tokens
 
                     tokens.forEach(async (token: any) => {
+                        if (token.tokenId === '0') return
                         await refreshMetadata(collection.id, token.tokenId)
                     })
                 }
@@ -115,13 +116,15 @@ const processMetadata = async (collectionId: string) => {
     let { tokens } = tokenData.data
     while (tokens.length > 0) {
         tokenOffset += 1000
+        tokens.forEach(async (token: any) => {
+            console.log('processing metadata of token', token.tokenId)
+
+            await refreshMetadata(collectionId, token.tokenId)
+        })
+
         // eslint-disable-next-line no-await-in-loop
         tokenData = await fetchTokens(collectionId, tokenOffset)
         tokens = tokenData.data.tokens
-
-        tokens.forEach(async (token: any) => {
-            await refreshMetadata(collectionId, token.tokenId)
-        })
     }
 }
 

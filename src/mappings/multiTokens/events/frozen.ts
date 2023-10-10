@@ -111,7 +111,7 @@ export async function frozen(
         collectionAccount.isFrozen = true
         collectionAccount.updatedAt = new Date(block.timestamp)
         ctx.store.save(collectionAccount)
-    } else if (data.tokenId) {
+    } else if (data.tokenId !== undefined) {
         const token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })

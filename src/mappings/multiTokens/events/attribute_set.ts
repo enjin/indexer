@@ -61,7 +61,7 @@ export async function attributeSet(
 
     const key = safeString(Buffer.from(data.key).toString())
     const value = safeString(Buffer.from(data.value).toString())
-    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
 
     let [attribute, collection] = await Promise.all([
@@ -99,7 +99,7 @@ export async function attributeSet(
     }
 
     let token = null
-    if (data.tokenId) {
+    if (data.tokenId !== undefined) {
         token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })

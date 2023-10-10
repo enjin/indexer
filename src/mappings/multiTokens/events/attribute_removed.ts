@@ -50,7 +50,7 @@ export async function attributeRemoved(
 
     if (skipSave) return getEvent(item, data)
 
-    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
     const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
