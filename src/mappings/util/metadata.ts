@@ -54,12 +54,11 @@ function parseMedia(value: string | Media[]) {
     }
 }
 
-function parseEthereumProperties(value: object) {
+function parseObjectProperties(value: object) {
     const properties: any = {}
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const element of Object.entries(value)) {
-        const [k, v] = element
+    for (const [k, v] of Object.entries(value)) {
         if (typeof v === 'object') {
             properties[k] = v
         } else {
@@ -118,8 +117,7 @@ export function metadataParser(
         media: Media[]
         properties: unknown
         attributes: unknown
-    } | null,
-    legacy = false
+    } | null
 ) {
     if (externalMetadata?.name) {
         metadata.name = safeString(externalMetadata.name)
@@ -130,7 +128,7 @@ export function metadataParser(
     if (externalMetadata?.external_url) {
         metadata.externalUrl = safeString(externalMetadata.external_url)
     }
-    if (legacy && externalMetadata?.image) {
+    if (externalMetadata?.image) {
         metadata.fallbackImage = safeString(externalMetadata.image)
     }
     if (externalMetadata?.fallback_image) {
@@ -139,11 +137,14 @@ export function metadataParser(
     if (externalMetadata?.media) {
         metadata.media = parseMedia(externalMetadata.media)
     }
-    if (legacy && externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
-        metadata.attributes = parseEthereumProperties(externalMetadata.properties)
+    if (externalMetadata?.properties && typeof externalMetadata.properties === 'object') {
+        metadata.attributes = parseObjectProperties(externalMetadata.properties)
+        if (Array.isArray(externalMetadata.properties)) {
+            metadata.attributes = parseArrayAttributes(externalMetadata.properties)
+        }
     }
     if (externalMetadata?.attributes && typeof externalMetadata.attributes === 'object') {
-        metadata.attributes = externalMetadata.attributes
+        metadata.attributes = parseObjectProperties(externalMetadata.attributes)
         if (Array.isArray(externalMetadata.attributes)) {
             metadata.attributes = parseArrayAttributes(externalMetadata.attributes)
         }

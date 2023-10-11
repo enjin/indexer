@@ -24,22 +24,30 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     let resource: Collection | Token | null
     let attributes: Attribute[] = []
+    let collectionUriAttribute: Attribute | null = null
     if (jobData.type === 'collection') {
-        resource = await em.findOne(Collection, {
-            where: { id: jobData.resourceId },
-        })
-        attributes = await em.find(Attribute, {
-            where: { collection: { id: jobData.resourceId }, token: IsNull() },
-        })
+        ;[resource, attributes] = await Promise.all([
+            em.findOne(Collection, {
+                where: { id: jobData.resourceId },
+            }),
+            em.find(Attribute, {
+                where: { collection: { id: jobData.resourceId }, token: IsNull() },
+            }),
+        ])
     } else {
-        resource = await em.findOne(Token, {
-            where: {
-                id: jobData.resourceId,
-            },
-            relations: {
-                attributes: true,
-            },
-        })
+        ;[resource, [collectionUriAttribute]] = await Promise.all([
+            em.findOne(Token, {
+                where: {
+                    id: jobData.resourceId,
+                },
+                relations: {
+                    attributes: true,
+                },
+            }),
+            em.find(Attribute, {
+                where: { collection: { id: jobData.resourceId.split('-')[0] }, key: 'uri', token: IsNull() },
+            }),
+        ])
         attributes = resource?.attributes ?? []
     }
 
@@ -48,7 +56,12 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         return
     }
 
-    const uriAttribute = attributes.find((a) => a.key === 'uri')
+    let uriAttribute = attributes.find((a) => a.key === 'uri')
+
+    if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
+        uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
+    }
+
     let externalMetadata: any = {}
     let metadata = new Metadata()
 
@@ -80,12 +93,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             }
         }
 
-        metadata = metadataParser(
-            metadata,
-            uriAttribute,
-            externalMetadata,
-            uriAttribute.value.includes('{id}.json') || uriAttribute.value.includes('%7Bid%7D.json')
-        )
+        metadata = metadataParser(metadata, uriAttribute, externalMetadata)
     }
 
     // add other attributes
