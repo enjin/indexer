@@ -12,6 +12,7 @@ import {Attribute} from "./attribute.model"
 import {Trait} from "./trait.model"
 import {Metadata} from "./_metadata"
 import {CollectionFlags} from "./_collectionFlags"
+import {CollectionSocials} from "./_collectionSocials"
 import {CollectionStats} from "./_collectionStats"
 
 @Entity_()
@@ -76,8 +77,11 @@ export class Collection {
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: true})
-    flags!: CollectionFlags | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: false})
+    flags!: CollectionFlags
+
+    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionSocials(undefined, obj)}, nullable: false})
+    socials!: CollectionSocials
 
     @Column_("bool", {nullable: false})
     hidden!: boolean

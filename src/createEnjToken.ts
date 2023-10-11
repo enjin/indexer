@@ -1,7 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { CommonContext } from './mappings/types/contexts'
 import { getOrCreateAccount } from './mappings/util/entities'
-import { Collection, CollectionStats, MintPolicy, Token, TransferPolicy } from './model'
+import { Collection, CollectionFlags, CollectionSocials, CollectionStats, MintPolicy, Token, TransferPolicy } from './model'
 import { isMainnet } from './common/tools'
 
 export async function createEnjToken(ctx: CommonContext, block: SubstrateBlock) {
@@ -29,6 +29,19 @@ export async function createEnjToken(ctx: CommonContext, block: SubstrateBlock) 
                 supply,
                 marketCap: 0n,
                 volume: 0n,
+            }),
+            flags: new CollectionFlags({
+                featured: false,
+                hiddenForLegalReasons: false,
+                verified: false,
+            }),
+            socials: new CollectionSocials({
+                discord: null,
+                twitter: null,
+                instagram: null,
+                medium: null,
+                tiktok: null,
+                website: null,
             }),
             hidden: false,
             burnPolicy: null,

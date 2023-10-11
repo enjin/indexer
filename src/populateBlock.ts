@@ -37,6 +37,8 @@ import {
     FixedPriceState,
     ListingStatusType,
     ListingStatus,
+    CollectionFlags,
+    CollectionSocials,
 } from './model'
 import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
@@ -258,6 +260,19 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                     supply: 0n,
                     marketCap: 0n,
                     volume: 0n,
+                }),
+                flags: new CollectionFlags({
+                    featured: false,
+                    hiddenForLegalReasons: false,
+                    verified: false,
+                }),
+                socials: new CollectionSocials({
+                    discord: null,
+                    twitter: null,
+                    instagram: null,
+                    medium: null,
+                    tiktok: null,
+                    website: null,
                 }),
                 hidden: false,
                 burnPolicy: null,

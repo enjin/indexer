@@ -353,6 +353,15 @@ type CollectionFlags {
   verified: Boolean!
 }
 
+type CollectionSocials {
+    twitter: String
+    discord: String
+    instagram: String
+    website: String
+    medium: String
+    tiktok: String
+}
+
 type Collection @entity {
   id: ID!
   collectionId: BigInt! @index
@@ -378,7 +387,8 @@ type Collection @entity {
   # Extras
   metadata: Metadata
   createdAt: DateTime!
-  flags: CollectionFlags
+  flags: CollectionFlags!
+  socials: CollectionSocials!
   hidden: Boolean!
 
   # Marketplace analytics
