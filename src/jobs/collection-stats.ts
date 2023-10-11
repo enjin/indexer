@@ -10,7 +10,7 @@ export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
     defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
     redis: redisConfig,
     settings: {
-        maxStalledCount: 2,
+        maxStalledCount: 3,
     },
 })
 

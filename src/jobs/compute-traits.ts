@@ -7,7 +7,7 @@ export const traitsQueue = new Queue<JobData>('traitsQueue', {
     defaultJobOptions: { delay: 5000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
     settings: {
-        maxStalledCount: 2,
+        maxStalledCount: 3,
     },
 })
 

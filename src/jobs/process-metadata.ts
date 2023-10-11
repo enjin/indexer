@@ -7,7 +7,7 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
     defaultJobOptions: { delay: 1000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
     settings: {
-        maxStalledCount: 2,
+        maxStalledCount: 3,
     },
 })
 

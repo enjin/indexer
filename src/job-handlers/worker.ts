@@ -19,7 +19,7 @@ async function main() {
     console.info('handling jobs...')
 
     traitsQueue.process(2, `${__dirname}/compute-traits.js`)
-    metadataQueue.process(80, `${__dirname}/process-metadata.js`)
+    metadataQueue.process(50, `${__dirname}/process-metadata.js`)
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
 
