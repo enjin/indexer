@@ -79,7 +79,7 @@ export async function attributeRemoved(
             processMetadata(collection.id, 'collection', true)
         }
 
-        ctx.store.remove(attribute)
+        await ctx.store.remove(attribute)
     }
     return getEvent(item, data)
 }

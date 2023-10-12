@@ -608,7 +608,7 @@ export async function tokenCreated(
             createdAt: new Date(block.timestamp),
         })
 
-        ctx.store.insert(Token, token as any)
+        await ctx.store.insert(Token, token as any)
 
         return getEvent(item, eventData)
     }

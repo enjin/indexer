@@ -97,7 +97,6 @@ export async function minted(
 
     const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
     })
 
     if (token.supply !== 0n && token.metadata?.attributes) {
@@ -106,15 +105,10 @@ export async function minted(
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)
-    ctx.store.save(token)
 
     tokenAccount.balance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
-    ctx.store.save(tokenAccount)
-
-    const { account } = tokenAccount
-    account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-    ctx.store.save(account)
+    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
 
     syncCollectionStats(data.collectionId.toString())
 

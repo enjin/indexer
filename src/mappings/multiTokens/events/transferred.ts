@@ -79,32 +79,22 @@ export async function transferred(
     const [fromTokenAccount, toTokenAccount] = await Promise.all([
         ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${fromAddress}-${data.collectionId}-${data.tokenId}` },
-            relations: { account: true, token: true },
         }),
         ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${toAddress}-${data.collectionId}-${data.tokenId}` },
-            relations: { account: true, token: true },
         }),
     ])
 
     if (fromTokenAccount) {
         fromTokenAccount.balance -= data.amount
         fromTokenAccount.updatedAt = new Date(block.timestamp)
-        ctx.store.save(fromTokenAccount)
-
-        const { account, token } = fromTokenAccount
-        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-        ctx.store.save(account)
+        await ctx.store.save(fromTokenAccount)
     }
 
     if (toTokenAccount) {
         toTokenAccount.balance += data.amount
         toTokenAccount.updatedAt = new Date(block.timestamp)
-        ctx.store.save(toTokenAccount)
-
-        const { account, token } = toTokenAccount
-        account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-        ctx.store.save(account)
+        await ctx.store.save(toTokenAccount)
     }
 
     syncCollectionStats(data.collectionId.toString())

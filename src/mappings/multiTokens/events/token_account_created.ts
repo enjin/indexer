@@ -96,7 +96,7 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    ctx.store.insert(TokenAccount, tokenAccount as any)
+    await ctx.store.insert(TokenAccount, tokenAccount as any)
 
     return getEvent(item, data)
 }

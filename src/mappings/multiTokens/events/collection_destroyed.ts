@@ -63,7 +63,7 @@ export async function collectionDestroyed(
         ctx.store.delete(Attribute, { collection: { id: collectionId } }),
     ])
 
-    ctx.store.delete(Collection, { id: collectionId })
+    await ctx.store.delete(Collection, { id: collectionId })
 
     return getEvent(item, data)
 }

@@ -62,7 +62,7 @@ export async function tokenAccountDestroyed(
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
     })
     if (tokenAccount) {
-        ctx.store.remove(tokenAccount)
+        await ctx.store.remove(tokenAccount)
     }
 
     return getEvent(item, data)
