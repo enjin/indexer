@@ -34,6 +34,7 @@ async function main() {
             new BullAdapter(collectionStatsQueue),
             new BullAdapter(fetchAccountQueue),
             new BullAdapter(traitsQueue),
+            new BullAdapter(fetchCollectionExtraQueue),
         ],
         serverAdapter,
         options: {
