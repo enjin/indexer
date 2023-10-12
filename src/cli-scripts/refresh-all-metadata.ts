@@ -117,6 +117,7 @@ const processMetadata = async (collectionId: string) => {
     while (tokens.length > 0) {
         tokenOffset += 1000
         tokens.forEach(async (token: any) => {
+            // eslint-disable-next-line no-console
             console.log('processing metadata of token', token.tokenId)
 
             await refreshMetadata(collectionId, token.tokenId)

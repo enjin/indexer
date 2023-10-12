@@ -17,6 +17,7 @@ export const computeTraits = async (collectionId: string) => {
     }
 
     traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+        // eslint-disable-next-line no-console
         console.log('Closing connection as Redis is not available')
         traitsQueue.close(true)
     })
