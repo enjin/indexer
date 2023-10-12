@@ -5,12 +5,14 @@ import { VerifyMessageResolver } from './verify_message'
 import { TopCollectionResolver } from './top_collections'
 import { MyTokensResolver } from './my_tokens'
 import { ClaimsAccountNonceResolver } from './claims_account_nonce'
+import { RefreshCollectionsResolver } from './refresh_collections'
 
 export {
     TokenSalesHistoryResolver,
     VerifyMessageResolver,
     RefreshMetadataResolver,
     RefreshAccountResolver,
+    RefreshCollectionsResolver,
     TopCollectionResolver,
     MyTokensResolver,
     ClaimsAccountNonceResolver,
