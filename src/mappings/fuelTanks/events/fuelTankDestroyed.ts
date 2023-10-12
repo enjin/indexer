@@ -36,7 +36,10 @@ export async function fuelTankDestroyed(
 
     const tankId = u8aToHex(eventData.tankId)
 
-    const pE = await ctx.store.find(PermittedExtrinsics, { where: { ruleSet: { tank: { id: tankId } } } })
+    const pE = await ctx.store.find(PermittedExtrinsics, {
+        relations: { ruleSet: true },
+        where: { ruleSet: { tank: { id: tankId } } },
+    })
 
     await ctx.store.remove(pE)
     await Promise.all([
@@ -44,7 +47,7 @@ export async function fuelTankDestroyed(
         ctx.store.delete(FuelTankAccountRules, { tank: { id: tankId } }),
     ])
 
-    ctx.store.delete(FuelTank, { tank: { id: tankId } })
+    ctx.store.delete(FuelTank, { id: tankId })
 
     return new EventModel({
         id: item.event.id,
