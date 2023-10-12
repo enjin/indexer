@@ -52,7 +52,7 @@ export async function fetchAccountsDetail(ids: string[]) {
         const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
-                query: collectionsQuery,
+                query: addressesQuery,
                 variables: {
                     ids,
                 },
@@ -94,7 +94,7 @@ export async function fetchCollectionsExtra(ids: string[]) {
         const { data } = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: any }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
-                query: addressesQuery,
+                query: collectionsQuery,
                 variables: {
                     ids,
                 },

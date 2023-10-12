@@ -1,5 +1,5 @@
-module.exports = class Data1696579774723 {
-    name = 'Data1696579774723'
+module.exports = class Data1697108287486 {
+    name = 'Data1697108287486'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -40,7 +40,7 @@ module.exports = class Data1696579774723 {
         await db.query(`CREATE TABLE "collection_account" ("id" character varying NOT NULL, "is_frozen" boolean NOT NULL, "approvals" jsonb, "account_count" integer NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying, "collection_id" character varying, CONSTRAINT "PK_149cc78cfb0b9c3da0f8a2ff5e9" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_2b2b641fd385385ba996c66098" ON "collection_account" ("account_id") `)
         await db.query(`CREATE INDEX "IDX_a0ca7fffb7ae953536712abef2" ON "collection_account" ("collection_id") `)
-        await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "collection_id" numeric NOT NULL, "mint_policy" jsonb NOT NULL, "market_policy" jsonb, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "flags" jsonb, "hidden" boolean NOT NULL, "stats" jsonb NOT NULL, "owner_id" character varying, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "collection" ("id" character varying NOT NULL, "collection_id" numeric NOT NULL, "mint_policy" jsonb NOT NULL, "market_policy" jsonb, "burn_policy" text, "transfer_policy" jsonb, "attribute_policy" text, "attribute_count" integer NOT NULL, "total_deposit" numeric NOT NULL, "metadata" jsonb, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "flags" jsonb NOT NULL, "socials" jsonb NOT NULL, "hidden" boolean NOT NULL, "stats" jsonb NOT NULL, "owner_id" character varying, CONSTRAINT "PK_ad3f485bbc99d875491f44d7c85" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_f7f39206eb394d7d788699c600" ON "collection" ("collection_id") `)
         await db.query(`CREATE INDEX "IDX_01d689ecc7eba32eaf962ad9d9" ON "collection" ("owner_id") `)
         await db.query(`CREATE TABLE "event" ("id" character varying NOT NULL, "data" jsonb, "collection_id" text, "token_id" text, "extrinsic_id" character varying, CONSTRAINT "PK_30c2f3bbaf6d34a55f8ae6e4614" PRIMARY KEY ("id"))`)
