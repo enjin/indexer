@@ -6,6 +6,7 @@ import { BalancesTransferEvent } from '../../../types/generated/events'
 import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
+import { Sns } from '../../../common/sns'
 
 interface EventData {
     from: Uint8Array
@@ -31,6 +32,19 @@ export async function transfer(
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
     if (!eventData) return undefined
+
+    if (item.event.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.event.id,
+            name: item.event.name,
+            body: {
+                from: u8aToHex(eventData.from),
+                to: u8aToHex(eventData.to),
+                amount: eventData.amount,
+                extrinsic: item.event.extrinsic.id,
+            },
+        })
+    }
 
     return new EventModel({
         id: item.event.id,
