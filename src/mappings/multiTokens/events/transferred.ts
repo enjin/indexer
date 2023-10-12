@@ -15,6 +15,7 @@ import {
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTransferredEvent(ctx, event)
@@ -105,6 +106,8 @@ export async function transferred(
         account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
         ctx.store.save(account)
     }
+
+    syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)
 }

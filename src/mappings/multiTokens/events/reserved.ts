@@ -5,6 +5,7 @@ import { TokenAccount, TokenNamedReserve } from '../../../model'
 import { MultiTokensReservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, eventItem: Event) {
     const event = new MultiTokensReservedEvent(ctx, eventItem)
@@ -48,6 +49,8 @@ export async function reserved(
 
         ctx.store.save(tokenAccount)
     }
+
+    syncCollectionStats(data.collectionId.toString())
 
     return undefined
 }
