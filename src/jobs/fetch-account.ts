@@ -4,7 +4,7 @@ import { redisConfig } from './common'
 export type JobData = { ids: `0x${string}`[] }
 
 export const fetchAccountQueue = new Queue<JobData>('fetchAccountQueue', {
-    defaultJobOptions: { attempts: 3, removeOnComplete: 30 },
+    defaultJobOptions: { attempts: 3, removeOnComplete: 50 },
     redis: redisConfig,
     settings: {
         maxStalledCount: 2,

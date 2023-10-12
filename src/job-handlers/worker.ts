@@ -7,6 +7,7 @@ import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
 import { fetchAccountQueue } from '../jobs/fetch-account'
 import { traitsQueue } from '../jobs/compute-traits'
+import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -22,6 +23,7 @@ async function main() {
     metadataQueue.process(50, `${__dirname}/process-metadata.js`)
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
+    fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
