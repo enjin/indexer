@@ -19,6 +19,9 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     const { collectionId } = job.data
     const em = connection.manager
 
+    // eslint-disable-next-line no-console
+    console.log('collection-stats', collectionId)
+
     const promises = [
         em
             .createQueryBuilder()
@@ -72,5 +75,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     await em.update(Collection, { id: collectionId }, { stats })
 
-    done(null, { id: collectionId })
+    done(null, { id: collectionId, stats: stats.toJSON() })
 }
