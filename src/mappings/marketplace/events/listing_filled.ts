@@ -98,7 +98,7 @@ export async function listingFilled(
             height: block.height,
             createdAt: new Date(block.timestamp),
         })
-        ctx.store.insert(ListingStatus, listingStatus as any)
+        await ctx.store.insert(ListingStatus, listingStatus as any)
     }
 
     const sale = new ListingSale({
@@ -120,7 +120,7 @@ export async function listingFilled(
         ctx.store.save(listing.makeAssetId)
     }
 
-    Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
+    await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
     if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 

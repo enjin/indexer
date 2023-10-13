@@ -130,7 +130,7 @@ export async function listingCreated(
     }
     makeAssetId.recentListing = listing
 
-    Promise.all([
+    await Promise.all([
         ctx.store.insert(Listing, listing as any),
         ctx.store.insert(ListingStatus, listingStatus as any),
         ctx.store.save(makeAssetId),

@@ -92,7 +92,7 @@ export async function listingCancelled(
         ctx.store.save(listing.makeAssetId)
     }
 
-    Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
+    await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
 
     if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 

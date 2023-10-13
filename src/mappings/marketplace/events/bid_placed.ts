@@ -107,7 +107,7 @@ export async function bidPlaced(
         }
     }
 
-    Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 
     if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
 
