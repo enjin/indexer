@@ -46,5 +46,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     await Promise.all(collectionsPromise)
 
-    done(null, ids)
+    done(null, data)
 }

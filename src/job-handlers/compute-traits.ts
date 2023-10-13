@@ -114,5 +114,5 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         await em.insert(TraitToken, traitTokensToSave as any)
     }
 
-    done(null, { timeElapsed: new Date().getTime() - start.getTime(), collectionId })
+    done(null, { timeElapsed: new Date().getTime() - start.getTime(), traits: traitsToSave.length })
 }
