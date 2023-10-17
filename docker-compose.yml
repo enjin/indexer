@@ -9,7 +9,9 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - indexer_db:/var/lib/postgresql/data
+  
     ports:
       - "5432:5432"
       # command: ["postgres", "-c", "log_statement=all"]
@@ -35,6 +37,7 @@ services:
       - .env:/squid/.env
     depends_on:
       - indexer_db
+      - indexer_worker
 
   indexer_graphql:
     container_name: indexer_graphql
@@ -45,12 +48,28 @@ services:
     build:
       context: .
     ports:
-      - "4467:4347"
+      - "4000:4000"
     volumes:
       - .env:/squid/.env
     depends_on:
       - indexer_db
       - indexer_processor
+
+  indexer_worker:
+    container_name: indexer_worker
+    restart: unless-stopped
+    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    environment:
+      CONTAINER_ROLE: worker
+    build:
+      context: .
+    ports:
+      - "9090:9090"
+    volumes:
+      - .env:/squid/.env
+    depends_on:
+      - indexer_db
+      - indexer_redis
 
   archive_db:
     container_name: archive_db
@@ -84,10 +103,11 @@ services:
     depends_on:
       - archive_db
     environment:
-      DATABASE_MAX_CONNECTIONS: 5
+      DATABASE_MAX_CONNECTIONS: 10
       RUST_LOG: "actix_web=info,actix_server=info"
     command: [
       "--database-url", "postgres://root@archive_db:26257/defaultdb",
+      "--scan-start-value", "100"
     ]
     ports:
       - "8888:8000"

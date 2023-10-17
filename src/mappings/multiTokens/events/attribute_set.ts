@@ -5,6 +5,8 @@ import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import {
     Attribute,
     Collection,
+    CollectionFlags,
+    CollectionSocials,
     CollectionStats,
     Event as EventModel,
     Extrinsic,
@@ -13,12 +15,12 @@ import {
     MultiTokensAttributeSet,
     Token,
 } from '../../../model'
-import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
 import { computeTraits } from '../../../jobs/compute-traits'
+import { processMetadata } from '../../../jobs/process-metadata'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensAttributeSetEvent(ctx, event)
@@ -29,18 +31,49 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensAttributeSet({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: safeString(Buffer.from(data.key).toString()),
+            value: safeString(Buffer.from(data.value).toString()),
+        }),
+    })
+}
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function attributeSet(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    let collection = await ctx.store.findOne<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
+    if (skipSave) return getEvent(item, data)
+
+    const key = safeString(Buffer.from(data.key).toString())
+    const value = safeString(Buffer.from(data.value).toString())
+    const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
+    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
+
+    let [attribute, collection] = await Promise.all([
+        ctx.store.findOne<Attribute>(Attribute, {
+            where: { id: attributeId },
+        }),
+        ctx.store.findOne<Collection>(Collection, {
+            where: { id: data.collectionId.toString() },
+        }),
+    ])
     if (!collection) {
         collection = new Collection({
             id: data.collectionId.toString(),
@@ -59,6 +92,20 @@ export async function attributeSet(
                 marketCap: 0n,
                 volume: 0n,
             }),
+            flags: new CollectionFlags({
+                featured: false,
+                hiddenForLegalReasons: false,
+                verified: false,
+            }),
+            socials: new CollectionSocials({
+                discord: null,
+                twitter: null,
+                instagram: null,
+                medium: null,
+                tiktok: null,
+                website: null,
+            }),
+            hidden: false,
             attributeCount: 0,
             totalDeposit: 0n,
             createdAt: new Date(block.timestamp),
@@ -67,20 +114,11 @@ export async function attributeSet(
     }
 
     let token = null
-    if (data.tokenId) {
+    if (data.tokenId !== undefined) {
         token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })
     }
-
-    const key = safeString(Buffer.from(data.key).toString())
-    const value = safeString(Buffer.from(data.value).toString())
-    const id = data.tokenId ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
-    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
-
-    let attribute = await ctx.store.findOne<Attribute>(Attribute, {
-        where: { id: attributeId },
-    })
 
     if (attribute) {
         attribute.value = value
@@ -89,14 +127,14 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
             await ctx.store.save(token)
+            processMetadata(token.id, 'token', true)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
             await ctx.store.save(collection)
+            processMetadata(collection.id, 'collection', true)
         }
         await ctx.store.save(attribute)
     } else {
@@ -117,32 +155,21 @@ export async function attributeSet(
             if (!token.metadata) {
                 token.metadata = new Metadata()
             }
-            token.metadata = await getMetadata(token.metadata, attribute)
             token.attributeCount += 1
             await ctx.store.save(token)
+            processMetadata(token.id, 'token', true)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
-            collection.metadata = await getMetadata(collection.metadata, attribute)
             collection.attributeCount += 1
             await ctx.store.save(collection)
+            processMetadata(collection.id, 'collection', true)
         }
     }
     if (token && token.metadata?.attributes) {
         computeTraits(collection.id)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensAttributeSet({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            key,
-            value,
-        }),
-    })
+    return getEvent(item, data)
 }

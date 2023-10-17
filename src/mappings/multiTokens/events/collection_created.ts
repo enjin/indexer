@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
@@ -10,6 +11,8 @@ import {
 } from '../../../types/generated/calls'
 import {
     Collection,
+    CollectionFlags,
+    CollectionSocials,
     CollectionStats,
     Event as EventModel,
     Extrinsic,
@@ -121,18 +124,38 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(event.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionCreated({
+            collectionId: data.collectionId,
+            owner: u8aToHex(data.owner),
+        }),
+    })
+}
+
 export async function collectionCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     if (!item.event.call) return undefined
 
     const eventData = getEventData(ctx, item.event)
-    const callData = await getCallData(ctx, item.event.call)
-    if (!eventData || !callData) return undefined
+    if (!eventData) return undefined
 
-    const account = await getOrCreateAccount(ctx, eventData.owner)
+    if (skipSave) {
+        ctx.store.update(Collection, { id: eventData.collectionId.toString() }, { createdAt: new Date(block.timestamp) })
+        return getEvent(item, eventData)
+    }
+    const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
+
+    if (!callData) return undefined
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         collectionId: eventData.collectionId,
@@ -156,6 +179,20 @@ export async function collectionCreated(
             marketCap: 0n,
             volume: 0n,
         }),
+        flags: new CollectionFlags({
+            featured: false,
+            hiddenForLegalReasons: false,
+            verified: false,
+        }),
+        socials: new CollectionSocials({
+            discord: null,
+            twitter: null,
+            instagram: null,
+            medium: null,
+            tiktok: null,
+            website: null,
+        }),
+        hidden: false,
         burnPolicy: null,
         attributePolicy: null,
         attributeCount: 0,
@@ -165,27 +202,18 @@ export async function collectionCreated(
 
     await ctx.store.save(collection)
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const currency of callData.explicitRoyaltyCurrencies) {
-        // eslint-disable-next-line no-await-in-loop
-        const token = await ctx.store.findOneOrFail<Token>(Token, {
-            where: { id: `${currency.collectionId.toString()}-${currency.tokenId.toString()}` },
+    const royaltyPromises = callData.explicitRoyaltyCurrencies
+        .map((currency) => {
+            const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
+            return new RoyaltyCurrency({
+                id: `${collection.id}-${tokenId}`,
+                collection,
+                token: new Token({ id: tokenId }),
+            })
         })
-        const royaltyCurrency = new RoyaltyCurrency({
-            id: `${collection.id}-${token.id}`,
-            collection,
-            token,
-        })
-        // eslint-disable-next-line no-await-in-loop
-        await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
-    }
+        .map((rc) => ctx.store.insert(RoyaltyCurrency, rc as any))
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionCreated({
-            collectionId: eventData.collectionId,
-            owner: account.id,
-        }),
-    })
+    Promise.all(royaltyPromises)
+
+    return getEvent(item, eventData)
 }

@@ -17,9 +17,9 @@ import {
     MarketplaceListingFilled,
 } from '../../../model'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { CommonContext } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingFilledEvent(ctx, event)
@@ -30,66 +30,11 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function listingFilled(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
-    if (!data) return undefined
-
-    const listingId = Buffer.from(data.listingId).toString('hex')
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
-        where: { id: listingId },
-        relations: {
-            seller: true,
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-        },
-    })
-
-    listing.state = new FixedPriceState({
-        listingType: ListingType.FixedPrice,
-        amountFilled: listing.amount - data.amountRemaining,
-    })
-
-    if (data.amountRemaining === 0n) {
-        const listingStatus = new ListingStatus({
-            id: `${listingId}-${block.height}`,
-            type: ListingStatusType.Finalized,
-            listing,
-            height: block.height,
-            createdAt: new Date(block.timestamp),
-        })
-        await ctx.store.insert(ListingStatus, listingStatus as any)
-    }
-
-    const sale = new ListingSale({
-        id: `${listingId}-${item.event.id}`,
-        amount: data.amountFilled,
-        buyer: new Account({ id: u8aToHex(data.buyer) }),
-        price: listing.price,
-        listing,
-        createdAt: new Date(block.timestamp),
-    })
-    await ctx.store.save(sale)
-
-    listing.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(listing)
-
-    if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        listing.makeAssetId.bestListing = null
-        if (bestListing) {
-            listing.makeAssetId.bestListing = bestListing
-        }
-        await ctx.store.save(listing.makeAssetId)
-    }
-
-    new CollectionService(ctx.store).sync(listing.makeAssetId.collection.id)
-
+function getEvent(
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
@@ -115,4 +60,69 @@ export async function listingFilled(
             event,
         }),
     ]
+}
+
+export async function listingFilled(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
+
+    const listingId = Buffer.from(data.listingId).toString('hex')
+    const listing = await ctx.store.findOne<Listing>(Listing, {
+        where: { id: listingId },
+        relations: {
+            seller: true,
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
+    })
+
+    if (!listing || !listing.makeAssetId) return undefined
+
+    listing.state = new FixedPriceState({
+        listingType: ListingType.FixedPrice,
+        amountFilled: listing.amount - data.amountRemaining,
+    })
+
+    if (data.amountRemaining === 0n) {
+        const listingStatus = new ListingStatus({
+            id: `${listingId}-${block.height}`,
+            type: ListingStatusType.Finalized,
+            listing,
+            height: block.height,
+            createdAt: new Date(block.timestamp),
+        })
+        await ctx.store.insert(ListingStatus, listingStatus as any)
+    }
+
+    const sale = new ListingSale({
+        id: `${listingId}-${item.event.id}`,
+        amount: data.amountFilled,
+        buyer: new Account({ id: u8aToHex(data.buyer) }),
+        price: listing.price,
+        listing,
+        createdAt: new Date(block.timestamp),
+    })
+    listing.updatedAt = new Date(block.timestamp)
+
+    if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
+        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+        listing.makeAssetId.bestListing = null
+        if (bestListing) {
+            listing.makeAssetId.bestListing = bestListing
+        }
+        ctx.store.save(listing.makeAssetId)
+    }
+
+    await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
+
+    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
+
+    return getEvent(item, data, listing)
 }

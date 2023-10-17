@@ -15,8 +15,9 @@ import {
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { CollectionService } from '../../../services'
 import { computeTraits } from '../../../jobs/compute-traits'
+import { getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 interface EventData {
     collectionId: bigint
@@ -39,53 +40,19 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function minted(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
-    if (!data) return undefined
-
-    const token = await ctx.store.findOneOrFail(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-        relations: {
-            collection: true,
-        },
-    })
-
-    if (token.supply !== 0n && token.metadata?.attributes) {
-        computeTraits(data.collectionId.toString())
-    }
-
-    token.supply += data.amount
-    token.nonFungible = isNonFungible(token)
-    await ctx.store.save(token)
-
-    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
-        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
-    })
-
-    tokenAccount.balance += data.amount
-    tokenAccount.updatedAt = new Date(block.timestamp)
-    await ctx.store.save(tokenAccount)
-
-    const { account } = tokenAccount
-    account.tokenValues += data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-    await ctx.store.save(account)
-
-    new CollectionService(ctx.store).sync(data.collectionId.toString())
-
+function getEvent(
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: token.id,
+        tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: token.id,
+            token: `${data.collectionId}-${data.tokenId}`,
             issuer: u8aToHex(data.issuer),
             recipient: u8aToHex(data.recipient),
             amount: data.amount,
@@ -96,10 +63,54 @@ export async function minted(
         event,
         new AccountTokenEvent({
             id: item.event.id,
-            token,
+            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
             from: new Account({ id: u8aToHex(data.issuer) }),
             to: new Account({ id: u8aToHex(data.recipient) }),
             event,
         }),
     ]
+}
+
+export async function minted(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
+): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
+
+    const token = await ctx.store.findOne(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
+    })
+
+    if (!token) return undefined
+
+    if (skipSave) {
+        getOrCreateAccount(ctx, data.recipient)
+        getOrCreateAccount(ctx, data.issuer)
+        return getEvent(item, data)
+    }
+
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
+    })
+
+    if (token.supply !== 0n && token.metadata?.attributes) {
+        computeTraits(data.collectionId.toString())
+    }
+
+    token.supply += data.amount
+    token.nonFungible = isNonFungible(token)
+
+    tokenAccount.balance += data.amount
+    tokenAccount.updatedAt = new Date(block.timestamp)
+    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
+
+    syncCollectionStats(data.collectionId.toString())
+
+    return getEvent(item, data)
 }

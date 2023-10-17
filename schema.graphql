@@ -250,7 +250,7 @@ type ClaimsClaimRequested {
 
 type ClaimsClaimed {
   account: Account!
-  ethAccount: Account
+  ethAccount: String
   efiSum: BigInt!
   enjSum: BigInt!
   efiBurned: BigInt!
@@ -347,6 +347,21 @@ type TraitToken @entity {
   token: Token!
 }
 
+type CollectionFlags {
+  hiddenForLegalReasons: Boolean!
+  featured: Boolean!
+  verified: Boolean!
+}
+
+type CollectionSocials {
+    twitter: String
+    discord: String
+    instagram: String
+    website: String
+    medium: String
+    tiktok: String
+}
+
 type Collection @entity {
   id: ID!
   collectionId: BigInt! @index
@@ -372,6 +387,9 @@ type Collection @entity {
   # Extras
   metadata: Metadata
   createdAt: DateTime!
+  flags: CollectionFlags!
+  socials: CollectionSocials!
+  hidden: Boolean!
 
   # Marketplace analytics
   stats: CollectionStats!
@@ -597,6 +615,7 @@ type Bid @entity {
   # Extras
   listing: Listing!
   height: Int!
+  extrinsicHash: String
 
   createdAt: DateTime!
 }
@@ -666,7 +685,7 @@ type ClaimRequest @entity {
   id: ID!
 
   account: ClaimAccount!
-  hash: String
+  hash: String @unique
   amountClaimable: BigInt!
   amountBurned: BigInt!
 
@@ -674,6 +693,8 @@ type ClaimRequest @entity {
   extrinsicIndex: Int
 
   isClaimed: Boolean!
+
+  isRejected: Boolean!
 
   createdAt: DateTime!
   createdBlock: Int!
@@ -756,6 +777,9 @@ type FuelTankRuleSet @entity {
   index: Int!
   tank: FuelTank!
   isFrozen: Boolean!
+
+  #for ease
+  isPermittedExtrinsicsEmpty: Boolean!
 
   whitelistedCallers: [String!]
   whitelistedCollections: [String]

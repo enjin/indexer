@@ -5,6 +5,7 @@ import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import ora from 'ora'
+import axios from 'axios'
 import { CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
 import config from './config'
@@ -27,7 +28,6 @@ import {
     TokenLock,
     TokenApproval,
     Attribute,
-    Metadata,
     Listing,
     FeeSide,
     FixedPriceData,
@@ -37,12 +37,15 @@ import {
     FixedPriceState,
     ListingStatusType,
     ListingStatus,
+    CollectionFlags,
+    CollectionSocials,
 } from './model'
 import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
-import { getMetadata } from './mappings/util/metadata'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
+import { UnknownVersionError } from './common/errors'
+import { processMetadata } from './jobs/process-metadata'
 
 const BATCH_SIZE = 1000
 
@@ -96,90 +99,119 @@ async function getAccountsMap(
     return map
 }
 
-function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const collectionStorage = new Storage.MultiTokensCollectionsStorage(ctx, block)
+async function getBlock(height: number) {
+    const query = `query Block($height: Int){
+        result: batch( fromBlock:$height, limit:1, includeAllBlocks:true){
+          header{
+            id
+            height
+            hash
+            specId
+            stateRoot
+            parentHash
+            timestamp
+          }
+        }
+      }`
 
-    if (collectionStorage.isMatrixEnjinV603) {
-        return collectionStorage.asMatrixEnjinV603
+    const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
+        query,
+        variables: {
+            height,
+        },
+    })
+
+    if (data.data.result.length === 0) {
+        throw new Error(`Can not start processor because block:${height} is not present in archive db, Please sync ingest first.`)
     }
 
-    throw new Error('Unsupported version')
+    return data.data.result[0].header
+}
+
+function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
+    const data = new Storage.MultiTokensCollectionsStorage(ctx, block)
+
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
+    }
+
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const balanceAccountStorage = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
+    const data = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
 
-    if (balanceAccountStorage.isMatrixEnjinV603) {
-        return balanceAccountStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const tokensStorage = new Storage.MultiTokensTokensStorage(ctx, block)
+    const data = new Storage.MultiTokensTokensStorage(ctx, block)
 
-    if (tokensStorage.isMatrixEnjinV603) {
-        return tokensStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    if (tokensStorage.isV600) {
-        return tokensStorage.asV600
+    if (data.isV600) {
+        return data.asV600
     }
 
-    if (tokensStorage.isV500) {
-        return tokensStorage.asV500
+    if (data.isV500) {
+        return data.asV500
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const tokenAccountsStorage = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
+    const data = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
 
-    if (tokenAccountsStorage.isMatrixEnjinV603) {
-        return tokenAccountsStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const attributeStorage = new Storage.MultiTokensAttributesStorage(ctx, block)
+    const data = new Storage.MultiTokensAttributesStorage(ctx, block)
 
-    if (attributeStorage.isMatrixEnjinV603) {
-        return attributeStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const listingStorage = new Storage.MarketplaceListingsStorage(ctx, block)
+    const data = new Storage.MarketplaceListingsStorage(ctx, block)
 
-    if (listingStorage.isMatrixEnjinV603) {
-        return listingStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const accountStorage = new Storage.SystemAccountStorage(ctx, block)
+    const data = new Storage.SystemAccountStorage(ctx, block)
 
-    if (accountStorage.isMatrixEnjinV603) {
-        return accountStorage.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    if (accountStorage.isV602) {
-        return accountStorage.asV602
+    if (data.isV602) {
+        return data.asV602
     }
 
-    if (accountStorage.isV500) {
-        return accountStorage.asV500
+    if (data.isV500) {
+        return data.asV500
     }
 
-    throw new Error('Unsupported version')
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
@@ -229,6 +261,20 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                     marketCap: 0n,
                     volume: 0n,
                 }),
+                flags: new CollectionFlags({
+                    featured: false,
+                    hiddenForLegalReasons: false,
+                    verified: false,
+                }),
+                socials: new CollectionSocials({
+                    discord: null,
+                    twitter: null,
+                    instagram: null,
+                    medium: null,
+                    tiktok: null,
+                    website: null,
+                }),
+                hidden: false,
                 burnPolicy: null,
                 attributePolicy: null,
                 attributeCount: data.attributeCount,
@@ -238,7 +284,13 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
             })
         })
 
-        await Promise.all(collectionsPromise).then((collections) => ctx.store.insert(Collection, collections as any))
+        await Promise.all(collectionsPromise)
+            .then((collections) => ctx.store.insert(Collection, collections as any))
+            .then((r) => {
+                r.identifiers.forEach((t) => {
+                    processMetadata(t.id, 'collection')
+                })
+            })
     }
 }
 
@@ -270,6 +322,8 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 
         await ctx.store.insert(CollectionAccount, collectionAccounts as any)
     }
+
+    return true
 }
 
 async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
@@ -331,7 +385,13 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
             return token
         })
 
-        await Promise.all(tokensPromise).then((tokens) => ctx.store.insert(Token, tokens as any))
+        await Promise.all(tokensPromise)
+            .then((tokens) => ctx.store.insert(Token, tokens as any))
+            .then((r) => {
+                r.identifiers.forEach((t) => {
+                    processMetadata(t.id, 'token')
+                })
+            })
     }
 }
 
@@ -400,6 +460,8 @@ async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
 
         await ctx.store.insert(TokenAccount, tokenAccounts as any)
     }
+
+    return true
 }
 
 async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
@@ -425,12 +487,6 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                     updatedAt: new Date(block.timestamp),
                 })
 
-                if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
-                    const token = new Token({ id, metadata: new Metadata() })
-                    token.metadata = await getMetadata(token.metadata as Metadata, attribute)
-                    await ctx.store.save(token)
-                }
-
                 return attribute
             }
 
@@ -444,19 +500,16 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                 updatedAt: new Date(block.timestamp),
             })
 
-            if (['uri', 'name', 'description', 'fallback_image', 'media', 'attributes'].includes(key)) {
-                const collection = new Collection({ id, metadata: new Metadata() })
-                collection.metadata = await getMetadata(collection.metadata as Metadata, attribute)
-                await ctx.store.save(collection)
-            }
-
             return attribute
         })
 
         await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
     }
+
+    return true
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
     for await (const pairs of getListingStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
         await getAccountsMap(
@@ -523,38 +576,36 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
         await saveAccounts(ctx, block)
     }
+
+    return true
 }
 
-export async function populateGenesis(ctx: CommonContext, block: SubstrateBlock) {
+async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
-    spinner.info('Syncing collections...')
+    spinner.start('Syncing collections...')
     await syncCollection(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
-
-    spinner.start('Syncing collection accounts...')
-    await syncCollectionAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     spinner.start('Syncing tokens...')
     await syncTokens(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    spinner.start('Syncing token accounts...')
-    await syncTokenAccounts(ctx, block)
+    spinner.start('Syncing token/collection accounts...')
+    await Promise.all([syncTokenAccounts(ctx, block), syncCollectionAccounts(ctx, block)])
     spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     spinner.start('Syncing attributes...')
     spinner.text = 'Syncing attributes... (can take a while)'
-    await syncAttributes(ctx, block)
+    await Promise.all([syncAttributes(ctx, block), syncBalance(ctx, block)])
     spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
-
-    spinner.start('Syncing listings...')
-    await syncListings(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Listing)} listings`)
-
-    spinner.start('Syncing balances...')
-    await syncBalance(ctx, block)
     spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
+}
+
+export async function populateBlock(ctx: CommonContext, block: number) {
+    const substrateBlock = await getBlock(block)
+    spinner.info(`Syncing block ${block} with hash ${substrateBlock.hash}`)
+    await populateBlockInternal(ctx, substrateBlock)
 }

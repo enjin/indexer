@@ -17,7 +17,7 @@ import {
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
-import { FuelTanksCreateFuelTankCall } from '../../../types/generated/calls'
+import { FuelTanksCreateFuelTankCall, FuelTanksForceCreateFuelTankCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
 import { rulesToMap } from '../common'
 import { safeJsonString } from '../../../common/tools'
@@ -33,18 +33,35 @@ function getEventData(ctx: CommonContext, event: Event) {
 }
 
 function getCallData(ctx: CommonContext, call: Call) {
-    const data = new FuelTanksCreateFuelTankCall(ctx, call)
+    let data: FuelTanksCreateFuelTankCall | FuelTanksForceCreateFuelTankCall
+    if (call.name === 'FuelTanks.force_create_fuel_tank') {
+        data = new FuelTanksForceCreateFuelTankCall(ctx, call)
+    } else {
+        data = new FuelTanksCreateFuelTankCall(ctx, call)
+
+        if (data.isV604) {
+            return data.asV604
+        }
+
+        if (data.isV602) {
+            return data.asV602
+        }
+
+        if (data.isV601) {
+            return data.asV601
+        }
+
+        if (data.isV600) {
+            return data.asV600
+        }
+
+        if (data.isV500) {
+            return data.asV500
+        }
+    }
 
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
-    }
-
-    if (data.isV604) {
-        return data.asV604
-    }
-
-    if (data.isV602) {
-        return data.asV602
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -134,6 +151,7 @@ export async function fuelTankCreated(
                 tank: fuelTank,
                 index,
                 isFrozen: false,
+                isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
                 whitelistedCallers,
                 whitelistedCollections,
                 maxFuelBurnPerTransaction,

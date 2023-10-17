@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
 import {ClaimAccount} from "./_claimAccount"
 
@@ -14,6 +14,7 @@ export class ClaimRequest {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new ClaimAccount(undefined, obj)}, nullable: false})
     account!: ClaimAccount
 
+    @Index_({unique: true})
     @Column_("text", {nullable: true})
     hash!: string | undefined | null
 
@@ -31,6 +32,9 @@ export class ClaimRequest {
 
     @Column_("bool", {nullable: false})
     isClaimed!: boolean
+
+    @Column_("bool", {nullable: false})
+    isRejected!: boolean
 
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date

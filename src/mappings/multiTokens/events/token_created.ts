@@ -1,9 +1,11 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
+import { IsNull } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
+    Attribute,
     CapType,
     Collection,
     Event as EventModel,
@@ -32,7 +34,6 @@ import {
     TokenCap,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
-import { getMetadata } from '../../util/metadata'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import {
@@ -516,30 +517,59 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: `${data.collectionId}-${data.tokenId}`,
+        data: new MultiTokensTokenCreated({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            issuer: u8aToHex(data.issuer),
+            initialSupply: data.initialSupply,
+        }),
+    })
+}
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export async function tokenCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
-    if (item.event.call) {
-        const callData = await getCallData(ctx, item.event.call, eventData)
-        if (!eventData || !callData) return undefined
+    if (skipSave && item.event.call) {
+        ctx.store.update(
+            Token,
+            { id: `${eventData.collectionId}-${eventData.tokenId}` },
+            { createdAt: new Date(block.timestamp) }
+        )
+        return getEvent(item, eventData)
+    }
 
-        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-            where: { id: eventData.collectionId.toString() },
-            relations: {
-                attributes: true,
-            },
-        })
+    if (item.event.call) {
+        const [callData, collection, collectionUri] = await Promise.all([
+            getCallData(ctx, item.event.call, eventData),
+            ctx.store.findOneOrFail(Collection, {
+                where: { id: eventData.collectionId.toString() },
+            }),
+            ctx.store.findOne(Attribute, {
+                where: { key: 'uri', token: IsNull(), collection: { id: eventData.collectionId.toString() } },
+            }),
+        ])
+
+        if (!eventData || !callData) return undefined
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
         let metadata: Metadata | null | undefined = null
-        const collectionUri = collection.attributes.find((e) => e.key === 'uri')
         if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
-            metadata = await getMetadata(new Metadata(), collectionUri)
+            metadata = await new Metadata()
             if (metadata) {
                 const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
                     where: { id: eventData.collectionId.toString() },
@@ -554,7 +584,7 @@ export async function tokenCreated(
                 })
 
                 if (otherTokens.length > 0) {
-                    await ctx.store.save(otherTokens)
+                    ctx.store.save(otherTokens)
                 }
             }
         }
@@ -580,18 +610,7 @@ export async function tokenCreated(
 
         await ctx.store.insert(Token, token as any)
 
-        return new EventModel({
-            id: item.event.id,
-            extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-            collectionId: eventData.collectionId.toString(),
-            tokenId: token.id,
-            data: new MultiTokensTokenCreated({
-                collectionId: eventData.collectionId,
-                tokenId: eventData.tokenId,
-                issuer: u8aToHex(eventData.issuer),
-                initialSupply: eventData.initialSupply,
-            }),
-        })
+        return getEvent(item, eventData)
     }
 
     return undefined

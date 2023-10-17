@@ -21,13 +21,30 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionAccountDestroyed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        data: new MultiTokensCollectionAccountDestroyed({
+            collectionId: data.collectionId,
+            account: u8aToHex(data.accountId),
+        }),
+    })
+}
+
 export async function collectionAccountDestroyed(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionAccountDestroyed', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.CollectionAccountDestroyed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
 
     const address = u8aToHex(data.accountId)
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
@@ -37,12 +54,5 @@ export async function collectionAccountDestroyed(
         await ctx.store.remove(collectionAccount)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        data: new MultiTokensCollectionAccountDestroyed({
-            collectionId: data.collectionId,
-            account: address,
-        }),
-    })
+    return getEvent(item, data)
 }

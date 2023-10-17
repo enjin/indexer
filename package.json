@@ -10,11 +10,14 @@
     "processor:start": "node lib/processor.js",
     "processor:debug": "node -r dotenv/config lib/processor.js",
     "query-node:start": "squid-graphql-server --subscriptions",
+    "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
     "lint": "eslint src --ext .ts,.js",
     "fix": "eslint src --ext .ts,.js --fix"
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.429.0",
+    "@bull-board/api": "^5.8.4",
+    "@bull-board/express": "^5.8.4",
     "@polkadot/api": "^10.9.1",
     "@polkadot/keyring": "^12.5.1",
     "@polkadot/util": "^12.5.1",
@@ -33,6 +36,7 @@
     "cacheable-request": "^8.3.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.3.1",
+    "express": "^4.18.2",
     "lodash": "^4.17.21",
     "node-cache": "^5.1.2",
     "ora": "^5.4.1",

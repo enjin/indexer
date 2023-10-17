@@ -34,6 +34,18 @@ function getCallData(ctx: CommonContext, call: Call) {
         return data.asV602
     }
 
+    if (data.isV601) {
+        return data.asV601
+    }
+
+    if (data.isV600) {
+        return data.asV600
+    }
+
+    if (data.isV500) {
+        return data.asV500
+    }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
@@ -69,6 +81,7 @@ export async function ruleSetInserted(
     const ruleSet = new FuelTankRuleSet({
         id: ruleSetId,
         index: eventData.ruleSetId,
+        isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
         tank: new FuelTank({ id: tankId }),
         isFrozen: false,
         whitelistedCallers,

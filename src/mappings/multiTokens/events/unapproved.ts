@@ -24,17 +24,38 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
+function getEvent(
+    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
+    return new EventModel({
+        id: item.event.id,
+        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensUnapproved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            owner: u8aToHex(data.owner),
+            operator: u8aToHex(data.operator),
+        }),
+    })
+}
+
 export async function unapproved(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
+    if (skipSave) return getEvent(item, data)
+
     const address = u8aToHex(data.owner)
 
-    if (data.tokenId) {
+    if (data.tokenId !== undefined) {
         const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })
@@ -42,7 +63,7 @@ export async function unapproved(
         tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
         tokenAccount.updatedAt = new Date(block.timestamp)
 
-        await ctx.store.save(tokenAccount)
+        ctx.store.save(tokenAccount)
     } else {
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
@@ -53,19 +74,8 @@ export async function unapproved(
         )
         collectionAccount.updatedAt = new Date(block.timestamp)
 
-        await ctx.store.save(collectionAccount)
+        ctx.store.save(collectionAccount)
     }
 
-    return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensUnapproved({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            owner: address,
-            operator: u8aToHex(data.operator),
-        }),
-    })
+    return getEvent(item, data)
 }

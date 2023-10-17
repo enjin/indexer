@@ -26,6 +26,9 @@ export class Bid {
     @Column_("int4", {nullable: false})
     height!: number
 
+    @Column_("text", {nullable: true})
+    extrinsicHash!: string | undefined | null
+
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 }

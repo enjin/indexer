@@ -43,7 +43,7 @@ export async function accountAdded(
     tank.accountCount += 1
 
     ctx.store.save(fuelAccount)
-    ctx.store.save(tank)
+    await ctx.store.save(tank)
 
     return undefined
 }

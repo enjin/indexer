@@ -15,7 +15,8 @@ import {
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { computeTraits } from '../../../jobs/compute-traits'
-import { CollectionService } from '../../../services/collection'
+import { getOrCreateAccount } from '../../util/entities'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 interface EventData {
     collectionId: bigint
@@ -34,58 +35,21 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function burned(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>
-): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
-    const data = getEventData(ctx, item.event)
-    if (!data || data.amount === 0n) return undefined
-
-    const address = u8aToHex(data.accountId)
-
-    const tokenAccount = await ctx.store.findOne(TokenAccount, {
-        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-        relations: { account: true },
-    })
-
-    if (tokenAccount) {
-        tokenAccount.balance -= data.amount
-        tokenAccount.updatedAt = new Date(block.timestamp)
-        await ctx.store.save(tokenAccount)
-    }
-
-    const token = await ctx.store.findOne(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
-    })
-
-    if (token) {
-        token.supply -= data.amount
-        await ctx.store.save(token)
-
-        if (token.metadata?.attributes) {
-            computeTraits(data.collectionId.toString())
-        }
-
-        new CollectionService(ctx.store).sync(data.collectionId.toString())
-    }
-
-    if (tokenAccount && token) {
-        const { account } = tokenAccount
-        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-        await ctx.store.save(account)
-    }
-
+function getEvent(
+    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>,
+    token?: Token
+): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: token ? token.id : null,
+        tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensBurned({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            token: token ? token.id : null,
-            account: address,
+            token: `${data.collectionId}-${data.tokenId}`,
+            account: u8aToHex(data.accountId),
             amount: data.amount,
         }),
     })
@@ -96,11 +60,62 @@ export async function burned(
             new AccountTokenEvent({
                 id: item.event.id,
                 token,
-                from: new Account({ id: address }),
+                from: new Account({ id: u8aToHex(data.accountId) }),
                 event,
             }),
         ]
     }
 
     return event
+}
+
+export async function burned(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
+): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
+    const data = getEventData(ctx, item.event)
+    if (!data || data.amount === 0n) return undefined
+
+    const address = u8aToHex(data.accountId)
+
+    if (skipSave) {
+        getOrCreateAccount(ctx, data.accountId)
+        return getEvent(item, data)
+    }
+
+    const [tokenAccount, token] = await Promise.all([
+        ctx.store.findOne(TokenAccount, {
+            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+            relations: { account: true },
+        }),
+        ctx.store.findOne(Token, {
+            where: { id: `${data.collectionId}-${data.tokenId}` },
+        }),
+    ])
+
+    if (tokenAccount) {
+        tokenAccount.balance -= data.amount
+        tokenAccount.updatedAt = new Date(block.timestamp)
+        ctx.store.save(tokenAccount)
+    }
+
+    if (token) {
+        token.supply -= data.amount
+
+        if (token.metadata?.attributes) {
+            computeTraits(data.collectionId.toString())
+        }
+        ctx.store.save(token)
+        syncCollectionStats(data.collectionId.toString())
+    }
+
+    if (tokenAccount && token) {
+        const { account } = tokenAccount
+        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
+        ctx.store.save(account)
+    }
+
+    return getEvent(item, data)
 }

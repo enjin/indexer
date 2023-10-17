@@ -34,7 +34,9 @@ export async function claimRejected(
         totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
     })
 
-    await Promise.all([ctx.store.remove(claimREeq), ctx.store.save(claimDetails)])
+    claimREeq.isRejected = true
+
+    await Promise.all([ctx.store.save(claimREeq), ctx.store.save(claimDetails)])
 
     return undefined
 }

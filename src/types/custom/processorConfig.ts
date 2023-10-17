@@ -23,8 +23,7 @@ export interface ProcessorConfig {
     redisSupportsTls: boolean
     redisPort: number
     marketplaceUrl: string
-    shouldFetchAccounts: boolean
-    sentryDsn?: string,
+    sentryDsn?: string
     amazonSns: {
         topicArn: string
         region: string

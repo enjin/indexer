@@ -31,7 +31,8 @@ ADD schema.graphql .
 ENV PROCESSOR_PROMETHEUS_PORT 3000
 EXPOSE 3000
 EXPOSE 4000
-
+# for worker
+EXPOSE 9090
 
 FROM squid AS matrixchain-indexer
 

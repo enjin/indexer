@@ -30,32 +30,10 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function collectionDestroyed(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
-    if (!data) return undefined
-
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
-        where: { id: data.collectionId.toString() },
-    })
-    const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
-        where: { collection: { id: collection.id } },
-    })
-
-    const attributes = await ctx.store.find(Attribute, {
-        where: {
-            collection: { id: collection.id },
-        },
-    })
-
-    await ctx.store.delete(Trait, { collection: { id: collection.id } })
-    await ctx.store.remove(royaltyCurrencies)
-    await ctx.store.remove(attributes)
-    await ctx.store.remove(collection)
-
+function getEvent(
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>,
+    data: ReturnType<typeof getEventData>
+) {
     return new EventModel({
         id: item.event.id,
         extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
@@ -64,4 +42,28 @@ export async function collectionDestroyed(
             caller: u8aToHex(data.caller),
         }),
     })
+}
+
+export async function collectionDestroyed(
+    ctx: CommonContext,
+    block: SubstrateBlock,
+    item: EventItem<'MultiTokens.CollectionDestroyed', { event: { args: true; extrinsic: true } }>,
+    skipSave: boolean
+): Promise<EventModel | undefined> {
+    const data = getEventData(ctx, item.event)
+    if (!data) return undefined
+
+    if (skipSave) return getEvent(item, data)
+
+    const collectionId = data.collectionId.toString()
+
+    await Promise.all([
+        ctx.store.delete(Trait, { collection: { id: collectionId } }),
+        ctx.store.delete(RoyaltyCurrency, { collection: { id: collectionId } }),
+        ctx.store.delete(Attribute, { collection: { id: collectionId } }),
+    ])
+
+    await ctx.store.delete(Collection, { id: collectionId })
+
+    return getEvent(item, data)
 }

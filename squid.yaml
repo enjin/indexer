@@ -21,7 +21,7 @@ deploy:
     - ARCHIVE_ENDPOINT
     - CHAIN_ENDPOINT
     - LAST_BLOCK_HEIGHT
-    - FETCH_ACCOUNTS
+
   processor:
     cmd: [ "node", "lib/processor" ]
   api:

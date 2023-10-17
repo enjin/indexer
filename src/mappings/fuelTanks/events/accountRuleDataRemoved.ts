@@ -41,7 +41,7 @@ export async function accountRuleDataRemoved(
         }
     }
 
-    ctx.store.save(ruleSet)
+    await ctx.store.save(ruleSet)
 
     return undefined
 }
