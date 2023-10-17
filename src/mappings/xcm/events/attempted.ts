@@ -6,17 +6,48 @@ import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../
 import { Call } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { PolkadotXcmLimitedTeleportAssetsCall } from '../../../types/generated/calls'
+import {
+    FuelTanksDispatchAndTouchCall,
+    FuelTanksDispatchCall,
+    PolkadotXcmLimitedTeleportAssetsCall,
+    PolkadotXcmTeleportAssetsCall,
+} from '../../../types/generated/calls'
 import config from '../../../config'
 
 async function getCallData(ctx: CommonContext, call: Call) {
-    const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
+    if (call.name === 'PolkadotXcm.limited_teleport_assets') {
+        const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
+        if (data.isMatrixEnjinV603) {
+            return data.asMatrixEnjinV603
+        }
+        throw new UnknownVersionError(data.constructor.name)
+    } else if (call.name === 'PolkadotXcm.teleport_assets') {
+        const data = new PolkadotXcmTeleportAssetsCall(ctx, call)
+        if (data.isMatrixEnjinV603) {
+            return data.asMatrixEnjinV603
+        }
+        throw new UnknownVersionError(data.constructor.name)
+    } else if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
+        let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
+        if (call.name === 'FuelTanks.dispatch') {
+            data = new FuelTanksDispatchCall(ctx, call)
+        } else {
+            data = new FuelTanksDispatchAndTouchCall(ctx, call)
+        }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+        if (
+            data.isMatrixEnjinV603 &&
+            data.asMatrixEnjinV603.call.__kind === 'PolkadotXcm' &&
+            (data.asMatrixEnjinV603.call.value.__kind === 'teleport_assets' ||
+                data.asMatrixEnjinV603.call.value.__kind === 'limited_teleport_assets')
+        ) {
+            return data.asMatrixEnjinV603.call.value
+        }
+
+        throw new UnknownVersionError(data.constructor.name)
+    } else {
+        throw new Error(`Invalid call ${call.name}`)
     }
-
-    throw new UnknownVersionError(data.constructor.name)
 }
 
 export async function attempted(
