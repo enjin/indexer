@@ -37,8 +37,13 @@ function getCallData(ctx: CommonContext, call: Call) {
     if (data.isV601) {
         return data.asV601
     }
+
     if (data.isV600) {
         return data.asV600
+    }
+
+    if (data.isV500) {
+        return data.asV500
     }
 
     throw new UnknownVersionError(data.constructor.name)
