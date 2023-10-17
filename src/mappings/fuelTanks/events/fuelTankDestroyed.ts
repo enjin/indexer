@@ -47,7 +47,7 @@ export async function fuelTankDestroyed(
         ctx.store.delete(FuelTankAccountRules, { tank: { id: tankId } }),
     ])
 
-    ctx.store.delete(FuelTank, { id: tankId })
+    await ctx.store.delete(FuelTank, { id: tankId })
 
     return new EventModel({
         id: item.event.id,

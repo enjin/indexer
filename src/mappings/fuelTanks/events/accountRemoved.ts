@@ -32,7 +32,7 @@ export async function accountRemoved(
 
     const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(eventData.tankId) })
     tank.accountCount -= 1
-    ctx.store.save(tank)
+    await ctx.store.save(tank)
 
     return undefined
 }

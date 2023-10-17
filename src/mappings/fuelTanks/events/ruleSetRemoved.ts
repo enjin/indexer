@@ -29,7 +29,7 @@ export async function ruleSetRemoved(
     const ruleId = `${u8aToHex(eventData.tankId)}-${eventData.ruleSetId}`
 
     await ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleId } })
-    ctx.store.delete(FuelTankRuleSet, { id: ruleId })
+    await ctx.store.delete(FuelTankRuleSet, { id: ruleId })
 
     return undefined
 }
