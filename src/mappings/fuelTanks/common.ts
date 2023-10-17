@@ -1,6 +1,8 @@
 import { u8aToHex } from '@polkadot/util'
 import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV603'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../types/generated/v602'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV601 } from '../../types/generated/v601'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV600 } from '../../types/generated/v600'
 import {
     MaxFuelBurnPerTransaction,
     UserFuelBudget,
@@ -10,7 +12,10 @@ import {
     FuelTankRuleSet,
 } from '../../model'
 
-export function rulesToMap(ruleId: string, rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[]) {
+export function rulesToMap(
+    ruleId: string,
+    rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[] | DispatchRuleDescriptorV601[] | DispatchRuleDescriptorV600[]
+) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
     let maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction | undefined

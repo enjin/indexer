@@ -38,6 +38,19 @@ function getCallData(ctx: CommonContext, call: Call) {
         data = new FuelTanksForceCreateFuelTankCall(ctx, call)
     } else {
         data = new FuelTanksCreateFuelTankCall(ctx, call)
+
+        if (data.isV604) {
+            return data.asV604
+        }
+        if (data.isV602) {
+            return data.asV602
+        }
+        if (data.isV601) {
+            return data.asV601
+        }
+        if (data.isV600) {
+            return data.asV600
+        }
     }
 
     if (data.isMatrixEnjinV603) {
