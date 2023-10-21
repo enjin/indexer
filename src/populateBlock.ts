@@ -39,6 +39,7 @@ import {
     ListingStatus,
     CollectionFlags,
     CollectionSocials,
+    CollectionApproval,
 } from './model'
 import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
@@ -308,10 +309,21 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 
             if (!account) throw Errors.accountNotFound()
 
+            let approvals = null
+
+            if (data.approvals && data.approvals.length > 0) {
+                approvals = data.approvals.map((approval) => {
+                    return new CollectionApproval({
+                        account: u8aToHex(approval[0]),
+                        expiration: approval[1],
+                    })
+                })
+            }
+
             return new CollectionAccount({
                 id: `${collectionId}-${accountId}`,
                 isFrozen: data.isFrozen,
-                approvals: null,
+                approvals,
                 accountCount: data.accountCount,
                 account,
                 collection: new Collection({ id: collectionId }),
