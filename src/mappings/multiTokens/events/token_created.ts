@@ -72,6 +72,10 @@ export function getFreezeState(state: FreezeState_v500): FreezeState | null {
     }
 }
 
+export function isTokenFrozen(freezeState: FreezeState | null | undefined): boolean {
+    return freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary
+}
+
 async function getBehavior(
     ctx: CommonContext,
     behavior: TokenMarketBehavior
@@ -595,7 +599,7 @@ export async function tokenCreated(
             supply: 0n, // Supply is updated on Mint/Burn events
             cap: callData.cap,
             behavior: callData.behavior,
-            isFrozen: false,
+            isFrozen: isTokenFrozen(callData.freezeState),
             freezeState: callData.freezeState,
             minimumBalance: callData.minimumBalance,
             unitPrice: callData.unitPrice,

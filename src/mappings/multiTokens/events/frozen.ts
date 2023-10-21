@@ -16,6 +16,7 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
+import { isTokenFrozen } from './token_created'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensFrozenEvent(ctx, event)
@@ -116,8 +117,6 @@ export async function frozen(
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })
 
-        token.isFrozen = true
-
         switch (data.freezeState?.__kind) {
             case 'Permanent':
                 token.freezeState = FreezeState.Permanent
@@ -132,6 +131,8 @@ export async function frozen(
                 token.freezeState = null
                 break
         }
+
+        token.isFrozen = isTokenFrozen(token.freezeState)
 
         ctx.store.save(token)
     } else {

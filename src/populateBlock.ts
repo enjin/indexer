@@ -39,8 +39,9 @@ import {
     ListingStatus,
     CollectionFlags,
     CollectionSocials,
+    CollectionApproval,
 } from './model'
-import { getCapType, getFreezeState } from './mappings/multiTokens/events'
+import { getCapType, getFreezeState, isTokenFrozen } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
@@ -308,10 +309,21 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 
             if (!account) throw Errors.accountNotFound()
 
+            let approvals = null
+
+            if (data.approvals && data.approvals.length > 0) {
+                approvals = data.approvals.map((approval) => {
+                    return new CollectionApproval({
+                        account: u8aToHex(approval[0]),
+                        expiration: approval[1],
+                    })
+                })
+            }
+
             return new CollectionAccount({
                 id: `${collectionId}-${accountId}`,
                 isFrozen: data.isFrozen,
-                approvals: null,
+                approvals,
                 accountCount: data.accountCount,
                 account,
                 collection: new Collection({ id: collectionId }),
@@ -363,16 +375,18 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
                 minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
             }
 
+            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : undefined
+
             const token = new Token({
                 id: `${collectionId}-${tokenId}`,
                 tokenId,
                 collection,
                 attributeCount: data.attributeCount,
                 supply: data.supply,
-                isFrozen: false,
+                isFrozen: isTokenFrozen(freezeState),
                 cap: data.cap ? getCapType(data.cap) : null,
                 behavior,
-                freezeState: data.freezeState ? getFreezeState(data.freezeState) : undefined,
+                freezeState,
                 listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
                 minimumBalance,
                 unitPrice,

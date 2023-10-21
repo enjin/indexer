@@ -213,7 +213,7 @@ export async function collectionCreated(
         })
         .map((rc) => ctx.store.insert(RoyaltyCurrency, rc as any))
 
-    Promise.all(royaltyPromises)
+    await Promise.all(royaltyPromises)
 
     return getEvent(item, eventData)
 }
