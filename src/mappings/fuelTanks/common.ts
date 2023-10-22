@@ -11,6 +11,10 @@ import {
     PermittedExtrinsics,
     FuelTankRuleSet,
 } from '../../model'
+import { Call } from '../../types/generated/support'
+import { CommonContext } from '../types/contexts'
+import { FuelTanksDispatchAndTouchCall, FuelTanksDispatchCall } from '../../types/generated/calls'
+import { UnknownVersionError } from '../../common/errors'
 
 export function rulesToMap(
     ruleId: string,
@@ -66,4 +70,38 @@ export function rulesToMap(
         permittedCalls,
         permittedExtrinsics,
     }
+}
+
+export function getTankDataFromCall(ctx: CommonContext, call: Call) {
+    let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
+    if (call.name === 'FuelTanks.dispatch') {
+        data = new FuelTanksDispatchCall(ctx, call)
+    } else {
+        data = new FuelTanksDispatchAndTouchCall(ctx, call)
+    }
+
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
+    }
+
+    if (data.isV604) {
+        return data.asV604
+    }
+
+    if (data.isV602) {
+        return data.asV602
+    }
+
+    if (data.isV601) {
+        return data.asV601
+    }
+    if (data.isV600) {
+        return data.asV600
+    }
+
+    if (data.isV500) {
+        return data.asV500
+    }
+
+    throw new UnknownVersionError(data.constructor.name)
 }

@@ -1,22 +1,19 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {Account} from "./account.model"
 
-export class FueTankData {
+export class FuelTankData {
     private _id!: string
     private _name!: string
-    private _owner!: string
     private _ruleSetId!: number | undefined | null
     private _paysRemainingFee!: boolean | undefined | null
     private _useNoneOrigin!: boolean | undefined | null
     private _feePaid!: bigint | undefined | null
 
-    constructor(props?: Partial<Omit<FueTankData, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<FuelTankData, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._id = marshal.string.fromJSON(json.id)
             this._name = marshal.string.fromJSON(json.name)
-            this._owner = marshal.string.fromJSON(json.owner)
             this._ruleSetId = json.ruleSetId == null ? undefined : marshal.int.fromJSON(json.ruleSetId)
             this._paysRemainingFee = json.paysRemainingFee == null ? undefined : marshal.boolean.fromJSON(json.paysRemainingFee)
             this._useNoneOrigin = json.useNoneOrigin == null ? undefined : marshal.boolean.fromJSON(json.useNoneOrigin)
@@ -40,15 +37,6 @@ export class FueTankData {
 
     set name(value: string) {
         this._name = value
-    }
-
-    get owner(): string {
-        assert(this._owner != null, 'uninitialized access')
-        return this._owner
-    }
-
-    set owner(value: string) {
-        this._owner = value
     }
 
     get ruleSetId(): number | undefined | null {
@@ -87,7 +75,6 @@ export class FueTankData {
         return {
             id: this.id,
             name: this.name,
-            owner: this.owner,
             ruleSetId: this.ruleSetId,
             paysRemainingFee: this.paysRemainingFee,
             useNoneOrigin: this.useNoneOrigin,

@@ -1,13 +1,13 @@
 /* eslint-disable no-await-in-loop */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
-import { hexStripPrefix, hexToU8a } from '@polkadot/util'
+import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { RewriteFrames } from '@sentry/integrations'
 import config from './config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -17,6 +17,7 @@ import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
+import { getTankDataFromCall } from './mappings/fuelTanks/common'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -296,6 +297,7 @@ processor.run(
 
                         let publicKey = ''
                         let extrinsicSignature: any = {}
+                        let fuelTank = null
 
                         if (!signature) {
                             publicKey = item.call.args.dest
@@ -310,6 +312,26 @@ processor.run(
                                     : signature.address
                             ) as string
                             extrinsicSignature = signature
+                        }
+
+                        if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
+                            const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
+                            const tank = await ctx.store.findOneByOrFail(FuelTankData, { id: u8aToHex(tankData.tankId.value) })
+
+                            fuelTank = new FuelTankData({
+                                id: tank.id,
+                                name: tank.name,
+                                feePaid: 0n,
+                                ruleSetId: tankData.ruleSetId,
+                                paysRemainingFee:
+                                    'settings' in tankData && tankData.settings !== undefined
+                                        ? tankData.settings.paysRemainingFee
+                                        : null,
+                                useNoneOrigin:
+                                    'settings' in tankData && tankData.settings !== undefined
+                                        ? tankData.settings.useNoneOrigin
+                                        : null,
+                            })
                         }
 
                         // eslint-disable-next-line no-await-in-loop
@@ -334,6 +356,7 @@ processor.run(
                                 amount: fee,
                                 who: signer.id,
                             }),
+                            fuelTank,
                             createdAt: new Date(block.header.timestamp),
                             participants: getParticipants(call.args, publicKey),
                         })
@@ -391,7 +414,6 @@ processor.run(
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
             if (lastBlock.height > config.lastBlockHeight - 200) {
-                // import('./handleJobs')
                 await chainState(ctx as unknown as CommonContext, lastBlock)
             }
         } catch (error) {

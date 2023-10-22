@@ -3,7 +3,7 @@ import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Fee} from "./_fee"
 import {Event} from "./event.model"
-import {FueTankData} from "./_fueTankData"
+import {FuelTankData} from "./_fuelTankData"
 
 @Entity_()
 export class Extrinsic {
@@ -65,6 +65,6 @@ export class Extrinsic {
     @Column_("text", {array: true, nullable: false})
     participants!: (string)[]
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new FueTankData(undefined, obj)}, nullable: true})
-    fuelTank!: FueTankData | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new FuelTankData(undefined, obj)}, nullable: true})
+    fuelTank!: FuelTankData | undefined | null
 }
