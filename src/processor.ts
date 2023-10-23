@@ -7,7 +7,7 @@ import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { RewriteFrames } from '@sentry/integrations'
 import config from './config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTankData, Listing } from './model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -316,7 +316,7 @@ processor.run(
 
                         if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                             const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
-                            const tank = await ctx.store.findOneByOrFail(FuelTankData, { id: u8aToHex(tankData.tankId.value) })
+                            const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
 
                             fuelTank = new FuelTankData({
                                 id: tank.id,
