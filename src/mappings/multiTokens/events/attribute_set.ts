@@ -167,7 +167,7 @@ export async function attributeSet(
             processMetadata(collection.id, 'collection', true)
         }
     }
-    if (token && token.metadata?.attributes) {
+    if (token) {
         computeTraits(collection.id)
     }
 
