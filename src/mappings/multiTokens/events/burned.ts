@@ -103,11 +103,8 @@ export async function burned(
 
     if (token) {
         token.supply -= data.amount
-
-        if (token.metadata?.attributes) {
-            computeTraits(data.collectionId.toString())
-        }
-        ctx.store.save(token)
+        computeTraits(data.collectionId.toString())
+        await ctx.store.save(token)
         syncCollectionStats(data.collectionId.toString())
     }
 

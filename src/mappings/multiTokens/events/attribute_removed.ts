@@ -6,6 +6,7 @@ import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttri
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { processMetadata } from '../../../jobs/process-metadata'
+import { computeTraits } from '../../../jobs/compute-traits'
 
 interface EventData {
     collectionId: bigint
@@ -69,6 +70,7 @@ export async function attributeRemoved(
             token.attributeCount -= 1
             await ctx.store.save(token)
             processMetadata(token.id, 'token', true)
+            computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
             const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },

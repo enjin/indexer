@@ -99,7 +99,7 @@ export async function minted(
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
-    if (token.supply !== 0n && token.metadata?.attributes) {
+    if (token.metadata?.attributes) {
         computeTraits(data.collectionId.toString())
     }
 
