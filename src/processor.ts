@@ -332,6 +332,25 @@ processor.run(
                                         ? tankData.settings.useNoneOrigin
                                         : null,
                             })
+
+                            // eslint-disable-next-line no-restricted-syntax
+                            for (const eventItem of block.items) {
+                                if (eventItem.name !== 'Balances.Withdraw' || eventItem.event.extrinsic?.id !== id) {
+                                    // eslint-disable-next-line no-continue
+                                    continue
+                                }
+
+                                // eslint-disable-next-line no-await-in-loop
+                                const transfer = await map.balances.events.withdraw(
+                                    ctx as unknown as CommonContext,
+                                    block.header,
+                                    eventItem
+                                )
+
+                                if (transfer && u8aToHex(transfer.who) === tank.id) {
+                                    fuelTank.feePaid = transfer.amount
+                                }
+                            }
                         }
 
                         // eslint-disable-next-line no-await-in-loop
@@ -376,14 +395,14 @@ processor.run(
                                 }
 
                                 // eslint-disable-next-line no-await-in-loop
-                                const feeAmount = await map.balances.events.withdraw(
+                                const transfer = await map.balances.events.withdraw(
                                     ctx as unknown as CommonContext,
                                     block.header,
                                     eventItem
                                 )
 
-                                if (extrinsic.fee && feeAmount) {
-                                    extrinsic.fee.amount = feeAmount
+                                if (extrinsic.fee && transfer) {
+                                    extrinsic.fee.amount = transfer.amount
                                     break
                                 }
                             }
