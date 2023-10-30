@@ -356,6 +356,7 @@ processor.run(
                         // eslint-disable-next-line no-await-in-loop
                         const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                         const callName = call.name.split('.')
+                        const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
                         const extrinsic = new Extrinsic({
                             id,
@@ -372,7 +373,7 @@ processor.run(
                             tip,
                             error,
                             fee: new Fee({
-                                amount: fee,
+                                amount: txFee,
                                 who: signer.id,
                             }),
                             fuelTank,
