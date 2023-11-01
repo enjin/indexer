@@ -99,9 +99,7 @@ export async function minted(
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
-    if (token.metadata?.attributes) {
-        computeTraits(data.collectionId.toString())
-    }
+    computeTraits(data.collectionId.toString())
 
     token.supply += data.amount
     token.nonFungible = isNonFungible(token)

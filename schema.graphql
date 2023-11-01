@@ -24,6 +24,15 @@ type Fee {
   who: Account
 }
 
+type FuelTankData {
+  id: String!
+  name: String!
+  ruleSetId: Int
+  paysRemainingFee: Boolean
+  useNoneOrigin: Boolean
+  feePaid: BigInt
+}
+
 type Extrinsic @entity {
   id: ID!
   hash: String! @index
@@ -46,6 +55,7 @@ type Extrinsic @entity {
 
   # Extras
   participants: [String!]!
+  fuelTank: FuelTankData
 }
 
 type Event @entity {

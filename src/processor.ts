@@ -1,13 +1,13 @@
 /* eslint-disable no-await-in-loop */
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
-import { hexStripPrefix, hexToU8a } from '@polkadot/util'
+import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { RewriteFrames } from '@sentry/integrations'
 import config from './config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, Listing } from './model'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
@@ -17,6 +17,7 @@ import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
+import { getTankDataFromCall } from './mappings/fuelTanks/common'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -296,6 +297,7 @@ processor.run(
 
                         let publicKey = ''
                         let extrinsicSignature: any = {}
+                        let fuelTank = null
 
                         if (!signature) {
                             publicKey = item.call.args.dest
@@ -312,9 +314,49 @@ processor.run(
                             extrinsicSignature = signature
                         }
 
+                        if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
+                            const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
+                            const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
+
+                            fuelTank = new FuelTankData({
+                                id: tank.id,
+                                name: tank.name,
+                                feePaid: 0n,
+                                ruleSetId: tankData.ruleSetId,
+                                paysRemainingFee:
+                                    'settings' in tankData && tankData.settings !== undefined
+                                        ? tankData.settings.paysRemainingFee
+                                        : null,
+                                useNoneOrigin:
+                                    'settings' in tankData && tankData.settings !== undefined
+                                        ? tankData.settings.useNoneOrigin
+                                        : null,
+                            })
+
+                            // eslint-disable-next-line no-restricted-syntax
+                            for (const eventItem of block.items) {
+                                if (eventItem.name !== 'Balances.Withdraw' || eventItem.event.extrinsic?.id !== id) {
+                                    // eslint-disable-next-line no-continue
+                                    continue
+                                }
+
+                                // eslint-disable-next-line no-await-in-loop
+                                const transfer = await map.balances.events.withdraw(
+                                    ctx as unknown as CommonContext,
+                                    block.header,
+                                    eventItem
+                                )
+
+                                if (transfer && u8aToHex(transfer.who) === tank.id) {
+                                    fuelTank.feePaid = transfer.amount
+                                }
+                            }
+                        }
+
                         // eslint-disable-next-line no-await-in-loop
                         const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
                         const callName = call.name.split('.')
+                        const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
                         const extrinsic = new Extrinsic({
                             id,
@@ -331,9 +373,10 @@ processor.run(
                             tip,
                             error,
                             fee: new Fee({
-                                amount: fee,
+                                amount: txFee,
                                 who: signer.id,
                             }),
+                            fuelTank,
                             createdAt: new Date(block.header.timestamp),
                             participants: getParticipants(call.args, publicKey),
                         })
@@ -353,14 +396,14 @@ processor.run(
                                 }
 
                                 // eslint-disable-next-line no-await-in-loop
-                                const feeAmount = await map.balances.events.withdraw(
+                                const transfer = await map.balances.events.withdraw(
                                     ctx as unknown as CommonContext,
                                     block.header,
                                     eventItem
                                 )
 
-                                if (extrinsic.fee && feeAmount) {
-                                    extrinsic.fee.amount = feeAmount
+                                if (extrinsic.fee && transfer) {
+                                    extrinsic.fee.amount = transfer.amount
                                     break
                                 }
                             }
@@ -391,7 +434,6 @@ processor.run(
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
             if (lastBlock.height > config.lastBlockHeight - 200) {
-                // import('./handleJobs')
                 await chainState(ctx as unknown as CommonContext, lastBlock)
             }
         } catch (error) {
