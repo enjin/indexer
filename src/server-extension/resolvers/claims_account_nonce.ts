@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { Query, Resolver, Arg, ObjectType, Field, registerEnumType } from 'type-graphql'
+import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import config from '../../config'
@@ -16,16 +16,6 @@ export class ClaimsAccountNonceResult {
         Object.assign(this, props)
     }
 }
-
-enum AccountType {
-    Substrate = 'Substrate',
-    EVM = 'EVM',
-}
-
-registerEnumType(AccountType, {
-    name: 'AccountType',
-    description: 'account of either evm or substrate',
-})
 
 @Resolver()
 export class ClaimsAccountNonceResolver {
