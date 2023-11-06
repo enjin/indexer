@@ -6,12 +6,14 @@ import { TopCollectionResolver } from './top_collections'
 import { MyTokensResolver } from './my_tokens'
 import { ClaimsAccountNonceResolver } from './claims_account_nonce'
 import { RefreshCollectionsResolver } from './refresh_collections'
+import { FuelTanksAccountsResolver } from './fueltanks-accounts'
 
 export {
     TokenSalesHistoryResolver,
     VerifyMessageResolver,
     RefreshMetadataResolver,
     RefreshAccountResolver,
+    FuelTanksAccountsResolver,
     RefreshCollectionsResolver,
     TopCollectionResolver,
     MyTokensResolver,

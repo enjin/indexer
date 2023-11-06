@@ -604,9 +604,12 @@ async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) 
     await syncTokens(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    spinner.start('Syncing token/collection accounts...')
-    await Promise.all([syncTokenAccounts(ctx, block), syncCollectionAccounts(ctx, block)])
+    spinner.start('Syncing token accounts...')
+    await syncTokenAccounts(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+
+    spinner.start('Syncing collection accounts...')
+    await syncCollectionAccounts(ctx, block)
     spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     spinner.start('Syncing attributes...')
