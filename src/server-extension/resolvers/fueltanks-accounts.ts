@@ -68,7 +68,7 @@ export class FuelTanksAccountsResolver {
         })
         fuelTank: string,
         @Arg('account', {
-            description: 'address of fuelTank',
+            description: 'address of account',
         })
         account: string
     ): Promise<FuelTanksAccountsResult | null> {
