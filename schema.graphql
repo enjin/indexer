@@ -729,6 +729,15 @@ type ClaimDetails @entity {
   totalUnclaimedAmount: BigInt!
 }
 
+type MultiTokenClaims @entity {
+  id: ID!
+
+  account: Account!
+  ethAccount: String!
+
+  createdAt: DateTime!
+}
+
 type WhitelistedCallers {
   value: [String!]!
 }
