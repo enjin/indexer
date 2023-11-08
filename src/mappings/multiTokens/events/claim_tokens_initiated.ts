@@ -17,7 +17,7 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function multiTokensClaimTokensInitiated(
+export async function claimTokensInitiated(
     ctx: CommonContext,
     block: SubstrateBlock,
     item: EventItem<'MultiTokens.ClaimTokensInitiated', { event: { args: true; extrinsic: true } }>
