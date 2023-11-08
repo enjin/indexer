@@ -7,6 +7,7 @@ import { Event as EventModel, Extrinsic, MultiTokensClaimTokensInitiated, MultiT
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensClaimTokensInitiatedEvent(ctx, event)
@@ -35,6 +36,15 @@ export async function claimTokensInitiated(
     })
 
     await ctx.store.insert(MultiTokensClaims, claim as any)
+
+    Sns.getInstance().send({
+        id: item.event.id,
+        name: item.event.name,
+        body: {
+            account: u8aToHex(data.accountId),
+            ethAccount: u8aToHex(data.ethereumAddress),
+        },
+    })
 
     return new EventModel({
         id: item.event.id,
