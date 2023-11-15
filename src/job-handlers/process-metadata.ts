@@ -62,6 +62,11 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
     }
 
+    // check if token/collection has {id} placeholder in it's own attribute
+    if (uriAttribute && uriAttribute.value.includes('{id}')) {
+        uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
+    }
+
     let externalMetadata: any = {}
     let metadata = new Metadata()
 
