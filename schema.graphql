@@ -83,7 +83,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
-  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimTokensInitiated
+  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
 
 type BalancesTransfer {
   from: Account!
@@ -278,6 +278,11 @@ type FuelTankDestroyed {
 }
 
 type MultiTokensClaimTokensInitiated {
+  account: Account!
+  ethAccount: String!
+}
+
+type MultiTokensClaimTokensCompleted {
   account: Account!
   ethAccount: String!
 }
@@ -739,6 +744,7 @@ type MultiTokensClaims @entity {
 
   account: Account!
   ethAccount: String!
+  completed: Boolean!
 
   createdAt: DateTime!
 }

@@ -17,6 +17,9 @@ export class MultiTokensClaims {
     @Column_("text", {nullable: false})
     ethAccount!: string
 
+    @Column_("bool", {nullable: false})
+    completed!: boolean
+
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 }
