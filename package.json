@@ -41,7 +41,8 @@
     "node-cache": "^5.1.2",
     "ora": "^5.4.1",
     "pg": "^8.11.3",
-    "type-graphql": "^1.2.0-rc.1"
+    "type-graphql": "^1.2.0-rc.1",
+    "web3-validator": "^2.0.3"
   },
   "devDependencies": {
     "@subsquid/substrate-metadata-explorer": "^1.1.2",
