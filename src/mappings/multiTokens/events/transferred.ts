@@ -16,6 +16,7 @@ import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
+import { Sns } from '../../../common/sns'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensTransferredEvent(ctx, event)
@@ -100,6 +101,23 @@ export async function transferred(
     }
 
     syncCollectionStats(data.collectionId.toString())
+
+    if (item.event.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.event.id,
+            name: item.event.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                token: `${data.collectionId}-${data.tokenId}`,
+                operator: u8aToHex(data.operator),
+                from: u8aToHex(data.from),
+                to: u8aToHex(data.to),
+                amount: data.amount,
+                extrinsic: item.event.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data)
 }
