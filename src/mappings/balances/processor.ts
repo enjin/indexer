@@ -243,7 +243,6 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     feeFrozen: accountData.feeFrozen,
                     miscFrozen: accountData.miscFrozen,
                 }),
-              
             })
         }
     }
