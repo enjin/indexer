@@ -5,15 +5,16 @@ import { TokenAccount } from '../../../model'
 import { MultiTokensUnreservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
+import { UnknownVersionError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, eventItem: Event) {
-    const event = new MultiTokensUnreservedEvent(ctx, eventItem)
+    const data = new MultiTokensUnreservedEvent(ctx, eventItem)
 
-    if (event.isMatrixEnjinV603) {
-        return event.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    return null
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 export async function unreserved(
@@ -47,7 +48,7 @@ export async function unreserved(
 
         tokenAccount.updatedAt = new Date(block.timestamp)
 
-        ctx.store.save(tokenAccount)
+        await ctx.store.save(tokenAccount)
     }
 
     return undefined

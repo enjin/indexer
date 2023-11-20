@@ -230,7 +230,6 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     feeFrozen: 0n,
                     miscFrozen: 0n,
                 }),
-                tokenValues: 0n,
             })
         } else if ('miscFrozen' in accountData) {
             accounts.push({
@@ -244,7 +243,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     feeFrozen: accountData.feeFrozen,
                     miscFrozen: accountData.miscFrozen,
                 }),
-                tokenValues: 0n,
+              
             })
         }
     }

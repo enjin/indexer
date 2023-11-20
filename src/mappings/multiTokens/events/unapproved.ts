@@ -63,7 +63,7 @@ export async function unapproved(
         tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
         tokenAccount.updatedAt = new Date(block.timestamp)
 
-        ctx.store.save(tokenAccount)
+        await ctx.store.save(tokenAccount)
     } else {
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
@@ -74,7 +74,7 @@ export async function unapproved(
         )
         collectionAccount.updatedAt = new Date(block.timestamp)
 
-        ctx.store.save(collectionAccount)
+        await ctx.store.save(collectionAccount)
     }
 
     return getEvent(item, data)

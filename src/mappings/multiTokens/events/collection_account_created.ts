@@ -71,7 +71,7 @@ export async function collectionAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        ctx.store.insert(CollectionAccount, newAccount as any)
+        await ctx.store.insert(CollectionAccount, newAccount as any)
     }
 
     return getEvent(item, data)

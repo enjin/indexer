@@ -24,7 +24,6 @@ export async function getOrCreateAccount(
                 feeFrozen: 0n,
             }),
             nonce: 0,
-            tokenValues: 0n,
         })
         await ctx.store.insert(Account, account as any)
     }

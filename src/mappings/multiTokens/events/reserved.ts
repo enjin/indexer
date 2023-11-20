@@ -6,6 +6,7 @@ import { MultiTokensReservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
+import { UnknownVersionError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, eventItem: Event) {
     const event = new MultiTokensReservedEvent(ctx, eventItem)
@@ -14,7 +15,7 @@ function getEventData(ctx: CommonContext, eventItem: Event) {
         return event.asMatrixEnjinV603
     }
 
-    return null
+    throw new UnknownVersionError(event.constructor.name)
 }
 
 export async function reserved(
@@ -47,7 +48,7 @@ export async function reserved(
 
         tokenAccount.updatedAt = new Date(block.timestamp)
 
-        ctx.store.save(tokenAccount)
+        await ctx.store.save(tokenAccount)
     }
 
     syncCollectionStats(data.collectionId.toString())

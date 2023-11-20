@@ -97,8 +97,9 @@ export async function burned(
 
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
+        tokenAccount.totalBalance -= data.amount
         tokenAccount.updatedAt = new Date(block.timestamp)
-        ctx.store.save(tokenAccount)
+        await ctx.store.save(tokenAccount)
     }
 
     if (token) {
@@ -106,12 +107,6 @@ export async function burned(
         computeTraits(data.collectionId.toString())
         await ctx.store.save(token)
         syncCollectionStats(data.collectionId.toString())
-    }
-
-    if (tokenAccount && token) {
-        const { account } = tokenAccount
-        account.tokenValues -= data.amount * (token.unitPrice ?? 10_000_000_000_000n)
-        ctx.store.save(account)
     }
 
     return getEvent(item, data)

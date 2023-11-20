@@ -41,9 +41,6 @@ export class Account {
     @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    tokenValues!: bigint
-
     @Column_("int4", {nullable: true})
     lastUpdateBlock!: number | undefined | null
 

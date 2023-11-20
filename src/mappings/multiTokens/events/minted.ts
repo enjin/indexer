@@ -105,6 +105,7 @@ export async function minted(
     token.nonFungible = isNonFungible(token)
 
     tokenAccount.balance += data.amount
+    tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
     await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
 

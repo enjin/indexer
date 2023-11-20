@@ -102,7 +102,7 @@ export async function frozen(
 
         tokenAccount.isFrozen = true
         tokenAccount.updatedAt = new Date(block.timestamp)
-        ctx.store.save(tokenAccount)
+        await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = u8aToHex(data.collectionAccount)
         const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
@@ -111,7 +111,7 @@ export async function frozen(
 
         collectionAccount.isFrozen = true
         collectionAccount.updatedAt = new Date(block.timestamp)
-        ctx.store.save(collectionAccount)
+        await ctx.store.save(collectionAccount)
     } else if (data.tokenId !== undefined) {
         const token = await ctx.store.findOneOrFail<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -134,14 +134,14 @@ export async function frozen(
 
         token.isFrozen = isTokenFrozen(token.freezeState)
 
-        ctx.store.save(token)
+        await ctx.store.save(token)
     } else {
         const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
             where: { id: data.collectionId.toString() },
         })
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
-        ctx.store.save(collection)
+        await ctx.store.save(collection)
     }
 
     return getEvent(item, data)

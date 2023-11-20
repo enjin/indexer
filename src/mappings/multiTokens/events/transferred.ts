@@ -87,12 +87,14 @@ export async function transferred(
 
     if (fromTokenAccount) {
         fromTokenAccount.balance -= data.amount
+        fromTokenAccount.totalBalance -= data.amount
         fromTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(fromTokenAccount)
     }
 
     if (toTokenAccount) {
         toTokenAccount.balance += data.amount
+        toTokenAccount.totalBalance += data.amount
         toTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(toTokenAccount)
     }
