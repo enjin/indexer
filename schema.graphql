@@ -301,7 +301,6 @@ type Account @entity {
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
 
   # Extras
-  tokenValues: BigInt!
   lastUpdateBlock: Int
 
   # profile
@@ -524,6 +523,7 @@ type TokenAccount @entity {
   id: ID!
 
   # Storage defaults
+  totalBalance: BigInt!
   balance: BigInt!
   reservedBalance: BigInt!
   lockedBalance: BigInt!

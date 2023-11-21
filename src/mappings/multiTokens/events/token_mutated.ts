@@ -98,7 +98,7 @@ export async function tokenMutated(
     }
 
     token.nonFungible = isNonFungible(token)
-    ctx.store.save(token)
+    await ctx.store.save(token)
 
     return getEvent(item, data)
 }

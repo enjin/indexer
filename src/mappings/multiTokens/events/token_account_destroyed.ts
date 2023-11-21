@@ -55,7 +55,7 @@ export async function tokenAccountDestroyed(
     })
     if (collectionAccount) {
         collectionAccount.accountCount -= 1
-        ctx.store.save(collectionAccount)
+        await ctx.store.save(collectionAccount)
     }
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {

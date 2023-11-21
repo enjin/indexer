@@ -117,7 +117,7 @@ export async function collectionMutated(
         }
     }
 
-    ctx.store.save(collection)
+    await ctx.store.save(collection)
 
     return getEvent(item)
 }

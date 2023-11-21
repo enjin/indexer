@@ -87,7 +87,6 @@ async function getAccountsMap(
                 feeFrozen: 0n,
             }),
             nonce: 0,
-            tokenValues: 0n,
         })
 
         await ctx.store.insert(Account, account as any)
@@ -459,6 +458,7 @@ async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
                 id: `${accountId}-${collectionId}-${tokenId}`,
                 balance: data.balance,
                 reservedBalance: data.reservedBalance,
+                totalBalance: data.balance + data.reservedBalance,
                 lockedBalance: data.lockedBalance,
                 namedReserves,
                 locks,

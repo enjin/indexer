@@ -74,16 +74,17 @@ export async function tokenAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        ctx.store.insert(CollectionAccount, newCA as any)
+        await ctx.store.insert(CollectionAccount, newCA as any)
     } else {
         collectionAccount.accountCount += 1
-        ctx.store.save(collectionAccount)
+        await ctx.store.save(collectionAccount)
     }
 
     const tokenAccount = new TokenAccount({
         id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
         balance: 0n, // The balance is updated on Mint event
         reservedBalance: 0n,
+        totalBalance: 0n,
         lockedBalance: 0n,
         namedReserves: null,
         locks: null,
