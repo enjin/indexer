@@ -38,14 +38,17 @@ export async function claimTokensInitiated(
 
     await ctx.store.insert(MultiTokensClaims, claim as any)
 
-    Sns.getInstance().send({
-        id: item.event.id,
-        name: item.event.name,
-        body: {
-            account: u8aToHex(data.accountId),
-            ethAccount: u8aToHex(data.ethereumAddress),
-        },
-    })
+    if (item.event.extrinsic) {
+        Sns.getInstance().send({
+            id: item.event.id,
+            name: item.event.name,
+            body: {
+                account: u8aToHex(data.accountId),
+                ethAccount: u8aToHex(data.ethereumAddress),
+                extrinsic: item.event.extrinsic.id,
+            },
+        })
+    }
 
     return new EventModel({
         id: item.event.id,

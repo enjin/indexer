@@ -38,6 +38,7 @@ export async function claimTokensCompleted(
         body: {
             account: u8aToHex(data.destination),
             ethAccount: u8aToHex(data.ethereumAddress),
+            extrinsic: '',
         },
     })
 
