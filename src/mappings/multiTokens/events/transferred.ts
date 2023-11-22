@@ -54,7 +54,7 @@ function getEvent(
             from: new Account({ id: u8aToHex(data.from) }),
             to: new Account({ id: u8aToHex(data.to) }),
             event,
-            token: new Token({ id: event.tokenId as string }),
+            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
         }),
     ]
 }
@@ -67,6 +67,12 @@ export async function transferred(
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
+
+    const token = await ctx.store.findOneOrFail<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+
+    if (!token) return undefined
 
     if (skipSave) {
         getOrCreateAccount(ctx, data.from)
