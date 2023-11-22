@@ -68,7 +68,7 @@ export async function transferred(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    const token = await ctx.store.findOneOrFail<Token>(Token, {
+    const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
