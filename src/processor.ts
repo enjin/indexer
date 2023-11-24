@@ -79,6 +79,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Unreserved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
     .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
+    .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
     .addEvent('Balances.DustLost', eventOptions)
     .addEvent('Balances.Endowed', eventOptions)
     .addEvent('Balances.ReserveRepatriated', eventOptions)
@@ -166,6 +167,8 @@ async function handleEvents(
             return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
         case 'MultiTokens.ClaimTokensInitiated':
             return map.multiTokens.events.claimTokensInitiated(ctx, block, item)
+        case 'MultiTokens.ClaimTokensCompleted':
+            return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
         case 'Balances.Transfer':
             await map.balances.processor.save(ctx, block, item.event, skipSave)
             return map.balances.events.transfer(ctx, block, item)
