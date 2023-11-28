@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
-import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { FullTypeormDatabase } from '@subsquid/typeorm-store'
+import { BlockHeader, Event as EventItem, SubstrateBatchProcessor } from '@subsquid/substrate-processor'
+import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
@@ -29,97 +29,92 @@ Sentry.init({
     ],
 })
 
-const eventOptions = {
-    data: {
-        event: {
-            args: true,
-            extrinsic: true,
-        },
-    } as const,
-} as const
-
-const eventOptionsWithCall = {
-    data: {
-        event: {
-            args: true,
-            call: true,
-            extrinsic: true,
-        },
-    } as const,
-} as const
-
 const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
     .setBlockRange(config.blockRange || { from: 0 })
-    .addCall('*', {
-        data: {
-            call: true,
-            extrinsic: true,
+    .addCall({
+        extrinsic: true,
+        stack: true,
+    })
+    .addEvent({
+        name: [
+            'MultiTokens.CollectionCreated',
+            'MultiTokens.CollectionDestroyed',
+            'MultiTokens.CollectionMutated',
+            'MultiTokens.CollectionAccountCreated',
+            'MultiTokens.CollectionAccountDestroyed',
+            'MultiTokens.TokenCreated',
+            'MultiTokens.TokenDestroyed',
+            'MultiTokens.TokenMutated',
+            'MultiTokens.TokenAccountCreated',
+            'MultiTokens.TokenAccountDestroyed',
+            'MultiTokens.Minted',
+            'MultiTokens.Burned',
+            'MultiTokens.AttributeSet',
+            'MultiTokens.AttributeRemoved',
+            'MultiTokens.Frozen',
+            'MultiTokens.Thawed',
+            'MultiTokens.Approved',
+            'MultiTokens.Reserved',
+            'MultiTokens.Unapproved',
+            'MultiTokens.Unreserved',
+            'MultiTokens.Transferred',
+            'Balances.BalanceSet',
+            'Balances.Deposit',
+            'Balances.DustLost',
+            'Balances.Endowed',
+            'Balances.ReserveRepatriated',
+            'Balances.Reserved',
+            'Balances.Slashed',
+            'Balances.Transfer',
+            'Balances.Unreserved',
+            'Balances.Withdraw',
+            'Claims.Claimed',
+            'Claims.ClaimRequested',
+            'Claims.DelayTimeForClaimSet',
+            'Claims.ExchangeRateSet',
+            'Claims.ClaimRejected',
+            'Claims.ClaimMinted',
+            'Marketplace.ListingCreated',
+            'Marketplace.ListingCancelled',
+            'Marketplace.ListingFilled',
+            'Marketplace.BidPlaced',
+            'Marketplace.AuctionFinalized',
+            'PolkadotXcm.Attempted',
+            'FuelTanks.AccountAdded',
+            'FuelTanks.AccountRemoved',
+            'FuelTanks.AccountRuleDataRemoved',
+            'FuelTanks.FreezeStateMutated',
+            'FuelTanks.FuelTankCreated',
+            'FuelTanks.FuelTankDestroyed',
+            'FuelTanks.FuelTankMutated',
+            'FuelTanks.RuleSetInserted',
+            'FuelTanks.RuleSetRemoved',
+        ],
+        extrinsic: true,
+        stack: true,
+        call: true,
+    })
+    .setFields({
+        block: {
+            timestamp: true,
+        },
+        call: {
+            origin: true,
+            success: true,
+            args: true,
+            name: true,
+        },
+        extrinsic: {
+            fee: true,
+            hash: true,
         },
     })
-    .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
-    .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
-    .addEvent('MultiTokens.CollectionMutated', eventOptions)
-    .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
-    .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
-    .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
-    .addEvent('MultiTokens.TokenDestroyed', eventOptions)
-    .addEvent('MultiTokens.TokenMutated', eventOptions)
-    .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
-    .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
-    .addEvent('MultiTokens.Minted', eventOptions)
-    .addEvent('MultiTokens.Burned', eventOptions)
-    .addEvent('MultiTokens.AttributeSet', eventOptions)
-    .addEvent('MultiTokens.AttributeRemoved', eventOptions)
-    .addEvent('MultiTokens.Frozen', eventOptions)
-    .addEvent('MultiTokens.Thawed', eventOptions)
-    .addEvent('MultiTokens.Approved', eventOptions)
-    .addEvent('MultiTokens.Reserved', eventOptions)
-    .addEvent('MultiTokens.Unapproved', eventOptions)
-    .addEvent('MultiTokens.Unreserved', eventOptions)
-    .addEvent('MultiTokens.Transferred', eventOptions)
-    .addEvent('MultiTokens.ClaimedCollections', eventOptions)
-    .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
-    .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
-    .addEvent('Balances.DustLost', eventOptions)
-    .addEvent('Balances.Endowed', eventOptions)
-    .addEvent('Balances.ReserveRepatriated', eventOptions)
-    .addEvent('Balances.Reserved', eventOptions)
-    .addEvent('Balances.Slashed', eventOptions)
-    .addEvent('Balances.Transfer', eventOptions)
-    .addEvent('Balances.Unreserved', eventOptions)
-    .addEvent('Claims.Claimed', eventOptions)
-    .addEvent('Claims.ClaimRequested', eventOptions)
-    .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
-    .addEvent('Claims.ExchangeRateSet', eventOptions)
-    .addEvent('Claims.ClaimRejected', eventOptions)
-    .addEvent('Claims.ClaimMinted', eventOptions)
-    // eslint-disable-next-line sonarjs/no-duplicate-string
-    .addEvent('Balances.Withdraw', eventOptions)
-    .addEvent('Balances.BalanceSet', eventOptions)
-    .addEvent('Balances.Deposit', eventOptions)
-    .addEvent('Marketplace.ListingCreated', eventOptions)
-    .addEvent('Marketplace.ListingCancelled', eventOptions)
-    .addEvent('Marketplace.ListingFilled', eventOptions)
-    .addEvent('Marketplace.BidPlaced', eventOptions)
-    .addEvent('Marketplace.AuctionFinalized', eventOptions)
-    .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
-    .addEvent('FuelTanks.AccountAdded', eventOptions)
-    .addEvent('FuelTanks.AccountRemoved', eventOptions)
-    .addEvent('FuelTanks.AccountRuleDataRemoved', eventOptions)
-    .addEvent('FuelTanks.FreezeStateMutated', eventOptions)
-    .addEvent('FuelTanks.FuelTankCreated', eventOptionsWithCall)
-    .addEvent('FuelTanks.FuelTankDestroyed', eventOptions)
-    .addEvent('FuelTanks.FuelTankMutated', eventOptions)
-    .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
-    .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
-
-export type Item = BatchProcessorItem<typeof processor>
 
 async function handleEvents(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: Item,
+    block: BlockHeader,
+    item: EventItem,
     skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
@@ -172,7 +167,7 @@ async function handleEvents(
         case 'MultiTokens.ClaimTokensCompleted':
             return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
         case 'Balances.Transfer':
-            await map.balances.processor.save(ctx, block, item.event, skipSave)
+            await map.balances.processor.save(ctx, block, item, skipSave)
             return map.balances.events.transfer(ctx, block, item)
         case 'Balances.BalanceSet':
         case 'Balances.Deposit':
@@ -183,7 +178,7 @@ async function handleEvents(
         case 'Balances.ReserveRepatriated':
         case 'Balances.Slashed':
         case 'Balances.Withdraw':
-            return map.balances.processor.save(ctx, block, item.event, skipSave)
+            return map.balances.processor.save(ctx, block, item, skipSave)
         case 'Claims.ClaimRequested':
             return map.claims.events.claimRequested(ctx, block, item)
         case 'Claims.ClaimRejected':
@@ -245,7 +240,7 @@ function getParticipants(args: any, signer: string): string[] {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(
-    new FullTypeormDatabase({
+    new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
     }),
     async (ctx) => {
@@ -279,174 +274,169 @@ processor.run(
                 console.log(`Processing block ${block.header.height}, ${block.items.length} items to process`)
 
                 // eslint-disable-next-line no-restricted-syntax
-                for (const item of block.items) {
-                    if (item.kind === 'event') {
-                        // eslint-disable-next-line no-await-in-loop
-                        const event = await handleEvents(
-                            ctx as unknown as CommonContext,
-                            block.header,
-                            item,
-                            block.header.height <= config.lastBlockHeight
-                        )
+                for (const item of block.events) {
+                    // eslint-disable-next-line no-await-in-loop
+                    const event = await handleEvents(
+                        ctx as unknown as CommonContext,
+                        block.header,
+                        item,
+                        block.header.height <= config.lastBlockHeight
+                    )
 
-                        if (event) {
-                            if (Array.isArray(event)) {
-                                events.push(event[0])
-                                accountTokenEvents.push(event[1])
-                            } else {
-                                events.push(event)
-                            }
-                        }
-                    } else if (item.kind === 'call') {
-                        if (
-                            item.call.parent != null ||
-                            (!['Claims.claim', 'MultiTokens.claim_tokens', 'MultiTokens.claim_collections'].includes(
-                                item.call.name
-                            ) &&
-                                item.extrinsic.signature?.address == null)
-                        ) {
-                            // eslint-disable-next-line no-continue
-                            continue
-                        }
-                        const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
-
-                        let publicKey = ''
-                        let extrinsicSignature: any = {}
-                        let fuelTank = null
-
-                        if (!signature) {
-                            publicKey = item.call.args.dest ?? item.call.args.destination
-                            extrinsicSignature = {
-                                address: item.call.args.dest ?? item.call.args.destination,
-                                signature: item.call.args.ethereumSignature,
-                            }
+                    if (event) {
+                        if (Array.isArray(event)) {
+                            events.push(event[0])
+                            accountTokenEvents.push(event[1])
                         } else {
-                            publicKey = (
-                                signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                                    ? signature.address.value
-                                    : signature.address
-                            ) as string
-                            extrinsicSignature = signature
+                            events.push(event)
                         }
+                    }
+                }
+                // eslint-disable-next-line no-restricted-syntax
+                for (const item of block.calls) {
+                    /*
+                    TODO: Fix this
+                     if (item.parentCall !== undefined || (item.parentCall !== undefined && item.parentCall 'Claims.claim')) {
+                        // eslint-disable-next-line no-continue
+                        continue
+                    } */
 
-                        if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
-                            const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
-                            const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
+                    const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+                    item.success
+                    let publicKey = ''
+                    let extrinsicSignature: any = {}
+                    let fuelTank = null
 
-                            fuelTank = new FuelTankData({
-                                id: tank.id,
-                                name: tank.name,
-                                feePaid: 0n,
-                                ruleSetId: tankData.ruleSetId,
-                                paysRemainingFee:
-                                    'settings' in tankData && tankData.settings !== undefined
-                                        ? tankData.settings.paysRemainingFee
-                                        : null,
-                                useNoneOrigin:
-                                    'settings' in tankData && tankData.settings !== undefined
-                                        ? tankData.settings.useNoneOrigin
-                                        : null,
-                            })
-
-                            // eslint-disable-next-line no-restricted-syntax
-                            for (const eventItem of block.items) {
-                                if (eventItem.name !== 'Balances.Withdraw' || eventItem.event.extrinsic?.id !== id) {
-                                    // eslint-disable-next-line no-continue
-                                    continue
-                                }
-
-                                // eslint-disable-next-line no-await-in-loop
-                                const transfer = await map.balances.events.withdraw(
-                                    ctx as unknown as CommonContext,
-                                    block.header,
-                                    eventItem
-                                )
-
-                                if (transfer && u8aToHex(transfer.who) === tank.id) {
-                                    fuelTank.feePaid = transfer.amount
-                                }
-                            }
+                    if (!signature) {
+                        publicKey = item.call.args.dest
+                        extrinsicSignature = {
+                            address: item.call.args.dest,
+                            signature: item.call.args.ethereumSignature,
                         }
+                    } else {
+                        publicKey = (
+                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
+                                ? signature.address.value
+                                : signature.address
+                        ) as string
+                        extrinsicSignature = signature
+                    }
 
-                        // eslint-disable-next-line no-await-in-loop
-                        const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
-                        const callName = call.name.split('.')
-                        const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
+                    if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
+                        const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
+                        const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
 
-                        const extrinsic = new Extrinsic({
-                            id,
-                            hash,
-                            blockNumber: block.header.height,
-                            blockHash: block.header.hash,
-                            success,
-                            pallet: callName[0],
-                            method: callName[1],
-                            args: call.args,
-                            signature: extrinsicSignature,
-                            signer,
-                            nonce: signer.nonce,
-                            tip,
-                            error,
-                            fee: new Fee({
-                                amount: txFee,
-                                who: signer.id,
-                            }),
-                            fuelTank,
-                            createdAt: new Date(block.header.timestamp),
-                            participants: getParticipants(call.args, publicKey),
+                        fuelTank = new FuelTankData({
+                            id: tank.id,
+                            name: tank.name,
+                            feePaid: 0n,
+                            ruleSetId: tankData.ruleSetId,
+                            paysRemainingFee:
+                                'settings' in tankData && tankData.settings !== undefined
+                                    ? tankData.settings.paysRemainingFee
+                                    : null,
+                            useNoneOrigin:
+                                'settings' in tankData && tankData.settings !== undefined
+                                    ? tankData.settings.useNoneOrigin
+                                    : null,
                         })
 
-                        // If fee empty search for the withdrawal event
-                        if (!fee) {
-                            // eslint-disable-next-line no-restricted-syntax
-                            for (const eventItem of block.items) {
-                                if (eventItem.name !== 'Balances.Withdraw') {
-                                    // eslint-disable-next-line no-continue
-                                    continue
-                                }
-
-                                if (eventItem.event.extrinsic?.id !== extrinsic.id) {
-                                    // eslint-disable-next-line no-continue
-                                    continue
-                                }
-
-                                // eslint-disable-next-line no-await-in-loop
-                                const transfer = await map.balances.events.withdraw(
-                                    ctx as unknown as CommonContext,
-                                    block.header,
-                                    eventItem
-                                )
-
-                                if (extrinsic.fee && transfer) {
-                                    extrinsic.fee.amount = transfer.amount
-                                    break
-                                }
+                        // eslint-disable-next-line no-restricted-syntax
+                        for (const eventItem of block.events) {
+                            if (eventItem.name !== 'Balances.Withdraw' || eventItem.extrinsic?.id !== id) {
+                                // eslint-disable-next-line no-continue
+                                continue
                             }
-                        }
 
-                        // Hotfix for adding listing seller to participant
-                        if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
-                            const listingId = call.args.listingId.toString()
                             // eslint-disable-next-line no-await-in-loop
-                            const listing = await ctx.store.findOne(Listing, {
-                                where: { id: hexStripPrefix(listingId) },
-                                relations: { seller: true },
-                            })
-                            if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
-                                extrinsic.participants.push(listing.seller.id)
+                            const transfer = await map.balances.events.withdraw(
+                                ctx as unknown as CommonContext,
+                                block.header,
+                                eventItem
+                            )
+
+                            if (transfer && u8aToHex(transfer.who) === tank.id) {
+                                fuelTank.feePaid = transfer.amount
                             }
                         }
-
-                        signers.add(publicKey)
-                        extrinsics.push(extrinsic)
                     }
+
+                    // eslint-disable-next-line no-await-in-loop
+                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                    const callName = call.name.split('.')
+                    const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
+
+                    const extrinsic = new Extrinsic({
+                        id,
+                        hash,
+                        blockNumber: block.header.height,
+                        blockHash: block.header.hash,
+                        success,
+                        pallet: callName[0],
+                        method: callName[1],
+                        args: call.args,
+                        signature: extrinsicSignature,
+                        signer,
+                        nonce: signer.nonce,
+                        tip,
+                        error,
+                        fee: new Fee({
+                            amount: txFee,
+                            who: signer.id,
+                        }),
+                        fuelTank,
+                        createdAt: new Date(block.header.timestamp ?? 0),
+                        participants: getParticipants(call.args, publicKey),
+                    })
+
+                    // If fee empty search for the withdrawal event
+                    if (!fee) {
+                        // eslint-disable-next-line no-restricted-syntax
+                        for (const eventItem of block.events) {
+                            if (eventItem.name !== 'Balances.Withdraw') {
+                                // eslint-disable-next-line no-continue
+                                continue
+                            }
+
+                            if (eventItem.event.extrinsic?.id !== extrinsic.id) {
+                                // eslint-disable-next-line no-continue
+                                continue
+                            }
+
+                            // eslint-disable-next-line no-await-in-loop
+                            const transfer = await map.balances.events.withdraw(
+                                ctx as unknown as CommonContext,
+                                block.header,
+                                eventItem
+                            )
+
+                            if (extrinsic.fee && transfer) {
+                                extrinsic.fee.amount = transfer.amount
+                                break
+                            }
+                        }
+                    }
+
+                    // Hotfix for adding listing seller to participant
+                    if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
+                        const listingId = call.args.listingId.toString()
+                        // eslint-disable-next-line no-await-in-loop
+                        const listing = await ctx.store.findOne(Listing, {
+                            where: { id: hexStripPrefix(listingId) },
+                            relations: { seller: true },
+                        })
+                        if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
+                            extrinsic.participants.push(listing.seller.id)
+                        }
+                    }
+
+                    extrinsics.push(extrinsic)
                 }
 
                 await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-                await fetchNonces(ctx as unknown as CommonContext, block.header, signers)
-                _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
-                _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
-                _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
+                _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
