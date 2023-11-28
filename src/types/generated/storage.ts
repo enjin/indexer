@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
@@ -8778,3 +8779,35 @@ export interface XcmpQueueSignalMessagesStorageMatrixEnjinV603 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: Uint8Array][]>
     getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: Uint8Array][]>
 }
+=======
+export * as system from './system/storage'
+export * as parachainSystem from './parachain-system/storage'
+export * as timestamp from './timestamp/storage'
+export * as parachainInfo from './parachain-info/storage'
+export * as preimage from './preimage/storage'
+export * as scheduler from './scheduler/storage'
+export * as balances from './balances/storage'
+export * as transactionPayment from './transaction-payment/storage'
+export * as democracy from './democracy/storage'
+export * as council from './council/storage'
+export * as technicalCommittee from './technical-committee/storage'
+export * as communityPool from './community-pool/storage'
+export * as technicalMembership from './technical-membership/storage'
+export * as multisig from './multisig/storage'
+export * as authorship from './authorship/storage'
+export * as collatorStaking from './collator-staking/storage'
+export * as session from './session/storage'
+export * as xcmpQueue from './xcmp-queue/storage'
+export * as polkadotXcm from './polkadot-xcm/storage'
+export * as dmpQueue from './dmp-queue/storage'
+export * as matrixXcm from './matrix-xcm/storage'
+export * as bounties from './bounties/storage'
+export * as multiTokens from './multi-tokens/storage'
+export * as pools from './pools/storage'
+export * as fuelTanks from './fuel-tanks/storage'
+export * as marketplace from './marketplace/storage'
+export * as extrinsicPause from './extrinsic-pause/storage'
+export * as claims from './claims/storage'
+export * as sudo from './sudo/storage'
+export * as efinityXcm from './efinity-xcm/storage'
+>>>>>>> b6fb319 (new types)

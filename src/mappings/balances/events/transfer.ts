@@ -32,6 +32,8 @@ export async function transfer(
     const eventData = getEventData(ctx, item)
     if (!eventData) return undefined
 
+    ctx.
+
     if (item.extrinsic) {
         await Sns.getInstance().send({
             id: item.id,
