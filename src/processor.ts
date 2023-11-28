@@ -108,6 +108,11 @@ const processor = new SubstrateBatchProcessor()
         extrinsic: {
             fee: true,
             hash: true,
+            tip: true,
+            signature: true,
+            version: true,
+            success: true,
+            error: true,
         },
     })
 
@@ -302,7 +307,7 @@ processor.run(
                     } */
 
                     const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
-                    item.success
+
                     let publicKey = ''
                     let extrinsicSignature: any = {}
                     let fuelTank = null
