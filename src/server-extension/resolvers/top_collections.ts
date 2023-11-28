@@ -64,6 +64,9 @@ export class CollectionRow {
     @Field({ nullable: true })
     volume_change!: string
 
+    @Field({ nullable: true })
+    volume_traded!: string
+
     @Field({ nullable: false })
     volume!: string
 
@@ -95,13 +98,16 @@ export class TopCollectionResolver {
         const builder = manager
             .createQueryBuilder()
             .addSelect('collectionId AS id')
-            .addSelect('( SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId ) AS users')
+            .addSelect('(SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId ) AS users')
             .addSelect('metadata AS metadata')
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
             .addSelect('sales_last_duration AS sales')
             .addSelect(
                 'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
+            )
+            .addSelect(
+                'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration), 2) ELSE volume_last_duration END AS volume_traded'
             )
             .from((qb) => {
                 const inBuilder = qb
