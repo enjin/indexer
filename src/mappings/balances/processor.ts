@@ -1,5 +1,5 @@
 import { hexToU8a, u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { BlockHeader } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId, isAddressSS58 } from '../../common/tools'
@@ -116,7 +116,7 @@ function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): [Uint8
     throw new UnknownVersionError(data.constructor.name)
 }
 
-async function getSystemAccountBalances(ctx: CommonContext, block: SubstrateBlock, accounts: Uint8Array[]) {
+async function getSystemAccountBalances(ctx: CommonContext, block: BlockHeader, accounts: Uint8Array[]) {
     const storage = new SystemAccountStorage(ctx, block)
     if (!storage.isExists) return undefined
 
@@ -194,14 +194,14 @@ function processBalancesEventItem(ctx: CommonContext, event: Event) {
     return ids
 }
 
-async function getBalances(ctx: CommonContext, block: SubstrateBlock, accountIds: Uint8Array[]) {
+async function getBalances(ctx: CommonContext, block: BlockHeader, accountIds: Uint8Array[]) {
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
 const accountsSet = new Set<string>()
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
+export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
 
@@ -253,7 +253,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
 
 export async function save(
     ctx: CommonContext,
-    block: SubstrateBlock,
+    block: BlockHeader,
     event: Event,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

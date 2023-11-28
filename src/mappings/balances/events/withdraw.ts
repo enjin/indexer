@@ -1,5 +1,4 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { BlockHeader, Event as EventItem } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { BalancesWithdrawEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
@@ -17,8 +16,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 
 export async function withdraw(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Balances.Withdraw', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem<{ event: { args: true; extrinsic: true } }>
 ) {
-    return getEventData(ctx, item.event)
+    return getEventData(ctx, item)
 }

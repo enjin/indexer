@@ -258,16 +258,16 @@ processor.run(
                 const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 1) {
-                    await createEnjToken(ctx as unknown as CommonContext, block.header)
-                    await chainState(ctx as unknown as CommonContext, block.header)
+                    await createEnjToken(ctx, block.header)
+                    await chainState(ctx, block.header)
 
                     if (Number(config.prefix) === 1110) {
-                        await updateClaimDetails(ctx as unknown as CommonContext, block.header)
+                        await updateClaimDetails(ctx, block.header)
                     }
 
                     await metadataQueue.pause().catch(() => {})
 
-                    await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
+                    await populateBlock(ctx, config.lastBlockHeight)
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
@@ -281,12 +281,7 @@ processor.run(
                 // eslint-disable-next-line no-restricted-syntax
                 for (const item of block.events) {
                     // eslint-disable-next-line no-await-in-loop
-                    const event = await handleEvents(
-                        ctx as unknown as CommonContext,
-                        block.header,
-                        item,
-                        block.header.height <= config.lastBlockHeight
-                    )
+                    const event = await handleEvents(ctx, block.header, item, block.header.height <= config.lastBlockHeight)
 
                     if (event) {
                         if (Array.isArray(event)) {
@@ -306,29 +301,34 @@ processor.run(
                         continue
                     } */
 
-                    const { id, fee, hash, call, signature, success, tip, error } = item.extrinsic
+                    if (!item.extrinsic) {
+                        // eslint-disable-next-line no-continue
+                        continue
+                    }
+
+                    const { id, fee, hash, signature, success, tip, error } = item.extrinsic
 
                     let publicKey = ''
                     let extrinsicSignature: any = {}
                     let fuelTank = null
 
                     if (!signature) {
-                        publicKey = item.call.args.dest
+                        publicKey = item.args.dest
                         extrinsicSignature = {
-                            address: item.call.args.dest,
-                            signature: item.call.args.ethereumSignature,
+                            address: item.args.dest,
+                            signature: item.args.ethereumSignature,
                         }
                     } else {
                         publicKey = (
-                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                                ? signature.address.value
+                            (signature.address as any).__kind === 'Id' || (signature.address as any).__kind === 'AccountId'
+                                ? (signature.address as any).value
                                 : signature.address
                         ) as string
                         extrinsicSignature = signature
                     }
 
-                    if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
-                        const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
+                    if (item.name === 'FuelTanks.dispatch' || item.name === 'FuelTanks.dispatch_and_touch') {
+                        const tankData = getTankDataFromCall(ctx, item)
                         const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
 
                         fuelTank = new FuelTankData({
@@ -354,11 +354,7 @@ processor.run(
                             }
 
                             // eslint-disable-next-line no-await-in-loop
-                            const transfer = await map.balances.events.withdraw(
-                                ctx as unknown as CommonContext,
-                                block.header,
-                                eventItem
-                            )
+                            const transfer = await map.balances.events.withdraw(ctx, block.header, eventItem)
 
                             if (transfer && u8aToHex(transfer.who) === tank.id) {
                                 fuelTank.feePaid = transfer.amount
@@ -367,8 +363,8 @@ processor.run(
                     }
 
                     // eslint-disable-next-line no-await-in-loop
-                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
-                    const callName = call.name.split('.')
+                    const signer = await getOrCreateAccount(ctx, hexToU8a(publicKey)) // TODO: Get or create accounts on batches
+                    const callName = item.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
                     const extrinsic = new Extrinsic({
@@ -379,19 +375,19 @@ processor.run(
                         success,
                         pallet: callName[0],
                         method: callName[1],
-                        args: call.args,
+                        args: item.args,
                         signature: extrinsicSignature,
                         signer,
                         nonce: signer.nonce,
                         tip,
-                        error,
+                        error: error as string,
                         fee: new Fee({
                             amount: txFee,
                             who: signer.id,
                         }),
                         fuelTank,
                         createdAt: new Date(block.header.timestamp ?? 0),
-                        participants: getParticipants(call.args, publicKey),
+                        participants: getParticipants(item.args, publicKey),
                     })
 
                     // If fee empty search for the withdrawal event
@@ -403,17 +399,13 @@ processor.run(
                                 continue
                             }
 
-                            if (eventItem.event.extrinsic?.id !== extrinsic.id) {
+                            if (eventItem.extrinsic?.id !== extrinsic.id) {
                                 // eslint-disable-next-line no-continue
                                 continue
                             }
 
                             // eslint-disable-next-line no-await-in-loop
-                            const transfer = await map.balances.events.withdraw(
-                                ctx as unknown as CommonContext,
-                                block.header,
-                                eventItem
-                            )
+                            const transfer = await map.balances.events.withdraw(ctx, block.header, eventItem)
 
                             if (extrinsic.fee && transfer) {
                                 extrinsic.fee.amount = transfer.amount
@@ -423,8 +415,8 @@ processor.run(
                     }
 
                     // Hotfix for adding listing seller to participant
-                    if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
-                        const listingId = call.args.listingId.toString()
+                    if (item.name === 'Marketplace.fill_listing' || item.name === 'Marketplace.finalize_auction') {
+                        const listingId = item.args.listingId.toString()
                         // eslint-disable-next-line no-await-in-loop
                         const listing = await ctx.store.findOne(Listing, {
                             where: { id: hexStripPrefix(listingId) },
@@ -438,7 +430,7 @@ processor.run(
                     extrinsics.push(extrinsic)
                 }
 
-                await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                await map.balances.processor.saveAccounts(ctx, block.header)
                 _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(chunk))
                 _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(chunk))
                 _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(chunk))
@@ -446,7 +438,7 @@ processor.run(
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
             if (lastBlock.height > config.lastBlockHeight - 200) {
-                await chainState(ctx as unknown as CommonContext, lastBlock)
+                await chainState(ctx, lastBlock)
             }
         } catch (error) {
             metadataQueue.resume()
