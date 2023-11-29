@@ -64,19 +64,21 @@ export async function claimRequested(
 
     await Promise.all([ctx.store.insert(ClaimRequest, claim), ctx.store.save(claimDetails)])
 
-    await Sns.getInstance().send({
-        id: item.event.id,
-        name: item.event.name,
-        body: {
-            who: account.account,
-            accountType: account.type,
-            amountClaimable: eventData.amountClaimable,
-            amountBurned: eventData.amountBurned,
-            hash: u8aToHex(eventData.transactionHash).toString(),
-            isEfiToken: eventData.isEfiToken,
-            extrinsic: item.event.extrinsic.id,
-        },
-    })
+    if (item.event.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.event.id,
+            name: item.event.name,
+            body: {
+                who: account.account,
+                accountType: account.type,
+                amountClaimable: eventData.amountClaimable,
+                amountBurned: eventData.amountBurned,
+                hash: u8aToHex(eventData.transactionHash).toString(),
+                isEfiToken: eventData.isEfiToken,
+                extrinsic: item.event.extrinsic.id,
+            },
+        })
+    }
 
     return new EventModel({
         id: item.event.id,

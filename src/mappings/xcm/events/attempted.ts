@@ -9,6 +9,7 @@ import { getOrCreateAccount } from '../../util/entities'
 import {
     FuelTanksDispatchAndTouchCall,
     FuelTanksDispatchCall,
+    PolkadotXcmLimitedReserveTransferAssetsCall,
     PolkadotXcmLimitedTeleportAssetsCall,
     PolkadotXcmTeleportAssetsCall,
 } from '../../../types/generated/calls'
@@ -34,6 +35,13 @@ async function getCallData(ctx: CommonContext, call: Call) {
         } else {
             data = new FuelTanksDispatchAndTouchCall(ctx, call)
         }
+        if (
+            data.isV1000 &&
+            data.asV1000.call.__kind === 'PolkadotXcm' &&
+            (data.asV1000.call.value.__kind === 'teleport_assets' || data.asV1000.call.value.__kind === 'limited_teleport_assets')
+        ) {
+            return data.asV1000.call.value
+        }
 
         if (
             data.isMatrixEnjinV603 &&
@@ -42,6 +50,13 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 data.asMatrixEnjinV603.call.value.__kind === 'limited_teleport_assets')
         ) {
             return data.asMatrixEnjinV603.call.value
+        }
+
+        throw new UnknownVersionError(data.constructor.name)
+    } else if (call.name === 'PolkadotXcm.limited_reserve_transfer_assets') {
+        const data = new PolkadotXcmLimitedReserveTransferAssetsCall(ctx, call)
+        if (data.isMatrixEnjinV603) {
+            return data.asMatrixEnjinV603
         }
 
         throw new UnknownVersionError(data.constructor.name)

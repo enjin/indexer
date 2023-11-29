@@ -83,7 +83,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
-  | FuelTankCreated | FuelTankDestroyed
+  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
 
 type BalancesTransfer {
   from: Account!
@@ -275,6 +275,16 @@ type FuelTankCreated {
 
 type FuelTankDestroyed {
   tank: String!
+}
+
+type MultiTokensClaimTokensInitiated {
+  account: Account!
+  ethAccount: String!
+}
+
+type MultiTokensClaimTokensCompleted {
+  account: Account!
+  ethAccount: String!
 }
 
 type Balance {
@@ -729,7 +739,21 @@ type ClaimDetails @entity {
   totalUnclaimedAmount: BigInt!
 }
 
+type MultiTokensClaims @entity {
+  id: ID!
+
+  account: Account!
+  ethAccount: String!
+  completed: Boolean!
+
+  createdAt: DateTime!
+}
+
 type WhitelistedCallers {
+  value: [String!]!
+}
+
+type WhitelistedPallets {
   value: [String!]!
 }
 
@@ -739,12 +763,12 @@ type MaxFuelBurnPerTransaction {
 
 type UserFuelBudget {
   amount: BigInt
-  resetPeriod: Int
+  resetPeriod: BigInt
 }
 
 type TankFuelBudget {
   amount: BigInt
-  resetPeriod: Int
+  resetPeriod: BigInt
 }
 
 type RequireToken {
@@ -793,6 +817,7 @@ type FuelTankRuleSet @entity {
 
   whitelistedCallers: [String!]
   whitelistedCollections: [String]
+  whitelistedPallets: [String!]
   maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction
   userFuelBudget: UserFuelBudget
   tankFuelBudget: TankFuelBudget

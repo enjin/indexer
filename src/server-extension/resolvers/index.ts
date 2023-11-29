@@ -7,6 +7,7 @@ import { MyTokensResolver } from './my_tokens'
 import { ClaimsAccountNonceResolver } from './claims_account_nonce'
 import { RefreshCollectionsResolver } from './refresh_collections'
 import { FuelTanksAccountsResolver } from './fueltanks-accounts'
+import { ClaimableCollectionIdsResolver } from './claimable_colllection_ids'
 
 export {
     TokenSalesHistoryResolver,
@@ -14,6 +15,7 @@ export {
     RefreshMetadataResolver,
     RefreshAccountResolver,
     FuelTanksAccountsResolver,
+    ClaimableCollectionIdsResolver,
     RefreshCollectionsResolver,
     TopCollectionResolver,
     MyTokensResolver,

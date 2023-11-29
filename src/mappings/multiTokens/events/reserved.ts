@@ -9,13 +9,13 @@ import { syncCollectionStats } from '../../../jobs/collection-stats'
 import { UnknownVersionError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, eventItem: Event) {
-    const event = new MultiTokensReservedEvent(ctx, eventItem)
+    const data = new MultiTokensReservedEvent(ctx, eventItem)
 
-    if (event.isMatrixEnjinV603) {
-        return event.asMatrixEnjinV603
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
     }
 
-    throw new UnknownVersionError(event.constructor.name)
+    throw new UnknownVersionError(data.constructor.name)
 }
 
 export async function reserved(

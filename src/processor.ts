@@ -78,6 +78,8 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Unapproved', eventOptions)
     .addEvent('MultiTokens.Unreserved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
+    .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
+    .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
     .addEvent('Balances.DustLost', eventOptions)
     .addEvent('Balances.Endowed', eventOptions)
     .addEvent('Balances.ReserveRepatriated', eventOptions)
@@ -163,6 +165,10 @@ async function handleEvents(
             return map.multiTokens.events.unapproved(ctx, block, item, skipSave)
         case 'MultiTokens.Unreserved':
             return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
+        case 'MultiTokens.ClaimTokensInitiated':
+            return map.multiTokens.events.claimTokensInitiated(ctx, block, item)
+        case 'MultiTokens.ClaimTokensCompleted':
+            return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
         case 'Balances.Transfer':
             await map.balances.processor.save(ctx, block, item.event, skipSave)
             return map.balances.events.transfer(ctx, block, item)
@@ -288,7 +294,8 @@ processor.run(
                     } else if (item.kind === 'call') {
                         if (
                             item.call.parent != null ||
-                            ((item.call.name as any) !== 'Claims.claim' && item.extrinsic.signature?.address == null)
+                            (!['Claims.claim', 'MultiTokens.claim_tokens'].includes(item.call.name) &&
+                                item.extrinsic.signature?.address == null)
                         ) {
                             // eslint-disable-next-line no-continue
                             continue
@@ -300,9 +307,9 @@ processor.run(
                         let fuelTank = null
 
                         if (!signature) {
-                            publicKey = item.call.args.dest
+                            publicKey = item.call.args.dest ?? item.call.args.destination
                             extrinsicSignature = {
-                                address: item.call.args.dest,
+                                address: item.call.args.dest ?? item.call.args.destination,
                                 signature: item.call.args.ethereumSignature,
                             }
                         } else {

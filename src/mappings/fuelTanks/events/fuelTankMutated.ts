@@ -45,7 +45,7 @@ export async function fuelTankMutated(
                 tankReservesExistentialDeposit: eventData.mutation.userAccountManagement.value.tankReservesExistentialDeposit,
             })
         } else {
-            tank.userAccountManagement = undefined
+            tank.userAccountManagement = null
         }
     }
 

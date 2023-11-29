@@ -63,6 +63,9 @@ function getCallData(ctx: CommonContext, call: Call) {
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }
+    if (data.isV1000) {
+        return data.asV1000
+    }
 
     throw new UnknownVersionError(data.constructor.name)
 }
@@ -144,6 +147,7 @@ export async function fuelTankCreated(
                 requireToken,
                 permittedCalls,
                 permittedExtrinsics,
+                whitelistedPallets,
             } = rulesToMap(`${fuelTank.id}-${index}`, rules)
 
             const ruleSetModel = new FuelTankRuleSet({
@@ -152,6 +156,7 @@ export async function fuelTankCreated(
                 index,
                 isFrozen: false,
                 isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
+                isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
                 whitelistedCallers,
                 whitelistedCollections,
                 maxFuelBurnPerTransaction,
@@ -159,6 +164,7 @@ export async function fuelTankCreated(
                 tankFuelBudget,
                 requireToken,
                 permittedCalls,
+                whitelistedPallets,
             })
 
             await ctx.store.save(ruleSetModel)
