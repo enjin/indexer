@@ -36,12 +36,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
             data = new FuelTanksDispatchAndTouchCall(ctx, call)
         }
         if (
-            data.isMatrixEnjinV605 &&
-            data.asMatrixEnjinV605.call.__kind === 'PolkadotXcm' &&
-            (data.asMatrixEnjinV605.call.value.__kind === 'teleport_assets' ||
-                data.asMatrixEnjinV605.call.value.__kind === 'limited_teleport_assets')
+            data.isV1000 &&
+            data.asV1000.call.__kind === 'PolkadotXcm' &&
+            (data.asV1000.call.value.__kind === 'teleport_assets' || data.asV1000.call.value.__kind === 'limited_teleport_assets')
         ) {
-            return data.asMatrixEnjinV605.call.value
+            return data.asV1000.call.value
         }
 
         if (

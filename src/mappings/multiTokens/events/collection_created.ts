@@ -91,11 +91,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
-            data.isMatrixEnjinV605 &&
-            data.asMatrixEnjinV605.call.__kind === 'MultiTokens' &&
-            data.asMatrixEnjinV605.call.value.__kind === 'create_collection'
+            data.isV1000 &&
+            data.asV1000.call.__kind === 'MultiTokens' &&
+            data.asV1000.call.value.__kind === 'create_collection'
         ) {
-            const { descriptor } = data.asMatrixEnjinV605.call.value
+            const { descriptor } = data.asV1000.call.value
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
             const royalty = descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
@@ -136,11 +136,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
         const data = new MultiTokensForceCreateEthereumCollectionCall(ctx, call)
 
-        if (data.isMatrixEnjinV605) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV605.descriptor.policy.mint
-            const royalty = data.asMatrixEnjinV605.descriptor.policy.market?.royalty
+        if (data.isV1000) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1000.descriptor.policy.mint
+            const royalty = data.asV1000.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV605.descriptor
+            const { explicitRoyaltyCurrencies } = data.asV1000.descriptor
 
             return {
                 maxTokenCount,
@@ -243,7 +243,7 @@ export async function collectionCreated(
     await ctx.store.save(collection)
 
     const royaltyPromises = callData.explicitRoyaltyCurrencies
-        .map((currency) => {
+        .map((currency: any) => {
             const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
             return new RoyaltyCurrency({
                 id: `${collection.id}-${tokenId}`,
@@ -251,7 +251,7 @@ export async function collectionCreated(
                 token: new Token({ id: tokenId }),
             })
         })
-        .map((rc) => ctx.store.insert(RoyaltyCurrency, rc as any))
+        .map((rc: any) => ctx.store.insert(RoyaltyCurrency, rc as any))
 
     await Promise.all(royaltyPromises)
 

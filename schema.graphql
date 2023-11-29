@@ -753,6 +753,10 @@ type WhitelistedCallers {
   value: [String!]!
 }
 
+type WhitelistedPallets {
+  value: [String!]!
+}
+
 type MaxFuelBurnPerTransaction {
   value: BigInt!
 }
@@ -813,6 +817,7 @@ type FuelTankRuleSet @entity {
 
   whitelistedCallers: [String!]
   whitelistedCollections: [String]
+  whitelistedPallets: [String!]
   maxFuelBurnPerTransaction: MaxFuelBurnPerTransaction
   userFuelBudget: UserFuelBudget
   tankFuelBudget: TankFuelBudget

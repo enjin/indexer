@@ -11,8 +11,8 @@ import { Sns } from '../../../common/sns'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensClaimTokensCompletedEvent(ctx, event)
 
-    if (data.isMatrixEnjinV605) {
-        return data.asMatrixEnjinV605
+    if (data.isV1000) {
+        return data.asV1000
     }
     throw new UnknownVersionError(data.constructor.name)
 }

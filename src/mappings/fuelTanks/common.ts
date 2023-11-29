@@ -3,6 +3,7 @@ import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV603'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../types/generated/v602'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV601 } from '../../types/generated/v601'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV600 } from '../../types/generated/v600'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorv1000 } from '../../types/generated/v1000'
 import {
     MaxFuelBurnPerTransaction,
     UserFuelBudget,
@@ -18,7 +19,12 @@ import { UnknownVersionError } from '../../common/errors'
 
 export function rulesToMap(
     ruleId: string,
-    rules: DispatchRuleDescriptor[] | DispatchRuleDescriptorV602[] | DispatchRuleDescriptorV601[] | DispatchRuleDescriptorV600[]
+    rules:
+        | DispatchRuleDescriptor[]
+        | DispatchRuleDescriptorV602[]
+        | DispatchRuleDescriptorV601[]
+        | DispatchRuleDescriptorV600[]
+        | DispatchRuleDescriptorv1000[]
 ) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -28,6 +34,7 @@ export function rulesToMap(
     let requireToken: RequireToken | undefined
     let permittedCalls: string[] | undefined
     let permittedExtrinsics: PermittedExtrinsics[] | undefined
+    let whitelistedPallets: string[] | undefined
 
     rules.forEach((rule, index) => {
         if (rule.__kind === 'WhitelistedCallers') {
@@ -57,6 +64,8 @@ export function rulesToMap(
                         extrinsicName: r.value.__kind,
                     })
             )
+        } else if (rule.__kind === 'WhitelistedPallets') {
+            whitelistedPallets = rule.value.map((p) => p.toString())
         }
     })
 
@@ -69,6 +78,7 @@ export function rulesToMap(
         requireToken,
         permittedCalls,
         permittedExtrinsics,
+        whitelistedPallets,
     }
 }
 

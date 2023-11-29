@@ -25,6 +25,9 @@ function getCallData(ctx: CommonContext, call: Call) {
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }
+    if (data.isV1000) {
+        return data.asV1000
+    }
 
     if (data.isV604) {
         return data.asV604
@@ -76,6 +79,7 @@ export async function ruleSetInserted(
         requireToken,
         permittedCalls,
         permittedExtrinsics,
+        whitelistedPallets,
     } = rulesToMap(ruleSetId, callData.rules)
 
     const ruleSet = new FuelTankRuleSet({
@@ -91,6 +95,7 @@ export async function ruleSetInserted(
         tankFuelBudget,
         requireToken,
         permittedCalls,
+        whitelistedPallets,
     })
     await ctx.store.save(ruleSet)
 

@@ -35,6 +35,9 @@ export class FuelTankRuleSet {
     @Column_("text", {array: true, nullable: true})
     whitelistedCollections!: (string | undefined | null)[] | undefined | null
 
+    @Column_("text", {array: true, nullable: true})
+    whitelistedPallets!: (string)[] | undefined | null
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MaxFuelBurnPerTransaction(undefined, obj)}, nullable: true})
     maxFuelBurnPerTransaction!: MaxFuelBurnPerTransaction | undefined | null
 
