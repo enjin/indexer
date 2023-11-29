@@ -29,6 +29,9 @@ export class FuelTankRuleSet {
     @Column_("bool", {nullable: false})
     isPermittedExtrinsicsEmpty!: boolean
 
+    @Column_("bool", {nullable: false})
+    isPermittedExtrinsicsNull!: boolean
+
     @Column_("text", {array: true, nullable: true})
     whitelistedCallers!: (string)[] | undefined | null
 

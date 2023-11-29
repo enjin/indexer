@@ -156,6 +156,7 @@ export async function fuelTankCreated(
                 index,
                 isFrozen: false,
                 isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
+                isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
                 whitelistedCallers,
                 whitelistedCollections,
                 maxFuelBurnPerTransaction,
