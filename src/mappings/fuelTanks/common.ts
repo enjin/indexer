@@ -94,6 +94,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: Call) {
         return data.asMatrixEnjinV603
     }
 
+    if (data.isV1000) {
+        return data.asV1000
+    }
+
     if (data.isV604) {
         return data.asV604
     }
