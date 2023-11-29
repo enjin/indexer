@@ -44,9 +44,9 @@ export function rulesToMap(
         } else if (rule.__kind === 'MaxFuelBurnPerTransaction') {
             maxFuelBurnPerTransaction = new MaxFuelBurnPerTransaction({ value: rule.value })
         } else if (rule.__kind === 'UserFuelBudget') {
-            userFuelBudget = new UserFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
+            userFuelBudget = new UserFuelBudget({ amount: rule.value.amount, resetPeriod: BigInt(rule.value.resetPeriod) })
         } else if (rule.__kind === 'TankFuelBudget') {
-            tankFuelBudget = new TankFuelBudget({ amount: rule.value.amount, resetPeriod: rule.value.resetPeriod })
+            tankFuelBudget = new TankFuelBudget({ amount: rule.value.amount, resetPeriod: BigInt(rule.value.resetPeriod) })
         } else if (rule.__kind === 'RequireToken') {
             requireToken = new RequireToken({
                 tokenId: rule.value.tokenId,

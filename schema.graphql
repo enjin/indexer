@@ -763,12 +763,12 @@ type MaxFuelBurnPerTransaction {
 
 type UserFuelBudget {
   amount: BigInt
-  resetPeriod: Int
+  resetPeriod: BigInt
 }
 
 type TankFuelBudget {
   amount: BigInt
-  resetPeriod: Int
+  resetPeriod: BigInt
 }
 
 type RequireToken {
