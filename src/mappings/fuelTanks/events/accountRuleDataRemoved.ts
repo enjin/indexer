@@ -10,6 +10,10 @@ import { CommonContext } from '../../types/contexts'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new FuelTanksAccountRuleDataRemovedEvent(ctx, event)
 
+    if (data.isMatrixEnjinV1000) {
+        return data.asMatrixEnjinV1000
+    }
+
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }

@@ -4,6 +4,7 @@ import * as matrixEnjinV603 from './matrixEnjinV603'
 import * as v500 from './v500'
 import * as v600 from './v600'
 import * as v602 from './v602'
+import * as matrixEnjinV1000 from './matrixEnjinV1000'
 import * as v604 from './v604'
 import * as v1000 from './v1000'
 
@@ -3011,6 +3012,36 @@ export class FuelTanksAccountAddedEvent {
     /**
      * An account was added to a [`FuelTank`]
      */
+    get isMatrixEnjinV1000(): boolean {
+        return this._chain.getEventHash('FuelTanks.AccountAdded') === 'fdaac5d1fd560c5965f1bc6ff72448c8e1da64b1a7a9cb4b6c0c77dab802dd2a'
+    }
+
+    /**
+     * An account was added to a [`FuelTank`]
+     */
+    get asMatrixEnjinV1000(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint, totalReceived: bigint} {
+        assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An account was added to a [`FuelTank`]
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('FuelTanks.AccountAdded') === 'eaba5f9eb5b376c10a9ee1aded196439de7b5045a6bdf4f20126a6ceada70754'
+    }
+
+    /**
+     * An account was added to a [`FuelTank`]
+     */
+    get asV500(): {tankId: Uint8Array, userId: Uint8Array, tankDeposit: bigint, userDeposit: bigint} {
+        assert(this.isV500)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * An account was added to a [`FuelTank`]
+     */
     get isV1000(): boolean {
         return this._chain.getEventHash('FuelTanks.AccountAdded') === 'fdaac5d1fd560c5965f1bc6ff72448c8e1da64b1a7a9cb4b6c0c77dab802dd2a'
     }
@@ -3080,6 +3111,40 @@ export class FuelTanksAccountRuleDataRemovedEvent {
      */
     get asMatrixEnjinV603(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: matrixEnjinV603.DispatchRuleKind} {
         assert(this.isMatrixEnjinV603)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    get isMatrixEnjinV1000(): boolean {
+        return this._chain.getEventHash('FuelTanks.AccountRuleDataRemoved') === '5da478de13b8078dff71552922d205abc9e8ed36a3cc8301889885355ba8ccd6'
+    }
+
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    get asMatrixEnjinV1000(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: matrixEnjinV1000.DispatchRuleKind} {
+        assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    get isV500(): boolean {
+        return this._chain.getEventHash('FuelTanks.AccountRuleDataRemoved') === '5a236b56107bcad5eb7d987ef926899db96b36ea5b6671becf5e98d5053e95e7'
+    }
+
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    get asV500(): {tankId: Uint8Array, userId: Uint8Array, ruleSetId: number, ruleKind: v500.DispatchRuleKind} {
+        assert(this.isV500)
         return this._chain.decodeEvent(this.event)
     }
 
@@ -3526,15 +3591,15 @@ export class IdentityIdentityClearedEvent {
     /**
      * A name was cleared, and the given balance returned.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.IdentityCleared') === '569627bf2a8105e3949fd62dcaae8174fb02f8afedb8e5d8a7fecda5d63b25c3'
     }
 
     /**
      * A name was cleared, and the given balance returned.
      */
-    get asV1000(): {who: Uint8Array, deposit: bigint} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {who: Uint8Array, deposit: bigint} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3555,15 +3620,15 @@ export class IdentityIdentityKilledEvent {
     /**
      * A name was removed and the given balance slashed.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.IdentityKilled') === '569627bf2a8105e3949fd62dcaae8174fb02f8afedb8e5d8a7fecda5d63b25c3'
     }
 
     /**
      * A name was removed and the given balance slashed.
      */
-    get asV1000(): {who: Uint8Array, deposit: bigint} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {who: Uint8Array, deposit: bigint} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3584,15 +3649,15 @@ export class IdentityIdentitySetEvent {
     /**
      * A name was set or reset (which will remove all judgements).
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.IdentitySet') === 'b8a0d2208835f6ada60dd21cd93533d703777b3779109a7c6a2f26bad68c2f3b'
     }
 
     /**
      * A name was set or reset (which will remove all judgements).
      */
-    get asV1000(): {who: Uint8Array} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {who: Uint8Array} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3613,15 +3678,15 @@ export class IdentityJudgementGivenEvent {
     /**
      * A judgement was given by a registrar.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.JudgementGiven') === '0771fa05d0977d28db0dee420efa5c006fa01a48edbd0b5b50cba5ea1d98b1b8'
     }
 
     /**
      * A judgement was given by a registrar.
      */
-    get asV1000(): {target: Uint8Array, registrarIndex: number} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {target: Uint8Array, registrarIndex: number} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3642,15 +3707,15 @@ export class IdentityJudgementRequestedEvent {
     /**
      * A judgement was asked from a registrar.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.JudgementRequested') === 'cbefacbef964c7ee928128f7969b3a567b57c51a6945e5bab170a3c3d42e8d5b'
     }
 
     /**
      * A judgement was asked from a registrar.
      */
-    get asV1000(): {who: Uint8Array, registrarIndex: number} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {who: Uint8Array, registrarIndex: number} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3671,15 +3736,15 @@ export class IdentityJudgementUnrequestedEvent {
     /**
      * A judgement request was retracted.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.JudgementUnrequested') === 'cbefacbef964c7ee928128f7969b3a567b57c51a6945e5bab170a3c3d42e8d5b'
     }
 
     /**
      * A judgement request was retracted.
      */
-    get asV1000(): {who: Uint8Array, registrarIndex: number} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {who: Uint8Array, registrarIndex: number} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3700,15 +3765,15 @@ export class IdentityRegistrarAddedEvent {
     /**
      * A registrar was added.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.RegistrarAdded') === 'c7c8fe6ce04ac3d49accb0e86098814baf3baab267afb645140023a3c5c84c24'
     }
 
     /**
      * A registrar was added.
      */
-    get asV1000(): {registrarIndex: number} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {registrarIndex: number} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3729,15 +3794,15 @@ export class IdentitySubIdentityAddedEvent {
     /**
      * A sub-identity was added to an identity and the deposit paid.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.SubIdentityAdded') === '3ffe8c1fa99373079f0c7dbda5849194c73c2867fd7ca2b08d19f7c6b676e1ef'
     }
 
     /**
      * A sub-identity was added to an identity and the deposit paid.
      */
-    get asV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3758,15 +3823,15 @@ export class IdentitySubIdentityRemovedEvent {
     /**
      * A sub-identity was removed from an identity and the deposit freed.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.SubIdentityRemoved') === '3ffe8c1fa99373079f0c7dbda5849194c73c2867fd7ca2b08d19f7c6b676e1ef'
     }
 
     /**
      * A sub-identity was removed from an identity and the deposit freed.
      */
-    get asV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -3788,7 +3853,7 @@ export class IdentitySubIdentityRevokedEvent {
      * A sub-identity was cleared, and the given deposit repatriated from the
      * main identity account to the sub-identity account.
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('Identity.SubIdentityRevoked') === '3ffe8c1fa99373079f0c7dbda5849194c73c2867fd7ca2b08d19f7c6b676e1ef'
     }
 
@@ -3796,8 +3861,8 @@ export class IdentitySubIdentityRevokedEvent {
      * A sub-identity was cleared, and the given deposit repatriated from the
      * main identity account to the sub-identity account.
      */
-    get asV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {sub: Uint8Array, main: Uint8Array, deposit: bigint} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4286,15 +4351,15 @@ export class MultiTokensClaimTokensCompletedEvent {
     /**
      * Finished claiming the tokens
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('MultiTokens.ClaimTokensCompleted') === 'e963b546ce52b3e105e5a29f2e7743ca6496e8a40e036e98f057e74fa36bca75'
     }
 
     /**
      * Finished claiming the tokens
      */
-    get asV1000(): {destination: Uint8Array, ethereumAddress: Uint8Array} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {destination: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4315,15 +4380,15 @@ export class MultiTokensClaimTokensInitiatedEvent {
     /**
      * Claims tokens initiated
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1000(): boolean {
         return this._chain.getEventHash('MultiTokens.ClaimTokensInitiated') === 'b855747546e97f30d0221aaf15e6923b0b420b5f5d208e31f08ee63deaa664f2'
     }
 
     /**
      * Claims tokens initiated
      */
-    get asV1000(): {accountId: Uint8Array, ethereumAddress: Uint8Array} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1000(): {accountId: Uint8Array, ethereumAddress: Uint8Array} {
+        assert(this.isMatrixEnjinV1000)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -4353,6 +4418,36 @@ export class MultiTokensClaimedCollectionsEvent {
      */
     get asMatrixEnjinV603(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: matrixEnjinV603.CollectionIdPair[]} {
         assert(this.isMatrixEnjinV603)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Collections were claimed
+     */
+    get isMatrixEnjinV1000(): boolean {
+        return this._chain.getEventHash('MultiTokens.ClaimedCollections') === 'dae918bcb0da6f6f293d6cea13c426e40bb93db488e889dfc01af80444518607'
+    }
+
+    /**
+     * Collections were claimed
+     */
+    get asMatrixEnjinV1000(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: bigint[]} {
+        assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Collections were claimed
+     */
+    get isV604(): boolean {
+        return this._chain.getEventHash('MultiTokens.ClaimedCollections') === '6a4b376096bdb8d85bb6c1e5fc18207e499f217fabc6ba19e104345b3579203c'
+    }
+
+    /**
+     * Collections were claimed
+     */
+    get asV604(): {accountId: Uint8Array, ethereumAddress: Uint8Array, collectionIds: v604.CollectionIdPair[]} {
+        assert(this.isV604)
         return this._chain.decodeEvent(this.event)
     }
 

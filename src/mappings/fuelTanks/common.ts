@@ -90,6 +90,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: Call) {
         data = new FuelTanksDispatchAndTouchCall(ctx, call)
     }
 
+    if (data.isMatrixEnjinV1000) {
+        return data.asMatrixEnjinV1000
+    }
+
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }

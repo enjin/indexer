@@ -11,6 +11,10 @@ import { getOrCreateAccount } from '../../util/entities'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new FuelTanksAccountAddedEvent(ctx, event)
 
+    if (data.isMatrixEnjinV1000) {
+        return data.asMatrixEnjinV1000
+    }
+
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }
