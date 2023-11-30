@@ -1,4 +1,4 @@
-import { DataHandlerContext } from '@subsquid/substrate-processor'
+import { DataHandlerContext,  } from '@subsquid/substrate-processor'
 import { Store } from '@subsquid/typeorm-store'
 
 export type CommonContext = DataHandlerContext<
