@@ -1,28 +1,7 @@
-import { DataHandlerContext,  } from '@subsquid/substrate-processor'
+import { DataHandlerContext, SubstrateBatchProcessorFields, Event as EventItem } from '@subsquid/substrate-processor'
 import { Store } from '@subsquid/typeorm-store'
+import { processor } from '../../processor'
 
-export type CommonContext = DataHandlerContext<
-    Store,
-    {
-        block: {
-            timestamp: true
-        }
-        call: {
-            origin: true
-            success: true
-            args: true
-            name: true
-        }
-        extrinsic: {
-            fee: true
-            hash: true
-            tip: true
-            signature: true
-            version: true
-            success: true
-            error: true
-        }
-    }
->
-
-export { CallContext, EventContext } from '../../types/generated/support'
+type Fields = SubstrateBatchProcessorFields<typeof processor>
+export type CommonContext = DataHandlerContext<Store, Fields>
+export type Event = EventItem<Fields>

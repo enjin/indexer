@@ -1,4 +1,4 @@
-import { DataHandlerContext, SubstrateBatchProcessor, SubstrateBatchProcessorFields } from '@subsquid/substrate-processor'
+import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import config from './config'
 import { events } from './types/generated'
 
@@ -88,6 +88,3 @@ export const processor = new SubstrateBatchProcessor()
             error: true,
         },
     })
-
-type Fields = SubstrateBatchProcessorFields<typeof processor>
-export type ProcessorContext<Store> = DataHandlerContext<Store, Fields>

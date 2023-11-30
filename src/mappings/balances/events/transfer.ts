@@ -1,11 +1,11 @@
-import { BlockHeader, Event as EventItem } from '@subsquid/substrate-processor'
+import { BlockHeader } from '@subsquid/substrate-processor'
 import { UnknownVersionError } from '../../../common/errors'
 import { balances } from '../../../types/generated/events'
 import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, Event } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
+function getEventData(ctx: CommonContext, event: Event) {
     if (balances.transfer.matrixEnjinV603.is(event)) {
         const { from, to, amount } = balances.transfer.matrixEnjinV603.decode(event)
         return { from, to, amount }
@@ -14,11 +14,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnknownVersionError(balances.transfer.name)
 }
 
-export async function transfer(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem<{ event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
+export async function transfer(ctx: CommonContext, block: BlockHeader, item: Event): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item)
     if (!eventData) return undefined
 
