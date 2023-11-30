@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import assert from 'assert'
 import {Chain, ChainContext, EventContext, Event, Result, Option} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
@@ -8568,6 +8569,8 @@ export class XcmpQueueXcmpMessageSentEvent {
     }
 }
 =======
+=======
+>>>>>>> 910c78b (typegen)
 export * as system from './system/events'
 export * as parachainSystem from './parachain-system/events'
 export * as preimage from './preimage/events'
@@ -8603,4 +8606,4 @@ export * as claims from './claims/events'
 export * as sudo from './sudo/events'
 export * as efinityXcm from './efinity-xcm/events'
 export * as efinityUtility from './efinity-utility/events'
->>>>>>> b6fb319 (new types)
+export * as identity from './identity/events'

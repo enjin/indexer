@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../sup
 import * as v500 from '../v500'
 import * as v600 from '../v600'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1000 from '../v1000'
 
 export const tokenAccounts =  {
     /**
@@ -374,6 +375,12 @@ export const unmintableTokenIds =  {
      *  These token ids can only be minted by calling `claim_token`
      */
     matrixEnjinV603: new StorageType('MultiTokens.UnmintableTokenIds', 'Optional', [sts.bigint()], matrixEnjinV603.RangeInclusive) as UnmintableTokenIdsMatrixEnjinV603,
+    /**
+     *  These token ids can only be minted by calling `force_mint`. The second key is an ethereum
+     *  base token id, and the value is the highest token index that cannot be minted. All token
+     *  indexes start from 1, so effectively it blocks token indexes from 1 to the value.
+     */
+    v1000: new StorageType('MultiTokens.UnmintableTokenIds', 'Optional', [sts.bigint(), sts.bigint()], sts.bigint()) as UnmintableTokenIdsV1000,
 }
 
 /**
@@ -391,6 +398,29 @@ export interface UnmintableTokenIdsMatrixEnjinV603  {
     getPairs(block: Block, key: bigint): Promise<[k: bigint, v: (matrixEnjinV603.RangeInclusive | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: (matrixEnjinV603.RangeInclusive | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<[k: bigint, v: (matrixEnjinV603.RangeInclusive | undefined)][]>
+}
+
+/**
+ *  These token ids can only be minted by calling `force_mint`. The second key is an ethereum
+ *  base token id, and the value is the highest token index that cannot be minted. All token
+ *  indexes start from 1, so effectively it blocks token indexes from 1 to the value.
+ */
+export interface UnmintableTokenIdsV1000  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: bigint, key2: bigint): Promise<(bigint | undefined)>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
+    getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
+    getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: (bigint | undefined)][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: (bigint | undefined)][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: (bigint | undefined)][]>
 }
 
 export const nativeCollectionIds =  {
@@ -431,4 +461,28 @@ export interface IdleOperationsV500  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): v500.WeightedIdleOperation[]
     get(block: Block): Promise<(v500.WeightedIdleOperation[] | undefined)>
+}
+
+export const claimableCollectionIds =  {
+    /**
+     *  Stores data for an ethereum address
+     */
+    v1000: new StorageType('MultiTokens.ClaimableCollectionIds', 'Optional', [v1000.H160], sts.array(() => sts.bigint())) as ClaimableCollectionIdsV1000,
+}
+
+/**
+ *  Stores data for an ethereum address
+ */
+export interface ClaimableCollectionIdsV1000  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1000.H160): Promise<(bigint[] | undefined)>
+    getMany(block: Block, keys: v1000.H160[]): Promise<(bigint[] | undefined)[]>
+    getKeys(block: Block): Promise<v1000.H160[]>
+    getKeys(block: Block, key: v1000.H160): Promise<v1000.H160[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1000.H160[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1000.H160): AsyncIterable<v1000.H160[]>
+    getPairs(block: Block): Promise<[k: v1000.H160, v: (bigint[] | undefined)][]>
+    getPairs(block: Block, key: v1000.H160): Promise<[k: v1000.H160, v: (bigint[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1000.H160, v: (bigint[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1000.H160): AsyncIterable<[k: v1000.H160, v: (bigint[] | undefined)][]>
 }

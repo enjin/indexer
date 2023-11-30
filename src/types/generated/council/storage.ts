@@ -5,6 +5,7 @@ import * as v601 from '../v601'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as v1000 from '../v1000'
 
 export const proposals =  {
     /**
@@ -47,6 +48,10 @@ export const proposalOf =  {
      *  Actual proposal for a given hash, if it's current.
      */
     v604: new StorageType('Council.ProposalOf', 'Optional', [v604.H256], v604.Call) as ProposalOfV604,
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    v1000: new StorageType('Council.ProposalOf', 'Optional', [v1000.H256], v1000.Call) as ProposalOfV1000,
 }
 
 /**
@@ -149,6 +154,23 @@ export interface ProposalOfV604  {
     getPairs(block: Block, key: v604.H256): Promise<[k: v604.H256, v: (v604.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v604.H256, v: (v604.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: v604.H256): AsyncIterable<[k: v604.H256, v: (v604.Call | undefined)][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface ProposalOfV1000  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1000.H256): Promise<(v1000.Call | undefined)>
+    getMany(block: Block, keys: v1000.H256[]): Promise<(v1000.Call | undefined)[]>
+    getKeys(block: Block): Promise<v1000.H256[]>
+    getKeys(block: Block, key: v1000.H256): Promise<v1000.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1000.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1000.H256): AsyncIterable<v1000.H256[]>
+    getPairs(block: Block): Promise<[k: v1000.H256, v: (v1000.Call | undefined)][]>
+    getPairs(block: Block, key: v1000.H256): Promise<[k: v1000.H256, v: (v1000.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1000.H256, v: (v1000.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1000.H256): AsyncIterable<[k: v1000.H256, v: (v1000.Call | undefined)][]>
 }
 
 export const voting =  {

@@ -3,6 +3,7 @@ import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as v1000 from '../v1000'
 
 export const fuelTankCreated =  {
     name: 'FuelTanks.FuelTankCreated',
@@ -110,6 +111,34 @@ export const accountAdded =  {
             userDeposit: sts.bigint(),
         })
     ),
+    /**
+     * An account was added to a [`FuelTank`]
+     */
+    v1000: new EventType(
+        'FuelTanks.AccountAdded',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v1000.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was added
+             */
+            userId: v1000.AccountId32,
+            /**
+             * The deposit reserved by the [`FuelTank`] for this account
+             */
+            tankDeposit: sts.bigint(),
+            /**
+             * The deposit reserved by the user for this account
+             */
+            userDeposit: sts.bigint(),
+            /**
+             * The amount the fuel tank has transferred to this account
+             */
+            totalReceived: sts.bigint(),
+        })
+    ),
 }
 
 export const accountRemoved =  {
@@ -157,6 +186,31 @@ export const accountRuleDataRemoved =  {
              * The [`DispatchRuleKind`] that was removed
              */
             ruleKind: matrixEnjinV603.DispatchRuleKind,
+        })
+    ),
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    v1000: new EventType(
+        'FuelTanks.AccountRuleDataRemoved',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v1000.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was removed
+             */
+            userId: v1000.AccountId32,
+            /**
+             * The id of the rule set that was removed
+             */
+            ruleSetId: sts.number(),
+            /**
+             * The [`DispatchRuleKind`] that was removed
+             */
+            ruleKind: v1000.DispatchRuleKind,
         })
     ),
 }

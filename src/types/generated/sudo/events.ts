@@ -1,6 +1,7 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as v500 from '../v500'
 import * as v602 from '../v602'
+import * as v1000 from '../v1000'
 
 export const sudid =  {
     name: 'Sudo.Sudid',
@@ -20,6 +21,15 @@ export const sudid =  {
         'Sudo.Sudid',
         sts.struct({
             sudoResult: sts.result(() => sts.unit(), () => v602.DispatchError),
+        })
+    ),
+    /**
+     * A sudo just took place. \[result\]
+     */
+    v1000: new EventType(
+        'Sudo.Sudid',
+        sts.struct({
+            sudoResult: sts.result(() => sts.unit(), () => v1000.DispatchError),
         })
     ),
 }
@@ -55,6 +65,15 @@ export const sudoAsDone =  {
         'Sudo.SudoAsDone',
         sts.struct({
             sudoResult: sts.result(() => sts.unit(), () => v602.DispatchError),
+        })
+    ),
+    /**
+     * A sudo just took place. \[result\]
+     */
+    v1000: new EventType(
+        'Sudo.SudoAsDone',
+        sts.struct({
+            sudoResult: sts.result(() => sts.unit(), () => v1000.DispatchError),
         })
     ),
 }

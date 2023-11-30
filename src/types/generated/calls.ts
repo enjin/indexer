@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import assert from 'assert'
 import {Chain, ChainContext, CallContext, Call, Result, Option} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
@@ -19159,6 +19160,8 @@ export class XcmpQueueUpdateXcmpMaxIndividualWeightCall {
     }
 }
 =======
+=======
+>>>>>>> 910c78b (typegen)
 export * as system from './system/calls'
 export * as parachainSystem from './parachain-system/calls'
 export * as timestamp from './timestamp/calls'
@@ -19192,4 +19195,4 @@ export * as claims from './claims/calls'
 export * as sudo from './sudo/calls'
 export * as efinityXcm from './efinity-xcm/calls'
 export * as efinityUtility from './efinity-utility/calls'
->>>>>>> b6fb319 (new types)
+export * as identity from './identity/calls'

@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../suppo
 import * as v500 from '../v500'
 import * as v600 from '../v600'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1000 from '../v1000'
 
 export const collectionCreated =  {
     name: 'MultiTokens.CollectionCreated',
@@ -904,6 +905,26 @@ export const claimedCollections =  {
             collectionIds: sts.array(() => matrixEnjinV603.CollectionIdPair),
         })
     ),
+    /**
+     * Collections were claimed
+     */
+    v1000: new EventType(
+        'MultiTokens.ClaimedCollections',
+        sts.struct({
+            /**
+             * The account that received the claim
+             */
+            accountId: v1000.AccountId32,
+            /**
+             * The ethereum address
+             */
+            ethereumAddress: v1000.H160,
+            /**
+             * The collection ids that were claimed
+             */
+            collectionIds: sts.array(() => sts.bigint()),
+        })
+    ),
 }
 
 export const claimedTokens =  {
@@ -930,6 +951,46 @@ export const claimedTokens =  {
              * This is true if there are still more tokens to claim
              */
             moreTokensRemain: sts.boolean(),
+        })
+    ),
+}
+
+export const claimTokensInitiated =  {
+    name: 'MultiTokens.ClaimTokensInitiated',
+    /**
+     * Claims tokens initiated
+     */
+    v1000: new EventType(
+        'MultiTokens.ClaimTokensInitiated',
+        sts.struct({
+            /**
+             * The account that will receive the tokens
+             */
+            accountId: v1000.AccountId32,
+            /**
+             * The ethereum address
+             */
+            ethereumAddress: v1000.H160,
+        })
+    ),
+}
+
+export const claimTokensCompleted =  {
+    name: 'MultiTokens.ClaimTokensCompleted',
+    /**
+     * Finished claiming the tokens
+     */
+    v1000: new EventType(
+        'MultiTokens.ClaimTokensCompleted',
+        sts.struct({
+            /**
+             * The account that received the tokens
+             */
+            destination: v1000.AccountId32,
+            /**
+             * The ethereum address that initiated the claim
+             */
+            ethereumAddress: v1000.H160,
         })
     ),
 }
