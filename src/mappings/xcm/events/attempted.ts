@@ -35,12 +35,14 @@ async function getCallData(ctx: CommonContext, call: Call) {
         } else {
             data = new FuelTanksDispatchAndTouchCall(ctx, call)
         }
+
         if (
-            data.isV1000 &&
-            data.asV1000.call.__kind === 'PolkadotXcm' &&
-            (data.asV1000.call.value.__kind === 'teleport_assets' || data.asV1000.call.value.__kind === 'limited_teleport_assets')
+            data.isMatrixEnjinV1000 &&
+            data.asMatrixEnjinV1000.call.__kind === 'PolkadotXcm' &&
+            (data.asMatrixEnjinV1000.call.value.__kind === 'teleport_assets' ||
+                data.asMatrixEnjinV1000.call.value.__kind === 'limited_teleport_assets')
         ) {
-            return data.asV1000.call.value
+            return data.asMatrixEnjinV1000.call.value
         }
 
         if (
@@ -50,6 +52,14 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 data.asMatrixEnjinV603.call.value.__kind === 'limited_teleport_assets')
         ) {
             return data.asMatrixEnjinV603.call.value
+        }
+
+        if (
+            data.isV1000 &&
+            data.asV1000.call.__kind === 'PolkadotXcm' &&
+            (data.asV1000.call.value.__kind === 'teleport_assets' || data.asV1000.call.value.__kind === 'limited_teleport_assets')
+        ) {
+            return data.asV1000.call.value
         }
 
         throw new UnknownVersionError(data.constructor.name)

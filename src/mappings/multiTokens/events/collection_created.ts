@@ -91,11 +91,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
-            data.isV1000 &&
-            data.asV1000.call.__kind === 'MultiTokens' &&
-            data.asV1000.call.value.__kind === 'create_collection'
+            data.isMatrixEnjinV1000 &&
+            data.asMatrixEnjinV1000.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV1000.call.value.__kind === 'create_collection'
         ) {
-            const { descriptor } = data.asV1000.call.value
+            const { descriptor } = data.asMatrixEnjinV1000.call.value
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
             const royalty = descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
@@ -130,17 +130,37 @@ async function getCallData(ctx: CommonContext, call: Call) {
             }
         }
 
+        if (
+            data.isV1000 &&
+            data.asV1000.call.__kind === 'MultiTokens' &&
+            data.asV1000.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asV1000.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     }
 
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
         const data = new MultiTokensForceCreateEthereumCollectionCall(ctx, call)
 
-        if (data.isV1000) {
-            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1000.descriptor.policy.mint
-            const royalty = data.asV1000.descriptor.policy.market?.royalty
+        if (data.isMatrixEnjinV1000) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1000.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV1000.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asV1000.descriptor
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1000.descriptor
 
             return {
                 maxTokenCount,
