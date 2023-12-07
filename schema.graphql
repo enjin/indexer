@@ -83,7 +83,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
-  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
+  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
 
 type BalancesTransfer {
   from: Account!
@@ -275,6 +275,12 @@ type FuelTankCreated {
 
 type FuelTankDestroyed {
   tank: String!
+}
+
+type MultiTokensClaimedCollections {
+  account: Account!
+  ethAccount: String!
+  collectionIds: [BigInt!]
 }
 
 type MultiTokensClaimTokensInitiated {
