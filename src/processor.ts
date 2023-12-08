@@ -1,8 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
+import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
 import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
-import { EntityManager } from 'typeorm'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { RewriteFrames } from '@sentry/integrations'
@@ -78,6 +77,7 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.Unapproved', eventOptions)
     .addEvent('MultiTokens.Unreserved', eventOptions)
     .addEvent('MultiTokens.Transferred', eventOptions)
+    .addEvent('MultiTokens.ClaimedCollections', eventOptions)
     .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
     .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
     .addEvent('Balances.DustLost', eventOptions)
@@ -114,7 +114,6 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
-export type Context = BatchContext<EntityManager, Item>
 
 async function handleEvents(
     ctx: CommonContext,
@@ -165,6 +164,8 @@ async function handleEvents(
             return map.multiTokens.events.unapproved(ctx, block, item, skipSave)
         case 'MultiTokens.Unreserved':
             return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
+        case 'MultiTokens.ClaimedCollections':
+            return map.multiTokens.events.claimedCollections(ctx, block, item)
         case 'MultiTokens.ClaimTokensInitiated':
             return map.multiTokens.events.claimTokensInitiated(ctx, block, item)
         case 'MultiTokens.ClaimTokensCompleted':
