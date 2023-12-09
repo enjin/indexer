@@ -295,7 +295,7 @@ processor.run(
                     } else if (item.kind === 'call') {
                         if (
                             item.call.parent != null ||
-                            (!['Claims.claim', 'MultiTokens.claim_tokens'].includes(item.call.name) &&
+                            (!['Claims.claim', 'MultiTokens.claim_tokens', 'MultiTokens.claim_collections'].includes(item.call.name) &&
                                 item.extrinsic.signature?.address == null)
                         ) {
                             // eslint-disable-next-line no-continue
