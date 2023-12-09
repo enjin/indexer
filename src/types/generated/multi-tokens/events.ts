@@ -2,6 +2,8 @@ import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../suppo
 import * as v500 from '../v500'
 import * as v600 from '../v600'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v604 from '../v604'
+import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 
 export const collectionCreated =  {
@@ -908,6 +910,46 @@ export const claimedCollections =  {
     /**
      * Collections were claimed
      */
+    matrixEnjinV1000: new EventType(
+        'MultiTokens.ClaimedCollections',
+        sts.struct({
+            /**
+             * The account that received the claim
+             */
+            accountId: matrixEnjinV1000.AccountId32,
+            /**
+             * The ethereum address
+             */
+            ethereumAddress: matrixEnjinV1000.H160,
+            /**
+             * The collection ids that were claimed
+             */
+            collectionIds: sts.array(() => sts.bigint()),
+        })
+    ),
+    /**
+     * Collections were claimed
+     */
+    v604: new EventType(
+        'MultiTokens.ClaimedCollections',
+        sts.struct({
+            /**
+             * The account that received the claim
+             */
+            accountId: v604.AccountId32,
+            /**
+             * The ethereum address
+             */
+            ethereumAddress: v604.H160,
+            /**
+             * The collection ids that were claimed
+             */
+            collectionIds: sts.array(() => v604.CollectionIdPair),
+        })
+    ),
+    /**
+     * Collections were claimed
+     */
     v1000: new EventType(
         'MultiTokens.ClaimedCollections',
         sts.struct({
@@ -960,17 +1002,17 @@ export const claimTokensInitiated =  {
     /**
      * Claims tokens initiated
      */
-    v1000: new EventType(
+    matrixEnjinV1000: new EventType(
         'MultiTokens.ClaimTokensInitiated',
         sts.struct({
             /**
              * The account that will receive the tokens
              */
-            accountId: v1000.AccountId32,
+            accountId: matrixEnjinV1000.AccountId32,
             /**
              * The ethereum address
              */
-            ethereumAddress: v1000.H160,
+            ethereumAddress: matrixEnjinV1000.H160,
         })
     ),
 }
@@ -980,17 +1022,17 @@ export const claimTokensCompleted =  {
     /**
      * Finished claiming the tokens
      */
-    v1000: new EventType(
+    matrixEnjinV1000: new EventType(
         'MultiTokens.ClaimTokensCompleted',
         sts.struct({
             /**
              * The account that received the tokens
              */
-            destination: v1000.AccountId32,
+            destination: matrixEnjinV1000.AccountId32,
             /**
              * The ethereum address that initiated the claim
              */
-            ethereumAddress: v1000.H160,
+            ethereumAddress: matrixEnjinV1000.H160,
         })
     ),
 }

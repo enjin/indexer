@@ -1,269 +1,5 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
-export interface RegistrarInfo {
-    account: AccountId32
-    fee: bigint
-    fields: BitFlags
-}
-
-export type BitFlags = bigint
-
-export const RegistrarInfo: sts.Type<RegistrarInfo> = sts.struct(() => {
-    return  {
-        account: AccountId32,
-        fee: sts.bigint(),
-        fields: BitFlags,
-    }
-})
-
-export type Data = Data_BlakeTwo256 | Data_Keccak256 | Data_None | Data_Raw0 | Data_Raw1 | Data_Raw10 | Data_Raw11 | Data_Raw12 | Data_Raw13 | Data_Raw14 | Data_Raw15 | Data_Raw16 | Data_Raw17 | Data_Raw18 | Data_Raw19 | Data_Raw2 | Data_Raw20 | Data_Raw21 | Data_Raw22 | Data_Raw23 | Data_Raw24 | Data_Raw25 | Data_Raw26 | Data_Raw27 | Data_Raw28 | Data_Raw29 | Data_Raw3 | Data_Raw30 | Data_Raw31 | Data_Raw32 | Data_Raw4 | Data_Raw5 | Data_Raw6 | Data_Raw7 | Data_Raw8 | Data_Raw9 | Data_Sha256 | Data_ShaThree256
-
-export interface Data_BlakeTwo256 {
-    __kind: 'BlakeTwo256'
-    value: Bytes
-}
-
-export interface Data_Keccak256 {
-    __kind: 'Keccak256'
-    value: Bytes
-}
-
-export interface Data_None {
-    __kind: 'None'
-}
-
-export interface Data_Raw0 {
-    __kind: 'Raw0'
-    value: Bytes
-}
-
-export interface Data_Raw1 {
-    __kind: 'Raw1'
-    value: Bytes
-}
-
-export interface Data_Raw10 {
-    __kind: 'Raw10'
-    value: Bytes
-}
-
-export interface Data_Raw11 {
-    __kind: 'Raw11'
-    value: Bytes
-}
-
-export interface Data_Raw12 {
-    __kind: 'Raw12'
-    value: Bytes
-}
-
-export interface Data_Raw13 {
-    __kind: 'Raw13'
-    value: Bytes
-}
-
-export interface Data_Raw14 {
-    __kind: 'Raw14'
-    value: Bytes
-}
-
-export interface Data_Raw15 {
-    __kind: 'Raw15'
-    value: Bytes
-}
-
-export interface Data_Raw16 {
-    __kind: 'Raw16'
-    value: Bytes
-}
-
-export interface Data_Raw17 {
-    __kind: 'Raw17'
-    value: Bytes
-}
-
-export interface Data_Raw18 {
-    __kind: 'Raw18'
-    value: Bytes
-}
-
-export interface Data_Raw19 {
-    __kind: 'Raw19'
-    value: Bytes
-}
-
-export interface Data_Raw2 {
-    __kind: 'Raw2'
-    value: Bytes
-}
-
-export interface Data_Raw20 {
-    __kind: 'Raw20'
-    value: Bytes
-}
-
-export interface Data_Raw21 {
-    __kind: 'Raw21'
-    value: Bytes
-}
-
-export interface Data_Raw22 {
-    __kind: 'Raw22'
-    value: Bytes
-}
-
-export interface Data_Raw23 {
-    __kind: 'Raw23'
-    value: Bytes
-}
-
-export interface Data_Raw24 {
-    __kind: 'Raw24'
-    value: Bytes
-}
-
-export interface Data_Raw25 {
-    __kind: 'Raw25'
-    value: Bytes
-}
-
-export interface Data_Raw26 {
-    __kind: 'Raw26'
-    value: Bytes
-}
-
-export interface Data_Raw27 {
-    __kind: 'Raw27'
-    value: Bytes
-}
-
-export interface Data_Raw28 {
-    __kind: 'Raw28'
-    value: Bytes
-}
-
-export interface Data_Raw29 {
-    __kind: 'Raw29'
-    value: Bytes
-}
-
-export interface Data_Raw3 {
-    __kind: 'Raw3'
-    value: Bytes
-}
-
-export interface Data_Raw30 {
-    __kind: 'Raw30'
-    value: Bytes
-}
-
-export interface Data_Raw31 {
-    __kind: 'Raw31'
-    value: Bytes
-}
-
-export interface Data_Raw32 {
-    __kind: 'Raw32'
-    value: Bytes
-}
-
-export interface Data_Raw4 {
-    __kind: 'Raw4'
-    value: Bytes
-}
-
-export interface Data_Raw5 {
-    __kind: 'Raw5'
-    value: Bytes
-}
-
-export interface Data_Raw6 {
-    __kind: 'Raw6'
-    value: Bytes
-}
-
-export interface Data_Raw7 {
-    __kind: 'Raw7'
-    value: Bytes
-}
-
-export interface Data_Raw8 {
-    __kind: 'Raw8'
-    value: Bytes
-}
-
-export interface Data_Raw9 {
-    __kind: 'Raw9'
-    value: Bytes
-}
-
-export interface Data_Sha256 {
-    __kind: 'Sha256'
-    value: Bytes
-}
-
-export interface Data_ShaThree256 {
-    __kind: 'ShaThree256'
-    value: Bytes
-}
-
-export interface Registration {
-    judgements: [number, Judgement][]
-    deposit: bigint
-    info: IdentityInfo
-}
-
-export interface IdentityInfo {
-    additional: [Data, Data][]
-    display: Data
-    legal: Data
-    web: Data
-    riot: Data
-    email: Data
-    pgpFingerprint?: (Bytes | undefined)
-    image: Data
-    twitter: Data
-}
-
-export type Judgement = Judgement_Erroneous | Judgement_FeePaid | Judgement_KnownGood | Judgement_LowQuality | Judgement_OutOfDate | Judgement_Reasonable | Judgement_Unknown
-
-export interface Judgement_Erroneous {
-    __kind: 'Erroneous'
-}
-
-export interface Judgement_FeePaid {
-    __kind: 'FeePaid'
-    value: bigint
-}
-
-export interface Judgement_KnownGood {
-    __kind: 'KnownGood'
-}
-
-export interface Judgement_LowQuality {
-    __kind: 'LowQuality'
-}
-
-export interface Judgement_OutOfDate {
-    __kind: 'OutOfDate'
-}
-
-export interface Judgement_Reasonable {
-    __kind: 'Reasonable'
-}
-
-export interface Judgement_Unknown {
-    __kind: 'Unknown'
-}
-
-export const Registration: sts.Type<Registration> = sts.struct(() => {
-    return  {
-        judgements: sts.array(() => sts.tuple(() => [sts.number(), Judgement])),
-        deposit: sts.bigint(),
-        info: IdentityInfo,
-    }
-})
-
 export interface UserAccount {
     tankDeposit: bigint
     userDeposit: bigint
@@ -543,8 +279,6 @@ export const Type_659: sts.Type<Type_659> = sts.struct(() => {
 
 export const MaxFuelBurnPerTransactionRule = sts.bigint()
 
-export type H160 = Bytes
-
 export type H256 = Bytes
 
 export type Call = Call_Balances | Call_Bounties | Call_Claims | Call_CollatorStaking | Call_CommunityPool | Call_Council | Call_CumulusXcm | Call_Democracy | Call_DmpQueue | Call_ExtrinsicPause | Call_FuelTanks | Call_Identity | Call_Marketplace | Call_MatrixUtility | Call_MatrixXcm | Call_MultiTokens | Call_MultiTokensMigration | Call_Multisig | Call_OrmlXcm | Call_ParachainSystem | Call_PolkadotXcm | Call_Pools | Call_Preimage | Call_Scheduler | Call_Session | Call_Sudo | Call_System | Call_TechnicalCommittee | Call_TechnicalMembership | Call_Timestamp | Call_Utility | Call_XTokens | Call_XcmpQueue
@@ -709,148 +443,6 @@ export interface Call_XTokens {
     value: XTokensCall
 }
 
-<<<<<<< HEAD
-export interface Call_Bounties {
-    __kind: 'Bounties'
-    value: BountiesCall
-}
-
-export interface Call_MultiTokens {
-    __kind: 'MultiTokens'
-    value: MultiTokensCall
-}
-
-export interface Call_Pools {
-    __kind: 'Pools'
-    value: PoolsCall
-}
-
-export interface Call_FuelTanks {
-    __kind: 'FuelTanks'
-    value: FuelTanksCall
-}
-
-export interface Call_Marketplace {
-    __kind: 'Marketplace'
-    value: MarketplaceCall
-}
-
-export interface Call_ExtrinsicPause {
-    __kind: 'ExtrinsicPause'
-    value: ExtrinsicPauseCall
-}
-
-export interface Call_MatrixUtility {
-    __kind: 'MatrixUtility'
-    value: MatrixUtilityCall
-}
-
-export interface Call_MultiTokensMigration {
-    __kind: 'MultiTokensMigration'
-    value: MultiTokensMigrationCall
-}
-
-export interface Call_Claims {
-    __kind: 'Claims'
-    value: ClaimsCall
-}
-
-export interface Call_Identity {
-    __kind: 'Identity'
-    value: IdentityCall
-}
-
-export interface FuelTankDescriptor {
-    name: Uint8Array
-    userAccountManagement: (UserAccountManagement | undefined)
-    ruleSets: [number, DispatchRuleDescriptor[]][]
-    providesDeposit: boolean
-    accountRules: AccountRuleDescriptor[]
-}
-
-export type MultiAddress = MultiAddress_Id | MultiAddress_Index | MultiAddress_Raw | MultiAddress_Address32 | MultiAddress_Address20
-
-export interface MultiAddress_Id {
-    __kind: 'Id'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Index {
-    __kind: 'Index'
-    value: null
-}
-
-export interface MultiAddress_Raw {
-    __kind: 'Raw'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Address32 {
-    __kind: 'Address32'
-    value: Uint8Array
-}
-
-export interface MultiAddress_Address20 {
-    __kind: 'Address20'
-    value: Uint8Array
-}
-
-export interface DispatchSettings {
-    useNoneOrigin: boolean
-    paysRemainingFee: boolean
-}
-
-export type DispatchRuleDescriptor = DispatchRuleDescriptor_WhitelistedCallers | DispatchRuleDescriptor_WhitelistedCollections | DispatchRuleDescriptor_MaxFuelBurnPerTransaction | DispatchRuleDescriptor_UserFuelBudget | DispatchRuleDescriptor_TankFuelBudget | DispatchRuleDescriptor_RequireToken | DispatchRuleDescriptor_PermittedCalls | DispatchRuleDescriptor_PermittedExtrinsics | DispatchRuleDescriptor_WhitelistedPallets
-
-export interface DispatchRuleDescriptor_WhitelistedCallers {
-    __kind: 'WhitelistedCallers'
-    value: Uint8Array[]
-}
-
-export interface DispatchRuleDescriptor_WhitelistedCollections {
-    __kind: 'WhitelistedCollections'
-    value: bigint[]
-}
-
-export interface DispatchRuleDescriptor_MaxFuelBurnPerTransaction {
-    __kind: 'MaxFuelBurnPerTransaction'
-    value: bigint
-}
-
-export interface DispatchRuleDescriptor_UserFuelBudget {
-    __kind: 'UserFuelBudget'
-    value: UserFuelBudgetRuleDescriptor
-}
-
-export interface DispatchRuleDescriptor_TankFuelBudget {
-    __kind: 'TankFuelBudget'
-    value: TankFuelBudgetRuleDescriptor
-}
-
-export interface DispatchRuleDescriptor_RequireToken {
-    __kind: 'RequireToken'
-    value: RequireTokenRule
-}
-
-export interface DispatchRuleDescriptor_PermittedCalls {
-    __kind: 'PermittedCalls'
-    value: Uint8Array[]
-}
-
-export interface DispatchRuleDescriptor_PermittedExtrinsics {
-    __kind: 'PermittedExtrinsics'
-    value: Call[]
-}
-
-export interface DispatchRuleDescriptor_WhitelistedPallets {
-    __kind: 'WhitelistedPallets'
-    value: Call[]
-}
-
-export interface Timepoint {
-    height: number
-    index: number
-=======
 export interface Call_XcmpQueue {
     __kind: 'XcmpQueue'
     value: XcmpQueueCall
@@ -971,7 +563,6 @@ export interface XcmpQueueCall_update_weight_restrict_decay {
 export interface XcmpQueueCall_update_xcmp_max_individual_weight {
     __kind: 'update_xcmp_max_individual_weight'
     new: Weight
->>>>>>> 910c78b (typegen)
 }
 
 export interface Weight {
@@ -1108,36 +699,6 @@ export interface XTokensCall_transfer_multicurrencies {
     destWeightLimit: V3WeightLimit
 }
 
-<<<<<<< HEAD
-export interface OriginCaller_Void {
-    __kind: 'Void'
-    value: Void
-}
-
-export interface UserAccount {
-    tankDeposit: bigint
-    userDeposit: bigint
-    totalReceived: bigint
-    ruleDataSets: [number, [DispatchRuleKind, Uint8Array][]][]
-}
-
-export interface FuelTank {
-    owner: Uint8Array
-    name: Uint8Array
-    ruleSets: [number, RuleSet][]
-    totalReserved: bigint
-    accountCount: number
-    userAccountManagement: (UserAccountManagement | undefined)
-    isFrozen: boolean
-    providesDeposit: boolean
-    accountRules: [AccountRuleKind, AccountRuleWrapper][]
-}
-
-export interface EventRecord {
-    phase: Phase
-    event: Event
-    topics: Uint8Array[]
-=======
 /**
  * Transfer native currencies specifying the fee and amount as
  * separate.
@@ -1175,7 +736,6 @@ export type VersionedMultiAssets = VersionedMultiAssets_V2 | VersionedMultiAsset
 export interface VersionedMultiAssets_V2 {
     __kind: 'V2'
     value: V2MultiAsset[]
->>>>>>> 910c78b (typegen)
 }
 
 export interface VersionedMultiAssets_V3 {
@@ -5420,6 +4980,8 @@ export interface DefaultMintPolicyDescriptor {
     forceSingleMint: boolean
 }
 
+export type H160 = Bytes
+
 export type Signature = Bytes
 
 export interface DefaultBurnParams {
@@ -6090,6 +5652,242 @@ export interface IdentityCall_set_identity {
 export interface IdentityCall_set_subs {
     __kind: 'set_subs'
     subs: [AccountId32, Data][]
+}
+
+export interface IdentityInfo {
+    additional: [Data, Data][]
+    display: Data
+    legal: Data
+    web: Data
+    riot: Data
+    email: Data
+    pgpFingerprint?: (Bytes | undefined)
+    image: Data
+    twitter: Data
+}
+
+export type BitFlags = bigint
+
+export type Judgement = Judgement_Erroneous | Judgement_FeePaid | Judgement_KnownGood | Judgement_LowQuality | Judgement_OutOfDate | Judgement_Reasonable | Judgement_Unknown
+
+export interface Judgement_Erroneous {
+    __kind: 'Erroneous'
+}
+
+export interface Judgement_FeePaid {
+    __kind: 'FeePaid'
+    value: bigint
+}
+
+export interface Judgement_KnownGood {
+    __kind: 'KnownGood'
+}
+
+export interface Judgement_LowQuality {
+    __kind: 'LowQuality'
+}
+
+export interface Judgement_OutOfDate {
+    __kind: 'OutOfDate'
+}
+
+export interface Judgement_Reasonable {
+    __kind: 'Reasonable'
+}
+
+export interface Judgement_Unknown {
+    __kind: 'Unknown'
+}
+
+export type Data = Data_BlakeTwo256 | Data_Keccak256 | Data_None | Data_Raw0 | Data_Raw1 | Data_Raw10 | Data_Raw11 | Data_Raw12 | Data_Raw13 | Data_Raw14 | Data_Raw15 | Data_Raw16 | Data_Raw17 | Data_Raw18 | Data_Raw19 | Data_Raw2 | Data_Raw20 | Data_Raw21 | Data_Raw22 | Data_Raw23 | Data_Raw24 | Data_Raw25 | Data_Raw26 | Data_Raw27 | Data_Raw28 | Data_Raw29 | Data_Raw3 | Data_Raw30 | Data_Raw31 | Data_Raw32 | Data_Raw4 | Data_Raw5 | Data_Raw6 | Data_Raw7 | Data_Raw8 | Data_Raw9 | Data_Sha256 | Data_ShaThree256
+
+export interface Data_BlakeTwo256 {
+    __kind: 'BlakeTwo256'
+    value: Bytes
+}
+
+export interface Data_Keccak256 {
+    __kind: 'Keccak256'
+    value: Bytes
+}
+
+export interface Data_None {
+    __kind: 'None'
+}
+
+export interface Data_Raw0 {
+    __kind: 'Raw0'
+    value: Bytes
+}
+
+export interface Data_Raw1 {
+    __kind: 'Raw1'
+    value: Bytes
+}
+
+export interface Data_Raw10 {
+    __kind: 'Raw10'
+    value: Bytes
+}
+
+export interface Data_Raw11 {
+    __kind: 'Raw11'
+    value: Bytes
+}
+
+export interface Data_Raw12 {
+    __kind: 'Raw12'
+    value: Bytes
+}
+
+export interface Data_Raw13 {
+    __kind: 'Raw13'
+    value: Bytes
+}
+
+export interface Data_Raw14 {
+    __kind: 'Raw14'
+    value: Bytes
+}
+
+export interface Data_Raw15 {
+    __kind: 'Raw15'
+    value: Bytes
+}
+
+export interface Data_Raw16 {
+    __kind: 'Raw16'
+    value: Bytes
+}
+
+export interface Data_Raw17 {
+    __kind: 'Raw17'
+    value: Bytes
+}
+
+export interface Data_Raw18 {
+    __kind: 'Raw18'
+    value: Bytes
+}
+
+export interface Data_Raw19 {
+    __kind: 'Raw19'
+    value: Bytes
+}
+
+export interface Data_Raw2 {
+    __kind: 'Raw2'
+    value: Bytes
+}
+
+export interface Data_Raw20 {
+    __kind: 'Raw20'
+    value: Bytes
+}
+
+export interface Data_Raw21 {
+    __kind: 'Raw21'
+    value: Bytes
+}
+
+export interface Data_Raw22 {
+    __kind: 'Raw22'
+    value: Bytes
+}
+
+export interface Data_Raw23 {
+    __kind: 'Raw23'
+    value: Bytes
+}
+
+export interface Data_Raw24 {
+    __kind: 'Raw24'
+    value: Bytes
+}
+
+export interface Data_Raw25 {
+    __kind: 'Raw25'
+    value: Bytes
+}
+
+export interface Data_Raw26 {
+    __kind: 'Raw26'
+    value: Bytes
+}
+
+export interface Data_Raw27 {
+    __kind: 'Raw27'
+    value: Bytes
+}
+
+export interface Data_Raw28 {
+    __kind: 'Raw28'
+    value: Bytes
+}
+
+export interface Data_Raw29 {
+    __kind: 'Raw29'
+    value: Bytes
+}
+
+export interface Data_Raw3 {
+    __kind: 'Raw3'
+    value: Bytes
+}
+
+export interface Data_Raw30 {
+    __kind: 'Raw30'
+    value: Bytes
+}
+
+export interface Data_Raw31 {
+    __kind: 'Raw31'
+    value: Bytes
+}
+
+export interface Data_Raw32 {
+    __kind: 'Raw32'
+    value: Bytes
+}
+
+export interface Data_Raw4 {
+    __kind: 'Raw4'
+    value: Bytes
+}
+
+export interface Data_Raw5 {
+    __kind: 'Raw5'
+    value: Bytes
+}
+
+export interface Data_Raw6 {
+    __kind: 'Raw6'
+    value: Bytes
+}
+
+export interface Data_Raw7 {
+    __kind: 'Raw7'
+    value: Bytes
+}
+
+export interface Data_Raw8 {
+    __kind: 'Raw8'
+    value: Bytes
+}
+
+export interface Data_Raw9 {
+    __kind: 'Raw9'
+    value: Bytes
+}
+
+export interface Data_Sha256 {
+    __kind: 'Sha256'
+    value: Bytes
+}
+
+export interface Data_ShaThree256 {
+    __kind: 'ShaThree256'
+    value: Bytes
 }
 
 /**
@@ -7691,12 +7489,6 @@ export interface BalancesCall_transfer {
     value: bigint
 }
 
-<<<<<<< HEAD
-export type RawOrigin = RawOrigin_Root | RawOrigin_Signed | RawOrigin_None
-
-export interface RawOrigin_Root {
-    __kind: 'Root'
-=======
 /**
  * Transfer the entire transferable balance from the caller account.
  * 
@@ -7762,8 +7554,9 @@ export interface BalancesCall_transfer_keep_alive {
 export interface BalancesCall_upgrade_accounts {
     __kind: 'upgrade_accounts'
     who: AccountId32[]
->>>>>>> 910c78b (typegen)
 }
+
+export const H256 = sts.bytes()
 
 export interface EventRecord {
     phase: Phase
@@ -7938,845 +7731,9 @@ export interface Event_XTokens {
     value: XTokensEvent
 }
 
-<<<<<<< HEAD
-export interface Event_Bounties {
-    __kind: 'Bounties'
-    value: BountiesEvent
-}
-
-export interface Event_MultiTokens {
-    __kind: 'MultiTokens'
-    value: MultiTokensEvent
-}
-
-export interface Event_Pools {
-    __kind: 'Pools'
-    value: PoolsEvent
-}
-
-export interface Event_FuelTanks {
-    __kind: 'FuelTanks'
-    value: FuelTanksEvent
-}
-
-export interface Event_Marketplace {
-    __kind: 'Marketplace'
-    value: MarketplaceEvent
-}
-
-export interface Event_ExtrinsicPause {
-    __kind: 'ExtrinsicPause'
-    value: ExtrinsicPauseEvent
-}
-
-export interface Event_MatrixUtility {
-    __kind: 'MatrixUtility'
-    value: MatrixUtilityEvent
-}
-
-export interface Event_MultiTokensMigration {
-    __kind: 'MultiTokensMigration'
-    value: MultiTokensMigrationEvent
-}
-
-export interface Event_Claims {
-    __kind: 'Claims'
-    value: ClaimsEvent
-}
-
-export interface Event_Identity {
-    __kind: 'Identity'
-    value: IdentityEvent
-}
-
-export interface ModuleError {
-    index: number
-    error: Uint8Array
-}
-
-export type TokenError = TokenError_FundsUnavailable | TokenError_OnlyProvider | TokenError_BelowMinimum | TokenError_CannotCreate | TokenError_UnknownAsset | TokenError_Frozen | TokenError_Unsupported | TokenError_CannotCreateHold | TokenError_NotExpendable | TokenError_Blocked
-
-export interface TokenError_FundsUnavailable {
-    __kind: 'FundsUnavailable'
-}
-
-export interface TokenError_OnlyProvider {
-    __kind: 'OnlyProvider'
-}
-
-export interface TokenError_BelowMinimum {
-    __kind: 'BelowMinimum'
-}
-
-export interface TokenError_CannotCreate {
-    __kind: 'CannotCreate'
-}
-
-export interface TokenError_UnknownAsset {
-    __kind: 'UnknownAsset'
-}
-
-export interface TokenError_Frozen {
-    __kind: 'Frozen'
-}
-
-export interface TokenError_Unsupported {
-    __kind: 'Unsupported'
-}
-
-export interface TokenError_CannotCreateHold {
-    __kind: 'CannotCreateHold'
-}
-
-export interface TokenError_NotExpendable {
-    __kind: 'NotExpendable'
-}
-
-export interface TokenError_Blocked {
-    __kind: 'Blocked'
-}
-
-export type ArithmeticError = ArithmeticError_Underflow | ArithmeticError_Overflow | ArithmeticError_DivisionByZero
-
-export interface ArithmeticError_Underflow {
-    __kind: 'Underflow'
-}
-
-export interface ArithmeticError_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface ArithmeticError_DivisionByZero {
-    __kind: 'DivisionByZero'
-}
-
-export type TransactionalError = TransactionalError_LimitReached | TransactionalError_NoLayer
-
-export interface TransactionalError_LimitReached {
-    __kind: 'LimitReached'
-}
-
-export interface TransactionalError_NoLayer {
-    __kind: 'NoLayer'
-}
-
-export interface ParachainInherentData {
-    validationData: V4PersistedValidationData
-    relayChainState: StorageProof
-    downwardMessages: InboundDownwardMessage[]
-    horizontalMessages: [number, InboundHrmpMessage[]][]
-}
-
-export type Bounded = Bounded_Legacy | Bounded_Inline | Bounded_Lookup
-
-export interface Bounded_Legacy {
-    __kind: 'Legacy'
-    hash: Uint8Array
-}
-
-export interface Bounded_Inline {
-    __kind: 'Inline'
-    value: Uint8Array
-}
-
-export interface Bounded_Lookup {
-    __kind: 'Lookup'
-    hash: Uint8Array
-    len: number
-}
-
-export type AccountVote = AccountVote_Standard | AccountVote_Split
-
-export interface AccountVote_Standard {
-    __kind: 'Standard'
-    vote: number
-    balance: bigint
-}
-
-export interface AccountVote_Split {
-    __kind: 'Split'
-    aye: bigint
-    nay: bigint
-}
-
-export type Conviction = Conviction_None | Conviction_Locked1x | Conviction_Locked2x | Conviction_Locked3x | Conviction_Locked4x | Conviction_Locked5x | Conviction_Locked6x
-
-export interface Conviction_None {
-    __kind: 'None'
-}
-
-export interface Conviction_Locked1x {
-    __kind: 'Locked1x'
-}
-
-export interface Conviction_Locked2x {
-    __kind: 'Locked2x'
-}
-
-export interface Conviction_Locked3x {
-    __kind: 'Locked3x'
-}
-
-export interface Conviction_Locked4x {
-    __kind: 'Locked4x'
-}
-
-export interface Conviction_Locked5x {
-    __kind: 'Locked5x'
-}
-
-export interface Conviction_Locked6x {
-    __kind: 'Locked6x'
-}
-
-export type MetadataOwner = MetadataOwner_External | MetadataOwner_Proposal | MetadataOwner_Referendum
-
-export interface MetadataOwner_External {
-    __kind: 'External'
-}
-
-export interface MetadataOwner_Proposal {
-    __kind: 'Proposal'
-    value: number
-}
-
-export interface MetadataOwner_Referendum {
-    __kind: 'Referendum'
-    value: number
-}
-
-export interface SessionKeys {
-    aura: Uint8Array
-    pools: Uint8Array
-}
-
-export type VersionedMultiLocation = VersionedMultiLocation_V2 | VersionedMultiLocation_V3
-
-export interface VersionedMultiLocation_V2 {
-    __kind: 'V2'
-    value: V2MultiLocation
-}
-
-export interface VersionedMultiLocation_V3 {
-    __kind: 'V3'
-    value: V3MultiLocation
-}
-
-export type VersionedXcm = VersionedXcm_V2 | VersionedXcm_V3
-
-export interface VersionedXcm_V2 {
-    __kind: 'V2'
-    value: V2Instruction[]
-}
-
-export interface VersionedXcm_V3 {
-    __kind: 'V3'
-    value: V3Instruction[]
-}
-
-export type VersionedMultiAssets = VersionedMultiAssets_V2 | VersionedMultiAssets_V3
-
-export interface VersionedMultiAssets_V2 {
-    __kind: 'V2'
-    value: V2MultiAsset[]
-}
-
-export interface VersionedMultiAssets_V3 {
-    __kind: 'V3'
-    value: V3MultiAsset[]
-}
-
-export type Type_347 = Type_347_V2 | Type_347_V3
-
-export interface Type_347_V2 {
-    __kind: 'V2'
-    value: Type_350[]
-}
-
-export interface Type_347_V3 {
-    __kind: 'V3'
-    value: Type_354[]
-}
-
-export interface V3MultiLocation {
-    parents: number
-    interior: V3Junctions
-}
-
-export type V3WeightLimit = V3WeightLimit_Unlimited | V3WeightLimit_Limited
-
-export interface V3WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export interface V3WeightLimit_Limited {
-    __kind: 'Limited'
-    value: Weight
-}
-
-export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
-
-export interface ParachainId_Acala {
-    __kind: 'Acala'
-}
-
-export interface ParachainId_Moonbeam {
-    __kind: 'Moonbeam'
-}
-
-export interface ParachainId_Statemint {
-    __kind: 'Statemint'
-}
-
-export type Account = Account_Substrate | Account_EVM
-
-export interface Account_Substrate {
-    __kind: 'Substrate'
-    value: Uint8Array
-}
-
-export interface Account_EVM {
-    __kind: 'EVM'
-    value: Uint8Array
-}
-
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface CurrencyIdAmountPair {
-    currencyId: AssetId
-    amount: bigint
-}
-
-export type XcmOperation = XcmOperation_XTokensTransfer | XcmOperation_ParachainFee
-
-export interface XcmOperation_XTokensTransfer {
-    __kind: 'XTokensTransfer'
-}
-
-export interface XcmOperation_ParachainFee {
-    __kind: 'ParachainFee'
-    value: V3MultiLocation
-}
-
-export interface MinimumWeightFeePair {
-    minimumWeight: Weight
-    fee: bigint
-}
-
-export type VersionedMultiAsset = VersionedMultiAsset_V2 | VersionedMultiAsset_V3
-
-export interface VersionedMultiAsset_V2 {
-    __kind: 'V2'
-    value: V2MultiAsset
-}
-
-export interface VersionedMultiAsset_V3 {
-    __kind: 'V3'
-    value: V3MultiAsset
-}
-
-export interface DefaultCollectionDescriptor {
-    policy: DefaultCollectionPolicyDescriptor
-    explicitRoyaltyCurrencies: AssetId[]
-    attributes: AttributeKeyValuePair[]
-}
-
-export interface DefaultCollectionMutation {
-    owner: (Uint8Array | undefined)
-    royalty: ShouldMutate
-    explicitRoyaltyCurrencies: (AssetId[] | undefined)
-}
-
-export interface DefaultTokenMutation {
-    behavior: Type_146
-    listingForbidden: Type_149
-    metadata: Type_150
-}
-
-export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
-
-export interface DefaultMintParams_CreateToken {
-    __kind: 'CreateToken'
-    tokenId: bigint
-    initialSupply: bigint
-    sufficiency: SufficiencyParam
-    cap: (TokenCap | undefined)
-    behavior: (TokenMarketBehavior | undefined)
-    listingForbidden: boolean
-    freezeState: (FreezeState | undefined)
-    attributes: AttributeKeyValuePair[]
-    foreignParams: (ForeignTokenCreationParams | undefined)
-}
-
-export interface DefaultMintParams_Mint {
-    __kind: 'Mint'
-    tokenId: bigint
-    amount: bigint
-    unitPrice: (bigint | undefined)
-}
-
-export interface DefaultBurnParams {
-    tokenId: bigint
-    amount: bigint
-    keepAlive: boolean
-    removeTokenStorage: boolean
-}
-
-export type DefaultTransferParams = DefaultTransferParams_Simple | DefaultTransferParams_Operator
-
-export interface DefaultTransferParams_Simple {
-    __kind: 'Simple'
-    tokenId: bigint
-    amount: bigint
-    keepAlive: boolean
-}
-
-export interface DefaultTransferParams_Operator {
-    __kind: 'Operator'
-    tokenId: bigint
-    source: Uint8Array
-    amount: bigint
-    keepAlive: boolean
-}
-
-export interface Freeze {
-    collectionId: bigint
-    freezeType: FreezeType
-}
-
-export interface Recipient {
-    accountId: Uint8Array
-    params: DefaultTransferParams
-}
-
-export interface Type_389 {
-    accountId: Uint8Array
-    params: DefaultMintParams
-}
-
-export interface AttributeKeyValuePair {
-    key: Uint8Array
-    value: Uint8Array
-}
-
-export interface Collection {
-    owner: Uint8Array
-    policy: DefaultCollectionPolicy
-    tokenCount: bigint
-    attributeCount: number
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [AssetId, null][]
-}
-
-export interface Token {
-    supply: bigint
-    cap: (TokenCap | undefined)
-    freezeState: (FreezeState | undefined)
-    minimumBalance: bigint
-    sufficiency: Sufficiency
-    mintDeposit: bigint
-    attributeCount: number
-    marketBehavior: (TokenMarketBehavior | undefined)
-    listingForbidden: boolean
-    metadata: DefaultTokenMetadata
-}
-
-export interface Attribute {
-    value: Uint8Array
-    deposit: bigint
-}
-
-export interface CollectionAccount {
-    isFrozen: boolean
-    approvals: [Uint8Array, (number | undefined)][]
-    accountCount: number
-}
-
-export interface TokenAccount {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    namedReserves: [Uint8Array, bigint][]
-    locks: [Uint8Array, bigint][]
-    approvals: [Uint8Array, Approval][]
-    isFrozen: boolean
-}
-
-export interface PoolsMutation {
-    community: Pool
-    collator: Pool
-    fuelTanks: Pool
-    priceDiscovery: Pool
-}
-
-export interface DefaultTankMutation {
-    userAccountManagement: Type_212
-    providesDeposit: (boolean | undefined)
-    accountRules: (AccountRuleDescriptor[] | undefined)
-}
-
-export interface Consumption {
-    totalConsumed: bigint
-    lastResetBlock: (number | undefined)
-}
-
-export interface AuctionData {
-    startBlock: number
-    endBlock: number
-}
-
-export interface Claim {
-    hash: Uint8Array
-    claim: TransactionData
-    isEfiToken: boolean
-}
-
-export interface RejectData {
-    account: Uint8Array
-    hash: Uint8Array
-}
-
-export interface IdentityInfo {
-    additional: [Data, Data][]
-    display: Data
-    legal: Data
-    web: Data
-    riot: Data
-    email: Data
-    pgpFingerprint: (Uint8Array | undefined)
-    image: Data
-    twitter: Data
-}
-
-export type Data = Data_None | Data_Raw0 | Data_Raw1 | Data_Raw2 | Data_Raw3 | Data_Raw4 | Data_Raw5 | Data_Raw6 | Data_Raw7 | Data_Raw8 | Data_Raw9 | Data_Raw10 | Data_Raw11 | Data_Raw12 | Data_Raw13 | Data_Raw14 | Data_Raw15 | Data_Raw16 | Data_Raw17 | Data_Raw18 | Data_Raw19 | Data_Raw20 | Data_Raw21 | Data_Raw22 | Data_Raw23 | Data_Raw24 | Data_Raw25 | Data_Raw26 | Data_Raw27 | Data_Raw28 | Data_Raw29 | Data_Raw30 | Data_Raw31 | Data_Raw32 | Data_BlakeTwo256 | Data_Sha256 | Data_Keccak256 | Data_ShaThree256
-
-export interface Data_None {
-    __kind: 'None'
-}
-
-export interface Data_Raw0 {
-    __kind: 'Raw0'
-    value: Uint8Array
-}
-
-export interface Data_Raw1 {
-    __kind: 'Raw1'
-    value: Uint8Array
-}
-
-export interface Data_Raw2 {
-    __kind: 'Raw2'
-    value: Uint8Array
-}
-
-export interface Data_Raw3 {
-    __kind: 'Raw3'
-    value: Uint8Array
-}
-
-export interface Data_Raw4 {
-    __kind: 'Raw4'
-    value: Uint8Array
-}
-
-export interface Data_Raw5 {
-    __kind: 'Raw5'
-    value: Uint8Array
-}
-
-export interface Data_Raw6 {
-    __kind: 'Raw6'
-    value: Uint8Array
-}
-
-export interface Data_Raw7 {
-    __kind: 'Raw7'
-    value: Uint8Array
-}
-
-export interface Data_Raw8 {
-    __kind: 'Raw8'
-    value: Uint8Array
-}
-
-export interface Data_Raw9 {
-    __kind: 'Raw9'
-    value: Uint8Array
-}
-
-export interface Data_Raw10 {
-    __kind: 'Raw10'
-    value: Uint8Array
-}
-
-export interface Data_Raw11 {
-    __kind: 'Raw11'
-    value: Uint8Array
-}
-
-export interface Data_Raw12 {
-    __kind: 'Raw12'
-    value: Uint8Array
-}
-
-export interface Data_Raw13 {
-    __kind: 'Raw13'
-    value: Uint8Array
-}
-
-export interface Data_Raw14 {
-    __kind: 'Raw14'
-    value: Uint8Array
-}
-
-export interface Data_Raw15 {
-    __kind: 'Raw15'
-    value: Uint8Array
-}
-
-export interface Data_Raw16 {
-    __kind: 'Raw16'
-    value: Uint8Array
-}
-
-export interface Data_Raw17 {
-    __kind: 'Raw17'
-    value: Uint8Array
-}
-
-export interface Data_Raw18 {
-    __kind: 'Raw18'
-    value: Uint8Array
-}
-
-export interface Data_Raw19 {
-    __kind: 'Raw19'
-    value: Uint8Array
-}
-
-export interface Data_Raw20 {
-    __kind: 'Raw20'
-    value: Uint8Array
-}
-
-export interface Data_Raw21 {
-    __kind: 'Raw21'
-    value: Uint8Array
-}
-
-export interface Data_Raw22 {
-    __kind: 'Raw22'
-    value: Uint8Array
-}
-
-export interface Data_Raw23 {
-    __kind: 'Raw23'
-    value: Uint8Array
-}
-
-export interface Data_Raw24 {
-    __kind: 'Raw24'
-    value: Uint8Array
-}
-
-export interface Data_Raw25 {
-    __kind: 'Raw25'
-    value: Uint8Array
-}
-
-export interface Data_Raw26 {
-    __kind: 'Raw26'
-    value: Uint8Array
-}
-
-export interface Data_Raw27 {
-    __kind: 'Raw27'
-    value: Uint8Array
-}
-
-export interface Data_Raw28 {
-    __kind: 'Raw28'
-    value: Uint8Array
-}
-
-export interface Data_Raw29 {
-    __kind: 'Raw29'
-    value: Uint8Array
-}
-
-export interface Data_Raw30 {
-    __kind: 'Raw30'
-    value: Uint8Array
-}
-
-export interface Data_Raw31 {
-    __kind: 'Raw31'
-    value: Uint8Array
-}
-
-export interface Data_Raw32 {
-    __kind: 'Raw32'
-    value: Uint8Array
-}
-
-export interface Data_BlakeTwo256 {
-    __kind: 'BlakeTwo256'
-    value: Uint8Array
-}
-
-export interface Data_Sha256 {
-    __kind: 'Sha256'
-    value: Uint8Array
-}
-
-export interface Data_Keccak256 {
-    __kind: 'Keccak256'
-    value: Uint8Array
-}
-
-export interface Data_ShaThree256 {
-    __kind: 'ShaThree256'
-    value: Uint8Array
-}
-
-export type Judgement = Judgement_Unknown | Judgement_FeePaid | Judgement_Reasonable | Judgement_KnownGood | Judgement_OutOfDate | Judgement_LowQuality | Judgement_Erroneous
-
-export interface Judgement_Unknown {
-    __kind: 'Unknown'
-}
-
-export interface Judgement_FeePaid {
-    __kind: 'FeePaid'
-    value: bigint
-}
-
-export interface Judgement_Reasonable {
-    __kind: 'Reasonable'
-}
-
-export interface Judgement_KnownGood {
-    __kind: 'KnownGood'
-}
-
-export interface Judgement_OutOfDate {
-    __kind: 'OutOfDate'
-}
-
-export interface Judgement_LowQuality {
-    __kind: 'LowQuality'
-}
-
-export interface Judgement_Erroneous {
-    __kind: 'Erroneous'
-}
-
-export type DispatchRuleWrapper = DispatchRuleWrapper_WhitelistedCallers | DispatchRuleWrapper_WhitelistedCollections | DispatchRuleWrapper_MaxFuelBurnPerTransaction | DispatchRuleWrapper_UserFuelBudget | DispatchRuleWrapper_TankFuelBudget | DispatchRuleWrapper_RequireToken | DispatchRuleWrapper_PermittedCalls | DispatchRuleWrapper_PermittedExtrinsics | DispatchRuleWrapper_WhitelistedPallets
-
-export interface DispatchRuleWrapper_WhitelistedCallers {
-    __kind: 'WhitelistedCallers'
-    value: Uint8Array[]
-}
-
-export interface DispatchRuleWrapper_WhitelistedCollections {
-    __kind: 'WhitelistedCollections'
-    value: bigint[]
-}
-
-export interface DispatchRuleWrapper_MaxFuelBurnPerTransaction {
-    __kind: 'MaxFuelBurnPerTransaction'
-    value: bigint
-}
-
-export interface DispatchRuleWrapper_UserFuelBudget {
-    __kind: 'UserFuelBudget'
-    value: UserFuelBudgetRule
-}
-
-export interface DispatchRuleWrapper_TankFuelBudget {
-    __kind: 'TankFuelBudget'
-    value: TankFuelBudgetRule
-}
-
-export interface DispatchRuleWrapper_RequireToken {
-    __kind: 'RequireToken'
-    value: RequireTokenRule
-}
-
-export interface DispatchRuleWrapper_PermittedCalls {
-    __kind: 'PermittedCalls'
-    value: Uint8Array[]
-}
-
-export interface DispatchRuleWrapper_PermittedExtrinsics {
-    __kind: 'PermittedExtrinsics'
-    value: Type_659[]
-}
-
-export interface DispatchRuleWrapper_WhitelistedPallets {
-    __kind: 'WhitelistedPallets'
-    value: Uint8Array[]
-}
-
-/**
- * Event for the System pallet.
- */
-export type SystemEvent = SystemEvent_ExtrinsicSuccess | SystemEvent_ExtrinsicFailed | SystemEvent_CodeUpdated | SystemEvent_NewAccount | SystemEvent_KilledAccount | SystemEvent_Remarked
-
-/**
- * An extrinsic completed successfully.
- */
-export interface SystemEvent_ExtrinsicSuccess {
-    __kind: 'ExtrinsicSuccess'
-    dispatchInfo: DispatchInfo
-}
-
-/**
- * An extrinsic failed.
- */
-export interface SystemEvent_ExtrinsicFailed {
-    __kind: 'ExtrinsicFailed'
-    dispatchError: DispatchError
-    dispatchInfo: DispatchInfo
-}
-
-/**
- * `:code` was updated.
- */
-export interface SystemEvent_CodeUpdated {
-    __kind: 'CodeUpdated'
-}
-
-/**
- * A new account was created.
- */
-export interface SystemEvent_NewAccount {
-    __kind: 'NewAccount'
-    account: Uint8Array
-}
-
-/**
- * An account was reaped.
- */
-export interface SystemEvent_KilledAccount {
-    __kind: 'KilledAccount'
-    account: Uint8Array
-}
-
-/**
- * On on-chain remark happened.
- */
-export interface SystemEvent_Remarked {
-    __kind: 'Remarked'
-    sender: Uint8Array
-    hash: Uint8Array
-=======
 export interface Event_XcmpQueue {
     __kind: 'XcmpQueue'
     value: XcmpQueueEvent
->>>>>>> 910c78b (typegen)
 }
 
 /**
@@ -12116,280 +11073,6 @@ export interface BalancesEvent_BalanceSet {
     free: bigint
 }
 
-<<<<<<< HEAD
-export interface Type_354_NoteUnlockable {
-    __kind: 'NoteUnlockable'
-    asset: V3MultiAsset
-    owner: V3MultiLocation
-}
-
-export interface Type_354_RequestUnlock {
-    __kind: 'RequestUnlock'
-    asset: V3MultiAsset
-    locker: V3MultiLocation
-}
-
-export interface Type_354_SetFeesMode {
-    __kind: 'SetFeesMode'
-    jitWithdraw: boolean
-}
-
-export interface Type_354_SetTopic {
-    __kind: 'SetTopic'
-    value: Uint8Array
-}
-
-export interface Type_354_ClearTopic {
-    __kind: 'ClearTopic'
-}
-
-export interface Type_354_AliasOrigin {
-    __kind: 'AliasOrigin'
-    value: V3MultiLocation
-}
-
-export interface Type_354_UnpaidExecution {
-    __kind: 'UnpaidExecution'
-    weightLimit: V3WeightLimit
-    checkOrigin: (V3MultiLocation | undefined)
-}
-
-export type V3Junctions = V3Junctions_Here | V3Junctions_X1 | V3Junctions_X2 | V3Junctions_X3 | V3Junctions_X4 | V3Junctions_X5 | V3Junctions_X6 | V3Junctions_X7 | V3Junctions_X8
-
-export interface V3Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V3Junctions_X1 {
-    __kind: 'X1'
-    value: V3Junction
-}
-
-export interface V3Junctions_X2 {
-    __kind: 'X2'
-    value: [V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X3 {
-    __kind: 'X3'
-    value: [V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X4 {
-    __kind: 'X4'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X5 {
-    __kind: 'X5'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X6 {
-    __kind: 'X6'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X7 {
-    __kind: 'X7'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface V3Junctions_X8 {
-    __kind: 'X8'
-    value: [V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction, V3Junction]
-}
-
-export interface DefaultCollectionPolicyDescriptor {
-    mint: DefaultMintPolicyDescriptor
-    market: DefaultMarketPolicyDescriptor
-}
-
-export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
-
-export interface ShouldMutate_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface ShouldMutate_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (DefaultRoyalty | undefined)
-}
-
-export type Type_146 = Type_146_NoMutation | Type_146_SomeMutation
-
-export interface Type_146_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface Type_146_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (TokenMarketBehavior | undefined)
-}
-
-export type Type_149 = Type_149_NoMutation | Type_149_SomeMutation
-
-export interface Type_149_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface Type_149_SomeMutation {
-    __kind: 'SomeMutation'
-    value: boolean
-}
-
-export type Type_150 = Type_150_NoMutation | Type_150_SomeMutation
-
-export interface Type_150_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface Type_150_SomeMutation {
-    __kind: 'SomeMutation'
-    value: DefaultTokenMetadata
-}
-
-export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
-
-export interface SufficiencyParam_Insufficient {
-    __kind: 'Insufficient'
-    unitPrice: (bigint | undefined)
-}
-
-export interface SufficiencyParam_Sufficient {
-    __kind: 'Sufficient'
-    minimumBalance: bigint
-}
-
-export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
-
-export interface TokenCap_SingleMint {
-    __kind: 'SingleMint'
-}
-
-export interface TokenCap_Supply {
-    __kind: 'Supply'
-    value: bigint
-}
-
-export interface TokenCap_CollapsingSupply {
-    __kind: 'CollapsingSupply'
-    value: bigint
-}
-
-export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
-
-export interface TokenMarketBehavior_HasRoyalty {
-    __kind: 'HasRoyalty'
-    value: DefaultRoyalty
-}
-
-export interface TokenMarketBehavior_IsCurrency {
-    __kind: 'IsCurrency'
-}
-
-export type FreezeState = FreezeState_Permanent | FreezeState_Temporary | FreezeState_Never
-
-export interface FreezeState_Permanent {
-    __kind: 'Permanent'
-}
-
-export interface FreezeState_Temporary {
-    __kind: 'Temporary'
-}
-
-export interface FreezeState_Never {
-    __kind: 'Never'
-}
-
-export interface ForeignTokenCreationParams {
-    decimalCount: number
-    name: Uint8Array
-    symbol: Uint8Array
-    location: (V3MultiLocation | undefined)
-    unitsPerSecond: (bigint | undefined)
-}
-
-export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
-
-export interface FreezeType_Collection {
-    __kind: 'Collection'
-}
-
-export interface FreezeType_Token {
-    __kind: 'Token'
-    tokenId: bigint
-    freezeState: (FreezeState | undefined)
-}
-
-export interface FreezeType_CollectionAccount {
-    __kind: 'CollectionAccount'
-    value: Uint8Array
-}
-
-export interface FreezeType_TokenAccount {
-    __kind: 'TokenAccount'
-    tokenId: bigint
-    accountId: Uint8Array
-}
-
-export interface DefaultCollectionPolicy {
-    mint: DefaultMintPolicy
-    transfer: DefaultTransferPolicy
-    market: DefaultMarketPolicy
-}
-
-export type Sufficiency = Sufficiency_Sufficient | Sufficiency_Insufficient
-
-export interface Sufficiency_Sufficient {
-    __kind: 'Sufficient'
-}
-
-export interface Sufficiency_Insufficient {
-    __kind: 'Insufficient'
-    unitPrice: bigint
-}
-
-export type DefaultTokenMetadata = DefaultTokenMetadata_Native | DefaultTokenMetadata_Foreign
-
-export interface DefaultTokenMetadata_Native {
-    __kind: 'Native'
-}
-
-export interface DefaultTokenMetadata_Foreign {
-    __kind: 'Foreign'
-    value: DefaultForeignTokenMetadata
-}
-
-export interface Approval {
-    amount: bigint
-    expiration: (number | undefined)
-}
-
-export interface Pool {
-    feeShare: number
-}
-
-export type Type_212 = Type_212_NoMutation | Type_212_SomeMutation
-
-export interface Type_212_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface Type_212_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (UserAccountManagement | undefined)
-}
-
-export interface TransactionData {
-    account: Uint8Array
-    amount: bigint
-}
-
-export interface UserFuelBudgetRule {
-    budget: Budget
-    userCount: number
-=======
 /**
  * Some amount was burned from an account.
  */
@@ -12416,7 +11099,6 @@ export interface BalancesEvent_DustLost {
     __kind: 'DustLost'
     account: AccountId32
     amount: bigint
->>>>>>> 910c78b (typegen)
 }
 
 /**
@@ -12590,931 +11272,6 @@ export interface Phase_ApplyExtrinsic {
     value: number
 }
 
-<<<<<<< HEAD
-export interface V3Response_PalletsInfo {
-    __kind: 'PalletsInfo'
-    value: V3PalletInfo[]
-}
-
-export interface V3Response_DispatchResult {
-    __kind: 'DispatchResult'
-    value: V3MaybeErrorCode
-}
-
-export type RootOrSigned = RootOrSigned_Root | RootOrSigned_Signed
-
-export interface RootOrSigned_Root {
-    __kind: 'Root'
-}
-
-export interface RootOrSigned_Signed {
-    __kind: 'Signed'
-    value: Uint8Array
-}
-
-export type MigrationStage = MigrationStage_NotStarted | MigrationStage_InProgress | MigrationStage_Completed | MigrationStage_Failed
-
-export interface MigrationStage_NotStarted {
-    __kind: 'NotStarted'
-}
-
-export interface MigrationStage_InProgress {
-    __kind: 'InProgress'
-}
-
-export interface MigrationStage_Completed {
-    __kind: 'Completed'
-}
-
-export interface MigrationStage_Failed {
-    __kind: 'Failed'
-}
-
-export interface AssetIdWithEth {
-    ethereumCollectionId: bigint
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface Listing {
-    seller: Uint8Array
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    minTakeValue: bigint
-    feeSide: FeeSide
-    creationBlock: number
-    deposit: bigint
-    salt: Uint8Array
-    data: ListingData
-    state: ListingState
-}
-
-export interface Bid {
-    bidder: Uint8Array
-    price: bigint
-}
-
-export type V2Junctions = V2Junctions_Here | V2Junctions_X1 | V2Junctions_X2 | V2Junctions_X3 | V2Junctions_X4 | V2Junctions_X5 | V2Junctions_X6 | V2Junctions_X7 | V2Junctions_X8
-
-export interface V2Junctions_Here {
-    __kind: 'Here'
-}
-
-export interface V2Junctions_X1 {
-    __kind: 'X1'
-    value: V2Junction
-}
-
-export interface V2Junctions_X2 {
-    __kind: 'X2'
-    value: [V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X3 {
-    __kind: 'X3'
-    value: [V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X4 {
-    __kind: 'X4'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X5 {
-    __kind: 'X5'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X6 {
-    __kind: 'X6'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X7 {
-    __kind: 'X7'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export interface V2Junctions_X8 {
-    __kind: 'X8'
-    value: [V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction, V2Junction]
-}
-
-export type V2Response = V2Response_Null | V2Response_Assets | V2Response_ExecutionResult | V2Response_Version
-
-export interface V2Response_Null {
-    __kind: 'Null'
-}
-
-export interface V2Response_Assets {
-    __kind: 'Assets'
-    value: V2MultiAsset[]
-}
-
-export interface V2Response_ExecutionResult {
-    __kind: 'ExecutionResult'
-    value: ([number, V2Error] | undefined)
-}
-
-export interface V2Response_Version {
-    __kind: 'Version'
-    value: number
-}
-
-export type V2OriginKind = V2OriginKind_Native | V2OriginKind_SovereignAccount | V2OriginKind_Superuser | V2OriginKind_Xcm
-
-export interface V2OriginKind_Native {
-    __kind: 'Native'
-}
-
-export interface V2OriginKind_SovereignAccount {
-    __kind: 'SovereignAccount'
-}
-
-export interface V2OriginKind_Superuser {
-    __kind: 'Superuser'
-}
-
-export interface V2OriginKind_Xcm {
-    __kind: 'Xcm'
-}
-
-export interface DoubleEncoded {
-    encoded: Uint8Array
-}
-
-export type V2MultiAssetFilter = V2MultiAssetFilter_Definite | V2MultiAssetFilter_Wild
-
-export interface V2MultiAssetFilter_Definite {
-    __kind: 'Definite'
-    value: V2MultiAsset[]
-}
-
-export interface V2MultiAssetFilter_Wild {
-    __kind: 'Wild'
-    value: V2WildMultiAsset
-}
-
-export type V2WeightLimit = V2WeightLimit_Unlimited | V2WeightLimit_Limited
-
-export interface V2WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export interface V2WeightLimit_Limited {
-    __kind: 'Limited'
-    value: bigint
-}
-
-export interface V3QueryResponseInfo {
-    destination: V3MultiLocation
-    queryId: bigint
-    maxWeight: Weight
-}
-
-export type V3MultiAssetFilter = V3MultiAssetFilter_Definite | V3MultiAssetFilter_Wild
-
-export interface V3MultiAssetFilter_Definite {
-    __kind: 'Definite'
-    value: V3MultiAsset[]
-}
-
-export interface V3MultiAssetFilter_Wild {
-    __kind: 'Wild'
-    value: V3WildMultiAsset
-}
-
-export type V3MaybeErrorCode = V3MaybeErrorCode_Success | V3MaybeErrorCode_Error | V3MaybeErrorCode_TruncatedError
-
-export interface V3MaybeErrorCode_Success {
-    __kind: 'Success'
-}
-
-export interface V3MaybeErrorCode_Error {
-    __kind: 'Error'
-    value: Uint8Array
-}
-
-export interface V3MaybeErrorCode_TruncatedError {
-    __kind: 'TruncatedError'
-    value: Uint8Array
-}
-
-export type V3Junction = V3Junction_Parachain | V3Junction_AccountId32 | V3Junction_AccountIndex64 | V3Junction_AccountKey20 | V3Junction_PalletInstance | V3Junction_GeneralIndex | V3Junction_GeneralKey | V3Junction_OnlyChild | V3Junction_Plurality | V3Junction_GlobalConsensus
-
-export interface V3Junction_Parachain {
-    __kind: 'Parachain'
-    value: number
-}
-
-export interface V3Junction_AccountId32 {
-    __kind: 'AccountId32'
-    network: (V3NetworkId | undefined)
-    id: Uint8Array
-}
-
-export interface V3Junction_AccountIndex64 {
-    __kind: 'AccountIndex64'
-    network: (V3NetworkId | undefined)
-    index: bigint
-}
-
-export interface V3Junction_AccountKey20 {
-    __kind: 'AccountKey20'
-    network: (V3NetworkId | undefined)
-    key: Uint8Array
-}
-
-export interface V3Junction_PalletInstance {
-    __kind: 'PalletInstance'
-    value: number
-}
-
-export interface V3Junction_GeneralIndex {
-    __kind: 'GeneralIndex'
-    value: bigint
-}
-
-export interface V3Junction_GeneralKey {
-    __kind: 'GeneralKey'
-    length: number
-    data: Uint8Array
-}
-
-export interface V3Junction_OnlyChild {
-    __kind: 'OnlyChild'
-}
-
-export interface V3Junction_Plurality {
-    __kind: 'Plurality'
-    id: V3BodyId
-    part: V3BodyPart
-}
-
-export interface V3Junction_GlobalConsensus {
-    __kind: 'GlobalConsensus'
-    value: V3NetworkId
-}
-
-export type V3NetworkId = V3NetworkId_ByGenesis | V3NetworkId_ByFork | V3NetworkId_Polkadot | V3NetworkId_Kusama | V3NetworkId_Westend | V3NetworkId_Rococo | V3NetworkId_Wococo | V3NetworkId_Ethereum | V3NetworkId_BitcoinCore | V3NetworkId_BitcoinCash
-
-export interface V3NetworkId_ByGenesis {
-    __kind: 'ByGenesis'
-    value: Uint8Array
-}
-
-export interface V3NetworkId_ByFork {
-    __kind: 'ByFork'
-    blockNumber: bigint
-    blockHash: Uint8Array
-}
-
-export interface V3NetworkId_Polkadot {
-    __kind: 'Polkadot'
-}
-
-export interface V3NetworkId_Kusama {
-    __kind: 'Kusama'
-}
-
-export interface V3NetworkId_Westend {
-    __kind: 'Westend'
-}
-
-export interface V3NetworkId_Rococo {
-    __kind: 'Rococo'
-}
-
-export interface V3NetworkId_Wococo {
-    __kind: 'Wococo'
-}
-
-export interface V3NetworkId_Ethereum {
-    __kind: 'Ethereum'
-    chainId: bigint
-}
-
-export interface V3NetworkId_BitcoinCore {
-    __kind: 'BitcoinCore'
-}
-
-export interface V3NetworkId_BitcoinCash {
-    __kind: 'BitcoinCash'
-}
-
-export type V2AssetId = V2AssetId_Concrete | V2AssetId_Abstract
-
-export interface V2AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V2MultiLocation
-}
-
-export interface V2AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Uint8Array
-}
-
-export type V2Fungibility = V2Fungibility_Fungible | V2Fungibility_NonFungible
-
-export interface V2Fungibility_Fungible {
-    __kind: 'Fungible'
-    value: bigint
-}
-
-export interface V2Fungibility_NonFungible {
-    __kind: 'NonFungible'
-    value: V2AssetInstance
-}
-
-export type V3AssetId = V3AssetId_Concrete | V3AssetId_Abstract
-
-export interface V3AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V3MultiLocation
-}
-
-export interface V3AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Uint8Array
-}
-
-export type V3Fungibility = V3Fungibility_Fungible | V3Fungibility_NonFungible
-
-export interface V3Fungibility_Fungible {
-    __kind: 'Fungible'
-    value: bigint
-}
-
-export interface V3Fungibility_NonFungible {
-    __kind: 'NonFungible'
-    value: V3AssetInstance
-}
-
-export interface DefaultMintPolicyDescriptor {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultMarketPolicyDescriptor {
-    royalty: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultRoyalty {
-    beneficiary: Uint8Array
-    percentage: number
-}
-
-export interface DefaultMintPolicy {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultTransferPolicy {
-    isFrozen: boolean
-}
-
-export interface DefaultMarketPolicy {
-    royalty: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultForeignTokenMetadata {
-    decimalCount: number
-    name: Uint8Array
-    symbol: Uint8Array
-    location: (V3MultiLocation | undefined)
-    unitsPerSecond: (bigint | undefined)
-    premintedSupply: bigint
-}
-
-export interface Budget {
-    amount: bigint
-    resetPeriod: number
-}
-
-export type DispatchClass = DispatchClass_Normal | DispatchClass_Operational | DispatchClass_Mandatory
-
-export interface DispatchClass_Normal {
-    __kind: 'Normal'
-}
-
-export interface DispatchClass_Operational {
-    __kind: 'Operational'
-}
-
-export interface DispatchClass_Mandatory {
-    __kind: 'Mandatory'
-}
-
-export type Pays = Pays_Yes | Pays_No
-
-export interface Pays_Yes {
-    __kind: 'Yes'
-}
-
-export interface Pays_No {
-    __kind: 'No'
-}
-
-export interface V3PalletInfo {
-    index: number
-    name: Uint8Array
-    moduleName: Uint8Array
-    major: number
-    minor: number
-    patch: number
-}
-
-export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
-
-export interface FeeSide_NoFee {
-    __kind: 'NoFee'
-}
-
-export interface FeeSide_Make {
-    __kind: 'Make'
-}
-
-export interface FeeSide_Take {
-    __kind: 'Take'
-}
-
-export type ListingData = ListingData_FixedPrice | ListingData_Auction
-
-export interface ListingData_FixedPrice {
-    __kind: 'FixedPrice'
-}
-
-export interface ListingData_Auction {
-    __kind: 'Auction'
-    value: AuctionData
-}
-
-export type ListingState = ListingState_FixedPrice | ListingState_Auction
-
-export interface ListingState_FixedPrice {
-    __kind: 'FixedPrice'
-    amountFilled: bigint
-}
-
-export interface ListingState_Auction {
-    __kind: 'Auction'
-    value: AuctionState
-}
-
-export type V2Junction = V2Junction_Parachain | V2Junction_AccountId32 | V2Junction_AccountIndex64 | V2Junction_AccountKey20 | V2Junction_PalletInstance | V2Junction_GeneralIndex | V2Junction_GeneralKey | V2Junction_OnlyChild | V2Junction_Plurality
-
-export interface V2Junction_Parachain {
-    __kind: 'Parachain'
-    value: number
-}
-
-export interface V2Junction_AccountId32 {
-    __kind: 'AccountId32'
-    network: V2NetworkId
-    id: Uint8Array
-}
-
-export interface V2Junction_AccountIndex64 {
-    __kind: 'AccountIndex64'
-    network: V2NetworkId
-    index: bigint
-}
-
-export interface V2Junction_AccountKey20 {
-    __kind: 'AccountKey20'
-    network: V2NetworkId
-    key: Uint8Array
-}
-
-export interface V2Junction_PalletInstance {
-    __kind: 'PalletInstance'
-    value: number
-}
-
-export interface V2Junction_GeneralIndex {
-    __kind: 'GeneralIndex'
-    value: bigint
-}
-
-export interface V2Junction_GeneralKey {
-    __kind: 'GeneralKey'
-    value: Uint8Array
-}
-
-export interface V2Junction_OnlyChild {
-    __kind: 'OnlyChild'
-}
-
-export interface V2Junction_Plurality {
-    __kind: 'Plurality'
-    id: V2BodyId
-    part: V2BodyPart
-}
-
-export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
-
-export interface V2Error_Overflow {
-    __kind: 'Overflow'
-}
-
-export interface V2Error_Unimplemented {
-    __kind: 'Unimplemented'
-}
-
-export interface V2Error_UntrustedReserveLocation {
-    __kind: 'UntrustedReserveLocation'
-}
-
-export interface V2Error_UntrustedTeleportLocation {
-    __kind: 'UntrustedTeleportLocation'
-}
-
-export interface V2Error_MultiLocationFull {
-    __kind: 'MultiLocationFull'
-}
-
-export interface V2Error_MultiLocationNotInvertible {
-    __kind: 'MultiLocationNotInvertible'
-}
-
-export interface V2Error_BadOrigin {
-    __kind: 'BadOrigin'
-}
-
-export interface V2Error_InvalidLocation {
-    __kind: 'InvalidLocation'
-}
-
-export interface V2Error_AssetNotFound {
-    __kind: 'AssetNotFound'
-}
-
-export interface V2Error_FailedToTransactAsset {
-    __kind: 'FailedToTransactAsset'
-}
-
-export interface V2Error_NotWithdrawable {
-    __kind: 'NotWithdrawable'
-}
-
-export interface V2Error_LocationCannotHold {
-    __kind: 'LocationCannotHold'
-}
-
-export interface V2Error_ExceedsMaxMessageSize {
-    __kind: 'ExceedsMaxMessageSize'
-}
-
-export interface V2Error_DestinationUnsupported {
-    __kind: 'DestinationUnsupported'
-}
-
-export interface V2Error_Transport {
-    __kind: 'Transport'
-}
-
-export interface V2Error_Unroutable {
-    __kind: 'Unroutable'
-}
-
-export interface V2Error_UnknownClaim {
-    __kind: 'UnknownClaim'
-}
-
-export interface V2Error_FailedToDecode {
-    __kind: 'FailedToDecode'
-}
-
-export interface V2Error_MaxWeightInvalid {
-    __kind: 'MaxWeightInvalid'
-}
-
-export interface V2Error_NotHoldingFees {
-    __kind: 'NotHoldingFees'
-}
-
-export interface V2Error_TooExpensive {
-    __kind: 'TooExpensive'
-}
-
-export interface V2Error_Trap {
-    __kind: 'Trap'
-    value: bigint
-}
-
-export interface V2Error_UnhandledXcmVersion {
-    __kind: 'UnhandledXcmVersion'
-}
-
-export interface V2Error_WeightLimitReached {
-    __kind: 'WeightLimitReached'
-    value: bigint
-}
-
-export interface V2Error_Barrier {
-    __kind: 'Barrier'
-}
-
-export interface V2Error_WeightNotComputable {
-    __kind: 'WeightNotComputable'
-}
-
-export type V2WildMultiAsset = V2WildMultiAsset_All | V2WildMultiAsset_AllOf
-
-export interface V2WildMultiAsset_All {
-    __kind: 'All'
-}
-
-export interface V2WildMultiAsset_AllOf {
-    __kind: 'AllOf'
-    id: V2AssetId
-    fun: V2WildFungibility
-}
-
-export type V3WildMultiAsset = V3WildMultiAsset_All | V3WildMultiAsset_AllOf | V3WildMultiAsset_AllCounted | V3WildMultiAsset_AllOfCounted
-
-export interface V3WildMultiAsset_All {
-    __kind: 'All'
-}
-
-export interface V3WildMultiAsset_AllOf {
-    __kind: 'AllOf'
-    id: V3AssetId
-    fun: V3WildFungibility
-}
-
-export interface V3WildMultiAsset_AllCounted {
-    __kind: 'AllCounted'
-    value: number
-}
-
-export interface V3WildMultiAsset_AllOfCounted {
-    __kind: 'AllOfCounted'
-    id: V3AssetId
-    fun: V3WildFungibility
-    count: number
-}
-
-export type V3BodyId = V3BodyId_Unit | V3BodyId_Moniker | V3BodyId_Index | V3BodyId_Executive | V3BodyId_Technical | V3BodyId_Legislative | V3BodyId_Judicial | V3BodyId_Defense | V3BodyId_Administration | V3BodyId_Treasury
-
-export interface V3BodyId_Unit {
-    __kind: 'Unit'
-}
-
-export interface V3BodyId_Moniker {
-    __kind: 'Moniker'
-    value: Uint8Array
-}
-
-export interface V3BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V3BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V3BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V3BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V3BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V3BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V3BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V3BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export type V3BodyPart = V3BodyPart_Voice | V3BodyPart_Members | V3BodyPart_Fraction | V3BodyPart_AtLeastProportion | V3BodyPart_MoreThanProportion
-
-export interface V3BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export interface V3BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V3BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V3BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
-export type V2AssetInstance = V2AssetInstance_Undefined | V2AssetInstance_Index | V2AssetInstance_Array4 | V2AssetInstance_Array8 | V2AssetInstance_Array16 | V2AssetInstance_Array32 | V2AssetInstance_Blob
-
-export interface V2AssetInstance_Undefined {
-    __kind: 'Undefined'
-}
-
-export interface V2AssetInstance_Index {
-    __kind: 'Index'
-    value: bigint
-}
-
-export interface V2AssetInstance_Array4 {
-    __kind: 'Array4'
-    value: Uint8Array
-}
-
-export interface V2AssetInstance_Array8 {
-    __kind: 'Array8'
-    value: Uint8Array
-}
-
-export interface V2AssetInstance_Array16 {
-    __kind: 'Array16'
-    value: Uint8Array
-}
-
-export interface V2AssetInstance_Array32 {
-    __kind: 'Array32'
-    value: Uint8Array
-}
-
-export interface V2AssetInstance_Blob {
-    __kind: 'Blob'
-    value: Uint8Array
-}
-
-export type V3AssetInstance = V3AssetInstance_Undefined | V3AssetInstance_Index | V3AssetInstance_Array4 | V3AssetInstance_Array8 | V3AssetInstance_Array16 | V3AssetInstance_Array32
-
-export interface V3AssetInstance_Undefined {
-    __kind: 'Undefined'
-}
-
-export interface V3AssetInstance_Index {
-    __kind: 'Index'
-    value: bigint
-}
-
-export interface V3AssetInstance_Array4 {
-    __kind: 'Array4'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array8 {
-    __kind: 'Array8'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array16 {
-    __kind: 'Array16'
-    value: Uint8Array
-}
-
-export interface V3AssetInstance_Array32 {
-    __kind: 'Array32'
-    value: Uint8Array
-}
-
-export interface AuctionState {
-    highBid: (Bid | undefined)
-}
-
-export type V2NetworkId = V2NetworkId_Any | V2NetworkId_Named | V2NetworkId_Polkadot | V2NetworkId_Kusama
-
-export interface V2NetworkId_Any {
-    __kind: 'Any'
-}
-
-export interface V2NetworkId_Named {
-    __kind: 'Named'
-    value: Uint8Array
-}
-
-export interface V2NetworkId_Polkadot {
-    __kind: 'Polkadot'
-}
-
-export interface V2NetworkId_Kusama {
-    __kind: 'Kusama'
-}
-
-export type V2BodyId = V2BodyId_Unit | V2BodyId_Named | V2BodyId_Index | V2BodyId_Executive | V2BodyId_Technical | V2BodyId_Legislative | V2BodyId_Judicial | V2BodyId_Defense | V2BodyId_Administration | V2BodyId_Treasury
-
-export interface V2BodyId_Unit {
-    __kind: 'Unit'
-}
-
-export interface V2BodyId_Named {
-    __kind: 'Named'
-    value: Uint8Array
-}
-
-export interface V2BodyId_Index {
-    __kind: 'Index'
-    value: number
-}
-
-export interface V2BodyId_Executive {
-    __kind: 'Executive'
-}
-
-export interface V2BodyId_Technical {
-    __kind: 'Technical'
-}
-
-export interface V2BodyId_Legislative {
-    __kind: 'Legislative'
-}
-
-export interface V2BodyId_Judicial {
-    __kind: 'Judicial'
-}
-
-export interface V2BodyId_Defense {
-    __kind: 'Defense'
-}
-
-export interface V2BodyId_Administration {
-    __kind: 'Administration'
-}
-
-export interface V2BodyId_Treasury {
-    __kind: 'Treasury'
-}
-
-export type V2BodyPart = V2BodyPart_Voice | V2BodyPart_Members | V2BodyPart_Fraction | V2BodyPart_AtLeastProportion | V2BodyPart_MoreThanProportion
-
-export interface V2BodyPart_Voice {
-    __kind: 'Voice'
-}
-
-export interface V2BodyPart_Members {
-    __kind: 'Members'
-    count: number
-}
-
-export interface V2BodyPart_Fraction {
-    __kind: 'Fraction'
-    nom: number
-    denom: number
-}
-
-export interface V2BodyPart_AtLeastProportion {
-    __kind: 'AtLeastProportion'
-    nom: number
-    denom: number
-}
-
-export interface V2BodyPart_MoreThanProportion {
-    __kind: 'MoreThanProportion'
-    nom: number
-    denom: number
-}
-
-export type V2WildFungibility = V2WildFungibility_Fungible | V2WildFungibility_NonFungible
-
-export interface V2WildFungibility_Fungible {
-    __kind: 'Fungible'
-}
-
-export interface V2WildFungibility_NonFungible {
-    __kind: 'NonFungible'
-}
-
-export type V3WildFungibility = V3WildFungibility_Fungible | V3WildFungibility_NonFungible
-
-export interface V3WildFungibility_Fungible {
-    __kind: 'Fungible'
-}
-
-export interface V3WildFungibility_NonFungible {
-    __kind: 'NonFungible'
-}
-=======
 export interface Phase_Finalization {
     __kind: 'Finalization'
 }
@@ -15816,79 +13573,6 @@ export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     }
 })
 
-export const H256 = sts.bytes()
-
-export const Judgement: sts.Type<Judgement> = sts.closedEnum(() => {
-    return  {
-        Erroneous: sts.unit(),
-        FeePaid: sts.bigint(),
-        KnownGood: sts.unit(),
-        LowQuality: sts.unit(),
-        OutOfDate: sts.unit(),
-        Reasonable: sts.unit(),
-        Unknown: sts.unit(),
-    }
-})
-
-export const BitFlags = sts.bigint()
-
-export const Data: sts.Type<Data> = sts.closedEnum(() => {
-    return  {
-        BlakeTwo256: sts.bytes(),
-        Keccak256: sts.bytes(),
-        None: sts.unit(),
-        Raw0: sts.bytes(),
-        Raw1: sts.bytes(),
-        Raw10: sts.bytes(),
-        Raw11: sts.bytes(),
-        Raw12: sts.bytes(),
-        Raw13: sts.bytes(),
-        Raw14: sts.bytes(),
-        Raw15: sts.bytes(),
-        Raw16: sts.bytes(),
-        Raw17: sts.bytes(),
-        Raw18: sts.bytes(),
-        Raw19: sts.bytes(),
-        Raw2: sts.bytes(),
-        Raw20: sts.bytes(),
-        Raw21: sts.bytes(),
-        Raw22: sts.bytes(),
-        Raw23: sts.bytes(),
-        Raw24: sts.bytes(),
-        Raw25: sts.bytes(),
-        Raw26: sts.bytes(),
-        Raw27: sts.bytes(),
-        Raw28: sts.bytes(),
-        Raw29: sts.bytes(),
-        Raw3: sts.bytes(),
-        Raw30: sts.bytes(),
-        Raw31: sts.bytes(),
-        Raw32: sts.bytes(),
-        Raw4: sts.bytes(),
-        Raw5: sts.bytes(),
-        Raw6: sts.bytes(),
-        Raw7: sts.bytes(),
-        Raw8: sts.bytes(),
-        Raw9: sts.bytes(),
-        Sha256: sts.bytes(),
-        ShaThree256: sts.bytes(),
-    }
-})
-
-export const IdentityInfo: sts.Type<IdentityInfo> = sts.struct(() => {
-    return  {
-        additional: sts.array(() => sts.tuple(() => [Data, Data])),
-        display: Data,
-        legal: Data,
-        web: Data,
-        riot: Data,
-        email: Data,
-        pgpFingerprint: sts.option(() => sts.bytes()),
-        image: Data,
-        twitter: Data,
-    }
-})
-
 export const DispatchRuleDescriptor: sts.Type<DispatchRuleDescriptor> = sts.closedEnum(() => {
     return  {
         MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
@@ -15941,42 +13625,6 @@ export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() =>
         ruleSets: sts.array(() => sts.tuple(() => [sts.number(), sts.array(() => DispatchRuleDescriptor)])),
         providesDeposit: sts.boolean(),
         accountRules: sts.array(() => AccountRuleDescriptor),
-    }
-})
-
-export const DefaultCollectionDescriptor: sts.Type<DefaultCollectionDescriptor> = sts.struct(() => {
-    return  {
-        policy: DefaultCollectionPolicyDescriptor,
-        explicitRoyaltyCurrencies: sts.array(() => AssetId),
-        attributes: sts.array(() => AttributeKeyValuePair),
-    }
-})
-
-export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
-    return  {
-        key: sts.bytes(),
-        value: sts.bytes(),
-    }
-})
-
-export const DefaultCollectionPolicyDescriptor: sts.Type<DefaultCollectionPolicyDescriptor> = sts.struct(() => {
-    return  {
-        mint: DefaultMintPolicyDescriptor,
-        market: DefaultMarketPolicyDescriptor,
-    }
-})
-
-export const DefaultMarketPolicyDescriptor: sts.Type<DefaultMarketPolicyDescriptor> = sts.struct(() => {
-    return  {
-        royalty: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> = sts.struct(() => {
-    return  {
-        maxTokenCount: sts.option(() => sts.bigint()),
-        maxTokenSupply: sts.option(() => sts.bigint()),
-        forceSingleMint: sts.boolean(),
     }
 })
 
@@ -17299,6 +14947,35 @@ export const SufficiencyParam: sts.Type<SufficiencyParam> = sts.closedEnum(() =>
     }
 })
 
+export const DefaultCollectionDescriptor: sts.Type<DefaultCollectionDescriptor> = sts.struct(() => {
+    return  {
+        policy: DefaultCollectionPolicyDescriptor,
+        explicitRoyaltyCurrencies: sts.array(() => AssetId),
+        attributes: sts.array(() => AttributeKeyValuePair),
+    }
+})
+
+export const DefaultCollectionPolicyDescriptor: sts.Type<DefaultCollectionPolicyDescriptor> = sts.struct(() => {
+    return  {
+        mint: DefaultMintPolicyDescriptor,
+        market: DefaultMarketPolicyDescriptor,
+    }
+})
+
+export const DefaultMarketPolicyDescriptor: sts.Type<DefaultMarketPolicyDescriptor> = sts.struct(() => {
+    return  {
+        royalty: sts.option(() => DefaultRoyalty),
+    }
+})
+
+export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> = sts.struct(() => {
+    return  {
+        maxTokenCount: sts.option(() => sts.bigint()),
+        maxTokenSupply: sts.option(() => sts.bigint()),
+        forceSingleMint: sts.boolean(),
+    }
+})
+
 export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
     return  {
         tokenId: sts.bigint(),
@@ -17312,6 +14989,13 @@ export const Recipient: sts.Type<Recipient> = sts.struct(() => {
     return  {
         accountId: AccountId32,
         params: DefaultTransferParams,
+    }
+})
+
+export const AttributeKeyValuePair: sts.Type<AttributeKeyValuePair> = sts.struct(() => {
+    return  {
+        key: sts.bytes(),
+        value: sts.bytes(),
     }
 })
 
@@ -17499,6 +15183,77 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
         set_subs: sts.enumStruct({
             subs: sts.array(() => sts.tuple(() => [AccountId32, Data])),
         }),
+    }
+})
+
+export const IdentityInfo: sts.Type<IdentityInfo> = sts.struct(() => {
+    return  {
+        additional: sts.array(() => sts.tuple(() => [Data, Data])),
+        display: Data,
+        legal: Data,
+        web: Data,
+        riot: Data,
+        email: Data,
+        pgpFingerprint: sts.option(() => sts.bytes()),
+        image: Data,
+        twitter: Data,
+    }
+})
+
+export const BitFlags = sts.bigint()
+
+export const Judgement: sts.Type<Judgement> = sts.closedEnum(() => {
+    return  {
+        Erroneous: sts.unit(),
+        FeePaid: sts.bigint(),
+        KnownGood: sts.unit(),
+        LowQuality: sts.unit(),
+        OutOfDate: sts.unit(),
+        Reasonable: sts.unit(),
+        Unknown: sts.unit(),
+    }
+})
+
+export const Data: sts.Type<Data> = sts.closedEnum(() => {
+    return  {
+        BlakeTwo256: sts.bytes(),
+        Keccak256: sts.bytes(),
+        None: sts.unit(),
+        Raw0: sts.bytes(),
+        Raw1: sts.bytes(),
+        Raw10: sts.bytes(),
+        Raw11: sts.bytes(),
+        Raw12: sts.bytes(),
+        Raw13: sts.bytes(),
+        Raw14: sts.bytes(),
+        Raw15: sts.bytes(),
+        Raw16: sts.bytes(),
+        Raw17: sts.bytes(),
+        Raw18: sts.bytes(),
+        Raw19: sts.bytes(),
+        Raw2: sts.bytes(),
+        Raw20: sts.bytes(),
+        Raw21: sts.bytes(),
+        Raw22: sts.bytes(),
+        Raw23: sts.bytes(),
+        Raw24: sts.bytes(),
+        Raw25: sts.bytes(),
+        Raw26: sts.bytes(),
+        Raw27: sts.bytes(),
+        Raw28: sts.bytes(),
+        Raw29: sts.bytes(),
+        Raw3: sts.bytes(),
+        Raw30: sts.bytes(),
+        Raw31: sts.bytes(),
+        Raw32: sts.bytes(),
+        Raw4: sts.bytes(),
+        Raw5: sts.bytes(),
+        Raw6: sts.bytes(),
+        Raw7: sts.bytes(),
+        Raw8: sts.bytes(),
+        Raw9: sts.bytes(),
+        Sha256: sts.bytes(),
+        ShaThree256: sts.bytes(),
     }
 })
 
@@ -18019,4 +15774,3 @@ export const DispatchRuleKind: sts.Type<DispatchRuleKind> = sts.closedEnum(() =>
 export const H160 = sts.bytes()
 
 export const AccountId32 = sts.bytes()
->>>>>>> 910c78b (typegen)

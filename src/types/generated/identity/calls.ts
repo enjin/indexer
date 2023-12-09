@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v1000 from '../v1000'
+import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 
 export const addRegistrar =  {
     name: 'Identity.add_registrar',
@@ -15,10 +15,10 @@ export const addRegistrar =  {
      * ## Complexity
      * - `O(R)` where `R` registrar-count (governance-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.add_registrar',
         sts.struct({
-            account: v1000.MultiAddress,
+            account: matrixEnjinV1000.MultiAddress,
         })
     ),
 }
@@ -42,10 +42,10 @@ export const setIdentity =  {
      *   - where `X` additional-field-count (deposit-bounded and code-bounded)
      *   - where `R` judgements-count (registrar-count-bounded)
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.set_identity',
         sts.struct({
-            info: v1000.IdentityInfo,
+            info: matrixEnjinV1000.IdentityInfo,
         })
     ),
 }
@@ -68,10 +68,10 @@ export const setSubs =  {
      *   - where `P` old-subs-count (hard- and deposit-bounded).
      *   - where `S` subs-count (hard- and deposit-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.set_subs',
         sts.struct({
-            subs: sts.array(() => sts.tuple(() => [v1000.AccountId32, v1000.Data])),
+            subs: sts.array(() => sts.tuple(() => [matrixEnjinV1000.AccountId32, matrixEnjinV1000.Data])),
         })
     ),
 }
@@ -94,7 +94,7 @@ export const clearIdentity =  {
      *   - where `S` subs-count (hard- and deposit-bounded).
      *   - where `X` additional-field-count (deposit-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.clear_identity',
         sts.unit()
     ),
@@ -125,7 +125,7 @@ export const requestJudgement =  {
      *   - where `R` registrar-count (governance-bounded).
      *   - where `X` additional-field-count (deposit-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.request_judgement',
         sts.struct({
             regIndex: sts.number(),
@@ -153,7 +153,7 @@ export const cancelRequest =  {
      *   - where `R` registrar-count (governance-bounded).
      *   - where `X` additional-field-count (deposit-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.cancel_request',
         sts.struct({
             regIndex: sts.number(),
@@ -176,7 +176,7 @@ export const setFee =  {
      * - `O(R)`.
      *   - where `R` registrar-count (governance-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.set_fee',
         sts.struct({
             index: sts.number(),
@@ -200,11 +200,11 @@ export const setAccountId =  {
      * - `O(R)`.
      *   - where `R` registrar-count (governance-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.set_account_id',
         sts.struct({
             index: sts.number(),
-            new: v1000.MultiAddress,
+            new: matrixEnjinV1000.MultiAddress,
         })
     ),
 }
@@ -224,11 +224,11 @@ export const setFields =  {
      * - `O(R)`.
      *   - where `R` registrar-count (governance-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.set_fields',
         sts.struct({
             index: sts.number(),
-            fields: v1000.BitFlags,
+            fields: matrixEnjinV1000.BitFlags,
         })
     ),
 }
@@ -254,13 +254,13 @@ export const provideJudgement =  {
      *   - where `R` registrar-count (governance-bounded).
      *   - where `X` additional-field-count (deposit-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.provide_judgement',
         sts.struct({
             regIndex: sts.number(),
-            target: v1000.MultiAddress,
-            judgement: v1000.Judgement,
-            identity: v1000.H256,
+            target: matrixEnjinV1000.MultiAddress,
+            judgement: matrixEnjinV1000.Judgement,
+            identity: matrixEnjinV1000.H256,
         })
     ),
 }
@@ -287,10 +287,10 @@ export const killIdentity =  {
      *   - where `S` subs-count (hard- and deposit-bounded).
      *   - where `X` additional-field-count (deposit-bounded and code-bounded).
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.kill_identity',
         sts.struct({
-            target: v1000.MultiAddress,
+            target: matrixEnjinV1000.MultiAddress,
         })
     ),
 }
@@ -306,11 +306,11 @@ export const addSub =  {
      * The dispatch origin for this call must be _Signed_ and the sender must have a registered
      * sub identity of `sub`.
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.add_sub',
         sts.struct({
-            sub: v1000.MultiAddress,
-            data: v1000.Data,
+            sub: matrixEnjinV1000.MultiAddress,
+            data: matrixEnjinV1000.Data,
         })
     ),
 }
@@ -323,11 +323,11 @@ export const renameSub =  {
      * The dispatch origin for this call must be _Signed_ and the sender must have a registered
      * sub identity of `sub`.
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.rename_sub',
         sts.struct({
-            sub: v1000.MultiAddress,
-            data: v1000.Data,
+            sub: matrixEnjinV1000.MultiAddress,
+            data: matrixEnjinV1000.Data,
         })
     ),
 }
@@ -343,10 +343,10 @@ export const removeSub =  {
      * The dispatch origin for this call must be _Signed_ and the sender must have a registered
      * sub identity of `sub`.
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.remove_sub',
         sts.struct({
-            sub: v1000.MultiAddress,
+            sub: matrixEnjinV1000.MultiAddress,
         })
     ),
 }
@@ -365,7 +365,7 @@ export const quitSub =  {
      * NOTE: This should not normally be used, but is provided in the case that the non-
      * controller of an account is maliciously registered as a sub-account.
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'Identity.quit_sub',
         sts.unit()
     ),

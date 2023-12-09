@@ -5,6 +5,7 @@ import * as v601 from '../v601'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 
 export const account =  {
@@ -240,6 +241,16 @@ export const events =  {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
+    matrixEnjinV1000: new StorageType('System.Events', 'Default', [], sts.array(() => matrixEnjinV1000.EventRecord)) as EventsMatrixEnjinV1000,
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
     v500: new StorageType('System.Events', 'Default', [], sts.array(() => v500.EventRecord)) as EventsV500,
     /**
      *  Events deposited for the current block.
@@ -306,6 +317,21 @@ export interface EventsMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.EventRecord[]
     get(block: Block): Promise<(matrixEnjinV603.EventRecord[] | undefined)>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsMatrixEnjinV1000  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1000.EventRecord[]
+    get(block: Block): Promise<(matrixEnjinV1000.EventRecord[] | undefined)>
 }
 
 /**

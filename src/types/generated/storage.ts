@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import assert from 'assert'
 import {Block, BlockContext, Chain, ChainContext, Option, Result, StorageBase} from './support'
 import * as matrixEnjinV603 from './matrixEnjinV603'
@@ -8783,6 +8784,8 @@ export interface XcmpQueueSignalMessagesStorageMatrixEnjinV603 {
 =======
 =======
 >>>>>>> 910c78b (typegen)
+=======
+>>>>>>> 87db0de (new types)
 export * as system from './system/storage'
 export * as parachainSystem from './parachain-system/storage'
 export * as timestamp from './timestamp/storage'
@@ -8811,6 +8814,6 @@ export * as fuelTanks from './fuel-tanks/storage'
 export * as marketplace from './marketplace/storage'
 export * as extrinsicPause from './extrinsic-pause/storage'
 export * as claims from './claims/storage'
+export * as identity from './identity/storage'
 export * as sudo from './sudo/storage'
 export * as efinityXcm from './efinity-xcm/storage'
-export * as identity from './identity/storage'

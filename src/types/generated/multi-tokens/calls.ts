@@ -2,6 +2,8 @@ import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../suppor
 import * as v500 from '../v500'
 import * as v600 from '../v600'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v604 from '../v604'
+import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 
 export const createCollection =  {
@@ -575,6 +577,72 @@ export const claimCollections =  {
      * - `collection_count`: The number of collections that will be claimed. It can also be
      *   higher than the actual number, but if it's lower it will fail.
      */
+    matrixEnjinV1000: new CallType(
+        'MultiTokens.claim_collections',
+        sts.struct({
+            destination: matrixEnjinV1000.AccountId32,
+            ethereumSignature: matrixEnjinV1000.Signature,
+            ethereumAddress: matrixEnjinV1000.H160,
+            collectionCount: sts.number(),
+        })
+    ),
+    /**
+     * Transfers ownership of collections to `destination` if the signature matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address) with nonce:{nonce}
+     * 
+     * and `address` matches the `destination` account. The nonce must also match.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address` : The Ethereum address from which the message is signed.
+     */
+    v604: new CallType(
+        'MultiTokens.claim_collections',
+        sts.struct({
+            destination: v604.AccountId32,
+            ethereumSignature: v604.Signature,
+            ethereumAddress: v604.H160,
+        })
+    ),
+    /**
+     * Transfers ownership of collections to `destination` if the signature and
+     * `collection_count` matches.
+     * 
+     * The dispatch origin for this call must be _None_.
+     * 
+     * Unsigned Validation:
+     * A call to claim is deemed valid if the signature provided matches
+     * the expected signed message of:
+     * 
+     * > Ethereum Signed Message:
+     * > (configured prefix string)(address)
+     * 
+     * and `address` matches the `destination` account.
+     * 
+     * This will always execute with weight of [`Config::MaxClaimableCollectionsPerAccount`]
+     * and it will reimburse weight for collections under that number.
+     * 
+     * ### Parameters:
+     * - `destination`: The account that will receive ownership of the collections
+     * - `ethereum_signature`: The signature of an ethereum signed message matching the format
+     *   described above.
+     * - `ethereum_address`: The Ethereum address from which the message is signed.
+     * - `collection_count`: The number of collections that will be claimed. It can also be
+     *   higher than the actual number, but if it's lower it will fail.
+     */
     v1000: new CallType(
         'MultiTokens.claim_collections',
         sts.struct({
@@ -862,11 +930,11 @@ export const finishClaimTokens =  {
      * Sends an event that signifies claiming the tokens was completed. Only callable by
      * [`Config::EthereumMigrationOrigin`].
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.finish_claim_tokens',
         sts.struct({
-            destination: v1000.AccountId32,
-            ethereumAddress: v1000.H160,
+            destination: matrixEnjinV1000.AccountId32,
+            ethereumAddress: matrixEnjinV1000.H160,
         })
     ),
 }
@@ -876,10 +944,10 @@ export const forceSetEthereumAccount =  {
     /**
      * Sets [`ClaimableCollectionIds`] to `value`. Only callable by [`Config::ForceOrigin`].
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.force_set_ethereum_account',
         sts.struct({
-            address: v1000.H160,
+            address: matrixEnjinV1000.H160,
             value: sts.option(() => sts.array(() => sts.bigint())),
         })
     ),
@@ -891,7 +959,7 @@ export const forceSetEthereumCollectionId =  {
      * Sets [`NativeCollectionIds`] to `native_collection_id`. Only callable by
      * [`Config::ForceOrigin`].
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.force_set_ethereum_collection_id',
         sts.struct({
             ethereumCollectionId: sts.bigint(),
@@ -906,7 +974,7 @@ export const forceSetUnmintableTokenIds =  {
      * Sets [`UnmintableTokenIds`] storage. Only callable by
      * [`Config::ForceOrigin`].
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.force_set_unmintable_token_ids',
         sts.struct({
             collectionId: sts.bigint(),
@@ -932,13 +1000,13 @@ export const forceCreateEthereumCollection =  {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.force_create_ethereum_collection',
         sts.struct({
-            owner: v1000.AccountId32,
-            claimer: v1000.H160,
+            owner: matrixEnjinV1000.AccountId32,
+            claimer: matrixEnjinV1000.H160,
             ethereumCollectionId: sts.bigint(),
-            descriptor: v1000.DefaultCollectionDescriptor,
+            descriptor: matrixEnjinV1000.DefaultCollectionDescriptor,
         })
     ),
 }
@@ -949,7 +1017,7 @@ export const forceSetEthereumUnmintableTokenIds =  {
      * Sets [`UnmintableTokenIds`] using ethereum_collection_id, the function will fail if the
      * ethereum_collection_id is invalid
      */
-    v1000: new CallType(
+    matrixEnjinV1000: new CallType(
         'MultiTokens.force_set_ethereum_unmintable_token_ids',
         sts.struct({
             ethereumCollectionId: sts.bigint(),
