@@ -56,9 +56,12 @@ export class Sns {
             DataType: 'String',
             StringValue: message.name,
         }
-        attr.Extrinsic = {
-            DataType: 'String',
-            StringValue: message.body.extrinsic,
+
+        if (message.body.extrinsic) {
+            attr.Extrinsic = {
+                DataType: 'String',
+                StringValue: message.body.extrinsic,
+            }
         }
 
         if (message.body.account || message.body.who) {
