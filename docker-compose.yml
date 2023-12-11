@@ -48,7 +48,7 @@ services:
     build:
       context: .
     ports:
-      - "4000:4000"
+      - "4347:4347"
     volumes:
       - .env:/squid/.env
     depends_on:
