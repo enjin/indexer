@@ -18,6 +18,7 @@ export async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 5000,
+        maxRedirects: 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
