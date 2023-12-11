@@ -32,15 +32,17 @@ export async function claimTokensCompleted(
 
     await ctx.store.save(claim)
 
-    Sns.getInstance().send({
-        id: item.event.id,
-        name: item.event.name,
-        body: {
-            account: u8aToHex(data.destination),
-            ethAccount: u8aToHex(data.ethereumAddress),
-            extrinsic: '',
-        },
-    })
+    if (item.event.extrinsic) {
+        Sns.getInstance().send({
+            id: item.event.id,
+            name: item.event.name,
+            body: {
+                account: u8aToHex(data.destination),
+                ethAccount: u8aToHex(data.ethereumAddress),
+                extrinsic: item.event.extrinsic.id,
+            },
+        })
+    }
 
     return new EventModel({
         id: item.event.id,
