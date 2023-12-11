@@ -43,6 +43,7 @@ import {
     MultiTokensBatchMintCall,
     MultiTokensForceMintCall,
     MultiTokensMintCall,
+    UtilityBatchCall,
 } from '../../../types/generated/calls'
 
 export function getCapType(cap: TokenCap) {
@@ -98,6 +99,92 @@ async function getBehavior(
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typeof getEventData>) {
+    if (call.name === 'Utility.batch') {
+        const data = new UtilityBatchCall(ctx, call)
+
+        if (data.isMatrixEnjinV1000) {
+            const { calls } = data.asMatrixEnjinV1000
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    (r.value.__kind === 'mint' || r.value.__kind === 'force_mint') &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
+        if (data.isV1000) {
+            const { calls } = data.asMatrixEnjinV1000
+            const recipientCall = calls.find(
+                (r) =>
+                    r.__kind === 'MultiTokens' &&
+                    (r.value.__kind === 'mint' || r.value.__kind === 'force_mint') &&
+                    r.value.collectionId === event.collectionId &&
+                    r.value.params.tokenId === event.tokenId &&
+                    r.value.params.__kind === 'CreateToken'
+            )
+
+            if (recipientCall) {
+                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
+                const recipient = mintCall.recipient.value as Uint8Array
+                const params = mintCall.params as DefaultMintParamsCreateToken_v500
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId: mintCall.collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+    }
+
     if (call.name === 'EfinityUtility.batch') {
         const data = new EfinityUtilityBatchCall(ctx, call)
 
