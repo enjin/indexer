@@ -6,6 +6,7 @@ import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import {
     Account,
     AccountTokenEvent,
+    Collection,
     Event as EventModel,
     Extrinsic,
     MultiTokensMinted,
@@ -95,9 +96,28 @@ export async function minted(
         return getEvent(item, data)
     }
 
-    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+    let tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
+
+    if (!tokenAccount) {
+        tokenAccount = new TokenAccount({
+            id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}`,
+            balance: 0n, // The balance is updated on Mint event
+            reservedBalance: 0n,
+            totalBalance: 0n,
+            lockedBalance: 0n,
+            namedReserves: null,
+            locks: null,
+            approvals: null,
+            isFrozen: false,
+            account: await getOrCreateAccount(ctx, data.recipient),
+            collection: new Collection({ id: data.collectionId.toString() }),
+            token,
+            createdAt: new Date(block.timestamp),
+            updatedAt: new Date(block.timestamp),
+        })
+    }
 
     computeTraits(data.collectionId.toString())
 
@@ -107,7 +127,9 @@ export async function minted(
     tokenAccount.balance += data.amount
     tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
-    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
+
+    await ctx.store.save(tokenAccount)
+    await ctx.store.save(token)
 
     syncCollectionStats(data.collectionId.toString())
 
