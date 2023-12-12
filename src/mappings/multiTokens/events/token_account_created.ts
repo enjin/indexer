@@ -57,6 +57,7 @@ export async function tokenAccountCreated(
     const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
 
     if (!token) {
+        // WARN: this should not happen
         // do not create token account if token does not exist
         return undefined
     }

@@ -100,6 +100,8 @@ export async function minted(
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
+    // WARN: this should not happen
+    // create token account if token account doesn't exist
     if (!tokenAccount) {
         tokenAccount = new TokenAccount({
             id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}`,
