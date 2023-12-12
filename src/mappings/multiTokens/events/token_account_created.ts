@@ -59,6 +59,9 @@ export async function tokenAccountCreated(
     if (!token) {
         // WARN: this should not happen
         // do not create token account if token does not exist
+        console.warn(
+            `WARN: token ${data.collectionId}-${data.tokenId} does not exist during token account creation, at block ${block.height}`
+        )
         return undefined
     }
 

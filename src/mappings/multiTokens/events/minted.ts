@@ -103,6 +103,10 @@ export async function minted(
     // WARN: this should not happen
     // create token account if token account doesn't exist
     if (!tokenAccount) {
+        console.warn(
+            `WARN: token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId} 
+            does not exist during token mint, at block ${block.height}`
+        )
         tokenAccount = new TokenAccount({
             id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}`,
             balance: 0n, // The balance is updated on Mint event
