@@ -54,7 +54,12 @@ export async function tokenAccountCreated(
     if (skipSave) return getEvent(item, data)
 
     const collection = new Collection({ id: data.collectionId.toString() })
-    const token = new Token({ id: `${data.collectionId}-${data.tokenId}` })
+    const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
+
+    if (!token) {
+        // do not create token account if token does not exist
+        return undefined
+    }
 
     const [account, collectionAccount] = await Promise.all([
         getOrCreateAccount(ctx, data.accountId),
