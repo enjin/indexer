@@ -127,7 +127,9 @@ export async function minted(
     tokenAccount.balance += data.amount
     tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
-    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
+
+    await ctx.store.save(tokenAccount)
+    await ctx.store.save(token)
 
     syncCollectionStats(data.collectionId.toString())
 
