@@ -36,7 +36,7 @@ export async function claimTokensInitiated(
         createdAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(MultiTokensClaims, claim as any)
+    await ctx.store.save(MultiTokensClaims, claim as any)
 
     if (item.event.extrinsic) {
         Sns.getInstance().send({
