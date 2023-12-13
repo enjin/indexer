@@ -42,6 +42,7 @@ import {
     MultiTokensMintCall,
     UtilityBatchCall,
 } from '../../../types/generated/calls'
+import { processMetadata } from '../../../jobs/process-metadata'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
@@ -807,6 +808,8 @@ export async function tokenCreated(
         })
 
         await ctx.store.insert(Token, token as any)
+
+        processMetadata(token.id, 'token')
 
         return getEvent(item, eventData)
     }
