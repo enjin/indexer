@@ -1,17 +1,14 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
-import { IsNull } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
-    Attribute,
     CapType,
     Collection,
     Event as EventModel,
     Extrinsic,
     FreezeState,
-    Metadata,
     MultiTokensTokenCreated,
     Royalty,
     Token,
@@ -781,40 +778,14 @@ export async function tokenCreated(
     }
 
     if (item.event.call) {
-        const [callData, collection, collectionUri] = await Promise.all([
+        const [callData, collection] = await Promise.all([
             getCallData(ctx, item.event.call, eventData),
             ctx.store.findOneOrFail(Collection, {
                 where: { id: eventData.collectionId.toString() },
             }),
-            ctx.store.findOne(Attribute, {
-                where: { key: 'uri', token: IsNull(), collection: { id: eventData.collectionId.toString() } },
-            }),
         ])
 
         if (!eventData || !callData) return undefined
-
-        // TODO: Far from ideal but we will do this only until we don't have the metadata processor
-        let metadata: Metadata | null | undefined = null
-        if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
-            metadata = await new Metadata()
-            if (metadata) {
-                const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
-                    where: { id: eventData.collectionId.toString() },
-                    relations: {
-                        tokens: true,
-                    },
-                })
-
-                const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
-                    e.metadata = metadata
-                    return e
-                })
-
-                if (otherTokens.length > 0) {
-                    ctx.store.save(otherTokens)
-                }
-            }
-        }
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
