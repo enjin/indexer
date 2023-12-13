@@ -51,7 +51,19 @@ export async function tokenAccountCreated(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) {
+        const tA = await ctx.store.findOne(TokenAccount, {
+            where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
+        })
+
+        if (tA) {
+            tA.createdAt = new Date(block.timestamp)
+            tA.updatedAt = new Date(block.timestamp)
+            await ctx.store.save(tA)
+        }
+
+        return getEvent(item, data)
+    }
 
     const collection = new Collection({ id: data.collectionId.toString() })
     const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
