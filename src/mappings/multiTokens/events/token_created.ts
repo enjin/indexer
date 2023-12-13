@@ -794,27 +794,27 @@ export async function tokenCreated(
         if (!eventData || !callData) return undefined
 
         // TODO: Far from ideal but we will do this only until we don't have the metadata processor
-        let metadata: Metadata | null | undefined = null
-        if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
-            metadata = await new Metadata()
-            if (metadata) {
-                const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
-                    where: { id: eventData.collectionId.toString() },
-                    relations: {
-                        tokens: true,
-                    },
-                })
+        // let metadata: Metadata | null | undefined = null
+        // if (collectionUri && (collectionUri.value.includes('{id}.json') || collectionUri.value.includes('%7Bid%7D.json'))) {
+        //     metadata = await new Metadata()
+        //     if (metadata) {
+        //         const collectionWithTokens = await ctx.store.findOneOrFail<Collection>(Collection, {
+        //             where: { id: eventData.collectionId.toString() },
+        //             relations: {
+        //                 tokens: true,
+        //             },
+        //         })
 
-                const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
-                    e.metadata = metadata
-                    return e
-                })
+        //         const otherTokens: Token[] = collectionWithTokens.tokens.map((e) => {
+        //             e.metadata = metadata
+        //             return e
+        //         })
 
-                if (otherTokens.length > 0) {
-                    ctx.store.save(otherTokens)
-                }
-            }
-        }
+        //         if (otherTokens.length > 0) {
+        //             ctx.store.save(otherTokens)
+        //         }
+        //     }
+        // }
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
