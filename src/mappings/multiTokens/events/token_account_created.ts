@@ -59,7 +59,7 @@ export async function tokenAccountCreated(
         if (tA) {
             tA.createdAt = new Date(block.timestamp)
             tA.updatedAt = new Date(block.timestamp)
-            await ctx.store.save(tA)
+            ctx.store.save(tA)
         }
 
         return getEvent(item, data)
