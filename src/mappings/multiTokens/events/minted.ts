@@ -6,7 +6,6 @@ import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import {
     Account,
     AccountTokenEvent,
-    Collection,
     Event as EventModel,
     Extrinsic,
     MultiTokensMinted,
@@ -96,10 +95,11 @@ export async function minted(
         return getEvent(item, data)
     }
 
-    let tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
+<<<<<<< HEAD
     // WARN: this should not happen
     // create token account if token account doesn't exist
     if (!tokenAccount) {
@@ -125,6 +125,8 @@ export async function minted(
         })
     }
 
+=======
+>>>>>>> parent of de82285 (hot: create token account if not present during minted (#752))
     computeTraits(data.collectionId.toString())
 
     token.supply += data.amount
@@ -133,9 +135,7 @@ export async function minted(
     tokenAccount.balance += data.amount
     tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp)
-
-    await ctx.store.save(tokenAccount)
-    await ctx.store.save(token)
+    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
 
     syncCollectionStats(data.collectionId.toString())
 

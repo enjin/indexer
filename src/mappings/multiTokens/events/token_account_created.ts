@@ -101,32 +101,24 @@ export async function tokenAccountCreated(
         await ctx.store.save(collectionAccount)
     }
 
-    const existingTokenAccount = await ctx.store.exists(TokenAccount, {
-        where: {
-            id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
-        },
+    const tokenAccount = new TokenAccount({
+        id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
+        balance: 0n, // The balance is updated on Mint event
+        reservedBalance: 0n,
+        totalBalance: 0n,
+        lockedBalance: 0n,
+        namedReserves: null,
+        locks: null,
+        approvals: null,
+        isFrozen: false,
+        account,
+        collection,
+        token,
+        createdAt: new Date(block.timestamp),
+        updatedAt: new Date(block.timestamp),
     })
 
-    if (!existingTokenAccount) {
-        const tokenAccount = new TokenAccount({
-            id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
-            balance: 0n, // The balance is updated on Mint event
-            reservedBalance: 0n,
-            totalBalance: 0n,
-            lockedBalance: 0n,
-            namedReserves: null,
-            locks: null,
-            approvals: null,
-            isFrozen: false,
-            account,
-            collection,
-            token,
-            createdAt: new Date(block.timestamp),
-            updatedAt: new Date(block.timestamp),
-        })
-
-        await ctx.store.save(TokenAccount, tokenAccount as any)
-    }
+    await ctx.store.insert(TokenAccount, tokenAccount as any)
 
     return getEvent(item, data)
 }
