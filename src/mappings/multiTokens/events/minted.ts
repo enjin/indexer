@@ -99,34 +99,6 @@ export async function minted(
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
-<<<<<<< HEAD
-    // WARN: this should not happen
-    // create token account if token account doesn't exist
-    if (!tokenAccount) {
-        console.warn(
-            `WARN: token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId} 
-            does not exist during token mint, at block ${block.height}`
-        )
-        tokenAccount = new TokenAccount({
-            id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}`,
-            balance: 0n, // The balance is updated on Mint event
-            reservedBalance: 0n,
-            totalBalance: 0n,
-            lockedBalance: 0n,
-            namedReserves: null,
-            locks: null,
-            approvals: null,
-            isFrozen: false,
-            account: await getOrCreateAccount(ctx, data.recipient),
-            collection: new Collection({ id: data.collectionId.toString() }),
-            token,
-            createdAt: new Date(block.timestamp),
-            updatedAt: new Date(block.timestamp),
-        })
-    }
-
-=======
->>>>>>> parent of de82285 (hot: create token account if not present during minted (#752))
     computeTraits(data.collectionId.toString())
 
     token.supply += data.amount
