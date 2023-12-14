@@ -3,7 +3,7 @@ version: "3.9"
 services:
   indexer_db:
     container_name: indexer_db
-    image: postgres:14
+    image: postgres:16
     restart: unless-stopped
     environment:
       POSTGRES_DB: postgres
@@ -11,10 +11,13 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - indexer_db:/var/lib/postgresql/data
-  
     ports:
       - "5432:5432"
-      # command: ["postgres", "-c", "log_statement=all"]
+    command: [
+      "postgres",
+      "-c", "shared_buffer=256MB",
+      "-c", "max_connections=200"
+    ]
 
   indexer_redis:
     container_name: indexer_redis

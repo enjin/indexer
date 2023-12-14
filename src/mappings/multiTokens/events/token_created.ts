@@ -22,7 +22,6 @@ import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
     FreezeState as FreezeState_v500,
-    MultiTokensCall_mint as MultiTokensCall_mint_v500,
     SufficiencyParam_Sufficient,
     TokenMarketBehavior,
 } from '../../../types/generated/v500'
@@ -34,13 +33,11 @@ import {
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import {
-    EfinityUtilityBatchCall,
     FuelTanksDispatchAndTouchCall,
     FuelTanksDispatchCall,
     MultiTokensBatchMintCall,
     MultiTokensForceMintCall,
     MultiTokensMintCall,
-    UtilityBatchCall,
 } from '../../../types/generated/calls'
 import { processMetadata } from '../../../jobs/process-metadata'
 
@@ -97,219 +94,6 @@ async function getBehavior(
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typeof getEventData>) {
-    if (call.name === 'Utility.batch') {
-        const data = new UtilityBatchCall(ctx, call)
-
-        if (data.isMatrixEnjinV1000) {
-            const { calls } = data.asMatrixEnjinV1000
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    (r.value.__kind === 'mint' || r.value.__kind === 'force_mint') &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV1000) {
-            const { calls } = data.asMatrixEnjinV1000
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    (r.value.__kind === 'mint' || r.value.__kind === 'force_mint') &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-    }
-
-    if (call.name === 'EfinityUtility.batch') {
-        const data = new EfinityUtilityBatchCall(ctx, call)
-
-        if (data.isV601) {
-            const { calls } = data.asV601
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    r.value.__kind === 'mint' &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV600) {
-            const { calls } = data.asV600
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    r.value.__kind === 'mint' &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV500) {
-            const { calls } = data.asV500
-            const recipientCall = calls.find(
-                (r) =>
-                    r.__kind === 'MultiTokens' &&
-                    r.value.__kind === 'mint' &&
-                    r.value.collectionId === event.collectionId &&
-                    r.value.params.tokenId === event.tokenId &&
-                    r.value.params.__kind === 'CreateToken'
-            )
-
-            if (recipientCall) {
-                const mintCall = recipientCall.value as MultiTokensCall_mint_v500
-                const recipient = mintCall.recipient.value as Uint8Array
-                const params = mintCall.params as DefaultMintParamsCreateToken_v500
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId: mintCall.collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-    }
-
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
 
@@ -490,6 +274,39 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         }
 
         if (
+            data.isV1003 &&
+            data.asV1003.call.__kind === 'MultiTokens' &&
+            (data.asV1003.call.value.__kind === 'mint' || data.asV1003.call.value.__kind === 'force_mint')
+        ) {
+            const { collectionId } = data.asV1003.call.value
+            const recipient = data.asV1003.call.value.recipient.value as Uint8Array
+            const params = data.asV1003.call.value.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (
             data.isV1000 &&
             data.asV1000.call.__kind === 'MultiTokens' &&
             (data.asV1000.call.value.__kind === 'mint' || data.asV1000.call.value.__kind === 'force_mint')
@@ -635,8 +452,95 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     let data: MultiTokensMintCall | MultiTokensForceMintCall
     if (call.name === 'MultiTokens.force_mint') {
         data = new MultiTokensForceMintCall(ctx, call)
+
+        if (data.isMatrixEnjinV603) {
+            const { collectionId } = data.asMatrixEnjinV603
+            const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
+            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (data.isV1003) {
+            const { collectionId } = data.asV1003
+            const recipient = data.asV1003.recipient.value as Uint8Array
+            const params = data.asV1003.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
     } else {
         data = new MultiTokensMintCall(ctx, call)
+
+        if (data.isMatrixEnjinV603) {
+            const { collectionId } = data.asMatrixEnjinV603
+            const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
+            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
 
         if (data.isV600) {
             const { collectionId } = data.asV600
@@ -694,35 +598,6 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
                 freezeState,
                 listingForbidden: params.listingForbidden ?? false,
             }
-        }
-    }
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId } = data.asMatrixEnjinV603
-        const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
-        const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
-        const cap = params.cap ? getCapType(params.cap) : null
-        const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-        const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-        let unitPrice: bigint | null = 10_000_000_000_000_000n
-        let minimumBalance = 1n
-
-        if (params.sufficiency.__kind === 'Sufficient') {
-            minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-            unitPrice = null
-        }
-
-        return {
-            recipient,
-            collectionId,
-            tokenId: params.tokenId,
-            initialSupply: params.initialSupply,
-            minimumBalance,
-            unitPrice,
-            cap,
-            behavior,
-            freezeState,
-            listingForbidden: params.listingForbidden ?? false,
         }
     }
 

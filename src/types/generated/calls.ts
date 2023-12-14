@@ -8,6 +8,7 @@ import * as v602 from './v602'
 import * as matrixEnjinV1000 from './matrixEnjinV1000'
 import * as v604 from './v604'
 import * as v1000 from './v1000'
+import * as v1003 from './v1003'
 
 export class BalancesForceSetBalanceCall {
     private readonly _chain: Chain
@@ -2723,6 +2724,37 @@ export class CouncilExecuteCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Council.execute') === '9de811c39530414adcd3368d446d2e212bfa5ab901203473176cb3fa0bebfa75'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asV1003(): {proposal: v1003.Call, lengthBound: number} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class CouncilProposeCall {
@@ -3141,6 +3173,47 @@ export class CouncilProposeCall {
      */
     get asV1000(): {threshold: number, proposal: v1000.Call, lengthBound: number} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Council.propose') === '22dc7bee22aa4eda8ff75dbd66f5ec6597086c5275c7dae9b99b98cfce675db9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asV1003(): {threshold: number, proposal: v1003.Call, lengthBound: number} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -4899,6 +4972,41 @@ export class ExtrinsicPausePauseExtrinsicCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === 'cad7f1ab9361829a1386efdeadaae5841bf7d7ea89678e7970ba3d2647bc7982'
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get asV1003(): {call: v1003.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ExtrinsicPauseResumeExtrinsicCall {
@@ -5175,6 +5283,39 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asV1000(): {call: v1000.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === 'aa602da4153efcd3a7c3d5e73661a0cbd102b4215330589223daa9928e94e02b'
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get asV1003(): {call: v1003.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5514,6 +5655,31 @@ export class FuelTanksCreateFuelTankCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '5f291f1a298f05cbb0a9c8cef5013f5784b69ae954ebb7c05e2db721799e8679'
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get asV1003(): {descriptor: v1003.FuelTankDescriptor} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDestroyFuelTankCall {
@@ -5809,6 +5975,35 @@ export class FuelTanksDispatchCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === '22f49eeb50716920f03da0320aa286d7f67c1183c87e93f41e8e60d410981eb8'
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get asV1003(): {tankId: v1003.MultiAddress, ruleSetId: number, call: v1003.Call, settings: (v1003.DispatchSettings | undefined)} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDispatchAndTouchCall {
@@ -6039,6 +6234,33 @@ export class FuelTanksDispatchAndTouchCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '22f49eeb50716920f03da0320aa286d7f67c1183c87e93f41e8e60d410981eb8'
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get asV1003(): {tankId: v1003.MultiAddress, ruleSetId: number, call: v1003.Call, settings: (v1003.DispatchSettings | undefined)} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksForceBatchAddAccountCall {
@@ -6172,6 +6394,29 @@ export class FuelTanksForceCreateFuelTankCall {
      */
     get asV1000(): {owner: v1000.MultiAddress, descriptor: v1000.FuelTankDescriptor} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '73ed62dc306ad76a32cb55eb2b9ef95956a7858180da2f2e7e1f9e908d0e501f'
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get asV1003(): {owner: v1003.MultiAddress, descriptor: v1003.FuelTankDescriptor} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -6595,6 +6840,51 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asV1000(): {tankId: v1000.MultiAddress, ruleSetId: number, rules: v1000.DispatchRuleDescriptor[]} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '14fe2179e727b95fc268d59ddb32418d9d802c601e19d5adf236de73835c39db'
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get asV1003(): {tankId: v1003.MultiAddress, ruleSetId: number, rules: v1003.DispatchRuleDescriptor[]} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8317,6 +8607,45 @@ export class MatrixUtilityBatchCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === '5f38aa958cc41bb0b89b12399759f390c909300ec1191497f7c52d926766c4cf'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get asV1003(): {calls: v1003.Call[], continueOnFailure: boolean} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MatrixXcmForceSetMinimumWeightCall {
@@ -9533,6 +9862,25 @@ export class MultiTokensForceMintCall {
      */
     get asMatrixEnjinV603(): {caller: matrixEnjinV603.MultiAddress, recipient: matrixEnjinV603.MultiAddress, collectionId: bigint, params: matrixEnjinV603.DefaultMintParams, depositBacker: (matrixEnjinV603.MultiAddress | undefined)} {
         assert(this.isMatrixEnjinV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mint') === '2f7b04c898012e70b44c3bd6644576e341733b54a7d1c169fe60ae594e72ad1a'
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    get asV1003(): {caller: (v1003.MultiAddress | undefined), recipient: v1003.MultiAddress, collectionId: bigint, params: v1003.FlexibleMintParams, depositor: (v1003.MultiAddress | undefined)} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11539,6 +11887,97 @@ export class MultisigAsMultiCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '04e202dc2fdd7984c6573299b41f16b4780a1d86adf2f1a329713b621196f98a'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get asV1003(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v1003.Timepoint | undefined), call: v1003.Call, maxWeight: v1003.Weight} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultisigAsMultiThreshold1Call {
@@ -11871,6 +12310,43 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asV1000(): {otherSignatories: Uint8Array[], call: v1000.Call} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '48e48c6da8db93f98b38f56536c96012a67dd6522a64299bae686208db37388b'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get asV1003(): {otherSignatories: Uint8Array[], call: v1003.Call} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13033,6 +13509,21 @@ export class SchedulerScheduleCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '3e97b01723c3ebc01f40e6c3a105c01e499d416980cd50aedbccdfe1fac83db3'
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get asV1003(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1003.Call} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleAfterCall {
@@ -13191,6 +13682,21 @@ export class SchedulerScheduleAfterCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === '7927529f4489056e5eedcef109ffa4c801545c086f6f008eef5c20599a13031c'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get asV1003(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1003.Call} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleNamedCall {
@@ -13323,6 +13829,21 @@ export class SchedulerScheduleNamedCall {
      */
     get asV1000(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1000.Call} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '350214c8f28dd4d694b7c1ba23392aaae194062d0076273d5a1e474863216b9c'
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get asV1003(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1003.Call} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13481,6 +14002,21 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asV1000(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1000.Call} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === 'b9700654477363ca6c216c428ab76525482b57a91dce95d4c6768b47362fbdc4'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get asV1003(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1003.Call} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13789,6 +14325,31 @@ export class SudoSudoCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === '5b5a617cbc5ac8e40912ee9028df183479eb0fb170ff840dfc627e81f3a8edb7'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asV1003(): {call: v1003.Call} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -13962,6 +14523,33 @@ export class SudoSudoAsCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === '3d753fdeb1b5a3ff139caafb72ca27debfe5fe1c464672ee1af7979fe17d0dcb'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asV1003(): {who: v1003.MultiAddress, call: v1003.Call} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -14131,6 +14719,35 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV1000(): {call: v1000.Call, weight: v1000.Weight} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === 'faa7e558ad7dd37c34b0b9d3e28b364f50b3229e8a8489e3300c0892d6e52b3f'
+    }
+
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asV1003(): {call: v1003.Call, weight: v1003.Weight} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -14862,6 +15479,37 @@ export class TechnicalCommitteeExecuteCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '9de811c39530414adcd3368d446d2e212bfa5ab901203473176cb3fa0bebfa75'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asV1003(): {proposal: v1003.Call, lengthBound: number} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class TechnicalCommitteeProposeCall {
@@ -15280,6 +15928,47 @@ export class TechnicalCommitteeProposeCall {
      */
     get asV1000(): {threshold: number, proposal: v1000.Call, lengthBound: number} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '22dc7bee22aa4eda8ff75dbd66f5ec6597086c5275c7dae9b99b98cfce675db9'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asV1003(): {threshold: number, proposal: v1003.Call, lengthBound: number} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16026,6 +16715,45 @@ export class UtilityAsDerivativeCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '510bf6455d65c1172d35d949113aec100486f423dcdca0478f889fae8bd83a0b'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asV1003(): {index: number, call: v1003.Call} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -16438,6 +17166,55 @@ export class UtilityBatchCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'c880364f919640484ef43e6c6025d5b4defc9a50b0630057e10645b9179fdc2f'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asV1003(): {calls: v1003.Call[]} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -16770,6 +17547,45 @@ export class UtilityBatchAllCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'c880364f919640484ef43e6c6025d5b4defc9a50b0630057e10645b9179fdc2f'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asV1003(): {calls: v1003.Call[]} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -17006,6 +17822,31 @@ export class UtilityDispatchAsCall {
      */
     get asV1000(): {asOrigin: v1000.OriginCaller, call: v1000.Call} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '628079658e057249b17fb4f071f4db2b0fd4048fb28499a301b1f36a654f3a01'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asV1003(): {asOrigin: v1003.OriginCaller, call: v1003.Call} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -17340,6 +18181,45 @@ export class UtilityForceBatchCall {
         assert(this.isV1000)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'c880364f919640484ef43e6c6025d5b4defc9a50b0630057e10645b9179fdc2f'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asV1003(): {calls: v1003.Call[]} {
+        assert(this.isV1003)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityWithWeightCall {
@@ -17552,6 +18432,31 @@ export class UtilityWithWeightCall {
      */
     get asV1000(): {call: v1000.Call, weight: v1000.Weight} {
         assert(this.isV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isV1003(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === 'faa7e558ad7dd37c34b0b9d3e28b364f50b3229e8a8489e3300c0892d6e52b3f'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asV1003(): {call: v1003.Call, weight: v1003.Weight} {
+        assert(this.isV1003)
         return this._chain.decodeCall(this.call)
     }
 }
