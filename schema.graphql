@@ -489,7 +489,7 @@ type Token @entity {
   id: ID!
 
   # Extrinsic defaults
-  tokenId: BigInt! 
+  tokenId: BigInt! @index
   supply: BigInt!
   isFrozen: Boolean!
   freezeState: FreezeState
