@@ -413,6 +413,39 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
+        if (data.isV1003 && data.asV1003.call.__kind === 'MultiTokens' && data.asV1003.call.value.__kind === 'batch_mint') {
+            const { collectionId, recipients } = data.asV1003.call.value
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
         if (data.isV1000 && data.asV1000.call.__kind === 'MultiTokens' && data.asV1000.call.value.__kind === 'batch_mint') {
             const { collectionId, recipients } = data.asV1000.call.value
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')

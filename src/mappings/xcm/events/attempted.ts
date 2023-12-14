@@ -53,6 +53,13 @@ async function getCallData(ctx: CommonContext, call: Call) {
         ) {
             return data.asMatrixEnjinV603.call.value
         }
+        if (
+            data.isV1003 &&
+            data.asV1003.call.__kind === 'PolkadotXcm' &&
+            (data.asV1003.call.value.__kind === 'teleport_assets' || data.asV1003.call.value.__kind === 'limited_teleport_assets')
+        ) {
+            return data.asV1003.call.value
+        }
 
         if (
             data.isV1000 &&

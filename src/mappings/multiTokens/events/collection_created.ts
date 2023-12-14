@@ -131,6 +131,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
+            data.isV1003 &&
+            data.asV1003.call.__kind === 'MultiTokens' &&
+            data.asV1003.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asV1003.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (
             data.isV1000 &&
             data.asV1000.call.__kind === 'MultiTokens' &&
             data.asV1000.call.value.__kind === 'create_collection'
