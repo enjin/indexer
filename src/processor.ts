@@ -17,6 +17,7 @@ import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
+import { fetchNonces } from './mappings/util/nonce'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -252,6 +253,7 @@ processor.run(
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
                 const extrinsics: Extrinsic[] = []
+                const signers = new Set<string>()
                 const events: Event[] = []
                 const accountTokenEvents: AccountTokenEvent[] = []
 
@@ -435,11 +437,13 @@ processor.run(
                             }
                         }
 
+                        signers.add(publicKey)
                         extrinsics.push(extrinsic)
                     }
                 }
 
                 await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                await fetchNonces(ctx as unknown as CommonContext, block.header, signers)
                 _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
                 _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
                 _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))

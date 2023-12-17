@@ -15,7 +15,6 @@ services:
       - "5432:5432"
     command: [
       "postgres",
-      "-c", "shared_buffer=256MB",
       "-c", "max_connections=200"
     ]
 
