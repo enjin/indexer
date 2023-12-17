@@ -45,7 +45,7 @@ export async function fetchNonces(ctx: CommonContext, block: SubstrateBlock, acc
         const id = accountsPublicKey[i]
         const accountInfo = accountInfos[i]
         const accountData = accountInfo.data
-        
+
         if ('frozen' in accountData) {
             accounts.push({
                 id,
