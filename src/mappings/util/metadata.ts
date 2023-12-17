@@ -23,7 +23,7 @@ export async function fetchMetadata(url: string) {
     })
 
     try {
-        const { status, data } = await api.get(url)
+        const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
         if (status < 400) {
             return data
         }
