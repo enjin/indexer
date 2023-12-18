@@ -91,6 +91,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
+            data.isMatrixEnjinV1003 &&
+            data.asMatrixEnjinV1003.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV1003.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asMatrixEnjinV1003.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (
             data.isMatrixEnjinV1000 &&
             data.asMatrixEnjinV1000.call.__kind === 'MultiTokens' &&
             data.asMatrixEnjinV1000.call.value.__kind === 'create_collection'

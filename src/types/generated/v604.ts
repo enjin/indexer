@@ -339,6 +339,28 @@ export interface DispatchRuleDescriptor_PermittedExtrinsics {
     value: Call[]
 }
 
+export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
+
+export interface DefaultMintParams_CreateToken {
+    __kind: 'CreateToken'
+    tokenId: bigint
+    initialSupply: bigint
+    sufficiency: SufficiencyParam
+    cap: (TokenCap | undefined)
+    behavior: (TokenMarketBehavior | undefined)
+    listingForbidden: boolean
+    freezeState: (FreezeState | undefined)
+    attributes: AttributeKeyValuePair[]
+    foreignParams: (ForeignTokenCreationParams | undefined)
+}
+
+export interface DefaultMintParams_Mint {
+    __kind: 'Mint'
+    tokenId: bigint
+    amount: bigint
+    unitPrice: (bigint | undefined)
+}
+
 export interface Weight {
     refTime: bigint
     proofSize: bigint
@@ -4237,6 +4259,72 @@ export interface RequireTokenRule {
     tokenId: bigint
 }
 
+export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
+
+export interface SufficiencyParam_Insufficient {
+    __kind: 'Insufficient'
+    unitPrice: (bigint | undefined)
+}
+
+export interface SufficiencyParam_Sufficient {
+    __kind: 'Sufficient'
+    minimumBalance: bigint
+}
+
+export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
+
+export interface TokenCap_SingleMint {
+    __kind: 'SingleMint'
+}
+
+export interface TokenCap_Supply {
+    __kind: 'Supply'
+    value: bigint
+}
+
+export interface TokenCap_CollapsingSupply {
+    __kind: 'CollapsingSupply'
+    value: bigint
+}
+
+export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
+
+export interface TokenMarketBehavior_HasRoyalty {
+    __kind: 'HasRoyalty'
+    value: DefaultRoyalty
+}
+
+export interface TokenMarketBehavior_IsCurrency {
+    __kind: 'IsCurrency'
+}
+
+export type FreezeState = FreezeState_Permanent | FreezeState_Temporary | FreezeState_Never
+
+export interface FreezeState_Permanent {
+    __kind: 'Permanent'
+}
+
+export interface FreezeState_Temporary {
+    __kind: 'Temporary'
+}
+
+export interface FreezeState_Never {
+    __kind: 'Never'
+}
+
+export interface AttributeKeyValuePair {
+    key: Uint8Array
+    value: Uint8Array
+}
+
+export interface ForeignTokenCreationParams {
+    decimalCount: number
+    name: Uint8Array
+    symbol: Uint8Array
+    location: (V3MultiLocation | undefined)
+    unitsPerSecond: (bigint | undefined)
+}
+
 export type RawOrigin = RawOrigin_Root | RawOrigin_Signed | RawOrigin_None
 
 export interface RawOrigin_Root {
@@ -4748,28 +4836,6 @@ export interface DefaultTokenMutation {
     metadata: Type_149
 }
 
-export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
-
-export interface DefaultMintParams_CreateToken {
-    __kind: 'CreateToken'
-    tokenId: bigint
-    initialSupply: bigint
-    sufficiency: SufficiencyParam
-    cap: (TokenCap | undefined)
-    behavior: (TokenMarketBehavior | undefined)
-    listingForbidden: boolean
-    freezeState: (FreezeState | undefined)
-    attributes: AttributeKeyValuePair[]
-    foreignParams: (ForeignTokenCreationParams | undefined)
-}
-
-export interface DefaultMintParams_Mint {
-    __kind: 'Mint'
-    tokenId: bigint
-    amount: bigint
-    unitPrice: (bigint | undefined)
-}
-
 export interface DefaultBurnParams {
     tokenId: bigint
     amount: bigint
@@ -4807,11 +4873,6 @@ export interface Recipient {
 export interface Type_395 {
     accountId: Uint8Array
     params: DefaultMintParams
-}
-
-export interface AttributeKeyValuePair {
-    key: Uint8Array
-    value: Uint8Array
 }
 
 export interface Collection {
@@ -4912,6 +4973,11 @@ export interface Consumption {
 export interface AuctionData {
     startBlock: number
     endBlock: number
+}
+
+export interface DefaultRoyalty {
+    beneficiary: Uint8Array
+    percentage: number
 }
 
 export interface V2MultiLocation {
@@ -9030,67 +9096,6 @@ export interface Type_149_SomeMutation {
     value: DefaultTokenMetadata
 }
 
-export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
-
-export interface SufficiencyParam_Insufficient {
-    __kind: 'Insufficient'
-    unitPrice: (bigint | undefined)
-}
-
-export interface SufficiencyParam_Sufficient {
-    __kind: 'Sufficient'
-    minimumBalance: bigint
-}
-
-export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
-
-export interface TokenCap_SingleMint {
-    __kind: 'SingleMint'
-}
-
-export interface TokenCap_Supply {
-    __kind: 'Supply'
-    value: bigint
-}
-
-export interface TokenCap_CollapsingSupply {
-    __kind: 'CollapsingSupply'
-    value: bigint
-}
-
-export type TokenMarketBehavior = TokenMarketBehavior_HasRoyalty | TokenMarketBehavior_IsCurrency
-
-export interface TokenMarketBehavior_HasRoyalty {
-    __kind: 'HasRoyalty'
-    value: DefaultRoyalty
-}
-
-export interface TokenMarketBehavior_IsCurrency {
-    __kind: 'IsCurrency'
-}
-
-export type FreezeState = FreezeState_Permanent | FreezeState_Temporary | FreezeState_Never
-
-export interface FreezeState_Permanent {
-    __kind: 'Permanent'
-}
-
-export interface FreezeState_Temporary {
-    __kind: 'Temporary'
-}
-
-export interface FreezeState_Never {
-    __kind: 'Never'
-}
-
-export interface ForeignTokenCreationParams {
-    decimalCount: number
-    name: Uint8Array
-    symbol: Uint8Array
-    location: (V3MultiLocation | undefined)
-    unitsPerSecond: (bigint | undefined)
-}
-
 export type FreezeType = FreezeType_Collection | FreezeType_Token | FreezeType_CollectionAccount | FreezeType_TokenAccount
 
 export interface FreezeType_Collection {
@@ -9745,11 +9750,6 @@ export interface DefaultMintPolicyDescriptor {
 
 export interface DefaultMarketPolicyDescriptor {
     royalty: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultRoyalty {
-    beneficiary: Uint8Array
-    percentage: number
 }
 
 export interface DefaultMintPolicy {
