@@ -62,7 +62,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
     }
 
-    if (attributes.find((a) => a.key === 'uri')) {
+    if (attributes.some((a) => a.key === 'uri')) {
         uriAttribute = attributes.find((a) => a.key === 'uri')
     }
 
