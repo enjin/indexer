@@ -5,6 +5,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
+import * as v1003 from '../v1003'
 
 export const createCollection =  {
     name: 'MultiTokens.create_collection',
@@ -861,6 +862,21 @@ export const forceMint =  {
             collectionId: sts.bigint(),
             params: matrixEnjinV603.DefaultMintParams,
             depositBacker: sts.option(() => matrixEnjinV603.MultiAddress),
+        })
+    ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    v1003: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => v1003.MultiAddress),
+            recipient: v1003.MultiAddress,
+            collectionId: sts.bigint(),
+            params: v1003.FlexibleMintParams,
+            depositor: sts.option(() => v1003.MultiAddress),
         })
     ),
 }

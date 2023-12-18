@@ -7,6 +7,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
+import * as v1003 from '../v1003'
 
 export const createFuelTank =  {
     name: 'FuelTanks.create_fuel_tank',
@@ -120,6 +121,20 @@ export const createFuelTank =  {
         'FuelTanks.create_fuel_tank',
         sts.struct({
             descriptor: v1000.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    v1003: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: v1003.FuelTankDescriptor,
         })
     ),
 }
@@ -432,6 +447,25 @@ export const dispatch =  {
             settings: sts.option(() => v1000.DispatchSettings),
         })
     ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    v1003: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: v1003.MultiAddress,
+            ruleSetId: sts.number(),
+            call: v1003.Call,
+            settings: sts.option(() => v1003.DispatchSettings),
+        })
+    ),
 }
 
 export const dispatchAndTouch =  {
@@ -578,6 +612,24 @@ export const dispatchAndTouch =  {
             ruleSetId: sts.number(),
             call: v1000.Call,
             settings: sts.option(() => v1000.DispatchSettings),
+        })
+    ),
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    v1003: new CallType(
+        'FuelTanks.dispatch_and_touch',
+        sts.struct({
+            tankId: v1003.MultiAddress,
+            ruleSetId: sts.number(),
+            call: v1003.Call,
+            settings: sts.option(() => v1003.DispatchSettings),
         })
     ),
 }
@@ -815,6 +867,32 @@ export const insertRuleSet =  {
             rules: sts.array(() => v1000.DispatchRuleDescriptor),
         })
     ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    v1003: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: v1003.MultiAddress,
+            ruleSetId: sts.number(),
+            rules: sts.array(() => v1003.DispatchRuleDescriptor),
+        })
+    ),
 }
 
 export const removeRuleSet =  {
@@ -983,6 +1061,20 @@ export const forceCreateFuelTank =  {
         sts.struct({
             owner: v1000.MultiAddress,
             descriptor: v1000.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    v1003: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: v1003.MultiAddress,
+            descriptor: v1003.FuelTankDescriptor,
         })
     ),
 }

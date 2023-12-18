@@ -4,6 +4,7 @@ import * as v600 from '../v600'
 import * as v601 from '../v601'
 import * as v602 from '../v602'
 import * as v1000 from '../v1000'
+import * as v1003 from '../v1003'
 
 export const sudo =  {
     name: 'Sudo.sudo',
@@ -87,6 +88,20 @@ export const sudo =  {
         'Sudo.sudo',
         sts.struct({
             call: v1000.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1003: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1003.Call,
         })
     ),
 }
@@ -182,6 +197,23 @@ export const sudoUncheckedWeight =  {
         sts.struct({
             call: v1000.Call,
             weight: v1000.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1003: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1003.Call,
+            weight: v1003.Weight,
         })
     ),
 }
@@ -300,6 +332,22 @@ export const sudoAs =  {
         sts.struct({
             who: v1000.MultiAddress,
             call: v1000.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1003: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1003.MultiAddress,
+            call: v1003.Call,
         })
     ),
 }
