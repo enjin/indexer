@@ -6,6 +6,7 @@ import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
 import * as matrixEnjinV1000 from './matrixEnjinV1000'
+import * as matrixEnjinV1003 from './matrixEnjinV1003'
 import * as v604 from './v604'
 import * as v1000 from './v1000'
 import * as v1003 from './v1003'
@@ -2532,6 +2533,37 @@ export class CouncilExecuteCall {
      * 
      * Origin must be a member of the collective.
      * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Council.execute') === '8436778e072de5fd031e538ef23b88424ea15c5d94208a400f13f01159fbfb00'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asMatrixEnjinV1003(): {proposal: matrixEnjinV1003.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
      * # <weight>
      * ## Weight
      * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
@@ -2849,6 +2881,47 @@ export class CouncilProposeCall {
      */
     get asMatrixEnjinV1000(): {threshold: number, proposal: matrixEnjinV1000.Call, lengthBound: number} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Council.propose') === '0318441ab0a9bd4ab2b6e923b6c88985852689b516a4d2084ccf14caa5f03be6'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asMatrixEnjinV1003(): {threshold: number, proposal: matrixEnjinV1003.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -4776,6 +4849,41 @@ export class ExtrinsicPausePauseExtrinsicCall {
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === 'd6954ca3e8c613f063c1cc4cb8a1427954836cf9b43c22a2085ff35970df2b19'
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    get asMatrixEnjinV1003(): {call: matrixEnjinV1003.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '0af39b1686ce411113718180a54f1772da531d4bc731f731597729aba3694beb'
     }
@@ -5085,6 +5193,39 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asMatrixEnjinV1000(): {call: matrixEnjinV1000.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '2868d2f123fb7eb424d929b21b8898623752bf6cb09d15597ed65811eea81c36'
+    }
+
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    get asMatrixEnjinV1003(): {call: matrixEnjinV1003.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -5514,6 +5655,31 @@ export class FuelTanksCreateFuelTankCall {
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === 'f453906e5ec08546019022707066080f5eabb1da54f0e905dec948830c860350'
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    get asMatrixEnjinV1003(): {descriptor: matrixEnjinV1003.FuelTankDescriptor} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '7ec8cf7f4479591fa8d8df81a83204729676ec97ce9d3fdd6908a443056cd0dc'
     }
@@ -5812,6 +5978,35 @@ export class FuelTanksDispatchCall {
      *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
      * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === 'b5bd8d4fd9f72fa240f91055db86aca70c41eba635451dcda30eb392907442b5'
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    get asMatrixEnjinV1003(): {tankId: matrixEnjinV1003.MultiAddress, ruleSetId: number, call: matrixEnjinV1003.Call, settings: (matrixEnjinV1003.DispatchSettings | undefined)} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('FuelTanks.dispatch') === 'dcc80be694c3cf26e67023f951da7862390eda86a944795bd4b5fa9fa37f1a1b'
     }
@@ -6070,6 +6265,33 @@ export class FuelTanksDispatchAndTouchCall {
      */
     get asMatrixEnjinV1000(): {tankId: matrixEnjinV1000.MultiAddress, ruleSetId: number, call: matrixEnjinV1000.Call, settings: (matrixEnjinV1000.DispatchSettings | undefined)} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'b5bd8d4fd9f72fa240f91055db86aca70c41eba635451dcda30eb392907442b5'
+    }
+
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    get asMatrixEnjinV1003(): {tankId: matrixEnjinV1003.MultiAddress, ruleSetId: number, call: matrixEnjinV1003.Call, settings: (matrixEnjinV1003.DispatchSettings | undefined)} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6358,6 +6580,29 @@ export class FuelTanksForceCreateFuelTankCall {
      * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '2cd125920335ca612acd514a7052f6fe65e2b6123a2f4abeb4a8bdd647d6f58c'
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    get asMatrixEnjinV1003(): {owner: matrixEnjinV1003.MultiAddress, descriptor: matrixEnjinV1003.FuelTankDescriptor} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
     get isV604(): boolean {
         return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '9fba66045ffe9823498216d94cdbc8a05b718af3834bbcff41bb4664bc9ca23e'
     }
@@ -6570,6 +6815,51 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asMatrixEnjinV1000(): {tankId: matrixEnjinV1000.MultiAddress, ruleSetId: number, rules: matrixEnjinV1000.DispatchRuleDescriptor[]} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '26b1fc4d62a36de9033bc84a5073e53cb066a1b1f1c06d4cabdf36fb1bb8d850'
+    }
+
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    get asMatrixEnjinV1003(): {tankId: matrixEnjinV1003.MultiAddress, ruleSetId: number, rules: matrixEnjinV1003.DispatchRuleDescriptor[]} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -8545,6 +8835,45 @@ export class MatrixUtilityBatchCall {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === 'cbf196d8ae488a10641203463a6e6089ac1f0b390593be56b3680556cce374d5'
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    get asMatrixEnjinV1003(): {calls: matrixEnjinV1003.Call[], continueOnFailure: boolean} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
     get isV604(): boolean {
         return this._chain.getCallHash('MatrixUtility.batch') === 'd62ee8112ec3c60241093b56ae224901f16f92caeeede499a20acae888ba7ab7'
     }
@@ -9862,6 +10191,42 @@ export class MultiTokensForceMintCall {
      */
     get asMatrixEnjinV603(): {caller: matrixEnjinV603.MultiAddress, recipient: matrixEnjinV603.MultiAddress, collectionId: bigint, params: matrixEnjinV603.DefaultMintParams, depositBacker: (matrixEnjinV603.MultiAddress | undefined)} {
         assert(this.isMatrixEnjinV603)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mint') === '2f7b04c898012e70b44c3bd6644576e341733b54a7d1c169fe60ae594e72ad1a'
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    get asMatrixEnjinV1003(): {caller: (matrixEnjinV1003.MultiAddress | undefined), recipient: matrixEnjinV1003.MultiAddress, collectionId: bigint, params: matrixEnjinV1003.FlexibleMintParams, depositor: (matrixEnjinV1003.MultiAddress | undefined)} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get isV604(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mint') === '6cf5f25d480cadca047bd92075c889f51eadee05fb17808aab0dbf485d3bcd38'
+    }
+
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::ForceOrigin`].
+     */
+    get asV604(): {caller: v604.MultiAddress, recipient: v604.MultiAddress, collectionId: bigint, params: v604.DefaultMintParams, depositBacker: (v604.MultiAddress | undefined)} {
+        assert(this.isV604)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11333,6 +11698,97 @@ export class MultisigAsMultiCall {
      * on success, result is `Ok` and the result from the interior call, if it was executed,
      * may be found in the deposited `MultisigExecuted` event.
      * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '9343c637a3889667ccbf558238e261cd733cdb7ab6298b83d656366afdbc01b2'
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
+     * ## Complexity
+     * - `O(S + Z + Call)`.
+     * - Up to one balance-reserve or unreserve operation.
+     * - One passthrough operation, one insert, both `O(S)` where `S` is the number of
+     *   signatories. `S` is capped by `MaxSignatories`, with weight being proportional.
+     * - One call encode & hash, both of complexity `O(Z)` where `Z` is tx-len.
+     * - One encode & hash, both of complexity `O(S)`.
+     * - Up to one binary search and insert (`O(logS + S)`).
+     * - I/O: 1 read `O(S)`, up to 1 mutate `O(S)`. Up to one remove.
+     * - One event.
+     * - The weight of the `call`.
+     * - Storage: inserts one item, value size bounded by `MaxSignatories`, with a deposit
+     *   taken for its lifetime of `DepositBase + threshold * DepositFactor`.
+     */
+    get asMatrixEnjinV1003(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (matrixEnjinV1003.Timepoint | undefined), call: matrixEnjinV1003.Call, maxWeight: matrixEnjinV1003.Weight} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Register approval for a dispatch to be made from a deterministic composite account if
+     * approved by a total of `threshold - 1` of `other_signatories`.
+     * 
+     * If there are enough, then dispatch the call.
+     * 
+     * Payment: `DepositBase` will be reserved if this is the first approval, plus
+     * `threshold` times `DepositFactor`. It is returned once this dispatch happens or
+     * is cancelled.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `threshold`: The total number of approvals for this dispatch before it is executed.
+     * - `other_signatories`: The accounts (other than the sender) who can approve this
+     * dispatch. May not be empty.
+     * - `maybe_timepoint`: If this is the first approval, then this must be `None`. If it is
+     * not the first approval, then it must be `Some`, with the timepoint (block number and
+     * transaction index) of the first approval transaction.
+     * - `call`: The call to be executed.
+     * 
+     * NOTE: Unless this is the final approval, you will generally want to use
+     * `approve_as_multi` instead, since it only requires a hash of the call.
+     * 
+     * Result is equivalent to the dispatched result if `threshold` is exactly `1`. Otherwise
+     * on success, result is `Ok` and the result from the interior call, if it was executed,
+     * may be found in the deposited `MultisigExecuted` event.
+     * 
      * # <weight>
      * - `O(S + Z + Call)`.
      * - Up to one balance-reserve or unreserve operation.
@@ -12064,6 +12520,43 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asMatrixEnjinV1000(): {otherSignatories: Uint8Array[], call: matrixEnjinV1000.Call} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '3cc1715f4f1185cd2d87bb033c331287195799ed30e78489a170032d305a9521'
+    }
+
+    /**
+     * Immediately dispatch a multi-signature call using a single approval from the caller.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * - `other_signatories`: The accounts (other than the sender) who are part of the
+     * multi-signature, but do not participate in the approval process.
+     * - `call`: The call to be executed.
+     * 
+     * Result is equivalent to the dispatched result.
+     * 
+     * ## Complexity
+     * O(Z + C) where Z is the length of the call and C its execution weight.
+     */
+    get asMatrixEnjinV1003(): {otherSignatories: Uint8Array[], call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -13423,6 +13916,21 @@ export class SchedulerScheduleCall {
     /**
      * Anonymously schedule a task.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === 'fc09eddb6d91c7b8bad72f7a6375412a4e833c2ad298540e721a84c11d3ef09e'
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
+    get asMatrixEnjinV1003(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Anonymously schedule a task.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('Scheduler.schedule') === '6b5b00362b6e8ab49ccce9efed96fa17584732dae6bf66e4c0002de6ddccbdbf'
     }
@@ -13566,6 +14074,21 @@ export class SchedulerScheduleAfterCall {
      */
     get asMatrixEnjinV1000(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1000.Call} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'cf6f15e7b1ad9ca1aaabd41aab7e4a9ba187b98441ebcf6803ecd6542f5de498'
+    }
+
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    get asMatrixEnjinV1003(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -13745,6 +14268,21 @@ export class SchedulerScheduleNamedCall {
     /**
      * Schedule a named task.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '58cb9ac696f6224c3105520f25368eababad88f8e30a2b3dffdc34f276480446'
+    }
+
+    /**
+     * Schedule a named task.
+     */
+    get asMatrixEnjinV1003(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('Scheduler.schedule_named') === 'a769574b7ca2ea2e82898d0ba8c54e1ed628ecc5e784f7372c06644f51be4911'
     }
@@ -13888,6 +14426,21 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asMatrixEnjinV1000(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1000.Call} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '587e593dc28540a462370349b9b8ce58c19fbe122202f60b635f7caba1fc6c99'
+    }
+
+    /**
+     * Schedule a named task after a delay.
+     */
+    get asMatrixEnjinV1003(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -15287,6 +15840,37 @@ export class TechnicalCommitteeExecuteCall {
      * 
      * Origin must be a member of the collective.
      * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '8436778e072de5fd031e538ef23b88424ea15c5d94208a400f13f01159fbfb00'
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    get asMatrixEnjinV1003(): {proposal: matrixEnjinV1003.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
      * # <weight>
      * ## Weight
      * - `O(M + P)` where `M` members-count (code-bounded) and `P` complexity of dispatching
@@ -15604,6 +16188,47 @@ export class TechnicalCommitteeProposeCall {
      */
     get asMatrixEnjinV1000(): {threshold: number, proposal: matrixEnjinV1000.Call, lengthBound: number} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '0318441ab0a9bd4ab2b6e923b6c88985852689b516a4d2084ccf14caa5f03be6'
+    }
+
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    get asMatrixEnjinV1003(): {threshold: number, proposal: matrixEnjinV1003.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -16497,6 +17122,45 @@ export class UtilityAsDerivativeCall {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '96918109d90c288af1063d682c608fa1af280c82d7800a83673f69e78fadcf30'
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    get asMatrixEnjinV1003(): {index: number, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     * 
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     * 
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     * 
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
     get isV500(): boolean {
         return this._chain.getCallHash('Utility.as_derivative') === '8228a867ebef820abe86288abff2f2e9d268d9dccb2584ea45bd75d68bfe4bc6'
     }
@@ -16864,6 +17528,55 @@ export class UtilityBatchCall {
      */
     get asMatrixEnjinV1000(): {calls: matrixEnjinV1000.Call[]} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.batch') === 'a3efd343b618281196a70a4fcc7d78e60971f46d785bc24380c11d8d0f09f714'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     * 
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    get asMatrixEnjinV1003(): {calls: matrixEnjinV1003.Call[]} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -17320,6 +18033,45 @@ export class UtilityBatchAllCall {
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
      * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === 'a3efd343b618281196a70a4fcc7d78e60971f46d785bc24380c11d8d0f09f714'
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asMatrixEnjinV1003(): {calls: matrixEnjinV1003.Call[]} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -17656,6 +18408,31 @@ export class UtilityDispatchAsCall {
      * 
      * The dispatch origin for this call must be _Root_.
      * 
+     * ## Complexity
+     * - O(1).
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === 'fae8b5d3311100f29264cf1593e7fe321d6cece7fd42232993589743245bb052'
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    get asMatrixEnjinV1003(): {asOrigin: matrixEnjinV1003.OriginCaller, call: matrixEnjinV1003.Call} {
+        assert(this.isMatrixEnjinV1003)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatches a function call with a provided origin.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     * 
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -17939,6 +18716,45 @@ export class UtilityForceBatchCall {
      */
     get asMatrixEnjinV1000(): {calls: matrixEnjinV1000.Call[]} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === 'a3efd343b618281196a70a4fcc7d78e60971f46d785bc24380c11d8d0f09f714'
+    }
+
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     * 
+     * May be called from any origin except `None`.
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     * 
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    get asMatrixEnjinV1003(): {calls: matrixEnjinV1003.Call[]} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 
@@ -18282,6 +19098,31 @@ export class UtilityWithWeightCall {
      */
     get asMatrixEnjinV1000(): {call: matrixEnjinV1000.Call, weight: matrixEnjinV1000.Weight} {
         assert(this.isMatrixEnjinV1000)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get isMatrixEnjinV1003(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '4a72a559f78e0d3adfb1681bcb1cd024d2325e9744d712bdf2fc95b8bad7caee'
+    }
+
+    /**
+     * Dispatch a function call with a specified weight.
+     * 
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Root_.
+     */
+    get asMatrixEnjinV1003(): {call: matrixEnjinV1003.Call, weight: matrixEnjinV1003.Weight} {
+        assert(this.isMatrixEnjinV1003)
         return this._chain.decodeCall(this.call)
     }
 

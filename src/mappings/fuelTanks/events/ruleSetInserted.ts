@@ -22,6 +22,10 @@ function getEventData(ctx: CommonContext, event: Event) {
 function getCallData(ctx: CommonContext, call: Call) {
     const data = new FuelTanksInsertRuleSetCall(ctx, call)
 
+    if (data.isMatrixEnjinV1003) {
+        return data.asMatrixEnjinV1003
+    }
+
     if (data.isMatrixEnjinV1000) {
         return data.asMatrixEnjinV1000
     }

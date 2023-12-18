@@ -6,6 +6,7 @@ import * as v600 from './v600'
 import * as v601 from './v601'
 import * as v602 from './v602'
 import * as matrixEnjinV1000 from './matrixEnjinV1000'
+import * as matrixEnjinV1003 from './matrixEnjinV1003'
 import * as v604 from './v604'
 import * as v1000 from './v1000'
 import * as v1003 from './v1003'
@@ -1869,6 +1870,21 @@ export class CouncilProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this.getTypeHash() === '7e38c81de9998b7ee5c1f6e2e1600141fe0b26a1eaa70c1e65ce1f8a2af3a057'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asMatrixEnjinV1003(): CouncilProposalOfStorageMatrixEnjinV1003 {
+        assert(this.isMatrixEnjinV1003)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '6cde8e9630d410c635d38d4e132dcdeddc5fd40211867012e22267dd19cd2cf1'
     }
@@ -2004,6 +2020,23 @@ export interface CouncilProposalOfStorageMatrixEnjinV1000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageMatrixEnjinV1003 {
+    get(key: Uint8Array): Promise<(matrixEnjinV1003.Call | undefined)>
+    getAll(): Promise<matrixEnjinV1003.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV1003.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
 }
 
 /**
@@ -7880,6 +7913,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
     /**
      *  Actual proposal for a given hash, if it's current.
      */
+    get isMatrixEnjinV1003(): boolean {
+        return this.getTypeHash() === '7e38c81de9998b7ee5c1f6e2e1600141fe0b26a1eaa70c1e65ce1f8a2af3a057'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asMatrixEnjinV1003(): TechnicalCommitteeProposalOfStorageMatrixEnjinV1003 {
+        assert(this.isMatrixEnjinV1003)
+        return this as any
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
     get isV500(): boolean {
         return this.getTypeHash() === '6cde8e9630d410c635d38d4e132dcdeddc5fd40211867012e22267dd19cd2cf1'
     }
@@ -8015,6 +8063,23 @@ export interface TechnicalCommitteeProposalOfStorageMatrixEnjinV1000 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1000.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageMatrixEnjinV1003 {
+    get(key: Uint8Array): Promise<(matrixEnjinV1003.Call | undefined)>
+    getAll(): Promise<matrixEnjinV1003.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(matrixEnjinV1003.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV1003.Call][]>
 }
 
 /**
