@@ -75,5 +75,5 @@ export async function fetchNonces(ctx: CommonContext, block: SubstrateBlock, acc
         }
     }
 
-    await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['nonce'], ['id']).execute()
+    ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['nonce'], ['id']).execute()
 }
