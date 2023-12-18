@@ -17,7 +17,6 @@ import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
-import { fetchNonces } from './mappings/util/nonce'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -442,8 +441,8 @@ processor.run(
                     }
                 }
 
+                map.balances.processor.addAccountsToSet(Array.from(signers))
                 await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-                await fetchNonces(ctx as unknown as CommonContext, block.header, signers)
                 _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
                 _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
                 _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
