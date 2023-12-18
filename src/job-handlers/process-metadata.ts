@@ -56,10 +56,14 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         return
     }
 
-    let uriAttribute = attributes.find((a) => a.key === 'uri')
+    let uriAttribute = null
 
     if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
         uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
+    }
+
+    if (attributes.find((a) => a.key === 'uri')) {
+        uriAttribute = attributes.find((a) => a.key === 'uri')
     }
 
     // check if token/collection has {id} placeholder in it's own attribute
