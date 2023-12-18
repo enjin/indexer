@@ -37,6 +37,15 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
+            data.isMatrixEnjinV1003 &&
+            data.asMatrixEnjinV1003.call.__kind === 'PolkadotXcm' &&
+            (data.asMatrixEnjinV1003.call.value.__kind === 'teleport_assets' ||
+                data.asMatrixEnjinV1003.call.value.__kind === 'limited_teleport_assets')
+        ) {
+            return data.asMatrixEnjinV1003.call.value
+        }
+
+        if (
             data.isMatrixEnjinV1000 &&
             data.asMatrixEnjinV1000.call.__kind === 'PolkadotXcm' &&
             (data.asMatrixEnjinV1000.call.value.__kind === 'teleport_assets' ||
