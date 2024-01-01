@@ -9,6 +9,7 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
+    ListingSale,
     ListingStatus,
     MultiTokensTokenDestroyed,
     Token,
