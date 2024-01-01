@@ -75,6 +75,12 @@ export async function tokenDestroyed(
             ctx.store
                 .getRepository(ListingStatus)
                 .query(
+                    'DELETE FROM listing_sale USING listing WHERE listing_sale.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                    [token.id]
+                ),
+            ctx.store
+                .getRepository(ListingStatus)
+                .query(
                     'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
                     [token.id]
                 ),
