@@ -9,6 +9,7 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
+    ListingSale,
     ListingStatus,
     MultiTokensTokenDestroyed,
     Token,
@@ -72,6 +73,12 @@ export async function tokenDestroyed(
         // We should only update the events that have relationship so it is null.
         // await ctx.store.delete(Event, { tokenId: token.id })
         await Promise.all([
+            ctx.store
+                .getRepository(ListingSale)
+                .query(
+                    'DELETE FROM listing_sale USING listing WHERE listing_sale.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                    [token.id]
+                ),
             ctx.store
                 .getRepository(ListingStatus)
                 .query(
