@@ -33,7 +33,8 @@ export class RefreshMetadataResolver {
     @Query(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
         @Arg('collectionId') collectionId: string,
-        @Arg('tokenId', () => BigInteger, { nullable: true }) tokenId: bigint
+        @Arg('tokenId', () => BigInteger, { nullable: true }) tokenId: bigint,
+        @Arg('allTokens') allTokens: boolean
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
         let resource!: Collection | Token | null
@@ -59,7 +60,7 @@ export class RefreshMetadataResolver {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
 
-        processMetadata(resource.id, isToken ? 'token' : 'collection', true)
+        processMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
 
         if (!isToken) {
             syncCollectionStats(collectionId)
