@@ -26,6 +26,9 @@ class RefreshMetadataResponse {
     error?: string
 }
 
+const rateLimitMap = new Map()
+const mins5 = 1000 * 60 * 5
+
 @Resolver()
 export class RefreshMetadataResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
@@ -40,6 +43,23 @@ export class RefreshMetadataResolver {
         let resource!: Collection | Token | null
 
         const isToken = tokenId !== null && tokenId !== undefined
+
+        if (!isToken && allTokens) {
+            const rateLimit = rateLimitMap.get(collectionId)
+
+            if (rateLimit) {
+                const timeLeft = Math.ceil((rateLimit + mins5 - Date.now()) / 1000)
+
+                if (timeLeft > 0) {
+                    return {
+                        status: RefreshMetadataResponseStatus.ERROR,
+                        error: `Rate limit exceeded for ${collectionId}, please try again later in ${timeLeft} seconds`,
+                    }
+                }
+            }
+
+            rateLimitMap.set(collectionId, Date.now())
+        }
 
         if (isToken) {
             resource = await manager.findOne(Token, {
