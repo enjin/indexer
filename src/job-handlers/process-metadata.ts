@@ -1,7 +1,7 @@
-import { IsNull } from 'typeorm'
+import { EntityManager, IsNull } from 'typeorm'
 import Queue from 'bull'
 import connection from '../connection'
-import { JobData } from '../jobs/process-metadata'
+import { JobData, processMetadata } from '../jobs/process-metadata'
 import { Attribute, Collection, Metadata, Token } from '../model'
 import { fetchMetadata, metadataParser } from '../mappings/util/metadata'
 
@@ -10,6 +10,29 @@ type MetadataType = {
     metadata: any
     uri: string
     last_updated_at: Date
+}
+async function* tokensInBatch(em: EntityManager, collectionId: string) {
+    let skip = 0
+    const limit = 500
+
+    while (true) {
+        // eslint-disable-next-line no-await-in-loop
+        const items = await em
+            .getRepository(Token)
+            .createQueryBuilder('token')
+            .select('token.id')
+            .addSelect('token.collection_id')
+            .where('token.collection_id = :collectionId', { collectionId })
+            .skip(skip)
+            .take(limit)
+            .getMany()
+
+        yield items
+        if (items.length === 0 || items.length < limit) {
+            return
+        }
+        skip += items.length
+    }
 }
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
@@ -115,6 +138,24 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     resource.metadata = metadata
 
     await em.save(resource)
+
+    if (jobData.type === 'collection' && jobData.allTokens === true) {
+        const uri = attributes.find((a) => a.key === 'uri')
+
+        if (uri && uri.value.includes('{id}')) {
+            // eslint-disable-next-line no-console
+            console.log('Processing all tokens in collection', jobData.resourceId)
+
+            const batch = tokensInBatch(em, jobData.resourceId)
+
+            // eslint-disable-next-line no-restricted-syntax
+            for await (const tokens of batch) {
+                tokens.forEach((token) => {
+                    processMetadata(token.id, 'token', true)
+                })
+            }
+        }
+    }
 
     done(null, { id: jobData.resourceId })
 }

@@ -17,7 +17,7 @@ export async function fetchMetadata(url: string) {
             'accept-encoding': 'gzip;q=0,deflate,sdch',
         },
         withCredentials: false,
-        timeout: 5000,
+        timeout: 15000,
         maxRedirects: 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
