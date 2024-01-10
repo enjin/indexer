@@ -27,27 +27,32 @@ export async function claimTokensInitiated(
     if (!data) return undefined
 
     const account = await getOrCreateAccount(ctx, data.accountId)
-
-    const claim = new MultiTokensClaims({
-        id: `${u8aToHex(data.accountId)}-${u8aToHex(data.ethereumAddress)}`,
-        account,
-        ethAccount: u8aToHex(data.ethereumAddress),
-        completed: false,
-        createdAt: new Date(block.timestamp),
+    const claimExists = await ctx.store.exists(MultiTokensClaims, {
+        where: { id: `${u8aToHex(data.accountId)}-${u8aToHex(data.ethereumAddress)}` },
     })
 
-    await ctx.store.save(MultiTokensClaims, claim as any)
-
-    if (item.event.extrinsic) {
-        Sns.getInstance().send({
-            id: item.event.id,
-            name: item.event.name,
-            body: {
-                account: u8aToHex(data.accountId),
-                ethAccount: u8aToHex(data.ethereumAddress),
-                extrinsic: item.event.extrinsic.id,
-            },
+    if (!claimExists) {
+        const claim = new MultiTokensClaims({
+            id: `${u8aToHex(data.accountId)}-${u8aToHex(data.ethereumAddress)}`,
+            account,
+            ethAccount: u8aToHex(data.ethereumAddress),
+            completed: false,
+            createdAt: new Date(block.timestamp),
         })
+
+        await ctx.store.save(MultiTokensClaims, claim as any)
+
+        if (item.event.extrinsic) {
+            Sns.getInstance().send({
+                id: item.event.id,
+                name: item.event.name,
+                body: {
+                    account: u8aToHex(data.accountId),
+                    ethAccount: u8aToHex(data.ethereumAddress),
+                    extrinsic: item.event.extrinsic.id,
+                },
+            })
+        }
     }
 
     return new EventModel({
