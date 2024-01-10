@@ -96,6 +96,7 @@ export async function auctionFinalized(
         ctx.store.save(sale)
     }
 
+    listing.isActive = false
     listing.updatedAt = new Date(block.timestamp)
 
     const listingStatus = new ListingStatus({

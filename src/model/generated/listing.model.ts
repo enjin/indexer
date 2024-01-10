@@ -8,6 +8,7 @@ import {ListingState, fromJsonListingState} from "./_listingState"
 import {Bid} from "./bid.model"
 import {ListingStatus} from "./listingStatus.model"
 import {ListingSale} from "./listingSale.model"
+import {ListingType} from "./_listingType"
 
 @Entity_()
 export class Listing {
@@ -66,11 +67,20 @@ export class Listing {
     @OneToMany_(() => ListingSale, e => e.listing)
     sales!: ListingSale[]
 
+    @Index_()
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     highestPrice!: bigint
 
     @Column_("bool", {nullable: true})
     deadListing!: boolean | undefined | null
+
+    @Index_()
+    @Column_("bool", {nullable: false})
+    isActive!: boolean
+
+    @Index_()
+    @Column_("varchar", {length: 10, nullable: false})
+    type!: ListingType
 
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
