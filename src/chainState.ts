@@ -4,7 +4,7 @@ import { ChainInfo, Marketplace } from './model'
 import config from './config'
 import { CommonContext } from './mappings/types/contexts'
 
-const wsProvider = new WsProvider(config.dataSource.chain)
+const wsProvider = new WsProvider(config.dataSource.chain, 1000)
 const apiPromise = ApiPromise.create({ provider: wsProvider })
 
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
