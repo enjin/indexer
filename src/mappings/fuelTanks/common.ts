@@ -43,6 +43,8 @@ export function rulesToMap(
             whitelistedCallers = rule.value.map((account) => u8aToHex(account))
         } else if (rule.__kind === 'WhitelistedCollections') {
             whitelistedCollections = rule.value.map((c) => c.toString())
+        } else if (rule.__kind === 'WhitelistedPallets') {
+            whitelistedPallets = rule.value.map((p) => `${p.__kind}:${p.value.__kind}`)
         } else if (rule.__kind === 'MaxFuelBurnPerTransaction') {
             maxFuelBurnPerTransaction = new MaxFuelBurnPerTransaction({ value: rule.value })
         } else if (rule.__kind === 'UserFuelBudget') {
@@ -66,21 +68,19 @@ export function rulesToMap(
                         extrinsicName: r.value.__kind,
                     })
             )
-        } else if (rule.__kind === 'WhitelistedPallets') {
-            whitelistedPallets = rule.value.map((p) => p.toString())
         }
     })
 
     return {
         whitelistedCallers,
         whitelistedCollections,
+        whitelistedPallets,
         maxFuelBurnPerTransaction,
         userFuelBudget,
         tankFuelBudget,
         requireToken,
         permittedCalls,
         permittedExtrinsics,
-        whitelistedPallets,
     }
 }
 

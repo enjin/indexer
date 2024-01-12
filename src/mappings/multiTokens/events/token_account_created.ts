@@ -42,6 +42,7 @@ function getEvent(
         }),
     })
 }
+
 export async function tokenAccountCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
@@ -66,17 +67,7 @@ export async function tokenAccountCreated(
     }
 
     const collection = new Collection({ id: data.collectionId.toString() })
-    const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
-
-    if (!token) {
-        // WARN: this should not happen
-        // do not create token account if token does not exist
-        // eslint-disable-next-line no-console
-        console.warn(
-            `WARN: token ${data.collectionId}-${data.tokenId} does not exist during token account creation, at block ${block.height}`
-        )
-        return undefined
-    }
+    const token = await ctx.store.findOneByOrFail(Token, { id: `${data.collectionId}-${data.tokenId}` })
 
     const [account, collectionAccount] = await Promise.all([
         getOrCreateAccount(ctx, data.accountId),

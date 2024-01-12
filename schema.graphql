@@ -761,10 +761,6 @@ type WhitelistedCallers {
   value: [String!]!
 }
 
-type WhitelistedPallets {
-  value: [String!]!
-}
-
 type MaxFuelBurnPerTransaction {
   value: BigInt!
 }

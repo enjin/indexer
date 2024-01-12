@@ -86,13 +86,13 @@ export async function ruleSetInserted(
     const {
         whitelistedCallers,
         whitelistedCollections,
+        whitelistedPallets,
         maxFuelBurnPerTransaction,
         userFuelBudget,
         tankFuelBudget,
         requireToken,
         permittedCalls,
         permittedExtrinsics,
-        whitelistedPallets,
     } = rulesToMap(ruleSetId, callData.rules)
 
     const ruleSet = new FuelTankRuleSet({
@@ -104,19 +104,17 @@ export async function ruleSetInserted(
         isFrozen: false,
         whitelistedCallers,
         whitelistedCollections,
+        whitelistedPallets,
         maxFuelBurnPerTransaction,
         userFuelBudget,
         tankFuelBudget,
         requireToken,
         permittedCalls,
-        whitelistedPallets,
     })
     await ctx.store.save(ruleSet)
 
     if (permittedExtrinsics && permittedExtrinsics.length > 0) {
-        permittedExtrinsics.forEach((permittedExtrinsic) => {
-            ctx.store.save(permittedExtrinsic)
-        })
+        ctx.store.save(permittedExtrinsics)
     }
 
     return undefined
