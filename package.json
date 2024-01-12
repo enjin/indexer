@@ -20,7 +20,7 @@
     "@bull-board/express": "^5.10.2",
     "@polkadot/api": "^10.11.2",
     "@polkadot/keyring": "^12.6.2",
-    "@polkadot/util": "^12.5.1",
+    "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@sentry/integrations": "^7.93.0",
     "@sentry/node": "^7.93.0",
