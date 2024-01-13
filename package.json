@@ -29,7 +29,7 @@
     "@subsquid/graphql-server": "^4.3.2",
     "@subsquid/ss58": "^0.1.4",
     "@subsquid/substrate-processor": "^2.4.1",
-    "@subsquid/typeorm-migration": "^1.2.3",
+    "@subsquid/typeorm-migration": "^1.2.4",
     "@subsquid/typeorm-store": "^0.2.1",
     "axios": "^1.6.4",
     "bull": "^4.11.0",
