@@ -10,7 +10,6 @@ const config: ProcessorConfig = {
         archive: process.env.ARCHIVE_ENDPOINT || 'https://matrixchain.archive.subsquid.io/graphql',
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
     },
-    batchSize: 100,
     blockRange: {
         from: 0,
     },
