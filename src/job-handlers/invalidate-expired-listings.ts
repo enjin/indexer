@@ -17,13 +17,17 @@ export default async (job: Queue.Job, done: Queue.DoneCallback) => {
     }
     const { height } = status[0]
 
-    const ff = await em
+    const q = await em
         .getRepository(Listing)
         .createQueryBuilder('listing')
         .update()
         .set({ isActive: false })
         .where('listing.type = :type', { type: ListingType.Auction })
-        .andWhere('listing.data < :block', { block: block.height - period })
+        .andWhere("(json->>'endHeight')::int < :height ", { height })
+        .returning('id')
+        .execute()
+
+    console.log(q)
 
     done(null, { at: height, updated: 0 })
 }
