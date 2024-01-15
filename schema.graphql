@@ -301,6 +301,56 @@ type Balance {
   feeFrozen: BigInt!
 }
 
+enum JudgementType {
+  Unknown
+  FeePaid
+  Reasonable
+  KnownGood
+  OutOfDate
+  LowQuality
+  Erroneous
+}
+
+type Judgement {
+  index: Int!
+  value: JudgementType!
+
+  # Extras
+  createdAt: DateTime!
+}
+
+type IdentityInfo @entity {
+  id: ID!
+  deposit: BigInt!
+  account: Account!
+  judgements: [Judgement]
+  currentJudgement: JudgementType!
+
+  #info
+  additional: JSON
+  display: String
+  legal: String
+  web: String
+  riot: String
+  email: String
+  pgpFingerprint: String
+  image: String
+  twitter: String
+
+  # Extras
+  createdAt: DateTime!
+}
+
+type IdentityRegistrar @entity {
+  id: ID!
+  index: Int!
+  account: Account!
+  fee: BigInt!
+
+  # Extras
+  createdAt: DateTime!
+}
+
 type Account @entity {
   id: ID!
 
@@ -315,6 +365,8 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
+  identity: IdentityInfo
+  registrar: IdentityRegistrar @derivedFrom(field: "account")
 
   # Extras
   lastUpdateBlock: Int
