@@ -23,11 +23,10 @@ export default async (job: Queue.Job, done: Queue.DoneCallback) => {
         .update()
         .set({ isActive: false })
         .where('listing.type = :type', { type: ListingType.Auction })
-        .andWhere("(json->>'endHeight')::int < :height ", { height })
+        .where('listing.isActive = true')
+        .andWhere("(listing.data->>'endHeight')::int < :height ", { height })
         .returning('id')
         .execute()
 
-    console.log(q)
-
-    done(null, { at: height, updated: 0 })
+    done(null, { at: height, affected: q.affected, raw: q.raw })
 }
