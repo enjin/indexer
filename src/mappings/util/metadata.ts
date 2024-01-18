@@ -19,7 +19,7 @@ export async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 15000,
-        maxRedirects: 3,
+        maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 2 : 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
