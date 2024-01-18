@@ -2,9 +2,11 @@ import Queue from 'bull'
 import { redisConfig } from './common'
 
 export const invalidateExpiredListings = new Queue('InvalidateListings', {
-    defaultJobOptions: { repeat: { every: 300_000 }, attempts: 3, removeOnComplete: 500 },
+    defaultJobOptions: { repeat: { cron: '*/1 * * * *' }, attempts: 5, removeOnComplete: 300 },
     redis: redisConfig,
     settings: {
-        maxStalledCount: 3,
+        maxStalledCount: 0,
     },
 })
+
+invalidateExpiredListings.add({})
