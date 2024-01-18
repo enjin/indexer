@@ -99,7 +99,10 @@ export async function listingFilled(
             createdAt: new Date(block.timestamp),
         })
         await ctx.store.insert(ListingStatus, listingStatus as any)
+        listing.isActive = false
     }
+
+    listing.updatedAt = new Date(block.timestamp)
 
     const sale = new ListingSale({
         id: `${listingId}-${item.event.id}`,
@@ -109,7 +112,6 @@ export async function listingFilled(
         listing,
         createdAt: new Date(block.timestamp),
     })
-    listing.updatedAt = new Date(block.timestamp)
 
     if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)

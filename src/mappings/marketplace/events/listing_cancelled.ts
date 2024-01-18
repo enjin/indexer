@@ -73,6 +73,7 @@ export async function listingCancelled(
 
     if (!listing) return undefined
 
+    listing.isActive = false
     listing.updatedAt = new Date(block.timestamp)
 
     const listingStatus = new ListingStatus({

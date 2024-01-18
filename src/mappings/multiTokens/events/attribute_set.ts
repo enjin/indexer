@@ -134,7 +134,7 @@ export async function attributeSet(
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection', true)
+            processMetadata(collection.id, 'collection', true, true)
         }
         await ctx.store.save(attribute)
     } else {

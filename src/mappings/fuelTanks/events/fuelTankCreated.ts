@@ -154,13 +154,13 @@ export async function fuelTankCreated(
             const {
                 whitelistedCallers,
                 whitelistedCollections,
+                whitelistedPallets,
                 maxFuelBurnPerTransaction,
                 userFuelBudget,
                 tankFuelBudget,
                 requireToken,
                 permittedCalls,
                 permittedExtrinsics,
-                whitelistedPallets,
             } = rulesToMap(`${fuelTank.id}-${index}`, rules)
 
             const ruleSetModel = new FuelTankRuleSet({
@@ -172,20 +172,18 @@ export async function fuelTankCreated(
                 isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
                 whitelistedCallers,
                 whitelistedCollections,
+                whitelistedPallets,
                 maxFuelBurnPerTransaction,
                 userFuelBudget,
                 tankFuelBudget,
                 requireToken,
                 permittedCalls,
-                whitelistedPallets,
             })
 
             await ctx.store.save(ruleSetModel)
 
             if (permittedExtrinsics && permittedExtrinsics.length > 0) {
-                permittedExtrinsics.forEach((permittedExtrinsic) => {
-                    ctx.store.save(permittedExtrinsic)
-                })
+                ctx.store.save(permittedExtrinsics)
             }
         })
     }

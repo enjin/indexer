@@ -8,6 +8,7 @@ import { metadataQueue } from '../jobs/process-metadata'
 import { fetchAccountQueue } from '../jobs/fetch-account'
 import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
+import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -27,6 +28,7 @@ async function main() {
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
     fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
+    invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
 
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
@@ -38,6 +40,7 @@ async function main() {
             new BullAdapter(fetchAccountQueue),
             new BullAdapter(traitsQueue),
             new BullAdapter(fetchCollectionExtraQueue),
+            new BullAdapter(invalidateExpiredListings),
         ],
         serverAdapter,
         options: {

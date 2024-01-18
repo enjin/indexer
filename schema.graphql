@@ -694,8 +694,10 @@ type Listing @entity {
   sales: [ListingSale] @derivedFrom(field: "listing")
 
   # Extras
-  highestPrice: BigInt!
+  highestPrice: BigInt! @index
   deadListing: Boolean
+  isActive: Boolean! @index
+  type: ListingType! @index
 
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -756,10 +758,6 @@ type MultiTokensClaims @entity {
 }
 
 type WhitelistedCallers {
-  value: [String!]!
-}
-
-type WhitelistedPallets {
   value: [String!]!
 }
 

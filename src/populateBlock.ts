@@ -28,15 +28,6 @@ import {
     TokenLock,
     TokenApproval,
     Attribute,
-    Listing,
-    FeeSide,
-    FixedPriceData,
-    ListingType,
-    AuctionData,
-    AuctionState,
-    FixedPriceState,
-    ListingStatusType,
-    ListingStatus,
     CollectionFlags,
     CollectionSocials,
     CollectionApproval,
@@ -178,16 +169,6 @@ function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
 
 function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensAttributesStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
-}
-
-function getListingStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MarketplaceListingsStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
@@ -521,66 +502,6 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
     }
 
     return true
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function syncListings(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getListingStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        await getAccountsMap(
-            ctx,
-            pairs.map(([, data]) => data.seller)
-        )
-
-        const listings = pairs.map(([id, data]) => {
-            const listingData =
-                data.data.__kind === ListingType.FixedPrice
-                    ? new FixedPriceData({ listingType: ListingType.FixedPrice })
-                    : new AuctionData({
-                          listingType: ListingType.Auction,
-                          startHeight: data.data.value.startBlock,
-                          endHeight: data.data.value.endBlock,
-                      })
-
-            const listingState =
-                data.state.__kind === ListingType.FixedPrice
-                    ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
-                    : new AuctionState({ listingType: ListingType.Auction })
-
-            const listingId = Buffer.from(id).toString('hex')
-
-            return [
-                new Listing({
-                    id: listingId,
-                    price: data.price,
-                    amount: data.amount,
-                    highestPrice: data.price,
-                    minTakeValue: data.minTakeValue,
-                    feeSide: FeeSide[data.feeSide.__kind],
-                    seller: new Account({ id: u8aToHex(data.seller) }),
-                    makeAssetId: new Token({ id: `${data.makeAssetId.collectionId}-${data.makeAssetId.tokenId}` }),
-                    takeAssetId: new Token({ id: `${data.takeAssetId.collectionId}-${data.takeAssetId.tokenId}` }),
-                    height: 0,
-                    deposit: data.deposit,
-                    salt: Buffer.from(data.salt).toString('hex'),
-                    data: listingData,
-                    state: listingState,
-                    deadListing: true,
-                    createdAt: new Date(block.timestamp),
-                    updatedAt: new Date(block.timestamp),
-                }),
-                new ListingStatus({
-                    id: `${listingId}-0`,
-                    type: ListingStatusType.Active,
-                    listing: new Listing({ id: listingId }),
-                    height: 0,
-                    createdAt: new Date(block.timestamp),
-                }),
-            ]
-        })
-
-        await ctx.store.insert(Listing, listings.map((l) => l[0]) as any)
-        await ctx.store.insert(ListingStatus, listings.map((l) => l[1]) as any)
-    }
 }
 
 async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {

@@ -113,6 +113,8 @@ export async function listingCreated(
         salt: Buffer.from(data.listing.salt).toString('hex'),
         data: listingData,
         state: listingState,
+        isActive: true,
+        type: listingData.listingType,
         createdAt: new Date(block.timestamp),
         updatedAt: new Date(block.timestamp),
     })
