@@ -1,5 +1,6 @@
 import Axios from 'axios'
 import https from 'https'
+import mime from 'mime-types'
 import { safeString } from '../../common/tools'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
 
@@ -18,7 +19,7 @@ export async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 15000,
-        maxRedirects: 1,
+        maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 2 : 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
@@ -70,6 +71,16 @@ function parseObjectProperties(value: object) {
     }
 
     return properties
+}
+
+function imageToMedia(value: string) {
+    return [
+        new MetadataMedia({
+            url: value,
+            type: mime.lookup(value) || 'image/jpeg',
+            alt: '',
+        }),
+    ]
 }
 
 function parseArrayAttributes(
@@ -131,6 +142,7 @@ export function metadataParser(
     }
     if (externalMetadata?.image) {
         metadata.fallbackImage = safeString(externalMetadata.image)
+        metadata.media = imageToMedia(externalMetadata.image)
     }
     if (externalMetadata?.fallback_image) {
         metadata.fallbackImage = safeString(externalMetadata.fallback_image)
