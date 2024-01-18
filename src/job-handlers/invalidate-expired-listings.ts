@@ -23,7 +23,7 @@ export default async (job: Queue.Job, done: Queue.DoneCallback) => {
         .update()
         .set({ isActive: false })
         .where('listing.type = :type', { type: ListingType.Auction })
-        .where('listing.isActive = true')
+        .where('listing.is_active = true')
         .andWhere("(listing.data->>'endHeight')::int < :height ", { height })
         .returning('id')
         .execute()
