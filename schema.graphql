@@ -323,7 +323,7 @@ type IdentityInfo @entity {
   id: ID!
   deposit: BigInt!
   account: Account!
-  judgements: [Judgement]
+  judgements: [Judgement!]
   currentJudgement: JudgementType!
 
   #info

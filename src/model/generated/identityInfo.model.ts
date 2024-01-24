@@ -20,8 +20,8 @@ export class IdentityInfo {
     @ManyToOne_(() => Account, {nullable: true})
     account!: Account
 
-    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val == null ? undefined : val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => val == null ? undefined : new Judgement(undefined, val))}, nullable: true})
-    judgements!: (Judgement | undefined | null)[] | undefined | null
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new Judgement(undefined, marshal.nonNull(val)))}, nullable: true})
+    judgements!: (Judgement)[] | undefined | null
 
     @Column_("varchar", {length: 10, nullable: false})
     currentJudgement!: JudgementType
