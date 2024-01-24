@@ -41,7 +41,7 @@ const dataToValue = (raw: Data) => {
 export async function identitySet(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Identity.IdentitySet', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Identity.IdentitySet', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) throw new CallNotDefinedError()
 

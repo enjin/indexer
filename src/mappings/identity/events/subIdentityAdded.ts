@@ -32,7 +32,7 @@ function getCallData(ctx: CommonContext, call: Call) {
 export async function subIdentityAdded(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Identity.SubIdentityAdded', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Identity.SubIdentityAdded', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) throw new CallNotDefinedError()
 

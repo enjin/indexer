@@ -31,7 +31,7 @@ function getCallData(ctx: CommonContext, call: Call) {
 export async function registrarAdded(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Identity.RegistrarAdded', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Identity.RegistrarAdded', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     if (!item.event.call) throw new CallNotDefinedError()
 
