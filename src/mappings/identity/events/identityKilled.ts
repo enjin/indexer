@@ -24,10 +24,28 @@ export async function identityKilled(
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
-    const identity = await ctx.store.findOneByOrFail(Identity, { id: u8aToHex(eventData.who) })
+    const identity = await ctx.store.findOneOrFail(Identity, {
+        relations: { super: { info: true }, sub: true },
+        where: { id: u8aToHex(eventData.who) },
+    })
     await ctx.store.delete(Registration, { id: u8aToHex(eventData.who) })
-    await ctx.store.delete(Identity, { super: { id: identity.id } })
-    await ctx.store.remove(Identity, identity)
+
+    await Promise.all(
+        identity.sub.map(async (sub) => {
+            if (sub.isSub) return ctx.store.remove(sub)
+            sub.super = null
+            return ctx.store.save(sub)
+        })
+    )
+
+    if (identity.super) {
+        identity.info = identity.super.info
+        identity.isSub = true
+
+        await ctx.store.save(identity)
+    } else {
+        await ctx.store.remove(Identity, identity)
+    }
 
     return undefined
 }

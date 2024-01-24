@@ -21,7 +21,7 @@ function getCallData(ctx: CommonContext, call: Call) {
 export async function setSubs(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: CallItem<'Identity.set_subs', { call: true; extrinsic: { signature: true } }>
+    item: CallItem<'Identity.set_subs', { call: true; extrinsic: true }>
 ): Promise<EventModel | undefined> {
     const callData = getCallData(ctx, item.call)
 

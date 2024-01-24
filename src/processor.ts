@@ -266,13 +266,12 @@ async function handleCalls(ctx: CommonContext, block: SubstrateBlock, item: any)
     switch (item.call.name) {
         case 'Identity.set_subs':
             return map.identity.calls.setSubs(ctx, block, item)
+        case 'Identity.rename_sub':
+            return map.identity.calls.renameSub(ctx, block, item)
         default: {
-            ctx.log.error(`Call not handled: ${item.call.name}`)
             return undefined
         }
     }
-
-    return undefined
 }
 
 function getParticipants(args: any, signer: string): string[] {

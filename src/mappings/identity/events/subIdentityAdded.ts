@@ -42,6 +42,15 @@ export async function subIdentityAdded(
     const account = await getOrCreateAccount(ctx, eventData.sub)
     const main = u8aToHex(eventData.main)
 
+    const existing = await ctx.store.findOneBy(Identity, { id: account.id })
+
+    if (existing) {
+        existing.super = new Identity({ id: main })
+        await ctx.store.save(existing)
+
+        return undefined
+    }
+
     const identity = new Identity({
         id: account.id,
         account,
