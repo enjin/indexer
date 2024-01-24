@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import isPlainObject from 'lodash/isPlainObject'
 import { createHash } from 'crypto'
 import Queue from 'bull'
@@ -17,8 +16,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')
     }
-
-    console.log(`Processing traits job ${job.id} for collection ${job.data.collectionId}`)
 
     if (!connection.isInitialized) {
         await connection.initialize().catch((err) => {
@@ -71,7 +68,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     })
 
     if (!traitTypeMap.size) {
-        console.log(`No traits found for collection ${collectionId}`)
         done()
 
         return

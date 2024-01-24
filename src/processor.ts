@@ -304,9 +304,6 @@ processor.run(
                     syncAllCollections()
                 }
 
-                // eslint-disable-next-line no-console
-                console.log(`Processing block ${block.header.height}, ${block.items.length} items to process`)
-
                 // eslint-disable-next-line no-restricted-syntax
                 for (const item of block.items) {
                     if (item.kind === 'event') {
