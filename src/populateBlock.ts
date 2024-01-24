@@ -4,7 +4,6 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
-import ora from 'ora'
 import axios from 'axios'
 import { CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
@@ -40,8 +39,6 @@ import { UnknownVersionError } from './common/errors'
 import { processMetadata } from './jobs/process-metadata'
 
 const BATCH_SIZE = 1000
-
-const spinner = ora()
 
 class Errors {
     public static accountNotFound() {
@@ -517,33 +514,32 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
 
 async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
-    spinner.start('Syncing collections...')
+    console.log('Syncing collections...')
     await syncCollection(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Collection)} collections`)
+    console.log(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
-    spinner.start('Syncing tokens...')
+    console.log('Syncing tokens...')
     await syncTokens(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Token)} tokens`)
+    console.log(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    spinner.start('Syncing token accounts...')
+    console.log('Syncing token accounts...')
     await syncTokenAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+    console.log(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
 
-    spinner.start('Syncing collection accounts...')
+    console.log('Syncing collection accounts...')
     await syncCollectionAccounts(ctx, block)
-    spinner.succeed(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
+    console.log(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
-    spinner.start('Syncing attributes...')
-    spinner.text = 'Syncing attributes... (can take a while)'
+    console.log('Syncing attributes...')
     await Promise.all([syncAttributes(ctx, block), syncBalance(ctx, block)])
-    spinner.succeed(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
-    spinner.succeed(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
+    console.log(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
+    console.log(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
 }
 
 export async function populateBlock(ctx: CommonContext, block: number) {
     const substrateBlock = await getBlock(block)
-    spinner.info(`Syncing block ${block} with hash ${substrateBlock.hash}`)
+    console.log(`Syncing block ${block} with hash ${substrateBlock.hash}`)
     await populateBlockInternal(ctx, substrateBlock)
 }
