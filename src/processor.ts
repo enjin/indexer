@@ -262,6 +262,19 @@ async function handleEvents(
     }
 }
 
+async function handleCalls(ctx: CommonContext, block: SubstrateBlock, item: any) {
+    switch (item.call.name) {
+        case 'Identity.set_subs':
+            return map.identity.calls.setSubs(ctx, block, item)
+        default: {
+            ctx.log.error(`Call not handled: ${item.call.name}`)
+            return undefined
+        }
+    }
+
+    return undefined
+}
+
 function getParticipants(args: any, signer: string): string[] {
     const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
     if (accountsFromArgs) {
@@ -324,6 +337,7 @@ processor.run(
                             }
                         }
                     } else if (item.kind === 'call') {
+                        await handleCalls(ctx as unknown as CommonContext, block.header, item)
                         if (
                             item.call.parent != null ||
                             (!['Claims.claim', 'MultiTokens.claim_tokens', 'MultiTokens.claim_collections'].includes(
