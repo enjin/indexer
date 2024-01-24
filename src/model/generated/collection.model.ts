@@ -83,6 +83,9 @@ export class Collection {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionSocials(undefined, obj)}, nullable: false})
     socials!: CollectionSocials
 
+    @Column_("text", {nullable: true})
+    category!: string | undefined | null
+
     @Column_("bool", {nullable: false})
     hidden!: boolean
 

@@ -7,6 +7,7 @@ import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {AccountTokenEvent} from "./accountTokenEvent.model"
 import {IdentityInfo} from "./identityInfo.model"
+import {IdentityRegistrar} from "./identityRegistrar.model"
 
 @Entity_()
 export class Account {
@@ -45,6 +46,7 @@ export class Account {
     @Index_()
     @ManyToOne_(() => IdentityInfo, {nullable: true})
     identity!: IdentityInfo | undefined | null
+
 
     @Column_("int4", {nullable: true})
     lastUpdateBlock!: number | undefined | null

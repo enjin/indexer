@@ -344,7 +344,7 @@ type IdentityInfo @entity {
 type IdentityRegistrar @entity {
   id: ID!
   index: Int!
-  account: Account!
+  account: Account! @unique
   fee: BigInt!
 
   # Extras
@@ -466,6 +466,7 @@ type Collection @entity {
   createdAt: DateTime!
   flags: CollectionFlags!
   socials: CollectionSocials!
+  category: String
   hidden: Boolean!
 
   # Marketplace analytics
