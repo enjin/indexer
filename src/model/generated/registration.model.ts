@@ -5,8 +5,8 @@ import {Judgement} from "./_judgement"
 import {JudgementType} from "./_judgementType"
 
 @Entity_()
-export class IdentityInfo {
-    constructor(props?: Partial<IdentityInfo>) {
+export class Registration {
+    constructor(props?: Partial<Registration>) {
         Object.assign(this, props)
     }
 

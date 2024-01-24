@@ -3,7 +3,7 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
 import { IdentityIdentitySetEvent } from '../../../types/generated/events'
-import { Event as EventModel, IdentityInfo, JudgementType } from '../../../model'
+import { Event as EventModel, Identity, JudgementType, Registration } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -59,7 +59,7 @@ export async function identitySet(
         })
     }
 
-    const identity = new IdentityInfo({
+    const registeration = new Registration({
         id: account.id,
         account,
         additional,
@@ -77,6 +77,15 @@ export async function identitySet(
         createdAt: new Date(block.timestamp),
     })
 
+    const identity = new Identity({
+        id: account.id,
+        account,
+        isSub: false,
+        info: registeration,
+        createdAt: new Date(block.timestamp),
+    })
+
+    await ctx.store.save(registeration)
     await ctx.store.save(identity)
 
     return undefined

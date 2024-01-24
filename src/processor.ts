@@ -112,6 +112,16 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('FuelTanks.FuelTankMutated', eventOptions)
     .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
     .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
+    .addEvent('Identity.IdentityCleared', eventOptions)
+    .addEvent('Identity.IdentityKilled', eventOptions)
+    .addEvent('Identity.IdentitySet', eventOptions)
+    .addEvent('Identity.JudgementGiven', eventOptions)
+    .addEvent('Identity.JudgementRequested', eventOptions)
+    .addEvent('Identity.JudgementUnrequested', eventOptions)
+    .addEvent('Identity.RegistrarAdded', eventOptions)
+    .addEvent('Identity.SubIdentityAdded', eventOptions)
+    .addEvent('Identity.SubIdentityRemoved', eventOptions)
+    .addEvent('Identity.SubIdentityRevoked', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 
@@ -225,6 +235,26 @@ async function handleEvents(
             return map.fuelTanks.events.ruleSetInserted(ctx, block, item)
         case 'FuelTanks.RuleSetRemoved':
             return map.fuelTanks.events.ruleSetRemoved(ctx, block, item)
+        case 'Identity.IdentityCleared':
+            return map.identity.events.identityCleared(ctx, block, item)
+        case 'Identity.IdentityKilled':
+            return map.identity.events.identityKilled(ctx, block, item)
+        case 'Identity.IdentitySet':
+            return map.identity.events.identitySet(ctx, block, item)
+        case 'Identity.JudgementGiven':
+            return map.identity.events.judgementGiven(ctx, block, item)
+        case 'Identity.JudgementRequested':
+            return map.identity.events.judgementRequested(ctx, block, item)
+        case 'Identity.JudgementUnrequested':
+            return map.identity.events.judgementUnrequested(ctx, block, item)
+        case 'Identity.RegistrarAdded':
+            return map.identity.events.registrarAdded(ctx, block, item)
+        case 'Identity.SubIdentityAdded':
+            return map.identity.events.subIdentityAdded(ctx, block, item)
+        case 'Identity.SubIdentityRemoved':
+            return map.identity.events.subIdentityRemoved(ctx, block, item)
+        case 'Identity.SubIdentityRevoked':
+            return map.identity.events.subIdentityRevoked(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
             return undefined

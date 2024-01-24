@@ -1,14 +1,14 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { IdentityJudgementRequestedEvent } from '../../../types/generated/events'
-import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
+import { IdentityJudgementUnrequestedEvent } from '../../../types/generated/events'
+import { Event as EventModel, JudgementType, Registration } from '../../../model'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: Event) {
-    const data = new IdentityJudgementRequestedEvent(ctx, event)
+    const data = new IdentityJudgementUnrequestedEvent(ctx, event)
 
     if (data.isMatrixEnjinV1000) {
         return data.asMatrixEnjinV1000
@@ -17,10 +17,10 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-export async function judgementRequested(
+export async function judgementUnrequested(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Identity.JudgementRequested', { event: { args: true; extrinsic: true } }>
+    item: EventItem<'Identity.JudgementUnrequested', { event: { args: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
 
@@ -28,18 +28,13 @@ export async function judgementRequested(
 
     const registeration = await ctx.store.findOneByOrFail(Registration, { id: account.id })
 
-    registeration.currentJudgement = JudgementType.FeePaid
-    const existing = registeration.judgements?.find((i) => i.index === eventData.registrarIndex)
-    if (existing) {
-        existing.value = JudgementType.FeePaid
+    const judgements = registeration.judgements?.filter((i) => i.index !== eventData.registrarIndex)
+
+    if (judgements?.length) {
+        registeration.judgements = judgements
+        registeration.currentJudgement = judgements[judgements.length - 1].value
     } else {
-        registeration.judgements?.push(
-            new Judgement({
-                index: eventData.registrarIndex,
-                value: JudgementType.FeePaid,
-                createdAt: new Date(block.timestamp),
-            })
-        )
+        registeration.currentJudgement = JudgementType.Unknown
     }
 
     await ctx.store.save(registeration)

@@ -2,7 +2,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
 import { IdentityJudgementGivenEvent } from '../../../types/generated/events'
-import { Event as EventModel, IdentityInfo, Judgement, JudgementType } from '../../../model'
+import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -40,15 +40,15 @@ export async function judgementGiven(
 
     const account = await getOrCreateAccount(ctx, eventData.target)
 
-    const identity = await ctx.store.findOneByOrFail(IdentityInfo, { id: account.id })
+    const registeration = await ctx.store.findOneByOrFail(Registration, { id: account.id })
 
-    identity.currentJudgement = JudgementType[callData.judgement.__kind]
-    const existing = identity.judgements?.find((i) => i.index === eventData.registrarIndex)
+    registeration.currentJudgement = JudgementType[callData.judgement.__kind]
+    const existing = registeration.judgements?.find((i) => i.index === eventData.registrarIndex)
     if (existing) {
         existing.value = JudgementType[callData.judgement.__kind]
         existing.createdAt = new Date(block.timestamp)
     } else {
-        identity.judgements?.push(
+        registeration.judgements?.push(
             new Judgement({
                 index: eventData.registrarIndex,
                 value: JudgementType[callData.judgement.__kind],
@@ -57,7 +57,7 @@ export async function judgementGiven(
         )
     }
 
-    await ctx.store.save(identity)
+    await ctx.store.save(registeration)
 
     return undefined
 }

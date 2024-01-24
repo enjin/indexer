@@ -319,7 +319,7 @@ type Judgement {
   createdAt: DateTime!
 }
 
-type IdentityInfo @entity {
+type Registration @entity {
   id: ID!
   deposit: BigInt!
   account: Account!
@@ -336,6 +336,21 @@ type IdentityInfo @entity {
   pgpFingerprint: String
   image: String
   twitter: String
+
+  # Extras
+  createdAt: DateTime!
+}
+
+type Identity @entity {
+  id: ID!
+  account: Account! @unique
+  isSub: Boolean!
+  name: String
+  info: Registration!
+
+  #relations
+  super: Identity
+  sub: [Identity] @derivedFrom(field: "super")
 
   # Extras
   createdAt: DateTime!
@@ -365,7 +380,7 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
-  identity: IdentityInfo
+  identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
 
   # Extras

@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, OneToMany as OneToMany_, ManyToOne as ManyToOne_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
 import * as marshal from "./marshal"
 import {Balance} from "./_balance"
 import {Extrinsic} from "./extrinsic.model"
@@ -6,7 +6,7 @@ import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {AccountTokenEvent} from "./accountTokenEvent.model"
-import {IdentityInfo} from "./identityInfo.model"
+import {Identity} from "./identity.model"
 import {IdentityRegistrar} from "./identityRegistrar.model"
 
 @Entity_()
@@ -43,9 +43,6 @@ export class Account {
     @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
 
-    @Index_()
-    @ManyToOne_(() => IdentityInfo, {nullable: true})
-    identity!: IdentityInfo | undefined | null
 
 
     @Column_("int4", {nullable: true})
