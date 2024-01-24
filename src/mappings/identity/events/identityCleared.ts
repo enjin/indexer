@@ -28,7 +28,6 @@ export async function identityCleared(
         relations: { super: { info: true }, sub: true },
         where: { id: u8aToHex(eventData.who) },
     })
-    await ctx.store.delete(Registration, { id: u8aToHex(eventData.who) })
 
     await Promise.all(
         identity.sub.map(async (sub) => {
@@ -46,6 +45,8 @@ export async function identityCleared(
     } else {
         await ctx.store.remove(Identity, identity)
     }
+
+    await ctx.store.delete(Registration, { id: u8aToHex(eventData.who) })
 
     return undefined
 }

@@ -47,5 +47,7 @@ export async function identityKilled(
         await ctx.store.remove(Identity, identity)
     }
 
+    await ctx.store.delete(Registration, { id: u8aToHex(eventData.who) })
+
     return undefined
 }
