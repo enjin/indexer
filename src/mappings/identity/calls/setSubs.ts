@@ -57,9 +57,8 @@ export async function setSubs(
 
             if (existing) {
                 existing.super = new Identity({ id: signer.id })
-                await ctx.store.save(existing)
 
-                return undefined
+                return existing
             }
 
             const identity = new Identity({
