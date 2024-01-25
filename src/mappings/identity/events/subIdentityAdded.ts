@@ -46,6 +46,7 @@ export async function subIdentityAdded(
 
     if (existing) {
         existing.super = new Identity({ id: main })
+        existing.name = callData.data.__kind !== 'None' ? u8aToString(callData.data.value) : null
         await ctx.store.save(existing)
 
         return undefined
