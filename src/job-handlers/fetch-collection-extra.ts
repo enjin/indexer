@@ -24,6 +24,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     const collectionsPromise = data.filter(isNotNull).map(async (_c) => {
         const collection = new Collection({})
         collection.hidden = _c.hidden
+        collection.category = _c.category
         collection.flags = new CollectionFlags({
             featured: _c.featured,
             hiddenForLegalReasons: _c.hiddenForLegalReasons,

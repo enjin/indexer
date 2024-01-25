@@ -112,6 +112,16 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('FuelTanks.FuelTankMutated', eventOptions)
     .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
     .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
+    .addEvent('Identity.IdentityCleared', eventOptions)
+    .addEvent('Identity.IdentityKilled', eventOptions)
+    .addEvent('Identity.IdentitySet', eventOptionsWithCall)
+    .addEvent('Identity.JudgementGiven', eventOptionsWithCall)
+    .addEvent('Identity.JudgementRequested', eventOptions)
+    .addEvent('Identity.JudgementUnrequested', eventOptions)
+    .addEvent('Identity.RegistrarAdded', eventOptionsWithCall)
+    .addEvent('Identity.SubIdentityAdded', eventOptionsWithCall)
+    .addEvent('Identity.SubIdentityRemoved', eventOptions)
+    .addEvent('Identity.SubIdentityRevoked', eventOptions)
 
 export type Item = BatchProcessorItem<typeof processor>
 
@@ -225,8 +235,40 @@ async function handleEvents(
             return map.fuelTanks.events.ruleSetInserted(ctx, block, item)
         case 'FuelTanks.RuleSetRemoved':
             return map.fuelTanks.events.ruleSetRemoved(ctx, block, item)
+        case 'Identity.IdentityCleared':
+            return map.identity.events.identityCleared(ctx, block, item)
+        case 'Identity.IdentityKilled':
+            return map.identity.events.identityKilled(ctx, block, item)
+        case 'Identity.IdentitySet':
+            return map.identity.events.identitySet(ctx, block, item)
+        case 'Identity.JudgementGiven':
+            return map.identity.events.judgementGiven(ctx, block, item)
+        case 'Identity.JudgementRequested':
+            return map.identity.events.judgementRequested(ctx, block, item)
+        case 'Identity.JudgementUnrequested':
+            return map.identity.events.judgementUnrequested(ctx, block, item)
+        case 'Identity.RegistrarAdded':
+            return map.identity.events.registrarAdded(ctx, block, item)
+        case 'Identity.SubIdentityAdded':
+            return map.identity.events.subIdentityAdded(ctx, block, item)
+        case 'Identity.SubIdentityRemoved':
+            return map.identity.events.subIdentityRemoved(ctx, block, item)
+        case 'Identity.SubIdentityRevoked':
+            return map.identity.events.subIdentityRevoked(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
+            return undefined
+        }
+    }
+}
+
+async function handleCalls(ctx: CommonContext, block: SubstrateBlock, item: any) {
+    switch (item.call.name) {
+        case 'Identity.set_subs':
+            return map.identity.calls.setSubs(ctx, block, item)
+        case 'Identity.rename_sub':
+            return map.identity.calls.renameSub(ctx, block, item)
+        default: {
             return undefined
         }
     }
@@ -274,8 +316,7 @@ processor.run(
                     syncAllCollections()
                 }
 
-                // eslint-disable-next-line no-console
-                console.log(`Processing block ${block.header.height}, ${block.items.length} items to process`)
+                ctx.log.info(`Processing block ${block.header.height}, ${block.items.length} items to process`)
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const item of block.items) {
@@ -297,6 +338,7 @@ processor.run(
                             }
                         }
                     } else if (item.kind === 'call') {
+                        await handleCalls(ctx as unknown as CommonContext, block.header, item)
                         if (
                             item.call.parent != null ||
                             (!['Claims.claim', 'MultiTokens.claim_tokens', 'MultiTokens.claim_collections'].includes(

@@ -6,6 +6,8 @@ import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {AccountTokenEvent} from "./accountTokenEvent.model"
+import {Identity} from "./identity.model"
+import {IdentityRegistrar} from "./identityRegistrar.model"
 
 @Entity_()
 export class Account {
@@ -40,6 +42,8 @@ export class Account {
 
     @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
+
+
 
     @Column_("int4", {nullable: true})
     lastUpdateBlock!: number | undefined | null
