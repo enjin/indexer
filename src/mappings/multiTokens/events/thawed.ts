@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import {
@@ -90,33 +91,56 @@ export async function thawed(
     if (skipSave) return getEvent(item, data)
 
     if (data.tokenAccount) {
-        const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${u8aToHex(data.tokenAccount)}-${data.collectionId}-${data.tokenId}` },
         })
+
+        if (!tokenAccount) {
+            Sentry.captureMessage(
+                `[Thawed] We have not found token account ${u8aToHex(data.tokenAccount)}-${data.collectionId}-${data.tokenId}.`,
+                'fatal'
+            )
+            return getEvent(item, data)
+        }
 
         tokenAccount.isFrozen = false
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
         const address = u8aToHex(data.collectionAccount)
-        const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+        const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })
+
+        if (!collectionAccount) {
+            Sentry.captureMessage(`[Thawed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            return getEvent(item, data)
+        }
 
         collectionAccount.isFrozen = false
         collectionAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId !== undefined) {
-        const token = await ctx.store.findOneOrFail<Token>(Token, {
+        const token = await ctx.store.findOne<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })
+
+        if (!token) {
+            Sentry.captureMessage(`[Thawed] We have not found collection account ${data.collectionId}-${data.tokenId}.`, 'fatal')
+            return getEvent(item, data)
+        }
 
         token.isFrozen = false
         await ctx.store.save(token)
     } else {
-        const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+        const collection = await ctx.store.findOne<Collection>(Collection, {
             where: { id: data.collectionId.toString() },
         })
+
+        if (!collection) {
+            Sentry.captureMessage(`[Thawed] We have not found collection ${data.collectionId.toString()}.`, 'fatal')
+            return getEvent(item, data)
+        }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
         await ctx.store.save(collection)

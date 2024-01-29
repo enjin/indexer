@@ -1,6 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import {
@@ -64,51 +65,55 @@ export async function tokenDestroyed(
 
     if (skipSave) return getEvent(item, data)
 
-    const token = await ctx.store.findOneOrFail<Token>(Token, {
+    console.log(`Deleting token: ${data.collectionId}-${data.tokenId}`)
+
+    const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
-    if (token) {
-        // TODO: We are removing all events that are related to this token.
-        // We should only update the events that have relationship so it is null.
-        // await ctx.store.delete(Event, { tokenId: token.id })
-        token.bestListing = null
-        token.recentListing = null
-
-        await ctx.store.save(token)
-
-        await Promise.all([
-            ctx.store
-                .getRepository(ListingSale)
-                .query(
-                    'DELETE FROM listing_sale USING listing WHERE listing_sale.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                    [token.id]
-                ),
-            ctx.store
-                .getRepository(ListingStatus)
-                .query(
-                    'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                    [token.id]
-                ),
-            ctx.store.delete(Listing, {
-                makeAssetId: {
-                    id: token.id,
-                },
-            }),
-            ctx.store.delete(Listing, {
-                takeAssetId: {
-                    id: token.id,
-                },
-            }),
-            ctx.store.delete(TraitToken, { token: { id: token.id } }),
-            ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
-            ctx.store.delete(Attribute, {
-                token: {
-                    id: token.id,
-                },
-            }),
-        ])
+    if (!token) {
+        Sentry.captureMessage(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return getEvent(item, data)
     }
+    // TODO: We are removing all events that are related to this token.
+    // We should only update the events that have relationship so it is null.
+    // await ctx.store.delete(Event, { tokenId: token.id })
+    token.bestListing = null
+    token.recentListing = null
+
+    await ctx.store.save(token)
+
+    await Promise.all([
+        ctx.store
+            .getRepository(ListingSale)
+            .query(
+                'DELETE FROM listing_sale USING listing WHERE listing_sale.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                [token.id]
+            ),
+        ctx.store
+            .getRepository(ListingStatus)
+            .query(
+                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
+                [token.id]
+            ),
+        ctx.store.delete(Listing, {
+            makeAssetId: {
+                id: token.id,
+            },
+        }),
+        ctx.store.delete(Listing, {
+            takeAssetId: {
+                id: token.id,
+            },
+        }),
+        ctx.store.delete(TraitToken, { token: { id: token.id } }),
+        ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
+        ctx.store.delete(Attribute, {
+            token: {
+                id: token.id,
+            },
+        }),
+    ])
 
     await ctx.store.remove(token)
     syncCollectionStats(data.collectionId.toString())

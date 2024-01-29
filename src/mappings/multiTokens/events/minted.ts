@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import {
@@ -80,6 +81,8 @@ export async function minted(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
+    const promises: Promise<any>[] = []
+
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
@@ -87,7 +90,14 @@ export async function minted(
         },
     })
 
-    if (!token) return undefined
+    if (token) {
+        token.supply += data.amount
+        token.nonFungible = isNonFungible(token)
+        promises.push(ctx.store.save(token))
+    } else {
+        Sentry.captureMessage(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        // throw new Error(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`)
+    }
 
     if (skipSave) {
         getOrCreateAccount(ctx, data.recipient)
@@ -95,20 +105,25 @@ export async function minted(
         return getEvent(item, data)
     }
 
-    const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
+    if (tokenAccount) {
+        tokenAccount.balance += data.amount
+        tokenAccount.totalBalance += data.amount
+        tokenAccount.updatedAt = new Date(block.timestamp)
+        promises.push(ctx.store.save(tokenAccount))
+    } else {
+        Sentry.captureMessage(
+            `[Minted] We have not found token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
+    }
+
+    await Promise.all(promises)
+
     computeTraits(data.collectionId.toString())
-
-    token.supply += data.amount
-    token.nonFungible = isNonFungible(token)
-
-    tokenAccount.balance += data.amount
-    tokenAccount.totalBalance += data.amount
-    tokenAccount.updatedAt = new Date(block.timestamp)
-    await Promise.all([ctx.store.save(tokenAccount), ctx.store.save(token)])
-
     syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)

@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
@@ -56,25 +57,36 @@ export async function unapproved(
     const address = u8aToHex(data.owner)
 
     if (data.tokenId !== undefined) {
-        const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })
 
-        tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
-        tokenAccount.updatedAt = new Date(block.timestamp)
+        if (tokenAccount) {
+            tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
+            tokenAccount.updatedAt = new Date(block.timestamp)
 
-        await ctx.store.save(tokenAccount)
+            await ctx.store.save(tokenAccount)
+        } else {
+            Sentry.captureMessage(
+                `[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
+                'fatal'
+            )
+        }
     } else {
-        const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+        const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })
 
-        collectionAccount.approvals = collectionAccount.approvals?.filter(
-            (approval) => approval.account !== encodeId(data.operator)
-        )
-        collectionAccount.updatedAt = new Date(block.timestamp)
+        if (collectionAccount) {
+            collectionAccount.approvals = collectionAccount.approvals?.filter(
+                (approval) => approval.account !== encodeId(data.operator)
+            )
+            collectionAccount.updatedAt = new Date(block.timestamp)
 
-        await ctx.store.save(collectionAccount)
+            await ctx.store.save(collectionAccount)
+        } else {
+            Sentry.captureMessage(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+        }
     }
 
     return getEvent(item, data)

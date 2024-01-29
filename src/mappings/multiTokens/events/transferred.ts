@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import {
@@ -72,7 +73,10 @@ export async function transferred(
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
-    if (!token) return undefined
+    if (!token) {
+        Sentry.captureMessage(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return getEvent(item, data)
+    }
 
     if (skipSave) {
         getOrCreateAccount(ctx, data.from)
@@ -97,6 +101,11 @@ export async function transferred(
         fromTokenAccount.totalBalance -= data.amount
         fromTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(fromTokenAccount)
+    } else {
+        Sentry.captureMessage(
+            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     if (toTokenAccount) {
@@ -104,6 +113,11 @@ export async function transferred(
         toTokenAccount.totalBalance += data.amount
         toTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(toTokenAccount)
+    } else {
+        Sentry.captureMessage(
+            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     syncCollectionStats(data.collectionId.toString())

@@ -1,6 +1,7 @@
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { TokenAccount, TokenNamedReserve } from '../../../model'
 import { MultiTokensReservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
@@ -28,7 +29,7 @@ export async function reserved(
     if (!data) return undefined
     if (skipSave) return undefined
 
-    const tokenAccount = await ctx.store.findOneOrFail(TokenAccount, {
+    const tokenAccount = await ctx.store.findOne(TokenAccount, {
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
@@ -49,6 +50,11 @@ export async function reserved(
         tokenAccount.updatedAt = new Date(block.timestamp)
 
         await ctx.store.save(tokenAccount)
+    } else {
+        Sentry.captureMessage(
+            `[Reserved] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     syncCollectionStats(data.collectionId.toString())
