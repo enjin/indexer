@@ -90,13 +90,9 @@ export async function minted(
         },
     })
 
-    if (token) {
-        token.supply += data.amount
-        token.nonFungible = isNonFungible(token)
-        promises.push(ctx.store.save(token))
-    } else {
+    if (!token) {
         Sentry.captureMessage(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        // throw new Error(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`)
+        return getEvent(item, data)
     }
 
     if (skipSave) {
@@ -105,21 +101,28 @@ export async function minted(
         return getEvent(item, data)
     }
 
+    token.supply += data.amount
+    token.nonFungible = isNonFungible(token)
+    promises.push(ctx.store.save(token))
+
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
     })
 
-    if (tokenAccount) {
-        tokenAccount.balance += data.amount
-        tokenAccount.totalBalance += data.amount
-        tokenAccount.updatedAt = new Date(block.timestamp)
-        promises.push(ctx.store.save(tokenAccount))
-    } else {
+    if (!tokenAccount) {
         Sentry.captureMessage(
             `[Minted] We have not found token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )
+
+        await Promise.all(promises)
+        return getEvent(item, data)
     }
+
+    tokenAccount.balance += data.amount
+    tokenAccount.totalBalance += data.amount
+    tokenAccount.updatedAt = new Date(block.timestamp)
+    promises.push(ctx.store.save(tokenAccount))
 
     await Promise.all(promises)
 

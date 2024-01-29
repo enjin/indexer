@@ -62,14 +62,16 @@ export async function tokenAccountCreated(
             tokenAccount.createdAt = new Date(block.timestamp)
             tokenAccount.updatedAt = new Date(block.timestamp)
             ctx.store.save(tokenAccount)
-        } else {
-            Sentry.captureMessage(
-                `[TokenAccountCreated] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
-                'fatal'
-            )
+
+            return getEvent(item, data)
         }
 
-        return getEvent(item, data)
+        // This token account was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
+        // So let the script continue, so it creates the token account that will probably be deleted later
+        Sentry.captureMessage(
+            `[TokenAccountCreated] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     const collection = new Collection({ id: data.collectionId.toString() })
