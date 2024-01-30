@@ -69,19 +69,21 @@ export async function collectionAccountCreated(
         )
     }
 
-    const account = await getOrCreateAccount(ctx, data.accountId)
-    const newCollectionAccount = new CollectionAccount({
-        id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
-        isFrozen: false,
-        approvals: null,
-        accountCount: 0,
-        account,
-        collection: new Collection({ id: data.collectionId.toString() }),
-        createdAt: new Date(block.timestamp),
-        updatedAt: new Date(block.timestamp),
-    })
+    if (!collectionAccount) {
+        const account = await getOrCreateAccount(ctx, data.accountId)
+        const newCollectionAccount = new CollectionAccount({
+            id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
+            isFrozen: false,
+            approvals: null,
+            accountCount: 0,
+            account,
+            collection: new Collection({ id: data.collectionId.toString() }),
+            createdAt: new Date(block.timestamp),
+            updatedAt: new Date(block.timestamp),
+        })
 
-    await ctx.store.insert(CollectionAccount, newCollectionAccount as any)
+        await ctx.store.insert(CollectionAccount, newCollectionAccount as any)
+    }
 
     return getEvent(item, data)
 }

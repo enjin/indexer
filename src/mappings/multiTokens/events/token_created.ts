@@ -837,7 +837,6 @@ export async function tokenCreated(
 
         await ctx.store.insert(Token, token as any)
         processMetadata(token.id, 'token')
-        console.log(`Token created ${eventData.collectionId}-${eventData.tokenId}`)
     }
 
     return getEvent(item, eventData)

@@ -65,8 +65,6 @@ export async function tokenDestroyed(
 
     if (skipSave) return getEvent(item, data)
 
-    console.log(`Deleting token: ${data.collectionId}-${data.tokenId}`)
-
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
