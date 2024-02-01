@@ -1,5 +1,6 @@
 import { RefreshMetadataResolver } from './refresh_metadata'
 import { RefreshAccountResolver } from './refresh_account'
+import { RefreshBalanceResolver } from './refresh_balance'
 import { TokenSalesHistoryResolver } from './token_sales_history'
 import { VerifyMessageResolver } from './verify_message'
 import { TopCollectionResolver } from './top_collections'
@@ -14,6 +15,7 @@ export {
     VerifyMessageResolver,
     RefreshMetadataResolver,
     RefreshAccountResolver,
+    RefreshBalanceResolver,
     FuelTanksAccountsResolver,
     ClaimableCollectionIdsResolver,
     RefreshCollectionsResolver,
