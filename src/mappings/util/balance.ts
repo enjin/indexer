@@ -14,7 +14,7 @@ export interface SystemAccount {
 }
 
 export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
-    const provider = new WsProvider(config.rpc)
+    const provider = new WsProvider(config.dataSource.chain)
     const api = await ApiPromise.create({ provider })
     const accounts: SystemAccount[] = []
 
