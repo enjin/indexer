@@ -6,6 +6,7 @@ import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
 import { fetchAccountQueue } from '../jobs/fetch-account'
+import { fetchBalanceQueue } from '../jobs/fetch-balance'
 import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
 import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
@@ -27,6 +28,7 @@ async function main() {
     )
     collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
+    fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
     fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
     invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
 
@@ -38,6 +40,7 @@ async function main() {
             new BullAdapter(metadataQueue),
             new BullAdapter(collectionStatsQueue),
             new BullAdapter(fetchAccountQueue),
+            new BullAdapter(fetchBalanceQueue),
             new BullAdapter(traitsQueue),
             new BullAdapter(fetchCollectionExtraQueue),
             new BullAdapter(invalidateExpiredListings),
