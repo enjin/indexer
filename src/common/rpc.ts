@@ -13,7 +13,7 @@ class Rpc {
 
     public static async getInstance(): Promise<Rpc> {
         if (!this._instance) {
-            const api = await ApiPromise.create({ provider: new WsProvider(config.dataSource.chain) })
+            const api = await ApiPromise.create({ provider: new WsProvider(config.dataSource.chain, 1000) })
             this._instance = new Rpc(api)
         }
 
