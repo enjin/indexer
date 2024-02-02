@@ -284,18 +284,12 @@ function getParticipants(args: any, signer: string): string[] {
     return [signer]
 }
 
-function delay(ms: number) {
-    return new Promise((resolve) => {setTimeout(resolve, ms)})
-}
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(
     new FullTypeormDatabase({
         isolationLevel: 'READ COMMITTED',
     }),
     async (ctx) => {
-        await delay(300000)
-
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {

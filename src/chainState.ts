@@ -4,18 +4,15 @@ import { ChainInfo, Marketplace } from './model'
 import config from './config'
 import { CommonContext } from './mappings/types/contexts'
 
-const wsProvider = new WsProvider(config.dataSource.chain)
-const apiPromise = ApiPromise.create({ provider: wsProvider })
-
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
-    const state = new ChainInfo({ id: block.hash })
-    const api = await apiPromise
-    // const apiAt = await api.at(block.hash)
+    const wsProvider = new WsProvider(config.dataSource.chain)
+    const api = await ApiPromise.create({ provider: wsProvider })
 
-    const [runtime] = await Promise.all<any>([api.rpc.state.getRuntimeVersion(block.hash)])
+    const state = new ChainInfo({ id: block.hash })
+    const runtime = await api.rpc.state.getRuntimeVersion(block.hash)
 
     state.genesisHash = config.genesisHash
-    state.transactionVersion = runtime.transactionVersion
+    state.transactionVersion = runtime.transactionVersion.toNumber()
     state.specVersion = Number(block.specId.split('@')[1])
     state.blockNumber = block.height
     state.blockHash = block.hash
