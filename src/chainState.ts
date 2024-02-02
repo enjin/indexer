@@ -1,14 +1,13 @@
-import { ApiPromise, WsProvider } from '@polkadot/api'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
 import config from './config'
 import { CommonContext } from './mappings/types/contexts'
+import Rpc from './common/rpc'
 
 export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
     try {
-        const wsProvider = new WsProvider(config.dataSource.chain)
-        const api = await ApiPromise.create({ provider: wsProvider })
+        const { api } = await Rpc.getInstance()
 
         const state = new ChainInfo({ id: block.hash })
         const runtime = await api.rpc.state.getRuntimeVersion(block.hash)
