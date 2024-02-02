@@ -1,7 +1,4 @@
-import '@polkadot/api-augment'
-// The @polkadot/api-augment must be imported before other polkadot packages
-import { ApiPromise, WsProvider } from '@polkadot/api'
-import config from '../../config'
+import Rpc from '../../common/rpc'
 
 export interface SystemAccount {
     address: string
@@ -14,9 +11,8 @@ export interface SystemAccount {
 }
 
 export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
-    const provider = new WsProvider(config.rpc)
-    const api = await ApiPromise.create({ provider })
     const accounts: SystemAccount[] = []
+    const { api } = await Rpc.getInstance()
 
     // We could use a multi query but that would be error prone
     // eslint-disable-next-line no-restricted-syntax

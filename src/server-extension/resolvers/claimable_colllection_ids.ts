@@ -2,11 +2,7 @@
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
 import { isAddress } from 'web3-validator'
-import { ApiPromise, WsProvider } from '@polkadot/api'
-import config from '../../config'
-
-const wsProvider = new WsProvider(config.dataSource.chain)
-const apiPromise = ApiPromise.create({ provider: wsProvider })
+import Rpc from '../../common/rpc'
 
 @ObjectType()
 export class ClaimableCollectionIdsResult {
@@ -38,8 +34,7 @@ export class ClaimableCollectionIdsResolver {
             throw new Error('Invalid address')
         }
 
-        const api = await apiPromise
-
+        const { api } = await Rpc.getInstance()
         const res = await api.query.multiTokens.claimableCollectionIds.multi(addresses)
 
         return addresses.map((address, index) => {

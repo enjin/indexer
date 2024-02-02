@@ -1,14 +1,8 @@
 /* eslint-disable max-classes-per-file */
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
-import { ApiPromise, WsProvider } from '@polkadot/api'
 import { hexToU8a } from '@polkadot/util'
-import config from '../../config'
-
-const wsProvider = new WsProvider(config.dataSource.chain)
-const apiPromise = ApiPromise.create({
-    provider: wsProvider,
-})
+import Rpc from '../../common/rpc'
 
 const customTypes = {
     UserFuelBudget: {
@@ -72,7 +66,7 @@ export class FuelTanksAccountsResolver {
         })
         account: string
     ): Promise<FuelTanksAccountsResult | null> {
-        const api = await apiPromise
+        const { api } = await Rpc.getInstance()
         api.registerTypes(customTypes)
 
         const res = await api.query.fuelTanks.accounts(fuelTank, account)
