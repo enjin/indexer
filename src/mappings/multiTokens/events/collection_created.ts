@@ -322,7 +322,7 @@ export async function collectionCreated(
                 token: new Token({ id: tokenId }),
             })
         })
-        .map((rc: any) => ctx.store.insert(RoyaltyCurrency, rc as any))
+        .map((rc: any) => ctx.store.save(RoyaltyCurrency, rc as any))
 
     await Promise.all(royaltyPromises)
 

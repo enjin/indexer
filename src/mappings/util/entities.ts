@@ -20,6 +20,7 @@ export async function getOrCreateAccount(
                 transferable: 0n,
                 free: 0n,
                 reserved: 0n,
+                frozen: 0n,
                 miscFrozen: 0n,
                 feeFrozen: 0n,
             }),

@@ -15,9 +15,9 @@ import {
     BalancesUnreservedEvent,
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
+import { CommonContext } from '../types/contexts'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { Event } from '../../types/generated/support'
-import { CommonContext } from '../types/contexts'
 
 function getDustLostAccount(ctx: CommonContext, event: Event) {
     const data = new BalancesDustLostEvent(ctx, event)
@@ -227,8 +227,9 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     transferable: accountData.free - accountData.frozen,
                     free: accountData.free,
                     reserved: accountData.reserved,
+                    frozen: accountData.frozen,
+                    miscFrozen: accountData.frozen,
                     feeFrozen: 0n,
-                    miscFrozen: 0n,
                 }),
             })
         } else if ('miscFrozen' in accountData) {
@@ -240,8 +241,9 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     transferable: accountData.free - accountData.miscFrozen,
                     free: accountData.free,
                     reserved: accountData.reserved,
-                    feeFrozen: accountData.feeFrozen,
+                    frozen: accountData.miscFrozen,
                     miscFrozen: accountData.miscFrozen,
+                    feeFrozen: accountData.feeFrozen,
                 }),
             })
         }

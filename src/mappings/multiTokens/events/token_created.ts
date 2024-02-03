@@ -835,7 +835,7 @@ export async function tokenCreated(
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
+        await ctx.store.save(Token, token as any)
         processMetadata(token.id, 'token')
     }
 
