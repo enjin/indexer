@@ -4,7 +4,7 @@ import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
-import { RewriteFrames } from '@sentry/integrations'
+import { rewriteFramesIntegration } from '@sentry/integrations'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
@@ -21,11 +21,7 @@ import { getTankDataFromCall } from './mappings/fuelTanks/common'
 Sentry.init({
     dsn: config.sentryDsn,
     tracesSampleRate: 1.0,
-    integrations: [
-        new RewriteFrames({
-            root: global.__dirname,
-        }),
-    ],
+    integrations: [rewriteFramesIntegration()],
 })
 
 const eventOptions = {
@@ -80,23 +76,30 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('MultiTokens.ClaimedCollections', eventOptions)
     .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
     .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
+    .addEvent('Balances.BalanceSet', eventOptions)
+    .addEvent('Balances.Burned', eventOptions)
+    .addEvent('Balances.Deposit', eventOptions)
     .addEvent('Balances.DustLost', eventOptions)
     .addEvent('Balances.Endowed', eventOptions)
+    .addEvent('Balances.Frozen', eventOptions)
+    .addEvent('Balances.Locked', eventOptions)
+    .addEvent('Balances.Minted', eventOptions)
     .addEvent('Balances.ReserveRepatriated', eventOptions)
     .addEvent('Balances.Reserved', eventOptions)
+    .addEvent('Balances.Restored', eventOptions)
     .addEvent('Balances.Slashed', eventOptions)
+    .addEvent('Balances.Suspended', eventOptions)
+    .addEvent('Balances.Thawed', eventOptions)
     .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('Balances.Unlocked', eventOptions)
     .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Balances.Withdraw', eventOptions)
     .addEvent('Claims.Claimed', eventOptions)
     .addEvent('Claims.ClaimRequested', eventOptions)
     .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
     .addEvent('Claims.ExchangeRateSet', eventOptions)
     .addEvent('Claims.ClaimRejected', eventOptions)
     .addEvent('Claims.ClaimMinted', eventOptions)
-    // eslint-disable-next-line sonarjs/no-duplicate-string
-    .addEvent('Balances.Withdraw', eventOptions)
-    .addEvent('Balances.BalanceSet', eventOptions)
-    .addEvent('Balances.Deposit', eventOptions)
     .addEvent('Marketplace.ListingCreated', eventOptions)
     .addEvent('Marketplace.ListingCancelled', eventOptions)
     .addEvent('Marketplace.ListingFilled', eventOptions)
@@ -181,18 +184,26 @@ async function handleEvents(
         case 'MultiTokens.ClaimTokensCompleted':
             return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
         case 'Balances.Transfer':
-            await map.balances.processor.save(ctx, block, item.event, skipSave)
+            await map.balances.processor.save(ctx, block, item.event)
             return map.balances.events.transfer(ctx, block, item)
         case 'Balances.BalanceSet':
+        case 'Balances.Burned':
         case 'Balances.Deposit':
-        case 'Balances.Endowed':
-        case 'Balances.Reserved':
-        case 'Balances.Unreserved':
         case 'Balances.DustLost':
+        case 'Balances.Endowed':
+        case 'Balances.Frozen':
+        case 'Balances.Locked':
+        case 'Balances.Minted':
         case 'Balances.ReserveRepatriated':
+        case 'Balances.Reserved':
+        case 'Balances.Restored':
         case 'Balances.Slashed':
+        case 'Balances.Suspended':
+        case 'Balances.Thawed':
+        case 'Balances.Unlocked':
+        case 'Balances.Unreserved':
         case 'Balances.Withdraw':
-            return map.balances.processor.save(ctx, block, item.event, skipSave)
+            return map.balances.processor.save(ctx, block, item.event)
         case 'Claims.ClaimRequested':
             return map.claims.events.claimRequested(ctx, block, item)
         case 'Claims.ClaimRejected':
@@ -484,7 +495,11 @@ processor.run(
                 }
 
                 map.balances.processor.addAccountsToSet(Array.from(signers))
-                await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+
+                if (block.header.height > config.lastBlockHeight) {
+                    await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                }
+
                 _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(Extrinsic, chunk as any))
                 _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(Event, chunk as any))
                 _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(AccountTokenEvent, chunk as any))
