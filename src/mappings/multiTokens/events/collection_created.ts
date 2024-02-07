@@ -1,6 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
@@ -250,8 +251,18 @@ export async function collectionCreated(
     if (!eventData) return undefined
 
     if (skipSave) {
-        ctx.store.update(Collection, { id: eventData.collectionId.toString() }, { createdAt: new Date(block.timestamp) })
-        return getEvent(item, eventData)
+        const collection = await ctx.store.findOne(Collection, { where: { id: eventData.collectionId.toString() } })
+
+        if (collection) {
+            collection.createdAt = new Date(block.timestamp)
+            ctx.store.save(collection)
+
+            return getEvent(item, eventData)
+        }
+
+        // This collection was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
+        // So let the script continue, so it creates the collection that will probably be deleted later
+        Sentry.captureMessage(`[CollectionCreated] We have not found collection ${eventData.collectionId}.`, 'fatal')
     }
     const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
 
@@ -311,7 +322,7 @@ export async function collectionCreated(
                 token: new Token({ id: tokenId }),
             })
         })
-        .map((rc: any) => ctx.store.insert(RoyaltyCurrency, rc as any))
+        .map((rc: any) => ctx.store.save(RoyaltyCurrency, rc as any))
 
     await Promise.all(royaltyPromises)
 

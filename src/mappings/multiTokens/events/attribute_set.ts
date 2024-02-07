@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
 import {
@@ -115,9 +116,14 @@ export async function attributeSet(
 
     let token = null
     if (data.tokenId !== undefined) {
-        token = await ctx.store.findOneOrFail<Token>(Token, {
+        token = await ctx.store.findOne<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
         })
+
+        if (!token) {
+            Sentry.captureMessage(`[AttributeSet] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+            return getEvent(item, data)
+        }
     }
 
     if (attribute) {

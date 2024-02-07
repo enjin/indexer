@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionAccountCreatedEvent } from '../../../types/generated/events'
 import {
@@ -51,17 +52,26 @@ export async function collectionAccountCreated(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+    })
 
-    const [account, collectionAccount] = await Promise.all([
-        getOrCreateAccount(ctx, data.accountId),
-        ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-            where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
-        }),
-    ])
+    if (skipSave) {
+        if (collectionAccount) {
+            return getEvent(item, data)
+        }
+
+        // This collection account was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
+        // So let the script continue, so it creates the collection account that will probably be deleted later
+        Sentry.captureMessage(
+            `[CollectionAccountCreated] We have not found collection account ${data.collectionId}-${u8aToHex(data.accountId)}.`,
+            'fatal'
+        )
+    }
 
     if (!collectionAccount) {
-        const newAccount = new CollectionAccount({
+        const account = await getOrCreateAccount(ctx, data.accountId)
+        const newCollectionAccount = new CollectionAccount({
             id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
             isFrozen: false,
             approvals: null,
@@ -71,7 +81,8 @@ export async function collectionAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, newAccount as any)
+
+        await ctx.store.save(CollectionAccount, newCollectionAccount as any)
     }
 
     return getEvent(item, data)

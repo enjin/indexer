@@ -1,6 +1,7 @@
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { TokenAccount } from '../../../model'
 import { MultiTokensUnreservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
@@ -28,12 +29,17 @@ export async function unreserved(
 
     if (skipSave) return undefined
 
-    const tokenAccount = await ctx.store.findOneOrFail(TokenAccount, {
+    const tokenAccount = await ctx.store.findOne(TokenAccount, {
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
 
-    if (tokenAccount) {
+    if (!tokenAccount) {
+        Sentry.captureMessage(
+            `[Unreserved] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
+    } else {
         tokenAccount.balance += data.amount
         tokenAccount.reservedBalance -= data.amount
         const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === u8aToString(data.reserveId))

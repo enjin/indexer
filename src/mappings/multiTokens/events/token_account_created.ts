@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
 import {
@@ -53,21 +54,33 @@ export async function tokenAccountCreated(
     if (!data) return undefined
 
     if (skipSave) {
-        const tA = await ctx.store.findOne(TokenAccount, {
+        const tokenAccount = await ctx.store.findOne(TokenAccount, {
             where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
         })
 
-        if (tA) {
-            tA.createdAt = new Date(block.timestamp)
-            tA.updatedAt = new Date(block.timestamp)
-            ctx.store.save(tA)
+        if (tokenAccount) {
+            tokenAccount.createdAt = new Date(block.timestamp)
+            tokenAccount.updatedAt = new Date(block.timestamp)
+            ctx.store.save(tokenAccount)
+
+            return getEvent(item, data)
         }
 
-        return getEvent(item, data)
+        // This token account was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
+        // So let the script continue, so it creates the token account that will probably be deleted later
+        Sentry.captureMessage(
+            `[TokenAccountCreated] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     const collection = new Collection({ id: data.collectionId.toString() })
-    const token = await ctx.store.findOneByOrFail(Token, { id: `${data.collectionId}-${data.tokenId}` })
+    const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
+
+    if (!token) {
+        Sentry.captureMessage(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return undefined
+    }
 
     const [account, collectionAccount] = await Promise.all([
         getOrCreateAccount(ctx, data.accountId),
@@ -77,7 +90,7 @@ export async function tokenAccountCreated(
     ])
 
     if (!collectionAccount) {
-        const newCA = new CollectionAccount({
+        const newCollectionAccount = new CollectionAccount({
             id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
             isFrozen: false,
             approvals: null,
@@ -87,7 +100,7 @@ export async function tokenAccountCreated(
             createdAt: new Date(block.timestamp),
             updatedAt: new Date(block.timestamp),
         })
-        await ctx.store.insert(CollectionAccount, newCA as any)
+        await ctx.store.insert(CollectionAccount, newCollectionAccount as any)
     } else {
         collectionAccount.accountCount += 1
         await ctx.store.save(collectionAccount)
@@ -110,7 +123,7 @@ export async function tokenAccountCreated(
         updatedAt: new Date(block.timestamp),
     })
 
-    await ctx.store.insert(TokenAccount, tokenAccount as any)
+    await ctx.store.save(TokenAccount, tokenAccount as any)
 
     return getEvent(item, data)
 }

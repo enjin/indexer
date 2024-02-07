@@ -5,6 +5,7 @@ export class Balance {
     private _transferable!: bigint
     private _free!: bigint
     private _reserved!: bigint
+    private _frozen!: bigint
     private _miscFrozen!: bigint
     private _feeFrozen!: bigint
 
@@ -14,6 +15,7 @@ export class Balance {
             this._transferable = marshal.bigint.fromJSON(json.transferable)
             this._free = marshal.bigint.fromJSON(json.free)
             this._reserved = marshal.bigint.fromJSON(json.reserved)
+            this._frozen = marshal.bigint.fromJSON(json.frozen)
             this._miscFrozen = marshal.bigint.fromJSON(json.miscFrozen)
             this._feeFrozen = marshal.bigint.fromJSON(json.feeFrozen)
         }
@@ -46,6 +48,15 @@ export class Balance {
         this._reserved = value
     }
 
+    get frozen(): bigint {
+        assert(this._frozen != null, 'uninitialized access')
+        return this._frozen
+    }
+
+    set frozen(value: bigint) {
+        this._frozen = value
+    }
+
     get miscFrozen(): bigint {
         assert(this._miscFrozen != null, 'uninitialized access')
         return this._miscFrozen
@@ -69,6 +80,7 @@ export class Balance {
             transferable: marshal.bigint.toJSON(this.transferable),
             free: marshal.bigint.toJSON(this.free),
             reserved: marshal.bigint.toJSON(this.reserved),
+            frozen: marshal.bigint.toJSON(this.frozen),
             miscFrozen: marshal.bigint.toJSON(this.miscFrozen),
             feeFrozen: marshal.bigint.toJSON(this.feeFrozen),
         }

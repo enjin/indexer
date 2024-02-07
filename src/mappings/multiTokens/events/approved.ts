@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import {
     CollectionAccount,
@@ -60,9 +61,17 @@ export async function approved(
     const address = u8aToHex(data.owner)
 
     if (data.tokenId !== undefined) {
-        const tokenAccount = await ctx.store.findOneOrFail<TokenAccount>(TokenAccount, {
+        const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })
+
+        if (!tokenAccount) {
+            Sentry.captureMessage(
+                `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
+                'fatal'
+            )
+            return getEvent(item, data)
+        }
 
         const approvals = tokenAccount.approvals ?? []
         approvals.push(
@@ -77,9 +86,14 @@ export async function approved(
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
-        const collectionAccount = await ctx.store.findOneOrFail<CollectionAccount>(CollectionAccount, {
+        const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })
+
+        if (!collectionAccount) {
+            Sentry.captureMessage(`[Approved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            return getEvent(item, data)
+        }
 
         const approvals = collectionAccount.approvals ?? []
         approvals.push(

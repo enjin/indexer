@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
 import {
@@ -65,9 +66,14 @@ export async function collectionMutated(
 
     if (skipSave) return getEvent(item)
 
-    const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+    const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
     })
+
+    if (!collection) {
+        Sentry.captureMessage(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+        return getEvent(item)
+    }
 
     if (data.owner) {
         collection.owner = await getOrCreateAccount(ctx, data.owner)
@@ -100,18 +106,25 @@ export async function collectionMutated(
                 }
 
                 // eslint-disable-next-line no-await-in-loop
-                const token = await ctx.store.findOneOrFail<Token>(Token, {
+                const token = await ctx.store.findOne<Token>(Token, {
                     where: { id: `${currency.collectionId}-${currency.tokenId}` },
                 })
 
-                const royaltyCurrency = new RoyaltyCurrency({
-                    id: `${collection.id}-${token.id}`,
-                    collection,
-                    token,
-                })
+                if (!token) {
+                    Sentry.captureMessage(
+                        `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`,
+                        'fatal'
+                    )
+                } else {
+                    const royaltyCurrency = new RoyaltyCurrency({
+                        id: `${collection.id}-${token.id}`,
+                        collection,
+                        token,
+                    })
 
-                // eslint-disable-next-line no-await-in-loop
-                await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+                    // eslint-disable-next-line no-await-in-loop
+                    await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+                }
             }
             ctx.store.remove(royaltyCurrencies)
         }

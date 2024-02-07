@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
@@ -63,18 +64,28 @@ export async function attributeRemoved(
 
     if (attribute) {
         if (attribute.token) {
-            const token = await ctx.store.findOneOrFail<Token>(Token, {
+            const token = await ctx.store.findOne<Token>(Token, {
                 where: { id: `${data.collectionId}-${data.tokenId}` },
             })
+
+            if (!token) {
+                Sentry.captureMessage(`[AttributeRemoved] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+                return getEvent(item, data)
+            }
 
             token.attributeCount -= 1
             await ctx.store.save(token)
             processMetadata(token.id, 'token', true)
             computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
-            const collection = await ctx.store.findOneOrFail<Collection>(Collection, {
+            const collection = await ctx.store.findOne<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
             })
+
+            if (!collection) {
+                Sentry.captureMessage(`[AttributeRemoved] We have not found collection ${data.collectionId}.`, 'fatal')
+                return getEvent(item, data)
+            }
 
             collection.attributeCount -= 1
             await ctx.store.save(collection)

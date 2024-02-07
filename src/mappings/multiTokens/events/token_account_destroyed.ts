@@ -1,6 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensTokenAccountDestroyed, TokenAccount } from '../../../model'
@@ -53,16 +54,28 @@ export async function tokenAccountDestroyed(
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
         where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
     })
+
     if (collectionAccount) {
         collectionAccount.accountCount -= 1
         await ctx.store.save(collectionAccount)
+    } else {
+        Sentry.captureMessage(
+            `[TokenAccountDestroyed] We have not found collection account ${data.collectionId}-${u8aToHex(data.accountId)}.`,
+            'fatal'
+        )
     }
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
     })
+
     if (tokenAccount) {
         await ctx.store.remove(tokenAccount)
+    } else {
+        Sentry.captureMessage(
+            `[TokenAccountDestroyed] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     return getEvent(item, data)

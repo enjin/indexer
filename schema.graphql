@@ -297,8 +297,9 @@ type Balance {
   transferable: BigInt!
   free: BigInt!
   reserved: BigInt!
-  miscFrozen: BigInt!
-  feeFrozen: BigInt!
+  frozen: BigInt!
+  miscFrozen: BigInt! @deprecated
+  feeFrozen: BigInt! @deprecated
 }
 
 enum JudgementType {

@@ -1,5 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
 import {
@@ -78,12 +79,17 @@ export async function tokenMutated(
 
     if (skipSave) return getEvent(item, data)
 
-    const token = await ctx.store.findOneOrFail<Token>(Token, {
+    const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
             collection: true,
         },
     })
+
+    if (!token) {
+        Sentry.captureMessage(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return getEvent(item, data)
+    }
 
     if (data.listingForbidden.__kind === 'SomeMutation') {
         token.listingForbidden = data.listingForbidden.value

@@ -1,6 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
+import * as Sentry from '@sentry/node'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
@@ -775,25 +776,45 @@ export async function tokenCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(ctx, item.event)
+    if (!eventData) return undefined
 
     if (skipSave && item.event.call) {
-        ctx.store.update(
-            Token,
-            { id: `${eventData.collectionId}-${eventData.tokenId}` },
-            { createdAt: new Date(block.timestamp) }
-        )
-        return getEvent(item, eventData)
+        const token = await ctx.store.findOne(Token, {
+            where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
+        })
+
+        if (token) {
+            token.createdAt = new Date(block.timestamp)
+            ctx.store.save(token)
+
+            return getEvent(item, eventData)
+        }
+
+        // This token was probably deleted in the LAST_HEIGHT that it was sync, and thus it did not exist here.
+        // So letting the script continue so it creates the token
+        Sentry.captureMessage(`[TokenCreated] We have not found token ${eventData.collectionId}-${eventData.tokenId}.`, 'fatal')
     }
 
     if (item.event.call) {
         const [callData, collection] = await Promise.all([
             getCallData(ctx, item.event.call, eventData),
-            ctx.store.findOneOrFail(Collection, {
+            ctx.store.findOne(Collection, {
                 where: { id: eventData.collectionId.toString() },
             }),
         ])
 
-        if (!eventData || !callData) return undefined
+        if (!collection) {
+            Sentry.captureMessage(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
+            return getEvent(item, eventData)
+        }
+
+        if (!callData) {
+            Sentry.captureMessage(
+                `[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`,
+                'fatal'
+            )
+            return getEvent(item, eventData)
+        }
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
@@ -814,12 +835,9 @@ export async function tokenCreated(
             createdAt: new Date(block.timestamp),
         })
 
-        await ctx.store.insert(Token, token as any)
-
+        await ctx.store.save(Token, token as any)
         processMetadata(token.id, 'token')
-
-        return getEvent(item, eventData)
     }
 
-    return undefined
+    return getEvent(item, eventData)
 }
