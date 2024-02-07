@@ -485,7 +485,7 @@ processor.run(
                                 call.args.call?.__kind === 'Marketplace' &&
                                 call.args.call?.value?.__kind === 'finalize_auction')
                         ) {
-                            const listingId = call.args.listingId.toString()
+                            const listingId = call.args.call?.value?.listingId ?? call.args.listingId
                             // eslint-disable-next-line no-await-in-loop
                             const listing = await ctx.store.findOne(Listing, {
                                 where: { id: hexStripPrefix(listingId) },
