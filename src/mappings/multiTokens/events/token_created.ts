@@ -93,7 +93,6 @@ async function getBehavior(
     })
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typeof getEventData>) {
     if (call.name === 'MultiTokens.batch_mint') {
         const data = new MultiTokensBatchMintCall(ctx, call)
@@ -768,7 +767,6 @@ function getEvent(
     })
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function tokenCreated(
     ctx: CommonContext,
     block: SubstrateBlock,

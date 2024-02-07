@@ -312,7 +312,6 @@ async function getBalances(ctx: CommonContext, block: SubstrateBlock, accountIds
 
 const accountsSet = new Set<string>()
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return

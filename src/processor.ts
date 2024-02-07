@@ -183,9 +183,6 @@ async function handleEvents(
             return map.multiTokens.events.claimTokensInitiated(ctx, block, item)
         case 'MultiTokens.ClaimTokensCompleted':
             return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
-        case 'Balances.Transfer':
-            await map.balances.processor.save(ctx, block, item.event)
-            return map.balances.events.transfer(ctx, block, item)
         case 'Balances.BalanceSet':
         case 'Balances.Burned':
         case 'Balances.Deposit':
@@ -204,6 +201,9 @@ async function handleEvents(
         case 'Balances.Unreserved':
         case 'Balances.Withdraw':
             return map.balances.processor.save(ctx, block, item.event)
+        case 'Balances.Transfer':
+            await map.balances.processor.save(ctx, block, item.event)
+            return map.balances.events.transfer(ctx, block, item)
         case 'Claims.ClaimRequested':
             return map.claims.events.claimRequested(ctx, block, item)
         case 'Claims.ClaimRejected':
@@ -294,8 +294,6 @@ function getParticipants(args: any, signer: string): string[] {
 
     return [signer]
 }
-
-// eslint-disable-next-line sonarjs/cognitive-complexity
 processor.run(
     new FullTypeormDatabase({
         isolationLevel: 'READ COMMITTED',
