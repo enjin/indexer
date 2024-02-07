@@ -46,7 +46,6 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     })
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 async function getCallData(ctx: CommonContext, call: Call) {
     if (call.name === 'MultiTokens.force_create_collection') {
         const data = new MultiTokensForceCreateCollectionCall(ctx, call)

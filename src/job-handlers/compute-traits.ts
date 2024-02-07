@@ -11,7 +11,6 @@ const hash = (str: string) => {
     return createHash('sha1').update(str).digest('hex')
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     if (!job.data.collectionId) {
         throw new Error('Collection ID not provided.')

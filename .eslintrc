@@ -3,9 +3,6 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": [
-    "sonarjs"
-  ],
   "rules": {
     "no-console":"warn",
     "import/prefer-default-export":"off",
@@ -27,8 +24,6 @@
     "airbnb-base",
     "airbnb-typescript/base",
     "plugin:@typescript-eslint/recommended",
-   // "plugin:sonarjs/recommended",
-   // "plugin:unicorn/recommended",
     "plugin:prettier/recommended",
     "prettier"
   ],

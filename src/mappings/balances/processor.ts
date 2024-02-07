@@ -5,13 +5,21 @@ import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId, isAddressSS58 } from '../../common/tools'
 import {
     BalancesBalanceSetEvent,
+    BalancesBurnedEvent,
     BalancesDepositEvent,
     BalancesDustLostEvent,
     BalancesEndowedEvent,
+    BalancesFrozenEvent,
+    BalancesLockedEvent,
+    BalancesMintedEvent,
     BalancesReservedEvent,
     BalancesReserveRepatriatedEvent,
+    BalancesRestoredEvent,
     BalancesSlashedEvent,
+    BalancesSuspendedEvent,
+    BalancesThawedEvent,
     BalancesTransferEvent,
+    BalancesUnlockedEvent,
     BalancesUnreservedEvent,
     BalancesWithdrawEvent,
 } from '../../types/generated/events'
@@ -19,7 +27,71 @@ import { CommonContext } from '../types/contexts'
 import { SystemAccountStorage } from '../../types/generated/storage'
 import { Event } from '../../types/generated/support'
 
-function getDustLostAccount(ctx: CommonContext, event: Event) {
+function getBurnedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesBurnedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getFrozenAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesFrozenEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getLockedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesLockedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getMintedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesMintedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getRestoredAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesRestoredEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getSuspendedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesSuspendedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getThawedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesThawedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getUnlockedAccount(ctx: CommonContext, event: Event): Uint8Array {
+    const data = new BalancesUnlockedEvent(ctx, event)
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603.who
+    }
+    throw new UnknownVersionError(data.constructor.name)
+}
+
+function getDustLostAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesDustLostEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -28,7 +100,7 @@ function getDustLostAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getBalanceSetAccount(ctx: CommonContext, event: Event) {
+function getBalanceSetAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesBalanceSetEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -44,7 +116,7 @@ function getBalanceSetAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTransferAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
+function getTransferAccounts(ctx: CommonContext, event: Event): Uint8Array[] {
     const data = new BalancesTransferEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -53,7 +125,7 @@ function getTransferAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uin
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getEndowedAccount(ctx: CommonContext, event: Event) {
+function getEndowedAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesEndowedEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -62,7 +134,7 @@ function getEndowedAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getDepositAccount(ctx: CommonContext, event: Event) {
+function getDepositAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesDepositEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -71,7 +143,7 @@ function getDepositAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReservedAccount(ctx: CommonContext, event: Event) {
+function getReservedAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesReservedEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -80,7 +152,7 @@ function getReservedAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getUnreservedAccount(ctx: CommonContext, event: Event) {
+function getUnreservedAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesUnreservedEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -89,7 +161,7 @@ function getUnreservedAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getWithdrawAccount(ctx: CommonContext, event: Event) {
+function getWithdrawAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesWithdrawEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -98,7 +170,7 @@ function getWithdrawAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getSlashedAccount(ctx: CommonContext, event: Event) {
+function getSlashedAccount(ctx: CommonContext, event: Event): Uint8Array {
     const data = new BalancesSlashedEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -107,7 +179,7 @@ function getSlashedAccount(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): [Uint8Array, Uint8Array] {
+function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): Uint8Array[] {
     const data = new BalancesReserveRepatriatedEvent(ctx, event)
 
     if (data.isMatrixEnjinV603) {
@@ -137,18 +209,13 @@ async function getSystemAccountBalances(ctx: CommonContext, block: SubstrateBloc
 function processBalancesEventItem(ctx: CommonContext, event: Event) {
     const ids: Uint8Array[] = []
     switch (event.name) {
-        case 'Balances.DustLost': {
-            const account = getDustLostAccount(ctx, event)
-            ids.push(account)
-            break
-        }
         case 'Balances.BalanceSet': {
             const account = getBalanceSetAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Endowed': {
-            const account = getEndowedAccount(ctx, event)
+        case 'Balances.Burned': {
+            const account = getBurnedAccount(ctx, event)
             ids.push(account)
             break
         }
@@ -157,8 +224,63 @@ function processBalancesEventItem(ctx: CommonContext, event: Event) {
             ids.push(account)
             break
         }
+        case 'Balances.DustLost': {
+            const account = getDustLostAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Endowed': {
+            const account = getEndowedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Frozen': {
+            const account = getFrozenAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Locked': {
+            const account = getLockedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Minted': {
+            const account = getMintedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.ReserveRepatriated': {
+            const accounts = getReserveRepatriatedAccounts(ctx, event)
+            ids.push(...accounts)
+            break
+        }
         case 'Balances.Reserved': {
             const account = getReservedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Restored': {
+            const account = getRestoredAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Slashed': {
+            const account = getSlashedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Suspended': {
+            const account = getSuspendedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Thawed': {
+            const account = getThawedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case 'Balances.Unlocked': {
+            const account = getUnlockedAccount(ctx, event)
             ids.push(account)
             break
         }
@@ -172,18 +294,8 @@ function processBalancesEventItem(ctx: CommonContext, event: Event) {
             ids.push(account)
             break
         }
-        case 'Balances.Slashed': {
-            const account = getSlashedAccount(ctx, event)
-            ids.push(account)
-            break
-        }
         case 'Balances.Transfer': {
             const accounts = getTransferAccounts(ctx, event)
-            ids.push(...accounts)
-            break
-        }
-        case 'Balances.ReserveRepatriated': {
-            const accounts = getReserveRepatriatedAccounts(ctx, event)
             ids.push(...accounts)
             break
         }
@@ -200,7 +312,6 @@ async function getBalances(ctx: CommonContext, block: SubstrateBlock, accountIds
 
 const accountsSet = new Set<string>()
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
@@ -249,18 +360,11 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
         }
     }
 
-    await ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
+    ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
     accountsSet.clear()
 }
 
-export async function save(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    event: Event,
-    skipSave: boolean
-): Promise<EventModel | undefined> {
-    if (skipSave) return undefined
-
+export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
     processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(u8aToHex(id)))
 
     return undefined

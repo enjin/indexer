@@ -50,7 +50,6 @@ function getEvent(
     })
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function attributeSet(
     ctx: CommonContext,
     block: SubstrateBlock,

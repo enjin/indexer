@@ -54,7 +54,6 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
     })
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export async function collectionMutated(
     ctx: CommonContext,
     block: SubstrateBlock,
