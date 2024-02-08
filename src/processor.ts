@@ -475,8 +475,17 @@ processor.run(
                         }
 
                         // Hotfix for adding listing seller to participant
-                        if (call.name === 'Marketplace.fill_listing' || call.name === 'Marketplace.finalize_auction') {
-                            const listingId = call.args.listingId.toString()
+                        if (
+                            call.name === 'Marketplace.fill_listing' ||
+                            call.name === 'Marketplace.finalize_auction' ||
+                            (fuelTank &&
+                                call.args.call?.__kind === 'Marketplace' &&
+                                call.args.call?.value?.__kind === 'fill_listing') ||
+                            (fuelTank &&
+                                call.args.call?.__kind === 'Marketplace' &&
+                                call.args.call?.value?.__kind === 'finalize_auction')
+                        ) {
+                            const listingId = call.args.call?.value?.listingId ?? call.args.listingId
                             // eslint-disable-next-line no-await-in-loop
                             const listing = await ctx.store.findOne(Listing, {
                                 where: { id: hexStripPrefix(listingId) },
