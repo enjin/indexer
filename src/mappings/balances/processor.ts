@@ -1,5 +1,6 @@
 import { hexToU8a, u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
+import _ from 'lodash'
 import { UnknownVersionError } from '../../common/errors'
 import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId, isAddressSS58 } from '../../common/tools'
@@ -316,51 +317,58 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
 
-    const accountsU8a: Uint8Array[] = accountIds.map((id) => hexToU8a(id))
-    const accountInfos = await getBalances(ctx, block, accountsU8a)
-    if (!accountInfos) {
-        return
-    }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const chunk of _.chunk(accountIds, 100)) {
+        const accountsU8a: Uint8Array[] = chunk.map((id) => hexToU8a(id))
+        // eslint-disable-next-line no-await-in-loop
+        const accountInfos = await getBalances(ctx, block, accountsU8a)
 
-    const accounts: any[] = []
-
-    for (let i = 0; i < accountIds.length; i += 1) {
-        const id = accountIds[i]
-        const accountInfo = accountInfos[i]
-        const accountData = accountInfo.data
-
-        if ('frozen' in accountData) {
-            accounts.push({
-                id,
-                address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                nonce: accountInfo.nonce,
-                balance: new Balance({
-                    transferable: accountData.free - accountData.frozen,
-                    free: accountData.free,
-                    reserved: accountData.reserved,
-                    frozen: accountData.frozen,
-                    miscFrozen: accountData.frozen,
-                    feeFrozen: 0n,
-                }),
-            })
-        } else if ('miscFrozen' in accountData) {
-            accounts.push({
-                id,
-                address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                nonce: accountInfo.nonce,
-                balance: new Balance({
-                    transferable: accountData.free - accountData.miscFrozen,
-                    free: accountData.free,
-                    reserved: accountData.reserved,
-                    frozen: accountData.miscFrozen,
-                    miscFrozen: accountData.miscFrozen,
-                    feeFrozen: accountData.feeFrozen,
-                }),
-            })
+        if (accountInfos === undefined || accountInfos.length === 0) {
+            // eslint-disable-next-line no-continue
+            continue
         }
+
+        const accounts: any[] = []
+
+        for (let i = 0; i < chunk.length; i += 1) {
+            const id = chunk[i]
+            const accountInfo = accountInfos[i]
+            const accountData = accountInfo.data
+
+            if ('frozen' in accountData) {
+                accounts.push({
+                    id,
+                    address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                    nonce: accountInfo.nonce,
+                    balance: new Balance({
+                        transferable: accountData.free - accountData.frozen,
+                        free: accountData.free,
+                        reserved: accountData.reserved,
+                        frozen: accountData.frozen,
+                        miscFrozen: accountData.frozen,
+                        feeFrozen: 0n,
+                    }),
+                })
+            } else if ('miscFrozen' in accountData) {
+                accounts.push({
+                    id,
+                    address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
+                    nonce: accountInfo.nonce,
+                    balance: new Balance({
+                        transferable: accountData.free - accountData.miscFrozen,
+                        free: accountData.free,
+                        reserved: accountData.reserved,
+                        frozen: accountData.miscFrozen,
+                        miscFrozen: accountData.miscFrozen,
+                        feeFrozen: accountData.feeFrozen,
+                    }),
+                })
+            }
+        }
+
+        ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
     }
 
-    ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
     accountsSet.clear()
 }
 
