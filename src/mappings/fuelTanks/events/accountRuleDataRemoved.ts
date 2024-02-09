@@ -18,8 +18,12 @@ function getEventData(ctx: CommonContext, event: Event) {
         return data.asMatrixEnjinV603
     }
 
-    if (data.isV1000) {
-        return data.asV1000
+    if (data.isV1021) {
+        return data.asV1021
+    }
+
+    if (data.isV102) {
+        return data.asV102
     }
 
     throw new UnknownVersionError(data.constructor.name)

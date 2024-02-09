@@ -1,10 +1,18 @@
 import { u8aToHex } from '@polkadot/util'
-import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV603'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../types/generated/v602'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorV601 } from '../../types/generated/v601'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorV600 } from '../../types/generated/v600'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorv1000 } from '../../types/generated/v1000'
-import { DispatchRuleDescriptor as DispatchRuleDescriptorv1003 } from '../../types/generated/v1003'
+import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV1003'
+import { DispatchRuleDescriptor as DispatchRuleDescriptormatrixEnjinV1000 } from '../../types/generated/matrixEnjinV1000'
+import { DispatchRuleDescriptor as DispatchRuleDescriptormatrixEnjinV603 } from '../../types/generated/matrixEnjinV603'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV1023 } from '../../types/generated/v1023'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV1022 } from '../../types/generated/v1022'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV1021 } from '../../types/generated/v1021'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV120 } from '../../types/generated/v120'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV110 } from '../../types/generated/v110'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV106 } from '../../types/generated/v106'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV105 } from '../../types/generated/v105'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV104 } from '../../types/generated/v104'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV103 } from '../../types/generated/v103'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorV102 } from '../../types/generated/v102'
+
 import {
     MaxFuelBurnPerTransaction,
     UserFuelBudget,
@@ -22,11 +30,18 @@ export function rulesToMap(
     ruleId: string,
     rules:
         | DispatchRuleDescriptor[]
-        | DispatchRuleDescriptorV602[]
-        | DispatchRuleDescriptorV601[]
-        | DispatchRuleDescriptorV600[]
-        | DispatchRuleDescriptorv1000[]
-        | DispatchRuleDescriptorv1003[]
+        | DispatchRuleDescriptormatrixEnjinV1000[]
+        | DispatchRuleDescriptormatrixEnjinV603[]
+        | DispatchRuleDescriptorV1023[]
+        | DispatchRuleDescriptorV1022[]
+        | DispatchRuleDescriptorV1021[]
+        | DispatchRuleDescriptorV120[]
+        | DispatchRuleDescriptorV110[]
+        | DispatchRuleDescriptorV106[]
+        | DispatchRuleDescriptorV105[]
+        | DispatchRuleDescriptorV103[]
+        | DispatchRuleDescriptorV104[]
+        | DispatchRuleDescriptorV102[]
 ) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -104,31 +119,44 @@ export function getTankDataFromCall(ctx: CommonContext, call: Call) {
         return data.asMatrixEnjinV603
     }
 
-    if (data.isV1003) {
-        return data.asV1003
+    if (data.isV1023) {
+        return data.asV1023
     }
 
-    if (data.isV1000) {
-        return data.asV1000
+    if (data.isV1022) {
+        return data.asV1022
     }
 
-    if (data.isV604) {
-        return data.asV604
+    if (data.isV1021) {
+        return data.asV1021
     }
 
-    if (data.isV602) {
-        return data.asV602
+    if (data.isV120) {
+        return data.asV120
     }
 
-    if (data.isV601) {
-        return data.asV601
-    }
-    if (data.isV600) {
-        return data.asV600
+    if (data.isV110) {
+        return data.asV110
     }
 
-    if (data.isV500) {
-        return data.asV500
+    if (data.isV106) {
+        return data.asV106
+    }
+
+    if (data.isV105) {
+        return data.asV105
+    }
+
+    if (data.isV104) {
+        return data.asV104
+    }
+
+    if (data.isV103) {
+        return data.asV103
+    }
+
+    if (data.isV102) {
+        return data.asV102
     }
 
     throw new UnknownVersionError(data.constructor.name)

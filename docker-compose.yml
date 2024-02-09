@@ -93,7 +93,7 @@ services:
     depends_on:
       - archive_db
     command: [
-      "-e", "wss://archive.matrix.blockchain.enjin.io",
+      "-e", "wss://archive.matrix.canary.enjin.io",
       "-c", "40",
       "--out", "postgres://root@archive_db:26257/defaultdb"
     ]

@@ -2,7 +2,7 @@ import { ProcessorConfig } from './types/custom/processorConfig'
 
 const config: ProcessorConfig = {
     chainName: process.env.CHAIN_NAME || 'enjin-matrixchain',
-    prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
+    prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 69,
     lastBlockHeight: process.env.LAST_BLOCK_HEIGHT ? parseInt(process.env.LAST_BLOCK_HEIGHT, 10) : 0,
     genesisHash: process.env.GENESIS_HASH || '0x3af4ff48ec76d2efc8476730f423ac07e25ad48f5f4c9dc39c778b164d808615',
     rpc: process.env.CHAIN_RPC || 'wss://rpc.matrix.blockchain.enjin.io',

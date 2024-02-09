@@ -20,15 +20,12 @@ import {
     TokenCapSupply,
 } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
-import {
-    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
-    FreezeState as FreezeState_v500,
-    SufficiencyParam_Sufficient,
-    TokenMarketBehavior,
-} from '../../../types/generated/v500'
-import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v600 } from '../../../types/generated/v600'
+import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v102 } from '../../../types/generated/v102'
 import {
     TokenCap,
+    SufficiencyParam_Sufficient,
+    TokenMarketBehavior,
+    FreezeState as FreezeState_v603,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
 import { CommonContext } from '../../types/contexts'
@@ -56,7 +53,7 @@ export function getCapType(cap: TokenCap) {
     })
 }
 
-export function getFreezeState(state: FreezeState_v500): FreezeState | null {
+export function getFreezeState(state: FreezeState_v603): FreezeState | null {
     switch (state.__kind) {
         case 'Permanent':
             return FreezeState.Permanent
@@ -130,46 +127,13 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV600) {
-            const { collectionId, recipients } = data.asV600
+        if (data.isV102) {
+            const { collectionId, recipients } = data.asV102
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
                 const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_v600
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV500) {
-            const { collectionId, recipients } = data.asV500
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_v500
+                const params = recipientCall.params as DefaultMintParamsCreateToken_v102
                 const cap = params.cap ? getCapType(params.cap) : null
                 const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
                 const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -214,7 +178,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         ) {
             const { collectionId } = data.asMatrixEnjinV1003.call.value
             const recipient = data.asMatrixEnjinV1003.call.value.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV1003.call.value.params as DefaultMintParamsCreateToken_v500
+            const params = data.asMatrixEnjinV1003.call.value.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -241,112 +205,13 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         }
 
         if (
-            data.isMatrixEnjinV1000 &&
-            data.asMatrixEnjinV1000.call.__kind === 'MultiTokens' &&
-            (data.asMatrixEnjinV1000.call.value.__kind === 'mint' || data.asMatrixEnjinV1000.call.value.__kind === 'force_mint')
+            data.isV1023 &&
+            data.asV1023.call.__kind === 'MultiTokens' &&
+            (data.asV1023.call.value.__kind === 'mint' || data.asV1023.call.value.__kind === 'force_mint')
         ) {
-            const { collectionId } = data.asMatrixEnjinV1000.call.value
-            const recipient = data.asMatrixEnjinV1000.call.value.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV1000.call.value.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                recipient,
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-
-        if (
-            data.isMatrixEnjinV603 &&
-            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
-            (data.asMatrixEnjinV603.call.value.__kind === 'mint' || data.asMatrixEnjinV603.call.value.__kind === 'force_mint')
-        ) {
-            const { collectionId } = data.asMatrixEnjinV603.call.value
-            const recipient = data.asMatrixEnjinV603.call.value.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV603.call.value.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                recipient,
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-
-        if (
-            data.isV1003 &&
-            data.asV1003.call.__kind === 'MultiTokens' &&
-            (data.asV1003.call.value.__kind === 'mint' || data.asV1003.call.value.__kind === 'force_mint')
-        ) {
-            const { collectionId } = data.asV1003.call.value
-            const recipient = data.asV1003.call.value.recipient.value as Uint8Array
-            const params = data.asV1003.call.value.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                recipient,
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-
-        if (
-            data.isV1000 &&
-            data.asV1000.call.__kind === 'MultiTokens' &&
-            (data.asV1000.call.value.__kind === 'mint' || data.asV1000.call.value.__kind === 'force_mint')
-        ) {
-            const { collectionId } = data.asV1000.call.value
-            const recipient = data.asV1000.call.value.recipient.value as Uint8Array
-            const params = data.asV1000.call.value.params as DefaultMintParamsCreateToken_v500
+            const { collectionId } = data.asV1023.call.value
+            const recipient = data.asV1023.call.value.recipient.value as Uint8Array
+            const params = data.asV1023.call.value.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -409,115 +274,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (
-            data.isMatrixEnjinV1000 &&
-            data.asMatrixEnjinV1000.call.__kind === 'MultiTokens' &&
-            data.asMatrixEnjinV1000.call.value.__kind === 'batch_mint'
-        ) {
-            const { collectionId, recipients } = data.asMatrixEnjinV1000.call.value
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (
-            data.isMatrixEnjinV603 &&
-            data.asMatrixEnjinV603.call.__kind === 'MultiTokens' &&
-            data.asMatrixEnjinV603.call.value.__kind === 'batch_mint'
-        ) {
-            const { collectionId, recipients } = data.asMatrixEnjinV603.call.value
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV1003 && data.asV1003.call.__kind === 'MultiTokens' && data.asV1003.call.value.__kind === 'batch_mint') {
-            const { collectionId, recipients } = data.asV1003.call.value
-            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
-
-            if (recipientCall) {
-                const recipient = recipientCall.accountId
-                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
-                const cap = params.cap ? getCapType(params.cap) : null
-                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-                let unitPrice: bigint | null = 10_000_000_000_000_000n
-                let minimumBalance = 1n
-
-                if (params.sufficiency.__kind === 'Sufficient') {
-                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                    unitPrice = null
-                }
-
-                return {
-                    recipient,
-                    collectionId,
-                    tokenId: params.tokenId,
-                    initialSupply: params.initialSupply,
-                    minimumBalance,
-                    unitPrice,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: params.listingForbidden ?? false,
-                }
-            }
-        }
-
-        if (data.isV1000 && data.asV1000.call.__kind === 'MultiTokens' && data.asV1000.call.value.__kind === 'batch_mint') {
-            const { collectionId, recipients } = data.asV1000.call.value
+        if (data.isV1023 && data.asV1023.call.__kind === 'MultiTokens' && data.asV1023.call.value.__kind === 'batch_mint') {
+            const { collectionId, recipients } = data.asV1023.call.value
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -559,7 +317,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         if (data.isMatrixEnjinV1003) {
             const { collectionId } = data.asMatrixEnjinV1003
             const recipient = data.asMatrixEnjinV1003.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV1003.params as DefaultMintParamsCreateToken_v500
+            const params = data.asMatrixEnjinV1003.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -588,7 +346,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         if (data.isMatrixEnjinV603) {
             const { collectionId } = data.asMatrixEnjinV603
             const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -614,10 +372,10 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV1003) {
-            const { collectionId } = data.asV1003
-            const recipient = data.asV1003.recipient.value as Uint8Array
-            const params = data.asV1003.params as DefaultMintParamsCreateToken_v500
+        if (data.isV1023) {
+            const { collectionId } = data.asV1023
+            const recipient = data.asV1023.recipient.value as Uint8Array
+            const params = data.asV1023.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -648,7 +406,7 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         if (data.isMatrixEnjinV603) {
             const { collectionId } = data.asMatrixEnjinV603
             const recipient = data.asMatrixEnjinV603.recipient.value as Uint8Array
-            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -674,39 +432,10 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV600) {
-            const { collectionId } = data.asV600
-            const recipient = data.asV600.recipient.value as Uint8Array
-            const params = data.asV600.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                recipient,
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-
-        if (data.isV500) {
-            const { collectionId } = data.asV500
-            const recipient = data.asV500.recipient.value as Uint8Array
-            const params = data.asV500.params as DefaultMintParamsCreateToken_v500
+        if (data.isV102) {
+            const { collectionId } = data.asV102
+            const recipient = data.asV102.recipient.value as Uint8Array
+            const params = data.asV102.params as DefaultMintParamsCreateToken_Enjin_v603
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null

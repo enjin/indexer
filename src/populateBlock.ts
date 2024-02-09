@@ -103,7 +103,7 @@ async function getBlock(height: number) {
         }
       }`
 
-    const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
+    /* const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
         query,
         variables: {
             height,
@@ -114,7 +114,18 @@ async function getBlock(height: number) {
         throw new Error(`Can not start processor because block:${height} is not present in archive db, Please sync ingest first.`)
     }
 
-    return data.data.result[0].header
+    return data.data.result[0].header */
+
+    return {
+        id: '0x10374f633578fb5064f768c5578d473cab1fae3b3bfbcd81b1944423c839835f',
+        height: 1977430,
+        hash: '0x10374f633578fb5064f768c5578d473cab1fae3b3bfbcd81b1944423c839835f',
+        specId: '0x0',
+        extrinsicsRoot: '0x0',
+        stateRoot: '0x0',
+        parentHash: '0x0',
+        timestamp: 0,
+    }
 }
 
 function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
@@ -144,12 +155,12 @@ function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
         return data.asMatrixEnjinV603
     }
 
-    if (data.isV600) {
-        return data.asV600
+    if (data.isV102) {
+        return data.asV102
     }
 
-    if (data.isV500) {
-        return data.asV500
+    if (data.isV100) {
+        return data.asV100
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -160,6 +171,10 @@ function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
 
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
+    }
+
+    if (data.isV101) {
+        return data.asV101
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -182,12 +197,12 @@ function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
         return data.asMatrixEnjinV603
     }
 
-    if (data.isV602) {
-        return data.asV602
+    if (data.isV104) {
+        return data.asV104
     }
 
-    if (data.isV500) {
-        return data.asV500
+    if (data.isV100) {
+        return data.asV100
     }
 
     throw new UnknownVersionError(data.constructor.name)

@@ -16,7 +16,7 @@ import {
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
 import { Event } from '../../../types/generated/support'
-import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
+import { FreezeType_Token } from '../../../types/generated/v1023'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensThawedEvent(ctx, event)
@@ -48,7 +48,7 @@ function getEventData(ctx: CommonContext, event: Event) {
             return {
                 collectionId,
                 freezeType: freezeType.__kind,
-                tokenId: (freezeType as FreezeTypeToken_v500).tokenId,
+                tokenId: (freezeType as FreezeType_Token).tokenId,
                 collectionAccount: undefined,
                 tokenAccount: undefined,
             }

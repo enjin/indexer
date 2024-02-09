@@ -8,7 +8,7 @@ import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { IdentitySetIdentityCall } from '../../../types/generated/calls'
-import { Data } from '../../../types/generated/v1003'
+import { Data } from '../../../types/generated/matrixEnjinV1003'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new IdentityIdentitySetEvent(ctx, event)

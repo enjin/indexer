@@ -107,11 +107,11 @@ function getBalanceSetAccount(ctx: CommonContext, event: Event): Uint8Array {
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603.who
     }
-    if (data.isV602) {
-        return data.asV602.who
+    if (data.isV104) {
+        return data.asV104.who
     }
-    if (data.isV500) {
-        return data.asV500.who
+    if (data.isV100) {
+        return data.asV100.who
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -196,12 +196,13 @@ async function getSystemAccountBalances(ctx: CommonContext, block: SubstrateBloc
     if (storage.isMatrixEnjinV603) {
         return storage.asMatrixEnjinV603.getMany(accounts)
     }
-    if (storage.isV602) {
-        return storage.asV602.getMany(accounts)
+
+    if (storage.isV104) {
+        return storage.asV104.getMany(accounts)
     }
 
-    if (storage.isV500) {
-        return storage.asV500.getMany(accounts)
+    if (storage.isV100) {
+        return storage.asV100.getMany(accounts)
     }
 
     throw new UnknownVersionError(storage.constructor.name)

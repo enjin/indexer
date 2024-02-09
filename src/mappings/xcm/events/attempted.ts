@@ -66,32 +66,44 @@ async function getCallData(ctx: CommonContext, call: Call) {
             callData = data.asMatrixEnjinV603
         }
 
-        if (data.isV1003) {
-            callData = data.asV1003
+        if (data.isV1023) {
+            callData = data.asV1023
         }
 
-        if (data.isV1000) {
-            callData = data.asV1000
+        if (data.isV1022) {
+            callData = data.asV1022
         }
 
-        if (data.isV604) {
-            callData = data.asV604
+        if (data.isV1021) {
+            callData = data.asV1021
         }
 
-        if (data.isV602) {
-            callData = data.asV602
+        if (data.isV120) {
+            callData = data.asV120
         }
 
-        if (data.isV601) {
-            callData = data.asV601
+        if (data.isV110) {
+            callData = data.asV110
         }
 
-        if (data.isV600) {
-            callData = data.asV600
+        if (data.isV106) {
+            callData = data.asV106
         }
 
-        if (data.isV500) {
-            callData = data.asV500
+        if (data.isV105) {
+            callData = data.asV105
+        }
+
+        if (data.isV104) {
+            callData = data.asV104
+        }
+
+        if (data.isV103) {
+            callData = data.asV103
+        }
+
+        if (data.isV102) {
+            callData = data.asV102
         }
 
         if (
