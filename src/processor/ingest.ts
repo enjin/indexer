@@ -1,28 +1,30 @@
 /* eslint-disable no-await-in-loop */
 import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { FullTypeormDatabase, TypeormDatabase } from '@subsquid/typeorm-store'
+import { FullTypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { rewriteFramesIntegration } from '@sentry/integrations'
-import config from './config'
-import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
-import { createEnjToken } from './createEnjToken'
-import { chainState } from './chainState'
-import * as map from './mappings'
-import { getOrCreateAccount } from './mappings/util/entities'
-import { CommonContext } from './mappings/types/contexts'
+import config from '../config'
+import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from '../model'
+import { createEnjToken } from '../createEnjToken'
+import { chainState } from '../chainState'
+import * as map from '../mappings'
+import { getOrCreateAccount } from '../mappings/util/entities'
+import { CommonContext } from '../mappings/types/contexts'
+import { updateClaimDetails } from '../mappings/claims/common'
+import { syncAllCollections } from '../jobs/collection-stats'
+import { metadataQueue } from '../jobs/process-metadata'
+import { getTankDataFromCall } from '../mappings/fuelTanks/common'
 import { populateBlock } from './populateBlock'
-import { updateClaimDetails } from './mappings/claims/common'
-import { syncAllCollections } from './jobs/collection-stats'
-import { metadataQueue } from './jobs/process-metadata'
-import { getTankDataFromCall } from './mappings/fuelTanks/common'
 
 Sentry.init({
     dsn: config.sentryDsn,
     tracesSampleRate: 1.0,
     integrations: [rewriteFramesIntegration()],
 })
+
+export type Item = BatchProcessorItem<typeof processor>
 
 const eventOptions = {
     data: {
@@ -43,103 +45,27 @@ const eventOptionsWithCall = {
     } as const,
 } as const
 
-const syncProcessor = new SubstrateBatchProcessor()
-    .setDataSource(config.dataSource)
-    .setBlockRange({ from: config.lastBlockHeight, to: config.lastBlockHeight })
-    .addCall('Timestamp.set')
+function getParticipants(args: any, signer: string): string[] {
+    const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
+    if (accountsFromArgs) {
+        const accounts = new Set<string>(accountsFromArgs)
+        return Array.from(accounts.add(signer))
+    }
 
-syncProcessor.run(new FullTypeormDatabase(), async (ctx) => {
-    console.log('Here is the sync processor')
+    return [signer]
+}
 
-    const block = ctx.blocks[0]
-    await populateBlock(ctx as unknown as CommonContext, block.header)
-})
-
-/*
-const processor = new SubstrateBatchProcessor()
-    .setDataSource(config.dataSource)
-    .setBlockRange(config.blockRange || { from: 0 })
-    .addCall('*', {
-        data: {
-            call: true,
-            extrinsic: true,
-        },
-    })
-    .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
-    .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
-    .addEvent('MultiTokens.CollectionMutated', eventOptions)
-    .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
-    .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
-    .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
-    .addEvent('MultiTokens.TokenDestroyed', eventOptions)
-    .addEvent('MultiTokens.TokenMutated', eventOptions)
-    .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
-    .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
-    .addEvent('MultiTokens.Minted', eventOptions)
-    .addEvent('MultiTokens.Burned', eventOptions)
-    .addEvent('MultiTokens.AttributeSet', eventOptions)
-    .addEvent('MultiTokens.AttributeRemoved', eventOptions)
-    .addEvent('MultiTokens.Frozen', eventOptions)
-    .addEvent('MultiTokens.Thawed', eventOptions)
-    .addEvent('MultiTokens.Approved', eventOptions)
-    .addEvent('MultiTokens.Reserved', eventOptions)
-    .addEvent('MultiTokens.Unapproved', eventOptions)
-    .addEvent('MultiTokens.Unreserved', eventOptions)
-    .addEvent('MultiTokens.Transferred', eventOptions)
-    .addEvent('MultiTokens.ClaimedCollections', eventOptions)
-    .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
-    .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
-    .addEvent('Balances.BalanceSet', eventOptions)
-    .addEvent('Balances.Burned', eventOptions)
-    .addEvent('Balances.Deposit', eventOptions)
-    .addEvent('Balances.DustLost', eventOptions)
-    .addEvent('Balances.Endowed', eventOptions)
-    .addEvent('Balances.Frozen', eventOptions)
-    .addEvent('Balances.Locked', eventOptions)
-    .addEvent('Balances.Minted', eventOptions)
-    .addEvent('Balances.ReserveRepatriated', eventOptions)
-    .addEvent('Balances.Reserved', eventOptions)
-    .addEvent('Balances.Restored', eventOptions)
-    .addEvent('Balances.Slashed', eventOptions)
-    .addEvent('Balances.Suspended', eventOptions)
-    .addEvent('Balances.Thawed', eventOptions)
-    .addEvent('Balances.Transfer', eventOptions)
-    .addEvent('Balances.Unlocked', eventOptions)
-    .addEvent('Balances.Unreserved', eventOptions)
-    .addEvent('Balances.Withdraw', eventOptions)
-    .addEvent('Claims.Claimed', eventOptions)
-    .addEvent('Claims.ClaimRequested', eventOptions)
-    .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
-    .addEvent('Claims.ExchangeRateSet', eventOptions)
-    .addEvent('Claims.ClaimRejected', eventOptions)
-    .addEvent('Claims.ClaimMinted', eventOptions)
-    .addEvent('Marketplace.ListingCreated', eventOptions)
-    .addEvent('Marketplace.ListingCancelled', eventOptions)
-    .addEvent('Marketplace.ListingFilled', eventOptions)
-    .addEvent('Marketplace.BidPlaced', eventOptions)
-    .addEvent('Marketplace.AuctionFinalized', eventOptions)
-    .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
-    .addEvent('FuelTanks.AccountAdded', eventOptions)
-    .addEvent('FuelTanks.AccountRemoved', eventOptions)
-    .addEvent('FuelTanks.AccountRuleDataRemoved', eventOptions)
-    .addEvent('FuelTanks.FreezeStateMutated', eventOptions)
-    .addEvent('FuelTanks.FuelTankCreated', eventOptionsWithCall)
-    .addEvent('FuelTanks.FuelTankDestroyed', eventOptions)
-    .addEvent('FuelTanks.FuelTankMutated', eventOptions)
-    .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
-    .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
-    .addEvent('Identity.IdentityCleared', eventOptions)
-    .addEvent('Identity.IdentityKilled', eventOptions)
-    .addEvent('Identity.IdentitySet', eventOptionsWithCall)
-    .addEvent('Identity.JudgementGiven', eventOptionsWithCall)
-    .addEvent('Identity.JudgementRequested', eventOptions)
-    .addEvent('Identity.JudgementUnrequested', eventOptions)
-    .addEvent('Identity.RegistrarAdded', eventOptionsWithCall)
-    .addEvent('Identity.SubIdentityAdded', eventOptionsWithCall)
-    .addEvent('Identity.SubIdentityRemoved', eventOptions)
-    .addEvent('Identity.SubIdentityRevoked', eventOptions)
-
-export type Item = BatchProcessorItem<typeof processor>
+async function handleCalls(ctx: CommonContext, block: SubstrateBlock, item: any) {
+    switch (item.call.name) {
+        case 'Identity.set_subs':
+            return map.identity.calls.setSubs(ctx, block, item)
+        case 'Identity.rename_sub':
+            return map.identity.calls.renameSub(ctx, block, item)
+        default: {
+            return undefined
+        }
+    }
+}
 
 async function handleEvents(
     ctx: CommonContext,
@@ -286,27 +212,89 @@ async function handleEvents(
     }
 }
 
-async function handleCalls(ctx: CommonContext, block: SubstrateBlock, item: any) {
-    switch (item.call.name) {
-        case 'Identity.set_subs':
-            return map.identity.calls.setSubs(ctx, block, item)
-        case 'Identity.rename_sub':
-            return map.identity.calls.renameSub(ctx, block, item)
-        default: {
-            return undefined
-        }
-    }
-}
+const processor = new SubstrateBatchProcessor()
+    .setDataSource(config.dataSource)
+    .setBlockRange(config.blockRange || { from: 0 })
+    .addCall('*', {
+        data: {
+            call: true,
+            extrinsic: true,
+        },
+    })
+    .addEvent('MultiTokens.CollectionCreated', eventOptionsWithCall)
+    .addEvent('MultiTokens.CollectionDestroyed', eventOptions)
+    .addEvent('MultiTokens.CollectionMutated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountCreated', eventOptions)
+    .addEvent('MultiTokens.CollectionAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenCreated', eventOptionsWithCall)
+    .addEvent('MultiTokens.TokenDestroyed', eventOptions)
+    .addEvent('MultiTokens.TokenMutated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountCreated', eventOptions)
+    .addEvent('MultiTokens.TokenAccountDestroyed', eventOptions)
+    .addEvent('MultiTokens.Minted', eventOptions)
+    .addEvent('MultiTokens.Burned', eventOptions)
+    .addEvent('MultiTokens.AttributeSet', eventOptions)
+    .addEvent('MultiTokens.AttributeRemoved', eventOptions)
+    .addEvent('MultiTokens.Frozen', eventOptions)
+    .addEvent('MultiTokens.Thawed', eventOptions)
+    .addEvent('MultiTokens.Approved', eventOptions)
+    .addEvent('MultiTokens.Reserved', eventOptions)
+    .addEvent('MultiTokens.Unapproved', eventOptions)
+    .addEvent('MultiTokens.Unreserved', eventOptions)
+    .addEvent('MultiTokens.Transferred', eventOptions)
+    .addEvent('MultiTokens.ClaimedCollections', eventOptions)
+    .addEvent('MultiTokens.ClaimTokensInitiated', eventOptions)
+    .addEvent('MultiTokens.ClaimTokensCompleted', eventOptions)
+    .addEvent('Balances.BalanceSet', eventOptions)
+    .addEvent('Balances.Burned', eventOptions)
+    .addEvent('Balances.Deposit', eventOptions)
+    .addEvent('Balances.DustLost', eventOptions)
+    .addEvent('Balances.Endowed', eventOptions)
+    .addEvent('Balances.Frozen', eventOptions)
+    .addEvent('Balances.Locked', eventOptions)
+    .addEvent('Balances.Minted', eventOptions)
+    .addEvent('Balances.ReserveRepatriated', eventOptions)
+    .addEvent('Balances.Reserved', eventOptions)
+    .addEvent('Balances.Restored', eventOptions)
+    .addEvent('Balances.Slashed', eventOptions)
+    .addEvent('Balances.Suspended', eventOptions)
+    .addEvent('Balances.Thawed', eventOptions)
+    .addEvent('Balances.Transfer', eventOptions)
+    .addEvent('Balances.Unlocked', eventOptions)
+    .addEvent('Balances.Unreserved', eventOptions)
+    .addEvent('Balances.Withdraw', eventOptions)
+    .addEvent('Claims.Claimed', eventOptions)
+    .addEvent('Claims.ClaimRequested', eventOptions)
+    .addEvent('Claims.DelayTimeForClaimSet', eventOptions)
+    .addEvent('Claims.ExchangeRateSet', eventOptions)
+    .addEvent('Claims.ClaimRejected', eventOptions)
+    .addEvent('Claims.ClaimMinted', eventOptions)
+    .addEvent('Marketplace.ListingCreated', eventOptions)
+    .addEvent('Marketplace.ListingCancelled', eventOptions)
+    .addEvent('Marketplace.ListingFilled', eventOptions)
+    .addEvent('Marketplace.BidPlaced', eventOptions)
+    .addEvent('Marketplace.AuctionFinalized', eventOptions)
+    .addEvent('PolkadotXcm.Attempted', eventOptionsWithCall)
+    .addEvent('FuelTanks.AccountAdded', eventOptions)
+    .addEvent('FuelTanks.AccountRemoved', eventOptions)
+    .addEvent('FuelTanks.AccountRuleDataRemoved', eventOptions)
+    .addEvent('FuelTanks.FreezeStateMutated', eventOptions)
+    .addEvent('FuelTanks.FuelTankCreated', eventOptionsWithCall)
+    .addEvent('FuelTanks.FuelTankDestroyed', eventOptions)
+    .addEvent('FuelTanks.FuelTankMutated', eventOptions)
+    .addEvent('FuelTanks.RuleSetInserted', eventOptionsWithCall)
+    .addEvent('FuelTanks.RuleSetRemoved', eventOptions)
+    .addEvent('Identity.IdentityCleared', eventOptions)
+    .addEvent('Identity.IdentityKilled', eventOptions)
+    .addEvent('Identity.IdentitySet', eventOptionsWithCall)
+    .addEvent('Identity.JudgementGiven', eventOptionsWithCall)
+    .addEvent('Identity.JudgementRequested', eventOptions)
+    .addEvent('Identity.JudgementUnrequested', eventOptions)
+    .addEvent('Identity.RegistrarAdded', eventOptionsWithCall)
+    .addEvent('Identity.SubIdentityAdded', eventOptionsWithCall)
+    .addEvent('Identity.SubIdentityRemoved', eventOptions)
+    .addEvent('Identity.SubIdentityRevoked', eventOptions)
 
-function getParticipants(args: any, signer: string): string[] {
-    const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
-    if (accountsFromArgs) {
-        const accounts = new Set<string>(accountsFromArgs)
-        return Array.from(accounts.add(signer))
-    }
-
-    return [signer]
-}
 processor.run(
     new FullTypeormDatabase({
         isolationLevel: 'READ COMMITTED',
@@ -320,22 +308,21 @@ processor.run(
                 const events: Event[] = []
                 const accountTokenEvents: AccountTokenEvent[] = []
 
-                console.log(block.header)
                 if (block.header.height === 1) {
-                    console.log('Before create enj token')
                     await createEnjToken(ctx as unknown as CommonContext, block.header)
-                    console.log('Before create chain state')
                     await chainState(ctx as unknown as CommonContext, block.header)
 
                     if (Number(config.prefix) === 1110) {
                         await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                     }
 
-                    console.log('Before pause metadata')
-                    metadataQueue.pause().catch(() => {})
+                    // console.log('Before pause metadata')
+                    // metadataQueue.pause().catch(() => {})
+                    //
+                    console.log(ctx)
 
                     console.log('Before populate block')
-                    await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
+                    await populateBlock(ctx as unknown as CommonContext, ctx.blocks[0].header)
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
@@ -399,7 +386,9 @@ processor.run(
 
                         if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                             const tankData = getTankDataFromCall(ctx as unknown as CommonContext, call)
-                            const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(tankData.tankId.value) })
+                            const tank = await ctx.store.findOneByOrFail(FuelTank, {
+                                id: u8aToHex(tankData.tankId.value),
+                            })
 
                             fuelTank = new FuelTankData({
                                 id: tank.id,
@@ -541,4 +530,3 @@ processor.run(
         }
     }
 )
-*/
