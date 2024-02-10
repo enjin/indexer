@@ -4,32 +4,31 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
-import axios from 'axios'
-import { CommonContext } from './mappings/types/contexts'
+import { BlockContext, CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
 import config from './config'
 import {
-    Collection,
-    MintPolicy,
-    TransferPolicy,
-    CollectionStats,
-    MarketPolicy,
-    Royalty,
     Account,
-    Balance,
-    CollectionAccount,
-    Token,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
-    TokenBehaviorHasRoyalty,
-    TokenAccount,
-    TokenNamedReserve,
-    TokenLock,
-    TokenApproval,
     Attribute,
+    Balance,
+    Collection,
+    CollectionAccount,
+    CollectionApproval,
     CollectionFlags,
     CollectionSocials,
-    CollectionApproval,
+    CollectionStats,
+    MarketPolicy,
+    MintPolicy,
+    Royalty,
+    Token,
+    TokenAccount,
+    TokenApproval,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+    TokenLock,
+    TokenNamedReserve,
+    TransferPolicy,
 } from './model'
 import { getCapType, getFreezeState, isTokenFrozen } from './mappings/multiTokens/events'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
@@ -46,7 +45,7 @@ class Errors {
     }
 }
 
-async function getAccountsMap(
+async function getAccountMap(
     ctx: CommonContext,
     accounts: (Uint8Array | null | undefined)[] | (Uint8Array | null | undefined)[][]
 ) {
@@ -60,9 +59,9 @@ async function getAccountsMap(
     const existingAccounts = await ctx.store.findBy(Account, { id: In([...uniqueAccounts]) })
     existingAccounts.forEach((a) => map.set(a.id, a))
     const accountsPromise = Array.from(uniqueAccounts).map(async (a) => {
-        const mapHasaccount = map.get(a)
-        if (mapHasaccount) {
-            return mapHasaccount
+        const mapHasAccount = map.get(a)
+        if (mapHasAccount) {
+            return mapHasAccount
         }
         const account = new Account({
             id: a,
@@ -88,36 +87,7 @@ async function getAccountsMap(
     return map
 }
 
-async function getBlock(height: number) {
-    const query = `query Block($height: Int){
-        result: batch( fromBlock:$height, limit:1, includeAllBlocks:true){
-          header{
-            id
-            height
-            hash
-            specId
-            stateRoot
-            parentHash
-            timestamp
-          }
-        }
-      }`
-
-    const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
-        query,
-        variables: {
-            height,
-        },
-    })
-
-    if (data.data.result.length === 0) {
-        throw new Error(`Can not start processor because block:${height} is not present in archive db, Please sync ingest first.`)
-    }
-
-    return data.data.result[0].header
-}
-
-function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
+function getCollectionStorage(ctx: BlockContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -127,7 +97,7 @@ function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
+function getCollectionAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -137,7 +107,7 @@ function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock)
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
+function getTokenStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensTokensStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -155,7 +125,7 @@ function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
+function getTokenAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -175,7 +145,7 @@ function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
+function getAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.SystemAccountStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -195,7 +165,7 @@ function getAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
 
 async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
     for await (const collectionPairs of getCollectionStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        const accountMap = await getAccountsMap(
+        const accountMap = await getAccountMap(
             ctx,
             collectionPairs.map(([, data]) => [
                 data.owner,
@@ -273,9 +243,9 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
-async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getCollectionAccountsStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        const accountMap = await getAccountsMap(
+async function syncCollectionAccount(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getCollectionAccountStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        const accountMap = await getAccountMap(
             ctx,
             pairs.map(([k]) => k[1])
         )
@@ -316,9 +286,9 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
     return true
 }
 
-async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getTokensStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        await getAccountsMap(
+async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getTokenStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        await getAccountMap(
             ctx,
             pairs.map(([, d]: [any, any]) => d?.marketBehavior?.value?.beneficiary)
         )
@@ -387,9 +357,9 @@ async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
     }
 }
 
-async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getTokenAccountsStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        const accountMap = await getAccountsMap(
+async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
+    for await (const pairs of getTokenAccountStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+        const accountMap = await getAccountMap(
             ctx,
             pairs.map(([k]) => k[2])
         )
@@ -457,7 +427,7 @@ async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
     return true
 }
 
-async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
+async function syncAttribute(ctx: CommonContext, block: SubstrateBlock) {
     for await (const pairs of getAttributeStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
         const attributePromise = pairs.map(async ([k, data]) => {
             const collectionId = k[0]
@@ -469,7 +439,7 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
             const attributeId = `${id}-${Buffer.from(key).toString('hex')}`
 
             if (tokenId !== undefined) {
-                const attribute = new Attribute({
+                return new Attribute({
                     id: attributeId,
                     token: new Token({ id }),
                     key,
@@ -479,21 +449,17 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
                     createdAt: new Date(block.timestamp),
                     updatedAt: new Date(block.timestamp),
                 })
-
-                return attribute
             }
 
-            const attribute = new Attribute({
+            return new Attribute({
                 id: attributeId,
                 key,
                 value,
                 deposit: data.deposit,
                 collection: new Collection({ id }),
-                createdAt: new Date(block.timestamp),
-                updatedAt: new Date(block.timestamp),
+                createdAt: new Date(ctx.block.timestamp),
+                updatedAt: new Date(ctx.block.timestamp),
             })
-
-            return attribute
         })
 
         await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
@@ -504,10 +470,10 @@ async function syncAttributes(ctx: CommonContext, block: SubstrateBlock) {
 
 async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
     const batchSize = 100
-    for await (const keys of getAccountsStorage(ctx, block).getKeysPaged(batchSize)) {
-        await getAccountsMap(ctx, keys)
+    for await (const keys of getAccountStorage(ctx, block).getKeysPaged(batchSize)) {
+        await getAccountMap(ctx, keys)
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
-        await saveAccounts(ctx, block)
+        await saveAccounts(ctx, ctx.block)
     }
 
     return true
@@ -520,27 +486,27 @@ async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) 
     console.log(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
     console.log('Syncing tokens...')
-    await syncTokens(ctx, block)
+    await syncToken(ctx, block)
     console.log(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
     console.log('Syncing token accounts...')
-    await syncTokenAccounts(ctx, block)
+    await syncTokenAccount(ctx, block)
     console.log(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
 
     console.log('Syncing collection accounts...')
-    await syncCollectionAccounts(ctx, block)
+    await syncCollectionAccount(ctx, block)
     console.log(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
     console.log('Syncing attributes...')
-    await Promise.all([syncAttributes(ctx, block), syncBalance(ctx, block)])
+    await Promise.all([syncAttribute(ctx, block), syncBalance(ctx, block)])
     console.log(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
     console.log(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
 }
 
-export async function populateBlock(ctx: CommonContext, block: number) {
-    const substrateBlock = await getBlock(block)
-    console.log(`Syncing block ${block} with hash ${substrateBlock.hash}`)
-    await populateBlockInternal(ctx, substrateBlock)
+export async function populateBlock(ctx: CommonContext, block: SubstrateBlock) {
+    console.log(`Syncing block ${block.height} with hash ${block.hash}`)
+
+    await populateBlockInternal(ctx, block)
 }

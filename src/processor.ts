@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { BatchProcessorItem, SubstrateBatchProcessor, SubstrateBlock } from '@subsquid/substrate-processor'
-import { FullTypeormDatabase } from '@subsquid/typeorm-store'
+import { FullTypeormDatabase, TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix, hexToU8a, u8aToHex } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
@@ -43,6 +43,19 @@ const eventOptionsWithCall = {
     } as const,
 } as const
 
+const syncProcessor = new SubstrateBatchProcessor()
+    .setDataSource(config.dataSource)
+    .setBlockRange({ from: config.lastBlockHeight, to: config.lastBlockHeight })
+    .addCall('Timestamp.set')
+
+syncProcessor.run(new FullTypeormDatabase(), async (ctx) => {
+    console.log('Here is the sync processor')
+
+    const block = ctx.blocks[0]
+    await populateBlock(ctx as unknown as CommonContext, block.header)
+})
+
+/*
 const processor = new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
     .setBlockRange(config.blockRange || { from: 0 })
@@ -307,16 +320,21 @@ processor.run(
                 const events: Event[] = []
                 const accountTokenEvents: AccountTokenEvent[] = []
 
+                console.log(block.header)
                 if (block.header.height === 1) {
+                    console.log('Before create enj token')
                     await createEnjToken(ctx as unknown as CommonContext, block.header)
+                    console.log('Before create chain state')
                     await chainState(ctx as unknown as CommonContext, block.header)
 
                     if (Number(config.prefix) === 1110) {
                         await updateClaimDetails(ctx as unknown as CommonContext, block.header)
                     }
 
-                    await metadataQueue.pause().catch(() => {})
+                    console.log('Before pause metadata')
+                    metadataQueue.pause().catch(() => {})
 
+                    console.log('Before populate block')
                     await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
                 }
 
@@ -523,3 +541,4 @@ processor.run(
         }
     }
 )
+*/

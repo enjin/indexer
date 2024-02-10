@@ -5,7 +5,7 @@ role=${CONTAINER_ROLE:-app}
 
 if [ "$role" = "processor" ]; then
     npm run db:migrate
-    npm run processor:debug
+    npm run processor
 elif [ "$role" = "graphql" ]; then
     npx squid-graphql-server --subscriptions --dumb-cache redis --dumb-cache-max-age 3000 --max-root-fields 10 --sql-statement-timeout 5000
 elif [ "$role" = "worker" ]; then
