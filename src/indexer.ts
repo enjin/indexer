@@ -7,7 +7,9 @@ import { CommonContext } from './mappings/types/contexts'
 new SubstrateBatchProcessor()
     .setDataSource(config.dataSource)
     .setBlockRange({ from: config.lastBlockHeight, to: config.lastBlockHeight })
-    .addCall('Timestamp.set') // We need at least one event or call to start the processor
+    // We need at least one event or call to start the processor
+    // Timestamp.set is a call that happens on every block
+    .addCall('Timestamp.set')
     .run(new FullTypeormDatabase(), async (ctx) => {
         ctx.log.info('Started chain state sync process')
         const block = ctx.blocks[0]

@@ -4,7 +4,7 @@ import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
-import { BlockContext, CommonContext } from './mappings/types/contexts'
+import { CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
 import config from './config'
 import {
@@ -87,7 +87,7 @@ async function getAccountMap(
     return map
 }
 
-function getCollectionStorage(ctx: BlockContext, block: SubstrateBlock) {
+function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
     const data = new Storage.MultiTokensCollectionsStorage(ctx, block)
 
     if (data.isMatrixEnjinV603) {
@@ -457,8 +457,8 @@ async function syncAttribute(ctx: CommonContext, block: SubstrateBlock) {
                 value,
                 deposit: data.deposit,
                 collection: new Collection({ id }),
-                createdAt: new Date(ctx.block.timestamp),
-                updatedAt: new Date(ctx.block.timestamp),
+                createdAt: new Date(block.timestamp),
+                updatedAt: new Date(block.timestamp),
             })
         })
 
@@ -473,7 +473,7 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
     for await (const keys of getAccountStorage(ctx, block).getKeysPaged(batchSize)) {
         await getAccountMap(ctx, keys)
         addAccountsToSet(keys.map((a) => u8aToHex(a)))
-        await saveAccounts(ctx, ctx.block)
+        await saveAccounts(ctx, block)
     }
 
     return true
@@ -481,32 +481,33 @@ async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
 
 async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
     console.time('populateGenesis')
-    console.log('Syncing collections...')
+
+    ctx.log.info('Syncing collections...')
     await syncCollection(ctx, block)
-    console.log(`Successfully imported ${await ctx.store.count(Collection)} collections`)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(Collection)} collections`)
 
-    console.log('Syncing tokens...')
+    ctx.log.info('Syncing tokens...')
     await syncToken(ctx, block)
-    console.log(`Successfully imported ${await ctx.store.count(Token)} tokens`)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    console.log('Syncing token accounts...')
+    ctx.log.info('Syncing token accounts...')
     await syncTokenAccount(ctx, block)
-    console.log(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
 
-    console.log('Syncing collection accounts...')
+    ctx.log.info('Syncing collection accounts...')
     await syncCollectionAccount(ctx, block)
-    console.log(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
 
-    console.log('Syncing attributes...')
+    ctx.log.info('Syncing attributes...')
     await Promise.all([syncAttribute(ctx, block), syncBalance(ctx, block)])
-    console.log(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
-    console.log(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
+    ctx.log.info(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
 }
 
 export async function populateBlock(ctx: CommonContext, block: SubstrateBlock) {
-    console.log(`Syncing block ${block.height} with hash ${block.hash}`)
+    ctx.log.info(`Syncing block ${block.height} with hash ${block.hash}`)
 
     await populateBlockInternal(ctx, block)
 }
