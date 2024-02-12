@@ -5,38 +5,43 @@ import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import axios from 'axios'
+import { EpMultiTokensToken } from '@polkadot/types/lookup'
 import { CommonContext } from './mappings/types/contexts'
 import * as Storage from './types/generated/storage'
 import config from './config'
 import {
-    Collection,
-    MintPolicy,
-    TransferPolicy,
-    CollectionStats,
-    MarketPolicy,
-    Royalty,
     Account,
-    Balance,
-    CollectionAccount,
-    Token,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
-    TokenBehaviorHasRoyalty,
-    TokenAccount,
-    TokenNamedReserve,
-    TokenLock,
-    TokenApproval,
     Attribute,
+    Balance,
+    CapType,
+    Collection,
+    CollectionAccount,
+    CollectionApproval,
     CollectionFlags,
     CollectionSocials,
-    CollectionApproval,
+    CollectionStats,
+    FreezeState,
+    MarketPolicy,
+    MintPolicy,
+    Royalty,
+    Token,
+    TokenAccount,
+    TokenApproval,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+    TokenCapSingleMint,
+    TokenCapSupply,
+    TokenLock,
+    TokenNamedReserve,
+    TransferPolicy,
 } from './model'
-import { getCapType, getFreezeState, isTokenFrozen } from './mappings/multiTokens/events'
-import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 import { UnknownVersionError } from './common/errors'
 import { processMetadata } from './jobs/process-metadata'
+import Rpc from './common/rpc'
+import { isNonFungible } from './mappings/multiTokens/utils/helpers'
 
 const BATCH_SIZE = 1000
 
@@ -137,22 +142,11 @@ function getCollectionAccountsStorage(ctx: CommonContext, block: SubstrateBlock)
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getTokensStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MultiTokensTokensStorage(ctx, block)
+async function getTokenStorage(block: SubstrateBlock) {
+    const { api } = await Rpc.getInstance()
+    const apiAt = await api.at(block.hash)
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
-    }
-
-    if (data.isV600) {
-        return data.asV600
-    }
-
-    if (data.isV500) {
-        return data.asV500
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    return apiAt.query.multiTokens.tokens.entries()
 }
 
 function getTokenAccountsStorage(ctx: CommonContext, block: SubstrateBlock) {
@@ -317,74 +311,99 @@ async function syncCollectionAccounts(ctx: CommonContext, block: SubstrateBlock)
 }
 
 async function syncTokens(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getTokensStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
-        await getAccountsMap(
-            ctx,
-            pairs.map(([, d]: [any, any]) => d?.marketBehavior?.value?.beneficiary)
-        )
-        const tokensPromise = pairs.map(async ([k, data]) => {
-            const collectionId = k[0]
-            const tokenId = k[1]
-            const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
+    const { api } = await Rpc.getInstance()
+    const storage = await getTokenStorage(block)
 
-            let behavior = null
+    const tokens = []
 
-            if ('marketBehavior' in data && data.marketBehavior) {
-                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
-                    behavior = new TokenBehaviorIsCurrency({
-                        type: TokenBehaviorType.IsCurrency,
-                    })
-                } else {
-                    behavior = new TokenBehaviorHasRoyalty({
-                        type: TokenBehaviorType.HasRoyalty,
-                        royalty: new Royalty({
-                            beneficiary: u8aToHex(data.marketBehavior.value.beneficiary),
-                            percentage: data.marketBehavior.value.percentage,
-                        }),
-                    })
-                }
-            }
+    for (const [key, value] of storage) {
+        const collectionId = key.args[0].toString()
+        const tokenId = key.args[1].toString()
+        // eslint-disable-next-line no-await-in-loop
+        const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
+        console.log(`collection: ${collectionId} - token: ${tokenId}`)
+        const data: EpMultiTokensToken = api.createType('EpMultiTokensToken', value)
 
-            if (data.sufficiency.__kind === 'Insufficient') {
-                unitPrice = data.sufficiency.unitPrice
-                minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
-            }
+        // const pool = JSON.parse(JSON.stringify(value.toJSON()))
+        console.log(data.toHuman())
 
-            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : undefined
-
-            const token = new Token({
-                id: `${collectionId}-${tokenId}`,
-                tokenId,
-                collection,
-                attributeCount: data.attributeCount,
-                supply: data.supply,
-                isFrozen: isTokenFrozen(freezeState),
-                cap: data.cap ? getCapType(data.cap) : null,
-                behavior,
-                freezeState,
-                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
-                minimumBalance,
-                unitPrice,
-                createdAt: new Date(block.timestamp),
-                mintDeposit: data.mintDeposit,
+        let cap = null
+        if (data.cap.unwrapOrDefault().isSupply) {
+            cap = new TokenCapSupply({
+                type: CapType.Supply,
+                supply: data.cap.unwrapOrDefault().asSupply.toBigInt(),
             })
+        } else if (data.cap.unwrapOrDefault().isSingleMint) {
+            cap = new TokenCapSingleMint({
+                type: CapType.SingleMint,
+            })
+        }
 
-            token.nonFungible = isNonFungible(token)
+        let behavior = null
+        if (data.marketBehavior.unwrapOrDefault().isIsCurrency) {
+            behavior = new TokenBehaviorIsCurrency({
+                type: TokenBehaviorType.IsCurrency,
+            })
+        } else if (data.marketBehavior.unwrapOrDefault().isHasRoyalty) {
+            const { beneficiary } = data.marketBehavior.unwrapOrDefault().asHasRoyalty
+            // eslint-disable-next-line no-await-in-loop
+            await getAccountsMap(ctx, [beneficiary.toU8a()])
 
-            return token
+            behavior = new TokenBehaviorHasRoyalty({
+                type: TokenBehaviorType.HasRoyalty,
+                royalty: new Royalty({
+                    beneficiary: u8aToHex(beneficiary),
+                    percentage: data.marketBehavior.unwrapOrDefault().asHasRoyalty.percentage.toNumber(),
+                }),
+            })
+        }
+
+        let freezeState = null
+
+        switch (data.freezeState.unwrapOrDefault().type) {
+            case 'Temporary':
+                freezeState = FreezeState.Temporary
+                break
+            case 'Permanent':
+                freezeState = FreezeState.Permanent
+                break
+            case 'Never':
+                freezeState = FreezeState.Never
+                break
+            default:
+                freezeState = null
+                break
+        }
+
+        const token = new Token({
+            id: `${collectionId}-${tokenId}`,
+            tokenId: BigInt(tokenId),
+            collection,
+            attributeCount: data.attributeCount.toNumber(),
+            supply: data.supply.toBigInt(),
+            isFrozen: data.freezeState.unwrapOrDefault().isPermanent || data.freezeState.unwrapOrDefault().isTemporary,
+            cap,
+            behavior,
+            freezeState,
+            listingForbidden: data.listingForbidden.isTrue,
+            minimumBalance: data.minimumBalance.toBigInt(),
+            unitPrice: 10_000_000_000_000_000n, // check
+            createdAt: new Date(block.timestamp),
+            mintDeposit: data.mintDeposit.toBigInt(),
         })
 
-        await Promise.all(tokensPromise)
-            .then((tokens) => ctx.store.insert(Token, tokens as any))
-            .then((r) => {
-                r.identifiers.forEach((t) => {
-                    processMetadata(t.id, 'token')
-                })
-            })
+        token.nonFungible = isNonFungible(token)
+        tokens.push(token)
     }
+
+    await Promise.all(tokens)
+        .then((t) => ctx.store.insert(Token, t as any))
+        .then((r) => {
+            r.identifiers.forEach((t) => {
+                processMetadata(t.id, 'token')
+            })
+        })
 }
 
 async function syncTokenAccounts(ctx: CommonContext, block: SubstrateBlock) {
