@@ -16,7 +16,7 @@ import { updateClaimDetails } from '../mappings/claims/common'
 import { syncAllCollections } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
 import { getTankDataFromCall } from '../mappings/fuelTanks/common'
-import { populateBlock } from './populateBlock'
+import { populateBlock } from '../populateBlock'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -295,11 +295,8 @@ const processor = new SubstrateBatchProcessor()
     .addEvent('Identity.SubIdentityRemoved', eventOptions)
     .addEvent('Identity.SubIdentityRevoked', eventOptions)
 
-processor.run(
-    new FullTypeormDatabase({
-        isolationLevel: 'READ COMMITTED',
-    }),
-    async (ctx) => {
+export function run(db: FullTypeormDatabase) {
+    processor.run(db, async (ctx) => {
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
@@ -528,5 +525,5 @@ processor.run(
             Sentry.captureException(error)
             throw error
         }
-    }
-)
+    })
+}
