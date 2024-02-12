@@ -314,8 +314,6 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
     const { api } = await Rpc.getInstance()
     const storage = await getTokenStorage(block)
 
-    const tokens = []
-
     for (const [key, value] of storage) {
         const collectionId = key.args[0].toString()
         const tokenId = key.args[1].toString()
@@ -389,16 +387,10 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
         })
 
         token.nonFungible = isNonFungible(token)
-        tokens.push(token)
-    }
 
-    await Promise.all(tokens)
-        .then((t) => ctx.store.insert(Token, t as any))
-        .then((r) => {
-            r.identifiers.forEach((t) => {
-                processMetadata(t.id, 'token')
-            })
-        })
+        ctx.store.insert(Token, token as any)
+        processMetadata(token.id, 'token')
+    }
 }
 
 async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
