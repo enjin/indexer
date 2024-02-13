@@ -1,6 +1,7 @@
 import '@polkadot/api-augment'
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import config from '../config'
+import * as definitions from './interfaces/definitions'
 
 class Rpc {
     private static _instance: Rpc | null = null
@@ -13,7 +14,15 @@ class Rpc {
 
     public static async getInstance(): Promise<Rpc> {
         if (!this._instance) {
-            const api = await ApiPromise.create({ provider: new WsProvider(config.dataSource.chain, 1000) })
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            const types = Object.values(definitions).reduce((res, { types }): object => ({ ...res, ...types }), {})
+
+            const api = await ApiPromise.create({
+                provider: new WsProvider(config.dataSource.chain, 1000),
+                types: {
+                    ...types,
+                },
+            })
             this._instance = new Rpc(api)
         }
 
