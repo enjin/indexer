@@ -62,7 +62,9 @@ function parseObjectProperties(value: object) {
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
         if (typeof v === 'object') {
-            properties[k] = v
+            if ('value' in v) {
+                properties[k] = v
+            }
         } else {
             properties[k] = {
                 value: v,
