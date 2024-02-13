@@ -7,7 +7,7 @@ import { computeTraits } from './compute-traits'
 export type JobData = { collectionId: string }
 
 export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
-    defaultJobOptions: { delay: 2000, attempts: 3, removeOnComplete: 500 },
+    defaultJobOptions: { delay: 1000, attempts: 3, removeOnComplete: true },
     redis: redisConfig,
     settings: {
         maxStalledCount: 3,
@@ -23,7 +23,7 @@ export const syncCollectionStats = async (collectionId: string) => {
         return
     }
 
-    collectionStatsQueue.add({ collectionId }).catch(() => {
+    collectionStatsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
         // eslint-disable-next-line no-console
         console.log('Closing connection as Redis is not available')
         collectionStatsQueue.close(true)
