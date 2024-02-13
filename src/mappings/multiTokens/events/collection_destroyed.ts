@@ -4,11 +4,13 @@ import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { MultiTokensCollectionDestroyedEvent } from '../../../types/generated/events'
 import {
+    AccountTokenEvent,
     Attribute,
     Collection,
     CollectionAccount,
     Event as EventModel,
     Extrinsic,
+    Listing,
     MultiTokensCollectionDestroyed,
     RoyaltyCurrency,
     Token,
@@ -64,6 +66,9 @@ export async function collectionDestroyed(
         ctx.store.delete(Trait, { collection: { id: collectionId } }),
         ctx.store.delete(RoyaltyCurrency, { collection: { id: collectionId } }),
         ctx.store.delete(Attribute, { collection: { id: collectionId } }),
+        ctx.store.delete(AccountTokenEvent, { token: { collection: { id: collectionId } } }),
+        ctx.store.delete(Listing, { makeAssetId: { collection: { id: collectionId } } }),
+        ctx.store.delete(Listing, { takeAssetId: { collection: { id: collectionId } } }),
         ctx.store.delete(TokenAccount, { collection: { id: collectionId } }),
         ctx.store.delete(Token, { collection: { id: collectionId } }),
         ctx.store.delete(CollectionAccount, { collection: { id: collectionId } }),
