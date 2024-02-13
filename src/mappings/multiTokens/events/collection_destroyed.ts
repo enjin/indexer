@@ -65,14 +65,14 @@ export async function collectionDestroyed(
     const accountTokenEvent = await ctx.store.find(AccountTokenEvent, { where: { token: { collection: { id: collectionId } } } })
     const listingMake = await ctx.store.find(Listing, { where: { makeAssetId: { collection: { id: collectionId } } } })
     const listingTake = await ctx.store.find(Listing, { where: { takeAssetId: { collection: { id: collectionId } } } })
+    await ctx.store.remove(AccountTokenEvent, accountTokenEvent)
+    await ctx.store.remove(Listing, listingMake)
+    await ctx.store.remove(Listing, listingTake)
 
     await Promise.all([
         ctx.store.delete(Trait, { collection: { id: collectionId } }),
         ctx.store.delete(RoyaltyCurrency, { collection: { id: collectionId } }),
         ctx.store.delete(Attribute, { collection: { id: collectionId } }),
-        ctx.store.delete(AccountTokenEvent, accountTokenEvent),
-        ctx.store.delete(Listing, listingMake),
-        ctx.store.delete(Listing, listingTake),
         ctx.store.delete(TokenAccount, { collection: { id: collectionId } }),
         ctx.store.delete(Token, { collection: { id: collectionId } }),
         ctx.store.delete(CollectionAccount, { collection: { id: collectionId } }),
