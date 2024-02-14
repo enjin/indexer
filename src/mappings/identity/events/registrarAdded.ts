@@ -1,6 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError } from '../../../common/errors'
 import { IdentityRegistrarAddedEvent } from '../../../types/generated/events'
 import { Event as EventModel, IdentityRegistrar } from '../../../model'
 import { Call, Event } from '../../../types/generated/support'
