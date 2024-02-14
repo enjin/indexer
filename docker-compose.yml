@@ -88,7 +88,7 @@ services:
 
   archive_ingest:
     container_name: archive_ingest
-    image: subsquid/substrate-ingest:latest
+    image: subsquid/substrate-ingest:firesquid
     restart: unless-stopped
     depends_on:
       - archive_db
