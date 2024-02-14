@@ -3,10 +3,10 @@ import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSele
 import { UnknownVersionError } from '../../../common/errors'
 import { IdentityRegistrarAddedEvent } from '../../../types/generated/events'
 import { Event as EventModel, IdentityRegistrar } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
+import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
-import { IdentityAddRegistrarCall } from '../../../types/generated/calls'
 import { getOrCreateAccount } from '../../util/entities'
+import { IdentityRegistrarsStorage } from '../../../types/generated/storage'
 
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new IdentityRegistrarAddedEvent(ctx, event)
@@ -18,11 +18,11 @@ function getEventData(ctx: CommonContext, event: Event) {
     throw new UnknownVersionError(data.constructor.name)
 }
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new IdentityAddRegistrarCall(ctx, call)
+function getRegistrars(ctx: CommonContext, block: SubstrateBlock) {
+    const data = new IdentityRegistrarsStorage(ctx, block)
 
     if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+        return data.asMatrixEnjinV1000.get()
     }
 
     throw new UnknownVersionError(data.constructor.name)
@@ -33,14 +33,15 @@ export async function registrarAdded(
     block: SubstrateBlock,
     item: EventItem<'Identity.RegistrarAdded', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.call) return undefined
-
     const eventData = getEventData(ctx, item.event)
-    const callData = getCallData(ctx, item.event.call)
 
-    if (!callData.account.value) throw new Error('Account not defined')
+    const registrars = await getRegistrars(ctx, block)
 
-    const account = await getOrCreateAccount(ctx, callData.account.value)
+    if (!registrars[eventData.registrarIndex]) {
+        throw new Error(`Registrar with index ${eventData.registrarIndex} not found`)
+    }
+
+    const account = await getOrCreateAccount(ctx, registrars[eventData.registrarIndex]!.account)
 
     const registrar = new IdentityRegistrar({
         id: account.id,
