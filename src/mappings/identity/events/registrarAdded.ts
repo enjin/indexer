@@ -33,7 +33,7 @@ export async function registrarAdded(
     block: SubstrateBlock,
     item: EventItem<'Identity.RegistrarAdded', { event: { args: true; call: true; extrinsic: true } }>
 ): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
+    if (!item.event.call) return undefined
 
     const eventData = getEventData(ctx, item.event)
     const callData = getCallData(ctx, item.event.call)
