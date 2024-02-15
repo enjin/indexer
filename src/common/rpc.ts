@@ -18,7 +18,7 @@ class Rpc {
             const types = Object.values(definitions).reduce((res, { types }): object => ({ ...res, ...types }), {})
 
             const api = await ApiPromise.create({
-                provider: new WsProvider(config.dataSource.chain, 1000),
+                provider: new WsProvider(config.dataSource.chain, 2000),
                 types: {
                     ...types,
                 },
