@@ -13,6 +13,9 @@ export class TokenSale {
     trades!: string
 
     @Field({ nullable: false })
+    amount!: string
+
+    @Field({ nullable: false })
     day!: Date
 
     constructor(props: Partial<TokenSale>) {
@@ -39,6 +42,7 @@ export class TokenSalesHistoryResolver {
             .select('DATE(listing_sale.created_at) AS day')
             .addSelect('COUNT(*) AS trades')
             .addSelect('SUM(listing_sale.price) AS price')
+            .addSelect('SUM(listing_sale.amount) AS amount')
 
         if (fromDate) {
             builder.andWhere('listing_sale.created_at >= :fromDate', { fromDate })
