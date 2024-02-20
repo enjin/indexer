@@ -310,93 +310,97 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        try {
+        // eslint-disable-next-line no-await-in-loop
+        const query = await apiAt.query.multiTokens.tokens.entriesPaged({
+            args: [],
+            pageSize: BATCH_SIZE,
+            startKey: lastKey,
+        })
+
+        if (query.length === 0) {
+            break
+        }
+
+        for (const [key, value] of query) {
+            const data: EpMultiTokensToken | null = value.unwrapOr(null)
+            // eslint-disable-next-line no-continue
+            if (!data) continue
+
+            const collectionId = key.args[0].toString()
+            const tokenId = key.args[1].toString()
             // eslint-disable-next-line no-await-in-loop
-            const query = await apiAt.query.multiTokens.tokens.entriesPaged({ args: [], pageSize: BATCH_SIZE, startKey: lastKey })
-            if (query.length === 0) {
-                break
-            }
+            const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            for (const [key, value] of query) {
-                const collectionId = key.args[0].toString()
-                const tokenId = key.args[1].toString()
-                // eslint-disable-next-line no-await-in-loop
-                const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
-                const data: EpMultiTokensToken = api.createType('EpMultiTokensToken', value)
-
-                let cap = null
-                if (data.cap.unwrapOrDefault().isSupply) {
-                    cap = new TokenCapSupply({
-                        type: CapType.Supply,
-                        supply: data.cap.unwrapOrDefault().asSupply.toBigInt(),
-                    })
-                } else if (data.cap.unwrapOrDefault().isSingleMint) {
-                    cap = new TokenCapSingleMint({
-                        type: CapType.SingleMint,
-                    })
-                }
-
-                let behavior = null
-                if (data.marketBehavior.unwrapOrDefault().isIsCurrency) {
-                    behavior = new TokenBehaviorIsCurrency({
-                        type: TokenBehaviorType.IsCurrency,
-                    })
-                } else if (data.marketBehavior.unwrapOrDefault().isHasRoyalty) {
-                    const { beneficiary } = data.marketBehavior.unwrapOrDefault().asHasRoyalty
-                    // eslint-disable-next-line no-await-in-loop
-                    await getAccountMap(ctx, [beneficiary.toU8a()])
-
-                    behavior = new TokenBehaviorHasRoyalty({
-                        type: TokenBehaviorType.HasRoyalty,
-                        royalty: new Royalty({
-                            beneficiary: u8aToHex(beneficiary),
-                            percentage: data.marketBehavior.unwrapOrDefault().asHasRoyalty.percentage.toNumber(),
-                        }),
-                    })
-                }
-
-                let freezeState = null
-
-                switch (data.freezeState.unwrapOrDefault().type) {
-                    case 'Temporary':
-                        freezeState = FreezeState.Temporary
-                        break
-                    case 'Permanent':
-                        freezeState = FreezeState.Permanent
-                        break
-                    case 'Never':
-                        freezeState = FreezeState.Never
-                        break
-                    default:
-                        freezeState = null
-                        break
-                }
-
-                const token = new Token({
-                    id: `${collectionId}-${tokenId}`,
-                    tokenId: BigInt(tokenId),
-                    collection,
-                    attributeCount: data.attributeCount.toNumber(),
-                    supply: data.supply.toBigInt(),
-                    isFrozen: data.freezeState.unwrapOrDefault().isPermanent || data.freezeState.unwrapOrDefault().isTemporary,
-                    cap,
-                    behavior,
-                    freezeState,
-                    listingForbidden: data.listingForbidden.isTrue,
-                    minimumBalance: data.minimumBalance.toBigInt(),
-                    unitPrice: 10_000_000_000_000_000n, // check
-                    createdAt: new Date(block.timestamp),
-                    mintDeposit: data.mintDeposit.toBigInt(),
+            let cap = null
+            if (data.cap?.unwrapOrDefault().isSupply) {
+                cap = new TokenCapSupply({
+                    type: CapType.Supply,
+                    supply: data.cap.unwrapOrDefault().asSupply.toBigInt(),
                 })
-
-                token.nonFungible = isNonFungible(token)
-                ctx.store.insert(Token, token as any)
-                processMetadata(token.id, 'token')
-
-                lastKey = key.toHex()
+            } else if (data.cap?.unwrapOrDefault().isSingleMint) {
+                cap = new TokenCapSingleMint({
+                    type: CapType.SingleMint,
+                })
             }
-        } catch (e) {
-            console.log(e)
+
+            let behavior = null
+            if (data.marketBehavior?.unwrapOrDefault().isIsCurrency) {
+                behavior = new TokenBehaviorIsCurrency({
+                    type: TokenBehaviorType.IsCurrency,
+                })
+            } else if (data.marketBehavior?.unwrapOrDefault().isHasRoyalty) {
+                const { beneficiary } = data.marketBehavior.unwrapOrDefault().asHasRoyalty
+                // eslint-disable-next-line no-await-in-loop
+                await getAccountMap(ctx, [beneficiary.toU8a()])
+
+                behavior = new TokenBehaviorHasRoyalty({
+                    type: TokenBehaviorType.HasRoyalty,
+                    royalty: new Royalty({
+                        beneficiary: u8aToHex(beneficiary),
+                        percentage: data.marketBehavior.unwrapOrDefault().asHasRoyalty.percentage.toNumber(),
+                    }),
+                })
+            }
+
+            let freezeState = null
+
+            switch (data.freezeState?.unwrapOrDefault().type) {
+                case 'Temporary':
+                    freezeState = FreezeState.Temporary
+                    break
+                case 'Permanent':
+                    freezeState = FreezeState.Permanent
+                    break
+                case 'Never':
+                    freezeState = FreezeState.Never
+                    break
+                default:
+                    freezeState = null
+                    break
+            }
+
+            const token = new Token({
+                id: `${collectionId}-${tokenId}`,
+                tokenId: BigInt(tokenId),
+                collection,
+                attributeCount: data.attributeCount?.toNumber() ?? 0,
+                supply: data.supply.toBigInt(),
+                isFrozen: data.freezeState.unwrapOrDefault().isPermanent || data.freezeState.unwrapOrDefault().isTemporary,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: data.listingForbidden.isTrue,
+                minimumBalance: data.minimumBalance.toBigInt(),
+                unitPrice: 10_000_000_000_000_000n, // check
+                createdAt: new Date(block.timestamp),
+                mintDeposit: data.mintDeposit.toBigInt(),
+            })
+
+            token.nonFungible = isNonFungible(token)
+            ctx.store.insert(Token, token as any)
+            processMetadata(token.id, 'token')
+
+            lastKey = key.toHex()
         }
     }
 }

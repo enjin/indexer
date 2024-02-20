@@ -11,6 +11,10 @@ import { ClaimDetails } from '../../model'
 export async function getTotalUnclaimedAmount(ctx: CommonContext, block: SubstrateBlock) {
     const data = new ClaimsTotalUnclaimedAmountStorage(ctx, block)
 
+    if (!data.isExists) {
+        return 0n
+    }
+
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603.get()
     }
