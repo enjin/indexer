@@ -13,6 +13,7 @@ import {
     ListingSale,
     ListingStatus,
     MultiTokensTokenDestroyed,
+    RoyaltyCurrency,
     Token,
     TraitToken,
 } from '../../../model'
@@ -104,6 +105,7 @@ export async function tokenDestroyed(
                 id: token.id,
             },
         }),
+        ctx.store.delete(RoyaltyCurrency, { token: { id: token.id } }),
         ctx.store.delete(TraitToken, { token: { id: token.id } }),
         ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
         ctx.store.delete(Attribute, {
