@@ -63,6 +63,22 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     } else if (call.name === 'MultiTokens.create_collection') {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
@@ -81,6 +97,22 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     } else if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
         let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
@@ -136,6 +168,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
             data.asMatrixEnjinV603.call.value.__kind === 'create_collection'
         ) {
             const { descriptor } = data.asMatrixEnjinV603.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (
+            data.isV1004 &&
+            data.asV1004.call.__kind === 'MultiTokens' &&
+            data.asV1004.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asV1004.call.value
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
             const royalty = descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
