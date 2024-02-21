@@ -102,7 +102,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
             const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
-            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
+            const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
 
             return {
                 maxTokenCount,
