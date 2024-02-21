@@ -5,6 +5,8 @@ import { DispatchRuleDescriptor as DispatchRuleDescriptorV601 } from '../../type
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV600 } from '../../types/generated/v600'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1000 } from '../../types/generated/v1000'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1003 } from '../../types/generated/v1003'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorv1004 } from '../../types/generated/v1004'
+
 import {
     MaxFuelBurnPerTransaction,
     UserFuelBudget,
@@ -27,6 +29,7 @@ export function rulesToMap(
         | DispatchRuleDescriptorV600[]
         | DispatchRuleDescriptorv1000[]
         | DispatchRuleDescriptorv1003[]
+        | DispatchRuleDescriptorv1004[]
 ) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -102,6 +105,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: Call) {
 
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
+    }
+
+    if (data.isV1004) {
+        return data.asV1004
     }
 
     if (data.isV1003) {

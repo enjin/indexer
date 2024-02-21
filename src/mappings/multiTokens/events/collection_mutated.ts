@@ -33,6 +33,17 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
+    if (data.isV1004) {
+        const { collectionId, mutation } = data.asV1004
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
