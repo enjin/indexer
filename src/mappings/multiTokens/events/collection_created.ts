@@ -66,7 +66,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
 
         if (data.isV1004) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
-            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
+            const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
 
@@ -100,7 +100,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
 
         if (data.isV1004) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
-            const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
+            const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
 
@@ -250,6 +250,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
 
         if (data.isMatrixEnjinV1000) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1000.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV1000.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1000.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
             const royalty = data.asMatrixEnjinV1000.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1000.descriptor
