@@ -66,6 +66,10 @@ async function getCallData(ctx: CommonContext, call: Call) {
             callData = data.asMatrixEnjinV603
         }
 
+        if (data.isV1004) {
+            callData = data.asV1004
+        }
+
         if (data.isV1003) {
             callData = data.asV1003
         }

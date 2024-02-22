@@ -794,19 +794,17 @@ export async function tokenCreated(
     }
 
     if (item.event.call) {
-        const [callData, collection] = await Promise.all([
-            getCallData(ctx, item.event.call, eventData),
-            ctx.store.findOne(Collection, {
-                where: { id: eventData.collectionId.toString() },
-            }),
-        ])
+        const callData = await getCallData(ctx, item.event.call, eventData)
+        const collection = await ctx.store.findOne(Collection, {
+            where: { id: eventData.collectionId.toString() },
+        })
 
-        if (!collection) {
+        if (collection === null) {
             Sentry.captureMessage(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
             return getEvent(item, eventData)
         }
 
-        if (!callData) {
+        if (callData === null) {
             Sentry.captureMessage(
                 `[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`,
                 'fatal'

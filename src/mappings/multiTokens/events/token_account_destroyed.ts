@@ -20,6 +20,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 
@@ -47,36 +48,37 @@ export async function tokenAccountDestroyed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
 
-    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+    const collectionAccount = await ctx.store.findOneBy<CollectionAccount>(CollectionAccount, {
+        id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
     })
 
-    if (collectionAccount) {
-        collectionAccount.accountCount -= 1
-        await ctx.store.save(collectionAccount)
-    } else {
+    if (collectionAccount === null) {
         Sentry.captureMessage(
             `[TokenAccountDestroyed] We have not found collection account ${data.collectionId}-${u8aToHex(data.accountId)}.`,
             'fatal'
         )
+
+        return getEvent(item, data)
     }
 
-    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-        where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
+    collectionAccount.accountCount -= 1
+    ctx.store.save(collectionAccount).then()
+
+    const tokenAccount = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
+        id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
     })
 
-    if (tokenAccount) {
-        await ctx.store.remove(tokenAccount)
-    } else {
+    if (tokenAccount === null) {
         Sentry.captureMessage(
             `[TokenAccountDestroyed] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )
     }
+
+    ctx.store.remove(tokenAccount).then()
 
     return getEvent(item, data)
 }

@@ -63,6 +63,22 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
+            const royalty = data.asV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     } else if (call.name === 'MultiTokens.create_collection') {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
@@ -81,6 +97,22 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
+            const royalty = data.asV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     } else if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
         let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
@@ -136,6 +168,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
             data.asMatrixEnjinV603.call.value.__kind === 'create_collection'
         ) {
             const { descriptor } = data.asMatrixEnjinV603.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (
+            data.isV1004 &&
+            data.asV1004.call.__kind === 'MultiTokens' &&
+            data.asV1004.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asV1004.call.value
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
             const royalty = descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
@@ -210,6 +262,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 explicitRoyaltyCurrencies,
             }
         }
+
+        if (data.isV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
+            const royalty = data.asV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
     }
 
     throw new UnsupportedCallError(call.name)
@@ -263,7 +330,12 @@ export async function collectionCreated(
         // So let the script continue, so it creates the collection that will probably be deleted later
         Sentry.captureMessage(`[CollectionCreated] We have not found collection ${eventData.collectionId}.`, 'fatal')
     }
-    const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
+
+    // Using promise.all here results in an error where this whole class could be called twice
+    // And getOrCreateAccount would be called twice in parallel and we would get an exception
+    // If the second query of finding the account was run before the insert of the first
+    const callData = await getCallData(ctx, item.event.call)
+    const account = await getOrCreateAccount(ctx, eventData.owner)
 
     if (!callData) return undefined
     const collection = new Collection({

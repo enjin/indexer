@@ -10,6 +10,7 @@ import * as matrixEnjinV1003 from './matrixEnjinV1003'
 import * as v604 from './v604'
 import * as v1000 from './v1000'
 import * as v1003 from './v1003'
+import * as v1004 from './v1004'
 
 export class AuthorshipAuthorStorage extends StorageBase {
     protected getPrefix() {
@@ -1986,6 +1987,21 @@ export class CouncilProposalOfStorage extends StorageBase {
         assert(this.isV1003)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === '69e6d13666e3451d4f2dee8c1f72397c4d6f9e99223bb91ffe671c3c7b090d47'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV1004(): CouncilProposalOfStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -2156,6 +2172,23 @@ export interface CouncilProposalOfStorageV1003 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1003.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1003.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1003.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface CouncilProposalOfStorageV1004 {
+    get(key: Uint8Array): Promise<(v1004.Call | undefined)>
+    getAll(): Promise<v1004.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v1004.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v1004.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1004.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1004.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1004.Call][]>
 }
 
 export class CouncilProposalsStorage extends StorageBase {
@@ -3767,6 +3800,21 @@ export class MarketplaceListingsStorage extends StorageBase {
         assert(this.isMatrixEnjinV603)
         return this as any
     }
+
+    /**
+     *  Listings by ID
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === 'd68709a03fe5f2e12d10e48ae2c964da6dd14fd99878c95b4381605a9ab2f7da'
+    }
+
+    /**
+     *  Listings by ID
+     */
+    get asV1004(): MarketplaceListingsStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -3784,6 +3832,23 @@ export interface MarketplaceListingsStorageMatrixEnjinV603 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: matrixEnjinV603.Listing][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface MarketplaceListingsStorageV1004 {
+    get(key: Uint8Array): Promise<(v1004.Listing | undefined)>
+    getAll(): Promise<v1004.Listing[]>
+    getMany(keys: Uint8Array[]): Promise<(v1004.Listing | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v1004.Listing][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1004.Listing][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1004.Listing][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1004.Listing][]>
 }
 
 export class MatrixXcmMinimumWeightsStorage extends StorageBase {
@@ -3863,6 +3928,21 @@ export class MultiTokensAssetIdsByLocationStorage extends StorageBase {
         assert(this.isMatrixEnjinV603)
         return this as any
     }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === '23158e49032a03fad1648e5c112d1685a37907dd0691ffa46a5e439e5a9d5bea'
+    }
+
+    /**
+     *  Map of Locations to AssetIds of Foreign Tokens
+     */
+    get asV1004(): MultiTokensAssetIdsByLocationStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -3880,6 +3960,23 @@ export interface MultiTokensAssetIdsByLocationStorageMatrixEnjinV603 {
     getPairs(key: matrixEnjinV603.V3MultiLocation): Promise<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
     getPairsPaged(pageSize: number, key: matrixEnjinV603.V3MultiLocation): AsyncIterable<[k: matrixEnjinV603.V3MultiLocation, v: matrixEnjinV603.AssetId][]>
+}
+
+/**
+ *  Map of Locations to AssetIds of Foreign Tokens
+ */
+export interface MultiTokensAssetIdsByLocationStorageV1004 {
+    get(key: v1004.V3MultiLocation): Promise<(v1004.AssetId | undefined)>
+    getAll(): Promise<v1004.AssetId[]>
+    getMany(keys: v1004.V3MultiLocation[]): Promise<(v1004.AssetId | undefined)[]>
+    getKeys(): Promise<v1004.V3MultiLocation[]>
+    getKeys(key: v1004.V3MultiLocation): Promise<v1004.V3MultiLocation[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v1004.V3MultiLocation[]>
+    getKeysPaged(pageSize: number, key: v1004.V3MultiLocation): AsyncIterable<v1004.V3MultiLocation[]>
+    getPairs(): Promise<[k: v1004.V3MultiLocation, v: v1004.AssetId][]>
+    getPairs(key: v1004.V3MultiLocation): Promise<[k: v1004.V3MultiLocation, v: v1004.AssetId][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v1004.V3MultiLocation, v: v1004.AssetId][]>
+    getPairsPaged(pageSize: number, key: v1004.V3MultiLocation): AsyncIterable<[k: v1004.V3MultiLocation, v: v1004.AssetId][]>
 }
 
 export class MultiTokensAttributesStorage extends StorageBase {
@@ -4043,6 +4140,21 @@ export class MultiTokensCollectionsStorage extends StorageBase {
         assert(this.isMatrixEnjinV603)
         return this as any
     }
+
+    /**
+     *  The collections in existence and their ownership details.
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === 'e81ecf325e9651b60bcaa24863dcc5844480dc00dcbf5f1ab90447fc88a94dd4'
+    }
+
+    /**
+     *  The collections in existence and their ownership details.
+     */
+    get asV1004(): MultiTokensCollectionsStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -4060,6 +4172,23 @@ export interface MultiTokensCollectionsStorageMatrixEnjinV603 {
     getPairs(key: bigint): Promise<[k: bigint, v: matrixEnjinV603.Collection][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: matrixEnjinV603.Collection][]>
     getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: matrixEnjinV603.Collection][]>
+}
+
+/**
+ *  The collections in existence and their ownership details.
+ */
+export interface MultiTokensCollectionsStorageV1004 {
+    get(key: bigint): Promise<(v1004.Collection | undefined)>
+    getAll(): Promise<v1004.Collection[]>
+    getMany(keys: bigint[]): Promise<(v1004.Collection | undefined)[]>
+    getKeys(): Promise<bigint[]>
+    getKeys(key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+    getPairs(): Promise<[k: bigint, v: v1004.Collection][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: v1004.Collection][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: v1004.Collection][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: v1004.Collection][]>
 }
 
 export class MultiTokensEthereumAccountsStorage extends StorageBase {
@@ -4390,6 +4519,48 @@ export class MultiTokensNextCollectionIdStorage extends StorageBase {
  */
 export interface MultiTokensNextCollectionIdStorageMatrixEnjinV603 {
     get(): Promise<bigint>
+}
+
+export class MultiTokensPendingCollectionTransfersStorage extends StorageBase {
+    protected getPrefix() {
+        return 'MultiTokens'
+    }
+
+    protected getName() {
+        return 'PendingCollectionTransfers'
+    }
+
+    /**
+     *  Collections waiting to be transferred
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === '1ae81dc228a0aee115c68cc8e3dc1fae8a27bd060e1562a6b62981f4b1d5ff20'
+    }
+
+    /**
+     *  Collections waiting to be transferred
+     */
+    get asV1004(): MultiTokensPendingCollectionTransfersStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
+}
+
+/**
+ *  Collections waiting to be transferred
+ */
+export interface MultiTokensPendingCollectionTransfersStorageV1004 {
+    get(key: bigint): Promise<(Uint8Array | undefined)>
+    getAll(): Promise<Uint8Array[]>
+    getMany(keys: bigint[]): Promise<(Uint8Array | undefined)[]>
+    getKeys(): Promise<bigint[]>
+    getKeys(key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, key: bigint): AsyncIterable<bigint[]>
+    getPairs(): Promise<[k: bigint, v: Uint8Array][]>
+    getPairs(key: bigint): Promise<[k: bigint, v: Uint8Array][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: bigint, v: Uint8Array][]>
+    getPairsPaged(pageSize: number, key: bigint): AsyncIterable<[k: bigint, v: Uint8Array][]>
 }
 
 export class MultiTokensTokenAccountsStorage extends StorageBase {
@@ -7400,6 +7571,33 @@ export class SystemEventsStorage extends StorageBase {
         assert(this.isV1000)
         return this as any
     }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === '0861f9e0b39c155f23d8c7abb375289d8bda537f1940becbdd79cf9f34a3da24'
+    }
+
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    get asV1004(): SystemEventsStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -7504,6 +7702,19 @@ export interface SystemEventsStorageV604 {
  */
 export interface SystemEventsStorageV1000 {
     get(): Promise<v1000.EventRecord[]>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface SystemEventsStorageV1004 {
+    get(): Promise<v1004.EventRecord[]>
 }
 
 export class SystemExecutionPhaseStorage extends StorageBase {
@@ -8029,6 +8240,21 @@ export class TechnicalCommitteeProposalOfStorage extends StorageBase {
         assert(this.isV1003)
         return this as any
     }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get isV1004(): boolean {
+        return this.getTypeHash() === '69e6d13666e3451d4f2dee8c1f72397c4d6f9e99223bb91ffe671c3c7b090d47'
+    }
+
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    get asV1004(): TechnicalCommitteeProposalOfStorageV1004 {
+        assert(this.isV1004)
+        return this as any
+    }
 }
 
 /**
@@ -8199,6 +8425,23 @@ export interface TechnicalCommitteeProposalOfStorageV1003 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1003.Call][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1003.Call][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1003.Call][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface TechnicalCommitteeProposalOfStorageV1004 {
+    get(key: Uint8Array): Promise<(v1004.Call | undefined)>
+    getAll(): Promise<v1004.Call[]>
+    getMany(keys: Uint8Array[]): Promise<(v1004.Call | undefined)[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v1004.Call][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1004.Call][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1004.Call][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1004.Call][]>
 }
 
 export class TechnicalCommitteeProposalsStorage extends StorageBase {

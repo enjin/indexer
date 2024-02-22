@@ -12,7 +12,7 @@ export async function getOrCreateAccount(
         id: pkHex,
     })
 
-    if (!account) {
+    if (account === null) {
         account = new Account({
             id: pkHex,
             address: isAddressSS58(publicKey) ? encodeId(publicKey) : pkHex,
@@ -26,7 +26,8 @@ export async function getOrCreateAccount(
             }),
             nonce: 0,
         })
-        await ctx.store.insert(Account, account as any)
+
+        await ctx.store.save(Account, account as any)
     }
 
     return account
