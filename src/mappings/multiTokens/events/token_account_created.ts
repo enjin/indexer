@@ -51,14 +51,13 @@ export async function tokenAccountCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = getEventData(ctx, item.event)
-    if (!data) return undefined
 
     if (skipSave) {
         const tokenAccount = await ctx.store.findOne(TokenAccount, {
             where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
         })
 
-        if (tokenAccount) {
+        if (tokenAccount !== null) {
             tokenAccount.createdAt = new Date(block.timestamp)
             tokenAccount.updatedAt = new Date(block.timestamp)
             ctx.store.save(tokenAccount)
@@ -82,14 +81,12 @@ export async function tokenAccountCreated(
         return undefined
     }
 
-    const [account, collectionAccount] = await Promise.all([
-        getOrCreateAccount(ctx, data.accountId),
-        ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-            where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
-        }),
-    ])
+    const account = await getOrCreateAccount(ctx, data.accountId)
+    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
+        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+    })
 
-    if (!collectionAccount) {
+    if (collectionAccount === null) {
         const newCollectionAccount = new CollectionAccount({
             id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
             isFrozen: false,

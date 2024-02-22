@@ -330,7 +330,12 @@ export async function collectionCreated(
         // So let the script continue, so it creates the collection that will probably be deleted later
         Sentry.captureMessage(`[CollectionCreated] We have not found collection ${eventData.collectionId}.`, 'fatal')
     }
-    const [callData, account] = await Promise.all([getCallData(ctx, item.event.call), getOrCreateAccount(ctx, eventData.owner)])
+
+    // Using promise.all here results in an error where this whole class could be called twice
+    // And getOrCreateAccount would be called twice in parallel and we would get an exception
+    // If the second query of finding the account was run before the insert of the first
+    const callData = await getCallData(ctx, item.event.call)
+    const account = await getOrCreateAccount(ctx, eventData.owner)
 
     if (!callData) return undefined
     const collection = new Collection({
