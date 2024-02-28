@@ -15,6 +15,7 @@ import {
     MultiTokensTokenDestroyed,
     RoyaltyCurrency,
     Token,
+    TokenAccount,
     TraitToken,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
@@ -66,8 +67,8 @@ export async function tokenDestroyed(
 
     if (skipSave) return getEvent(item, data)
 
-    const token = await ctx.store.findOne<Token>(Token, {
-        where: { id: `${data.collectionId}-${data.tokenId}` },
+    const token = await ctx.store.findOneBy<Token>(Token, {
+        id: `${data.collectionId}-${data.tokenId}`,
     })
 
     if (!token) {
@@ -106,13 +107,10 @@ export async function tokenDestroyed(
             },
         }),
         ctx.store.delete(RoyaltyCurrency, { token: { id: token.id } }),
+        ctx.store.delete(TokenAccount, { token: { id: token.id } }),
         ctx.store.delete(TraitToken, { token: { id: token.id } }),
         ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
-        ctx.store.delete(Attribute, {
-            token: {
-                id: token.id,
-            },
-        }),
+        ctx.store.delete(Attribute, { token: { id: token.id } }),
     ])
 
     await ctx.store.remove(token)
