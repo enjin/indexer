@@ -58,10 +58,10 @@ function parseObjectProperties(value: object) {
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
         if (typeof v === 'object') {
-            if ('value' in v) {
+            if ('value' in v && v.value !== null && v.value !== '') {
                 properties[k] = v
             }
-        } else {
+        } else if (v !== null && v !== '') {
             properties[k] = {
                 value: v,
             }
@@ -107,7 +107,7 @@ function parseArrayAttributes(
         if (attr.trait_type) {
             key = attr.trait_type
         }
-        if (key && attr.value) {
+        if (key && attr.value !== null && attr.value !== '') {
             obj[key] = { ...attr, type: attr.display_type ?? attr.type ?? undefined }
         }
     })
