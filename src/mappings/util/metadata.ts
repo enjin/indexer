@@ -28,6 +28,9 @@ export async function fetchMetadata(url: string) {
         return data
     }
 
+    // eslint-disable-next-line no-console
+    console.error('Failed to fetch metadata', url, status)
+
     return null
 }
 
