@@ -308,6 +308,7 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
     const { api } = await Rpc.getInstance()
     const apiAt = await api.at(block.hash)
     let lastKey = ''
+    let count = 0
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -321,6 +322,8 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
         if (query.length === 0) {
             break
         }
+
+        const tokens: Token[] = []
 
         for (const [key, value] of query) {
             const data: EpMultiTokensToken | null = value.unwrapOr(null)
@@ -398,10 +401,20 @@ async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
             })
 
             token.nonFungible = isNonFungible(token)
-            ctx.store.insert(Token, token as any)
+            tokens.push(token)
+
             processMetadata(token.id, 'token')
 
             lastKey = key.toHex()
+        }
+
+        // eslint-disable-next-line no-await-in-loop
+        await ctx.store.insert(Token, tokens as any)
+
+        count += 1
+
+        if (count % 10 === 0) {
+            ctx.log.info(`Processed ${count * BATCH_SIZE} tokens`)
         }
     }
 }
