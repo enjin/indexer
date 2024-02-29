@@ -23,13 +23,9 @@ export async function fetchMetadata(url: string) {
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
-    try {
-        const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
-        if (status < 400) {
-            return data
-        }
-    } catch (e) {
-        return null
+    const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
+    if (status < 400) {
+        return data
     }
 
     return null
