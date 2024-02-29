@@ -17,7 +17,7 @@ function getEventData(ctx: CommonContext, event: Event) {
     }
 
     if (data.isMatrixEnjinV603) {
-        return data.asV1000
+        return data.asMatrixEnjinV603
     }
 
     if (data.isV1000) {
