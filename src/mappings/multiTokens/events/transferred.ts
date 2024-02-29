@@ -29,7 +29,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 
 function getEvent(
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
+    data: ReturnType<typeof getEventData>,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -47,16 +48,20 @@ function getEvent(
         }),
     })
 
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            from: new Account({ id: u8aToHex(data.from) }),
-            to: new Account({ id: u8aToHex(data.to) }),
+    if (token) {
+        return [
             event,
-            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
-        }),
-    ]
+            new AccountTokenEvent({
+                id: item.event.id,
+                from: new Account({ id: u8aToHex(data.from) }),
+                to: new Account({ id: u8aToHex(data.to) }),
+                event,
+                token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
+            }),
+        ]
+    }
+
+    return event
 }
 
 export async function transferred(
@@ -132,5 +137,5 @@ export async function transferred(
         })
     }
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }

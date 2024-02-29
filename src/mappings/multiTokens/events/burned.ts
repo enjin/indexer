@@ -38,7 +38,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 function getEvent(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>,
-    token?: Token
+    token?: Token | null
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
@@ -113,5 +113,5 @@ export async function burned(
         throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }

@@ -42,7 +42,8 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 
 function getEvent(
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
+    data: ReturnType<typeof getEventData>,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -59,16 +60,20 @@ function getEvent(
         }),
     })
 
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.event.id,
-            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
-            from: new Account({ id: u8aToHex(data.issuer) }),
-            to: new Account({ id: u8aToHex(data.recipient) }),
+    if (token) {
+        return [
             event,
-        }),
-    ]
+            new AccountTokenEvent({
+                id: item.event.id,
+                token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
+                from: new Account({ id: u8aToHex(data.issuer) }),
+                to: new Account({ id: u8aToHex(data.recipient) }),
+                event,
+            }),
+        ]
+    }
+
+    return event
 }
 
 export async function minted(
@@ -128,5 +133,5 @@ export async function minted(
     computeTraits(data.collectionId.toString())
     syncCollectionStats(data.collectionId.toString())
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }
