@@ -40,7 +40,6 @@ export async function getBestListing(ctx: CommonContext, tokenId: string) {
         .createQueryBuilder('listing')
         .select('listing.id')
         .addSelect('listing.highestPrice')
-        .addSelect('COUNT(status.type)')
         .where('listing.makeAssetId = :tokenId', { tokenId })
         .andWhere('listing.isActive = true')
         .orderBy('listing.highestPrice', 'ASC')
