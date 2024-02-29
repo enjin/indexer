@@ -54,6 +54,9 @@ export class Account {
     @Column_("timestamp with time zone", {nullable: true})
     verifiedAt!: Date | undefined | null
 
+    @Column_("bool", {nullable: false})
+    verified!: boolean
+
     @Column_("text", {nullable: true})
     image!: string | undefined | null
 }

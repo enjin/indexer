@@ -2,7 +2,7 @@ import express from 'express'
 import { createBullBoard } from '@bull-board/api'
 import { BullAdapter } from '@bull-board/api/bullAdapter'
 import { ExpressAdapter } from '@bull-board/express'
-import * as Sentry from '@sentry/node'
+import { throwError } from 'src/common/errors'
 import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
@@ -34,11 +34,11 @@ async function main() {
     invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
 
     traitsQueue.on('global:failed', (job, err) => {
-        Sentry.captureMessage(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+        throwError(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
     })
 
     metadataQueue.on('global:failed', (job, err) => {
-        Sentry.captureMessage(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+        throwError(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
     })
 
     const serverAdapter = new ExpressAdapter()

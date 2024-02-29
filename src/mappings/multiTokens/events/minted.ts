@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import {
     Account,
@@ -91,7 +90,7 @@ export async function minted(
     })
 
     if (!token) {
-        Sentry.captureMessage(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
         return getEvent(item, data)
     }
 
@@ -110,7 +109,7 @@ export async function minted(
     })
 
     if (!tokenAccount) {
-        Sentry.captureMessage(
+        throwError(
             `[Minted] We have not found token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )

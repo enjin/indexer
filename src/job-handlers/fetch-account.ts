@@ -28,6 +28,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             account.username = _d.username
             account.image = _d.image
             account.verifiedAt = _d.verifiedAt
+            account.verified = !!_d.verifiedAt
 
             return account
         })

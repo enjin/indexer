@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenAccountDestroyedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensTokenAccountDestroyed, TokenAccount } from '../../../model'
 import { CommonContext } from '../../types/contexts'
@@ -56,7 +55,7 @@ export async function tokenAccountDestroyed(
     })
 
     if (collectionAccount === null) {
-        Sentry.captureMessage(
+        throwError(
             `[TokenAccountDestroyed] We have not found collection account ${data.collectionId}-${u8aToHex(data.accountId)}.`,
             'fatal'
         )
@@ -72,7 +71,7 @@ export async function tokenAccountDestroyed(
     })
 
     if (tokenAccount === null) {
-        Sentry.captureMessage(
+        throwError(
             `[TokenAccountDestroyed] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )

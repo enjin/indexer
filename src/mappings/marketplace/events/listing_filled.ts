@@ -119,7 +119,7 @@ export async function listingFilled(
         if (bestListing) {
             listing.makeAssetId.bestListing = bestListing
         }
-        ctx.store.save(listing.makeAssetId)
+        await ctx.store.save(listing.makeAssetId)
     }
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])

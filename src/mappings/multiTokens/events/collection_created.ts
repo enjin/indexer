@@ -1,7 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
-import * as Sentry from '@sentry/node'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
@@ -449,13 +448,9 @@ export async function collectionCreated(
         if (collection) {
             collection.createdAt = new Date(block.timestamp)
             ctx.store.save(collection)
-
-            return getEvent(item, eventData)
         }
 
-        // This collection was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
-        // So let the script continue, so it creates the collection that will probably be deleted later
-        Sentry.captureMessage(`[CollectionCreated] We have not found collection ${eventData.collectionId}.`, 'fatal')
+        return getEvent(item, eventData)
     }
 
     // Using promise.all here results in an error where this whole class could be called twice

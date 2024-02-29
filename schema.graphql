@@ -390,6 +390,7 @@ type Account @entity {
   # profile
   username: String
   verifiedAt: DateTime
+  verified: Boolean!
   image: String
 }
 
@@ -585,7 +586,7 @@ type Token @entity {
   # Extras
   nonFungible: Boolean!
   metadata: Metadata
-  createdAt: DateTime!
+  createdAt: DateTime! @index
 }
 
 type TokenApproval {
@@ -623,7 +624,7 @@ type TokenAccount @entity {
   token: Token! @index
 
   # Extras
-  createdAt: DateTime!
+  createdAt: DateTime! @index
   updatedAt: DateTime!
 }
 
@@ -768,7 +769,7 @@ type Listing @entity {
   isActive: Boolean! @index
   type: ListingType! @index
 
-  createdAt: DateTime!
+  createdAt: DateTime! @index
   updatedAt: DateTime!
 }
 

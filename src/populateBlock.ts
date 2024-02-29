@@ -80,6 +80,7 @@ async function getAccountMap(
                 miscFrozen: 0n,
                 feeFrozen: 0n,
             }),
+            verified: false,
             nonce: 0,
         })
 

@@ -1,7 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { Event } from '../../../types/generated/support'
@@ -69,7 +68,7 @@ export async function attributeRemoved(
             })
 
             if (!token) {
-                Sentry.captureMessage(`[AttributeRemoved] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+                throwError(`[AttributeRemoved] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
                 return getEvent(item, data)
             }
 
@@ -83,7 +82,7 @@ export async function attributeRemoved(
             })
 
             if (!collection) {
-                Sentry.captureMessage(`[AttributeRemoved] We have not found collection ${data.collectionId}.`, 'fatal')
+                throwError(`[AttributeRemoved] We have not found collection ${data.collectionId}.`, 'fatal')
                 return getEvent(item, data)
             }
 

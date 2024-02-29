@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import {
     Account,
@@ -102,10 +101,7 @@ export async function burned(
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
-        Sentry.captureMessage(
-            `[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     if (token) {
@@ -114,7 +110,7 @@ export async function burned(
         await ctx.store.save(token)
         syncCollectionStats(data.collectionId.toString())
     } else {
-        Sentry.captureMessage(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     return getEvent(item, data)

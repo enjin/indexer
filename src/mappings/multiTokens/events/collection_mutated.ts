@@ -1,8 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
 import {
     Collection,
@@ -103,7 +102,7 @@ export async function collectionMutated(
     })
 
     if (!collection) {
-        Sentry.captureMessage(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+        throwError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
         return getEvent(item)
     }
 
@@ -143,7 +142,7 @@ export async function collectionMutated(
                 })
 
                 if (!token) {
-                    Sentry.captureMessage(
+                    throwError(
                         `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`,
                         'fatal'
                     )

@@ -1,8 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
     CapType,
@@ -883,13 +882,9 @@ export async function tokenCreated(
         if (token) {
             token.createdAt = new Date(block.timestamp)
             ctx.store.save(token)
-
-            return getEvent(item, eventData)
         }
 
-        // This token was probably deleted in the LAST_HEIGHT that it was sync, and thus it did not exist here.
-        // So letting the script continue so it creates the token
-        Sentry.captureMessage(`[TokenCreated] We have not found token ${eventData.collectionId}-${eventData.tokenId}.`, 'fatal')
+        return getEvent(item, eventData)
     }
 
     if (item.event.call) {
@@ -899,15 +894,12 @@ export async function tokenCreated(
         })
 
         if (collection === null) {
-            Sentry.captureMessage(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
+            throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
             return getEvent(item, eventData)
         }
 
         if (callData === null) {
-            Sentry.captureMessage(
-                `[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`,
-                'fatal'
-            )
+            throwError(`[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`, 'fatal')
             return getEvent(item, eventData)
         }
 

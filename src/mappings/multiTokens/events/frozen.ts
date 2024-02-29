@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensFrozenEvent } from '../../../types/generated/events'
 import {
     Collection,
@@ -102,10 +101,7 @@ export async function frozen(
         })
 
         if (!tokenAccount) {
-            Sentry.captureMessage(
-                `[Frozen] We have not found collection ${address}-${data.collectionId}-${data.tokenId}`,
-                'fatal'
-            )
+            throwError(`[Frozen] We have not found collection ${address}-${data.collectionId}-${data.tokenId}`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -119,7 +115,7 @@ export async function frozen(
         })
 
         if (!collectionAccount) {
-            Sentry.captureMessage(`[Frozen] We have not found collection ${data.collectionId}-${address}`, 'fatal')
+            throwError(`[Frozen] We have not found collection ${data.collectionId}-${address}`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -132,7 +128,7 @@ export async function frozen(
         })
 
         if (!token) {
-            Sentry.captureMessage(`[Frozen] We have not found collection ${data.collectionId}-${data.tokenId}`, 'fatal')
+            throwError(`[Frozen] We have not found collection ${data.collectionId}-${data.tokenId}`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -160,7 +156,7 @@ export async function frozen(
         })
 
         if (!collection) {
-            Sentry.captureMessage(`[Frozen] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+            throwError(`[Frozen] We have not found collection ${data.collectionId.toString()}`, 'fatal')
             return getEvent(item, data)
         }
 

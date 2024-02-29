@@ -1,7 +1,6 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
 import {
     Event as EventModel,
@@ -87,7 +86,7 @@ export async function tokenMutated(
     })
 
     if (!token) {
-        Sentry.captureMessage(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
         return getEvent(item, data)
     }
 

@@ -82,6 +82,7 @@ export class Listing {
     @Column_("varchar", {length: 10, nullable: false})
     type!: ListingType
 
+    @Index_()
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 

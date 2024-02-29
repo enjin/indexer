@@ -7,8 +7,7 @@
   "scripts": {
     "build": "rm -rf lib && tsc",
     "db:migrate": "npx squid-typeorm-migration apply",
-    "processor:start": "node lib/processor.js",
-    "processor:debug": "node -r dotenv/config lib/processor.js",
+    "processor:start": "node -r dotenv/config lib/processor.js",
     "query-node:start": "squid-graphql-server --subscriptions",
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
     "lint": "eslint src --ext .ts,.js",

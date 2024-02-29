@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
@@ -67,10 +66,7 @@ export async function unapproved(
 
             await ctx.store.save(tokenAccount)
         } else {
-            Sentry.captureMessage(
-                `[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-                'fatal'
-            )
+            throwError(`[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
         }
     } else {
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
@@ -85,7 +81,7 @@ export async function unapproved(
 
             await ctx.store.save(collectionAccount)
         } else {
-            Sentry.captureMessage(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            throwError(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
         }
     }
 

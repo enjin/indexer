@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensCollectionAccountDestroyedEvent } from '../../../types/generated/events'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../../model'
 import { CommonContext } from '../../types/contexts'
@@ -54,10 +53,7 @@ export async function collectionAccountDestroyed(
     if (collectionAccount) {
         await ctx.store.remove(collectionAccount)
     } else {
-        Sentry.captureMessage(
-            `[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`,
-            'fatal'
-        )
+        throwError(`[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
     }
 
     return getEvent(item, data)
