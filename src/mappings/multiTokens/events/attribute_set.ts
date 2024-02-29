@@ -113,7 +113,7 @@ export async function attributeSet(
         await ctx.store.save(collection)
     }
 
-    let token = null
+    let token: Token | null = null
     if (data.tokenId !== undefined) {
         token = await ctx.store.findOne<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },

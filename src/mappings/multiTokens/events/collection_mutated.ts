@@ -22,6 +22,17 @@ import { DefaultRoyalty } from '../../../types/generated/v500'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
+    if (data.isMatrixEnjinV1004) {
+        const { collectionId, mutation } = data.asMatrixEnjinV1004
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
     if (data.isMatrixEnjinV603) {
         const { collectionId, mutation } = data.asMatrixEnjinV603
 
@@ -35,6 +46,17 @@ function getEventData(ctx: CommonContext, event: Event) {
 
     if (data.isV1004) {
         const { collectionId, mutation } = data.asV1004
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
+    if (data.isV500) {
+        const { collectionId, mutation } = data.asV500
 
         return {
             collectionId,

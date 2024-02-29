@@ -49,6 +49,22 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 async function getCallData(ctx: CommonContext, call: Call) {
     if (call.name === 'MultiTokens.force_create_collection') {
         const data = new MultiTokensForceCreateCollectionCall(ctx, call)
+
+        if (data.isMatrixEnjinV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1004.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (data.isMatrixEnjinV603) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV603.descriptor.policy.mint
             const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
@@ -69,6 +85,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV500) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV500.descriptor.policy.mint
+            const royalty = data.asV500.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV500.descriptor
 
             return {
                 maxTokenCount,
@@ -83,6 +114,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
     } else if (call.name === 'MultiTokens.create_collection') {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
 
+        if (data.isMatrixEnjinV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1004.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (data.isMatrixEnjinV603) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV603.descriptor.policy.mint
             const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
@@ -103,6 +149,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV500) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV500.descriptor.policy.mint
+            const royalty = data.asV500.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV500.descriptor
 
             return {
                 maxTokenCount,
@@ -120,6 +181,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
             data = new FuelTanksDispatchCall(ctx, call)
         } else {
             data = new FuelTanksDispatchAndTouchCall(ctx, call)
+        }
+
+        if (
+            data.isMatrixEnjinV1004 &&
+            data.asMatrixEnjinV1004.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV1004.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asMatrixEnjinV1004.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
         }
 
         if (
@@ -242,11 +323,42 @@ async function getCallData(ctx: CommonContext, call: Call) {
             }
         }
 
+        if (data.isV500 && data.asV500.call.__kind === 'MultiTokens' && data.asV500.call.value.__kind === 'create_collection') {
+            const { descriptor } = data.asV500.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         throw new UnknownVersionError(data.constructor.name)
     }
 
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
         const data = new MultiTokensForceCreateEthereumCollectionCall(ctx, call)
+
+        if (data.isMatrixEnjinV1004) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1004.descriptor.policy.mint
+            const royalty = data.asMatrixEnjinV1004.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
 
         if (data.isMatrixEnjinV1000) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asMatrixEnjinV1000.descriptor.policy.mint
@@ -268,6 +380,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const royalty = data.asV1004.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asV1004.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV1000) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1000.descriptor.policy.mint
+            const royalty = data.asV1000.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1000.descriptor
 
             return {
                 maxTokenCount,

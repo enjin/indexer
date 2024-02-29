@@ -52,7 +52,11 @@ async function getCallData(ctx: CommonContext, call: Call) {
                 ? new FuelTanksDispatchCall(ctx, call)
                 : new FuelTanksDispatchAndTouchCall(ctx, call)
 
-        let callData = null
+        let callData: any = null
+
+        if (data.isMatrixEnjinV1004) {
+            callData = data.asMatrixEnjinV1004
+        }
 
         if (data.isMatrixEnjinV1003) {
             callData = data.asMatrixEnjinV1003
