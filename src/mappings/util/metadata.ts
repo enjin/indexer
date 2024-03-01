@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Axios from 'axios'
 import https from 'https'
 import mime from 'mime-types'
@@ -22,13 +23,36 @@ export async function fetchMetadata(url: string) {
         maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 2 : 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
+    try {
+        const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
+        if (status < 400) {
+            return data
+        }
+        throw new Error(`Failed to fetch metadata from ${url}`)
+    } catch (error: unknown) {
+        if (!Axios.isAxiosError(error)) {
+            // eslint-disable-next-line no-console
+            console.error(`Failed to fetch metadata from ${url} (non-axios)`, error)
+            throw error
+        }
 
-    const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
-    if (status < 400) {
-        return data
+        console.error(`Failed to fetch metadata from ${url} (axios)`, error.message)
+        if (error.response) {
+            if (error.response.status === 404) {
+                return null
+            }
+
+            console.log(error.response.data)
+            console.log(error.response.status)
+            console.log(error.response.headers)
+        } else if (error.request) {
+            console.log(error.request)
+        } else {
+            console.log('Error', error.message)
+        }
+
+        throw error
     }
-
-    throw new Error(`Failed to fetch metadata from ${url}`)
 }
 
 function parseMedia(value: string | Media[]) {
