@@ -43,6 +43,17 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
+    if (data.isV1005) {
+        const { collectionId, mutation } = data.asV1005
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
     if (data.isV1004) {
         const { collectionId, mutation } = data.asV1004
 

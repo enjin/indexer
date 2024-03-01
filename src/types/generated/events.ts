@@ -9,6 +9,7 @@ import * as v604 from './v604'
 import * as matrixEnjinV1004 from './matrixEnjinV1004'
 import * as v1000 from './v1000'
 import * as v1004 from './v1004'
+import * as v1005 from './v1005'
 
 export class BalancesBalanceSetEvent {
     private readonly _chain: Chain
@@ -4226,6 +4227,35 @@ export class MarketplaceListingCancelledEvent {
     }
 }
 
+export class MarketplaceListingConvertedEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Marketplace.ListingConverted')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     * A listing was converted to the correct format
+     */
+    get isV1005(): boolean {
+        return this._chain.getEventHash('Marketplace.ListingConverted') === '56b483accb79407d2146b841c242046f1ff043c0a2fda9fb311497fdcd762679'
+    }
+
+    /**
+     * A listing was converted to the correct format
+     */
+    get asV1005(): {listingId: Uint8Array} {
+        assert(this.isV1005)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class MarketplaceListingCreatedEvent {
     private readonly _chain: Chain
     private readonly event: Event
@@ -4296,6 +4326,21 @@ export class MarketplaceListingCreatedEvent {
      */
     get asV1004(): {listingId: Uint8Array, listing: v1004.Listing} {
         assert(this.isV1004)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A listing was created
+     */
+    get isV1005(): boolean {
+        return this._chain.getEventHash('Marketplace.ListingCreated') === '396b87e5fef710b0fb92ab0a1d2f82c41b7ad217eaec1ac1b7c0b53b3d4e8449'
+    }
+
+    /**
+     * A listing was created
+     */
+    get asV1005(): {listingId: Uint8Array, listing: v1005.Listing} {
+        assert(this.isV1005)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -5030,6 +5075,21 @@ export class MultiTokensCollectionMutatedEvent {
         assert(this.isV1004)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A collection was mutated
+     */
+    get isV1005(): boolean {
+        return this._chain.getEventHash('MultiTokens.CollectionMutated') === 'd7b85f625e23a04082ca1038b142ad4c56b4ebeb4ab61685f39f6c00eddb78f1'
+    }
+
+    /**
+     * A collection was mutated
+     */
+    get asV1005(): {collectionId: bigint, mutation: v1005.DefaultCollectionMutation} {
+        assert(this.isV1005)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class MultiTokensCollectionTransferCancelledEvent {
@@ -5160,6 +5220,21 @@ export class MultiTokensCollectionUpdatedEvent {
      */
     get asV1004(): {collectionId: bigint, value: (v1004.Collection | undefined)} {
         assert(this.isV1004)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Collection storage was set to `value`
+     */
+    get isV1005(): boolean {
+        return this._chain.getEventHash('MultiTokens.CollectionUpdated') === '98bf9d540f024070954f2f94467d9e9b5cd79997861f988b682972dd34f2a757'
+    }
+
+    /**
+     * Collection storage was set to `value`
+     */
+    get asV1005(): {collectionId: bigint, value: (v1005.Collection | undefined)} {
+        assert(this.isV1005)
         return this._chain.decodeEvent(this.event)
     }
 }

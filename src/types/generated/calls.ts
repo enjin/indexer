@@ -12,6 +12,7 @@ import * as matrixEnjinV1004 from './matrixEnjinV1004'
 import * as v1000 from './v1000'
 import * as v1003 from './v1003'
 import * as v1004 from './v1004'
+import * as v1005 from './v1005'
 
 export class BalancesForceSetBalanceCall {
     private readonly _chain: Chain
@@ -2819,6 +2820,21 @@ export class CouncilExecuteCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Council.execute') === '0f81f761e9018870429f53fc2fd01f53f164a83f0b6c3d52c8eb8a2eb02fa124'
+    }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get asV1005(): {proposal: v1005.Call, lengthBound: number} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class CouncilProposeCall {
@@ -3349,6 +3365,21 @@ export class CouncilProposeCall {
      */
     get asV1004(): {threshold: number, proposal: v1004.Call, lengthBound: number} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Council.propose') === '766835cd66a28764860acd5028e930223831a917718a138d7e78874f705e4c3a'
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get asV1005(): {threshold: number, proposal: v1005.Call, lengthBound: number} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5207,6 +5238,21 @@ export class ExtrinsicPausePauseExtrinsicCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::pause_extrinsic`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '73ec42c468b527f8cea5572dd66649038759520d2fd694264d37502f06440b6e'
+    }
+
+    /**
+     * See [`Pallet::pause_extrinsic`].
+     */
+    get asV1005(): {call: v1005.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class ExtrinsicPauseResumeExtrinsicCall {
@@ -5579,6 +5625,21 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asV1004(): {call: v1004.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::resume_extrinsic`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === 'e6e69e3290afeff259e341601e9297fff84d8ae0304416cdc74eeb978e8f435a'
+    }
+
+    /**
+     * See [`Pallet::resume_extrinsic`].
+     */
+    get asV1005(): {call: v1005.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -5998,6 +6059,21 @@ export class FuelTanksCreateFuelTankCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::create_fuel_tank`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === '27fad8235d589ba446c59dc04484f6572ea32baa1a4dd2c3fd7af406442bef91'
+    }
+
+    /**
+     * See [`Pallet::create_fuel_tank`].
+     */
+    get asV1005(): {descriptor: v1005.FuelTankDescriptor} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDestroyFuelTankCall {
@@ -6381,6 +6457,21 @@ export class FuelTanksDispatchCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::dispatch`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === '56a5f91dbecd0700417352265ba48bbadfd874c6e804ef3410f980408bd9e93a'
+    }
+
+    /**
+     * See [`Pallet::dispatch`].
+     */
+    get asV1005(): {tankId: v1005.MultiAddress, ruleSetId: number, call: v1005.Call, settings: (v1005.DispatchSettings | undefined)} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksDispatchAndTouchCall {
@@ -6695,6 +6786,21 @@ export class FuelTanksDispatchAndTouchCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::dispatch_and_touch`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === '56a5f91dbecd0700417352265ba48bbadfd874c6e804ef3410f980408bd9e93a'
+    }
+
+    /**
+     * See [`Pallet::dispatch_and_touch`].
+     */
+    get asV1005(): {tankId: v1005.MultiAddress, ruleSetId: number, call: v1005.Call, settings: (v1005.DispatchSettings | undefined)} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class FuelTanksForceBatchAddAccountCall {
@@ -6904,6 +7010,21 @@ export class FuelTanksForceCreateFuelTankCall {
      */
     get asV1004(): {owner: v1004.MultiAddress, descriptor: v1004.FuelTankDescriptor} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::force_create_fuel_tank`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '803f049fa19440e1a30d204ac250f555b8a4553b2e3694be525e09f02fdf757f'
+    }
+
+    /**
+     * See [`Pallet::force_create_fuel_tank`].
+     */
+    get asV1005(): {owner: v1005.MultiAddress, descriptor: v1005.FuelTankDescriptor} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -7447,6 +7568,21 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asV1004(): {tankId: v1004.MultiAddress, ruleSetId: number, rules: v1004.DispatchRuleDescriptor[]} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::insert_rule_set`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === 'ba2696f3eddb8628cda6a886b6916d0a6f7a93d44e7336d65af73e425d2bed51'
+    }
+
+    /**
+     * See [`Pallet::insert_rule_set`].
+     */
+    get asV1005(): {tankId: v1005.MultiAddress, ruleSetId: number, rules: v1005.DispatchRuleDescriptor[]} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8638,6 +8774,35 @@ export class MarketplaceCancelListingCall {
     }
 }
 
+export class MarketplaceConvertListingsCall {
+    private readonly _chain: Chain
+    private readonly call: Call
+
+    constructor(ctx: CallContext)
+    constructor(ctx: ChainContext, call: Call)
+    constructor(ctx: CallContext, call?: Call) {
+        call = call || ctx.call
+        assert(call.name === 'Marketplace.convert_listings')
+        this._chain = ctx._chain
+        this.call = call
+    }
+
+    /**
+     * See [`Pallet::convert_listings`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Marketplace.convert_listings') === '470674a1c453bbf211b97f93a9ecac8440af5b89491cf2ab06d86e4183a54f68'
+    }
+
+    /**
+     * See [`Pallet::convert_listings`].
+     */
+    get asV1005(): {listingIds: Uint8Array[]} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
+}
+
 export class MarketplaceCreateListingCall {
     private readonly _chain: Chain
     private readonly call: Call
@@ -8796,6 +8961,21 @@ export class MarketplaceCreateListingCall {
      */
     get asV1004(): {makeAssetId: v1004.AssetId, takeAssetId: v1004.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v1004.AuctionData | undefined)} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::create_listing`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Marketplace.create_listing') === '78b7a393701f9f95d8413f0683f9a8071358025ff047a772b81cffc1c315d7b4'
+    }
+
+    /**
+     * See [`Pallet::create_listing`].
+     */
+    get asV1005(): {makeAssetId: v1005.AssetId, takeAssetId: v1005.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v1005.AuctionData | undefined)} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9024,6 +9204,21 @@ export class MarketplaceForceCreateListingCall {
      */
     get asV1004(): {seller: v1004.MultiAddress, makeAssetId: v1004.AssetId, takeAssetId: v1004.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v1004.AuctionData | undefined), depositBacker: (v1004.MultiAddress | undefined)} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::force_create_listing`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Marketplace.force_create_listing') === '740d5c8aa6c755cb69b094d1cae70ff2f50500c1d18fd8c66c8e1fd05539a640'
+    }
+
+    /**
+     * See [`Pallet::force_create_listing`].
+     */
+    get asV1005(): {seller: v1005.MultiAddress, makeAssetId: v1005.AssetId, takeAssetId: v1005.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v1005.AuctionData | undefined), depositBacker: (v1005.MultiAddress | undefined)} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -9431,6 +9626,21 @@ export class MatrixUtilityBatchCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === 'ee7c56b1114f19fd13de64e44c4cc3afe7854e6a5b9b841d3f7cc4f3e6fba728'
+    }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get asV1005(): {calls: v1005.Call[], continueOnFailure: boolean} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MatrixXcmForceSetMinimumWeightCall {
@@ -9598,6 +9808,21 @@ export class MatrixXcmTransferAssetToParachainCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::transfer_asset_to_parachain`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_to_parachain') === '6e0995af8a1271406f286250994b7e96ef4e950ec17addde0aa13d7dcf06db7e'
+    }
+
+    /**
+     * See [`Pallet::transfer_asset_to_parachain`].
+     */
+    get asV1005(): {paraId: v1005.ParachainId, beneficiary: v1005.Account, currencyId: v1005.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MatrixXcmTransferAssetWithFeeCall {
@@ -9730,6 +9955,21 @@ export class MatrixXcmTransferAssetWithFeeCall {
      */
     get asV1004(): {assetPair: v1004.CurrencyIdAmountPair, feePair: v1004.CurrencyIdAmountPair, paraId: v1004.ParachainId, beneficiary: v1004.Account, destWeight: (bigint | undefined)} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::transfer_asset_with_fee`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MatrixXcm.transfer_asset_with_fee') === '253afe02afbaf582b39ed2b492eb0493066e690147b56578b4e8b20fb470b444'
+    }
+
+    /**
+     * See [`Pallet::transfer_asset_with_fee`].
+     */
+    get asV1005(): {assetPair: v1005.CurrencyIdAmountPair, feePair: v1005.CurrencyIdAmountPair, paraId: v1005.ParachainId, beneficiary: v1005.Account, destWeight: (bigint | undefined)} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -10616,6 +10856,21 @@ export class MultiTokensCreateCollectionCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::create_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.create_collection') === '2c5ffb5fc94633dce91583fb29da64fdda08ce309e89734aab20a62a8cbb3250'
+    }
+
+    /**
+     * See [`Pallet::create_collection`].
+     */
+    get asV1005(): {descriptor: v1005.DefaultCollectionDescriptor} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultiTokensDestroyCollectionCall {
@@ -10854,6 +11109,21 @@ export class MultiTokensForceCreateCollectionCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::force_create_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_create_collection') === '64f054ecc6931474221d23bfcfed0b8f345cfbdab3115fd062d513a374ecf698'
+    }
+
+    /**
+     * See [`Pallet::force_create_collection`].
+     */
+    get asV1005(): {owner: Uint8Array, collectionId: bigint, descriptor: v1005.DefaultCollectionDescriptor} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultiTokensForceCreateEthereumCollectionCall {
@@ -10970,6 +11240,21 @@ export class MultiTokensForceCreateEthereumCollectionCall {
      */
     get asV1004(): {owner: Uint8Array, claimer: Uint8Array, ethereumCollectionId: bigint, descriptor: v1004.DefaultCollectionDescriptor} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::force_create_ethereum_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_create_ethereum_collection') === 'e0b68803545526e7819b718982de46e39b26d56c26ea0debdb7b2d4189045018'
+    }
+
+    /**
+     * See [`Pallet::force_create_ethereum_collection`].
+     */
+    get asV1005(): {owner: Uint8Array, claimer: Uint8Array, ethereumCollectionId: bigint, descriptor: v1005.DefaultCollectionDescriptor} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11181,6 +11466,21 @@ export class MultiTokensForceMutateCollectionCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::force_mutate_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
+    }
+
+    /**
+     * See [`Pallet::force_mutate_collection`].
+     */
+    get asV1005(): {collectionId: bigint, mutation: v1005.DefaultCollectionMutation} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultiTokensForceSetAttributeCall {
@@ -11282,6 +11582,21 @@ export class MultiTokensForceSetCollectionCall {
      */
     get asV1004(): {collectionId: bigint, value: (v1004.Collection | undefined)} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::force_set_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.force_set_collection') === 'd75af3c3c47bd7f1909045c69b61ffb4bbd68459ef76923bcdbd9203caeb90d5'
+    }
+
+    /**
+     * See [`Pallet::force_set_collection`].
+     */
+    get asV1005(): {collectionId: bigint, value: (v1005.Collection | undefined)} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -11861,6 +12176,21 @@ export class MultiTokensMutateCollectionCall {
      */
     get asV1004(): {collectionId: bigint, mutation: v1004.DefaultCollectionMutation} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::mutate_collection`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('MultiTokens.mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
+    }
+
+    /**
+     * See [`Pallet::mutate_collection`].
+     */
+    get asV1005(): {collectionId: bigint, mutation: v1005.DefaultCollectionMutation} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -13458,6 +13788,21 @@ export class MultisigAsMultiCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::as_multi`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === '5201b85d8bb311c9d48e3d2857629613962be598d7d55c86f8cc36ff44063fee'
+    }
+
+    /**
+     * See [`Pallet::as_multi`].
+     */
+    get asV1005(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (v1005.Timepoint | undefined), call: v1005.Call, maxWeight: v1005.Weight} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class MultisigAsMultiThreshold1Call {
@@ -13894,6 +14239,21 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asV1004(): {otherSignatories: Uint8Array[], call: v1004.Call} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::as_multi_threshold_1`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '919176848402a110b30d4c89da5ce22a54f077cdb84f1c50f9272dc47aaed9ef'
+    }
+
+    /**
+     * See [`Pallet::as_multi_threshold_1`].
+     */
+    get asV1005(): {otherSignatories: Uint8Array[], call: v1005.Call} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -15171,6 +15531,21 @@ export class SchedulerScheduleCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::schedule`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '72a4535fdeedceff1edf225561c249419f907cda54b792d4c9dce823c188d14e'
+    }
+
+    /**
+     * See [`Pallet::schedule`].
+     */
+    get asV1005(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1005.Call} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleAfterCall {
@@ -15389,6 +15764,21 @@ export class SchedulerScheduleAfterCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::schedule_after`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === '7f172faa510cd547f1f7117a50c081cdbdc12d9a96dd8704ad1e162fd98bed20'
+    }
+
+    /**
+     * See [`Pallet::schedule_after`].
+     */
+    get asV1005(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1005.Call} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SchedulerScheduleNamedCall {
@@ -15581,6 +15971,21 @@ export class SchedulerScheduleNamedCall {
      */
     get asV1004(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1004.Call} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::schedule_named`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === '26aed96d149a97e214aec8d81a8fbcfeb46d1e61e34fade5b185d1ec13e4c91b'
+    }
+
+    /**
+     * See [`Pallet::schedule_named`].
+     */
+    get asV1005(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1005.Call} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -15799,6 +16204,21 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asV1004(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1004.Call} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::schedule_named_after`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === '67cced37accd6a19fca529ec1c1b677c986fff0635cb6059984dc145bf2f01ed'
+    }
+
+    /**
+     * See [`Pallet::schedule_named_after`].
+     */
+    get asV1005(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: v1005.Call} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -16147,6 +16567,21 @@ export class SudoSudoCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::sudo`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Sudo.sudo') === '5ca7ff331f46fe7770086ed32a9ccfe92394940d39e370619b49331689971d0d'
+    }
+
+    /**
+     * See [`Pallet::sudo`].
+     */
+    get asV1005(): {call: v1005.Call} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoAsCall {
@@ -16362,6 +16797,21 @@ export class SudoSudoAsCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::sudo_as`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_as') === 'dfe87a6dba9e42bd3723128cfff708e76953e5a8a61aa6c00e4bed688af8e4ba'
+    }
+
+    /**
+     * See [`Pallet::sudo_as`].
+     */
+    get asV1005(): {who: v1005.MultiAddress, call: v1005.Call} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class SudoSudoUncheckedWeightCall {
@@ -16575,6 +17025,21 @@ export class SudoSudoUncheckedWeightCall {
      */
     get asV1004(): {call: v1004.Call, weight: v1004.Weight} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::sudo_unchecked_weight`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Sudo.sudo_unchecked_weight') === '8286aa60327f8cab31086ed78f73b18b761429c79c59bfd0e3b3dc7cd717ad08'
+    }
+
+    /**
+     * See [`Pallet::sudo_unchecked_weight`].
+     */
+    get asV1005(): {call: v1005.Call, weight: v1005.Weight} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -17398,6 +17863,21 @@ export class TechnicalCommitteeExecuteCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === '0f81f761e9018870429f53fc2fd01f53f164a83f0b6c3d52c8eb8a2eb02fa124'
+    }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get asV1005(): {proposal: v1005.Call, lengthBound: number} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class TechnicalCommitteeProposeCall {
@@ -17928,6 +18408,21 @@ export class TechnicalCommitteeProposeCall {
      */
     get asV1004(): {threshold: number, proposal: v1004.Call, lengthBound: number} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '766835cd66a28764860acd5028e930223831a917718a138d7e78874f705e4c3a'
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get asV1005(): {threshold: number, proposal: v1005.Call, lengthBound: number} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -18782,6 +19277,21 @@ export class UtilityAsDerivativeCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::as_derivative`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === '3b2e39dcc6d7f5402d514e0a541d13db4aacaf4f064313c150a7414f28e0dc8c'
+    }
+
+    /**
+     * See [`Pallet::as_derivative`].
+     */
+    get asV1005(): {index: number, call: v1005.Call} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchCall {
@@ -19322,6 +19832,21 @@ export class UtilityBatchCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '3fe0610719951610d7e58e7cff6de0babc0d74f4028e6ca46c48e6c65f469721'
+    }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get asV1005(): {calls: v1005.Call[]} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityBatchAllCall {
@@ -19762,6 +20287,21 @@ export class UtilityBatchAllCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::batch_all`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '3fe0610719951610d7e58e7cff6de0babc0d74f4028e6ca46c48e6c65f469721'
+    }
+
+    /**
+     * See [`Pallet::batch_all`].
+     */
+    get asV1005(): {calls: v1005.Call[]} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityDispatchAsCall {
@@ -20078,6 +20618,21 @@ export class UtilityDispatchAsCall {
      */
     get asV1004(): {asOrigin: v1004.OriginCaller, call: v1004.Call} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::dispatch_as`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '99787ad39937b518ea952153cc6563261c3575526fb84cc9863c5c4c1e65de48'
+    }
+
+    /**
+     * See [`Pallet::dispatch_as`].
+     */
+    get asV1005(): {asOrigin: v1005.OriginCaller, call: v1005.Call} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -20520,6 +21075,21 @@ export class UtilityForceBatchCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::force_batch`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '3fe0610719951610d7e58e7cff6de0babc0d74f4028e6ca46c48e6c65f469721'
+    }
+
+    /**
+     * See [`Pallet::force_batch`].
+     */
+    get asV1005(): {calls: v1005.Call[]} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class UtilityWithWeightCall {
@@ -20814,6 +21384,21 @@ export class UtilityWithWeightCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::with_weight`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === '8286aa60327f8cab31086ed78f73b18b761429c79c59bfd0e3b3dc7cd717ad08'
+    }
+
+    /**
+     * See [`Pallet::with_weight`].
+     */
+    get asV1005(): {call: v1005.Call, weight: v1005.Weight} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XTokensTransferCall {
@@ -20930,6 +21515,21 @@ export class XTokensTransferCall {
      */
     get asV1004(): {currencyId: v1004.AssetId, amount: bigint, dest: v1004.VersionedMultiLocation, destWeightLimit: v1004.V3WeightLimit} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::transfer`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('XTokens.transfer') === '26df7f19916781e6746694066c0d24f7fef9a20367132a192147dc6c414af64c'
+    }
+
+    /**
+     * See [`Pallet::transfer`].
+     */
+    get asV1005(): {currencyId: v1005.AssetId, amount: bigint, dest: v1005.VersionedMultiLocation, destWeightLimit: v1005.V3WeightLimit} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -21239,6 +21839,21 @@ export class XTokensTransferMulticurrenciesCall {
         assert(this.isV1004)
         return this._chain.decodeCall(this.call)
     }
+
+    /**
+     * See [`Pallet::transfer_multicurrencies`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_multicurrencies') === 'fa576588d6b62b5cf4c7bdd8bee764e1be7fc0c2fbe730e805ffd89ad1a3b1e6'
+    }
+
+    /**
+     * See [`Pallet::transfer_multicurrencies`].
+     */
+    get asV1005(): {currencies: [v1005.AssetId, bigint][], feeItem: number, dest: v1005.VersionedMultiLocation, destWeightLimit: v1005.V3WeightLimit} {
+        assert(this.isV1005)
+        return this._chain.decodeCall(this.call)
+    }
 }
 
 export class XTokensTransferWithFeeCall {
@@ -21391,6 +22006,21 @@ export class XTokensTransferWithFeeCall {
      */
     get asV1004(): {currencyId: v1004.AssetId, amount: bigint, fee: bigint, dest: v1004.VersionedMultiLocation, destWeightLimit: v1004.V3WeightLimit} {
         assert(this.isV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::transfer_with_fee`].
+     */
+    get isV1005(): boolean {
+        return this._chain.getCallHash('XTokens.transfer_with_fee') === 'c05a522029f57db9f9e4ceeff8427cc674dd992c069c7798b3625e3d55e588cb'
+    }
+
+    /**
+     * See [`Pallet::transfer_with_fee`].
+     */
+    get asV1005(): {currencyId: v1005.AssetId, amount: bigint, fee: bigint, dest: v1005.VersionedMultiLocation, destWeightLimit: v1005.V3WeightLimit} {
+        assert(this.isV1005)
         return this._chain.decodeCall(this.call)
     }
 }
