@@ -106,7 +106,7 @@ export async function tokenDestroyed(
         }),
         ctx.store.delete(RoyaltyCurrency, { token: { id: token.id } }),
         ctx.store.delete(TraitToken, { token: { id: token.id } }),
-        ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
+        ctx.store.update(AccountTokenEvent, { token: { id: token.id } }, { token: null }),
         ctx.store.delete(Attribute, { token: { id: token.id } }),
     ])
 

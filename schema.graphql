@@ -73,7 +73,7 @@ type AccountTokenEvent @entity {
   from: Account!
   to: Account
   event: Event!
-  token: Token!
+  token: Token
 }
 
 union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
