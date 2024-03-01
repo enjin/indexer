@@ -28,14 +28,7 @@ export async function fetchMetadata(url: string) {
         return data
     }
 
-    if (status === 404) {
-        return null
-    }
-
-    // eslint-disable-next-line no-console
-    console.error('Failed to fetch metadata', url, status)
-
-    return null
+    throw new Error(`Failed to fetch metadata from ${url}`)
 }
 
 function parseMedia(value: string | Media[]) {
@@ -64,10 +57,8 @@ function parseObjectProperties(value: object) {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
-        if (typeof v === 'object') {
-            if ('value' in v && v.value !== null && v.value !== '') {
-                properties[k] = v
-            }
+        if (typeof v === 'object' && v !== null && 'value' in v && v.value !== null && v.value !== '') {
+            properties[k] = v.value
         } else if (v !== null && v !== '') {
             properties[k] = {
                 value: v,
