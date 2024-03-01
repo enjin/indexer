@@ -74,8 +74,8 @@ export async function transferred(
     })
 
     if (skipSave) {
-        getOrCreateAccount(ctx, data.from)
-        getOrCreateAccount(ctx, data.to)
+        await Promise.all([getOrCreateAccount(ctx, data.from), getOrCreateAccount(ctx, data.to)])
+
         return getEvent(item, data, token)
     }
 

@@ -81,7 +81,7 @@ export async function burned(
     })
 
     if (skipSave) {
-        getOrCreateAccount(ctx, data.accountId)
+        await getOrCreateAccount(ctx, data.accountId)
         return getEvent(item, data, token)
     }
 

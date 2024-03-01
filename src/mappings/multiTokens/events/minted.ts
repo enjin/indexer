@@ -91,8 +91,7 @@ export async function minted(
     })
 
     if (skipSave) {
-        getOrCreateAccount(ctx, data.recipient)
-        getOrCreateAccount(ctx, data.issuer)
+        await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
         return getEvent(item, data, token)
     }
 
