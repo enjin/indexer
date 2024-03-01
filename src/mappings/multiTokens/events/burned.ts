@@ -38,7 +38,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 function getEvent(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>,
-    token?: Token | null
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
@@ -54,19 +54,15 @@ function getEvent(
         }),
     })
 
-    if (token) {
-        return [
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token,
+            from: new Account({ id: u8aToHex(data.accountId) }),
             event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                token,
-                from: new Account({ id: u8aToHex(data.accountId) }),
-                event,
-            }),
-        ]
-    }
-
-    return event
+        }),
+    ]
 }
 
 export async function burned(
@@ -80,20 +76,19 @@ export async function burned(
 
     const address = u8aToHex(data.accountId)
 
+    const token = await ctx.store.findOne(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+
     if (skipSave) {
         getOrCreateAccount(ctx, data.accountId)
-        return getEvent(item, data)
+        return getEvent(item, data, token)
     }
 
-    const [tokenAccount, token] = await Promise.all([
-        ctx.store.findOne(TokenAccount, {
-            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-            relations: { account: true },
-        }),
-        ctx.store.findOne(Token, {
-            where: { id: `${data.collectionId}-${data.tokenId}` },
-        }),
-    ])
+    const tokenAccount = await ctx.store.findOne(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
+    })
 
     if (tokenAccount) {
         tokenAccount.balance -= data.amount

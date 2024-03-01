@@ -43,7 +43,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 function getEvent(
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>,
-    token?: Token
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -60,20 +60,16 @@ function getEvent(
         }),
     })
 
-    if (token) {
-        return [
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token,
+            from: new Account({ id: u8aToHex(data.issuer) }),
+            to: new Account({ id: u8aToHex(data.recipient) }),
             event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
-                from: new Account({ id: u8aToHex(data.issuer) }),
-                to: new Account({ id: u8aToHex(data.recipient) }),
-                event,
-            }),
-        ]
-    }
-
-    return event
+        }),
+    ]
 }
 
 export async function minted(
@@ -87,12 +83,6 @@ export async function minted(
 
     const promises: Promise<any>[] = []
 
-    if (skipSave) {
-        getOrCreateAccount(ctx, data.recipient)
-        getOrCreateAccount(ctx, data.issuer)
-        return getEvent(item, data)
-    }
-
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
         relations: {
@@ -100,9 +90,15 @@ export async function minted(
         },
     })
 
+    if (skipSave) {
+        getOrCreateAccount(ctx, data.recipient)
+        getOrCreateAccount(ctx, data.issuer)
+        return getEvent(item, data, token)
+    }
+
     if (!token) {
         throwError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+        return getEvent(item, data, token)
     }
 
     token.supply += data.amount
@@ -120,7 +116,7 @@ export async function minted(
         )
 
         await Promise.all(promises)
-        return getEvent(item, data)
+        return getEvent(item, data, token)
     }
 
     tokenAccount.balance += data.amount

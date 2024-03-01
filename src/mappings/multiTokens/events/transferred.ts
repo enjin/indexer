@@ -30,7 +30,7 @@ function getEventData(ctx: CommonContext, event: Event) {
 function getEvent(
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>,
-    token?: Token
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -48,20 +48,16 @@ function getEvent(
         }),
     })
 
-    if (token) {
-        return [
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            from: new Account({ id: u8aToHex(data.from) }),
+            to: new Account({ id: u8aToHex(data.to) }),
             event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                from: new Account({ id: u8aToHex(data.from) }),
-                to: new Account({ id: u8aToHex(data.to) }),
-                event,
-                token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
-            }),
-        ]
-    }
-
-    return event
+            token,
+        }),
+    ]
 }
 
 export async function transferred(
@@ -73,19 +69,19 @@ export async function transferred(
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
 
-    if (skipSave) {
-        getOrCreateAccount(ctx, data.from)
-        getOrCreateAccount(ctx, data.to)
-        return getEvent(item, data)
-    }
-
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
+    if (skipSave) {
+        getOrCreateAccount(ctx, data.from)
+        getOrCreateAccount(ctx, data.to)
+        return getEvent(item, data, token)
+    }
+
     if (!token) {
         throwError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+        return getEvent(item, data, token)
     }
 
     const fromAddress = u8aToHex(data.from)
