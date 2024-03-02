@@ -79,6 +79,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             }
         }
 
+        if (data.isV1005) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1005.descriptor.policy.mint
+            const royalty = data.asV1005.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1005.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (data.isV1004) {
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1004.descriptor.policy.mint
             const royalty = data.asV1004.descriptor.policy.market?.royalty
@@ -133,6 +148,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const royalty = data.asMatrixEnjinV603.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV603.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV1005) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1005.descriptor.policy.mint
+            const royalty = data.asV1005.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1005.descriptor
 
             return {
                 maxTokenCount,
@@ -263,6 +293,26 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         if (
+            data.isV1005 &&
+            data.asV1005.call.__kind === 'MultiTokens' &&
+            data.asV1005.call.value.__kind === 'create_collection'
+        ) {
+            const { descriptor } = data.asV1005.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (
             data.isV1004 &&
             data.asV1004.call.__kind === 'MultiTokens' &&
             data.asV1004.call.value.__kind === 'create_collection'
@@ -364,6 +414,21 @@ async function getCallData(ctx: CommonContext, call: Call) {
             const royalty = data.asMatrixEnjinV1000.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null
             const { explicitRoyaltyCurrencies } = data.asMatrixEnjinV1000.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV1005) {
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.asV1005.descriptor.policy.mint
+            const royalty = data.asV1005.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.asV1005.descriptor
 
             return {
                 maxTokenCount,

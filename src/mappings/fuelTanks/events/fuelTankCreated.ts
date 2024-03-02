@@ -72,6 +72,10 @@ function getCallData(ctx: CommonContext, call: Call) {
         return data.asMatrixEnjinV603
     }
 
+    if (data.isV1005) {
+        return data.asV1005
+    }
+
     if (data.isV1004) {
         return data.asV1004
     }
