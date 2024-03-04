@@ -43,7 +43,7 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
                 return null
             }
 
-            job.log(`url: ${error.response.request.responseURL} status: ${error.response.status.toString()}`)
+            job.log(`url: ${error.response.request.res.responseURL} status: ${error.response.status.toString()}`)
             job.log(error.response.data)
         } else {
             job.log(`UnknownError: ${error.message}`)
