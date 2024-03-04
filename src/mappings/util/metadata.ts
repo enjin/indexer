@@ -89,7 +89,7 @@ function parseObjectProperties(value: object) {
             typeof v.value !== 'object'
         ) {
             properties[k] = v.value
-        } else if (v !== null && v !== '') {
+        } else if (v !== null && v !== '' && typeof v !== 'object') {
             properties[k] = {
                 value: v,
             }
