@@ -105,7 +105,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         if (response.length > 0 && response[0].uri === uriAttribute.value && !jobData.force) {
             externalMetadata = response[0].metadata
         } else {
-            const externalResponse = await fetchMetadata(uriAttribute.value)
+            const externalResponse = await fetchMetadata(uriAttribute.value, job)
             if (externalResponse && typeof externalResponse === 'object' && !Array.isArray(externalResponse)) {
                 if (response.length > 0) {
                     await connection.query(
