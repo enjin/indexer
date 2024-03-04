@@ -71,8 +71,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             return
         }
 
-        console.log('traitTypeMap', traitTypeMap)
-
         const traitsToSave: Trait[] = []
 
         traitTypeMap.forEach((traitValueMap, traitType) => {
