@@ -22,14 +22,15 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
     }
 
+    const em = connection.manager
+
     const traitTypeMap = new Map<string, TraitValueMap>()
     const tokenTraitMap = new Map<string, string[]>()
 
     const start = new Date()
 
     const { collectionId } = job.data satisfies JobData
-
-    await connection.manager.transaction(async (em) => {
+    try {
         const tokens = await em
             .getRepository(Token)
             .createQueryBuilder('token')
@@ -107,7 +108,9 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         if (traitTokensToSave.length) {
             await em.insert(TraitToken, traitTokensToSave as any)
         }
-    })
 
-    done(null, { timeElapsed: new Date().getTime() - start.getTime() })
+        done(null, { timeElapsed: new Date().getTime() - start.getTime() })
+    } catch (error: any) {
+        done('message' in error ? error.message : error)
+    }
 }
