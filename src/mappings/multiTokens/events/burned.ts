@@ -96,7 +96,7 @@ export async function burned(
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
-        throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'log')
     }
 
     if (token) {
@@ -105,7 +105,7 @@ export async function burned(
         await ctx.store.save(token)
         syncCollectionStats(data.collectionId.toString())
     } else {
-        throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
     }
 
     return getEvent(item, data, token)

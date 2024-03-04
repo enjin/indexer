@@ -43,7 +43,8 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
                 return null
             }
 
-            job.log(`url: ${error.response.request.res.responseURL} status: ${error.response.status.toString()}`)
+            job.log(`url: ${error.response.request.res.responseUrl} status: ${error.response.status.toString()}`)
+            job.log(`redirectsCount: ${error.response.request.res.redirects.length.toString()}`)
             job.log(error.response.data)
         } else {
             job.log(`UnknownError: ${url} ${error.message}`)

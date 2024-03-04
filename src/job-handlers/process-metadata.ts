@@ -37,7 +37,9 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     if (!connection.isInitialized) {
-        await connection.initialize()
+        await connection.initialize().catch(() => {
+            done(new Error('Failed to initialize connection'))
+        })
     }
 
     const em = connection.manager
