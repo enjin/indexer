@@ -1,8 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
 import {
     CapType,
@@ -208,6 +207,39 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         }
 
         if (
+            data.isMatrixEnjinV1004 &&
+            data.asMatrixEnjinV1004.call.__kind === 'MultiTokens' &&
+            (data.asMatrixEnjinV1004.call.value.__kind === 'mint' || data.asMatrixEnjinV1004.call.value.__kind === 'force_mint')
+        ) {
+            const { collectionId } = data.asMatrixEnjinV1004.call.value
+            const recipient = data.asMatrixEnjinV1004.call.value.recipient.value as Uint8Array
+            const params = data.asMatrixEnjinV1004.call.value.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (
             data.isMatrixEnjinV1003 &&
             data.asMatrixEnjinV1003.call.__kind === 'MultiTokens' &&
             (data.asMatrixEnjinV1003.call.value.__kind === 'mint' || data.asMatrixEnjinV1003.call.value.__kind === 'force_mint')
@@ -307,6 +339,39 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
         }
 
         if (
+            data.isV1005 &&
+            data.asV1005.call.__kind === 'MultiTokens' &&
+            (data.asV1005.call.value.__kind === 'mint' || data.asV1005.call.value.__kind === 'force_mint')
+        ) {
+            const { collectionId } = data.asV1005.call.value
+            const recipient = data.asV1005.call.value.recipient.value as Uint8Array
+            const params = data.asV1005.call.value.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (
             data.isV1003 &&
             data.asV1003.call.__kind === 'MultiTokens' &&
             (data.asV1003.call.value.__kind === 'mint' || data.asV1003.call.value.__kind === 'force_mint')
@@ -369,6 +434,43 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
                 behavior,
                 freezeState,
                 listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (
+            data.isMatrixEnjinV1004 &&
+            data.asMatrixEnjinV1004.call.__kind === 'MultiTokens' &&
+            data.asMatrixEnjinV1004.call.value.__kind === 'batch_mint'
+        ) {
+            const { collectionId, recipients } = data.asMatrixEnjinV1004.call.value
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
             }
         }
 
@@ -452,6 +554,39 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             data.asMatrixEnjinV603.call.value.__kind === 'batch_mint'
         ) {
             const { collectionId, recipients } = data.asMatrixEnjinV603.call.value
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const recipient = recipientCall.accountId
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v603
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                let unitPrice: bigint | null = 10_000_000_000_000_000n
+                let minimumBalance = 1n
+
+                if (params.sufficiency.__kind === 'Sufficient') {
+                    minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                    unitPrice = null
+                }
+
+                return {
+                    recipient,
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                }
+            }
+        }
+
+        if (data.isV1005 && data.asV1005.call.__kind === 'MultiTokens' && data.asV1005.call.value.__kind === 'batch_mint') {
+            const { collectionId, recipients } = data.asV1005.call.value
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -642,6 +777,35 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
                 listingForbidden: params.listingForbidden ?? false,
             }
         }
+
+        if (data.isV604) {
+            const { collectionId } = data.asV604
+            const recipient = data.asV604.recipient.value as Uint8Array
+            const params = data.asV604.params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                recipient,
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
     } else {
         data = new MultiTokensMintCall(ctx, call)
 
@@ -784,13 +948,9 @@ export async function tokenCreated(
         if (token) {
             token.createdAt = new Date(block.timestamp)
             ctx.store.save(token)
-
-            return getEvent(item, eventData)
         }
 
-        // This token was probably deleted in the LAST_HEIGHT that it was sync, and thus it did not exist here.
-        // So letting the script continue so it creates the token
-        Sentry.captureMessage(`[TokenCreated] We have not found token ${eventData.collectionId}-${eventData.tokenId}.`, 'fatal')
+        return getEvent(item, eventData)
     }
 
     if (item.event.call) {
@@ -800,15 +960,12 @@ export async function tokenCreated(
         })
 
         if (collection === null) {
-            Sentry.captureMessage(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
+            throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
             return getEvent(item, eventData)
         }
 
         if (callData === null) {
-            Sentry.captureMessage(
-                `[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`,
-                'fatal'
-            )
+            throwError(`[TokenCreated] We could not parse call data for ${eventData.collectionId}-${eventData.tokenId}.`, 'fatal')
             return getEvent(item, eventData)
         }
 

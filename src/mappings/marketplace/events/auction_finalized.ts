@@ -113,7 +113,7 @@ export async function auctionFinalized(
         if (bestListing) {
             listing.makeAssetId.bestListing = bestListing
         }
-        ctx.store.save(listing.makeAssetId)
+        await ctx.store.save(listing.makeAssetId)
     }
 
     await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])

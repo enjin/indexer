@@ -1,12 +1,11 @@
 import { u8aToHex, u8aToString } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
 import { TokenAccount } from '../../../model'
 import { MultiTokensUnreservedEvent } from '../../../types/generated/events'
 import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, eventItem: Event) {
     const data = new MultiTokensUnreservedEvent(ctx, eventItem)
@@ -35,7 +34,7 @@ export async function unreserved(
     })
 
     if (!tokenAccount) {
-        Sentry.captureMessage(
+        throwError(
             `[Unreserved] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )

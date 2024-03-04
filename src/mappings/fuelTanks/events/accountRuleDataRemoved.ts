@@ -22,6 +22,10 @@ function getEventData(ctx: CommonContext, event: Event) {
         return data.asV1000
     }
 
+    if (data.isV500) {
+        return data.asV500
+    }
+
     throw new UnknownVersionError(data.constructor.name)
 }
 

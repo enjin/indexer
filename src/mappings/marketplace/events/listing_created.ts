@@ -29,12 +29,24 @@ import { syncCollectionStats } from '../../../jobs/collection-stats'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MarketplaceListingCreatedEvent(ctx, event)
 
+    if (data.isMatrixEnjinV1004) {
+        return data.asMatrixEnjinV1004
+    }
+
     if (data.isMatrixEnjinV603) {
         return data.asMatrixEnjinV603
     }
 
+    if (data.isV1005) {
+        return data.asV1005
+    }
+
     if (data.isV1004) {
         return data.asV1004
+    }
+
+    if (data.isV500) {
+        return data.asV500
     }
     throw new UnknownVersionError(data.constructor.name)
 }

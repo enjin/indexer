@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
 import {
     Collection,
@@ -61,23 +60,16 @@ export async function tokenAccountCreated(
             tokenAccount.createdAt = new Date(block.timestamp)
             tokenAccount.updatedAt = new Date(block.timestamp)
             ctx.store.save(tokenAccount)
-
-            return getEvent(item, data)
         }
 
-        // This token account was probably deleted before the LAST_HEIGHT when it was synced, and thus does not exist here.
-        // So let the script continue, so it creates the token account that will probably be deleted later
-        Sentry.captureMessage(
-            `[TokenAccountCreated] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        return getEvent(item, data)
     }
 
     const collection = new Collection({ id: data.collectionId.toString() })
     const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
 
     if (!token) {
-        Sentry.captureMessage(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
         return undefined
     }
 

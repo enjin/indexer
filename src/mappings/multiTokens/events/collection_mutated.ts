@@ -1,8 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
 import {
     Collection,
@@ -22,6 +21,17 @@ import { DefaultRoyalty } from '../../../types/generated/v500'
 function getEventData(ctx: CommonContext, event: Event) {
     const data = new MultiTokensCollectionMutatedEvent(ctx, event)
 
+    if (data.isMatrixEnjinV1004) {
+        const { collectionId, mutation } = data.asMatrixEnjinV1004
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
     if (data.isMatrixEnjinV603) {
         const { collectionId, mutation } = data.asMatrixEnjinV603
 
@@ -33,8 +43,30 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
+    if (data.isV1005) {
+        const { collectionId, mutation } = data.asV1005
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
     if (data.isV1004) {
         const { collectionId, mutation } = data.asV1004
+
+        return {
+            collectionId,
+            owner: mutation.owner,
+            royalty: mutation.royalty,
+            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
+        }
+    }
+
+    if (data.isV500) {
+        const { collectionId, mutation } = data.asV500
 
         return {
             collectionId,
@@ -81,7 +113,7 @@ export async function collectionMutated(
     })
 
     if (!collection) {
-        Sentry.captureMessage(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+        throwError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
         return getEvent(item)
     }
 
@@ -121,7 +153,7 @@ export async function collectionMutated(
                 })
 
                 if (!token) {
-                    Sentry.captureMessage(
+                    throwError(
                         `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`,
                         'fatal'
                     )

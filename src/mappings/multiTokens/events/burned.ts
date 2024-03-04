@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensBurnedEvent } from '../../../types/generated/events'
 import {
     Account,
@@ -39,7 +38,7 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 function getEvent(
     item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
     data: ReturnType<typeof getEventData>,
-    token?: Token
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.event.id,
@@ -55,19 +54,15 @@ function getEvent(
         }),
     })
 
-    if (token) {
-        return [
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.event.id,
+            token,
+            from: new Account({ id: u8aToHex(data.accountId) }),
             event,
-            new AccountTokenEvent({
-                id: item.event.id,
-                token,
-                from: new Account({ id: u8aToHex(data.accountId) }),
-                event,
-            }),
-        ]
-    }
-
-    return event
+        }),
+    ]
 }
 
 export async function burned(
@@ -81,20 +76,19 @@ export async function burned(
 
     const address = u8aToHex(data.accountId)
 
+    const token = await ctx.store.findOne(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+    })
+
     if (skipSave) {
-        getOrCreateAccount(ctx, data.accountId)
-        return getEvent(item, data)
+        await getOrCreateAccount(ctx, data.accountId)
+        return getEvent(item, data, token)
     }
 
-    const [tokenAccount, token] = await Promise.all([
-        ctx.store.findOne(TokenAccount, {
-            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
-            relations: { account: true },
-        }),
-        ctx.store.findOne(Token, {
-            where: { id: `${data.collectionId}-${data.tokenId}` },
-        }),
-    ])
+    const tokenAccount = await ctx.store.findOne(TokenAccount, {
+        where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+        relations: { account: true },
+    })
 
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
@@ -102,10 +96,7 @@ export async function burned(
         tokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(tokenAccount)
     } else {
-        Sentry.captureMessage(
-            `[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     if (token) {
@@ -114,8 +105,8 @@ export async function burned(
         await ctx.store.save(token)
         syncCollectionStats(data.collectionId.toString())
     } else {
-        Sentry.captureMessage(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }

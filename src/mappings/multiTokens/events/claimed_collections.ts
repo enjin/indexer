@@ -16,6 +16,10 @@ function getEventData(ctx: CommonContext, event: Event) {
         return data.asMatrixEnjinV1000
     }
 
+    if (data.isMatrixEnjinV603) {
+        return data.asMatrixEnjinV603
+    }
+
     if (data.isV1000) {
         return data.asV1000
     }
@@ -58,7 +62,7 @@ export async function claimedCollections(
         data: new MultiTokensClaimedCollections({
             account: u8aToHex(data.accountId),
             ethAccount: u8aToHex(data.ethereumAddress),
-            collectionIds: data.collectionIds,
+            collectionIds: data.collectionIds.map((id) => (typeof id === 'bigint' ? id : id.native)),
         }),
     })
 }

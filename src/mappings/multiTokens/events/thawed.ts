@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensThawedEvent } from '../../../types/generated/events'
 import {
     Collection,
@@ -96,7 +95,7 @@ export async function thawed(
         })
 
         if (!tokenAccount) {
-            Sentry.captureMessage(
+            throwError(
                 `[Thawed] We have not found token account ${u8aToHex(data.tokenAccount)}-${data.collectionId}-${data.tokenId}.`,
                 'fatal'
             )
@@ -113,7 +112,7 @@ export async function thawed(
         })
 
         if (!collectionAccount) {
-            Sentry.captureMessage(`[Thawed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            throwError(`[Thawed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -126,7 +125,7 @@ export async function thawed(
         })
 
         if (!token) {
-            Sentry.captureMessage(`[Thawed] We have not found collection account ${data.collectionId}-${data.tokenId}.`, 'fatal')
+            throwError(`[Thawed] We have not found collection account ${data.collectionId}-${data.tokenId}.`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -138,7 +137,7 @@ export async function thawed(
         })
 
         if (!collection) {
-            Sentry.captureMessage(`[Thawed] We have not found collection ${data.collectionId.toString()}.`, 'fatal')
+            throwError(`[Thawed] We have not found collection ${data.collectionId.toString()}.`, 'fatal')
             return getEvent(item, data)
         }
 

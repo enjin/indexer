@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Axios from 'axios'
 import https from 'https'
 import mime from 'mime-types'
@@ -22,17 +23,36 @@ export async function fetchMetadata(url: string) {
         maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 2 : 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
-
     try {
         const { status, data } = await api.get(url.replace('ipfs://', 'https://ipfs.io/ipfs/'))
         if (status < 400) {
             return data
         }
-    } catch (e) {
-        return null
-    }
+        throw new Error(`Failed to fetch metadata from ${url}`)
+    } catch (error: unknown) {
+        if (!Axios.isAxiosError(error)) {
+            // eslint-disable-next-line no-console
+            console.error(`Failed to fetch metadata from ${url} (non-axios)`, error)
+            throw error
+        }
 
-    return null
+        console.error(`Failed to fetch metadata from ${url} (axios)`, error.message)
+        if (error.response) {
+            if (error.response.status === 404) {
+                return null
+            }
+
+            console.log(error.response.data)
+            console.log(error.response.status)
+            console.log(error.response.headers)
+        } else if (error.request) {
+            console.log(error.request)
+        } else {
+            console.log('Error', error.message)
+        }
+
+        throw error
+    }
 }
 
 function parseMedia(value: string | Media[]) {
@@ -61,11 +81,9 @@ function parseObjectProperties(value: object) {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
-        if (typeof v === 'object') {
-            if ('value' in v) {
-                properties[k] = v
-            }
-        } else {
+        if (typeof v === 'object' && v !== null && 'value' in v && v.value !== null && v.value !== '') {
+            properties[k] = v.value
+        } else if (v !== null && v !== '') {
             properties[k] = {
                 value: v,
             }
@@ -111,7 +129,7 @@ function parseArrayAttributes(
         if (attr.trait_type) {
             key = attr.trait_type
         }
-        if (key && attr.value) {
+        if (key && attr.value !== null && attr.value !== '') {
             obj[key] = { ...attr, type: attr.display_type ?? attr.type ?? undefined }
         }
     })

@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensMintedEvent } from '../../../types/generated/events'
 import {
     Account,
@@ -43,7 +42,8 @@ function getEventData(ctx: CommonContext, event: Event): EventData {
 
 function getEvent(
     item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
+    data: ReturnType<typeof getEventData>,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -64,7 +64,7 @@ function getEvent(
         event,
         new AccountTokenEvent({
             id: item.event.id,
-            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
+            token,
             from: new Account({ id: u8aToHex(data.issuer) }),
             to: new Account({ id: u8aToHex(data.recipient) }),
             event,
@@ -90,15 +90,14 @@ export async function minted(
         },
     })
 
-    if (!token) {
-        Sentry.captureMessage(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+    if (skipSave) {
+        await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
+        return getEvent(item, data, token)
     }
 
-    if (skipSave) {
-        getOrCreateAccount(ctx, data.recipient)
-        getOrCreateAccount(ctx, data.issuer)
-        return getEvent(item, data)
+    if (!token) {
+        throwError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return getEvent(item, data, token)
     }
 
     token.supply += data.amount
@@ -110,13 +109,13 @@ export async function minted(
     })
 
     if (!tokenAccount) {
-        Sentry.captureMessage(
+        throwError(
             `[Minted] We have not found token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}.`,
             'fatal'
         )
 
         await Promise.all(promises)
-        return getEvent(item, data)
+        return getEvent(item, data, token)
     }
 
     tokenAccount.balance += data.amount
@@ -129,5 +128,5 @@ export async function minted(
     computeTraits(data.collectionId.toString())
     syncCollectionStats(data.collectionId.toString())
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }

@@ -86,6 +86,7 @@ export class Token {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
+    @Index_()
     @Column_("timestamp with time zone", {nullable: false})
     createdAt!: Date
 }

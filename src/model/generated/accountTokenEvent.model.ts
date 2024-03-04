@@ -26,5 +26,5 @@ export class AccountTokenEvent {
 
     @Index_()
     @ManyToOne_(() => Token, {nullable: true})
-    token!: Token
+    token!: Token | undefined | null
 }

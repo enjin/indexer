@@ -1,8 +1,7 @@
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { u8aToHex } from '@polkadot/util'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTokenDestroyedEvent } from '../../../types/generated/events'
 import {
     AccountTokenEvent,
@@ -15,7 +14,6 @@ import {
     MultiTokensTokenDestroyed,
     RoyaltyCurrency,
     Token,
-    TokenAccount,
     TraitToken,
 } from '../../../model'
 import { CommonContext } from '../../types/contexts'
@@ -72,7 +70,7 @@ export async function tokenDestroyed(
     })
 
     if (!token) {
-        Sentry.captureMessage(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
         return getEvent(item, data)
     }
     // TODO: We are removing all events that are related to this token.
@@ -107,9 +105,8 @@ export async function tokenDestroyed(
             },
         }),
         ctx.store.delete(RoyaltyCurrency, { token: { id: token.id } }),
-        ctx.store.delete(TokenAccount, { token: { id: token.id } }),
         ctx.store.delete(TraitToken, { token: { id: token.id } }),
-        ctx.store.delete(AccountTokenEvent, { token: { id: token.id } }),
+        ctx.store.update(AccountTokenEvent, { token: { id: token.id } }, { token: null }),
         ctx.store.delete(Attribute, { token: { id: token.id } }),
     ])
 

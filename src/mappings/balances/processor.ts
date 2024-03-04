@@ -340,6 +340,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     id,
                     address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                     nonce: accountInfo.nonce,
+                    verified: false,
                     balance: new Balance({
                         transferable: accountData.free - accountData.frozen,
                         free: accountData.free,
@@ -354,6 +355,7 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
                     id,
                     address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
                     nonce: accountInfo.nonce,
+                    verified: false,
                     balance: new Balance({
                         transferable: accountData.free - accountData.miscFrozen,
                         free: accountData.free,

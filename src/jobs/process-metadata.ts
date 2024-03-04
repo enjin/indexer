@@ -4,10 +4,10 @@ import { redisConfig } from './common'
 export type JobData = { resourceId: string; type: 'token' | 'collection'; force: boolean; allTokens: boolean }
 
 export const metadataQueue = new Queue<JobData>('metadataQueue', {
-    defaultJobOptions: { delay: 1000, attempts: 5, removeOnComplete: true },
+    defaultJobOptions: { delay: 1000, attempts: 1, removeOnComplete: true },
     redis: redisConfig,
     settings: {
-        maxStalledCount: 3,
+        maxStalledCount: 2,
     },
 })
 

@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import {
     CollectionAccount,
     TokenAccount,
@@ -66,10 +65,7 @@ export async function approved(
         })
 
         if (!tokenAccount) {
-            Sentry.captureMessage(
-                `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-                'fatal'
-            )
+            throwError(`[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
             return getEvent(item, data)
         }
 
@@ -91,7 +87,7 @@ export async function approved(
         })
 
         if (!collectionAccount) {
-            Sentry.captureMessage(`[Approved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            throwError(`[Approved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
             return getEvent(item, data)
         }
 

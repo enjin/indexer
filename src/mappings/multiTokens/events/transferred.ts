@@ -1,8 +1,7 @@
 import { u8aToHex } from '@polkadot/util'
 import { SubstrateBlock } from '@subsquid/substrate-processor'
 import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import * as Sentry from '@sentry/node'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnknownVersionError, throwError } from '../../../common/errors'
 import { MultiTokensTransferredEvent } from '../../../types/generated/events'
 import {
     Account,
@@ -30,7 +29,8 @@ function getEventData(ctx: CommonContext, event: Event) {
 
 function getEvent(
     item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
+    data: ReturnType<typeof getEventData>,
+    token: Token | null
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.event.id,
@@ -55,7 +55,7 @@ function getEvent(
             from: new Account({ id: u8aToHex(data.from) }),
             to: new Account({ id: u8aToHex(data.to) }),
             event,
-            token: new Token({ id: `${data.collectionId}-${data.tokenId}` }),
+            token,
         }),
     ]
 }
@@ -73,15 +73,15 @@ export async function transferred(
         where: { id: `${data.collectionId}-${data.tokenId}` },
     })
 
-    if (!token) {
-        Sentry.captureMessage(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+    if (skipSave) {
+        await Promise.all([getOrCreateAccount(ctx, data.from), getOrCreateAccount(ctx, data.to)])
+
+        return getEvent(item, data, token)
     }
 
-    if (skipSave) {
-        getOrCreateAccount(ctx, data.from)
-        getOrCreateAccount(ctx, data.to)
-        return getEvent(item, data)
+    if (!token) {
+        throwError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return getEvent(item, data, token)
     }
 
     const fromAddress = u8aToHex(data.from)
@@ -102,10 +102,7 @@ export async function transferred(
         fromTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(fromTokenAccount)
     } else {
-        Sentry.captureMessage(
-            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     if (toTokenAccount) {
@@ -114,10 +111,7 @@ export async function transferred(
         toTokenAccount.updatedAt = new Date(block.timestamp)
         await ctx.store.save(toTokenAccount)
     } else {
-        Sentry.captureMessage(
-            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     syncCollectionStats(data.collectionId.toString())
@@ -139,5 +133,5 @@ export async function transferred(
         })
     }
 
-    return getEvent(item, data)
+    return getEvent(item, data, token)
 }

@@ -39,10 +39,6 @@ function getCallData(ctx: CommonContext, call: Call) {
     } else {
         data = new FuelTanksCreateFuelTankCall(ctx, call)
 
-        if (data.isV604) {
-            return data.asV604
-        }
-
         if (data.isV602) {
             return data.asV602
         }
@@ -60,6 +56,10 @@ function getCallData(ctx: CommonContext, call: Call) {
         }
     }
 
+    if (data.isMatrixEnjinV1004) {
+        return data.asMatrixEnjinV1004
+    }
+
     if (data.isMatrixEnjinV1003) {
         return data.asMatrixEnjinV1003
     }
@@ -72,6 +72,10 @@ function getCallData(ctx: CommonContext, call: Call) {
         return data.asMatrixEnjinV603
     }
 
+    if (data.isV1005) {
+        return data.asV1005
+    }
+
     if (data.isV1004) {
         return data.asV1004
     }
@@ -82,6 +86,10 @@ function getCallData(ctx: CommonContext, call: Call) {
 
     if (data.isV1000) {
         return data.asV1000
+    }
+
+    if (data.isV604) {
+        return data.asV604
     }
 
     throw new UnknownVersionError(data.constructor.name)

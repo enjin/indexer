@@ -138,6 +138,7 @@ export class TopCollectionResolver {
                 return inBuilder
             }, 'l')
             .orderBy(orderBy, order, 'NULLS LAST')
+            .addOrderBy('id', 'DESC')
             .limit(limit)
             .offset(offset)
 
