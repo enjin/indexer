@@ -3,6 +3,8 @@ import connection from '../connection'
 import { JobData } from '../jobs/fetch-collection-extra'
 import { fetchCollectionsExtra } from '../mappings/util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../model'
+import { computeTraits } from '../jobs/compute-traits'
+import { syncCollectionStats } from '../jobs/collection-stats'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
@@ -38,6 +40,9 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             tiktok: _c.tiktok,
             website: _c.website,
         })
+
+        syncCollectionStats(collection.id)
+        computeTraits(collection.id)
 
         await em.update(Collection, { id: _c.collectionId }, collection as any).catch((err) => {
             // eslint-disable-next-line no-console
