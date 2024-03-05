@@ -88,8 +88,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             })
         })
 
-        await em.insert(Trait, traitsToSave as any)
-
+        await em.save(Trait, traitsToSave as any, { chunk: 1000 })
         const traitTokensToSave: TraitToken[] = []
 
         tokenTraitMap.forEach((traits, tokenId) => {
@@ -106,11 +105,11 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
 
         if (traitTokensToSave.length) {
-            await em.insert(TraitToken, traitTokensToSave as any)
+            await em.save(TraitToken, traitTokensToSave as any, { chunk: 1000 })
         }
 
         done(null, { timeElapsed: new Date().getTime() - start.getTime() })
     } catch (error: any) {
-        done('message' in error ? error.message : error)
+        done(Error('message' in error ? error.message : error.toString()))
     }
 }
