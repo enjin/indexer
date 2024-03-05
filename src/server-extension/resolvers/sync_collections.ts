@@ -7,7 +7,7 @@ const mins10 = 1000 * 60 * 30
 let rateLimit: number | null = null
 
 @Resolver()
-export class SyncCollections {
+export class SyncCollectionsResolver {
     @Query(() => Boolean)
     async syncCollections(): Promise<boolean> {
         if (rateLimit) {
