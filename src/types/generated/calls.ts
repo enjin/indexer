@@ -9,6 +9,7 @@ import * as matrixEnjinV1000 from './matrixEnjinV1000'
 import * as matrixEnjinV1003 from './matrixEnjinV1003'
 import * as v604 from './v604'
 import * as matrixEnjinV1004 from './matrixEnjinV1004'
+import * as matrixEnjinV1005 from './matrixEnjinV1005'
 import * as v1000 from './v1000'
 import * as v1003 from './v1003'
 import * as v1004 from './v1004'
@@ -2578,6 +2579,21 @@ export class CouncilExecuteCall {
     }
 
     /**
+     * See [`Pallet::execute`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Council.execute') === 'ad80e0de1d20c01aa99b1f284aced00621ca59cbcd8fb1bfcf59fe0ca286e16d'
+    }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get asMatrixEnjinV1005(): {proposal: matrixEnjinV1005.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatch a proposal from a member using the `Member` origin.
      * 
      * Origin must be a member of the collective.
@@ -2985,6 +3001,21 @@ export class CouncilProposeCall {
      */
     get asMatrixEnjinV1004(): {threshold: number, proposal: matrixEnjinV1004.Call, lengthBound: number} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Council.propose') === '7908f2cc78805227332d13313a2392cad3eb0a7839b2d50559aa8596621b7532'
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get asMatrixEnjinV1005(): {threshold: number, proposal: matrixEnjinV1005.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -4980,6 +5011,21 @@ export class ExtrinsicPausePauseExtrinsicCall {
     }
 
     /**
+     * See [`Pallet::pause_extrinsic`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.pause_extrinsic') === '2918d80510c58a8c223a76364c25b6cda15238b25fddbf85395e21de3e49ab85'
+    }
+
+    /**
+     * See [`Pallet::pause_extrinsic`].
+     */
+    get asMatrixEnjinV1005(): {call: matrixEnjinV1005.Call, pauseOnlyExtrinsic: boolean} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Pause execution of extrinsic(s)
      * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
@@ -5379,6 +5425,21 @@ export class ExtrinsicPauseResumeExtrinsicCall {
      */
     get asMatrixEnjinV1004(): {call: matrixEnjinV1004.Call, resumeOnlyExtrinsic: boolean} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::resume_extrinsic`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('ExtrinsicPause.resume_extrinsic') === '3ac7d986459eb08016fd5509100a4030216723474145e8935d9cab948c685b4b'
+    }
+
+    /**
+     * See [`Pallet::resume_extrinsic`].
+     */
+    get asMatrixEnjinV1005(): {call: matrixEnjinV1005.Call, resumeOnlyExtrinsic: boolean} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -5871,6 +5932,21 @@ export class FuelTanksCreateFuelTankCall {
     }
 
     /**
+     * See [`Pallet::create_fuel_tank`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.create_fuel_tank') === 'c78ad660d2699d68fa3fc6242393569146b87e87a702ae8ade3551bae718937a'
+    }
+
+    /**
+     * See [`Pallet::create_fuel_tank`].
+     */
+    get asMatrixEnjinV1005(): {descriptor: matrixEnjinV1005.FuelTankDescriptor} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Creates a fuel tank, given a descriptor
      * 
      * # Errors
@@ -6241,6 +6317,21 @@ export class FuelTanksDispatchCall {
     }
 
     /**
+     * See [`Pallet::dispatch`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch') === 'c589177e570cdf76d39ea7b1cf06e057e1e1821f44c55ac5641fe62422c38024'
+    }
+
+    /**
+     * See [`Pallet::dispatch`].
+     */
+    get asMatrixEnjinV1005(): {tankId: matrixEnjinV1005.MultiAddress, ruleSetId: number, call: matrixEnjinV1005.Call, settings: (matrixEnjinV1005.DispatchSettings | undefined)} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
      * 
      * # Errors
@@ -6580,6 +6671,21 @@ export class FuelTanksDispatchAndTouchCall {
      */
     get asMatrixEnjinV1004(): {tankId: matrixEnjinV1004.MultiAddress, ruleSetId: number, call: matrixEnjinV1004.Call, settings: (matrixEnjinV1004.DispatchSettings | undefined)} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::dispatch_and_touch`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.dispatch_and_touch') === 'c589177e570cdf76d39ea7b1cf06e057e1e1821f44c55ac5641fe62422c38024'
+    }
+
+    /**
+     * See [`Pallet::dispatch_and_touch`].
+     */
+    get asMatrixEnjinV1005(): {tankId: matrixEnjinV1005.MultiAddress, ruleSetId: number, call: matrixEnjinV1005.Call, settings: (matrixEnjinV1005.DispatchSettings | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -6930,6 +7036,21 @@ export class FuelTanksForceCreateFuelTankCall {
     }
 
     /**
+     * See [`Pallet::force_create_fuel_tank`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.force_create_fuel_tank') === '0869bb06b9f270fd8a015265a723b581c4cbab9f6cc36092d6bf263d84a7d8e9'
+    }
+
+    /**
+     * See [`Pallet::force_create_fuel_tank`].
+     */
+    get asMatrixEnjinV1005(): {owner: matrixEnjinV1005.MultiAddress, descriptor: matrixEnjinV1005.FuelTankDescriptor} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Force creates a fuel tank
      * 
      * # Errors
@@ -7238,6 +7359,21 @@ export class FuelTanksInsertRuleSetCall {
      */
     get asMatrixEnjinV1004(): {tankId: matrixEnjinV1004.MultiAddress, ruleSetId: number, rules: matrixEnjinV1004.DispatchRuleDescriptor[]} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::insert_rule_set`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('FuelTanks.insert_rule_set') === '3ff56efb61a519b24246c8dcedcc6389575ca0c61517213b9102d83de7242b8b'
+    }
+
+    /**
+     * See [`Pallet::insert_rule_set`].
+     */
+    get asMatrixEnjinV1005(): {tankId: matrixEnjinV1005.MultiAddress, ruleSetId: number, rules: matrixEnjinV1005.DispatchRuleDescriptor[]} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -8790,15 +8926,15 @@ export class MarketplaceConvertListingsCall {
     /**
      * See [`Pallet::convert_listings`].
      */
-    get isV1005(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('Marketplace.convert_listings') === '470674a1c453bbf211b97f93a9ecac8440af5b89491cf2ab06d86e4183a54f68'
     }
 
     /**
      * See [`Pallet::convert_listings`].
      */
-    get asV1005(): {listingIds: Uint8Array[]} {
-        assert(this.isV1005)
+    get asMatrixEnjinV1005(): {listingIds: Uint8Array[]} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 }
@@ -8891,61 +9027,17 @@ export class MarketplaceCreateListingCall {
     }
 
     /**
-     * Places a sell order. Requires `make_asset_id` or `take_asset_id` to be a currency.
-     * The id for the listing is generated by hashing the encoded bytes of the listing.
-     * 
-     * # Parameters
-     * 
-     * - `make_asset_id`: The id of the asset being sold
-     * - `take_asset_id`: The id of the asset being requested
-     * - `amount`: The number of units being sold
-     * - `price`: The requested price for each unit. If it's an auction, this is the minimum
-     *   bid
-     * - `salt`: Can be used to differentiate listings
-     * - `auction_data`: Including this makes the listing an auction
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAuctionStart`] if the start is less than the current block +
-     *   `T::ListingActiveDelay`
-     * - [`Error::NoCurrency`] Neither the make or take side is considered a currency
-     * - [`Error::ListingForbidden`] if make or take side tokens are not allowed to be listed
-     * - [`Error::CurrencyNotAllowedAsRoyalty`] if currency cannot be used as a royalty
-     * - [`Error::LowBaseCurrencyBalance`] if base currency balance is too low
-     * - [`Error::LowTokenBalance`] token balance is too low for reserve
-     * - [`Error::ListingAlreadyExists`] if a listing with the same ID already exists
+     * See [`Pallet::create_listing`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('Marketplace.create_listing') === '78b7a393701f9f95d8413f0683f9a8071358025ff047a772b81cffc1c315d7b4'
     }
 
     /**
-     * Places a sell order. Requires `make_asset_id` or `take_asset_id` to be a currency.
-     * The id for the listing is generated by hashing the encoded bytes of the listing.
-     * 
-     * # Parameters
-     * 
-     * - `make_asset_id`: The id of the asset being sold
-     * - `take_asset_id`: The id of the asset being requested
-     * - `amount`: The number of units being sold
-     * - `price`: The requested price for each unit. If it's an auction, this is the minimum
-     *   bid
-     * - `salt`: Can be used to differentiate listings
-     * - `auction_data`: Including this makes the listing an auction
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAuctionStart`] if the start is less than the current block +
-     *   `T::ListingActiveDelay`
-     * - [`Error::NoCurrency`] Neither the make or take side is considered a currency
-     * - [`Error::ListingForbidden`] if make or take side tokens are not allowed to be listed
-     * - [`Error::CurrencyNotAllowedAsRoyalty`] if currency cannot be used as a royalty
-     * - [`Error::LowBaseCurrencyBalance`] if base currency balance is too low
-     * - [`Error::LowTokenBalance`] token balance is too low for reserve
-     * - [`Error::ListingAlreadyExists`] if a listing with the same ID already exists
+     * See [`Pallet::create_listing`].
      */
-    get asV500(): {makeAssetId: v500.AssetId, takeAssetId: v500.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v500.AuctionData | undefined)} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {makeAssetId: matrixEnjinV1005.AssetId, takeAssetId: matrixEnjinV1005.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (matrixEnjinV1005.AuctionData | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -9158,37 +9250,17 @@ export class MarketplaceForceCreateListingCall {
     }
 
     /**
-     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
-     * 
-     * # Parameters
-     * 
-     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
-     * a deposit if `seller` does not have enough.
-     * 
-     * # Errors
-     * 
-     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
-     * [`Config::ForceOrigin`]
+     * See [`Pallet::force_create_listing`].
      */
-    get isV604(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('Marketplace.force_create_listing') === '740d5c8aa6c755cb69b094d1cae70ff2f50500c1d18fd8c66c8e1fd05539a640'
     }
 
     /**
-     * Force create a listing. This is only callable by the [`Config::ForceOrigin`].
-     * 
-     * # Parameters
-     * 
-     * Mostly the same as [`Self::create_listing`], but `deposit_backer` can be included to pay
-     * a deposit if `seller` does not have enough.
-     * 
-     * # Errors
-     * 
-     * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
-     * [`Config::ForceOrigin`]
+     * See [`Pallet::force_create_listing`].
      */
-    get asV604(): {seller: v604.MultiAddress, makeAssetId: v604.AssetId, takeAssetId: v604.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (v604.AuctionData | undefined), depositBacker: (v604.MultiAddress | undefined)} {
-        assert(this.isV604)
+    get asMatrixEnjinV1005(): {seller: matrixEnjinV1005.MultiAddress, makeAssetId: matrixEnjinV1005.AssetId, takeAssetId: matrixEnjinV1005.AssetId, amount: bigint, price: bigint, salt: Uint8Array, auctionData: (matrixEnjinV1005.AuctionData | undefined), depositBacker: (matrixEnjinV1005.MultiAddress | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -9496,6 +9568,21 @@ export class MatrixUtilityBatchCall {
     }
 
     /**
+     * See [`Pallet::batch`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('MatrixUtility.batch') === '0a9f2b6f654e6932454a05c26970303e84fed6713318f5b48ba3bad7b7eb1b3c'
+    }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get asMatrixEnjinV1005(): {calls: matrixEnjinV1005.Call[], continueOnFailure: boolean} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatch a batch of calls.
      * 
      * May be called from any origin except [`None`].
@@ -9748,49 +9835,17 @@ export class MatrixXcmTransferAssetToParachainCall {
     }
 
     /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
-     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
-     *   the asset.
+     * See [`Pallet::transfer_asset_to_parachain`].
      */
-    get isV604(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MatrixXcm.transfer_asset_to_parachain') === '6e0995af8a1271406f286250994b7e96ef4e950ec17addde0aa13d7dcf06db7e'
     }
 
     /**
-     * `origin` transfers `amount` of `asset` to `beneficiary` on the `parachain`
-     * 
-     * Note: `asset` needs to be registered as foreign token in destination parachain
-     * 
-     * - `para_id`: destination parachain
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `asset`: asset to transfer
-     * - `amount`: amount of `asset` to transfer
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     *   `None`
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
-     * - [`Error::NotTransferable`]: A corresponding multilocation could not be converted for
-     *   the asset.
+     * See [`Pallet::transfer_asset_to_parachain`].
      */
-    get asV604(): {paraId: v604.ParachainId, beneficiary: v604.Account, currencyId: v604.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
-        assert(this.isV604)
+    get asMatrixEnjinV1005(): {paraId: matrixEnjinV1005.ParachainId, beneficiary: matrixEnjinV1005.Account, currencyId: matrixEnjinV1005.AssetId, amount: bigint, destWeight: (bigint | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -9899,47 +9954,17 @@ export class MatrixXcmTransferAssetWithFeeCall {
     }
 
     /**
-     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
-     * the fee. This allows the transfer of custom assets like a non-fungible which
-     * cannot be used to pay fees.
-     * 
-     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
-     * parachain.
-     * 
-     * - `asset`: asset to transfer
-     * - `fee_asset`: asset to be used as fee
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `para_id`: destination parachain
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     * 
-     * # Errors
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
+     * See [`Pallet::transfer_asset_with_fee`].
      */
-    get isV604(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MatrixXcm.transfer_asset_with_fee') === '253afe02afbaf582b39ed2b492eb0493066e690147b56578b4e8b20fb470b444'
     }
 
     /**
-     * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
-     * the fee. This allows the transfer of custom assets like a non-fungible which
-     * cannot be used to pay fees.
-     * 
-     * Note: each [`MultiAsset`] must be registered as a foreign asset at the destination
-     * parachain.
-     * 
-     * - `asset`: asset to transfer
-     * - `fee_asset`: asset to be used as fee
-     * - `beneficiary`: account to receive `asset` in destination parachain
-     * - `para_id`: destination parachain
-     * - `dest_weight`: optional weight to be paid in destination chain, unlimited in case it's
-     * 
-     * # Errors
-     * - [`Error::InvalidAddress`]: `beneficiary` is invalid, i.e could not be converted to
-     *   [`MultiLocation`]
+     * See [`Pallet::transfer_asset_with_fee`].
      */
-    get asV604(): {assetPair: v604.CurrencyIdAmountPair, feePair: v604.CurrencyIdAmountPair, paraId: v604.ParachainId, beneficiary: v604.Account, destWeight: (bigint | undefined)} {
-        assert(this.isV604)
+    get asMatrixEnjinV1005(): {assetPair: matrixEnjinV1005.CurrencyIdAmountPair, feePair: matrixEnjinV1005.CurrencyIdAmountPair, paraId: matrixEnjinV1005.ParachainId, beneficiary: matrixEnjinV1005.Account, destWeight: (bigint | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -10820,25 +10845,17 @@ export class MultiTokensCreateCollectionCall {
     }
 
     /**
-     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
-     * 
-     * # Errors
-     * 
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * See [`Pallet::create_collection`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.create_collection') === '2c5ffb5fc94633dce91583fb29da64fdda08ce309e89734aab20a62a8cbb3250'
     }
 
     /**
-     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
-     * 
-     * # Errors
-     * 
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * See [`Pallet::create_collection`].
      */
-    get asV500(): {descriptor: v500.DefaultCollectionDescriptor} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {descriptor: matrixEnjinV1005.DefaultCollectionDescriptor} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11073,25 +11090,17 @@ export class MultiTokensForceCreateCollectionCall {
     }
 
     /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     * See [`Pallet::force_create_collection`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.force_create_collection') === '64f054ecc6931474221d23bfcfed0b8f345cfbdab3115fd062d513a374ecf698'
     }
 
     /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     * See [`Pallet::force_create_collection`].
      */
-    get asV500(): {owner: Uint8Array, collectionId: bigint, descriptor: v500.DefaultCollectionDescriptor} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {owner: Uint8Array, collectionId: bigint, descriptor: matrixEnjinV1005.DefaultCollectionDescriptor} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11192,39 +11201,17 @@ export class MultiTokensForceCreateEthereumCollectionCall {
     }
 
     /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be
-     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
-     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
-     * 
-     * # Params
-     * - `owner` - the account that will own the new collection
-     * - `claimer` - the ethereum address that will be able to claim the collection
-     * - `ethereum_collection_id` - the collection id on ethereum
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     * See [`Pallet::force_create_ethereum_collection`].
      */
-    get isV1000(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.force_create_ethereum_collection') === 'e0b68803545526e7819b718982de46e39b26d56c26ea0debdb7b2d4189045018'
     }
 
     /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be
-     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
-     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
-     * 
-     * # Params
-     * - `owner` - the account that will own the new collection
-     * - `claimer` - the ethereum address that will be able to claim the collection
-     * - `ethereum_collection_id` - the collection id on ethereum
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     * See [`Pallet::force_create_ethereum_collection`].
      */
-    get asV1000(): {owner: Uint8Array, claimer: Uint8Array, ethereumCollectionId: bigint, descriptor: v1000.DefaultCollectionDescriptor} {
-        assert(this.isV1000)
+    get asMatrixEnjinV1005(): {owner: Uint8Array, claimer: Uint8Array, ethereumCollectionId: bigint, descriptor: matrixEnjinV1005.DefaultCollectionDescriptor} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11428,27 +11415,17 @@ export class MultiTokensForceMutateCollectionCall {
     }
 
     /**
-     * Exactly as [`mutate_collection`](Self::mutate_collection), except the origin must be
-     * root and the `caller` account should be specified.
-     * 
-     * # Errors
-     * 
-     * Same as [`mutate_collection`](Self::mutate_collection)
+     * See [`Pallet::force_mutate_collection`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.force_mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
     }
 
     /**
-     * Exactly as [`mutate_collection`](Self::mutate_collection), except the origin must be
-     * root and the `caller` account should be specified.
-     * 
-     * # Errors
-     * 
-     * Same as [`mutate_collection`](Self::mutate_collection)
+     * See [`Pallet::force_mutate_collection`].
      */
-    get asV500(): {collectionId: bigint, mutation: v500.DefaultCollectionMutation} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {collectionId: bigint, mutation: matrixEnjinV1005.DefaultCollectionMutation} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -11556,17 +11533,17 @@ export class MultiTokensForceSetCollectionCall {
     }
 
     /**
-     * Set the Collections storage to the given `value`, origin must be root
+     * See [`Pallet::force_set_collection`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.force_set_collection') === 'd75af3c3c47bd7f1909045c69b61ffb4bbd68459ef76923bcdbd9203caeb90d5'
     }
 
     /**
-     * Set the Collections storage to the given `value`, origin must be root
+     * See [`Pallet::force_set_collection`].
      */
-    get asV500(): {collectionId: bigint, value: (v500.Collection | undefined)} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {collectionId: bigint, value: (matrixEnjinV1005.Collection | undefined)} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -12140,27 +12117,17 @@ export class MultiTokensMutateCollectionCall {
     }
 
     /**
-     * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`
-     * 
-     * # Errors
-     * 
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
-     * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+     * See [`Pallet::mutate_collection`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('MultiTokens.mutate_collection') === '14654b078d9899c1c298781a09e325690f44d4eb607d8c69ff2f94e1c6b31069'
     }
 
     /**
-     * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`
-     * 
-     * # Errors
-     * 
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
-     * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+     * See [`Pallet::mutate_collection`].
      */
-    get asV500(): {collectionId: bigint, mutation: v500.DefaultCollectionMutation} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {collectionId: bigint, mutation: matrixEnjinV1005.DefaultCollectionMutation} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -13102,6 +13069,21 @@ export class MultisigAsMultiCall {
     }
 
     /**
+     * See [`Pallet::as_multi`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi') === 'ff04bf944df520da29052f26f540685344453ef97c8acf9a1d6e7666f6089dec'
+    }
+
+    /**
+     * See [`Pallet::as_multi`].
+     */
+    get asMatrixEnjinV1005(): {threshold: number, otherSignatories: Uint8Array[], maybeTimepoint: (matrixEnjinV1005.Timepoint | undefined), call: matrixEnjinV1005.Call, maxWeight: matrixEnjinV1005.Weight} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Register approval for a dispatch to be made from a deterministic composite account if
      * approved by a total of `threshold - 1` of `other_signatories`.
      * 
@@ -13941,6 +13923,21 @@ export class MultisigAsMultiThreshold1Call {
      */
     get asMatrixEnjinV1004(): {otherSignatories: Uint8Array[], call: matrixEnjinV1004.Call} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::as_multi_threshold_1`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Multisig.as_multi_threshold_1') === '55eb5707b84eb1e24a6d2064ea06f85dcde0d37041239a7abdd04d1aab960231'
+    }
+
+    /**
+     * See [`Pallet::as_multi_threshold_1`].
+     */
+    get asMatrixEnjinV1005(): {otherSignatories: Uint8Array[], call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -15413,6 +15410,21 @@ export class SchedulerScheduleCall {
     }
 
     /**
+     * See [`Pallet::schedule`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule') === '3f331936e5efc54e786ae3b93a778f89c1c1217ed2d8905fd4b8afbfe8c780d0'
+    }
+
+    /**
+     * See [`Pallet::schedule`].
+     */
+    get asMatrixEnjinV1005(): {when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Anonymously schedule a task.
      */
     get isV500(): boolean {
@@ -15618,6 +15630,21 @@ export class SchedulerScheduleAfterCall {
      */
     get asMatrixEnjinV1004(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1004.Call} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::schedule_after`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_after') === 'e4181c1b330dc27adc01e2f9d2426c86fd8b0f26d41af640c887cf51059a778c'
+    }
+
+    /**
+     * See [`Pallet::schedule_after`].
+     */
+    get asMatrixEnjinV1005(): {after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -15855,6 +15882,21 @@ export class SchedulerScheduleNamedCall {
     }
 
     /**
+     * See [`Pallet::schedule_named`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named') === 'd3079622958190761ec82e424db261cf8fc87237e5f6fa7566b03cc86cb628a9'
+    }
+
+    /**
+     * See [`Pallet::schedule_named`].
+     */
+    get asMatrixEnjinV1005(): {id: Uint8Array, when: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Schedule a named task.
      */
     get isV500(): boolean {
@@ -16060,6 +16102,21 @@ export class SchedulerScheduleNamedAfterCall {
      */
     get asMatrixEnjinV1004(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1004.Call} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::schedule_named_after`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Scheduler.schedule_named_after') === 'e73489db127d9492b96ee8851ef74576ec5d8e9191aa5913214eabc6bea1d4d9'
+    }
+
+    /**
+     * See [`Pallet::schedule_named_after`].
+     */
+    get asMatrixEnjinV1005(): {id: Uint8Array, after: number, maybePeriodic: ([number, number] | undefined), priority: number, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -17621,6 +17678,21 @@ export class TechnicalCommitteeExecuteCall {
     }
 
     /**
+     * See [`Pallet::execute`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.execute') === 'ad80e0de1d20c01aa99b1f284aced00621ca59cbcd8fb1bfcf59fe0ca286e16d'
+    }
+
+    /**
+     * See [`Pallet::execute`].
+     */
+    get asMatrixEnjinV1005(): {proposal: matrixEnjinV1005.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatch a proposal from a member using the `Member` origin.
      * 
      * Origin must be a member of the collective.
@@ -18028,6 +18100,21 @@ export class TechnicalCommitteeProposeCall {
      */
     get asMatrixEnjinV1004(): {threshold: number, proposal: matrixEnjinV1004.Call, lengthBound: number} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('TechnicalCommittee.propose') === '7908f2cc78805227332d13313a2392cad3eb0a7839b2d50559aa8596621b7532'
+    }
+
+    /**
+     * See [`Pallet::propose`].
+     */
+    get asMatrixEnjinV1005(): {threshold: number, proposal: matrixEnjinV1005.Call, lengthBound: number} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -18991,6 +19078,21 @@ export class UtilityAsDerivativeCall {
     }
 
     /**
+     * See [`Pallet::as_derivative`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.as_derivative') === 'ae66f3690f1eb12039f74be03a769febf0ea4d5571b223054a2ed8a4359d1e82'
+    }
+
+    /**
+     * See [`Pallet::as_derivative`].
+     */
+    get asMatrixEnjinV1005(): {index: number, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Send a call through an indexed pseudonym of the sender.
      * 
      * Filter from origin are passed along. The call will be dispatched with an origin which
@@ -19466,6 +19568,21 @@ export class UtilityBatchCall {
      */
     get asMatrixEnjinV1004(): {calls: matrixEnjinV1004.Call[]} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.batch') === '7534c64fadd111dd8750fcf825790b71a27089a8db2db32a765962f6f11245bb'
+    }
+
+    /**
+     * See [`Pallet::batch`].
+     */
+    get asMatrixEnjinV1005(): {calls: matrixEnjinV1005.Call[]} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -19995,6 +20112,21 @@ export class UtilityBatchAllCall {
     }
 
     /**
+     * See [`Pallet::batch_all`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.batch_all') === '7534c64fadd111dd8750fcf825790b71a27089a8db2db32a765962f6f11245bb'
+    }
+
+    /**
+     * See [`Pallet::batch_all`].
+     */
+    get asMatrixEnjinV1005(): {calls: matrixEnjinV1005.Call[]} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
      * 
@@ -20408,6 +20540,21 @@ export class UtilityDispatchAsCall {
     }
 
     /**
+     * See [`Pallet::dispatch_as`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.dispatch_as') === '31cdac43e73eaa9f4d2a4e79c09e38af89b0c9e12df3911d7c755ba376ef84fd'
+    }
+
+    /**
+     * See [`Pallet::dispatch_as`].
+     */
+    get asMatrixEnjinV1005(): {asOrigin: matrixEnjinV1005.OriginCaller, call: matrixEnjinV1005.Call} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatches a function call with a provided origin.
      * 
      * The dispatch origin for this call must be _Root_.
@@ -20779,6 +20926,21 @@ export class UtilityForceBatchCall {
      */
     get asMatrixEnjinV1004(): {calls: matrixEnjinV1004.Call[]} {
         assert(this.isMatrixEnjinV1004)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
+     * See [`Pallet::force_batch`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.force_batch') === '7534c64fadd111dd8750fcf825790b71a27089a8db2db32a765962f6f11245bb'
+    }
+
+    /**
+     * See [`Pallet::force_batch`].
+     */
+    get asMatrixEnjinV1005(): {calls: matrixEnjinV1005.Call[]} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -21196,6 +21358,21 @@ export class UtilityWithWeightCall {
     }
 
     /**
+     * See [`Pallet::with_weight`].
+     */
+    get isMatrixEnjinV1005(): boolean {
+        return this._chain.getCallHash('Utility.with_weight') === 'f2125944b2c2db0fc802ebeb34e0e46eb5d7dc404ccfb21c045054158edddb6c'
+    }
+
+    /**
+     * See [`Pallet::with_weight`].
+     */
+    get asMatrixEnjinV1005(): {call: matrixEnjinV1005.Call, weight: matrixEnjinV1005.Weight} {
+        assert(this.isMatrixEnjinV1005)
+        return this._chain.decodeCall(this.call)
+    }
+
+    /**
      * Dispatch a function call with a specified weight.
      * 
      * This function does not check the weight of the call, and instead allows the
@@ -21467,39 +21644,17 @@ export class XTokensTransferCall {
     }
 
     /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('XTokens.transfer') === '26df7f19916781e6746694066c0d24f7fef9a20367132a192147dc6c414af64c'
     }
 
     /**
-     * Transfer native currencies.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer`].
      */
-    get asV500(): {currencyId: v500.AssetId, amount: bigint, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {currencyId: matrixEnjinV1005.AssetId, amount: bigint, dest: matrixEnjinV1005.VersionedMultiLocation, destWeightLimit: matrixEnjinV1005.V3WeightLimit} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -21783,45 +21938,17 @@ export class XTokensTransferMulticurrenciesCall {
     }
 
     /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer_multicurrencies`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('XTokens.transfer_multicurrencies') === 'fa576588d6b62b5cf4c7bdd8bee764e1be7fc0c2fbe730e805ffd89ad1a3b1e6'
     }
 
     /**
-     * Transfer several currencies specifying the item to be used as fee
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee_item` is index of the currencies tuple that we want to use for
-     * payment
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer_multicurrencies`].
      */
-    get asV500(): {currencies: [v500.AssetId, bigint][], feeItem: number, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {currencies: [matrixEnjinV1005.AssetId, bigint][], feeItem: number, dest: matrixEnjinV1005.VersionedMultiLocation, destWeightLimit: matrixEnjinV1005.V3WeightLimit} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 
@@ -21940,57 +22067,17 @@ export class XTokensTransferWithFeeCall {
     }
 
     /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer_with_fee`].
      */
-    get isV500(): boolean {
+    get isMatrixEnjinV1005(): boolean {
         return this._chain.getCallHash('XTokens.transfer_with_fee') === 'c05a522029f57db9f9e4ceeff8427cc674dd992c069c7798b3625e3d55e588cb'
     }
 
     /**
-     * Transfer native currencies specifying the fee and amount as
-     * separate.
-     * 
-     * `dest_weight_limit` is the weight for XCM execution on the dest
-     * chain, and it would be charged from the transferred assets. If set
-     * below requirements, the execution may fail and assets wouldn't be
-     * received.
-     * 
-     * `fee` is the amount to be spent to pay for execution in destination
-     * chain. Both fee and amount will be subtracted form the callers
-     * balance.
-     * 
-     * If `fee` is not high enough to cover for the execution costs in the
-     * destination chain, then the assets will be trapped in the
-     * destination chain
-     * 
-     * It's a no-op if any error on local XCM execution or message sending.
-     * Note sending assets out per se doesn't guarantee they would be
-     * received. Receiving depends on if the XCM message could be delivered
-     * by the network, and if the receiving chain would handle
-     * messages correctly.
+     * See [`Pallet::transfer_with_fee`].
      */
-    get asV500(): {currencyId: v500.AssetId, amount: bigint, fee: bigint, dest: v500.VersionedMultiLocation, destWeightLimit: v500.V3WeightLimit} {
-        assert(this.isV500)
+    get asMatrixEnjinV1005(): {currencyId: matrixEnjinV1005.AssetId, amount: bigint, fee: bigint, dest: matrixEnjinV1005.VersionedMultiLocation, destWeightLimit: matrixEnjinV1005.V3WeightLimit} {
+        assert(this.isMatrixEnjinV1005)
         return this._chain.decodeCall(this.call)
     }
 

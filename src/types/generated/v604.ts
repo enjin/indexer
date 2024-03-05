@@ -339,47 +339,6 @@ export interface DispatchRuleDescriptor_PermittedExtrinsics {
     value: Call[]
 }
 
-export interface AssetId {
-    collectionId: bigint
-    tokenId: bigint
-}
-
-export interface AuctionData {
-    startBlock: number
-    endBlock: number
-}
-
-export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
-
-export interface ParachainId_Acala {
-    __kind: 'Acala'
-}
-
-export interface ParachainId_Moonbeam {
-    __kind: 'Moonbeam'
-}
-
-export interface ParachainId_Statemint {
-    __kind: 'Statemint'
-}
-
-export type Account = Account_Substrate | Account_EVM
-
-export interface Account_Substrate {
-    __kind: 'Substrate'
-    value: Uint8Array
-}
-
-export interface Account_EVM {
-    __kind: 'EVM'
-    value: Uint8Array
-}
-
-export interface CurrencyIdAmountPair {
-    currencyId: AssetId
-    amount: bigint
-}
-
 export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
 
 export interface DefaultMintParams_CreateToken {
@@ -4795,6 +4754,42 @@ export interface V3WeightLimit_Limited {
     value: Weight
 }
 
+export type ParachainId = ParachainId_Acala | ParachainId_Moonbeam | ParachainId_Statemint
+
+export interface ParachainId_Acala {
+    __kind: 'Acala'
+}
+
+export interface ParachainId_Moonbeam {
+    __kind: 'Moonbeam'
+}
+
+export interface ParachainId_Statemint {
+    __kind: 'Statemint'
+}
+
+export type Account = Account_Substrate | Account_EVM
+
+export interface Account_Substrate {
+    __kind: 'Substrate'
+    value: Uint8Array
+}
+
+export interface Account_EVM {
+    __kind: 'EVM'
+    value: Uint8Array
+}
+
+export interface AssetId {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export interface CurrencyIdAmountPair {
+    currencyId: AssetId
+    amount: bigint
+}
+
 export type XcmOperation = XcmOperation_XTokensTransfer | XcmOperation_ParachainFee
 
 export interface XcmOperation_XTokensTransfer {
@@ -4973,6 +4968,11 @@ export interface DispatchRuleKind_PermittedExtrinsics {
 export interface Consumption {
     totalConsumed: bigint
     lastResetBlock: (number | undefined)
+}
+
+export interface AuctionData {
+    startBlock: number
+    endBlock: number
 }
 
 export interface DefaultRoyalty {
