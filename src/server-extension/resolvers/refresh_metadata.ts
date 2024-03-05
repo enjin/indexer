@@ -27,7 +27,7 @@ class RefreshMetadataResponse {
 }
 
 const rateLimitMap = new Map()
-const mins10 = 1000 * 60 * 10
+const mins30 = 30 * 1000 * 60 * 10
 
 @Resolver()
 export class RefreshMetadataResolver {
@@ -48,7 +48,7 @@ export class RefreshMetadataResolver {
             const rateLimit = rateLimitMap.get(collectionId)
 
             if (rateLimit) {
-                const timeLeft = Math.ceil((rateLimit + mins10 - Date.now()) / 1000)
+                const timeLeft = Math.ceil((rateLimit + mins30 - Date.now()) / 1000)
 
                 if (timeLeft > 0) {
                     return {

@@ -20,7 +20,7 @@ export class CallNotDefinedError extends Error {
 }
 
 export function throwError(message: string, severity: Sentry.SeverityLevel = 'error'): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && severity !== 'log') {
         throw new Error(message)
     } else {
         Sentry.captureMessage(message, severity)

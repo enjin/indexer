@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import Axios from 'axios'
 import https from 'https'
+import Queue from 'bull'
 import mime from 'mime-types'
 import { safeString } from '../../common/tools'
 import { Attribute, Metadata, MetadataMedia } from '../../model'
@@ -11,7 +12,7 @@ type Media = {
     alt: string
 }
 
-export async function fetchMetadata(url: string) {
+export async function fetchMetadata(url: string, job: Queue.Job) {
     const api = Axios.create({
         headers: {
             'Cache-Control': 'no-cache',
@@ -20,7 +21,7 @@ export async function fetchMetadata(url: string) {
         },
         withCredentials: false,
         timeout: 15000,
-        maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 2 : 1,
+        maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 3 : 1,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
     try {
@@ -32,23 +33,21 @@ export async function fetchMetadata(url: string) {
     } catch (error: unknown) {
         if (!Axios.isAxiosError(error)) {
             // eslint-disable-next-line no-console
-            console.error(`Failed to fetch metadata from ${url} (non-axios)`, error)
+            job.log(`Failed to fetch metadata from ${url} (non-axios) : ${(error as any).toString()}`)
             throw error
         }
 
-        console.error(`Failed to fetch metadata from ${url} (axios)`, error.message)
+        job.log(`Failed to fetch metadata from ${url} (axios)`)
         if (error.response) {
             if (error.response.status === 404) {
                 return null
             }
 
-            console.log(error.response.data)
-            console.log(error.response.status)
-            console.log(error.response.headers)
-        } else if (error.request) {
-            console.log(error.request)
+            job.log(`url: ${error.response.request.res.responseUrl} status: ${error.response.status.toString()}`)
+            job.log(`redirectsCount: ${error.response.request.res.redirects.length.toString()}`)
+            job.log(error.response.data)
         } else {
-            console.log('Error', error.message)
+            job.log(`UnknownError: ${url} ${error.message}`)
         }
 
         throw error
@@ -81,9 +80,16 @@ function parseObjectProperties(value: object) {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
-        if (typeof v === 'object' && v !== null && 'value' in v && v.value !== null && v.value !== '') {
+        if (
+            typeof v === 'object' &&
+            v !== null &&
+            'value' in v &&
+            v.value !== null &&
+            v.value !== '' &&
+            typeof v.value !== 'object'
+        ) {
             properties[k] = v.value
-        } else if (v !== null && v !== '') {
+        } else if (v !== null && v !== '' && typeof v !== 'object') {
             properties[k] = {
                 value: v,
             }
@@ -129,7 +135,7 @@ function parseArrayAttributes(
         if (attr.trait_type) {
             key = attr.trait_type
         }
-        if (key && attr.value !== null && attr.value !== '') {
+        if (key && attr.value !== null && attr.value !== '' && typeof attr.value !== 'object') {
             obj[key] = { ...attr, type: attr.display_type ?? attr.type ?? undefined }
         }
     })
