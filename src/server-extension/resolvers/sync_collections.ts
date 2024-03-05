@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
-import { type EntityManager } from 'typeorm'
 import { syncAllCollections } from '../../jobs/collection-stats'
 
 const mins10 = 1000 * 60 * 30
@@ -9,8 +8,6 @@ let rateLimit: number | null = null
 
 @Resolver()
 export class SyncCollections {
-    constructor(private tx: () => Promise<EntityManager>) {}
-
     @Query(() => Boolean)
     async syncCollections(): Promise<boolean> {
         if (rateLimit) {
