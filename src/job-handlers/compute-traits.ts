@@ -74,7 +74,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     job.log(`Found ${traitTypeMap.size} trait types`)
-
     const traitsToSave: Trait[] = []
 
     traitTypeMap.forEach((traitValueMap, traitType) => {
@@ -92,7 +91,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     })
 
     job.log(`Saving ${traitsToSave.length} traits`)
-
     await em.save(Trait, traitsToSave as any, { chunk: 1000 })
     const traitTokensToSave: TraitToken[] = []
 
