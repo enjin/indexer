@@ -67,10 +67,13 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     })
 
     if (!traitTypeMap.size) {
+        job.log(`No traits found for collection ${collectionId}`)
         done()
 
         return
     }
+
+    job.log(`Found ${traitTypeMap.size} trait types`)
 
     const traitsToSave: Trait[] = []
 
@@ -87,6 +90,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             )
         })
     })
+
+    job.log(`Saving ${traitsToSave.length} traits`)
 
     await em.save(Trait, traitsToSave as any, { chunk: 1000 })
     const traitTokensToSave: TraitToken[] = []
@@ -105,6 +110,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     })
 
     if (traitTokensToSave.length) {
+        job.log(`Saving ${traitsToSave.length} token traits`)
         await em.save(TraitToken, traitTokensToSave as any, { chunk: 1000 })
     }
 
