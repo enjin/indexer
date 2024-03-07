@@ -48,9 +48,12 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     tokens.forEach((token) => {
         if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
-        const attributes = token.metadata.attributes as Record<string, { value: string }>
-        Object.entries(attributes).forEach(([traitType, { value }]) => {
-            if (!value) return
+        const attributes = token.metadata.attributes as Record<string, { value: string } | string>
+        Object.entries(attributes).forEach(([traitType, data]) => {
+            let value = data as string
+            if (typeof data === 'object') {
+                value = data.value
+            }
 
             if (!traitTypeMap.has(traitType)) {
                 traitTypeMap.set(traitType, new Map())
