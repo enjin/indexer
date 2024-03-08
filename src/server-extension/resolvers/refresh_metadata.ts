@@ -2,6 +2,7 @@
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
+import NodeCache from 'node-cache'
 import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Token } from '../../model'
 import { computeTraits } from '../../jobs/compute-traits'
@@ -26,7 +27,7 @@ class RefreshMetadataResponse {
     error?: string
 }
 
-const rateLimitMap = new Map()
+const rateLimitMap = new NodeCache({ stdTTL: 60 * 60 * 24, checkperiod: 60 * 60 })
 const mins30 = 30 * 1000 * 60 * 10
 
 @Resolver()
@@ -45,7 +46,7 @@ export class RefreshMetadataResolver {
         const isToken = tokenId !== null && tokenId !== undefined
 
         if (!isToken && allTokens) {
-            const rateLimit = rateLimitMap.get(collectionId)
+            const rateLimit = rateLimitMap.get<number>(collectionId)
 
             if (rateLimit) {
                 const timeLeft = Math.ceil((rateLimit + mins30 - Date.now()) / 1000)
