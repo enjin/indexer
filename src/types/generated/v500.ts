@@ -130,36 +130,6 @@ export interface DispatchRuleKind_PermittedExtrinsics {
     __kind: 'PermittedExtrinsics'
 }
 
-export interface Listing {
-    seller: Uint8Array
-    makeAssetId: AssetId
-    takeAssetId: AssetId
-    amount: bigint
-    price: bigint
-    minTakeValue: bigint
-    feeSide: FeeSide
-    creationBlock: number
-    deposit: bigint
-    salt: Uint8Array
-    data: ListingData
-    state: ListingState
-}
-
-export interface DefaultCollectionMutation {
-    owner: (Uint8Array | undefined)
-    royalty: ShouldMutate
-    explicitRoyaltyCurrencies: (AssetId[] | undefined)
-}
-
-export interface Collection {
-    owner: Uint8Array
-    policy: DefaultCollectionPolicy
-    tokenCount: bigint
-    attributeCount: number
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [AssetId, null][]
-}
-
 export interface Token {
     supply: bigint
     cap: (TokenCap | undefined)
@@ -984,20 +954,9 @@ export interface DispatchRuleDescriptor_PermittedExtrinsics {
     value: Call[]
 }
 
-export interface AuctionData {
-    startBlock: number
-    endBlock: number
-}
-
 export interface Type_380 {
     accountId: Uint8Array
     params: DefaultMintParams
-}
-
-export interface DefaultCollectionDescriptor {
-    policy: DefaultCollectionPolicyDescriptor
-    explicitRoyaltyCurrencies: AssetId[]
-    attributes: AttributeKeyValuePair[]
 }
 
 export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
@@ -1052,17 +1011,6 @@ export interface OriginCaller_CumulusXcm {
 export interface OriginCaller_Void {
     __kind: 'Void'
     value: Void
-}
-
-export type V3WeightLimit = V3WeightLimit_Unlimited | V3WeightLimit_Limited
-
-export interface V3WeightLimit_Unlimited {
-    __kind: 'Unlimited'
-}
-
-export interface V3WeightLimit_Limited {
-    __kind: 'Limited'
-    value: Weight
 }
 
 export interface AccountData {
@@ -1203,60 +1151,6 @@ export interface TransactionalError_LimitReached {
 
 export interface TransactionalError_NoLayer {
     __kind: 'NoLayer'
-}
-
-export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
-
-export interface FeeSide_NoFee {
-    __kind: 'NoFee'
-}
-
-export interface FeeSide_Make {
-    __kind: 'Make'
-}
-
-export interface FeeSide_Take {
-    __kind: 'Take'
-}
-
-export type ListingData = ListingData_FixedPrice | ListingData_Auction
-
-export interface ListingData_FixedPrice {
-    __kind: 'FixedPrice'
-}
-
-export interface ListingData_Auction {
-    __kind: 'Auction'
-    value: AuctionData
-}
-
-export type ListingState = ListingState_FixedPrice | ListingState_Auction
-
-export interface ListingState_FixedPrice {
-    __kind: 'FixedPrice'
-    amountFilled: bigint
-}
-
-export interface ListingState_Auction {
-    __kind: 'Auction'
-    value: AuctionState
-}
-
-export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
-
-export interface ShouldMutate_NoMutation {
-    __kind: 'NoMutation'
-}
-
-export interface ShouldMutate_SomeMutation {
-    __kind: 'SomeMutation'
-    value: (DefaultRoyalty | undefined)
-}
-
-export interface DefaultCollectionPolicy {
-    mint: DefaultMintPolicy
-    transfer: DefaultTransferPolicy
-    market: DefaultMarketPolicy
 }
 
 export type TokenCap = TokenCap_SingleMint | TokenCap_Supply
@@ -1460,6 +1354,17 @@ export interface V3MultiAssetFilter_Definite {
 export interface V3MultiAssetFilter_Wild {
     __kind: 'Wild'
     value: V3WildMultiAsset
+}
+
+export type V3WeightLimit = V3WeightLimit_Unlimited | V3WeightLimit_Limited
+
+export interface V3WeightLimit_Unlimited {
+    __kind: 'Unlimited'
+}
+
+export interface V3WeightLimit_Limited {
+    __kind: 'Limited'
+    value: Weight
 }
 
 export type V3Junction = V3Junction_Parachain | V3Junction_AccountId32 | V3Junction_AccountIndex64 | V3Junction_AccountKey20 | V3Junction_PalletInstance | V3Junction_GeneralIndex | V3Junction_GeneralKey | V3Junction_OnlyChild | V3Junction_Plurality | V3Junction_GlobalConsensus
@@ -5390,16 +5295,6 @@ export interface RequireTokenRule {
     tokenId: bigint
 }
 
-export interface DefaultCollectionPolicyDescriptor {
-    mint: DefaultMintPolicyDescriptor
-    market: DefaultMarketPolicyDescriptor
-}
-
-export interface AttributeKeyValuePair {
-    key: Uint8Array
-    value: Uint8Array
-}
-
 export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
 
 export interface SufficiencyParam_Insufficient {
@@ -5410,6 +5305,11 @@ export interface SufficiencyParam_Insufficient {
 export interface SufficiencyParam_Sufficient {
     __kind: 'Sufficient'
     minimumBalance: bigint
+}
+
+export interface AttributeKeyValuePair {
+    key: Uint8Array
+    value: Uint8Array
 }
 
 export interface ForeignTokenCreationParams {
@@ -5714,27 +5614,9 @@ export interface Event_EfinityUtility {
     value: EfinityUtilityEvent
 }
 
-export interface AuctionState {
-    highBid: (Bid | undefined)
-}
-
 export interface DefaultRoyalty {
     beneficiary: Uint8Array
     percentage: number
-}
-
-export interface DefaultMintPolicy {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultTransferPolicy {
-    isFrozen: boolean
-}
-
-export interface DefaultMarketPolicy {
-    royalty: (DefaultRoyalty | undefined)
 }
 
 export interface DefaultForeignTokenMetadata {
@@ -6054,6 +5936,18 @@ export interface VersionedMultiAsset_V3 {
     value: V3MultiAsset
 }
 
+export interface DefaultCollectionDescriptor {
+    policy: DefaultCollectionPolicyDescriptor
+    explicitRoyaltyCurrencies: AssetId[]
+    attributes: AttributeKeyValuePair[]
+}
+
+export interface DefaultCollectionMutation {
+    owner: (Uint8Array | undefined)
+    royalty: ShouldMutate
+    explicitRoyaltyCurrencies: (AssetId[] | undefined)
+}
+
 export interface DefaultTokenMutation {
     behavior: Type_142
     listingForbidden: Type_145
@@ -6092,6 +5986,15 @@ export interface Freeze {
 export interface Recipient {
     accountId: Uint8Array
     params: DefaultTransferParams
+}
+
+export interface Collection {
+    owner: Uint8Array
+    policy: DefaultCollectionPolicy
+    tokenCount: bigint
+    attributeCount: number
+    totalDeposit: bigint
+    explicitRoyaltyCurrencies: [AssetId, null][]
 }
 
 export interface Attribute {
@@ -6133,14 +6036,9 @@ export interface Consumption {
     lastResetBlock: (number | undefined)
 }
 
-export interface DefaultMintPolicyDescriptor {
-    maxTokenCount: (bigint | undefined)
-    maxTokenSupply: (bigint | undefined)
-    forceSingleMint: boolean
-}
-
-export interface DefaultMarketPolicyDescriptor {
-    royalty: (DefaultRoyalty | undefined)
+export interface AuctionData {
+    startBlock: number
+    endBlock: number
 }
 
 export type DispatchRuleWrapper = DispatchRuleWrapper_WhitelistedCallers | DispatchRuleWrapper_WhitelistedCollections | DispatchRuleWrapper_MaxFuelBurnPerTransaction | DispatchRuleWrapper_UserFuelBudget | DispatchRuleWrapper_TankFuelBudget | DispatchRuleWrapper_RequireToken | DispatchRuleWrapper_PermittedCalls | DispatchRuleWrapper_PermittedExtrinsics
@@ -8974,11 +8872,6 @@ export interface EfinityUtilityEvent_BatchFailed {
     error: DispatchError
 }
 
-export interface Bid {
-    bidder: Uint8Array
-    price: bigint
-}
-
 export type V2AssetInstance = V2AssetInstance_Undefined | V2AssetInstance_Index | V2AssetInstance_Array4 | V2AssetInstance_Array8 | V2AssetInstance_Array16 | V2AssetInstance_Array32 | V2AssetInstance_Blob
 
 export interface V2AssetInstance_Undefined {
@@ -9703,6 +9596,22 @@ export interface Type_345_UnpaidExecution {
     checkOrigin: (V3MultiLocation | undefined)
 }
 
+export interface DefaultCollectionPolicyDescriptor {
+    mint: DefaultMintPolicyDescriptor
+    market: DefaultMarketPolicyDescriptor
+}
+
+export type ShouldMutate = ShouldMutate_NoMutation | ShouldMutate_SomeMutation
+
+export interface ShouldMutate_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface ShouldMutate_SomeMutation {
+    __kind: 'SomeMutation'
+    value: (DefaultRoyalty | undefined)
+}
+
 export type Type_142 = Type_142_NoMutation | Type_142_SomeMutation
 
 export interface Type_142_NoMutation {
@@ -9757,6 +9666,12 @@ export interface FreezeType_TokenAccount {
     __kind: 'TokenAccount'
     tokenId: bigint
     accountId: Uint8Array
+}
+
+export interface DefaultCollectionPolicy {
+    mint: DefaultMintPolicy
+    transfer: DefaultTransferPolicy
+    market: DefaultMarketPolicy
 }
 
 export interface Approval {
@@ -9845,6 +9760,26 @@ export interface MigrationStage_Completed {
 
 export interface MigrationStage_Failed {
     __kind: 'Failed'
+}
+
+export interface Listing {
+    seller: Uint8Array
+    makeAssetId: AssetId
+    takeAssetId: AssetId
+    amount: bigint
+    price: bigint
+    minTakeValue: bigint
+    feeSide: FeeSide
+    creationBlock: number
+    deposit: bigint
+    salt: Uint8Array
+    data: ListingData
+    state: ListingState
+}
+
+export interface Bid {
+    bidder: Uint8Array
+    price: bigint
 }
 
 export type V2NetworkId = V2NetworkId_Any | V2NetworkId_Named | V2NetworkId_Polkadot | V2NetworkId_Kusama
@@ -9983,9 +9918,70 @@ export interface V2WeightLimit_Limited {
     value: bigint
 }
 
+export interface DefaultMintPolicyDescriptor {
+    maxTokenCount: (bigint | undefined)
+    maxTokenSupply: (bigint | undefined)
+    forceSingleMint: boolean
+}
+
+export interface DefaultMarketPolicyDescriptor {
+    royalty: (DefaultRoyalty | undefined)
+}
+
+export interface DefaultMintPolicy {
+    maxTokenCount: (bigint | undefined)
+    maxTokenSupply: (bigint | undefined)
+    forceSingleMint: boolean
+}
+
+export interface DefaultTransferPolicy {
+    isFrozen: boolean
+}
+
+export interface DefaultMarketPolicy {
+    royalty: (DefaultRoyalty | undefined)
+}
+
 export interface Budget {
     amount: bigint
     resetPeriod: number
+}
+
+export type FeeSide = FeeSide_NoFee | FeeSide_Make | FeeSide_Take
+
+export interface FeeSide_NoFee {
+    __kind: 'NoFee'
+}
+
+export interface FeeSide_Make {
+    __kind: 'Make'
+}
+
+export interface FeeSide_Take {
+    __kind: 'Take'
+}
+
+export type ListingData = ListingData_FixedPrice | ListingData_Auction
+
+export interface ListingData_FixedPrice {
+    __kind: 'FixedPrice'
+}
+
+export interface ListingData_Auction {
+    __kind: 'Auction'
+    value: AuctionData
+}
+
+export type ListingState = ListingState_FixedPrice | ListingState_Auction
+
+export interface ListingState_FixedPrice {
+    __kind: 'FixedPrice'
+    amountFilled: bigint
+}
+
+export interface ListingState_Auction {
+    __kind: 'Auction'
+    value: AuctionState
 }
 
 export type V2Error = V2Error_Overflow | V2Error_Unimplemented | V2Error_UntrustedReserveLocation | V2Error_UntrustedTeleportLocation | V2Error_MultiLocationFull | V2Error_MultiLocationNotInvertible | V2Error_BadOrigin | V2Error_InvalidLocation | V2Error_AssetNotFound | V2Error_FailedToTransactAsset | V2Error_NotWithdrawable | V2Error_LocationCannotHold | V2Error_ExceedsMaxMessageSize | V2Error_DestinationUnsupported | V2Error_Transport | V2Error_Unroutable | V2Error_UnknownClaim | V2Error_FailedToDecode | V2Error_MaxWeightInvalid | V2Error_NotHoldingFees | V2Error_TooExpensive | V2Error_Trap | V2Error_UnhandledXcmVersion | V2Error_WeightLimitReached | V2Error_Barrier | V2Error_WeightNotComputable
@@ -10106,6 +10102,10 @@ export interface V2WildMultiAsset_AllOf {
     __kind: 'AllOf'
     id: V2AssetId
     fun: V2WildFungibility
+}
+
+export interface AuctionState {
+    highBid: (Bid | undefined)
 }
 
 export type V2WildFungibility = V2WildFungibility_Fungible | V2WildFungibility_NonFungible
