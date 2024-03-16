@@ -109,6 +109,7 @@ export async function fuelTankCreated(
     const eventData = getEventData(ctx, item.event)
 
     const callData = getCallData(ctx, item.event.call)
+
     if (!eventData || !callData) return undefined
 
     const [tankAccount, owner] = await Promise.all([

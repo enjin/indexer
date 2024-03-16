@@ -1,6 +1,6 @@
 /node_modules
 /lib
-
+.metadata.jsonl
 # IDE files
 /.idea
 /**/!*
