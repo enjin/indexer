@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
-import register from './registry'
-import connection from '../connection'
+import register from '../registry'
+import connection from '../../connection'
 
 export const indexer_fueltanks_tanks_total = new client.Gauge({
     name: 'indexer_fueltanks_tanks_total',
@@ -42,8 +42,10 @@ export default async () => {
 
     const [tanks, dispatchedTotal, enjConsumed] = await Promise.all([
         em.query('SELECT COUNT(*) FROM fuel_tank'),
-        em.query('SELECT COUNT(*) FROM extrinsic WHERE fuel_tank IS NOT NULL'),
-        em.query("SELECT SUM((fuel_tank->>'feePaid')::numeric) / POW(10,18) as sum FROM extrinsic WHERE fuel_tank IS NOT NULL"),
+        em.query('SELECT COUNT(*) FROM extrinsic WHERE fuel_tank IS NOT NULL AND AND success = true'),
+        em.query(
+            "SELECT SUM((fuel_tank->>'feePaid')::numeric) / POW(10,18) as sum FROM extrinsic WHERE fuel_tank IS NOT NULL AND success = true"
+        ),
     ])
 
     indexer_fueltanks_tanks_total.set(Number(tanks[0].count))

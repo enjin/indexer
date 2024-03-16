@@ -1,17 +1,20 @@
 import http from 'http'
 import client from 'prom-client'
-import updateMultiTokenMetrics from './multiToken'
-import updateTransactionMetrics from './transaction'
-import updateFuelTankMetrics from './fuelTank'
-import updateInfoMetrics from './info'
-import updateMigrationMetrics from './migration'
+import updateMultiTokenMetrics from './definitions/multiToken'
+import updateTransactionMetrics from './definitions/transaction'
+import updateFuelTankMetrics from './definitions/fuelTank'
+import updateInfoMetrics from './definitions/info'
+import updateMigrationMetrics from './definitions/migration'
+import updateIdentityMetrics from './definitions/identity'
 import register from './registry'
 
 client.collectDefaultMetrics({ register })
 
 const updateMetrics = async () => {
     //await updateMultiTokenMetrics()
-    await Promise.all([updateMigrationMetrics(), updateFuelTankMetrics(), updateTransactionMetrics(), updateInfoMetrics()])
+    // await Promise.all([updateMigrationMetrics(), updateFuelTankMetrics(), updateTransactionMetrics(), updateInfoMetrics()])
+
+    await updateIdentityMetrics()
 }
 
 const server = http.createServer(async (req, res) => {

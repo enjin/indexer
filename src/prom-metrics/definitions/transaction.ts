@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
-import register from './registry'
-import connection from '../connection'
+import register from '../registry'
+import connection from '../../connection'
 
 export const indexer_transactions_extrinsics_total = new client.Gauge({
     name: 'indexer_transactions_extrinsics_total',
@@ -34,9 +34,9 @@ export default async () => {
     const em = connection.manager
 
     const [extrinsicsTotal, enjTransferTotal, tokenTransferTotal] = await Promise.all([
-        em.query('SELECT COUNT(*) FROM extrinsic'),
-        em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'Balances'"),
-        em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'MultiTokens'"),
+        em.query('SELECT COUNT(*) FROM extrinsic AND success = true'),
+        em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'Balances' AND success = true"),
+        em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'MultiTokens' AND success = true"),
     ])
 
     indexer_transactions_extrinsics_total.set(Number(extrinsicsTotal[0].count))

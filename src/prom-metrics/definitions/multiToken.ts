@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
-import register from './registry'
-import connection from '../connection'
+import register from '../registry'
+import connection from '../../connection'
 
 export const indexer_multitokens_unique_holders_total = new client.Gauge({
     name: 'indexer_multitokens_unique_holders_total',

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
-import register from './registry'
-
+import register from '../registry'
 
 export const indexer_marketplace_trades_total = new client.Gauge({
     name: 'indexer_marketplace_trades_total',
@@ -87,38 +86,12 @@ export const indexer_marketplace_unique_buyers_total = new client.Gauge({
     registers: [register],
 })
 
-export const indexer_identity_registrars_total = new client.Gauge({
-    name: 'indexer_identity_registrars_total',
-    labelNames: ['identity'],
-    help: 'The total number of registrars.',
-    registers: [register],
-})
+export default async () => {
+    if (!connection.isInitialized) {
+        await connection.initialize().catch(() => {
+            throw Error('Failed to initialize connection')
+        })
+    }
 
-export const indexer_identity_identities_main_total = new client.Gauge({
-    name: 'indexer_identity_identities_main_total',
-    labelNames: ['identity'],
-    help: 'The total number of “main” identities created (excludes sub identities).',
-    registers: [register],
-})
-
-export const indexer_identity_identities_sub_total = new client.Gauge({
-    name: 'indexer_identity_identities_sub_total',
-    labelNames: ['identity'],
-    help: 'The total number of “sub” identities created (excludes main identities).',
-    registers: [register],
-})
-
-export const indexer_identity_identities_total = new client.Gauge({
-    name: 'indexer_identity_identities_total',
-    labelNames: ['identity'],
-    help: 'The total number of identities created (including main and sub identities).',
-    registers: [register],
-})
-
-export const indexer_identity_indeitities_sub_avg = new client.Gauge({
-    name: 'indexer_identity_indeitities_sub_avg',
-    labelNames: ['identity'],
-    help: 'The average number of sub identities created per main identity.',
-    registers: [register],
-})
-
+    const em = connection.manager
+}
