@@ -5,6 +5,7 @@ import updateTransactionMetrics from './definitions/transaction'
 import updateFuelTankMetrics from './definitions/fuelTank'
 import updateInfoMetrics from './definitions/info'
 import updateMigrationMetrics from './definitions/migration'
+import updateMarketplaceMetrics from './definitions/marketplace'
 import updateIdentityMetrics from './definitions/identity'
 import register from './registry'
 
@@ -15,6 +16,7 @@ const updateMetrics = async () => {
     // await Promise.all([updateMigrationMetrics(), updateFuelTankMetrics(), updateTransactionMetrics(), updateInfoMetrics()])
 
     await updateIdentityMetrics()
+    await updateMarketplaceMetrics()
 }
 
 const server = http.createServer(async (req, res) => {

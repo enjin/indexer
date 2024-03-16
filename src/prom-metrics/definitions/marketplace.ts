@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
 import register from '../registry'
+import connection from '../../connection'
 
 export const indexer_marketplace_trades_total = new client.Gauge({
     name: 'indexer_marketplace_trades_total',
@@ -94,4 +95,25 @@ export default async () => {
     }
 
     const em = connection.manager
+
+    const [
+        tradesTotal,
+        tradingVolume24h,
+        // auctionsCreated,
+        // auctionsFinalized,
+        // auctionsBid,
+        // listingsCreated,
+        // listingsFilled,
+        // listingsActive,
+        // listingsCanceled,
+        // tokenSellPriceAvg,
+        // uniqueSellers,
+        // uniqueBuyers,
+    ] = await Promise.all([
+        em.query('SELECT COUNT(*) FROM listing_sale'),
+        em.query("SELECT SUM(amount*price) as sum FROM listing_sale WHERE created_at > NOW() - INTERVAL '24 hours'"),
+    ])
+
+    indexer_marketplace_trades_total.set(Number(tradesTotal[0].count))
+    indexer_marketplace_24h_trading_volume_total.set(Number(tradingVolume24h[0].sum || 0) / 1e18)
 }

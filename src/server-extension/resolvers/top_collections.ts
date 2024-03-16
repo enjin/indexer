@@ -95,7 +95,7 @@ export class TopCollectionResolver {
         const builder = manager
             .createQueryBuilder()
             .addSelect('collectionId AS id')
-            .addSelect('( SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId ) AS users')
+            .addSelect('(SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId) AS users')
             .addSelect('metadata AS metadata')
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
