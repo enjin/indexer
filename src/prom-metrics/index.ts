@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 import http from 'http'
 import client from 'prom-client'
+import trottle from 'lodash/throttle'
 import updateMultiTokenMetrics from './definitions/multiToken'
 import updateTransactionMetrics from './definitions/transaction'
 import updateFuelTankMetrics from './definitions/fuelTank'
@@ -12,6 +14,8 @@ import register from './registry'
 client.collectDefaultMetrics({ register })
 
 const updateMetrics = async () => {
+    console.log('Updating metrics')
+
     await Promise.all([
         updateMultiTokenMetrics(),
         updateMigrationMetrics(),
@@ -23,11 +27,13 @@ const updateMetrics = async () => {
     ])
 }
 
+const throttledUpdateMetrics = trottle(updateMetrics, 10000)
+
 const server = http.createServer(async (req, res) => {
     if (!req.url) throw new Error('No url')
 
     if (req.url === '/_metrics') {
-        await updateMetrics()
+        await throttledUpdateMetrics()
         res.setHeader('Content-Type', register.contentType)
         res.end(await register.metrics())
     } else {
