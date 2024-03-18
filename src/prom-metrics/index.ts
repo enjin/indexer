@@ -12,11 +12,15 @@ import register from './registry'
 client.collectDefaultMetrics({ register })
 
 const updateMetrics = async () => {
-    //await updateMultiTokenMetrics()
-    // await Promise.all([updateMigrationMetrics(), updateFuelTankMetrics(), updateTransactionMetrics(), updateInfoMetrics()])
-
-    await updateIdentityMetrics()
-    await updateMarketplaceMetrics()
+    await Promise.all([
+        updateMultiTokenMetrics(),
+        updateMigrationMetrics(),
+        updateFuelTankMetrics(),
+        updateTransactionMetrics(),
+        updateInfoMetrics(),
+        updateIdentityMetrics(),
+        updateMarketplaceMetrics(),
+    ])
 }
 
 const server = http.createServer(async (req, res) => {

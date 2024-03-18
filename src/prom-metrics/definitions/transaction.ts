@@ -34,7 +34,7 @@ export default async () => {
     const em = connection.manager
 
     const [extrinsicsTotal, enjTransferTotal, tokenTransferTotal] = await Promise.all([
-        em.query('SELECT COUNT(*) FROM extrinsic AND success = true'),
+        em.query('SELECT COUNT(*) FROM extrinsic WHERE success = true'),
         em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'Balances' AND success = true"),
         em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'MultiTokens' AND success = true"),
     ])

@@ -42,7 +42,7 @@ export default async () => {
 
     const [tanks, dispatchedTotal, enjConsumed] = await Promise.all([
         em.query('SELECT COUNT(*) FROM fuel_tank'),
-        em.query('SELECT COUNT(*) FROM extrinsic WHERE fuel_tank IS NOT NULL AND AND success = true'),
+        em.query('SELECT COUNT(*) FROM extrinsic WHERE fuel_tank IS NOT NULL AND success = true'),
         em.query(
             "SELECT SUM((fuel_tank->>'feePaid')::numeric) / POW(10,18) as sum FROM extrinsic WHERE fuel_tank IS NOT NULL AND success = true"
         ),
