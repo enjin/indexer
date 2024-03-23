@@ -80,8 +80,7 @@ function getEvent(
 export async function listingCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>,
-    skipSave = false
+    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -143,6 +142,7 @@ export async function listingCreated(
         height: block.height,
         createdAt: new Date(block.timestamp),
     })
+
     // update best listing
     if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
         makeAssetId.bestListing = listing
@@ -155,9 +155,7 @@ export async function listingCreated(
         ctx.store.save(makeAssetId),
     ])
 
-    if (!skipSave) {
-        await syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
-    }
+    syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
 
     return getEvent(item, data)
 }

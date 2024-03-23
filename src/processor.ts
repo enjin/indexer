@@ -217,15 +217,15 @@ async function handleEvents(
         case 'Claims.ExchangeRateSet':
             return map.claims.events.exchangeRateSet(ctx, block, item)
         case 'Marketplace.ListingCreated':
-            return map.marketplace.events.listingCreated(ctx, block, item, skipSave)
+            return map.marketplace.events.listingCreated(ctx, block, item)
         case 'Marketplace.ListingCancelled':
-            return map.marketplace.events.listingCancelled(ctx, block, item, skipSave)
+            return map.marketplace.events.listingCancelled(ctx, block, item)
         case 'Marketplace.ListingFilled':
-            return map.marketplace.events.listingFilled(ctx, block, item, skipSave)
+            return map.marketplace.events.listingFilled(ctx, block, item)
         case 'Marketplace.BidPlaced':
-            return map.marketplace.events.bidPlaced(ctx, block, item, skipSave)
+            return map.marketplace.events.bidPlaced(ctx, block, item)
         case 'Marketplace.AuctionFinalized':
-            return map.marketplace.events.auctionFinalized(ctx, block, item, skipSave)
+            return map.marketplace.events.auctionFinalized(ctx, block, item)
         case 'PolkadotXcm.Attempted':
             return map.xcm.events.attempted(ctx, block, item)
         case 'FuelTanks.AccountAdded':

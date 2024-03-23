@@ -65,8 +65,7 @@ function getEvent(
 export async function listingFilled(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
-    skipSave: boolean
+    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -113,6 +112,8 @@ export async function listingFilled(
         createdAt: new Date(block.timestamp),
     })
 
+    await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
+
     if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         listing.makeAssetId.bestListing = null
@@ -122,9 +123,7 @@ export async function listingFilled(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
-
-    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
+    syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing)
 }

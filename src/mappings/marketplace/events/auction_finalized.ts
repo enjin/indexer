@@ -62,8 +62,7 @@ function getEvent(
 export async function auctionFinalized(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true } }>,
-    skipSave: boolean
+    item: EventItem<'Marketplace.AuctionFinalized', { event: { args: true; extrinsic: true } }>
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -107,6 +106,8 @@ export async function auctionFinalized(
         createdAt: new Date(block.timestamp),
     })
 
+    await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
+
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         listing.makeAssetId.bestListing = null
@@ -116,9 +117,7 @@ export async function auctionFinalized(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
-
-    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
+    syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing)
 }
