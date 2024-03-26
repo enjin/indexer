@@ -1,3 +1,4 @@
+import { syncAllCollections } from './jobs/collection-stats'
 import { CommonContext } from './mappings/types/contexts'
 
 export async function fixBestListings(ctx: CommonContext) {
@@ -23,6 +24,8 @@ export async function fixBestListings(ctx: CommonContext) {
         ) AS l
         WHERE t.id = l.make_asset_id_id;`
     )
+
+    syncAllCollections()
 
     console.log(update)
 }
