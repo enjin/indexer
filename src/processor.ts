@@ -17,7 +17,6 @@ import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
-import { fixBestListings } from './temp-fix-best-listing'
 
 Sentry.init({
     dsn: config.sentryDsn,
