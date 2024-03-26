@@ -295,16 +295,12 @@ function getParticipants(args: any, signer: string): string[] {
 
     return [signer]
 }
-let executed = false
+
 processor.run(
     new FullTypeormDatabase({
         isolationLevel: 'READ COMMITTED',
     }),
     async (ctx) => {
-        if (!executed) {
-            await fixBestListings(ctx as unknown as CommonContext)
-        }
-        executed = true
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
