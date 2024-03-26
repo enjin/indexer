@@ -60,8 +60,7 @@ function getEvent(
 export async function bidPlaced(
     ctx: CommonContext,
     block: SubstrateBlock,
-    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>,
-    skipSave: boolean
+    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item.event)
     if (!data) return undefined
@@ -99,6 +98,8 @@ export async function bidPlaced(
     })
     listing.updatedAt = new Date(block.timestamp)
 
+    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         if (bestListing?.id !== listing.id) {
@@ -107,9 +108,7 @@ export async function bidPlaced(
         }
     }
 
-    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
-
-    if (!skipSave) syncCollectionStats(listing.makeAssetId.collection.id)
+    syncCollectionStats(listing.makeAssetId.collection.id)
 
     return getEvent(item, data, listing, account)
 }
