@@ -17,6 +17,7 @@ import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
+import { fixBestListings } from './temp-fix-best-listing'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -294,11 +295,16 @@ function getParticipants(args: any, signer: string): string[] {
 
     return [signer]
 }
+let executed = false
 processor.run(
     new FullTypeormDatabase({
         isolationLevel: 'READ COMMITTED',
     }),
     async (ctx) => {
+        if (!executed) {
+            await fixBestListings(ctx as unknown as CommonContext)
+        }
+        executed = true
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
