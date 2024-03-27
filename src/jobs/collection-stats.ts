@@ -23,7 +23,7 @@ export const syncCollectionStats = async (collectionId: string) => {
         return
     }
 
-    collectionStatsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+    collectionStatsQueue.add({ collectionId }).catch(() => {
         // eslint-disable-next-line no-console
         console.log('Closing connection as Redis is not available')
         collectionStatsQueue.close(true)
