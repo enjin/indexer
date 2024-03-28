@@ -69,8 +69,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         highestSale: sales?.highest_sale ?? null,
     })
 
-    job.log(`floor proice ${floor_price}`)
-
     await em.update(Collection, { id: collectionId }, { stats })
 
     done(null, { id: collectionId, stats: stats.toJSON() })
