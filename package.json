@@ -26,7 +26,7 @@
     "@sentry/node": "^7.108.0",
     "@subsquid/archive-registry": "^3.3.0",
     "@subsquid/cli": "^2.9.3",
-    "@subsquid/graphql-server": "^4.5.0",
+    "@subsquid/graphql-server": "^4.5.1",
     "@subsquid/ss58": "^1.2.0",
     "@subsquid/substrate-processor": "^2.4.1",
     "@subsquid/typeorm-migration": "^1.3.0",
