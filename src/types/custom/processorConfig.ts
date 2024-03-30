@@ -1,5 +1,3 @@
-import { SubstrateProcessor } from '@subsquid/substrate-processor'
-
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
 enum HandlerParams {
@@ -14,9 +12,7 @@ export interface ProcessorConfig {
     lastBlockHeight: number
     genesisHash: string
     rpc: string
-    dataSource: Parameters<SubstrateProcessor<any>['setDataSource']>[HandlerParams.NAME]
-    port?: Parameters<SubstrateProcessor<any>['setPrometheusPort']>[HandlerParams.NAME]
-    blockRange?: Parameters<SubstrateProcessor<any>['setBlockRange']>[HandlerParams.NAME]
+    batchSize?: number
     redisHost: string
     redisDb: number
     redisSupportsTls: boolean
