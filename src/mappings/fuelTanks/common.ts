@@ -137,6 +137,14 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
             return fuelTanks.dispatch.v601.decode(call)
         }
 
+        if (fuelTanks.dispatch.v600.is(call)) {
+            return fuelTanks.dispatch.v600.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v500.is(call)) {
+            return fuelTanks.dispatch.v500.decode(call)
+        }
+
         throw new UnknownVersionError(fuelTanks.dispatch.name)
     }
 
@@ -186,6 +194,14 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
 
     if (fuelTanks.dispatchAndTouch.v601.is(call)) {
         return fuelTanks.dispatchAndTouch.v601.decode(call)
+    }
+
+    if (fuelTanks.dispatchAndTouch.v600.is(call)) {
+        return fuelTanks.dispatchAndTouch.v600.decode(call)
+    }
+
+    if (fuelTanks.dispatchAndTouch.v500.is(call)) {
+        return fuelTanks.dispatchAndTouch.v500.decode(call)
     }
 
     throw new UnknownVersionError(fuelTanks.dispatchAndTouch.name)
