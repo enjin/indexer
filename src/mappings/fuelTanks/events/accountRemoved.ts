@@ -1,36 +1,26 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { FuelTanksAccountRemovedEvent } from '../../../types/generated/events'
+import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTankUserAccounts, FuelTank } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksAccountRemovedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (fuelTanks.accountRemoved.matrixEnjinV603.is(event)) {
+        return fuelTanks.accountRemoved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(fuelTanks.accountRemoved.name)
 }
 
-export async function accountRemoved(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.AccountRemoved', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+export async function accountRemoved(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    const eventData = getEventData(ctx, item)
 
     if (!eventData) return undefined
 
-    const tankAccountId = `${u8aToHex(eventData.tankId)}-${u8aToHex(eventData.userId)}`
+    const tankAccountId = `${eventData.tankId}-${eventData.userId}`
 
-    ctx.store.delete(FuelTankUserAccounts, { id: tankAccountId })
+    await ctx.store.remove(FuelTankUserAccounts, tankAccountId)
 
-    const tank = await ctx.store.findOneByOrFail(FuelTank, { id: u8aToHex(eventData.tankId) })
+    const tank = await ctx.store.findOneByOrFail(FuelTank, { id: eventData.tankId })
     tank.accountCount -= 1
     await ctx.store.save(tank)
 

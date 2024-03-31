@@ -1,9 +1,7 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex, u8aToString } from '@polkadot/util'
+import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
-import { FuelTanksFuelTankCreatedEvent } from '../../../types/generated/events'
+import { calls, events } from '../../../types/generated'
 import {
     Event as EventModel,
     Extrinsic,
@@ -15,100 +13,117 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
-import { FuelTanksCreateFuelTankCall, FuelTanksForceCreateFuelTankCall } from '../../../types/generated/calls'
+import { CommonContext, BlockHeader, EventItem, CallItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { rulesToMap } from '../common'
 import { safeJsonString } from '../../../common/tools'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksFuelTankCreatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.fuelTanks.fuelTankCreated.matrixEnjinV603.is(event)) {
+        return events.fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.fuelTanks.fuelTankCreated.name)
 }
 
-function getCallData(ctx: CommonContext, call: Call) {
-    let data: FuelTanksCreateFuelTankCall | FuelTanksForceCreateFuelTankCall
+function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
-        data = new FuelTanksForceCreateFuelTankCall(ctx, call)
-    } else {
-        data = new FuelTanksCreateFuelTankCall(ctx, call)
-
-        if (data.isV602) {
-            return data.asV602
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.decode(call)
         }
 
-        if (data.isV601) {
-            return data.asV601
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.decode(call)
         }
 
-        if (data.isV600) {
-            return data.asV600
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.decode(call)
         }
 
-        if (data.isV500) {
-            return data.asV500
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.decode(call)
         }
+
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.decode(call)
+        }
+
+        if (calls.fuelTanks.forceCreateFuelTank.v1005.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1005.decode(call)
+        }
+
+        if (calls.fuelTanks.forceCreateFuelTank.v1004.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1004.decode(call)
+        }
+
+        if (calls.fuelTanks.forceCreateFuelTank.v1003.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1003.decode(call)
+        }
+
+        if (calls.fuelTanks.forceCreateFuelTank.v1000.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1000.decode(call)
+        }
+
+        if (calls.fuelTanks.forceCreateFuelTank.v604.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v604.decode(call)
+        }
+
+        throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
     }
 
-    if (data.isMatrixEnjinV1005) {
-        return data.asMatrixEnjinV1005
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1005.decode(call)
     }
 
-    if (data.isMatrixEnjinV1004) {
-        return data.asMatrixEnjinV1004
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1004.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1004.decode(call)
     }
 
-    if (data.isMatrixEnjinV1003) {
-        return data.asMatrixEnjinV1003
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1003.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1003.decode(call)
     }
 
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1000.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1000.decode(call)
     }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV603.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV603.decode(call)
     }
 
-    if (data.isV1005) {
-        return data.asV1005
+    if (calls.fuelTanks.createFuelTank.v1005.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1005.decode(call)
     }
 
-    if (data.isV1004) {
-        return data.asV1004
+    if (calls.fuelTanks.createFuelTank.v1004.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1004.decode(call)
     }
 
-    if (data.isV1003) {
-        return data.asV1003
+    if (calls.fuelTanks.createFuelTank.v1003.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1003.decode(call)
     }
 
-    if (data.isV1000) {
-        return data.asV1000
+    if (calls.fuelTanks.createFuelTank.v1000.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1000.decode(call)
     }
 
-    if (data.isV604) {
-        return data.asV604
+    if (calls.fuelTanks.createFuelTank.v604.is(call)) {
+        return calls.fuelTanks.createFuelTank.v604.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    if (calls.fuelTanks.createFuelTank.v602.is(call)) {
+        return calls.fuelTanks.createFuelTank.v602.decode(call)
+    }
+
+    throw new UnknownVersionError(calls.fuelTanks.createFuelTank.name)
 }
 
-export async function fuelTankCreated(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.FuelTankCreated', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
+export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
 
-    const callData = getCallData(ctx, item.event.call)
+    const callData = getCallData(ctx, item.call)
 
     if (!eventData || !callData) return undefined
 
@@ -128,7 +143,7 @@ export async function fuelTankCreated(
     const fuelTank = new FuelTank({
         id: tankAccount.id,
         tankAccount,
-        name: u8aToString(eventData.name),
+        name: hexToString(eventData.name),
         owner,
         isFrozen: false,
         accountCount: 0,
@@ -143,7 +158,7 @@ export async function fuelTankCreated(
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
-                    value: rule.value.map((account) => u8aToHex(account)),
+                    value: rule.value.map((account) => account),
                 })
             } else if (rule.__kind === 'RequireToken') {
                 accountRule = new RequireToken({
@@ -206,12 +221,12 @@ export async function fuelTankCreated(
     }
 
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new FuelTankCreated({
             tank: fuelTank.id,
             owner: owner.id,
-            name: u8aToString(eventData.name),
+            name: hexToString(eventData.name),
         }),
     })
 }

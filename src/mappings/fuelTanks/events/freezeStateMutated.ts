@@ -1,37 +1,38 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { FuelTanksFreezeStateMutatedEvent } from '../../../types/generated/events'
+import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTank, FuelTankRuleSet } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksFreezeStateMutatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (fuelTanks.freezeStateMutated.matrixEnjinV603.is(event)) {
+        return fuelTanks.freezeStateMutated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(fuelTanks.freezeStateMutated.name)
 }
 
 export async function freezeStateMutated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.FreezeStateMutated', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
 
     if (!eventData) return undefined
 
     if (eventData.ruleSetId !== undefined) {
-        const id = `${u8aToHex(eventData.tankId)}-${eventData.ruleSetId}`
-        ctx.store.update(FuelTankRuleSet, { id }, { isFrozen: eventData.isFrozen })
+        const fuelTankRuleSet = new FuelTankRuleSet({
+            id: `${eventData.tankId}-${eventData.ruleSetId}`,
+            isFrozen: eventData.isFrozen,
+        })
+        await ctx.store.save(fuelTankRuleSet)
     } else {
-        const id = u8aToHex(eventData.tankId)
-        ctx.store.update(FuelTank, { id }, { isFrozen: eventData.isFrozen })
+        const fuelTank = new FuelTank({
+            id: eventData.tankId,
+            isFrozen: eventData.isFrozen,
+        })
+
+        await ctx.store.save(fuelTank)
     }
 
     return undefined

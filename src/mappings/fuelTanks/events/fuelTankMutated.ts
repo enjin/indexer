@@ -1,9 +1,6 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { randomBytes } from 'crypto'
 import { UnknownVersionError } from '../../../common/errors'
-import { FuelTanksFuelTankMutatedEvent } from '../../../types/generated/events'
+import { fuelTanks } from '../../../types/generated/events'
 import {
     Event as EventModel,
     FuelTank,
@@ -12,28 +9,21 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksFuelTankMutatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (fuelTanks.fuelTankMutated.matrixEnjinV603.is(event)) {
+        return fuelTanks.fuelTankMutated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(fuelTanks.fuelTankMutated.name)
 }
 
-export async function fuelTankMutated(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.FuelTankMutated', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    const eventData = getEventData(item)
     if (!eventData) return undefined
 
-    const tankId = u8aToHex(eventData.tankId)
+    const { tankId } = eventData
 
     const tank = await ctx.store.findOneByOrFail(FuelTank, { id: tankId })
 
@@ -60,7 +50,7 @@ export async function fuelTankMutated(
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
-                    value: rule.value.map((account) => u8aToHex(account)),
+                    value: rule.value.map((account) => account),
                 })
             } else if (rule.__kind === 'RequireToken') {
                 accountRule = new RequireToken({

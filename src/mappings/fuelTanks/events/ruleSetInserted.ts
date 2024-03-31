@@ -1,99 +1,50 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
-import { FuelTanksRuleSetInsertedEvent } from '../../../types/generated/events'
+import { events, calls } from '../../../types/generated'
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
-import { FuelTanksInsertRuleSetCall } from '../../../types/generated/calls'
+import { CommonContext, EventItem, BlockHeader, CallItem } from '../../types/contexts'
 import { rulesToMap } from '../common'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksRuleSetInsertedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.fuelTanks.ruleSetInserted.matrixEnjinV603.is(event)) {
+        return events.fuelTanks.ruleSetInserted.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.fuelTanks.ruleSetInserted.name)
 }
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new FuelTanksInsertRuleSetCall(ctx, call)
-
-    if (data.isMatrixEnjinV1005) {
-        return data.asMatrixEnjinV1005
+function getCallData(call: CallItem) {
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1005.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1005.decode(call)
     }
 
-    if (data.isMatrixEnjinV1004) {
-        return data.asMatrixEnjinV1004
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1004.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1004.decode(call)
     }
 
-    if (data.isMatrixEnjinV1003) {
-        return data.asMatrixEnjinV1003
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1003.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1003.decode(call)
     }
 
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1000.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1000.decode(call)
     }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV603.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
     }
 
-    if (data.isV1005) {
-        return data.asV1005
-    }
-
-    if (data.isV1004) {
-        return data.asV1004
-    }
-
-    if (data.isV1003) {
-        return data.asV1003
-    }
-
-    if (data.isV1000) {
-        return data.asV1000
-    }
-
-    if (data.isV604) {
-        return data.asV604
-    }
-
-    if (data.isV602) {
-        return data.asV602
-    }
-
-    if (data.isV601) {
-        return data.asV601
-    }
-
-    if (data.isV600) {
-        return data.asV600
-    }
-
-    if (data.isV500) {
-        return data.asV500
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(calls.fuelTanks.insertRuleSet.name)
 }
 
-export async function ruleSetInserted(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.RuleSetInserted', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
+export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
 
-    const callData = getCallData(ctx, item.event.call)
+    const callData = getCallData(item.call)
     if (!eventData || !callData) return undefined
 
-    const tankId = u8aToHex(eventData.tankId)
+    const { tankId } = eventData
     const ruleSetId = `${tankId}-${eventData.ruleSetId}`
 
     await ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleSetId } })
