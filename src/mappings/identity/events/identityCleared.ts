@@ -1,10 +1,8 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+
 import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { IdentityIdentityClearedEvent } from '../../../types/generated/events'
+import { identity } from '../../../types/generated/events'
 import { Event as EventModel, Identity, Registration } from '../../../model'
-import { Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 
 function getEventData(ctx: CommonContext, event: Event) {
