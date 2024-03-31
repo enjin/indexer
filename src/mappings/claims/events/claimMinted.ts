@@ -1,39 +1,29 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { ClaimsClaimMintedEvent } from '../../../types/generated/events'
+import { claims } from '../../../types/generated/events'
 import { AccountClaimType, ClaimRequest, ClaimDetails, ClaimAccount, Event as EventModel } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getTotalUnclaimedAmount } from '../common'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new ClaimsClaimMintedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (claims.claimMinted.matrixEnjinV603.is(event)) {
+        return claims.claimMinted.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(claims.claimMinted.name)
 }
 
-export async function claimMinted(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Claims.ClaimMinted', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    const eventData = getEventData(item)
 
     if (!eventData) return undefined
 
     const account = new ClaimAccount({
         type: AccountClaimType.EVM,
-        account: u8aToHex(eventData.who),
+        account: eventData.who,
     })
 
     const claim = new ClaimRequest({
-        id: `${u8aToHex(eventData.who)}-${block.height}-minted`,
+        id: `${eventData.who}-${block.height}-minted`,
         account,
         amountClaimable: eventData.amount,
         amountBurned: 0n,
@@ -43,7 +33,7 @@ export async function claimMinted(
         isClaimed: false,
         isRejected: false,
         createdBlock: block.height,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     const claimDetails = new ClaimDetails({
@@ -51,7 +41,7 @@ export async function claimMinted(
         totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
     })
 
-    await Promise.all([ctx.store.insert(ClaimRequest, claim), ctx.store.save(claimDetails)])
+    await Promise.all([ctx.store.insert(claim), ctx.store.save(claimDetails)])
 
     return undefined
 }

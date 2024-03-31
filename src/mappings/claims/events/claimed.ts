@@ -1,9 +1,6 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { ClaimsClaimedEvent } from '../../../types/generated/events'
-import { ClaimsDelayClaimsPeriodStorage } from '../../../types/generated/storage'
+import { claims } from '../../../types/generated/events'
+import { claims as claimsStorage } from '../../../types/generated/storage'
 import {
     AccountClaimType,
     ClaimDetails,
@@ -13,45 +10,35 @@ import {
     Claim,
     ClaimsClaimed,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { getTotalUnclaimedAmount } from '../common'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new ClaimsClaimedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (claims.claimed.matrixEnjinV603.is(event)) {
+        return claims.claimed.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(claims.claimed.name)
 }
 
-function getDelayPeriod(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new ClaimsDelayClaimsPeriodStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.get()
+function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
+    if (claimsStorage.delayClaimsPeriod.matrixEnjinV603.is(block)) {
+        return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('Claims.DelayClaimsPeriod')
 }
 
-export async function claimed(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Claims.Claimed', { event: { args: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.extrinsic) return undefined
+export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.extrinsic) return undefined
 
-    const eventData = getEventData(ctx, item.event)
-
+    const eventData = getEventData(ctx, item)
     if (!eventData) return undefined
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const claimAccount = u8aToHex(eventData.ethereumAddress).toLowerCase()
+    const claimAccount = eventData.ethereumAddress?.toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
     const period = claimDetails.delayClaimsPeriod || (await getDelayPeriod(ctx, block))
@@ -114,15 +101,12 @@ export async function claimed(
     await Promise.all([
         ctx.store.save(updatedClaim),
         ctx.store.save(claimDetails),
-        ctx.store.save(
-            ClaimRequest,
-            claimRequests.map((request) => ({ ...request, isClaimed: true }))
-        ),
+        ctx.store.save(claimRequests.map((request: any) => ({ ...request, isClaimed: true }))),
     ])
 
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimed({
             account: account.id,
             ethAccount: claimAccount,
