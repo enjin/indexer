@@ -1,42 +1,30 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
-import { IdentityJudgementGivenEvent } from '../../../types/generated/events'
+import { events, calls } from '../../../types/generated'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem, CallItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { IdentityProvideJudgementCall } from '../../../types/generated/calls'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new IdentityJudgementGivenEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getEventData(event: EventItem) {
+    if (events.identity.judgementGiven.matrixEnjinV1000.is(event)) {
+        return events.identity.judgementGiven.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.identity.judgementGiven.name)
 }
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new IdentityProvideJudgementCall(ctx, call)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getCallData(call: CallItem) {
+    if (calls.identity.provideJudgement.matrixEnjinV1000.is(call)) {
+        return calls.identity.provideJudgement.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(calls.identity.provideJudgement.name)
 }
 
-export async function judgementGiven(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Identity.JudgementGiven', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
+export async function judgementGiven(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(ctx, item.event)
-    const callData = getCallData(ctx, item.event.call)
+    const eventData = getEventData(item)
+    const callData = getCallData(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.target)
 
@@ -46,13 +34,13 @@ export async function judgementGiven(
     const existing = registeration.judgements?.find((i) => i.index === eventData.registrarIndex)
     if (existing) {
         existing.value = JudgementType[callData.judgement.__kind]
-        existing.createdAt = new Date(block.timestamp)
+        existing.createdAt = new Date(block.timestamp ?? 0)
     } else {
         registeration.judgements?.push(
             new Judgement({
                 index: eventData.registrarIndex,
                 value: JudgementType[callData.judgement.__kind],
-                createdAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
             })
         )
     }

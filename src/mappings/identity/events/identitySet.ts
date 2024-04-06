@@ -1,52 +1,40 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex, u8aToString } from '@polkadot/util'
+import { hexToString } from '@polkadot/util'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
-import { IdentityIdentitySetEvent } from '../../../types/generated/events'
+import { calls, events } from '../../../types/generated'
 import { Event as EventModel, Identity, JudgementType, Registration } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { IdentitySetIdentityCall } from '../../../types/generated/calls'
 import { Data } from '../../../types/generated/v1003'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new IdentityIdentitySetEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getEventData(event: EventItem) {
+    if (events.identity.identitySet.matrixEnjinV1000.is(event)) {
+        return events.identity.identitySet.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.identity.identitySet.name)
 }
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new IdentitySetIdentityCall(ctx, call)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getCallData(call: CallItem) {
+    if (calls.identity.setIdentity.matrixEnjinV1000.is(call)) {
+        return calls.identity.setIdentity.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(calls.identity.setIdentity.name)
 }
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {
-        return u8aToString(raw.value)
+        return hexToString(raw.value)
     }
 
     return null
 }
 
-export async function identitySet(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Identity.IdentitySet', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.call) throw new CallNotDefinedError()
+export async function identitySet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(ctx, item.event)
-    const callData = getCallData(ctx, item.event.call)
+    const eventData = getEventData(item)
+    const callData = getCallData(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.who)
     let additional: { key: string | null; value: string | null }[] = []
@@ -70,11 +58,11 @@ export async function identitySet(
         email: dataToValue(callData.info.email),
         twitter: dataToValue(callData.info.twitter),
         image: dataToValue(callData.info.image),
-        pgpFingerprint: u8aToHex(callData.info.pgpFingerprint),
+        pgpFingerprint: callData.info.pgpFingerprint,
         currentJudgement: JudgementType.Unknown,
         judgements: [],
         deposit: 0n,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     const identity = new Identity({
@@ -83,7 +71,7 @@ export async function identitySet(
         isSub: false,
         name: dataToValue(callData.info.display) || dataToValue(callData.info.legal),
         info: registeration,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     await ctx.store.save(registeration)
