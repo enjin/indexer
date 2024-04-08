@@ -28,7 +28,8 @@ import {
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { DefaultRoyalty } from '../../../types/generated/v500'
+import { DefaultRoyalty, AssetId } from '../../../types/generated/v500'
+import { MultiTokensCollectionsStorage } from '../../../types/generated/storage'
 
 interface EventData {
     collectionId: bigint
@@ -46,6 +47,10 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 }
 
 async function getCallData(ctx: CommonContext, call: Call) {
+    if (call.name === 'MatrixUtility.batch') {
+        return undefined
+    }
+
     if (call.name === 'MultiTokens.force_create_collection') {
         const data = new MultiTokensForceCreateCollectionCall(ctx, call)
 
@@ -125,7 +130,9 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         throw new UnknownVersionError(data.constructor.name)
-    } else if (call.name === 'MultiTokens.create_collection') {
+    }
+
+    if (call.name === 'MultiTokens.create_collection') {
         const data = new MultiTokensCreateCollectionCall(ctx, call)
 
         if (data.isMatrixEnjinV1005) {
@@ -204,7 +211,9 @@ async function getCallData(ctx: CommonContext, call: Call) {
         }
 
         throw new UnknownVersionError(data.constructor.name)
-    } else if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
+    }
+
+    if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
         let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
         if (call.name === 'FuelTanks.dispatch') {
             data = new FuelTanksDispatchCall(ctx, call)
@@ -541,10 +550,13 @@ export async function collectionCreated(
     // Using promise.all here results in an error where this whole class could be called twice
     // And getOrCreateAccount would be called twice in parallel and we would get an exception
     // If the second query of finding the account was run before the insert of the first
-    const callData = await getCallData(ctx, item.event.call)
-    const account = await getOrCreateAccount(ctx, eventData.owner)
+    let callData = await getCallData(ctx, item.event.call)
 
-    if (!callData) return undefined
+    if (callData === undefined) {
+        callData = await getCollectionId(ctx, block, eventData.collectionId)
+    }
+
+    const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
         id: eventData.collectionId.toString(),
         collectionId: eventData.collectionId,
@@ -605,4 +617,31 @@ export async function collectionCreated(
     await Promise.all(royaltyPromises)
 
     return getEvent(item, eventData)
+}
+
+async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collectionId: bigint) {
+    const storage = new MultiTokensCollectionsStorage(ctx, block)
+
+    if (storage.isExists) {
+        const data = await storage.asMatrixEnjinV603.get(collectionId)
+
+        if (data) {
+            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
+            return {
+                maxTokenCount: data.policy.mint.maxTokenCount,
+                maxTokenSupply: data.policy.mint.maxTokenSupply,
+                forceSingleMint: data.policy.mint.forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies: data.explicitRoyaltyCurrencies.keys() as unknown as AssetId[],
+            }
+        }
+    }
+
+    return {
+        maxTokenCount: 0n,
+        maxTokenSupply: 0n,
+        forceSingleMint: false,
+        market: null,
+        explicitRoyaltyCurrencies: [],
+    }
 }
