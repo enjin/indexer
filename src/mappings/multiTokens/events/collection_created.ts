@@ -632,7 +632,7 @@ async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collec
                 maxTokenSupply: data.policy.mint.maxTokenSupply,
                 forceSingleMint: data.policy.mint.forceSingleMint,
                 market,
-                explicitRoyaltyCurrencies: data.explicitRoyaltyCurrencies.keys() as unknown as AssetId[],
+                explicitRoyaltyCurrencies: [], // Check
             }
         }
     }
