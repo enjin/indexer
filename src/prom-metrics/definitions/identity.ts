@@ -68,7 +68,7 @@ export default async () => {
         ),
         em.query('SELECT COUNT(*) FROM identity'),
         em.query(
-            'SELECT COUNT(*) / (SELECT COUNT(*) FROM identity WHERE super_id IS NULL) as count FROM identity WHERE super_id IS NOT NULL'
+            'SELECT COUNT(*) / GREATEST((SELECT COUNT(*) FROM identity WHERE super_id IS NULL),1) as count FROM identity WHERE super_id IS NOT NULL'
         ),
     ])
 

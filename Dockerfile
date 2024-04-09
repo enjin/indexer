@@ -32,6 +32,7 @@ EXPOSE 3000
 EXPOSE 4000
 # for worker
 EXPOSE 9090
+EXPOSE 8080
 
 FROM squid AS matrixchain-indexer
 
