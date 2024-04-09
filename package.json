@@ -9,6 +9,7 @@
     "db:migrate": "npx squid-typeorm-migration apply",
     "processor:start": "node -r dotenv/config lib/processor.js",
     "query-node:start": "squid-graphql-server --subscriptions",
+    "prom:start": "node -r dotenv/config lib/prom-metrics/index.js",
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
     "lint": "eslint src --ext .ts,.js",
     "fix": "eslint src --ext .ts,.js --fix"
