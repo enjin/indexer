@@ -27,7 +27,7 @@ const updateMetrics = async () => {
     ])
 }
 
-const throttledUpdateMetrics = trottle(updateMetrics, 10000)
+const throttledUpdateMetrics = trottle(updateMetrics, 10_000)
 
 const server = http.createServer(async (req, res) => {
     if (!req.url) throw new Error('No url')
@@ -42,4 +42,5 @@ const server = http.createServer(async (req, res) => {
     }
 })
 
-server.listen(8080)
+server.listen(process.env.PROM_PORT || 8080)
+console.log(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
