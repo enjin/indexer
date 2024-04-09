@@ -30,6 +30,7 @@ import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { DefaultRoyalty } from '../../../types/generated/v500'
 import { MultiTokensCollectionsStorage } from '../../../types/generated/storage'
+import { AssetId } from '../../../types/generated/matrixEnjinV603'
 
 interface EventData {
     collectionId: bigint
@@ -47,7 +48,7 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 }
 
 async function getCallData(ctx: CommonContext, call: Call) {
-    if (call.name === 'MatrixUtility.batch') {
+    if (call.name === 'MatrixUtility.batch' || call.name === 'Utility.batch') {
         return undefined
     }
 
@@ -530,6 +531,8 @@ async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collec
 
     if (storage.isExists) {
         const data = await storage.asMatrixEnjinV603.get(collectionId)
+        const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
+        const assets = currencies?.map(([assetId, _]) => assetId)
 
         if (data) {
             const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
@@ -538,7 +541,7 @@ async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collec
                 maxTokenSupply: data.policy.mint.maxTokenSupply,
                 forceSingleMint: data.policy.mint.forceSingleMint,
                 market,
-                explicitRoyaltyCurrencies: [], // Check
+                explicitRoyaltyCurrencies: assets ?? [], // Check
             }
         }
     }
@@ -575,7 +578,7 @@ export async function collectionCreated(
     }
 
     // Using promise.all here results in an error where this whole class could be called twice
-    // And getOrCreateAccount would be called twice in parallel and we would get an exception
+    // And getOrCreateAccount would be called twice in parallel, and we would get an exception
     // If the second query of finding the account was run before the insert of the first
     let callData = await getCallData(ctx, item.event.call)
 
