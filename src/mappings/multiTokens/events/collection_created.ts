@@ -4,8 +4,6 @@ import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { MultiTokensCollectionCreatedEvent } from '../../../types/generated/events'
 import {
-    FuelTanksDispatchAndTouchCall,
-    FuelTanksDispatchCall,
     MultiTokensCreateCollectionCall,
     MultiTokensForceCreateCollectionCall,
     MultiTokensForceCreateEthereumCollectionCall,
@@ -51,6 +49,7 @@ async function getCallData(ctx: CommonContext, call: Call) {
     if (
         call.name === 'MatrixUtility.batch' ||
         call.name === 'Utility.batch' ||
+        call.name === 'Utility.batch_all' ||
         call.name === 'FuelTanks.dispatch_and_touch' ||
         call.name === 'FuelTanks.dispatch'
     ) {
