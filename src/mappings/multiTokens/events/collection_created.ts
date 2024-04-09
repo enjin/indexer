@@ -28,7 +28,7 @@ import {
 import { Call, Event } from '../../../types/generated/support'
 import { CommonContext } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { DefaultRoyalty, AssetId } from '../../../types/generated/v500'
+import { DefaultRoyalty } from '../../../types/generated/v500'
 import { MultiTokensCollectionsStorage } from '../../../types/generated/storage'
 
 interface EventData {
@@ -525,6 +525,33 @@ function getEvent(
     })
 }
 
+async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collectionId: bigint) {
+    const storage = new MultiTokensCollectionsStorage(ctx, block)
+
+    if (storage.isExists) {
+        const data = await storage.asMatrixEnjinV603.get(collectionId)
+
+        if (data) {
+            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
+            return {
+                maxTokenCount: data.policy.mint.maxTokenCount,
+                maxTokenSupply: data.policy.mint.maxTokenSupply,
+                forceSingleMint: data.policy.mint.forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies: [], // Check
+            }
+        }
+    }
+
+    return {
+        maxTokenCount: 0n,
+        maxTokenSupply: 0n,
+        forceSingleMint: false,
+        market: null,
+        explicitRoyaltyCurrencies: [],
+    }
+}
+
 export async function collectionCreated(
     ctx: CommonContext,
     block: SubstrateBlock,
@@ -617,31 +644,4 @@ export async function collectionCreated(
     await Promise.all(royaltyPromises)
 
     return getEvent(item, eventData)
-}
-
-async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collectionId: bigint) {
-    const storage = new MultiTokensCollectionsStorage(ctx, block)
-
-    if (storage.isExists) {
-        const data = await storage.asMatrixEnjinV603.get(collectionId)
-
-        if (data) {
-            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
-            return {
-                maxTokenCount: data.policy.mint.maxTokenCount,
-                maxTokenSupply: data.policy.mint.maxTokenSupply,
-                forceSingleMint: data.policy.mint.forceSingleMint,
-                market,
-                explicitRoyaltyCurrencies: [], // Check
-            }
-        }
-    }
-
-    return {
-        maxTokenCount: 0n,
-        maxTokenSupply: 0n,
-        forceSingleMint: false,
-        market: null,
-        explicitRoyaltyCurrencies: [],
-    }
 }
