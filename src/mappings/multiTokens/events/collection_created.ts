@@ -402,6 +402,70 @@ async function getCallData(ctx: CommonContext, call: Call) {
             }
         }
 
+        if (data.isV604 && data.asV604.call.__kind === 'MultiTokens' && data.asV604.call.value.__kind === 'create_collection') {
+            const { descriptor } = data.asV604.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV602 && data.asV602.call.__kind === 'MultiTokens' && data.asV602.call.value.__kind === 'create_collection') {
+            const { descriptor } = data.asV602.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV601 && data.asV601.call.__kind === 'MultiTokens' && data.asV601.call.value.__kind === 'create_collection') {
+            const { descriptor } = data.asV601.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (data.isV600 && data.asV600.call.__kind === 'MultiTokens' && data.asV600.call.value.__kind === 'create_collection') {
+            const { descriptor } = data.asV600.call.value
+            const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
+            const royalty = descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (data.isV500 && data.asV500.call.__kind === 'MultiTokens' && data.asV500.call.value.__kind === 'create_collection') {
             const { descriptor } = data.asV500.call.value
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = descriptor.policy.mint
@@ -532,6 +596,7 @@ async function getCollectionId(ctx: CommonContext, block: SubstrateBlock, collec
     if (storage.isExists) {
         const data = await storage.asMatrixEnjinV603.get(collectionId)
         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
+        // eslint-disable-line @typescript-eslint/no-unused-vars
         const assets = currencies?.map(([assetId, _]) => assetId)
 
         if (data) {
