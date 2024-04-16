@@ -83,7 +83,8 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
-  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
+  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
+  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred
 
 type BalancesTransfer {
   from: Account!
@@ -179,6 +180,11 @@ type MultiTokensCollectionDestroyed {
 
 type MultiTokensCollectionMutated {
   extrinsic: Extrinsic
+}
+
+type MultiTokensCollectionTransferred {
+  collectionId: BigInt!
+  owner: Account!
 }
 
 type MultiTokensFrozen {

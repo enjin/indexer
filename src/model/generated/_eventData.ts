@@ -31,8 +31,9 @@ import {FuelTankDestroyed} from "./_fuelTankDestroyed"
 import {MultiTokensClaimedCollections} from "./_multiTokensClaimedCollections"
 import {MultiTokensClaimTokensInitiated} from "./_multiTokensClaimTokensInitiated"
 import {MultiTokensClaimTokensCompleted} from "./_multiTokensClaimTokensCompleted"
+import {MultiTokensCollectionTransferred} from "./_multiTokensCollectionTransferred"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -69,6 +70,7 @@ export function fromJsonEventData(json: any): EventData {
         case 'MultiTokensClaimedCollections': return new MultiTokensClaimedCollections(undefined, json)
         case 'MultiTokensClaimTokensInitiated': return new MultiTokensClaimTokensInitiated(undefined, json)
         case 'MultiTokensClaimTokensCompleted': return new MultiTokensClaimTokensCompleted(undefined, json)
+        case 'MultiTokensCollectionTransferred': return new MultiTokensCollectionTransferred(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }

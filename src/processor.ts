@@ -153,6 +153,8 @@ async function handleEvents(
             return map.multiTokens.events.collectionDestroyed(ctx, block, item, skipSave)
         case 'MultiTokens.CollectionMutated':
             return map.multiTokens.events.collectionMutated(ctx, block, item, skipSave)
+        case 'MultiTokens.CollectionTransferred':
+            return map.multiTokens.events.collectionTransferred(ctx, block, item, skipSave)
         case 'MultiTokens.Frozen':
             return map.multiTokens.events.frozen(ctx, block, item, skipSave)
         case 'MultiTokens.Minted':
