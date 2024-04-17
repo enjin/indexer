@@ -26,7 +26,7 @@ function getEventData(ctx: CommonContext, event: Event) {
 
         return {
             collectionId,
-            owner: mutation.owner,
+            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
@@ -37,7 +37,7 @@ function getEventData(ctx: CommonContext, event: Event) {
 
         return {
             collectionId,
-            owner: mutation.owner,
+            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
@@ -59,7 +59,7 @@ function getEventData(ctx: CommonContext, event: Event) {
 
         return {
             collectionId,
-            owner: mutation.owner,
+            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
@@ -70,7 +70,7 @@ function getEventData(ctx: CommonContext, event: Event) {
 
         return {
             collectionId,
-            owner: mutation.owner,
+            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
             royalty: mutation.royalty,
             explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
         }
