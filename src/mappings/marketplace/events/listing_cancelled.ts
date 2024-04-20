@@ -1,7 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceListingCancelledEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     AccountTokenEvent,
     Event as EventModel,
@@ -11,27 +9,22 @@ import {
     ListingStatusType,
     MarketplaceListingCancelled,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MarketplaceListingCancelledEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.listingCancelled.matrixEnjinV603.is(event)) {
+        return events.marketplace.listingCancelled.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.marketplace.listingCancelled.name)
 }
 
-function getEvent(
-    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>,
-    listing: Listing
-): [EventModel, AccountTokenEvent] | undefined {
+function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
         data: new MarketplaceListingCancelled({
@@ -42,7 +35,7 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token: listing.makeAssetId,
             from: listing.seller,
             event,
@@ -52,10 +45,10 @@ function getEvent(
 
 export async function listingCancelled(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCancelled', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
@@ -73,17 +66,17 @@ export async function listingCancelled(
     if (!listing) return undefined
 
     listing.isActive = false
-    listing.updatedAt = new Date(block.timestamp)
+    listing.updatedAt = new Date(block.timestamp ?? 0)
 
     const listingStatus = new ListingStatus({
         id: `${listingId}-${block.height}`,
         type: ListingStatusType.Cancelled,
         listing,
         height: block.height,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await Promise.all([ctx.store.insert(ListingStatus, listingStatus as any), ctx.store.save(listing)])
+    await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
 
     if (listing.makeAssetId.bestListing?.id === listing.id) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
