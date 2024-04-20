@@ -23,7 +23,9 @@ export async function identityKilled(ctx: CommonContext, block: BlockHeader, ite
         },
         where: { id: eventData.who },
     })
-    await ctx.store.delete(Registration, { id: eventData.who })
+    const registration = await ctx.store.findOneByOrFail(Registration, { id: eventData.who })
+
+    await ctx.store.remove(registration)
 
     await Promise.all(
         identity.sub.map(async (sub) => {
@@ -42,8 +44,6 @@ export async function identityKilled(ctx: CommonContext, block: BlockHeader, ite
     } else {
         await ctx.store.remove(identity)
     }
-
-    await ctx.store.delete(Registration, { id: eventData.who })
 
     return undefined
 }
