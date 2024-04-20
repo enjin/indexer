@@ -1,35 +1,22 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensAttributeRemovedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
 import { processMetadata } from '../../../jobs/process-metadata'
 import { computeTraits } from '../../../jobs/compute-traits'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint | undefined
-    key: Uint8Array
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
-    const data = new MultiTokensAttributeRemovedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.attributeRemoved.matrixEnjinV603.is(event)) {
+        return events.multiTokens.attributeRemoved.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.multiTokens.attributeRemoved.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensAttributeRemoved({
@@ -42,11 +29,11 @@ function getEvent(
 
 export async function attributeRemoved(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeRemoved', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

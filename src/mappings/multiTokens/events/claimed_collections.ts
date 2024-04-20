@@ -1,68 +1,58 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { MultiTokensClaimedCollectionsEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensClaimedCollections } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Sns } from '../../../common/sns'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensClaimedCollectionsEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.claimedCollections.matrixEnjinV1000.is(event)) {
+        return events.multiTokens.claimedCollections.matrixEnjinV1000.decode(event)
     }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
-    }
-
-    if (data.isV1000) {
-        return data.asV1000
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.claimedCollections.name)
 }
 
 export async function claimedCollections(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.ClaimedCollections', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     const account = await getOrCreateAccount(ctx, data.accountId)
 
-    await ctx.store
-        .createQueryBuilder()
-        .update(Collection)
-        .set({ owner: account })
-        .where('collectionId IN (:...collectionIds)', { collectionIds: data.collectionIds })
-        .execute()
+    const promises = data.collectionIds.map((id) => {
+        return ctx.store.save(
+            new Collection({
+                id: id.toString(),
+                owner: account,
+            })
+        )
+    })
 
-    if (item.event.extrinsic) {
+    await Promise.all(promises)
+
+    if (item.extrinsic) {
         Sns.getInstance().send({
-            id: item.event.id,
-            name: item.event.name,
+            id: item.id,
+            name: item.name,
             body: {
-                account: u8aToHex(data.accountId),
-                ethAccount: u8aToHex(data.ethereumAddress),
-                extrinsic: item.event.extrinsic.id,
+                account: data.accountId,
+                ethAccount: data.ethereumAddress,
+                extrinsic: item.extrinsic.id,
             },
         })
     }
 
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensClaimedCollections({
-            account: u8aToHex(data.accountId),
-            ethAccount: u8aToHex(data.ethereumAddress),
-            collectionIds: data.collectionIds.map((id) => (typeof id === 'bigint' ? id : id.native)),
+            account: data.accountId,
+            ethAccount: data.ethereumAddress,
+            collectionIds: data.collectionIds.map((id) => id),
         }),
     })
 }
