@@ -1,10 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
-import { u8aToHex } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import axios from 'axios'
-import { EpMultiTokensToken } from '@polkadot/types/lookup'
 import { CommonContext, BlockHeader } from './mappings/types/contexts'
 import { storage } from './types/generated'
 import config from './config'
@@ -12,7 +10,6 @@ import {
     Account,
     Attribute,
     Balance,
-    CapType,
     Collection,
     CollectionAccount,
     CollectionApproval,
