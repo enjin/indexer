@@ -217,7 +217,7 @@ processor.run(
                     }
 
                     await metadataQueue.pause().catch(() => {})
-                    await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
+                    // await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
@@ -226,7 +226,7 @@ processor.run(
                 }
 
                 ctx.log.info(
-                    `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} block to process`
+                    `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                 )
 
                 // eslint-disable-next-line no-restricted-syntax

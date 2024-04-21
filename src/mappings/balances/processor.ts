@@ -2,7 +2,7 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
 import { UnknownVersionError } from '../../common/errors'
-import { Balance, Event as EventModel } from '../../model'
+import { Balance, Event as EventModel, Account } from '../../model'
 import { encodeId } from '../../common/tools'
 import { balances } from '../../types/generated/events'
 import { account as systemAccount } from '../../types/generated/system/storage'
@@ -296,35 +296,39 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
             const accountData = accountInfo!.data
 
             if ('frozen' in accountData) {
-                accounts.push({
-                    id,
-                    address: encodeId(id),
-                    nonce: accountInfo!.nonce,
-                    verified: false,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.frozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        frozen: accountData.frozen,
-                        miscFrozen: accountData.frozen,
-                        feeFrozen: 0n,
-                    }),
-                })
+                accounts.push(
+                    new Account({
+                        id,
+                        address: encodeId(id),
+                        nonce: accountInfo!.nonce,
+                        verified: false,
+                        balance: new Balance({
+                            transferable: accountData.free - accountData.frozen,
+                            free: accountData.free,
+                            reserved: accountData.reserved,
+                            frozen: accountData.frozen,
+                            miscFrozen: accountData.frozen,
+                            feeFrozen: 0n,
+                        }),
+                    })
+                )
             } else if ('miscFrozen' in accountData) {
-                accounts.push({
-                    id,
-                    address: encodeId(id),
-                    nonce: accountInfo!.nonce,
-                    verified: false,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.miscFrozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        frozen: accountData.miscFrozen,
-                        miscFrozen: accountData.miscFrozen,
-                        feeFrozen: accountData.feeFrozen,
-                    }),
-                })
+                accounts.push(
+                    new Account({
+                        id,
+                        address: encodeId(id),
+                        nonce: accountInfo!.nonce,
+                        verified: false,
+                        balance: new Balance({
+                            transferable: accountData.free - accountData.miscFrozen,
+                            free: accountData.free,
+                            reserved: accountData.reserved,
+                            frozen: accountData.miscFrozen,
+                            miscFrozen: accountData.miscFrozen,
+                            feeFrozen: accountData.feeFrozen,
+                        }),
+                    })
+                )
             }
         }
 
