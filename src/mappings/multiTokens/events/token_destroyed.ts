@@ -67,33 +67,92 @@ export async function tokenDestroyed(
 
     await ctx.store.save(token)
 
+    const [
+        listingSales,
+        listingStatus,
+        listingsMake,
+        listingTake,
+        royaltyCurrencies,
+        traitTokens,
+        accountTokenEvents,
+        attributes,
+    ] = await Promise.all([
+        ctx.store.find(ListingSale, {
+            where: {
+                listing: {
+                    makeAssetId: {
+                        id: token.id,
+                    },
+                },
+            },
+        }),
+        ctx.store.find(ListingStatus, {
+            where: {
+                listing: {
+                    makeAssetId: {
+                        id: token.id,
+                    },
+                },
+            },
+        }),
+        ctx.store.find(Listing, {
+            where: {
+                makeAssetId: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(Listing, {
+            where: {
+                takeAssetId: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(RoyaltyCurrency, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(TraitToken, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(AccountTokenEvent, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(Attribute, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+    ])
+
+    const updatedEvent = accountTokenEvents.map((event) => {
+        event.token = null
+        return event
+    })
+
     await Promise.all([
-        ctx.store
-            .getRepository(ListingSale)
-            .query(
-                'DELETE FROM listing_sale USING listing WHERE listing_sale.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                [token.id]
-            ),
-        ctx.store
-            .getRepository(ListingStatus)
-            .query(
-                'DELETE FROM listing_status USING listing WHERE listing_status.listing_id = listing.id AND listing.make_asset_id_id  = $1',
-                [token.id]
-            ),
-        ctx.store.delete(Listing, {
-            makeAssetId: {
-                id: token.id,
-            },
-        }),
-        ctx.store.delete(Listing, {
-            takeAssetId: {
-                id: token.id,
-            },
-        }),
-        ctx.store.delete(RoyaltyCurrency, { token: { id: token.id } }),
-        ctx.store.delete(TraitToken, { token: { id: token.id } }),
-        ctx.store.update(AccountTokenEvent, { token: { id: token.id } }, { token: null }),
-        ctx.store.delete(Attribute, { token: { id: token.id } }),
+        ctx.store.remove(listingSales),
+        ctx.store.remove(listingStatus),
+        ctx.store.remove(listingsMake),
+        ctx.store.remove(listingTake),
+        ctx.store.remove(royaltyCurrencies),
+        ctx.store.remove(traitTokens),
+        ctx.store.remove(attributes),
+        ctx.store.save(updatedEvent),
     ])
 
     await ctx.store.remove(token)

@@ -43,13 +43,17 @@ export async function collectionDestroyed(
 
     const collectionId = data.collectionId.toString()
 
-    await Promise.all([
-        ctx.store.delete(Trait, { collection: { id: collectionId } }),
-        ctx.store.delete(RoyaltyCurrency, { collection: { id: collectionId } }),
-        ctx.store.delete(Attribute, { collection: { id: collectionId } }),
+    const collection = await ctx.store.findOneByOrFail(Collection, { id: collectionId })
+
+    const [traits, royaltyCurrencies, attributes] = await Promise.all([
+        ctx.store.find(Trait, { where: { collection: { id: collectionId } } }),
+        ctx.store.find(RoyaltyCurrency, { where: { collection: { id: collectionId } } }),
+        ctx.store.find(Attribute, { where: { collection: { id: collectionId } } }),
     ])
 
-    await ctx.store.delete(Collection, { id: collectionId })
+    await Promise.all([ctx.store.remove(traits), ctx.store.remove(royaltyCurrencies), ctx.store.remove(attributes)])
+
+    await ctx.store.remove(collection)
 
     return getEvent(item, data)
 }
