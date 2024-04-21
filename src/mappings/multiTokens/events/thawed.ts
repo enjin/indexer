@@ -1,4 +1,3 @@
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {

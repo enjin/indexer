@@ -53,7 +53,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
 
             if (existing) {
                 existing.super = new Identity({ id: signer.id })
-                existing.name = sub[1].__kind !== 'None' ? u8aToString(sub[1].value) : null
+                existing.name = sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null
                 return existing
             }
 
