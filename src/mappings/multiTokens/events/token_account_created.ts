@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensTokenAccountCreatedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Collection,
     CollectionAccount,
@@ -12,32 +9,27 @@ import {
     Token,
     TokenAccount,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensTokenAccountCreatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.tokenAccountCreated.matrixEnjinV603.is(event)) {
+        return events.multiTokens.tokenAccountCreated.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.multiTokens.tokenAccountCreated.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensTokenAccountCreated({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            account: u8aToHex(data.accountId),
+            account: data.accountId,
             balance: data.balance,
         }),
     })
@@ -45,20 +37,20 @@ function getEvent(
 
 export async function tokenAccountCreated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenAccountCreated', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
 
     if (skipSave) {
         const tokenAccount = await ctx.store.findOne(TokenAccount, {
-            where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
+            where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
         })
 
-        if (tokenAccount !== null) {
-            tokenAccount.createdAt = new Date(block.timestamp)
-            tokenAccount.updatedAt = new Date(block.timestamp)
+        if (tokenAccount) {
+            tokenAccount.createdAt = new Date(block.timestamp ?? 0)
+            tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
             ctx.store.save(tokenAccount)
         }
 
@@ -75,28 +67,28 @@ export async function tokenAccountCreated(
 
     const account = await getOrCreateAccount(ctx, data.accountId)
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${u8aToHex(data.accountId)}` },
+        where: { id: `${data.collectionId}-${data.accountId}` },
     })
 
-    if (collectionAccount === null) {
+    if (collectionAccount) {
+        collectionAccount.accountCount += 1
+        await ctx.store.save(collectionAccount)
+    } else {
         const newCollectionAccount = new CollectionAccount({
-            id: `${data.collectionId}-${u8aToHex(data.accountId)}`,
+            id: `${data.collectionId}-${data.accountId}`,
             isFrozen: false,
             approvals: null,
             accountCount: 1,
             account,
             collection,
-            createdAt: new Date(block.timestamp),
-            updatedAt: new Date(block.timestamp),
+            createdAt: new Date(block.timestamp ?? 0),
+            updatedAt: new Date(block.timestamp ?? 0),
         })
-        await ctx.store.insert(CollectionAccount, newCollectionAccount as any)
-    } else {
-        collectionAccount.accountCount += 1
-        await ctx.store.save(collectionAccount)
+        await ctx.store.insert(newCollectionAccount)
     }
 
     const tokenAccount = new TokenAccount({
-        id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}`,
+        id: `${data.accountId}-${data.collectionId}-${data.tokenId}`,
         balance: 0n, // The balance is updated on Mint event
         reservedBalance: 0n,
         totalBalance: 0n,
@@ -108,11 +100,11 @@ export async function tokenAccountCreated(
         account,
         collection,
         token,
-        createdAt: new Date(block.timestamp),
-        updatedAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
+        updatedAt: new Date(block.timestamp ?? 0),
     })
 
-    await ctx.store.save(TokenAccount, tokenAccount as any)
+    await ctx.store.save(tokenAccount)
 
     return getEvent(item, data)
 }

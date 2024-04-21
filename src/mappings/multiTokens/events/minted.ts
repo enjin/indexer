@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensMintedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -13,49 +10,45 @@ import {
     TokenAccount,
 } from '../../../model'
 import { isNonFungible } from '../utils/helpers'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint
-    issuer: Uint8Array
-    recipient: Uint8Array
-    amount: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
-    const data = new MultiTokensMintedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, tokenId, issuer, recipient, amount } = data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.minted.matrixEnjinV603.is(event)) {
+        const { collectionId, tokenId, issuer, recipient, amount } = events.multiTokens.minted.matrixEnjinV603.decode(event)
         if (issuer.__kind === 'Signed') {
             return { collectionId, tokenId, issuer: issuer.value, recipient, amount }
         }
-        return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), recipient, amount }
+        return {
+            collectionId,
+            tokenId,
+            issuer: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            recipient,
+            amount,
+        }
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.multiTokens.minted.name)
 }
 
 function getEvent(
-    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    item: EventItem,
     data: ReturnType<typeof getEventData>,
-    token: Token | null
+    token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensMinted({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            issuer: u8aToHex(data.issuer),
-            recipient: u8aToHex(data.recipient),
+            issuer: data.issuer,
+            recipient: data.recipient,
             amount: data.amount,
         }),
     })
@@ -63,10 +56,10 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token,
-            from: new Account({ id: u8aToHex(data.issuer) }),
-            to: new Account({ id: u8aToHex(data.recipient) }),
+            from: new Account({ id: data.issuer }),
+            to: new Account({ id: data.recipient }),
             event,
         }),
     ]
@@ -74,11 +67,11 @@ function getEvent(
 
 export async function minted(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Minted', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     const promises: Promise<any>[] = []
@@ -105,14 +98,11 @@ export async function minted(
     promises.push(ctx.store.save(token))
 
     const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-        where: { id: `${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}` },
+        where: { id: `${data.recipient}-${data.collectionId}-${data.tokenId}` },
     })
 
     if (!tokenAccount) {
-        throwError(
-            `[Minted] We have not found token account ${u8aToHex(data.recipient)}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`, 'fatal')
 
         await Promise.all(promises)
         return getEvent(item, data, token)
@@ -120,7 +110,7 @@ export async function minted(
 
     tokenAccount.balance += data.amount
     tokenAccount.totalBalance += data.amount
-    tokenAccount.updatedAt = new Date(block.timestamp)
+    tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
     promises.push(ctx.store.save(tokenAccount))
 
     await Promise.all(promises)

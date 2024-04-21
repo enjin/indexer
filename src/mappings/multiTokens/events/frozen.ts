@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensFrozenEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Collection,
     CollectionAccount,
@@ -14,15 +11,12 @@ import {
     TransferPolicy,
     FreezeState,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { isTokenFrozen } from './token_created'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensFrozenEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, freezeType } = data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.frozen.matrixEnjinV603.is(event)) {
+        const { collectionId, freezeType } = events.multiTokens.frozen.matrixEnjinV603.decode(event)
 
         if (freezeType.__kind === 'Collection') {
             return {
@@ -67,16 +61,13 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.frozen.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensFrozen(),
@@ -85,17 +76,17 @@ function getEvent(
 
 export async function frozen(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Frozen', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
 
     if (data.tokenAccount) {
-        const address = u8aToHex(data.tokenAccount)
+        const address = data.tokenAccount
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
         })
@@ -106,10 +97,10 @@ export async function frozen(
         }
 
         tokenAccount.isFrozen = true
-        tokenAccount.updatedAt = new Date(block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
-        const address = u8aToHex(data.collectionAccount)
+        const address = data.collectionAccount
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })
@@ -120,7 +111,7 @@ export async function frozen(
         }
 
         collectionAccount.isFrozen = true
-        collectionAccount.updatedAt = new Date(block.timestamp)
+        collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId !== undefined) {
         const token = await ctx.store.findOne<Token>(Token, {

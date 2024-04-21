@@ -1,7 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Event as EventModel,
     Extrinsic,
@@ -12,9 +10,8 @@ import {
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { TokenMarketBehavior } from '../../../types/generated/v500'
 
