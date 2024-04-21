@@ -1,4 +1,5 @@
 import { u8aToHex } from '@polkadot/util'
+import { getConnection } from 'src/connection'
 import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../../common/tools'
@@ -32,7 +33,9 @@ export async function getOrCreateAccount(ctx: CommonContext, publicKey: Uint8Arr
 }
 
 export async function getBestListing(ctx: CommonContext, tokenId: string) {
-    return ctx.store
+    const con = await getConnection()
+
+    return con.manager
         .getRepository(Listing)
         .createQueryBuilder('listing')
         .select('listing.id')

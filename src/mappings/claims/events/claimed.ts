@@ -12,6 +12,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { getConnection } from '../../../connection'
 import { getTotalUnclaimedAmount } from '../common'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -47,9 +48,11 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         throw new Error('Delay period is not set')
     }
 
+    const con = await getConnection()
+
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         getTotalUnclaimedAmount(ctx, block),
-        ctx.store
+        con.manager
             .getRepository(ClaimRequest)
             .createQueryBuilder('request')
             .where('request.account ::jsonb @> :account', {
@@ -60,6 +63,7 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
             .getMany(),
         ctx.store.findOneBy(Claim, { account: { id: account.id } }),
     ])
+
     claimDetails.totalUnclaimedAmount = totalUnclaimedAmount
 
     if (claimRequests.length === 0) {

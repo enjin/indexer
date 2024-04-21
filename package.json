@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rm -rf lib && tsc",
     "db:migrate": "npx squid-typeorm-migration apply",
-    "processor:start": "node -r dotenv/config lib/processor.js",
+    "processor:start": "node -r dotenv/config lib/main.js",
     "query-node:start": "squid-graphql-server --subscriptions",
     "prom:start": "node -r dotenv/config lib/prom-metrics/index.js",
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",

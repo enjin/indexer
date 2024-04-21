@@ -5,7 +5,12 @@ import { ClaimDetails } from '../../model'
 
 export async function getTotalUnclaimedAmount(ctx: CommonContext, block: BlockHeader) {
     if (claims.totalUnclaimedAmount.matrixEnjinV603.is(block)) {
-        return claims.totalUnclaimedAmount.matrixEnjinV603.get(block)
+        const data = await claims.totalUnclaimedAmount.matrixEnjinV603.get(block)
+        if (data === undefined) {
+            return 0n
+        }
+
+        return data
     }
 
     return BigInt(0)

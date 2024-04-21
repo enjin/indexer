@@ -51,7 +51,7 @@ export async function createEnjToken(ctx: CommonContext, block: BlockHeader<{ bl
             createdAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.insert(Collection, collection)
+        await ctx.store.insert(collection)
 
         const token = new Token({
             id: `0-0`,
@@ -69,6 +69,6 @@ export async function createEnjToken(ctx: CommonContext, block: BlockHeader<{ bl
             createdAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.insert(Token, token)
+        await ctx.store.insert(token)
     }
 }

@@ -47,8 +47,12 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
     const { tankId } = eventData
     const ruleSetId = `${tankId}-${eventData.ruleSetId}`
 
-    await ctx.store.delete(PermittedExtrinsics, { ruleSet: { id: ruleSetId } })
-    await ctx.store.delete(FuelTankRuleSet, { id: ruleSetId })
+    const [pE, rS] = await Promise.all([
+        ctx.store.find(PermittedExtrinsics, { where: { ruleSet: { id: ruleSetId } } }),
+        ctx.store.find(FuelTankRuleSet, { where: { id: ruleSetId } }),
+    ])
+
+    await Promise.all([ctx.store.remove(pE), ctx.store.remove(rS)])
 
     const {
         whitelistedCallers,

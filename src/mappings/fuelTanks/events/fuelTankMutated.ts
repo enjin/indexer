@@ -44,7 +44,8 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
     }
 
     if (eventData.mutation.accountRules !== undefined) {
-        await ctx.store.delete(FuelTankAccountRules, { tank: tank.id })
+        const accountRules = await ctx.store.find(FuelTankAccountRules, { where: { tank: { id: tank.id } } })
+        await ctx.store.remove(accountRules)
 
         eventData.mutation.accountRules.forEach(async (rule) => {
             let accountRule: WhitelistedCallers | RequireToken
