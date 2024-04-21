@@ -38,7 +38,6 @@ export function getCapType(cap: TokenCap) {
         })
     }
 
-    // TODO: add collapsing
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
     })

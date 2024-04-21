@@ -1,9 +1,11 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
+import { lookupArchive } from '@subsquid/archive-registry'
 import config from './config'
 import { events } from './types/generated'
 
 export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.rpc)
+    .setGateway(lookupArchive('enjin-matrix'))
     .setBlockRange({ from: 0 })
     .addCall({
         extrinsic: true,

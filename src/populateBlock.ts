@@ -29,8 +29,6 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
-    TokenCapSingleMint,
-    TokenCapSupply,
     TokenLock,
     TokenNamedReserve,
     TransferPolicy,
@@ -39,8 +37,8 @@ import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 import { UnknownVersionError } from './common/errors'
 import { processMetadata } from './jobs/process-metadata'
-import Rpc from './common/rpc'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
+import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 
 const BATCH_SIZE = 1000
 
@@ -124,6 +122,22 @@ function getCollectionStorage(block: BlockHeader) {
     }
 
     throw new UnknownVersionError('MultiTokens.Collections')
+}
+
+function getTokenStorage(block: BlockHeader) {
+    if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.tokens.matrixEnjinV603
+    }
+
+    if (storage.multiTokens.tokens.v600.is(block)) {
+        return storage.multiTokens.tokens.v600
+    }
+
+    if (storage.multiTokens.tokens.v500.is(block)) {
+        return storage.multiTokens.tokens.v500
+    }
+
+    throw new UnknownVersionError('MultiTokens.Tokens')
 }
 
 function getCollectionAccountStorage(block: BlockHeader) {
@@ -302,125 +316,68 @@ async function syncCollectionAccount(ctx: CommonContext, block: BlockHeader) {
 }
 
 async function syncToken(ctx: CommonContext, block: BlockHeader) {
-    const { api } = await Rpc.getInstance()
-    const apiAt = await api.at(block.hash)
-    let lastKey = ''
-    let count = 0
-
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        // eslint-disable-next-line no-await-in-loop
-        const query = await apiAt.query.multiTokens.tokens.entriesPaged({
-            args: [],
-            pageSize: BATCH_SIZE,
-            startKey: lastKey,
-        })
-
-        if (query.length === 0) {
-            break
-        }
-
-        const tokens: Token[] = []
-
-        for (const [key, value] of query) {
-            const data: EpMultiTokensToken | null = value.unwrapOr(null)
+    for await (const collectionPairs of getTokenStorage(block).getPairsPaged(BATCH_SIZE, block)) {
+        const tokens = []
+        for (const [key, data] of collectionPairs) {
             // eslint-disable-next-line no-continue
             if (!data) continue
 
-            const collectionId = key.args[0].toString()
-            const tokenId = key.args[1].toString()
+            const collectionId = key[0].toString()
+            const tokenId = key[1].toString()
             // eslint-disable-next-line no-await-in-loop
             const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            let cap = null
-            if (data.cap.isNone) {
-                cap = null
-            } else if (data.cap.unwrap().isSupply) {
-                cap = new TokenCapSupply({
-                    type: CapType.Supply,
-                    supply: data.cap.unwrap().asSupply.toBigInt(),
-                })
-            } else if (data.cap.unwrap().isSingleMint) {
-                cap = new TokenCapSingleMint({
-                    type: CapType.SingleMint,
-                })
-            }
-
             let behavior = null
-            if (data.marketBehavior.isNone) {
-                behavior = null
-            } else if (data.marketBehavior.unwrap().isIsCurrency) {
-                behavior = new TokenBehaviorIsCurrency({
-                    type: TokenBehaviorType.IsCurrency,
-                })
-            } else if (data.marketBehavior.unwrap().isHasRoyalty) {
-                const { beneficiary } = data.marketBehavior.unwrap().asHasRoyalty
-                // eslint-disable-next-line no-await-in-loop
-                await getAccountMap(ctx, [beneficiary.toHex()])
-
-                behavior = new TokenBehaviorHasRoyalty({
-                    type: TokenBehaviorType.HasRoyalty,
-                    royalty: new Royalty({
-                        beneficiary: u8aToHex(beneficiary),
-                        percentage: data.marketBehavior.unwrap().asHasRoyalty.percentage.toNumber(),
-                    }),
-                })
+            if ('marketBehavior' in data && data.marketBehavior) {
+                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+                    behavior = new TokenBehaviorIsCurrency({
+                        type: TokenBehaviorType.IsCurrency,
+                    })
+                } else {
+                    behavior = new TokenBehaviorHasRoyalty({
+                        type: TokenBehaviorType.HasRoyalty,
+                        royalty: new Royalty({
+                            beneficiary: data.marketBehavior.value.beneficiary,
+                            percentage: data.marketBehavior.value.percentage,
+                        }),
+                    })
+                }
             }
 
-            let freezeState = null
+            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : undefined
 
-            if (data.freezeState.isNone) {
-                freezeState = null
-            } else {
-                switch (data.freezeState.unwrap().type) {
-                    case 'Temporary':
-                        freezeState = FreezeState.Temporary
-                        break
-                    case 'Permanent':
-                        freezeState = FreezeState.Permanent
-                        break
-                    case 'Never':
-                        freezeState = FreezeState.Never
-                        break
-                    default:
-                        freezeState = null
-                        break
-                }
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (data.sufficiency.__kind === 'Insufficient') {
+                unitPrice = data.sufficiency.unitPrice
+                minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
             }
 
             const token = new Token({
                 id: `${collectionId}-${tokenId}`,
                 tokenId: BigInt(tokenId),
                 collection,
-                attributeCount: data.attributeCount.toNumber() ?? 0,
-                supply: data.supply.toBigInt(),
+                attributeCount: data.attributeCount,
+                supply: data.supply,
                 isFrozen: freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary,
-                cap,
+                cap: data.cap ? getCapType(data.cap) : null,
                 behavior,
                 freezeState,
-                listingForbidden: data.listingForbidden.isTrue,
-                minimumBalance: data.minimumBalance.toBigInt(),
-                unitPrice: 10_000_000_000_000_000n, // check
+                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
+                minimumBalance,
+                unitPrice,
                 createdAt: new Date(block.timestamp ?? 0),
-                mintDeposit: data.mintDeposit.toBigInt(),
+                mintDeposit: data.mintDeposit,
             })
 
             token.nonFungible = isNonFungible(token)
             tokens.push(token)
 
             processMetadata(token.id, 'token')
-
-            lastKey = key.toHex()
         }
 
-        // eslint-disable-next-line no-await-in-loop
         await ctx.store.insert(tokens)
-
-        count += 1
-
-        if (count % 10 === 0) {
-            ctx.log.info(`Processed ${count * BATCH_SIZE} tokens`)
-        }
     }
 }
 
