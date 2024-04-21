@@ -1,4 +1,4 @@
-import { claims } from 'src/types/generated/events'
+import { claims } from '../../../types/generated/events'
 import { UnknownVersionError } from '../../../common/errors'
 import { ClaimRequest, ClaimDetails, Event as EventModel } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'

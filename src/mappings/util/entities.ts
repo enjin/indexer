@@ -1,5 +1,5 @@
 import { u8aToHex } from '@polkadot/util'
-import { getConnection } from 'src/connection'
+import { getConnection } from '../../connection'
 import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../../common/tools'
