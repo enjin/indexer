@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensTransferredEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -12,38 +9,36 @@ import {
     Token,
     TokenAccount,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 import { Sns } from '../../../common/sns'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensTransferredEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.transferred.matrixEnjinV603.is(event)) {
+        return events.multiTokens.transferred.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.multiTokens.transferred.name)
 }
 
 function getEvent(
-    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
+    item: EventItem,
     data: ReturnType<typeof getEventData>,
-    token: Token | null
+    token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensTransferred({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            operator: u8aToHex(data.operator),
-            from: u8aToHex(data.from),
-            to: u8aToHex(data.to),
+            operator: data.operator,
+            from: data.from,
+            to: data.to,
             amount: data.amount,
         }),
     })
@@ -51,9 +46,9 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
-            from: new Account({ id: u8aToHex(data.from) }),
-            to: new Account({ id: u8aToHex(data.to) }),
+            id: item.id,
+            from: new Account({ id: data.from }),
+            to: new Account({ id: data.to }),
             event,
             token,
         }),
@@ -62,11 +57,11 @@ function getEvent(
 
 export async function transferred(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Transferred', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     const token = await ctx.store.findOne<Token>(Token, {
@@ -84,8 +79,8 @@ export async function transferred(
         return getEvent(item, data, token)
     }
 
-    const fromAddress = u8aToHex(data.from)
-    const toAddress = u8aToHex(data.to)
+    const fromAddress = data.from
+    const toAddress = data.to
 
     const [fromTokenAccount, toTokenAccount] = await Promise.all([
         ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -99,7 +94,7 @@ export async function transferred(
     if (fromTokenAccount) {
         fromTokenAccount.balance -= data.amount
         fromTokenAccount.totalBalance -= data.amount
-        fromTokenAccount.updatedAt = new Date(block.timestamp)
+        fromTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(fromTokenAccount)
     } else {
         throwError(`[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
@@ -108,7 +103,7 @@ export async function transferred(
     if (toTokenAccount) {
         toTokenAccount.balance += data.amount
         toTokenAccount.totalBalance += data.amount
-        toTokenAccount.updatedAt = new Date(block.timestamp)
+        toTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(toTokenAccount)
     } else {
         throwError(`[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
@@ -116,19 +111,19 @@ export async function transferred(
 
     syncCollectionStats(data.collectionId.toString())
 
-    if (item.event.extrinsic) {
+    if (item.extrinsic) {
         await Sns.getInstance().send({
-            id: item.event.id,
-            name: item.event.name,
+            id: item.id,
+            name: item.name,
             body: {
                 collectionId: data.collectionId,
                 tokenId: data.tokenId,
                 token: `${data.collectionId}-${data.tokenId}`,
-                operator: u8aToHex(data.operator),
-                from: u8aToHex(data.from),
-                to: u8aToHex(data.to),
+                operator: data.operator,
+                from: data.from,
+                to: data.to,
                 amount: data.amount,
-                extrinsic: item.event.extrinsic.id,
+                extrinsic: item.extrinsic.id,
             },
         })
     }

@@ -1,105 +1,95 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { hexToU8a } from '@polkadot/util'
 import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../../model'
-import { Call } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { calls } from '../../../types/generated'
+import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import {
-    FuelTanksDispatchAndTouchCall,
-    FuelTanksDispatchCall,
-    PolkadotXcmLimitedReserveTransferAssetsCall,
-    PolkadotXcmLimitedTeleportAssetsCall,
-    PolkadotXcmTeleportAssetsCall,
-} from '../../../types/generated/calls'
 import config from '../../../config'
 
-async function getCallData(ctx: CommonContext, call: Call) {
+async function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'PolkadotXcm.limited_teleport_assets') {
-        const data = new PolkadotXcmLimitedTeleportAssetsCall(ctx, call)
-
-        if (data.isMatrixEnjinV603) {
-            return data.asMatrixEnjinV603
+        if (calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.is(call)) {
+            return calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.decode(call)
         }
 
-        throw new UnknownVersionError(data.constructor.name)
+        throw new UnknownVersionError(calls.polkadotXcm.limitedTeleportAssets.name)
     }
 
     if (call.name === 'PolkadotXcm.teleport_assets') {
-        const data = new PolkadotXcmTeleportAssetsCall(ctx, call)
-
-        if (data.isMatrixEnjinV603) {
-            return data.asMatrixEnjinV603
+        if (calls.polkadotXcm.teleportAssets.matrixEnjinV603.is(call)) {
+            return calls.polkadotXcm.teleportAssets.matrixEnjinV603.decode(call)
         }
 
-        throw new UnknownVersionError(data.constructor.name)
+        throw new UnknownVersionError(calls.polkadotXcm.teleportAssets.name)
     }
 
     if (call.name === 'PolkadotXcm.limited_reserve_transfer_assets') {
-        const data = new PolkadotXcmLimitedReserveTransferAssetsCall(ctx, call)
-
-        if (data.isMatrixEnjinV603) {
-            return data.asMatrixEnjinV603
+        if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.is(call)) {
+            return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
         }
 
-        throw new UnknownVersionError(data.constructor.name)
+        throw new UnknownVersionError(calls.polkadotXcm.limitedReserveTransferAssets.name)
     }
 
     if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {
-        const data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall =
-            call.name === 'FuelTanks.dispatch'
-                ? new FuelTanksDispatchCall(ctx, call)
-                : new FuelTanksDispatchAndTouchCall(ctx, call)
+        const data = call.name === 'FuelTanks.dispatch' ? calls.fuelTanks.dispatch : calls.fuelTanks.dispatchAndTouch
 
         let callData: any = null
 
-        if (data.isMatrixEnjinV1004) {
-            callData = data.asMatrixEnjinV1004
+        if (data.matrixEnjinV1005.is(call)) {
+            callData = data.matrixEnjinV1005.decode(call)
         }
 
-        if (data.isMatrixEnjinV1003) {
-            callData = data.asMatrixEnjinV1003
+        if (data.matrixEnjinV1004.is(call)) {
+            callData = data.matrixEnjinV1004.decode(call)
         }
 
-        if (data.isMatrixEnjinV1000) {
-            callData = data.asMatrixEnjinV1000
+        if (data.matrixEnjinV1003.is(call)) {
+            callData = data.matrixEnjinV1003.decode(call)
         }
 
-        if (data.isMatrixEnjinV603) {
-            callData = data.asMatrixEnjinV603
+        if (data.matrixEnjinV1000.is(call)) {
+            callData = data.matrixEnjinV1000.decode(call)
         }
 
-        if (data.isV1004) {
-            callData = data.asV1004
+        if (data.matrixEnjinV603.is(call)) {
+            callData = data.matrixEnjinV603.decode(call)
         }
 
-        if (data.isV1003) {
-            callData = data.asV1003
+        if (data.v1005.is(call)) {
+            callData = data.v1005.decode(call)
         }
 
-        if (data.isV1000) {
-            callData = data.asV1000
+        if (data.v1004.is(call)) {
+            callData = data.v1004.decode(call)
         }
 
-        if (data.isV604) {
-            callData = data.asV604
+        if (data.v1003.is(call)) {
+            callData = data.v1000.decode(call)
         }
 
-        if (data.isV602) {
-            callData = data.asV602
+        if (data.v1000.is(call)) {
+            callData = data.v1000.decode(call)
         }
 
-        if (data.isV601) {
-            callData = data.asV601
+        if (data.v604.is(call)) {
+            callData = data.v604.decode(call)
         }
 
-        if (data.isV600) {
-            callData = data.asV600
+        if (data.v602.is(call)) {
+            callData = data.v602.decode(call)
         }
 
-        if (data.isV500) {
-            callData = data.asV500
+        if (data.v601.is(call)) {
+            callData = data.v601.decode(call)
+        }
+
+        if (data.v600.is(call)) {
+            callData = data.v600.decode(call)
+        }
+
+        if (data.v500.is(call)) {
+            callData = data.v500.decode(call)
         }
 
         if (
@@ -115,18 +105,14 @@ async function getCallData(ctx: CommonContext, call: Call) {
     throw new UnsupportedCallError(call.name)
 }
 
-export async function attempted(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'PolkadotXcm.Attempted', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    if (!item.event.call) return undefined
+export async function attempted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.call) return undefined
 
-    const callData = await getCallData(ctx, item.event.call)
+    const callData = await getCallData(ctx, item.call)
     if (!callData || !('dest' in callData) || !('beneficiary' in callData) || !('assets' in callData)) {
         return new EventModel({
-            id: item.event.id,
-            extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+            id: item.id,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
             data: null,
         })
     }
@@ -159,12 +145,12 @@ export async function attempted(
         return undefined
     }
 
-    const account = await getOrCreateAccount(ctx, hexToU8a(item.event.extrinsic.signature?.address.value))
+    const account = await getOrCreateAccount(ctx, hexToU8a((item.extrinsic?.signature?.address as any)?.value))
     const beneficiaryAccount = await getOrCreateAccount(ctx, beneficiary)
 
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new TeleportBalanceWithdrawn({
             beneficiary: beneficiaryAccount.id,
             destination,
