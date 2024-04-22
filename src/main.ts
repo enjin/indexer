@@ -229,35 +229,29 @@ processor.run(
                     `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
                 )
 
-                // eslint-disable-next-line no-restricted-syntax
-                for (const call of block.calls) {
-                    await handleCalls(ctx as unknown as CommonContext, block.header, call)
-                    if (
-                        call.parentCall ||
-                        (!['Claims.claim', 'MultiTokens.claim_tokens', 'MultiTokens.claim_collections'].includes(call.name) &&
-                            call.extrinsic!.signature?.address == null)
-                    ) {
-                        // eslint-disable-next-line no-continue
-                        continue
-                    }
-                    if (!call.extrinsic) {
-                        throw new Error('Extrinsic is null')
-                    }
-
-                    const { id, fee, hash, signature: signatureUnknown, success, tip, error } = call.extrinsic
-
+                for (const extrinsic of block.extrinsics) {
+                    const { id, fee, hash, signature: signatureUnknown, success, tip, error, call } = extrinsic
                     let publicKey = ''
                     let extrinsicSignature: any = {}
                     let fuelTank = null
+                    if (!call) {
+                        throw new Error('Call is undefined')
+                    }
+
                     const signature = signatureUnknown as any
 
+                    console.log(id)
+
                     if (!signature) {
+                        console.log('Signature is undefined', call.name, call.args)
+
                         publicKey = call.args.dest ?? call.args.destination
                         extrinsicSignature = {
                             address: call.args.dest ?? call.args.destination,
                             signature: call.args.ethereumSignature,
                         }
                     } else {
+                        console.log('Signature is defined', signature)
                         publicKey = (
                             signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
                                 ? signature.address.value
@@ -306,11 +300,11 @@ processor.run(
                     }
 
                     // eslint-disable-next-line no-await-in-loop
-                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(publicKey))
+                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, publicKey)
                     const callName = call.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
-                    const extrinsic = new Extrinsic({
+                    const extrinsicM = new Extrinsic({
                         id,
                         hash,
                         blockNumber: block.header.height,
@@ -333,34 +327,6 @@ processor.run(
                         participants: getParticipants(call.args, publicKey),
                     })
 
-                    // If fee empty search for the withdrawal event
-                    if (!fee) {
-                        // eslint-disable-next-line no-restricted-syntax
-                        for (const eventItem of block.events) {
-                            if (eventItem.name !== 'Balances.Withdraw') {
-                                // eslint-disable-next-line no-continue
-                                continue
-                            }
-
-                            if (eventItem.extrinsic?.id !== extrinsic.id) {
-                                // eslint-disable-next-line no-continue
-                                continue
-                            }
-
-                            // eslint-disable-next-line no-await-in-loop
-                            const transfer = await map.balances.events.withdraw(
-                                ctx as unknown as CommonContext,
-                                block.header,
-                                eventItem
-                            )
-
-                            if (extrinsic.fee && transfer) {
-                                extrinsic.fee.amount = transfer.amount
-                                break
-                            }
-                        }
-                    }
-
                     // Hotfix for adding listing seller to participant
                     if (
                         call.name === 'Marketplace.fill_listing' ||
@@ -378,13 +344,17 @@ processor.run(
                             where: { id: hexStripPrefix(listingId) },
                             relations: { seller: true },
                         })
-                        if (listing?.seller && !extrinsic.participants.includes(listing.seller.id)) {
-                            extrinsic.participants.push(listing.seller.id)
+                        if (listing?.seller && !extrinsicM.participants.includes(listing.seller.id)) {
+                            extrinsicM.participants.push(listing.seller.id)
                         }
                     }
 
                     signers.add(publicKey)
-                    extrinsics.push(extrinsic)
+                    extrinsics.push(extrinsicM)
+                }
+
+                for (const call of block.calls) {
+                    await handleCalls(ctx as unknown as CommonContext, block.header, call)
                 }
                 for (const eventItem of block.events) {
                     // eslint-disable-next-line no-await-in-loop
@@ -411,9 +381,9 @@ processor.run(
                     await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
                 }
 
-                _.chunk(extrinsics, 2000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(events, 2000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(accountTokenEvents, 2000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(events, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

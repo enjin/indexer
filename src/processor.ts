@@ -1,5 +1,4 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
-import { lookupArchive } from '@subsquid/archive-registry'
 import config from './config'
 import { events } from './types/generated'
 
@@ -7,10 +6,6 @@ export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.rpc)
     .setGateway('https://v2.archive.subsquid.io/network/enjin-matrix')
     .setBlockRange({ from: 0 })
-    .addCall({
-        extrinsic: true,
-        stack: true,
-    })
     .addEvent({
         name: [
             events.multiTokens.collectionCreated.name,
