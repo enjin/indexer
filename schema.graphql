@@ -251,13 +251,9 @@ type MultiTokensUnapproved {
   operator: Account!
 }
 
-type ClaimAccount {
-   type: AccountClaimType!
-   account: String!
-}
-
 type ClaimsClaimRequested {
-  who: ClaimAccount!
+  who: String!,
+  accountType: AccountClaimType!
   hash: String
   amountClaimable: BigInt!
   amountBurned: BigInt!
@@ -789,7 +785,8 @@ enum AccountClaimType {
 type ClaimRequest @entity {
   id: ID!
 
-  account: ClaimAccount!
+  account: String!
+  acountType: AccountClaimType!
   hash: String @unique
   amountClaimable: BigInt!
   amountBurned: BigInt!

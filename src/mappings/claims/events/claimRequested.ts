@@ -4,7 +4,6 @@ import {
     AccountClaimType,
     ClaimRequest,
     ClaimDetails,
-    ClaimAccount,
     ClaimsClaimRequested,
     Event as EventModel,
     Extrinsic,
@@ -28,14 +27,10 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
 
     if (!eventData) return undefined
 
-    const account = new ClaimAccount({
-        type: AccountClaimType.EVM,
-        account: eventData.who.toLowerCase(),
-    })
-
     const claim = new ClaimRequest({
         id: `${eventData.who}-${eventData.transactionHash}`,
-        account,
+        account: eventData.who,
+        acountType: AccountClaimType.EVM,
         amountClaimable: eventData.amountClaimable,
         amountBurned: eventData.amountBurned,
         hash: eventData.transactionHash.toString(),
@@ -59,8 +54,8 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
             id: item.id,
             name: item.name,
             body: {
-                who: account.account,
-                accountType: account.type,
+                who: eventData.who,
+                accountType: AccountClaimType.EVM,
                 amountClaimable: eventData.amountClaimable,
                 amountBurned: eventData.amountBurned,
                 hash: eventData.transactionHash.toString(),
@@ -74,7 +69,8 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         id: item.id,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
-            who: account,
+            who: eventData.who,
+            accountType: AccountClaimType.EVM,
             amountClaimable: eventData.amountClaimable,
             amountBurned: eventData.amountBurned,
             hash: eventData.transactionHash.toString(),

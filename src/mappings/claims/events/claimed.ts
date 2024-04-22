@@ -2,15 +2,7 @@ import { LessThan } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { claims } from '../../../types/generated/events'
 import { claims as claimsStorage } from '../../../types/generated/storage'
-import {
-    AccountClaimType,
-    ClaimDetails,
-    Event as EventModel,
-    Extrinsic,
-    ClaimRequest,
-    Claim,
-    ClaimsClaimed,
-} from '../../../model'
+import { ClaimDetails, Event as EventModel, Extrinsic, ClaimRequest, Claim, ClaimsClaimed } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { getTotalUnclaimedAmount } from '../common'
@@ -52,7 +44,7 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         getTotalUnclaimedAmount(ctx, block),
         ctx.store.find(ClaimRequest, {
             where: {
-                account: { type: AccountClaimType.EVM, account: claimAccount },
+                account: claimAccount,
                 isClaimed: false,
                 createdBlock: LessThan(block.height - period),
             },

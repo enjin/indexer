@@ -1,6 +1,6 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
 import * as marshal from "./marshal"
-import {ClaimAccount} from "./_claimAccount"
+import {AccountClaimType} from "./_accountClaimType"
 
 @Entity_()
 export class ClaimRequest {
@@ -11,8 +11,11 @@ export class ClaimRequest {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new ClaimAccount(undefined, obj)}, nullable: false})
-    account!: ClaimAccount
+    @Column_("text", {nullable: false})
+    account!: string
+
+    @Column_("varchar", {length: 9, nullable: false})
+    acountType!: AccountClaimType
 
     @Index_({unique: true})
     @Column_("text", {nullable: true})
