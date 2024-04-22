@@ -208,7 +208,7 @@ processor.run(
                 const events: Event[] = []
                 const accountTokenEvents: AccountTokenEvent[] = []
 
-                if (block.header.height === 1) {
+                if (block.header.height === 0) {
                     await createEnjToken(ctx as unknown as CommonContext, block.header)
                     await chainState(ctx as unknown as CommonContext, block.header)
 
