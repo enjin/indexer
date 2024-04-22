@@ -1,28 +1,19 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { ClaimDetails } from '../../../model'
-import { ClaimsDelayTimeForClaimSetEvent } from '../../../types/generated/events'
+import { claims } from '../../../types/generated/events'
 import { getTotalUnclaimedAmount } from '../common'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new ClaimsDelayTimeForClaimSetEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (claims.delayTimeForClaimSet.matrixEnjinV603.is(event)) {
+        return claims.delayTimeForClaimSet.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(claims.delayTimeForClaimSet.name)
 }
 
-export async function delayTimeForClaimSet(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Claims.DelayTimeForClaimSet', { event: { args: true; extrinsic: true } }>
-) {
-    const eventData = getEventData(ctx, item.event)
+export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+    const eventData = getEventData(item)
 
     const claimDetails = new ClaimDetails({
         id: '0',
@@ -30,7 +21,7 @@ export async function delayTimeForClaimSet(
         totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
     })
 
-    await ctx.store.save(ClaimDetails, claimDetails as any)
+    await ctx.store.save(claimDetails)
 
     if (!eventData) return undefined
 

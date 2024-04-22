@@ -1,7 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensTokenMutatedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Event as EventModel,
     Extrinsic,
@@ -12,17 +10,14 @@ import {
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
 import { isNonFungible } from '../utils/helpers'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { TokenMarketBehavior } from '../../../types/generated/v500'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensTokenMutatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, tokenId, mutation } = data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.tokenMutated.matrixEnjinV603.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV603.decode(event)
         return {
             collectionId,
             tokenId,
@@ -31,7 +26,7 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.tokenMutated.name)
 }
 
 async function getBehavior(
@@ -54,13 +49,10 @@ async function getBehavior(
     })
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensTokenMutated(),
@@ -69,11 +61,11 @@ function getEvent(
 
 export async function tokenMutated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenMutated', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

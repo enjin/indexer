@@ -1,38 +1,30 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { CallItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { hexToU8a, u8aToHex, u8aToString } from '@polkadot/util'
+import { hexToString, hexToU8a } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { Event as EventModel, Identity, Registration } from '../../../model'
-import { Call } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, CallItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { IdentitySetSubsCall } from '../../../types/generated/calls'
+import { identity } from '../../../types/generated/calls'
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new IdentitySetSubsCall(ctx, call)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getCallData(ctx: CommonContext, call: CallItem) {
+    if (identity.setSubs.matrixEnjinV1000.is(call)) {
+        return identity.setSubs.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(identity.setSubs.name)
 }
 
-export async function setSubs(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: CallItem<'Identity.set_subs', { call: true; extrinsic: true }>
-): Promise<EventModel | undefined> {
-    const callData = getCallData(ctx, item.call)
+export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
+    const callData = getCallData(ctx, item)
 
-    if (!item.extrinsic.signature) {
+    if (!item.extrinsic!.signature) {
         throw new Error('No signature')
     }
 
     const pk =
-        item.extrinsic.signature.address.__kind === 'Id' || item.extrinsic.signature.address.__kind === 'AccountId'
-            ? item.extrinsic.signature.address.value
-            : item.extrinsic.signature.address
+        (item.extrinsic!.signature.address as any).__kind === 'Id' ||
+        (item.extrinsic!.signature.address as any).__kind === 'AccountId'
+            ? (item.extrinsic!.signature.address as any).value
+            : item.extrinsic!.signature.address
 
     const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(pk))
 
@@ -56,26 +48,24 @@ export async function setSubs(
         callData.subs.map(async (sub) => {
             const [account, existing] = await Promise.all([
                 getOrCreateAccount(ctx, sub[0]),
-                ctx.store.findOneBy(Identity, { id: u8aToHex(sub[0]) }),
+                ctx.store.findOneBy(Identity, { id: sub[0] }),
             ])
 
             if (existing) {
                 existing.super = new Identity({ id: signer.id })
-                existing.name = sub[1].__kind !== 'None' ? u8aToString(sub[1].value) : null
+                existing.name = sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null
                 return existing
             }
 
-            const identity = new Identity({
+            return new Identity({
                 id: account.id,
                 account,
-                name: sub[1].__kind !== 'None' ? u8aToString(sub[1].value) : null,
+                name: sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null,
                 super: new Identity({ id: signer.id }),
                 isSub: true,
                 info: new Registration({ id: signer.id }),
-                createdAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
             })
-
-            return identity
         })
     )
 

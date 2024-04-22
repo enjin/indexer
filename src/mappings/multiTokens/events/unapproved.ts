@@ -1,59 +1,43 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensUnapprovedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint | undefined
-    owner: Uint8Array
-    operator: Uint8Array
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
-    const data = new MultiTokensUnapprovedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.unapproved.matrixEnjinV603.is(event)) {
+        return events.multiTokens.unapproved.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.unapproved.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensUnapproved({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            owner: u8aToHex(data.owner),
-            operator: u8aToHex(data.operator),
+            owner: data.owner,
+            operator: data.operator,
         }),
     })
 }
 
 export async function unapproved(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Unapproved', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
 
-    const address = u8aToHex(data.owner)
+    const address = data.owner
 
     if (data.tokenId !== undefined) {
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -62,7 +46,7 @@ export async function unapproved(
 
         if (tokenAccount) {
             tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
-            tokenAccount.updatedAt = new Date(block.timestamp)
+            tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
             await ctx.store.save(tokenAccount)
         } else {
@@ -77,7 +61,7 @@ export async function unapproved(
             collectionAccount.approvals = collectionAccount.approvals?.filter(
                 (approval) => approval.account !== encodeId(data.operator)
             )
-            collectionAccount.updatedAt = new Date(block.timestamp)
+            collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
 
             await ctx.store.save(collectionAccount)
         } else {

@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensThawedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Collection,
     CollectionAccount,
@@ -13,15 +10,12 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensThawedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, freezeType } = data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.thawed.matrixEnjinV603.is(event)) {
+        const { collectionId, freezeType } = events.multiTokens.thawed.matrixEnjinV603.decode(event)
 
         if (freezeType.__kind === 'Collection') {
             return {
@@ -62,16 +56,13 @@ function getEventData(ctx: CommonContext, event: Event) {
         }
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.thawed.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensThawed(),
@@ -80,33 +71,33 @@ function getEvent(
 
 export async function thawed(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Thawed', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
 
     if (data.tokenAccount) {
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { id: `${u8aToHex(data.tokenAccount)}-${data.collectionId}-${data.tokenId}` },
+            where: { id: `${data.tokenAccount}-${data.collectionId}-${data.tokenId}` },
         })
 
         if (!tokenAccount) {
             throwError(
-                `[Thawed] We have not found token account ${u8aToHex(data.tokenAccount)}-${data.collectionId}-${data.tokenId}.`,
+                `[Thawed] We have not found token account ${data.tokenAccount}-${data.collectionId}-${data.tokenId}.`,
                 'fatal'
             )
             return getEvent(item, data)
         }
 
         tokenAccount.isFrozen = false
-        tokenAccount.updatedAt = new Date(block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else if (data.collectionAccount) {
-        const address = u8aToHex(data.collectionAccount)
+        const address = data.collectionAccount
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
             where: { id: `${data.collectionId}-${address}` },
         })
@@ -117,7 +108,7 @@ export async function thawed(
         }
 
         collectionAccount.isFrozen = false
-        collectionAccount.updatedAt = new Date(block.timestamp)
+        collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
     } else if (data.tokenId !== undefined) {
         const token = await ctx.store.findOne<Token>(Token, {

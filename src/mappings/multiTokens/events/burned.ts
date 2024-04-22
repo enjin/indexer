@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensBurnedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -12,44 +9,34 @@ import {
     Token,
     TokenAccount,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-interface EventData {
-    collectionId: bigint
-    tokenId: bigint
-    accountId: Uint8Array
-    amount: bigint
-}
-
-function getEventData(ctx: CommonContext, event: Event): EventData {
-    const data = new MultiTokensBurnedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.burned.matrixEnjinV603.is(event)) {
+        return events.multiTokens.burned.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.burned.name)
 }
 
 function getEvent(
-    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    item: EventItem,
     data: ReturnType<typeof getEventData>,
-    token: Token | null
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensBurned({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            account: u8aToHex(data.accountId),
+            account: data.accountId,
             amount: data.amount,
         }),
     })
@@ -57,9 +44,9 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token,
-            from: new Account({ id: u8aToHex(data.accountId) }),
+            from: new Account({ id: data.accountId }),
             event,
         }),
     ]
@@ -67,14 +54,14 @@ function getEvent(
 
 export async function burned(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Burned', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data || data.amount === 0n) return undefined
 
-    const address = u8aToHex(data.accountId)
+    const address = data.accountId
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -93,7 +80,7 @@ export async function burned(
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
         tokenAccount.totalBalance -= data.amount
-        tokenAccount.updatedAt = new Date(block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else {
         throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'log')

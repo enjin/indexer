@@ -1,50 +1,36 @@
 /* eslint-disable no-restricted-syntax */
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { throwError, UnknownVersionError } from '../../../common/errors'
-import { MultiTokensCollectionTransferredEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensCollectionTransferredEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1004) {
-        const { collectionId, newOwner } = data.asMatrixEnjinV1004
-
-        return {
-            collectionId,
-            owner: newOwner,
-        }
+function getEventData(event: EventItem) {
+    if (events.multiTokens.collectionTransferred.matrixEnjinV1004.is(event)) {
+        return events.multiTokens.collectionTransferred.matrixEnjinV1004.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.collectionTransferred.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.CollectionTransferred', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensCollectionTransferred({
             collectionId: data.collectionId,
-            owner: u8aToHex(data.owner),
+            owner: data.newOwner,
         }),
     })
 }
 
 export async function collectionTransferred(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionTransferred', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
@@ -58,7 +44,7 @@ export async function collectionTransferred(
         return getEvent(item, data)
     }
 
-    collection.owner = await getOrCreateAccount(ctx, data.owner)
+    collection.owner = await getOrCreateAccount(ctx, data.newOwner)
 
     await ctx.store.save(collection)
 

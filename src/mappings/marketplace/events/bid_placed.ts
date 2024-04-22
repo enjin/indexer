@@ -1,8 +1,5 @@
-import { u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceBidPlacedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -15,41 +12,38 @@ import {
     MarketplaceBidPlaced,
     Token,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getBestListing, getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MarketplaceBidPlacedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.bidPlaced.matrixEnjinV603.is(event)) {
+        return events.marketplace.bidPlaced.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.marketplace.bidPlaced.name)
 }
 
 function getEvent(
-    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>,
+    item: EventItem,
     data: ReturnType<typeof getEventData>,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
         data: new MarketplaceBidPlaced({
             listing: listing.id,
-            bid: `${listing.id}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
+            bid: `${listing.id}-${data.bid.bidder}-${data.bid.price}`,
         }),
     })
 
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token: new Token({ id: listing.makeAssetId.id }),
             from: account,
             event,
@@ -59,10 +53,10 @@ function getEvent(
 
 export async function bidPlaced(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Marketplace.BidPlaced', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
@@ -82,13 +76,13 @@ export async function bidPlaced(
     if (!listing || !listing.makeAssetId) return undefined
 
     const bid = new Bid({
-        id: `${listingId}-${u8aToHex(data.bid.bidder)}-${data.bid.price}`,
+        id: `${listingId}-${data.bid.bidder}-${data.bid.price}`,
         bidder: account,
         price: data.bid.price,
         listing,
         height: block.height,
-        extrinsicHash: item.event.extrinsic?.hash,
-        createdAt: new Date(block.timestamp),
+        extrinsicHash: item.extrinsic?.hash,
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     listing.highestPrice = data.bid.price
@@ -96,7 +90,7 @@ export async function bidPlaced(
         listingType: ListingType.Auction,
         highBid: bid.id,
     })
-    listing.updatedAt = new Date(block.timestamp)
+    listing.updatedAt = new Date(block.timestamp ?? 0)
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
 

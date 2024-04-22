@@ -1,41 +1,33 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { IdentityRegistrarAddedEvent } from '../../../types/generated/events'
+import { events, storage } from '../../../types/generated'
 import { Event as EventModel, IdentityRegistrar } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { IdentityRegistrarsStorage } from '../../../types/generated/storage'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new IdentityRegistrarAddedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getEventData(event: EventItem) {
+    if (events.identity.registrarAdded.matrixEnjinV1000.is(event)) {
+        return events.identity.registrarAdded.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.identity.registrarAdded.name)
 }
 
-function getRegistrars(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new IdentityRegistrarsStorage(ctx, block)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000.get()
+function getRegistrars(block: BlockHeader) {
+    if (storage.identity.registrars.matrixEnjinV1000.is(block)) {
+        return storage.identity.registrars.matrixEnjinV1000.get(block)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('Identity.Registrars')
 }
 
-export async function registrarAdded(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Identity.RegistrarAdded', { event: { args: true; call: true; extrinsic: true } }>
-): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+export async function registrarAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    const eventData = getEventData(item)
 
-    const registrars = await getRegistrars(ctx, block)
+    const registrars = await getRegistrars(block)
+
+    if (!registrars) {
+        throw new Error('No registrars found')
+    }
 
     if (!registrars[eventData.registrarIndex]) {
         throw new Error(`Registrar with index ${eventData.registrarIndex} not found`)
@@ -48,7 +40,7 @@ export async function registrarAdded(
         account,
         fee: 0n,
         index: eventData.registrarIndex,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     await ctx.store.save(registrar)

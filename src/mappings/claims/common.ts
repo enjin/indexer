@@ -1,56 +1,46 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { CommonContext } from '../types/contexts'
+import { CommonContext, BlockHeader } from '../types/contexts'
 import { UnknownVersionError } from '../../common/errors'
-import {
-    ClaimsDelayClaimsPeriodStorage,
-    ClaimsExchangeRateStorage,
-    ClaimsTotalUnclaimedAmountStorage,
-} from '../../types/generated/storage'
+import { claims } from '../../types/generated/storage'
 import { ClaimDetails } from '../../model'
 
-export async function getTotalUnclaimedAmount(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new ClaimsTotalUnclaimedAmountStorage(ctx, block)
+export async function getTotalUnclaimedAmount(ctx: CommonContext, block: BlockHeader) {
+    if (claims.totalUnclaimedAmount.matrixEnjinV603.is(block)) {
+        const data = await claims.totalUnclaimedAmount.matrixEnjinV603.get(block)
+        if (data === undefined) {
+            return 0n
+        }
 
-    if (!data.isExists) {
-        return 0n
+        return data
     }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.get()
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    return BigInt(0)
 }
 
-async function getDelayPeriod(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new ClaimsDelayClaimsPeriodStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.get()
+async function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
+    if (claims.delayClaimsPeriod.matrixEnjinV603.is(block)) {
+        return claims.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('Claims.TotalUnclaimedAmount')
 }
 
-async function getExchangeRate(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new ClaimsExchangeRateStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.get()
+async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {
+    if (claims.exchangeRate.matrixEnjinV603.is(block)) {
+        return claims.exchangeRate.matrixEnjinV603.get(block)
     }
 
-    if (data.isV604) {
-        return data.asV604.get()
+    if (claims.exchangeRate.v604.is(block)) {
+        return claims.exchangeRate.v604.get(block)
     }
 
-    if (data.isV500) {
-        return data.asV500.get()
+    if (claims.exchangeRate.v500.is(block)) {
+        return claims.exchangeRate.v500.get(block)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('Claims.ExchangeRate')
 }
 
-export async function updateClaimDetails(ctx: CommonContext, block: SubstrateBlock) {
+export async function updateClaimDetails(ctx: CommonContext, block: BlockHeader) {
     const rate = await getExchangeRate(ctx, block)
     const claimDetails = new ClaimDetails({
         id: '0',
@@ -59,5 +49,5 @@ export async function updateClaimDetails(ctx: CommonContext, block: SubstrateBlo
         exchangeRate: typeof rate === 'bigint' ? null : rate,
     })
 
-    await ctx.store.save(ClaimDetails, claimDetails as any)
+    await ctx.store.save(claimDetails)
 }

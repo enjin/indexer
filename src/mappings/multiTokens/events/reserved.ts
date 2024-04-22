@@ -1,59 +1,46 @@
-import { u8aToHex, u8aToString } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
+import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../../model'
-import { MultiTokensReservedEvent } from '../../../types/generated/events'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { events } from '../../../types/generated'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 
-function getEventData(ctx: CommonContext, eventItem: Event) {
-    const data = new MultiTokensReservedEvent(ctx, eventItem)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.reserved.matrixEnjinV603.is(event)) {
+        return events.multiTokens.reserved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.reserved.name)
 }
 
-export async function reserved(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.Reserved', { event: { args: true; extrinsic: true } }>,
-    skipSave: boolean
-) {
-    const data = getEventData(ctx, item.event)
+export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
+    const data = getEventData(ctx, item)
     if (!data) return undefined
     if (skipSave) return undefined
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
-        where: { id: `${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}` },
+        where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })
 
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
         tokenAccount.reservedBalance += data.amount
-        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === u8aToString(data.reserveId))
+        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === hexToString(data.reserveId))
 
         if (pallet) {
             pallet.amount += data.amount
         } else if (tokenAccount.namedReserves) {
-            tokenAccount.namedReserves.push(new TokenNamedReserve({ pallet: u8aToString(data.reserveId), amount: data.amount }))
+            tokenAccount.namedReserves.push(new TokenNamedReserve({ pallet: hexToString(data.reserveId), amount: data.amount }))
         } else {
-            tokenAccount.namedReserves = [new TokenNamedReserve({ pallet: u8aToString(data.reserveId), amount: data.amount })]
+            tokenAccount.namedReserves = [new TokenNamedReserve({ pallet: hexToString(data.reserveId), amount: data.amount })]
         }
 
-        tokenAccount.updatedAt = new Date(block.timestamp)
+        tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
         await ctx.store.save(tokenAccount)
     } else {
-        throwError(
-            `[Reserved] We have not found token account ${u8aToHex(data.accountId)}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
-        )
+        throwError(`[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
     syncCollectionStats(data.collectionId.toString())

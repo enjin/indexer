@@ -1,8 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { FuelTanksFuelTankDestroyedEvent } from '../../../types/generated/events'
+import { fuelTanks } from '../../../types/generated/events'
 import {
     Event as EventModel,
     Extrinsic,
@@ -12,46 +9,44 @@ import {
     FuelTankRuleSet,
     PermittedExtrinsics,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new FuelTanksFuelTankDestroyedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (fuelTanks.fuelTankDestroyed.matrixEnjinV603.is(event)) {
+        return fuelTanks.fuelTankDestroyed.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(fuelTanks.fuelTankDestroyed.name)
 }
 
 export async function fuelTankDestroyed(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'FuelTanks.FuelTankDestroyed', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
 
     if (!eventData) return undefined
 
-    const tankId = u8aToHex(eventData.tankId)
+    const { tankId } = eventData
 
-    const pE = await ctx.store.find(PermittedExtrinsics, {
-        relations: { ruleSet: true },
-        where: { ruleSet: { tank: { id: tankId } } },
-    })
-
-    await ctx.store.remove(pE)
-    await Promise.all([
-        ctx.store.delete(FuelTankRuleSet, { tank: { id: tankId } }),
-        ctx.store.delete(FuelTankAccountRules, { tank: { id: tankId } }),
+    const [permittedExtrinsics, ruleSet, accountRuleSet, tank] = await Promise.all([
+        ctx.store.find(PermittedExtrinsics, {
+            relations: { ruleSet: true },
+            where: { ruleSet: { tank: { id: tankId } } },
+        }),
+        ctx.store.find(FuelTankRuleSet, { where: { tank: { id: tankId } } }),
+        ctx.store.find(FuelTankAccountRules, { where: { tank: { id: tankId } } }),
+        ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
     ])
 
-    await ctx.store.delete(FuelTank, { id: tankId })
+    await Promise.all([ctx.store.remove(permittedExtrinsics), ctx.store.remove(ruleSet), ctx.store.remove(accountRuleSet)])
+
+    await ctx.store.remove(tank)
 
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new FuelTankDestroyed({
             tank: tankId,
         }),

@@ -1,4 +1,3 @@
-import { u8aToHex } from '@polkadot/util'
 import { DispatchRuleDescriptor } from '../../types/generated/matrixEnjinV603'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV602 } from '../../types/generated/v602'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorV601 } from '../../types/generated/v601'
@@ -16,9 +15,8 @@ import {
     PermittedExtrinsics,
     FuelTankRuleSet,
 } from '../../model'
-import { Call } from '../../types/generated/support'
-import { CommonContext } from '../types/contexts'
-import { FuelTanksDispatchAndTouchCall, FuelTanksDispatchCall } from '../../types/generated/calls'
+import { CommonContext, CallItem } from '../types/contexts'
+import { fuelTanks } from '../../types/generated/calls'
 import { UnknownVersionError } from '../../common/errors'
 
 export function rulesToMap(
@@ -45,7 +43,7 @@ export function rulesToMap(
 
     rules.forEach((rule, index) => {
         if (rule.__kind === 'WhitelistedCallers') {
-            whitelistedCallers = rule.value.map((account) => u8aToHex(account))
+            whitelistedCallers = rule.value.map((account) => account)
         } else if (rule.__kind === 'WhitelistedCollections') {
             whitelistedCollections = rule.value.map((c) => c.toString())
         } else if (rule.__kind === 'WhitelistedPallets') {
@@ -62,7 +60,7 @@ export function rulesToMap(
                 collectionId: rule.value.collectionId,
             })
         } else if (rule.__kind === 'PermittedCalls') {
-            permittedCalls = rule.value.map((call) => u8aToHex(call))
+            permittedCalls = rule.value.map((call) => call)
         } else if (rule.__kind === 'PermittedExtrinsics') {
             permittedExtrinsics = rule.value.map(
                 (r, i) =>
@@ -89,68 +87,122 @@ export function rulesToMap(
     }
 }
 
-export function getTankDataFromCall(ctx: CommonContext, call: Call) {
-    let data: FuelTanksDispatchCall | FuelTanksDispatchAndTouchCall
+export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.dispatch') {
-        data = new FuelTanksDispatchCall(ctx, call)
-    } else {
-        data = new FuelTanksDispatchAndTouchCall(ctx, call)
+        if (fuelTanks.dispatch.matrixEnjinV1005.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1005.decode(call)
+        }
+
+        if (fuelTanks.dispatch.matrixEnjinV1004.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1004.decode(call)
+        }
+
+        if (fuelTanks.dispatch.matrixEnjinV1003.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1003.decode(call)
+        }
+
+        if (fuelTanks.dispatch.matrixEnjinV1000.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1000.decode(call)
+        }
+
+        if (fuelTanks.dispatch.matrixEnjinV603.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV603.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v1005.is(call)) {
+            return fuelTanks.dispatch.v1005.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v1004.is(call)) {
+            return fuelTanks.dispatch.v1004.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v1003.is(call)) {
+            return fuelTanks.dispatch.v1003.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v1000.is(call)) {
+            return fuelTanks.dispatch.v1000.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v604.is(call)) {
+            return fuelTanks.dispatch.v604.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v602.is(call)) {
+            return fuelTanks.dispatch.v602.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v601.is(call)) {
+            return fuelTanks.dispatch.v601.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v600.is(call)) {
+            return fuelTanks.dispatch.v600.decode(call)
+        }
+
+        if (fuelTanks.dispatch.v500.is(call)) {
+            return fuelTanks.dispatch.v500.decode(call)
+        }
+
+        throw new UnknownVersionError(fuelTanks.dispatch.name)
     }
 
-    if (data.isMatrixEnjinV1005) {
-        return data.asMatrixEnjinV1005
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1005.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1005.decode(call)
     }
 
-    if (data.isMatrixEnjinV1004) {
-        return data.asMatrixEnjinV1004
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1004.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1004.decode(call)
     }
 
-    if (data.isMatrixEnjinV1003) {
-        return data.asMatrixEnjinV1003
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1003.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1003.decode(call)
     }
 
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1000.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1000.decode(call)
     }
 
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV603.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV603.decode(call)
     }
 
-    if (data.isV1005) {
-        return data.asV1005
+    if (fuelTanks.dispatchAndTouch.v1005.is(call)) {
+        return fuelTanks.dispatchAndTouch.v1005.decode(call)
     }
 
-    if (data.isV1004) {
-        return data.asV1004
+    if (fuelTanks.dispatchAndTouch.v1004.is(call)) {
+        return fuelTanks.dispatchAndTouch.v1004.decode(call)
     }
 
-    if (data.isV1003) {
-        return data.asV1003
+    if (fuelTanks.dispatchAndTouch.v1003.is(call)) {
+        return fuelTanks.dispatchAndTouch.v1003.decode(call)
     }
 
-    if (data.isV1000) {
-        return data.asV1000
+    if (fuelTanks.dispatchAndTouch.v1000.is(call)) {
+        return fuelTanks.dispatchAndTouch.v1000.decode(call)
     }
 
-    if (data.isV604) {
-        return data.asV604
+    if (fuelTanks.dispatchAndTouch.v604.is(call)) {
+        return fuelTanks.dispatchAndTouch.v604.decode(call)
     }
 
-    if (data.isV602) {
-        return data.asV602
+    if (fuelTanks.dispatchAndTouch.v602.is(call)) {
+        return fuelTanks.dispatchAndTouch.v602.decode(call)
     }
 
-    if (data.isV601) {
-        return data.asV601
-    }
-    if (data.isV600) {
-        return data.asV600
+    if (fuelTanks.dispatchAndTouch.v601.is(call)) {
+        return fuelTanks.dispatchAndTouch.v601.decode(call)
     }
 
-    if (data.isV500) {
-        return data.asV500
+    if (fuelTanks.dispatchAndTouch.v600.is(call)) {
+        return fuelTanks.dispatchAndTouch.v600.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    if (fuelTanks.dispatchAndTouch.v500.is(call)) {
+        return fuelTanks.dispatchAndTouch.v500.decode(call)
+    }
+
+    throw new UnknownVersionError(fuelTanks.dispatchAndTouch.name)
 }

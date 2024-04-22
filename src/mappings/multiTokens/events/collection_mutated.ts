@@ -1,8 +1,6 @@
 /* eslint-disable no-restricted-syntax */
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensCollectionMutatedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Collection,
     Event as EventModel,
@@ -13,76 +11,22 @@ import {
     RoyaltyCurrency,
     Token,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { DefaultRoyalty } from '../../../types/generated/v500'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensCollectionMutatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1005) {
-        const { collectionId, mutation } = data.asMatrixEnjinV1005
-
-        return {
-            collectionId,
-            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.collectionMutated.matrixEnjinV603.is(event)) {
+        return events.multiTokens.collectionMutated.matrixEnjinV603.decode(event)
     }
 
-    if (data.isMatrixEnjinV1004) {
-        const { collectionId, mutation } = data.asMatrixEnjinV1004
-
-        return {
-            collectionId,
-            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, mutation } = data.asMatrixEnjinV603
-
-        return {
-            collectionId,
-            owner: mutation.owner,
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-
-    if (data.isV1005) {
-        const { collectionId, mutation } = data.asV1005
-
-        return {
-            collectionId,
-            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-
-    if (data.isV1004) {
-        const { collectionId, mutation } = data.asV1004
-
-        return {
-            collectionId,
-            owner: null, // For this chainSpec owner is changed on CollectionTransferred event
-            royalty: mutation.royalty,
-            explicitRoyaltyCurrencies: mutation.explicitRoyaltyCurrencies,
-        }
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.collectionMutated.name)
 }
 
-function getEvent(item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>) {
+function getEvent(item: EventItem) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensCollectionMutated(),
     })
 }
@@ -99,11 +43,11 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<M
 
 export async function collectionMutated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.CollectionMutated', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item)
@@ -117,27 +61,27 @@ export async function collectionMutated(
         return getEvent(item)
     }
 
-    if (data.owner) {
-        collection.owner = await getOrCreateAccount(ctx, data.owner)
+    if (data.mutation.owner) {
+        collection.owner = await getOrCreateAccount(ctx, data.mutation.owner)
     }
 
-    if (data.royalty.__kind === 'SomeMutation') {
-        if (data.royalty.value === undefined) {
+    if (data.mutation.royalty.__kind === 'SomeMutation') {
+        if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
         } else {
-            collection.marketPolicy = await getMarket(ctx, data.royalty.value)
+            collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
         }
     }
 
-    if (data.explicitRoyaltyCurrencies !== undefined) {
+    if (data.mutation.explicitRoyaltyCurrencies !== undefined) {
         const royaltyCurrencies = await ctx.store.find<RoyaltyCurrency>(RoyaltyCurrency, {
             where: { collection: { id: collection.id } },
         })
 
-        if (data.explicitRoyaltyCurrencies.length === 0) {
+        if (data.mutation.explicitRoyaltyCurrencies.length === 0) {
             ctx.store.remove(royaltyCurrencies)
         } else {
-            for (const currency of data.explicitRoyaltyCurrencies) {
+            for (const currency of data.mutation.explicitRoyaltyCurrencies) {
                 const rc = royaltyCurrencies.find(
                     (_rc) => _rc.id === `${collection.id}-${currency.collectionId}-${currency.tokenId}`
                 )
@@ -165,7 +109,7 @@ export async function collectionMutated(
                     })
 
                     // eslint-disable-next-line no-await-in-loop
-                    await ctx.store.insert(RoyaltyCurrency, royaltyCurrency as any)
+                    await ctx.store.insert(royaltyCurrency)
                 }
             }
             ctx.store.remove(royaltyCurrencies)

@@ -1,9 +1,6 @@
 import { Buffer } from 'buffer'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceListingCreatedEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -21,44 +18,22 @@ import {
     MarketplaceListingCreated,
     Token,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MarketplaceListingCreatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1005) {
-        return data.asMatrixEnjinV1005
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.listingCreated.matrixEnjinV603.is(event)) {
+        return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
     }
 
-    if (data.isMatrixEnjinV1004) {
-        return data.asMatrixEnjinV1004
-    }
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
-    }
-
-    if (data.isV1005) {
-        return data.asV1005
-    }
-
-    if (data.isV1004) {
-        return data.asV1004
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.marketplace.listingCreated.name)
 }
 
-function getEvent(
-    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-): [EventModel, AccountTokenEvent] | undefined {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.listing.makeAssetId.collectionId.toString(),
         tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
         data: new MarketplaceListingCreated({
@@ -69,9 +44,9 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token: new Token({ id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` }),
-            from: new Account({ id: u8aToHex(data.listing.seller) }),
+            from: new Account({ id: data.listing.seller }),
             event,
         }),
     ]
@@ -79,10 +54,10 @@ function getEvent(
 
 export async function listingCreated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingCreated', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
     const listingId = Buffer.from(data.listingId).toString('hex')
     const [makeAssetId, takeAssetId, account] = await Promise.all([
@@ -131,8 +106,8 @@ export async function listingCreated(
         state: listingState,
         isActive: true,
         type: listingData.listingType,
-        createdAt: new Date(block.timestamp),
-        updatedAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
+        updatedAt: new Date(block.timestamp ?? 0),
     })
 
     const listingStatus = new ListingStatus({
@@ -140,7 +115,7 @@ export async function listingCreated(
         type: ListingStatusType.Active,
         listing,
         height: block.height,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     // update best listing
@@ -149,11 +124,7 @@ export async function listingCreated(
     }
     makeAssetId.recentListing = listing
 
-    await Promise.all([
-        ctx.store.insert(Listing, listing as any),
-        ctx.store.insert(ListingStatus, listingStatus as any),
-        ctx.store.save(makeAssetId),
-    ])
+    await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
     syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
 

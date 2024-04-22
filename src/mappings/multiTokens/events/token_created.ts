@@ -1,8 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensTokenCreatedEvent } from '../../../types/generated/events'
+import { events, calls, storage } from '../../../types/generated'
 import {
     CapType,
     Collection,
@@ -18,7 +15,6 @@ import {
     TokenCapSingleMint,
     TokenCapSupply,
 } from '../../../model'
-import { Call, Event } from '../../../types/generated/support'
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
     FreezeState as FreezeState_v500,
@@ -30,11 +26,9 @@ import {
     TokenCap,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
-import { CommonContext } from '../../types/contexts'
+import { CallItem, CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { MultiTokensBatchMintCall, MultiTokensForceMintCall, MultiTokensMintCall } from '../../../types/generated/calls'
 import { processMetadata } from '../../../jobs/process-metadata'
-import { MultiTokensTokensStorage } from '../../../types/generated/storage'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
@@ -44,7 +38,6 @@ export function getCapType(cap: TokenCap) {
         })
     }
 
-    // TODO: add collapsing
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
     })
@@ -87,7 +80,7 @@ async function getBehavior(
     })
 }
 
-async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typeof getEventData>) {
+async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType<typeof getEventData>) {
     if (
         call.name === 'MatrixUtility.batch' ||
         call.name === 'Utility.batch' ||
@@ -99,10 +92,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
     }
 
     if (call.name === 'MultiTokens.batch_mint') {
-        const data = new MultiTokensBatchMintCall(ctx, call)
+        if (calls.multiTokens.batchMint.matrixEnjinV603.is(call)) {
+            const { collectionId, recipients } = calls.multiTokens.batchMint.matrixEnjinV603.decode(call)
 
-        if (data.isMatrixEnjinV603) {
-            const { collectionId, recipients } = data.asMatrixEnjinV603
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -132,8 +124,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV600) {
-            const { collectionId, recipients } = data.asV600
+        if (calls.multiTokens.batchMint.v600.is(call)) {
+            const { collectionId, recipients } = calls.multiTokens.batchMint.v600.decode(call)
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -163,8 +155,8 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV500) {
-            const { collectionId, recipients } = data.asV500
+        if (calls.multiTokens.batchMint.v500.is(call)) {
+            const { collectionId, recipients } = calls.multiTokens.batchMint.v500.decode(call)
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
             if (recipientCall) {
@@ -194,16 +186,13 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        throw new UnknownVersionError(data.constructor.name)
+        throw new UnknownVersionError(calls.multiTokens.batchMint.name)
     }
 
-    let data: MultiTokensMintCall | MultiTokensForceMintCall
     if (call.name === 'MultiTokens.force_mint') {
-        data = new MultiTokensForceMintCall(ctx, call)
-
-        if (data.isMatrixEnjinV1003) {
-            const { collectionId } = data.asMatrixEnjinV1003
-            const params = data.asMatrixEnjinV1003.params as DefaultMintParamsCreateToken_v500
+        if (calls.multiTokens.forceMint.matrixEnjinV1003.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.matrixEnjinV1003.decode(call)
+            const params = calls.multiTokens.forceMint.matrixEnjinV1003.decode(call).params as DefaultMintParamsCreateToken_v500
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -228,9 +217,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isMatrixEnjinV603) {
-            const { collectionId } = data.asMatrixEnjinV603
-            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+        if (calls.multiTokens.forceMint.matrixEnjinV603.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.matrixEnjinV603.decode(call)
+            const params = calls.multiTokens.forceMint.matrixEnjinV603.decode(call).params as DefaultMintParamsCreateToken_v500
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -255,9 +244,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV1003) {
-            const { collectionId } = data.asV1003
-            const params = data.asV1003.params as DefaultMintParamsCreateToken_v500
+        if (calls.multiTokens.forceMint.v1003.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.v1003.decode(call)
+            const params = calls.multiTokens.forceMint.v1003.decode(call).params as DefaultMintParamsCreateToken_v500
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -282,38 +271,9 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV604) {
-            const { collectionId } = data.asV604
-            const params = data.asV604.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-    } else {
-        data = new MultiTokensMintCall(ctx, call)
-
-        if (data.isMatrixEnjinV603) {
-            const { collectionId } = data.asMatrixEnjinV603
-            const params = data.asMatrixEnjinV603.params as DefaultMintParamsCreateToken_v500
+        if (calls.multiTokens.forceMint.v604.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.v604.decode(call)
+            const params = calls.multiTokens.forceMint.v604.decode(call).params as DefaultMintParamsCreateToken_v500
             const cap = params.cap ? getCapType(params.cap) : null
             const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
             const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
@@ -338,100 +298,132 @@ async function getCallData(ctx: CommonContext, call: Call, event: ReturnType<typ
             }
         }
 
-        if (data.isV600) {
-            const { collectionId } = data.asV600
-            const params = data.asV600.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
-
-        if (data.isV500) {
-            const { collectionId } = data.asV500
-            const params = data.asV500.params as DefaultMintParamsCreateToken_v500
-            const cap = params.cap ? getCapType(params.cap) : null
-            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
-            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
-            let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
-
-            if (params.sufficiency.__kind === 'Sufficient') {
-                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
-                unitPrice = null
-            }
-
-            return {
-                collectionId,
-                tokenId: params.tokenId,
-                initialSupply: params.initialSupply,
-                minimumBalance,
-                unitPrice,
-                cap,
-                behavior,
-                freezeState,
-                listingForbidden: params.listingForbidden ?? false,
-            }
-        }
+        throw new UnknownVersionError(calls.multiTokens.forceMint.name)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    if (call.name === 'MultiTokens.mint') {
+        if (calls.multiTokens.mint.matrixEnjinV603.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.matrixEnjinV603.decode(call)
+            const params = calls.multiTokens.mint.matrixEnjinV603.decode(call).params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (calls.multiTokens.mint.v600.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.v600.decode(call)
+            const params = calls.multiTokens.mint.v600.decode(call).params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        if (calls.multiTokens.mint.v500.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.v500.decode(call)
+            const params = calls.multiTokens.mint.v500.decode(call).params as DefaultMintParamsCreateToken_v500
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (params.sufficiency.__kind === 'Sufficient') {
+                minimumBalance = (params.sufficiency as SufficiencyParam_Sufficient).minimumBalance
+                unitPrice = null
+            }
+
+            return {
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+            }
+        }
+
+        throw new UnknownVersionError(calls.multiTokens.mint.name)
+    }
+
+    throw new UnknownVersionError(call.name)
 }
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensTokenCreatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        const { collectionId, tokenId, issuer, initialSupply } = data.asMatrixEnjinV603
+function getEventData(event: EventItem) {
+    if (events.multiTokens.tokenCreated.matrixEnjinV603.is(event)) {
+        const { collectionId, tokenId, issuer, initialSupply } = events.multiTokens.tokenCreated.matrixEnjinV603.decode(event)
         if (issuer.__kind === 'Signed') {
             return { collectionId, tokenId, issuer: issuer.value, initialSupply }
         }
-        return { collectionId, tokenId, issuer: new Uint8Array(32).fill(0), initialSupply }
+        return {
+            collectionId,
+            tokenId,
+            issuer: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            initialSupply,
+        }
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.multiTokens.tokenCreated.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
         data: new MultiTokensTokenCreated({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            issuer: u8aToHex(data.issuer),
+            issuer: data.issuer,
             initialSupply: data.initialSupply,
         }),
     })
 }
 
-async function getTokenId(ctx: CommonContext, block: SubstrateBlock, collectionId: bigint, tokenId: bigint) {
-    const storage = new MultiTokensTokensStorage(ctx, block)
-
-    if (storage.isExists) {
-        const data = await storage.asMatrixEnjinV603.get(collectionId, tokenId)
+async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
+    if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
+        const data = await storage.multiTokens.tokens.matrixEnjinV603.get(block, collectionId, tokenId)
 
         if (data) {
             const cap = data.cap ? getCapType(data.cap) : null
@@ -470,27 +462,27 @@ async function getTokenId(ctx: CommonContext, block: SubstrateBlock, collectionI
 
 export async function tokenCreated(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.TokenCreated', { event: { args: true; call: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
     if (!eventData) return undefined
 
-    if (skipSave && item.event.call) {
+    if (skipSave && item.call) {
         const token = await ctx.store.findOne(Token, {
             where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
         })
 
         if (token) {
-            token.createdAt = new Date(block.timestamp)
+            token.createdAt = new Date(block.timestamp ?? 0)
             ctx.store.save(token)
         }
 
         return getEvent(item, eventData)
     }
 
-    if (item.event.call) {
+    if (item.call) {
         const collection = await ctx.store.findOne(Collection, {
             where: { id: eventData.collectionId.toString() },
         })
@@ -500,7 +492,7 @@ export async function tokenCreated(
             return getEvent(item, eventData)
         }
 
-        let callData = await getCallData(ctx, item.event.call, eventData)
+        let callData = await getCallData(ctx, item.call, eventData)
 
         if (callData === undefined) {
             callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
@@ -522,10 +514,10 @@ export async function tokenCreated(
             metadata: null,
             nonFungible: false,
             listingForbidden: callData.listingForbidden,
-            createdAt: new Date(block.timestamp),
+            createdAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.save(Token, token as any)
+        await ctx.store.save(token)
         processMetadata(token.id, 'token')
     }
 

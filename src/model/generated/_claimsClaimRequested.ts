@@ -1,10 +1,11 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {ClaimAccount} from "./_claimAccount"
+import {AccountClaimType} from "./_accountClaimType"
 
 export class ClaimsClaimRequested {
     public readonly isTypeOf = 'ClaimsClaimRequested'
-    private _who!: ClaimAccount
+    private _who!: string
+    private _accountType!: AccountClaimType
     private _hash!: string | undefined | null
     private _amountClaimable!: bigint
     private _amountBurned!: bigint
@@ -13,7 +14,8 @@ export class ClaimsClaimRequested {
     constructor(props?: Partial<Omit<ClaimsClaimRequested, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._who = new ClaimAccount(undefined, marshal.nonNull(json.who))
+            this._who = marshal.string.fromJSON(json.who)
+            this._accountType = marshal.enumFromJson(json.accountType, AccountClaimType)
             this._hash = json.hash == null ? undefined : marshal.string.fromJSON(json.hash)
             this._amountClaimable = marshal.bigint.fromJSON(json.amountClaimable)
             this._amountBurned = marshal.bigint.fromJSON(json.amountBurned)
@@ -21,13 +23,22 @@ export class ClaimsClaimRequested {
         }
     }
 
-    get who(): ClaimAccount {
+    get who(): string {
         assert(this._who != null, 'uninitialized access')
         return this._who
     }
 
-    set who(value: ClaimAccount) {
+    set who(value: string) {
         this._who = value
+    }
+
+    get accountType(): AccountClaimType {
+        assert(this._accountType != null, 'uninitialized access')
+        return this._accountType
+    }
+
+    set accountType(value: AccountClaimType) {
+        this._accountType = value
     }
 
     get hash(): string | undefined | null {
@@ -68,7 +79,8 @@ export class ClaimsClaimRequested {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            who: this.who.toJSON(),
+            who: this.who,
+            accountType: this.accountType,
             hash: this.hash,
             amountClaimable: marshal.bigint.toJSON(this.amountClaimable),
             amountBurned: marshal.bigint.toJSON(this.amountBurned),

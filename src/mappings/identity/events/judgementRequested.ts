@@ -1,28 +1,23 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError } from '../../../common/errors'
-import { IdentityJudgementRequestedEvent } from '../../../types/generated/events'
+import { identity } from '../../../types/generated/events'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new IdentityJudgementRequestedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getEventData(event: EventItem) {
+    if (identity.judgementRequested.matrixEnjinV1000.is(event)) {
+        return identity.judgementRequested.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(identity.judgementRequested.name)
 }
 
 export async function judgementRequested(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Identity.JudgementRequested', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item.event)
+    const eventData = getEventData(item)
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
@@ -37,7 +32,7 @@ export async function judgementRequested(
             new Judgement({
                 index: eventData.registrarIndex,
                 value: JudgementType.FeePaid,
-                createdAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
             })
         )
     }

@@ -1,21 +1,19 @@
 import { u8aToHex } from '@polkadot/util'
+import { getConnection } from '../../connection'
 import { Account, Balance, Listing } from '../../model'
-import { BlockHandlerContext, CallHandlerContext, CommonContext, EventHandlerContext } from '../types/contexts'
-import { encodeId, isAddressSS58 } from '../../common/tools'
+import { CommonContext } from '../types/contexts'
+import { encodeId } from '../../common/tools'
 
-export async function getOrCreateAccount(
-    ctx: EventHandlerContext | CallHandlerContext | BlockHandlerContext | CommonContext,
-    publicKey: Uint8Array
-): Promise<Account> {
-    const pkHex = u8aToHex(publicKey)
+export async function getOrCreateAccount(ctx: CommonContext, publicKey: Uint8Array | string): Promise<Account> {
+    const pkHex = publicKey instanceof Uint8Array ? u8aToHex(publicKey) : publicKey
     let account = await ctx.store.findOneBy(Account, {
         id: pkHex,
     })
 
-    if (account === null) {
+    if (!account) {
         account = new Account({
             id: pkHex,
-            address: isAddressSS58(publicKey) ? encodeId(publicKey) : pkHex,
+            address: encodeId(publicKey),
             balance: new Balance({
                 transferable: 0n,
                 free: 0n,
@@ -28,14 +26,16 @@ export async function getOrCreateAccount(
             nonce: 0,
         })
 
-        await ctx.store.save(Account, account as any)
+        await ctx.store.save(account)
     }
 
     return account
 }
 
 export async function getBestListing(ctx: CommonContext, tokenId: string) {
-    return ctx.store
+    const con = await getConnection()
+
+    return con.manager
         .getRepository(Listing)
         .createQueryBuilder('listing')
         .select('listing.id')

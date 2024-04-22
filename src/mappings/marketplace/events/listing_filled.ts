@@ -1,8 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
-import { MarketplaceListingFilledEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -16,33 +13,31 @@ import {
     ListingType,
     MarketplaceListingFilled,
 } from '../../../model'
-import { Event } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MarketplaceListingFilledEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.listingFilled.matrixEnjinV603.is(event)) {
+        return events.marketplace.listingFilled.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(events.marketplace.listingFilled.name)
 }
 
 function getEvent(
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>,
+    item: EventItem,
     data: ReturnType<typeof getEventData>,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
         data: new MarketplaceListingFilled({
             listing: listing.id,
-            buyer: u8aToHex(data.buyer),
+            buyer: data.buyer,
             amountFilled: data.amountFilled,
             amountRemaining: data.amountRemaining,
             protocolFee: data.protocolFee,
@@ -53,10 +48,10 @@ function getEvent(
     return [
         event,
         new AccountTokenEvent({
-            id: item.event.id,
+            id: item.id,
             token: listing.makeAssetId,
             from: listing.seller,
-            to: new Account({ id: u8aToHex(data.buyer) }),
+            to: new Account({ id: data.buyer }),
             event,
         }),
     ]
@@ -64,10 +59,10 @@ function getEvent(
 
 export async function listingFilled(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'Marketplace.ListingFilled', { event: { args: true; extrinsic: true } }>
+    block: BlockHeader,
+    item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     const listingId = Buffer.from(data.listingId).toString('hex')
@@ -95,21 +90,21 @@ export async function listingFilled(
             type: ListingStatusType.Finalized,
             listing,
             height: block.height,
-            createdAt: new Date(block.timestamp),
+            createdAt: new Date(block.timestamp ?? 0),
         })
-        await ctx.store.insert(ListingStatus, listingStatus as any)
+        await ctx.store.insert(listingStatus)
         listing.isActive = false
     }
 
-    listing.updatedAt = new Date(block.timestamp)
+    listing.updatedAt = new Date(block.timestamp ?? 0)
 
     const sale = new ListingSale({
-        id: `${listingId}-${item.event.id}`,
+        id: `${listingId}-${item.id}`,
         amount: data.amountFilled,
-        buyer: new Account({ id: u8aToHex(data.buyer) }),
+        buyer: new Account({ id: data.buyer }),
         price: listing.price,
         listing,
-        createdAt: new Date(block.timestamp),
+        createdAt: new Date(block.timestamp ?? 0),
     })
 
     listing.makeAssetId.lastSale = sale

@@ -1,19 +1,15 @@
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { u8aToHex, u8aToString } from '@polkadot/util'
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import axios from 'axios'
-import { EpMultiTokensToken } from '@polkadot/types/lookup'
-import { CommonContext } from './mappings/types/contexts'
-import * as Storage from './types/generated/storage'
+import { CommonContext, BlockHeader } from './mappings/types/contexts'
+import { storage } from './types/generated'
 import config from './config'
 import {
     Account,
     Attribute,
     Balance,
-    CapType,
     Collection,
     CollectionAccount,
     CollectionApproval,
@@ -30,8 +26,6 @@ import {
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
-    TokenCapSingleMint,
-    TokenCapSupply,
     TokenLock,
     TokenNamedReserve,
     TransferPolicy,
@@ -40,8 +34,8 @@ import { safeString } from './common/tools'
 import { addAccountsToSet, saveAccounts } from './mappings/balances/processor'
 import { UnknownVersionError } from './common/errors'
 import { processMetadata } from './jobs/process-metadata'
-import Rpc from './common/rpc'
 import { isNonFungible } from './mappings/multiTokens/utils/helpers'
+import { getCapType, getFreezeState } from './mappings/multiTokens/events'
 
 const BATCH_SIZE = 1000
 
@@ -51,16 +45,12 @@ class Errors {
     }
 }
 
-async function getAccountMap(
-    ctx: CommonContext,
-    accounts: (Uint8Array | null | undefined)[] | (Uint8Array | null | undefined)[][]
-) {
-    const uniqueAccounts = new Set<string>(
-        accounts
-            .flat()
-            .filter((a) => a !== null && a !== undefined)
-            .map((a) => u8aToHex(a))
-    )
+function isNotNull<T>(input: null | undefined | T): input is T {
+    return input != null && input !== undefined
+}
+
+async function getAccountMap(ctx: CommonContext, accounts: (string | null | undefined)[] | (string | null | undefined)[][]) {
+    const uniqueAccounts = new Set<string>(accounts.flat().filter(isNotNull))
     const map = new Map<string, Account>()
     const existingAccounts = await ctx.store.findBy(Account, { id: In([...uniqueAccounts]) })
     existingAccounts.forEach((a) => map.set(a.id, a))
@@ -84,7 +74,7 @@ async function getAccountMap(
             nonce: 0,
         })
 
-        await ctx.store.insert(Account, account as any)
+        await ctx.store.insert(account)
         return account
     })
 
@@ -109,7 +99,7 @@ async function getBlock(height: number) {
         }
       }`
 
-    const { data } = await axios.post<{ data: { result: { header: SubstrateBlock }[] } }>(config.dataSource.archive, {
+    const { data } = await axios.post<{ data: { result: { header: BlockHeader }[] } }>(config.dataSource.archive, {
         query,
         variables: {
             height,
@@ -123,78 +113,90 @@ async function getBlock(height: number) {
     return data.data.result[0].header
 }
 
-function getCollectionStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MultiTokensCollectionsStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getCollectionStorage(block: BlockHeader) {
+    if (storage.multiTokens.collections.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.collections.matrixEnjinV603
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('MultiTokens.Collections')
 }
 
-function getCollectionAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MultiTokensCollectionAccountsStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getTokenStorage(block: BlockHeader) {
+    if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.tokens.matrixEnjinV603
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    if (storage.multiTokens.tokens.v600.is(block)) {
+        return storage.multiTokens.tokens.v600
+    }
+
+    if (storage.multiTokens.tokens.v500.is(block)) {
+        return storage.multiTokens.tokens.v500
+    }
+
+    throw new UnknownVersionError('MultiTokens.Tokens')
 }
 
-function getTokenAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MultiTokensTokenAccountsStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getCollectionAccountStorage(block: BlockHeader) {
+    if (storage.multiTokens.collectionAccounts.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.collectionAccounts.matrixEnjinV603
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('MultiTokens.CollectionAccounts')
 }
 
-function getAttributeStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.MultiTokensAttributesStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getTokenAccountStorage(block: BlockHeader) {
+    if (storage.multiTokens.tokenAccounts.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.tokenAccounts.matrixEnjinV603
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('MultiTokens.TokenAccounts')
 }
 
-function getAccountStorage(ctx: CommonContext, block: SubstrateBlock) {
-    const data = new Storage.SystemAccountStorage(ctx, block)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getAttributeStorage(block: BlockHeader) {
+    if (storage.multiTokens.attributes.matrixEnjinV603.is(block)) {
+        return storage.multiTokens.attributes.matrixEnjinV603
     }
 
-    if (data.isV602) {
-        return data.asV602
-    }
-
-    if (data.isV500) {
-        return data.asV500
-    }
-
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError('MultiTokens.Attributes')
 }
 
-async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const collectionPairs of getCollectionStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+function getAccountStorage(block: BlockHeader) {
+    if (storage.system.account.matrixEnjinV603.is(block)) {
+        return storage.system.account.matrixEnjinV603
+    }
+
+    if (storage.system.account.v602.is(block)) {
+        return storage.system.account.v602
+    }
+
+    if (storage.system.account.v500.is(block)) {
+        return storage.system.account.v500
+    }
+
+    throw new UnknownVersionError('System.Account')
+}
+
+async function syncCollection(ctx: CommonContext, block: BlockHeader) {
+    for await (const collectionPairs of getCollectionStorage(block).getPairsPaged(BATCH_SIZE, block)) {
         const accountMap = await getAccountMap(
             ctx,
-            collectionPairs.map(([, data]) => [
-                data.owner,
-                'market' in data.policy ? data.policy.market?.royalty?.beneficiary : null,
-            ])
+            collectionPairs.map(([, data]) => {
+                if (!data) {
+                    throw new Error('Collection Data not found')
+                }
+                return [data.owner, 'market' in data.policy ? data.policy.market?.royalty?.beneficiary : null]
+            })
         )
         const collectionPromise = collectionPairs.map(async ([id, data]) => {
-            const owner = accountMap.get(u8aToHex(data.owner))
+            if (!data) {
+                throw new Error('Collection Data not found')
+            }
+
+            const owner = accountMap.get(data.owner)
             let market = null
             if ('market' in data.policy && data.policy.market.royalty) {
-                const account = accountMap.get(u8aToHex(data.policy.market.royalty.beneficiary))
+                const account = accountMap.get(data.policy.market.royalty.beneficiary)
 
                 if (!account) throw Errors.accountNotFound()
 
@@ -246,31 +248,37 @@ async function syncCollection(ctx: CommonContext, block: SubstrateBlock) {
                 attributePolicy: null,
                 attributeCount: data.attributeCount,
                 totalDeposit: data.totalDeposit,
-                createdAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
                 collectionId: id,
             })
         })
 
         await Promise.all(collectionPromise)
-            .then((collections) => ctx.store.insert(Collection, collections as any))
+            .then(async (collections) => {
+                await ctx.store.insert(collections)
+                return collections
+            })
             .then((r) => {
-                r.identifiers.forEach((t) => {
+                r.forEach((t) => {
                     processMetadata(t.id, 'collection')
                 })
             })
     }
 }
 
-async function syncCollectionAccount(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getCollectionAccountStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+async function syncCollectionAccount(ctx: CommonContext, block: BlockHeader) {
+    for await (const pairs of getCollectionAccountStorage(block).getPairsPaged(BATCH_SIZE, block)) {
         const accountMap = await getAccountMap(
             ctx,
             pairs.map(([k]) => k[1])
         )
 
         const collectionAccounts = pairs.map(([k, data]) => {
+            if (!data) {
+                throw new Error('Collection Account Data not found')
+            }
             const collectionId = k[0].toString()
-            const accountId = u8aToHex(k[1])
+            const accountId = k[1]
             const account = accountMap.get(accountId)
 
             if (!account) throw Errors.accountNotFound()
@@ -280,7 +288,7 @@ async function syncCollectionAccount(ctx: CommonContext, block: SubstrateBlock) 
             if (data.approvals && data.approvals.length > 0) {
                 approvals = data.approvals.map((approval) => {
                     return new CollectionApproval({
-                        account: u8aToHex(approval[0]),
+                        account: approval[0],
                         expiration: approval[1],
                     })
                 })
@@ -293,151 +301,97 @@ async function syncCollectionAccount(ctx: CommonContext, block: SubstrateBlock) 
                 accountCount: data.accountCount,
                 account,
                 collection: new Collection({ id: collectionId }),
-                createdAt: new Date(block.timestamp),
-                updatedAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
             })
         })
 
-        await ctx.store.insert(CollectionAccount, collectionAccounts as any)
+        await ctx.store.insert(collectionAccounts)
     }
 
     return true
 }
 
-async function syncToken(ctx: CommonContext, block: SubstrateBlock) {
-    const { api } = await Rpc.getInstance()
-    const apiAt = await api.at(block.hash)
-    let lastKey = ''
-    let count = 0
-
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        // eslint-disable-next-line no-await-in-loop
-        const query = await apiAt.query.multiTokens.tokens.entriesPaged({
-            args: [],
-            pageSize: BATCH_SIZE,
-            startKey: lastKey,
-        })
-
-        if (query.length === 0) {
-            break
-        }
-
-        const tokens: Token[] = []
-
-        for (const [key, value] of query) {
-            const data: EpMultiTokensToken | null = value.unwrapOr(null)
+async function syncToken(ctx: CommonContext, block: BlockHeader) {
+    for await (const collectionPairs of getTokenStorage(block).getPairsPaged(BATCH_SIZE, block)) {
+        const tokens = []
+        for (const [key, data] of collectionPairs) {
             // eslint-disable-next-line no-continue
             if (!data) continue
 
-            const collectionId = key.args[0].toString()
-            const tokenId = key.args[1].toString()
+            const collectionId = key[0].toString()
+            const tokenId = key[1].toString()
             // eslint-disable-next-line no-await-in-loop
             const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            let cap = null
-            if (data.cap.isNone) {
-                cap = null
-            } else if (data.cap.unwrap().isSupply) {
-                cap = new TokenCapSupply({
-                    type: CapType.Supply,
-                    supply: data.cap.unwrap().asSupply.toBigInt(),
-                })
-            } else if (data.cap.unwrap().isSingleMint) {
-                cap = new TokenCapSingleMint({
-                    type: CapType.SingleMint,
-                })
-            }
-
             let behavior = null
-            if (data.marketBehavior.isNone) {
-                behavior = null
-            } else if (data.marketBehavior.unwrap().isIsCurrency) {
-                behavior = new TokenBehaviorIsCurrency({
-                    type: TokenBehaviorType.IsCurrency,
-                })
-            } else if (data.marketBehavior.unwrap().isHasRoyalty) {
-                const { beneficiary } = data.marketBehavior.unwrap().asHasRoyalty
-                // eslint-disable-next-line no-await-in-loop
-                await getAccountMap(ctx, [beneficiary.toU8a()])
-
-                behavior = new TokenBehaviorHasRoyalty({
-                    type: TokenBehaviorType.HasRoyalty,
-                    royalty: new Royalty({
-                        beneficiary: u8aToHex(beneficiary),
-                        percentage: data.marketBehavior.unwrap().asHasRoyalty.percentage.toNumber(),
-                    }),
-                })
+            if ('marketBehavior' in data && data.marketBehavior) {
+                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+                    behavior = new TokenBehaviorIsCurrency({
+                        type: TokenBehaviorType.IsCurrency,
+                    })
+                } else {
+                    behavior = new TokenBehaviorHasRoyalty({
+                        type: TokenBehaviorType.HasRoyalty,
+                        royalty: new Royalty({
+                            beneficiary: data.marketBehavior.value.beneficiary,
+                            percentage: data.marketBehavior.value.percentage,
+                        }),
+                    })
+                }
             }
 
-            let freezeState = null
+            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : undefined
 
-            if (data.freezeState.isNone) {
-                freezeState = null
-            } else {
-                switch (data.freezeState.unwrap().type) {
-                    case 'Temporary':
-                        freezeState = FreezeState.Temporary
-                        break
-                    case 'Permanent':
-                        freezeState = FreezeState.Permanent
-                        break
-                    case 'Never':
-                        freezeState = FreezeState.Never
-                        break
-                    default:
-                        freezeState = null
-                        break
-                }
+            let unitPrice: bigint | null = 10_000_000_000_000_000n
+            let minimumBalance = 1n
+
+            if (data.sufficiency.__kind === 'Insufficient') {
+                unitPrice = data.sufficiency.unitPrice
+                minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
             }
 
             const token = new Token({
                 id: `${collectionId}-${tokenId}`,
                 tokenId: BigInt(tokenId),
                 collection,
-                attributeCount: data.attributeCount.toNumber() ?? 0,
-                supply: data.supply.toBigInt(),
+                attributeCount: data.attributeCount,
+                supply: data.supply,
                 isFrozen: freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary,
-                cap,
+                cap: data.cap ? getCapType(data.cap) : null,
                 behavior,
                 freezeState,
-                listingForbidden: data.listingForbidden.isTrue,
-                minimumBalance: data.minimumBalance.toBigInt(),
-                unitPrice: 10_000_000_000_000_000n, // check
-                createdAt: new Date(block.timestamp),
-                mintDeposit: data.mintDeposit.toBigInt(),
+                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
+                minimumBalance,
+                unitPrice,
+                createdAt: new Date(block.timestamp ?? 0),
+                mintDeposit: data.mintDeposit,
             })
 
             token.nonFungible = isNonFungible(token)
             tokens.push(token)
 
             processMetadata(token.id, 'token')
-
-            lastKey = key.toHex()
         }
 
-        // eslint-disable-next-line no-await-in-loop
-        await ctx.store.insert(Token, tokens as any)
-
-        count += 1
-
-        if (count % 10 === 0) {
-            ctx.log.info(`Processed ${count * BATCH_SIZE} tokens`)
-        }
+        await ctx.store.insert(tokens)
     }
 }
 
-async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getTokenAccountStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+async function syncTokenAccount(ctx: CommonContext, block: BlockHeader) {
+    for await (const pairs of getTokenAccountStorage(block).getPairsPaged(BATCH_SIZE, block)) {
         const accountMap = await getAccountMap(
             ctx,
             pairs.map(([k]) => k[2])
         )
 
         const tokenAccounts = pairs.map(([k, data]) => {
+            if (!data) {
+                throw new Error('Token Account Data not found')
+            }
             const collectionId = k[0]
             const tokenId = k[1]
-            const accountId = u8aToHex(k[2])
+            const accountId = k[2]
             const account = accountMap.get(accountId)
 
             if (!account) throw Errors.accountNotFound()
@@ -446,7 +400,7 @@ async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
             if (data.namedReserves && data.namedReserves.length > 0) {
                 namedReserves = data.namedReserves.map((namedReserve) => {
                     return new TokenNamedReserve({
-                        pallet: u8aToString(namedReserve[0]),
+                        pallet: namedReserve[0],
                         amount: namedReserve[1],
                     })
                 })
@@ -456,7 +410,7 @@ async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
             if (data.locks && data.locks.length > 0) {
                 locks = data.locks.map((lock) => {
                     return new TokenLock({
-                        pallet: u8aToString(lock[0]),
+                        pallet: lock[0],
                         amount: lock[1],
                     })
                 })
@@ -466,7 +420,7 @@ async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
             if (data.approvals && data.approvals.length > 0) {
                 approvals = data.approvals.map((approval) => {
                     return new TokenApproval({
-                        account: u8aToHex(approval[0]),
+                        account: approval[0],
                         amount: approval[1].amount,
                         expiration: approval[1].expiration,
                     })
@@ -486,20 +440,23 @@ async function syncTokenAccount(ctx: CommonContext, block: SubstrateBlock) {
                 account,
                 collection: new Collection({ id: collectionId.toString() }),
                 token: new Token({ id: `${collectionId}-${tokenId}` }),
-                createdAt: new Date(block.timestamp),
-                updatedAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
             })
         })
 
-        await ctx.store.insert(TokenAccount, tokenAccounts as any)
+        await ctx.store.insert(tokenAccounts)
     }
 
     return true
 }
 
-async function syncAttribute(ctx: CommonContext, block: SubstrateBlock) {
-    for await (const pairs of getAttributeStorage(ctx, block).getPairsPaged(BATCH_SIZE)) {
+async function syncAttribute(ctx: CommonContext, block: BlockHeader) {
+    for await (const pairs of getAttributeStorage(block).getPairsPaged(BATCH_SIZE, block)) {
         const attributePromise = pairs.map(async ([k, data]) => {
+            if (!data) {
+                throw new Error('Attribute Data not found')
+            }
             const collectionId = k[0]
             const tokenId = k[1]
             const key = safeString(Buffer.from(k[2]).toString())
@@ -516,8 +473,8 @@ async function syncAttribute(ctx: CommonContext, block: SubstrateBlock) {
                     value,
                     deposit: data.deposit,
                     collection: new Collection({ id: collectionId.toString() }),
-                    createdAt: new Date(block.timestamp),
-                    updatedAt: new Date(block.timestamp),
+                    createdAt: new Date(block.timestamp ?? 0),
+                    updatedAt: new Date(block.timestamp ?? 0),
                 })
             }
 
@@ -527,29 +484,29 @@ async function syncAttribute(ctx: CommonContext, block: SubstrateBlock) {
                 value,
                 deposit: data.deposit,
                 collection: new Collection({ id }),
-                createdAt: new Date(block.timestamp),
-                updatedAt: new Date(block.timestamp),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
             })
         })
 
-        await Promise.all(attributePromise).then((attributes) => ctx.store.insert(Attribute, attributes as any))
+        await Promise.all(attributePromise).then((attributes) => ctx.store.insert(attributes))
     }
 
     return true
 }
 
-async function syncBalance(ctx: CommonContext, block: SubstrateBlock) {
+async function syncBalance(ctx: CommonContext, block: BlockHeader) {
     const batchSize = 100
-    for await (const keys of getAccountStorage(ctx, block).getKeysPaged(batchSize)) {
+    for await (const keys of getAccountStorage(block).getKeysPaged(batchSize, block)) {
         await getAccountMap(ctx, keys)
-        addAccountsToSet(keys.map((a) => u8aToHex(a)))
+        addAccountsToSet(keys)
         await saveAccounts(ctx, block)
     }
 
     return true
 }
 
-async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) {
+async function populateBlockInternal(ctx: CommonContext, block: BlockHeader) {
     console.time('populateGenesis')
     ctx.log.info('Syncing collections...')
     await syncCollection(ctx, block)
@@ -576,7 +533,7 @@ async function populateBlockInternal(ctx: CommonContext, block: SubstrateBlock) 
 }
 
 export async function populateBlock(ctx: CommonContext, block: number) {
-    const substrateBlock = await getBlock(block)
-    ctx.log.info(`Syncing block ${block} with hash ${substrateBlock.hash}`)
-    await populateBlockInternal(ctx, substrateBlock)
+    const blockHeader = await getBlock(block)
+    ctx.log.info(`Syncing block ${block} with hash ${blockHeader.hash}`)
+    await populateBlockInternal(ctx, blockHeader)
 }

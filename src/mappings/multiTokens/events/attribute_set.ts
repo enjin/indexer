@@ -1,7 +1,5 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { EventItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
 import { UnknownVersionError, throwError } from '../../../common/errors'
-import { MultiTokensAttributeSetEvent } from '../../../types/generated/events'
+import { events } from '../../../types/generated'
 import {
     Attribute,
     Collection,
@@ -15,29 +13,23 @@ import {
     MultiTokensAttributeSet,
     Token,
 } from '../../../model'
-import { CommonContext } from '../../types/contexts'
-import { Event } from '../../../types/generated/support'
+import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { safeString } from '../../../common/tools'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { processMetadata } from '../../../jobs/process-metadata'
 
-function getEventData(ctx: CommonContext, event: Event) {
-    const data = new MultiTokensAttributeSetEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603
+function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.attributeSet.matrixEnjinV603.is(event)) {
+        return events.multiTokens.attributeSet.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(events.multiTokens.attributeSet.name)
 }
 
-function getEvent(
-    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
-    data: ReturnType<typeof getEventData>
-) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
-        id: item.event.id,
-        extrinsic: item.event.extrinsic?.id ? new Extrinsic({ id: item.event.extrinsic.id }) : null,
+        id: item.id,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
         data: new MultiTokensAttributeSet({
@@ -51,11 +43,11 @@ function getEvent(
 
 export async function attributeSet(
     ctx: CommonContext,
-    block: SubstrateBlock,
-    item: EventItem<'MultiTokens.AttributeSet', { event: { args: true; extrinsic: true } }>,
+    block: BlockHeader,
+    item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item.event)
+    const data = getEventData(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
@@ -107,12 +99,12 @@ export async function attributeSet(
             hidden: false,
             attributeCount: 0,
             totalDeposit: 0n,
-            createdAt: new Date(block.timestamp),
+            createdAt: new Date(block.timestamp ?? 0),
         })
         await ctx.store.save(collection)
     }
 
-    let token: Token | null = null
+    let token: Token | undefined
     if (data.tokenId !== undefined) {
         token = await ctx.store.findOne<Token>(Token, {
             where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -126,7 +118,7 @@ export async function attributeSet(
 
     if (attribute) {
         attribute.value = value
-        attribute.updatedAt = new Date(block.timestamp)
+        attribute.updatedAt = new Date(block.timestamp ?? 0)
         if (token) {
             if (!token.metadata) {
                 token.metadata = new Metadata()
@@ -149,11 +141,11 @@ export async function attributeSet(
             deposit: 0n, // TODO: Change fixed for now
             collection,
             token,
-            createdAt: new Date(block.timestamp),
-            updatedAt: new Date(block.timestamp),
+            createdAt: new Date(block.timestamp ?? 0),
+            updatedAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.insert(Attribute, attribute as any)
+        await ctx.store.insert(attribute)
 
         if (token) {
             if (!token.metadata) {

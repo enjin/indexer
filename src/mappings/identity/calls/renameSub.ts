@@ -1,35 +1,30 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import { CallItem } from '@subsquid/substrate-processor/lib/interfaces/dataSelection'
-import { u8aToHex, u8aToString } from '@polkadot/util'
+import { hexToString } from '@polkadot/util'
 import { UnknownVersionError } from '../../../common/errors'
 import { Event as EventModel, Identity } from '../../../model'
-import { Call } from '../../../types/generated/support'
-import { CommonContext } from '../../types/contexts'
-import { IdentityRenameSubCall } from '../../../types/generated/calls'
+import { CommonContext, CallItem, BlockHeader } from '../../types/contexts'
+import { identity } from '../../../types/generated/calls'
 
-function getCallData(ctx: CommonContext, call: Call) {
-    const data = new IdentityRenameSubCall(ctx, call)
-
-    if (data.isMatrixEnjinV1000) {
-        return data.asMatrixEnjinV1000
+function getCallData(call: CallItem) {
+    if (identity.renameSub.matrixEnjinV1000.is(call)) {
+        return identity.renameSub.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(identity.renameSub.name)
 }
 
-export async function renameSub(
-    ctx: CommonContext,
-    block: SubstrateBlock,
-    item: CallItem<'Identity.rename_sub', { call: true; extrinsic: true }>
-): Promise<EventModel | undefined> {
-    const callData = getCallData(ctx, item.call)
+export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
+    const callData = getCallData(item)
 
-    if (!callData.sub.value) return undefined
+    const id = callData.sub.__kind !== 'Index' ? callData.sub.value : null
 
-    const identity = await ctx.store.findOneByOrFail(Identity, { id: u8aToHex(callData.sub.value) })
-    identity.name = callData.data.__kind !== 'None' ? u8aToString(callData.data.value) : null
+    if (!id) return undefined
 
-    await ctx.store.save(identity)
+    const sub = await ctx.store.findOneByOrFail(Identity, {
+        id,
+    })
+    sub.name = callData.data.__kind !== 'None' ? hexToString(callData.data.value) : null
+
+    await ctx.store.save(sub)
 
     return undefined
 }

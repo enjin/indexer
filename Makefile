@@ -1,5 +1,5 @@
 process: migrate
-	@NODE_OPTIONS="--max-old-space-size=16384" node -r dotenv/config lib/processor.js
+	@NODE_OPTIONS="--max-old-space-size=16384" node -r dotenv/config lib/main.js
 
 build:
 	@npm run build

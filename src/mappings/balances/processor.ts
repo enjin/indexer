@@ -1,214 +1,175 @@
-import { hexToU8a, u8aToHex } from '@polkadot/util'
-import { SubstrateBlock } from '@subsquid/substrate-processor'
-import _ from 'lodash'
+/* eslint-disable no-await-in-loop */
+import { BlockHeader } from '@subsquid/substrate-processor'
+import chunk from 'lodash/chunk'
 import { UnknownVersionError } from '../../common/errors'
-import { Account, Balance, Event as EventModel } from '../../model'
-import { encodeId, isAddressSS58 } from '../../common/tools'
-import {
-    BalancesBalanceSetEvent,
-    BalancesBurnedEvent,
-    BalancesDepositEvent,
-    BalancesDustLostEvent,
-    BalancesEndowedEvent,
-    BalancesFrozenEvent,
-    BalancesLockedEvent,
-    BalancesMintedEvent,
-    BalancesReservedEvent,
-    BalancesReserveRepatriatedEvent,
-    BalancesRestoredEvent,
-    BalancesSlashedEvent,
-    BalancesSuspendedEvent,
-    BalancesThawedEvent,
-    BalancesTransferEvent,
-    BalancesUnlockedEvent,
-    BalancesUnreservedEvent,
-    BalancesWithdrawEvent,
-} from '../../types/generated/events'
-import { CommonContext } from '../types/contexts'
-import { SystemAccountStorage } from '../../types/generated/storage'
-import { Event } from '../../types/generated/support'
+import { Balance, Event as EventModel, Account } from '../../model'
+import { encodeId } from '../../common/tools'
+import { balances } from '../../types/generated/events'
+import { account as systemAccount } from '../../types/generated/system/storage'
+import { CommonContext, EventItem } from '../types/contexts'
 
-function getBurnedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesBurnedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getBurnedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.burned.matrixEnjinV603.is(event)) {
+        return balances.burned.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.burned.name)
 }
 
-function getFrozenAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesFrozenEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getFrozenAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.frozen.matrixEnjinV603.is(event)) {
+        return balances.frozen.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.frozen.name)
 }
 
-function getLockedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesLockedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getLockedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.locked.matrixEnjinV603.is(event)) {
+        return balances.locked.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.locked.name)
 }
 
-function getMintedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesMintedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getMintedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.minted.matrixEnjinV603.is(event)) {
+        return balances.minted.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.minted.name)
 }
 
-function getRestoredAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesRestoredEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getRestoredAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.restored.matrixEnjinV603.is(event)) {
+        return balances.restored.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.restored.name)
 }
 
-function getSuspendedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesSuspendedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getSuspendedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.suspended.matrixEnjinV603.is(event)) {
+        return balances.suspended.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.suspended.name)
 }
 
-function getThawedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesThawedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getThawedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.thawed.matrixEnjinV603.is(event)) {
+        return balances.thawed.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.thawed.name)
 }
 
-function getUnlockedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesUnlockedEvent(ctx, event)
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getUnlockedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.unlocked.matrixEnjinV603.is(event)) {
+        return balances.unlocked.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.unlocked.name)
 }
 
-function getDustLostAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesDustLostEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.account
+function getDustLostAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.dustLost.matrixEnjinV603.is(event)) {
+        return balances.dustLost.matrixEnjinV603.decode(event).account
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.dustLost.name)
 }
 
-function getBalanceSetAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesBalanceSetEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
-    }
-    if (data.isV602) {
-        return data.asV602.who
-    }
-    if (data.isV500) {
-        return data.asV500.who
+function getBalanceSetAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.balanceSet.matrixEnjinV603.is(event)) {
+        return balances.balanceSet.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(data.constructor.name)
+    if (balances.balanceSet.v602.is(event)) {
+        return balances.balanceSet.v602.decode(event).who
+    }
+
+    if (balances.balanceSet.v500.is(event)) {
+        return balances.balanceSet.v500.decode(event).who
+    }
+
+    throw new UnknownVersionError(balances.balanceSet.name)
 }
 
-function getTransferAccounts(ctx: CommonContext, event: Event): Uint8Array[] {
-    const data = new BalancesTransferEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return [data.asMatrixEnjinV603.from, data.asMatrixEnjinV603.to]
+function getTransferAccounts(ctx: CommonContext, event: EventItem) {
+    if (balances.transfer.matrixEnjinV603.is(event)) {
+        return [balances.transfer.matrixEnjinV603.decode(event).from, balances.transfer.matrixEnjinV603.decode(event).to]
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.transfer.name)
 }
 
-function getEndowedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesEndowedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.account
+function getEndowedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.endowed.matrixEnjinV603.is(event)) {
+        return balances.endowed.matrixEnjinV603.decode(event).account
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.endowed.name)
 }
 
-function getDepositAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesDepositEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getDepositAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.deposit.matrixEnjinV603.is(event)) {
+        return balances.deposit.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.deposit.name)
 }
 
-function getReservedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesReservedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getReservedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.reserved.matrixEnjinV603.is(event)) {
+        return balances.reserved.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.reserved.name)
 }
 
-function getUnreservedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesUnreservedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getUnreservedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.unreserved.matrixEnjinV603.is(event)) {
+        return balances.unreserved.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.unreserved.name)
 }
 
-function getWithdrawAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesWithdrawEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getWithdrawAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.withdraw.matrixEnjinV603.is(event)) {
+        return balances.withdraw.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+
+    throw new UnknownVersionError(balances.withdraw.name)
 }
 
-function getSlashedAccount(ctx: CommonContext, event: Event): Uint8Array {
-    const data = new BalancesSlashedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return data.asMatrixEnjinV603.who
+function getSlashedAccount(ctx: CommonContext, event: EventItem) {
+    if (balances.slashed.matrixEnjinV603.is(event)) {
+        return balances.slashed.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.slashed.name)
 }
 
-function getReserveRepatriatedAccounts(ctx: CommonContext, event: Event): Uint8Array[] {
-    const data = new BalancesReserveRepatriatedEvent(ctx, event)
-
-    if (data.isMatrixEnjinV603) {
-        return [data.asMatrixEnjinV603.from, data.asMatrixEnjinV603.to]
+function getReserveRepatriatedAccounts(ctx: CommonContext, event: EventItem) {
+    if (balances.reserveRepatriated.matrixEnjinV603.is(event)) {
+        return [
+            balances.reserveRepatriated.matrixEnjinV603.decode(event).from,
+            balances.reserveRepatriated.matrixEnjinV603.decode(event).to,
+        ]
     }
-    throw new UnknownVersionError(data.constructor.name)
+    throw new UnknownVersionError(balances.reserveRepatriated.name)
 }
 
-async function getSystemAccountBalances(ctx: CommonContext, block: SubstrateBlock, accounts: Uint8Array[]) {
-    const storage = new SystemAccountStorage(ctx, block)
-    if (!storage.isExists) return undefined
-
-    if (storage.isMatrixEnjinV603) {
-        return storage.asMatrixEnjinV603.getMany(accounts)
-    }
-    if (storage.isV602) {
-        return storage.asV602.getMany(accounts)
+async function getSystemAccountBalances(ctx: CommonContext, block: BlockHeader, accounts: string[]) {
+    if (systemAccount.matrixEnjinV603.is(block)) {
+        return systemAccount.matrixEnjinV603.getMany(block, accounts)
     }
 
-    if (storage.isV500) {
-        return storage.asV500.getMany(accounts)
+    if (systemAccount.v602.is(block)) {
+        return systemAccount.v602.getMany(block, accounts)
     }
 
-    throw new UnknownVersionError(storage.constructor.name)
+    if (systemAccount.v500.is(block)) {
+        return systemAccount.v500.getMany(block, accounts)
+    }
+
+    throw new UnknownVersionError('system.account')
 }
 
-function processBalancesEventItem(ctx: CommonContext, event: Event) {
-    const ids: Uint8Array[] = []
+function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
+    const ids: string[] = []
     switch (event.name) {
         case 'Balances.BalanceSet': {
             const account = getBalanceSetAccount(ctx, event)
@@ -307,21 +268,20 @@ function processBalancesEventItem(ctx: CommonContext, event: Event) {
     return ids
 }
 
-async function getBalances(ctx: CommonContext, block: SubstrateBlock, accountIds: Uint8Array[]) {
+async function getBalances(ctx: CommonContext, block: BlockHeader, accountIds: string[]) {
     return getSystemAccountBalances(ctx, block, accountIds)
 }
 
 const accountsSet = new Set<string>()
 
-export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
+export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const chunk of _.chunk(accountIds, 100)) {
-        const accountsU8a: Uint8Array[] = chunk.map((id) => hexToU8a(id))
+    for (const chunked of chunk(accountIds, 100)) {
         // eslint-disable-next-line no-await-in-loop
-        const accountInfos = await getBalances(ctx, block, accountsU8a)
+        const accountInfos = await getBalances(ctx, block, chunked)
 
         if (accountInfos === undefined || accountInfos.length === 0) {
             // eslint-disable-next-line no-continue
@@ -330,52 +290,62 @@ export async function saveAccounts(ctx: CommonContext, block: SubstrateBlock) {
 
         const accounts: any[] = []
 
-        for (let i = 0; i < chunk.length; i += 1) {
-            const id = chunk[i]
+        for (let i = 0; i < chunked.length; i += 1) {
+            const id = chunked[i]
             const accountInfo = accountInfos[i]
+
+            if (accountInfo === undefined) {
+                // eslint-disable-next-line no-continue
+                continue
+            }
+
             const accountData = accountInfo.data
 
             if ('frozen' in accountData) {
-                accounts.push({
-                    id,
-                    address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                    nonce: accountInfo.nonce,
-                    verified: false,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.frozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        frozen: accountData.frozen,
-                        miscFrozen: accountData.frozen,
-                        feeFrozen: 0n,
-                    }),
-                })
+                accounts.push(
+                    new Account({
+                        id,
+                        address: encodeId(id),
+                        nonce: accountInfo!.nonce,
+                        verified: false,
+                        balance: new Balance({
+                            transferable: accountData.free - accountData.frozen,
+                            free: accountData.free,
+                            reserved: accountData.reserved,
+                            frozen: accountData.frozen,
+                            miscFrozen: accountData.frozen,
+                            feeFrozen: 0n,
+                        }),
+                    })
+                )
             } else if ('miscFrozen' in accountData) {
-                accounts.push({
-                    id,
-                    address: isAddressSS58(accountsU8a[i]) ? encodeId(accountsU8a[i]) : u8aToHex(accountsU8a[i]),
-                    nonce: accountInfo.nonce,
-                    verified: false,
-                    balance: new Balance({
-                        transferable: accountData.free - accountData.miscFrozen,
-                        free: accountData.free,
-                        reserved: accountData.reserved,
-                        frozen: accountData.miscFrozen,
-                        miscFrozen: accountData.miscFrozen,
-                        feeFrozen: accountData.feeFrozen,
-                    }),
-                })
+                accounts.push(
+                    new Account({
+                        id,
+                        address: encodeId(id),
+                        nonce: accountInfo!.nonce,
+                        verified: false,
+                        balance: new Balance({
+                            transferable: accountData.free - accountData.miscFrozen,
+                            free: accountData.free,
+                            reserved: accountData.reserved,
+                            frozen: accountData.miscFrozen,
+                            miscFrozen: accountData.miscFrozen,
+                            feeFrozen: accountData.feeFrozen,
+                        }),
+                    })
+                )
             }
         }
 
-        ctx.store.createQueryBuilder().insert().into(Account).values(accounts).orUpdate(['balance', 'nonce'], ['id']).execute()
+        await ctx.store.upsert(accounts)
     }
 
     accountsSet.clear()
 }
 
-export async function save(ctx: CommonContext, block: SubstrateBlock, event: Event): Promise<EventModel | undefined> {
-    processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(u8aToHex(id)))
+export async function save(ctx: CommonContext, block: BlockHeader, event: EventItem): Promise<EventModel | undefined> {
+    processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(id))
 
     return undefined
 }

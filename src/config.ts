@@ -10,9 +10,6 @@ const config: ProcessorConfig = {
         archive: process.env.ARCHIVE_ENDPOINT || 'https://matrixchain.archive.subsquid.io/graphql',
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
     },
-    blockRange: {
-        from: 0,
-    },
     redisHost: process.env.REDIS_HOST || 'indexer_redis',
     redisDb: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
     redisSupportsTls: Boolean(process.env.REDIS_SUPPORTS_TLS || false),

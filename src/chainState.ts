@@ -1,11 +1,11 @@
-import { SubstrateBlock } from '@subsquid/substrate-processor'
+import { BlockHeader } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
 import config from './config'
 import { CommonContext } from './mappings/types/contexts'
 import Rpc from './common/rpc'
 
-export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
+export async function chainState(ctx: CommonContext, block: BlockHeader<{ block: { timestamp: true } }>) {
     try {
         const { api } = await Rpc.getInstance()
 
@@ -14,11 +14,11 @@ export async function chainState(ctx: CommonContext, block: SubstrateBlock) {
 
         state.genesisHash = config.genesisHash
         state.transactionVersion = runtime.transactionVersion.toNumber()
-        state.specVersion = Number(block.specId.split('@')[1])
+        state.specVersion = Number(block.specVersion)
         state.blockNumber = block.height
         state.blockHash = block.hash
         state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
-        state.timestamp = new Date(block.timestamp)
+        state.timestamp = new Date(block.timestamp ?? 0)
         state.marketplace = new Marketplace({
             protocolFee: 25_000000,
             listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
