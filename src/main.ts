@@ -201,6 +201,8 @@ processor.run(
     }),
     async (ctx) => {
         try {
+            console.log('last block of batch', ctx.blocks[ctx.blocks.length - 1].header.height)
+
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
                 const extrinsics: Extrinsic[] = []

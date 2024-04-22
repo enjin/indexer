@@ -27,12 +27,11 @@ export async function freezeStateMutated(
         })
         await ctx.store.save(fuelTankRuleSet)
     } else {
-        const fuelTank = new FuelTank({
-            id: eventData.tankId,
-            isFrozen: eventData.isFrozen,
-        })
+        const tank = await ctx.store.findOneByOrFail(FuelTank, { id: eventData.tankId })
 
-        await ctx.store.save(fuelTank)
+        tank.isFrozen = eventData.isFrozen
+
+        await ctx.store.save(tank)
     }
 
     return undefined
