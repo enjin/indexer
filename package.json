@@ -42,7 +42,7 @@
     "mime-types": "^2.1.35",
     "node-cache": "^5.1.2",
     "pg": "^8.11.3",
-    "prom-client": "^15.1.1",
+    "prom-client": "^15.1.2",
     "type-graphql": "^1.2.0-rc.1",
     "web3-validator": "^2.0.5"
   },
