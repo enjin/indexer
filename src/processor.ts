@@ -106,5 +106,6 @@ export const processor = new SubstrateBatchProcessor()
             version: true,
             success: true,
             error: true,
+            name: true,
         },
     })

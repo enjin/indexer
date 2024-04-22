@@ -230,28 +230,30 @@ processor.run(
                 )
 
                 for (const extrinsic of block.extrinsics) {
-                    const { id, fee, hash, signature: signatureUnknown, success, tip, error, call } = extrinsic
+                    const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
                     let publicKey = ''
                     let extrinsicSignature: any = {}
                     let fuelTank = null
+
                     if (!call) {
-                        throw new Error('Call is undefined')
+                        // eslint-disable-next-line no-continue
+                        continue
+                    }
+
+                    if (['ParachainSystem.set_validation_data', 'Timestamp.set'].includes(call.name)) {
+                        // eslint-disable-next-line no-continue
+                        continue
                     }
 
                     const signature = signatureUnknown as any
 
-                    console.log(id)
-
                     if (!signature) {
-                        console.log('Signature is undefined', call.name, call.args)
-
                         publicKey = call.args.dest ?? call.args.destination
                         extrinsicSignature = {
                             address: call.args.dest ?? call.args.destination,
                             signature: call.args.ethereumSignature,
                         }
                     } else {
-                        console.log('Signature is defined', signature)
                         publicKey = (
                             signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
                                 ? signature.address.value
@@ -358,6 +360,7 @@ processor.run(
                 }
                 for (const eventItem of block.events) {
                     // eslint-disable-next-line no-await-in-loop
+
                     const event = await handleEvents(
                         ctx as unknown as CommonContext,
                         block.header,
