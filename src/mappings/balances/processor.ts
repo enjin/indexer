@@ -293,7 +293,13 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
         for (let i = 0; i < chunked.length; i += 1) {
             const id = chunked[i]
             const accountInfo = accountInfos[i]
-            const accountData = accountInfo!.data
+
+            if (accountInfo === undefined) {
+                // eslint-disable-next-line no-continue
+                continue
+            }
+
+            const accountData = accountInfo.data
 
             if ('frozen' in accountData) {
                 accounts.push(

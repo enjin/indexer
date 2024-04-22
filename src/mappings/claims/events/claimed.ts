@@ -1,3 +1,4 @@
+import { LessThan } from 'typeorm'
 import { UnknownVersionError } from '../../../common/errors'
 import { claims } from '../../../types/generated/events'
 import { claims as claimsStorage } from '../../../types/generated/storage'
@@ -12,7 +13,6 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { getConnection } from '../../../connection'
 import { getTotalUnclaimedAmount } from '../common'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -48,19 +48,15 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         throw new Error('Delay period is not set')
     }
 
-    const con = await getConnection()
-
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         getTotalUnclaimedAmount(ctx, block),
-        con.manager
-            .getRepository(ClaimRequest)
-            .createQueryBuilder('request')
-            .where('request.account ::jsonb @> :account', {
+        ctx.store.find(ClaimRequest, {
+            where: {
                 account: { type: AccountClaimType.EVM, account: claimAccount },
-            })
-            .andWhere('request.isClaimed = false')
-            .andWhere('request.createdBlock < :block', { block: block.height - period })
-            .getMany(),
+                isClaimed: false,
+                createdBlock: LessThan(block.height - period),
+            },
+        }),
         ctx.store.findOneBy(Claim, { account: { id: account.id } }),
     ])
 
@@ -105,7 +101,7 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     await Promise.all([
         ctx.store.save(updatedClaim),
         ctx.store.save(claimDetails),
-        ctx.store.save(claimRequests.map((request: any) => ({ ...request, isClaimed: true }))),
+        ctx.store.save(claimRequests.map((request: any) => new ClaimRequest({ ...request, isClaimed: true }))),
     ])
 
     return new EventModel({
