@@ -85,11 +85,13 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     traitTypeMap.forEach((traitValueMap, traitType) => {
         traitValueMap.forEach((count, value) => {
             // temp
-            if (tempExistMap.has(`${collectionId}-${traitType}-${value}`)) {
-                job.log(`Duplicate trait found ${collectionId}-${traitType}-${value}`)
+            if (tempExistMap.get(hash(`${collectionId}-${traitType}-${value}`))) {
+                job.log(
+                    `Duplicate trait found ${collectionId}-${traitType}-${value}, ${hash(`${collectionId}-${traitType}-${value}`)}`
+                )
             }
 
-            tempExistMap.set(`${collectionId}-${traitType}-${value}`, true)
+            tempExistMap.set(hash(`${collectionId}-${traitType}-${value}`), true)
             // temp end
 
             traitsToSave.push(
