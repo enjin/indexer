@@ -80,8 +80,18 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     job.log(`Found ${traitTypeMap.size} trait types`)
     const traitsToSave: Trait[] = []
 
+    const tempExistMap = new Map<string, boolean>()
+
     traitTypeMap.forEach((traitValueMap, traitType) => {
         traitValueMap.forEach((count, value) => {
+            // temp
+            if (tempExistMap.has(`${collectionId}-${traitType}-${value}`)) {
+                job.log(`Duplicate trait found ${collectionId}-${traitType}-${value}`)
+            }
+
+            tempExistMap.set(`${collectionId}-${traitType}-${value}`, true)
+            // temp end
+
             traitsToSave.push(
                 new Trait({
                     id: hash(`${collectionId}-${traitType}-${value}`),
