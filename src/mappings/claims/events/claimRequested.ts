@@ -42,12 +42,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    const claimDetails = new ClaimDetails({
-        id: '0',
-        totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
-    })
-
-    await Promise.all([ctx.store.insert(claim), ctx.store.save(claimDetails)])
+    await Promise.all([ctx.store.insert(claim)])
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
