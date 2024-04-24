@@ -83,6 +83,10 @@ export async function minted(
         },
     })
 
+    if (data.amount === 0n) {
+        return undefined
+    }
+
     if (skipSave) {
         await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
         return getEvent(item, data, token)
