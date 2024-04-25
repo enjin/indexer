@@ -40,6 +40,7 @@ function getEvent(
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
+        name: MultiTokensMinted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: `${data.collectionId}-${data.tokenId}`,
@@ -82,6 +83,10 @@ export async function minted(
             collection: true,
         },
     })
+
+    if (data.amount === 0n) {
+        return undefined
+    }
 
     if (skipSave) {
         await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])

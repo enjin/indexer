@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import { TypeormDatabase } from '@subsquid/typeorm-store'
-import { hexStripPrefix, hexToU8a } from '@polkadot/util'
+import { hexStripPrefix } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import { rewriteFramesIntegration } from '@sentry/integrations'
@@ -11,8 +11,9 @@ import { createEnjToken } from './createEnjToken'
 import { chainState } from './chainState'
 import * as map from './mappings'
 import { getOrCreateAccount } from './mappings/util/entities'
+import { events } from './types/generated'
+import { identity as identityCall } from './types/generated/calls'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './mappings/types/contexts'
-import { populateBlock } from './populateBlock'
 import { updateClaimDetails } from './mappings/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
@@ -32,138 +33,138 @@ async function handleEvents(
     skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
-        case 'MultiTokens.Approved':
+        case events.multiTokens.approved.name:
             return map.multiTokens.events.approved(ctx, block, item, skipSave)
-        case 'MultiTokens.AttributeRemoved':
+        case events.multiTokens.attributeRemoved.name:
             return map.multiTokens.events.attributeRemoved(ctx, block, item, skipSave)
-        case 'MultiTokens.AttributeSet':
+        case events.multiTokens.attributeSet.name:
             return map.multiTokens.events.attributeSet(ctx, block, item, skipSave)
-        case 'MultiTokens.Burned':
+        case events.multiTokens.burned.name:
             return map.multiTokens.events.burned(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionAccountCreated':
+        case events.multiTokens.collectionAccountCreated.name:
             return map.multiTokens.events.collectionAccountCreated(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionAccountDestroyed':
+        case events.multiTokens.collectionAccountDestroyed.name:
             return map.multiTokens.events.collectionAccountDestroyed(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionCreated':
+        case events.multiTokens.collectionCreated.name:
             return map.multiTokens.events.collectionCreated(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionDestroyed':
+        case events.multiTokens.collectionDestroyed.name:
             return map.multiTokens.events.collectionDestroyed(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionMutated':
+        case events.multiTokens.collectionMutated.name:
             return map.multiTokens.events.collectionMutated(ctx, block, item, skipSave)
-        case 'MultiTokens.CollectionTransferred':
+        case events.multiTokens.collectionTransferred.name:
             return map.multiTokens.events.collectionTransferred(ctx, block, item, skipSave)
-        case 'MultiTokens.Frozen':
+        case events.multiTokens.frozen.name:
             return map.multiTokens.events.frozen(ctx, block, item, skipSave)
-        case 'MultiTokens.Minted':
+        case events.multiTokens.minted.name:
             return map.multiTokens.events.minted(ctx, block, item, skipSave)
-        case 'MultiTokens.Reserved':
+        case events.multiTokens.reserved.name:
             return map.multiTokens.events.reserved(ctx, block, item, skipSave)
-        case 'MultiTokens.Thawed':
+        case events.multiTokens.thawed.name:
             return map.multiTokens.events.thawed(ctx, block, item, skipSave)
-        case 'MultiTokens.TokenAccountCreated':
+        case events.multiTokens.tokenAccountCreated.name:
             return map.multiTokens.events.tokenAccountCreated(ctx, block, item, skipSave)
-        case 'MultiTokens.TokenAccountDestroyed':
+        case events.multiTokens.tokenAccountDestroyed.name:
             return map.multiTokens.events.tokenAccountDestroyed(ctx, block, item, skipSave)
-        case 'MultiTokens.TokenCreated':
+        case events.multiTokens.tokenCreated.name:
             return map.multiTokens.events.tokenCreated(ctx, block, item, skipSave)
-        case 'MultiTokens.TokenDestroyed':
+        case events.multiTokens.tokenDestroyed.name:
             return map.multiTokens.events.tokenDestroyed(ctx, block, item, skipSave)
-        case 'MultiTokens.TokenMutated':
+        case events.multiTokens.tokenMutated.name:
             return map.multiTokens.events.tokenMutated(ctx, block, item, skipSave)
-        case 'MultiTokens.Transferred':
+        case events.multiTokens.transferred.name:
             return map.multiTokens.events.transferred(ctx, block, item, skipSave)
-        case 'MultiTokens.Unapproved':
+        case events.multiTokens.unapproved.name:
             return map.multiTokens.events.unapproved(ctx, block, item, skipSave)
-        case 'MultiTokens.Unreserved':
+        case events.multiTokens.unreserved.name:
             return map.multiTokens.events.unreserved(ctx, block, item, skipSave)
-        case 'MultiTokens.ClaimedCollections':
+        case events.multiTokens.claimedCollections.name:
             return map.multiTokens.events.claimedCollections(ctx, block, item)
-        case 'MultiTokens.ClaimTokensInitiated':
+        case events.multiTokens.claimTokensInitiated.name:
             return map.multiTokens.events.claimTokensInitiated(ctx, block, item)
-        case 'MultiTokens.ClaimTokensCompleted':
+        case events.multiTokens.claimTokensCompleted.name:
             return map.multiTokens.events.claimTokensCompleted(ctx, block, item)
-        case 'Balances.BalanceSet':
-        case 'Balances.Burned':
-        case 'Balances.Deposit':
-        case 'Balances.DustLost':
-        case 'Balances.Endowed':
-        case 'Balances.Frozen':
-        case 'Balances.Locked':
-        case 'Balances.Minted':
-        case 'Balances.ReserveRepatriated':
-        case 'Balances.Reserved':
-        case 'Balances.Restored':
-        case 'Balances.Slashed':
-        case 'Balances.Suspended':
-        case 'Balances.Thawed':
-        case 'Balances.Unlocked':
-        case 'Balances.Unreserved':
-        case 'Balances.Withdraw':
+        case events.balances.balanceSet.name:
+        case events.balances.burned.name:
+        case events.balances.deposit.name:
+        case events.balances.dustLost.name:
+        case events.balances.endowed.name:
+        case events.balances.frozen.name:
+        case events.balances.locked.name:
+        case events.balances.minted.name:
+        case events.balances.reserveRepatriated.name:
+        case events.balances.reserved.name:
+        case events.balances.restored.name:
+        case events.balances.slashed.name:
+        case events.balances.suspended.name:
+        case events.balances.thawed.name:
+        case events.balances.unlocked.name:
+        case events.balances.unreserved.name:
+        case events.balances.withdraw.name:
             return map.balances.processor.save(ctx, block, item)
-        case 'Balances.Transfer':
+        case events.balances.transfer.name:
             await map.balances.processor.save(ctx, block, item)
             return map.balances.events.transfer(ctx, block, item)
-        case 'Claims.ClaimRequested':
+        case events.claims.claimRequested.name:
             return map.claims.events.claimRequested(ctx, block, item)
-        case 'Claims.ClaimRejected':
+        case events.claims.claimRejected.name:
             return map.claims.events.claimRejected(ctx, block, item)
-        case 'Claims.ClaimMinted':
+        case events.claims.claimMinted.name:
             return map.claims.events.claimMinted(ctx, block, item)
-        case 'Claims.DelayTimeForClaimSet':
+        case events.claims.delayTimeForClaimSet.name:
             return map.claims.events.delayTimeForClaimSet(ctx, block, item)
-        case 'Claims.Claimed':
+        case events.claims.claimed.name:
             return map.claims.events.claimed(ctx, block, item)
-        case 'Claims.ExchangeRateSet':
+        case events.claims.exchangeRateSet.name:
             return map.claims.events.exchangeRateSet(ctx, block, item)
-        case 'Marketplace.ListingCreated':
+        case events.marketplace.listingCreated.name:
             return map.marketplace.events.listingCreated(ctx, block, item)
-        case 'Marketplace.ListingCancelled':
+        case events.marketplace.listingCancelled.name:
             return map.marketplace.events.listingCancelled(ctx, block, item)
-        case 'Marketplace.ListingFilled':
+        case events.marketplace.listingFilled.name:
             return map.marketplace.events.listingFilled(ctx, block, item)
-        case 'Marketplace.BidPlaced':
+        case events.marketplace.bidPlaced.name:
             return map.marketplace.events.bidPlaced(ctx, block, item)
-        case 'Marketplace.AuctionFinalized':
+        case events.marketplace.auctionFinalized.name:
             return map.marketplace.events.auctionFinalized(ctx, block, item)
-        case 'PolkadotXcm.Attempted':
+        case events.polkadotXcm.attempted.name:
             return map.xcm.events.attempted(ctx, block, item)
-        case 'FuelTanks.AccountAdded':
+        case events.fuelTanks.accountAdded.name:
             return map.fuelTanks.events.accountAdded(ctx, block, item)
-        case 'FuelTanks.AccountRemoved':
+        case events.fuelTanks.accountRemoved.name:
             return map.fuelTanks.events.accountRemoved(ctx, block, item)
-        case 'FuelTanks.AccountRuleDataRemoved':
+        case events.fuelTanks.accountRuleDataRemoved.name:
             return map.fuelTanks.events.accountRuleDataRemoved(ctx, block, item)
-        case 'FuelTanks.FreezeStateMutated':
+        case events.fuelTanks.freezeStateMutated.name:
             return map.fuelTanks.events.freezeStateMutated(ctx, block, item)
-        case 'FuelTanks.FuelTankCreated':
+        case events.fuelTanks.fuelTankCreated.name:
             return map.fuelTanks.events.fuelTankCreated(ctx, block, item)
-        case 'FuelTanks.FuelTankDestroyed':
+        case events.fuelTanks.fuelTankDestroyed.name:
             return map.fuelTanks.events.fuelTankDestroyed(ctx, block, item)
-        case 'FuelTanks.FuelTankMutated':
+        case events.fuelTanks.fuelTankMutated.name:
             return map.fuelTanks.events.fuelTankMutated(ctx, block, item)
-        case 'FuelTanks.RuleSetInserted':
+        case events.fuelTanks.ruleSetInserted.name:
             return map.fuelTanks.events.ruleSetInserted(ctx, block, item)
-        case 'FuelTanks.RuleSetRemoved':
+        case events.fuelTanks.ruleSetRemoved.name:
             return map.fuelTanks.events.ruleSetRemoved(ctx, block, item)
-        case 'Identity.IdentityCleared':
+        case events.identity.identityCleared.name:
             return map.identity.events.identityCleared(ctx, block, item)
-        case 'Identity.IdentityKilled':
+        case events.identity.identityKilled.name:
             return map.identity.events.identityKilled(ctx, block, item)
-        case 'Identity.IdentitySet':
+        case events.identity.identitySet.name:
             return map.identity.events.identitySet(ctx, block, item)
-        case 'Identity.JudgementGiven':
+        case events.identity.judgementGiven.name:
             return map.identity.events.judgementGiven(ctx, block, item)
-        case 'Identity.JudgementRequested':
+        case events.identity.judgementRequested.name:
             return map.identity.events.judgementRequested(ctx, block, item)
-        case 'Identity.JudgementUnrequested':
+        case events.identity.judgementUnrequested.name:
             return map.identity.events.judgementUnrequested(ctx, block, item)
-        case 'Identity.RegistrarAdded':
+        case events.identity.registrarAdded.name:
             return map.identity.events.registrarAdded(ctx, block, item)
-        case 'Identity.SubIdentityAdded':
+        case events.identity.subIdentityAdded.name:
             return map.identity.events.subIdentityAdded(ctx, block, item)
-        case 'Identity.SubIdentityRemoved':
+        case events.identity.subIdentityRemoved.name:
             return map.identity.events.subIdentityRemoved(ctx, block, item)
-        case 'Identity.SubIdentityRevoked':
+        case events.identity.subIdentityRevoked.name:
             return map.identity.events.subIdentityRevoked(ctx, block, item)
         default: {
             ctx.log.error(`Event not handled: ${item.name}`)
@@ -174,9 +175,9 @@ async function handleEvents(
 
 async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallItem) {
     switch (item.name) {
-        case 'Identity.set_subs':
+        case identityCall.setSubs.name:
             return map.identity.calls.setSubs(ctx, block, item)
-        case 'Identity.rename_sub':
+        case identityCall.renameSub.name:
             return map.identity.calls.renameSub(ctx, block, item)
         default: {
             return undefined
@@ -201,11 +202,13 @@ processor.run(
     }),
     async (ctx) => {
         try {
+            ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
+
             // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
                 const extrinsics: Extrinsic[] = []
                 const signers = new Set<string>()
-                const events: Event[] = []
+                const eventsCollection: Event[] = []
                 const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 0) {
@@ -370,10 +373,10 @@ processor.run(
 
                     if (event) {
                         if (Array.isArray(event)) {
-                            events.push(event[0])
+                            eventsCollection.push(event[0])
                             accountTokenEvents.push(event[1])
                         } else {
-                            events.push(event)
+                            eventsCollection.push(event)
                         }
                     }
                 }
@@ -385,7 +388,7 @@ processor.run(
                 }
 
                 _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(events, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
                 _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 

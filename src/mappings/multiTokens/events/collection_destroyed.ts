@@ -22,6 +22,7 @@ function getEventData(event: EventItem) {
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
         id: item.id,
+        name: MultiTokensCollectionDestroyed.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensCollectionDestroyed({
             collectionId: data.collectionId,

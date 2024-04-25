@@ -1,16 +1,8 @@
 import { UnknownVersionError } from '../../../common/errors'
 import { claims } from '../../../types/generated/events'
-import {
-    AccountClaimType,
-    ClaimRequest,
-    ClaimDetails,
-    ClaimsClaimRequested,
-    Event as EventModel,
-    Extrinsic,
-} from '../../../model'
+import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
-import { getTotalUnclaimedAmount } from '../common'
 
 function getEventData(event: EventItem) {
     if (claims.claimRequested.matrixEnjinV603.is(event)) {
@@ -42,12 +34,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    const claimDetails = new ClaimDetails({
-        id: '0',
-        totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
-    })
-
-    await Promise.all([ctx.store.insert(claim), ctx.store.save(claimDetails)])
+    await Promise.all([ctx.store.insert(claim)])
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -67,6 +54,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
 
     return new EventModel({
         id: item.id,
+        name: ClaimsClaimRequested.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
             who: eventData.who,

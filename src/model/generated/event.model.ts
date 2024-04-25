@@ -20,6 +20,10 @@ export class Event {
     data!: EventData | undefined | null
 
     @Index_()
+    @Column_("text", {nullable: false})
+    name!: string
+
+    @Index_()
     @Column_("text", {nullable: true})
     collectionId!: string | undefined | null
 

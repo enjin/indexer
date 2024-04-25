@@ -14,6 +14,7 @@ function getEventData(event: EventItem) {
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
         id: item.id,
+        name: MultiTokensUnapproved.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
         tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,

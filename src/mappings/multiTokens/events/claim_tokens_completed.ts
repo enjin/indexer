@@ -19,10 +19,9 @@ export async function claimTokensCompleted(
     const data = getEventData(ctx, item)
     if (!data) return undefined
 
-    const claim = new MultiTokensClaims({
-        id: `${data.destination}-${data.ethereumAddress}`,
-        completed: true,
-    })
+    const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, { id: `${data.destination}-${data.ethereumAddress}` })
+
+    claim.completed = true
 
     await ctx.store.save(claim)
 
@@ -37,6 +36,7 @@ export async function claimTokensCompleted(
 
     return new EventModel({
         id: item.id,
+        name: MultiTokensClaimTokensCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensClaimTokensCompleted({
             account: data.destination,

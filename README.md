@@ -39,25 +39,22 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 1. Clone the repository
 2. Run `docker compose up -d`
-3. Access the GraphiQL Playground at http://localhost:4467/graphql <!-- markdown-link-check-disable-line -->
+3. Access the GraphiQL Playground at http://localhost:4000/graphql <!-- markdown-link-check-disable-line -->
 
 ## Architecture
 
-The indexer is composed of 7 containers
+The indexer is composed of 4 containers
 1. **indexer_db** - a postgres database that stores the processed data;
 2. **indexer_processor** - the worker that transforms and saves the blockchain data;
 3. **indexer_graphql** - the GraphQL API that exposes the processed data;
-4. **archive_db** - a cockroach db that stores the blockchain data;
-5. **archive_ingest** - the worker that ingests the blockchain data;
-6. **archive_gateway** - the gateway that exposes the blockchain data to the processor;
-7. **archive_explorer** - the GraphQL API that exposes the blockchain data;
+4. **indexer_worker** - the queue worker that processes the metadata of assets. 
 
 ## Metadata
 
 The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
-npx squid-substrate-metadata-explorer --chain wss://archive.matrix.blockchain.io --out typegen/matrixVersion.jsonl
+npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.blockchain.io --out typegen/matrixVersion.jsonl
 ```
 
 In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Matrixchain** so make sure you save them and use the proper WSS endpoint to gather them.

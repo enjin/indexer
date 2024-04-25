@@ -23,11 +23,16 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnknownVersionError(events.multiTokens.collectionMutated.name)
 }
 
-function getEvent(item: EventItem) {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
         id: item.id,
+        name: MultiTokensCollectionMutated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionMutated(),
+        collectionId: data.collectionId.toString(),
+        tokenId: null,
+        data: new MultiTokensCollectionMutated({
+            collectionId: data.collectionId,
+        }),
     })
 }
 
@@ -50,7 +55,7 @@ export async function collectionMutated(
     const data = getEventData(ctx, item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item)
+    if (skipSave) return getEvent(item, data)
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -58,7 +63,7 @@ export async function collectionMutated(
 
     if (!collection) {
         throwError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
-        return getEvent(item)
+        return getEvent(item, data)
     }
 
     if (data.mutation.owner) {
@@ -118,5 +123,5 @@ export async function collectionMutated(
 
     await ctx.store.save(collection)
 
-    return getEvent(item)
+    return getEvent(item, data)
 }

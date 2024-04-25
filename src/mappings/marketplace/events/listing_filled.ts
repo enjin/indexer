@@ -32,6 +32,7 @@ function getEvent(
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
+        name: MarketplaceListingFilled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
@@ -65,7 +66,7 @@ export async function listingFilled(
     const data = getEventData(ctx, item)
     if (!data) return undefined
 
-    const listingId = Buffer.from(data.listingId).toString('hex')
+    const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {

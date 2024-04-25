@@ -1,5 +1,4 @@
 import { u8aToHex } from '@polkadot/util'
-import { getConnection } from '../../connection'
 import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../../common/tools'
@@ -33,16 +32,5 @@ export async function getOrCreateAccount(ctx: CommonContext, publicKey: Uint8Arr
 }
 
 export async function getBestListing(ctx: CommonContext, tokenId: string) {
-    const con = await getConnection()
-
-    return con.manager
-        .getRepository(Listing)
-        .createQueryBuilder('listing')
-        .select('listing.id')
-        .addSelect('listing.highestPrice')
-        .where('listing.makeAssetId = :tokenId', { tokenId })
-        .andWhere('listing.isActive = true')
-        .orderBy('listing.highestPrice', 'ASC')
-        .groupBy('listing.id')
-        .getOne()
+    return ctx.store.findOne(Listing, { where: { makeAssetId: { id: tokenId }, isActive: true }, order: { highestPrice: 'ASC' } })
 }

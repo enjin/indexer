@@ -24,15 +24,22 @@ export async function claimedCollections(
     const account = await getOrCreateAccount(ctx, data.accountId)
 
     const promises = data.collectionIds.map((id) => {
-        return ctx.store.save(
-            new Collection({
-                id: id.toString(),
-                owner: account,
-            })
-        )
+        return ctx.store.findOneBy(Collection, { id: id.toString() })
     })
 
-    await Promise.all(promises)
+    const collections = await Promise.all(promises)
+
+    const savePromises = collections.map((collection) => {
+        if (collection) {
+            collection.owner = account
+
+            return ctx.store.save(collection)
+        }
+
+        return Promise.resolve()
+    })
+
+    await Promise.all(savePromises)
 
     if (item.extrinsic) {
         Sns.getInstance().send({
@@ -48,6 +55,7 @@ export async function claimedCollections(
 
     return new EventModel({
         id: item.id,
+        name: MultiTokensClaimedCollections.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensClaimedCollections({
             account: data.accountId,
