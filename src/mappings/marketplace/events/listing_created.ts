@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer'
 import { UnknownVersionError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
