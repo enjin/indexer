@@ -28,7 +28,7 @@ export async function chainState(ctx: CommonContext, block: BlockHeader<{ block:
             minimumBidIncreasePercentage: Number(api.consts.marketplace.minimumBidIncreasePercentage.toString()),
         })
 
-        ctx.store.save(state)
+        await ctx.store.save(state)
     } catch (error) {
         Sentry.captureException(error)
     }
