@@ -51,7 +51,7 @@ export async function listingCancelled(
     const data = getEventData(ctx, item)
     if (!data) return undefined
 
-    const listingId = Buffer.from(data.listingId).toString('hex')
+    const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {

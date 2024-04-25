@@ -1,9 +1,11 @@
+import { hexToString } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
 import { processMetadata } from '../../../jobs/process-metadata'
 import { computeTraits } from '../../../jobs/compute-traits'
+import { safeString } from '../../../common/tools'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.attributeRemoved.matrixEnjinV603.is(event)) {
@@ -22,7 +24,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         data: new MultiTokensAttributeRemoved({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            key: Buffer.from(data.key).toString(),
+            key: data.key,
         }),
     })
 }
@@ -39,7 +41,7 @@ export async function attributeRemoved(
     if (skipSave) return getEvent(item, data)
 
     const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
-    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
+    const attributeId = `${id}-${safeString(hexToString(data.key))}`
     const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
         relations: {

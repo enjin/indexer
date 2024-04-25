@@ -3,6 +3,7 @@
 import { encodeAddress } from '@polkadot/util-crypto'
 import { In } from 'typeorm'
 import axios from 'axios'
+import { hexToString } from '@polkadot/util'
 import { CommonContext, BlockHeader } from './mappings/types/contexts'
 import { storage } from './types/generated'
 import config from './config'
@@ -459,11 +460,11 @@ async function syncAttribute(ctx: CommonContext, block: BlockHeader) {
             }
             const collectionId = k[0]
             const tokenId = k[1]
-            const key = safeString(Buffer.from(k[2]).toString())
-            const value = safeString(Buffer.from(data.value).toString())
+            const key = safeString(hexToString(k[2]))
+            const value = safeString(hexToString(data.value))
             const id = tokenId !== undefined ? `${collectionId}-${tokenId}` : collectionId.toString()
 
-            const attributeId = `${id}-${Buffer.from(key).toString('hex')}`
+            const attributeId = `${id}-${k[2]}`
 
             if (tokenId !== undefined) {
                 return new Attribute({

@@ -37,7 +37,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [Even
         collectionId: data.listing.makeAssetId.collectionId.toString(),
         tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
         data: new MarketplaceListingCreated({
-            listing: Buffer.from(data.listingId).toString('hex'),
+            listing: data.listingId.substring(2),
         }),
     })
 
@@ -59,7 +59,7 @@ export async function listingCreated(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item)
     if (!data) return undefined
-    const listingId = Buffer.from(data.listingId).toString('hex')
+    const listingId = data.listingId.substring(2)
     const [makeAssetId, takeAssetId, account] = await Promise.all([
         ctx.store.findOne<Token>(Token, {
             where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
@@ -101,7 +101,7 @@ export async function listingCreated(
         feeSide,
         height: data.listing.creationBlock,
         deposit: data.listing.deposit,
-        salt: Buffer.from(data.listing.salt).toString('hex'),
+        salt: data.listing.salt,
         data: listingData,
         state: listingState,
         isActive: true,

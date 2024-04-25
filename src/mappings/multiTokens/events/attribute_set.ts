@@ -1,3 +1,4 @@
+import { hexToString } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
@@ -35,8 +36,8 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         data: new MultiTokensAttributeSet({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            key: safeString(Buffer.from(data.key).toString()),
-            value: safeString(Buffer.from(data.value).toString()),
+            key: safeString(hexToString(data.key)),
+            value: safeString(hexToString(data.value)),
         }),
     })
 }
@@ -52,10 +53,10 @@ export async function attributeSet(
 
     if (skipSave) return getEvent(item, data)
 
-    const key = safeString(Buffer.from(data.key).toString())
-    const value = safeString(Buffer.from(data.value).toString())
+    const key = safeString(hexToString(data.key))
+    const value = safeString(hexToString(data.value))
     const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
-    const attributeId = `${id}-${Buffer.from(data.key).toString('hex')}`
+    const attributeId = `${id}-${data.key}`
 
     let [attribute, collection] = await Promise.all([
         ctx.store.findOne<Attribute>(Attribute, {
