@@ -24,6 +24,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
+        name: MarketplaceListingCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,

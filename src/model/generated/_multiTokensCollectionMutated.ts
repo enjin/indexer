@@ -1,30 +1,30 @@
 import assert from "assert"
 import * as marshal from "./marshal"
-import {Extrinsic} from "./extrinsic.model"
 
 export class MultiTokensCollectionMutated {
     public readonly isTypeOf = 'MultiTokensCollectionMutated'
-    private _extrinsic!: string | undefined | null
+    private _collectionId!: bigint
 
     constructor(props?: Partial<Omit<MultiTokensCollectionMutated, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._extrinsic = json.extrinsic == null ? undefined : marshal.string.fromJSON(json.extrinsic)
+            this._collectionId = marshal.bigint.fromJSON(json.collectionId)
         }
     }
 
-    get extrinsic(): string | undefined | null {
-        return this._extrinsic
+    get collectionId(): bigint {
+        assert(this._collectionId != null, 'uninitialized access')
+        return this._collectionId
     }
 
-    set extrinsic(value: string | undefined | null) {
-        this._extrinsic = value
+    set collectionId(value: bigint) {
+        this._collectionId = value
     }
 
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
-            extrinsic: this.extrinsic,
+            collectionId: marshal.bigint.toJSON(this.collectionId),
         }
     }
 }

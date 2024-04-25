@@ -62,6 +62,7 @@ type Event @entity {
   id: ID!
   extrinsic: Extrinsic
   data: EventData
+  name: String! @index
 
   # Filters
   collectionId: String @index
@@ -179,7 +180,7 @@ type MultiTokensCollectionDestroyed {
 }
 
 type MultiTokensCollectionMutated {
-  extrinsic: Extrinsic
+  collectionId: BigInt!
 }
 
 type MultiTokensCollectionTransferred {

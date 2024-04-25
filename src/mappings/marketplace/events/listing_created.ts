@@ -33,6 +33,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
+        name: MarketplaceListingCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.listing.makeAssetId.collectionId.toString(),
         tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,

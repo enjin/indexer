@@ -32,6 +32,7 @@ export async function transfer(ctx: CommonContext, block: BlockHeader, item: Eve
 
     return new EventModel({
         id: item.id,
+        name: BalancesTransfer.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new BalancesTransfer({
             from: eventData.from,

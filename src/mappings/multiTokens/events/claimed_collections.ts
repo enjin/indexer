@@ -55,6 +55,7 @@ export async function claimedCollections(
 
     return new EventModel({
         id: item.id,
+        name: MultiTokensClaimedCollections.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new MultiTokensClaimedCollections({
             account: data.accountId,

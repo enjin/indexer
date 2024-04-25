@@ -30,6 +30,7 @@ function getEvent(
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
+        name: MarketplaceAuctionFinalized.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,

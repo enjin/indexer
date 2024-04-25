@@ -110,11 +110,7 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
 
     const callData = await getCallData(ctx, item.call)
     if (!callData || !('dest' in callData) || !('beneficiary' in callData) || !('assets' in callData)) {
-        return new EventModel({
-            id: item.id,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            data: null,
-        })
+        return undefined
     }
     let destination: string | null = null
     let beneficiary: Uint8Array | null = null
@@ -150,6 +146,7 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
 
     return new EventModel({
         id: item.id,
+        name: TeleportBalanceWithdrawn.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new TeleportBalanceWithdrawn({
             beneficiary: beneficiaryAccount.id,

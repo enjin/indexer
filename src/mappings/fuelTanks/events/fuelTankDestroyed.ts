@@ -46,6 +46,7 @@ export async function fuelTankDestroyed(
 
     return new EventModel({
         id: item.id,
+        name: FuelTankDestroyed.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new FuelTankDestroyed({
             tank: tankId,

@@ -222,6 +222,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
 
     return new EventModel({
         id: item.id,
+        name: FuelTankCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new FuelTankCreated({
             tank: fuelTank.id,
