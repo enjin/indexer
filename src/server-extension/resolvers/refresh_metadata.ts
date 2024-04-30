@@ -57,9 +57,8 @@ export class RefreshMetadataResolver {
                         error: `You exceeded rate limit for ${collectionId}. Please retry after ${timeLeft} seconds.`,
                     }
                 }
-            } else {
-                rateLimitMap.set(collectionId, Date.now())
             }
+            rateLimitMap.set(collectionId, Date.now())
         }
 
         if (isToken) {
