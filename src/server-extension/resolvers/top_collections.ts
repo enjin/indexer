@@ -58,6 +58,9 @@ export class CollectionRow {
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
 
+    @Field({ nullable: true })
+    category!: string
+
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
 
@@ -108,6 +111,7 @@ export class TopCollectionResolver {
                     .select('collection.id AS collectionId')
                     .addSelect('collection.metadata AS metadata')
                     .addSelect('collection.stats AS stats')
+                    .addSelect('collection.category AS category')
                 if (timeFrame === Timeframe.ALL) {
                     inBuilder
                         .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
