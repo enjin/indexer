@@ -54,7 +54,10 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             if (typeof data === 'object') {
                 value = data.value
             }
+
             if (!value) return
+
+            value = value.toString()
 
             if (!traitTypeMap.has(traitType)) {
                 traitTypeMap.set(traitType, new Map())
