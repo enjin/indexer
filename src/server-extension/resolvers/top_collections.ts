@@ -31,6 +31,7 @@ enum TopCollectionOrderBy {
     SALES = 'sales',
     VOLUME_CHANGE = 'volume_change',
     USERS = 'users',
+    CATEGORY = 'category',
 }
 
 enum Order {
@@ -103,6 +104,7 @@ export class TopCollectionResolver {
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
             .addSelect('sales_last_duration AS sales')
+            .addSelect('category AS category')
             .addSelect(
                 'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
             )
