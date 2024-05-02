@@ -90,7 +90,7 @@ export class TopCollectionResolver {
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
         @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
-        @Arg('category', () => String, { nullable: true, defaultValue: null }) category: string,
+        @Arg('category', () => [String], { nullable: true, defaultValue: [] }) category: string[],
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
@@ -134,8 +134,8 @@ export class TopCollectionResolver {
                         .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
                 }
 
-                if (category) {
-                    inBuilder.where('collection.category = :category', { category })
+                if (category.length > 0) {
+                    inBuilder.andWhere('collection.category IN (:...category)', { category })
                 }
 
                 inBuilder
