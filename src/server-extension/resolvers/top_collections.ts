@@ -90,6 +90,7 @@ export class TopCollectionResolver {
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
         @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
+        @Arg('category', () => String, { nullable: true, defaultValue: null }) category: string,
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
@@ -131,6 +132,10 @@ export class TopCollectionResolver {
                             `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
                         )
                         .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
+                }
+
+                if (category) {
+                    inBuilder.where('collection.category = :category', { category })
                 }
 
                 inBuilder
