@@ -28,7 +28,7 @@ class RefreshMetadataResponse {
 }
 
 const rateLimitMap = new NodeCache({ stdTTL: 60 * 60 * 24, checkperiod: 60 * 60 })
-const mins30 = 30 * 1000 * 60 * 10
+const mins30 = 30 * 60 * 1000 // 30 minutes in ms
 
 @Resolver()
 export class RefreshMetadataResolver {
@@ -54,11 +54,10 @@ export class RefreshMetadataResolver {
                 if (timeLeft > 0) {
                     return {
                         status: RefreshMetadataResponseStatus.ERROR,
-                        error: `Rate limit exceeded for ${collectionId}, please try again later in ${timeLeft} seconds`,
+                        error: `You exceeded rate limit for ${collectionId}. Please retry after ${timeLeft} seconds.`,
                     }
                 }
             }
-
             rateLimitMap.set(collectionId, Date.now())
         }
 

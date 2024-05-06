@@ -31,6 +31,7 @@ enum TopCollectionOrderBy {
     SALES = 'sales',
     VOLUME_CHANGE = 'volume_change',
     USERS = 'users',
+    CATEGORY = 'category',
 }
 
 enum Order {
@@ -57,6 +58,9 @@ export class CollectionRow {
 
     @Field(() => Json, { nullable: true })
     metadata!: typeof Json
+
+    @Field({ nullable: true })
+    category!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
@@ -86,6 +90,7 @@ export class TopCollectionResolver {
     async topCollection(
         @Arg('timeFrame', () => Timeframe) timeFrame: Timeframe,
         @Arg('orderBy', () => TopCollectionOrderBy) orderBy: TopCollectionOrderBy,
+        @Arg('category', () => [String], { nullable: true, defaultValue: [] }) category: string[],
         @Arg('order', () => Order) order: Order,
         @Arg('offset', () => Int) offset: number = 0,
         @Arg('limit', () => Int) limit: number = 10
@@ -100,6 +105,7 @@ export class TopCollectionResolver {
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
             .addSelect('sales_last_duration AS sales')
+            .addSelect('category AS category')
             .addSelect(
                 'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
             )
@@ -108,6 +114,7 @@ export class TopCollectionResolver {
                     .select('collection.id AS collectionId')
                     .addSelect('collection.metadata AS metadata')
                     .addSelect('collection.stats AS stats')
+                    .addSelect('collection.category AS category')
                 if (timeFrame === Timeframe.ALL) {
                     inBuilder
                         .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
@@ -125,6 +132,10 @@ export class TopCollectionResolver {
                             `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
                         )
                         .where(`sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}'`)
+                }
+
+                if (category.length > 0) {
+                    inBuilder.andWhere('collection.category IN (:...category)', { category })
                 }
 
                 inBuilder
