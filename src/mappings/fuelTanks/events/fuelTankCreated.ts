@@ -115,6 +115,18 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         return calls.fuelTanks.createFuelTank.v602.decode(call)
     }
 
+    if (calls.fuelTanks.createFuelTank.v601.is(call)) {
+        return calls.fuelTanks.createFuelTank.v601.decode(call)
+    }
+
+    if (calls.fuelTanks.createFuelTank.v600.is(call)) {
+        return calls.fuelTanks.createFuelTank.v600.decode(call)
+    }
+
+    if (calls.fuelTanks.createFuelTank.v500.is(call)) {
+        return calls.fuelTanks.createFuelTank.v500.decode(call)
+    }
+
     throw new UnknownVersionError(calls.fuelTanks.createFuelTank.name)
 }
 
