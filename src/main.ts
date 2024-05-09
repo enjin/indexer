@@ -364,12 +364,7 @@ processor.run(
                 for (const eventItem of block.events) {
                     // eslint-disable-next-line no-await-in-loop
 
-                    const event = await handleEvents(
-                        ctx as unknown as CommonContext,
-                        block.header,
-                        eventItem,
-                        block.header.height <= config.lastBlockHeight
-                    )
+                    const event = await handleEvents(ctx as unknown as CommonContext, block.header, eventItem, false)
 
                     if (event) {
                         if (Array.isArray(event)) {
