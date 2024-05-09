@@ -1,4 +1,4 @@
-import { DataSource } from "@subsquid/archive-registry"
+import { DataSource } from '@subsquid/archive-registry'
 
 type Parameters<T> = T extends (...args: infer T) => any ? T : never
 
@@ -13,7 +13,6 @@ export interface ProcessorConfig {
     prefix: number | string
     lastBlockHeight: number
     genesisHash: string
-    rpc: string
     batchSize?: number
     redisHost: string
     redisDb: number

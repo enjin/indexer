@@ -3,8 +3,8 @@ import config from './config'
 import { events, calls } from './types/generated'
 
 export const processor = new SubstrateBatchProcessor()
-    .setRpcEndpoint(config.rpc)
-    .setGateway('https://v2.archive.subsquid.io/network/enjin-matrix')
+    .setRpcEndpoint(config.dataSource.chain)
+    .setGateway(config.dataSource.archive)
     .setBlockRange({ from: 0 })
     .addCall({
         name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
