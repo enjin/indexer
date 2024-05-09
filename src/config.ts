@@ -5,9 +5,8 @@ const config: ProcessorConfig = {
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
     lastBlockHeight: process.env.LAST_BLOCK_HEIGHT ? parseInt(process.env.LAST_BLOCK_HEIGHT, 10) : 0,
     genesisHash: process.env.GENESIS_HASH || '0x3af4ff48ec76d2efc8476730f423ac07e25ad48f5f4c9dc39c778b164d808615',
-    rpc: process.env.CHAIN_RPC || 'wss://rpc.matrix.blockchain.enjin.io',
     dataSource: {
-        archive: process.env.ARCHIVE_ENDPOINT || 'https://matrixchain.archive.subsquid.io/graphql',
+        archive: process.env.ARCHIVE_ENDPOINT || 'https://v2.archive.subsquid.io/network/enjin-matrix',
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
     },
     redisHost: process.env.REDIS_HOST || 'indexer_redis',
