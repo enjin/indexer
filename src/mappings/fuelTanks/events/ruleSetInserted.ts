@@ -33,6 +33,42 @@ function getCallData(call: CallItem) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
     }
 
+    if (calls.fuelTanks.insertRuleSet.v1005.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1005.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v1004.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1004.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v1003.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1003.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v1000.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1000.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v604.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v604.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v602.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v602.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v601.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v601.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v600.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v600.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v500.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v500.decode(call)
+    }
+
     throw new UnknownVersionError(calls.fuelTanks.insertRuleSet.name)
 }
 
