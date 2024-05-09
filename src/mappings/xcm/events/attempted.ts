@@ -65,7 +65,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         }
 
         if (data.v1003.is(call)) {
-            callData = data.v1000.decode(call)
+            callData = data.v1003.decode(call)
         }
 
         if (data.v1000.is(call)) {
