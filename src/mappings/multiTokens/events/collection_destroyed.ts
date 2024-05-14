@@ -9,6 +9,7 @@ import {
     RoyaltyCurrency,
     Trait,
 } from '../../../model'
+import { Sns } from '../../../common/sns'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
@@ -55,6 +56,18 @@ export async function collectionDestroyed(
     await Promise.all([ctx.store.remove(traits), ctx.store.remove(royaltyCurrencies), ctx.store.remove(attributes)])
 
     await ctx.store.remove(collection)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                caller: data.caller,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data)
 }

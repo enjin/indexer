@@ -11,6 +11,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -89,6 +90,27 @@ export async function listingCancelled(
     }
 
     syncCollectionStats(listing.makeAssetId.collection.id)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
+                },
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, listing)
 }

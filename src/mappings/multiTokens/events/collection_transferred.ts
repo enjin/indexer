@@ -4,6 +4,7 @@ import { events } from '../../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.collectionTransferred.matrixEnjinV1004.is(event)) {
@@ -49,6 +50,18 @@ export async function collectionTransferred(
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
 
     await ctx.store.save(collection)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                owner: data.newOwner,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data)
 }

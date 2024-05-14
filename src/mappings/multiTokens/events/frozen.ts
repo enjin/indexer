@@ -13,6 +13,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { isTokenFrozen } from './token_created'
+import { Sns } from '../../../common/sns'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.frozen.matrixEnjinV603.is(event)) {
@@ -154,6 +155,18 @@ export async function frozen(
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
         await ctx.store.save(collection)
+    }
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId.toString(),
+                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     return getEvent(item, data)

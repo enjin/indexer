@@ -16,6 +16,7 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
+import { Sns } from '../../../common/sns'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.listingFilled.matrixEnjinV603.is(event)) {
@@ -123,6 +124,32 @@ export async function listingFilled(
     await ctx.store.save(listing.makeAssetId)
 
     syncCollectionStats(listing.makeAssetId.collection.id)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
+                },
+                buyer: { id: data.buyer },
+                amountFilled: data.amountFilled,
+                amountRemaining: data.amountRemaining,
+                protocolFee: data.protocolFee,
+                royalty: data.royalty,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data, listing)
 }

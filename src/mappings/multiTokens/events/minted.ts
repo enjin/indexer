@@ -14,6 +14,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { computeTraits } from '../../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
+import { Sns } from '../../../common/sns'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.minted.matrixEnjinV603.is(event)) {
@@ -122,6 +123,22 @@ export async function minted(
 
     computeTraits(data.collectionId.toString())
     syncCollectionStats(data.collectionId.toString())
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                token: `${data.collectionId}-${data.tokenId}`,
+                issuer: data.issuer,
+                recipient: data.recipient,
+                amount: data.amount,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data, token)
 }

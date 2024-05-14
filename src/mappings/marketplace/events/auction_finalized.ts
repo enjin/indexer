@@ -13,6 +13,7 @@ import {
 } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
 import { getBestListing } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -114,6 +115,36 @@ export async function auctionFinalized(
     await ctx.store.save(listing.makeAssetId)
 
     syncCollectionStats(listing.makeAssetId.collection.id)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    id: listing.id,
+                    highestPrice: listing.highestPrice.toString(),
+                    amount: listing.amount.toString(),
+                    price: listing.price.toString(),
+                    data: listing.data.toJSON(),
+                },
+                winningBid: data.winningBid
+                    ? {
+                          bidder: {
+                              id: data.winningBid.bidder,
+                          },
+                          price: data.winningBid.price.toString(),
+                      }
+                    : null,
+                protocolFee: data.protocolFee,
+                royalty: data.royalty,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data, listing)
 }
