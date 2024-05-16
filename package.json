@@ -23,7 +23,7 @@
     "@polkadot/types": "^10.12.4",
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
-    "@sentry/integrations": "^7.109.0",
+    "@sentry/integrations": "^7.114.0",
     "@sentry/node": "^7.109.0",
     "@subsquid/archive-registry": "^3.3.2",
     "@subsquid/cli": "^2.9.3",
