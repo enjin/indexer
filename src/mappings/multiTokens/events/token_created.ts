@@ -28,7 +28,6 @@ import {
 } from '../../../types/generated/matrixEnjinV603'
 import { CallItem, CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { processMetadata } from '../../../jobs/process-metadata'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
@@ -519,7 +518,6 @@ export async function tokenCreated(
         })
 
         await ctx.store.save(token)
-        processMetadata(token.id, 'token')
     }
 
     return getEvent(item, eventData)
