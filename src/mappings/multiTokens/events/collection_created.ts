@@ -17,6 +17,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 import { DefaultRoyalty } from '../../../types/generated/v500'
 import { AssetId } from '../../../types/generated/matrixEnjinV603'
 
@@ -239,6 +240,18 @@ export async function collectionCreated(
         .map((rc: any) => ctx.store.save(rc))
 
     await Promise.all(royaltyPromises)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: eventData.collectionId,
+                owner: eventData.owner,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, eventData)
 }

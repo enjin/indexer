@@ -19,6 +19,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
+import { Sns } from '../../../common/sns'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -127,6 +128,27 @@ export async function listingCreated(
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
     syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
+                },
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data)
 }

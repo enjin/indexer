@@ -13,6 +13,7 @@ import {
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
+import { Sns } from '../../../common/sns'
 import { getBestListing, getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
@@ -104,6 +105,33 @@ export async function bidPlaced(
     }
 
     syncCollectionStats(listing.makeAssetId.collection.id)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                listing: {
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    id: listing.id,
+                    highestPrice: listing.highestPrice.toString(),
+                    amount: listing.amount.toString(),
+                    price: listing.price.toString(),
+                    data: listing.data.toJSON(),
+                },
+                bid: {
+                    id: bid.id,
+                    price: bid.price.toString(),
+                    bidder: {
+                        id: bid.bidder.id,
+                    },
+                },
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data, listing, account)
 }

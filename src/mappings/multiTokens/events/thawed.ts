@@ -11,6 +11,7 @@ import {
     TransferPolicy,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
+import { Sns } from '../../../common/sns'
 import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
 
 function getEventData(event: EventItem) {
@@ -135,6 +136,18 @@ export async function thawed(
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
         await ctx.store.save(collection)
+    }
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId.toString(),
+                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     return getEvent(item, data)

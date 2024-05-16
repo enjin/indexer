@@ -14,6 +14,7 @@ import {
     TraitToken,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
+import { Sns } from '../../../common/sns'
 
 import { computeTraits } from '../../../jobs/compute-traits'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
@@ -159,6 +160,19 @@ export async function tokenDestroyed(
     await ctx.store.remove(token)
     syncCollectionStats(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                caller: data.caller,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data)
 }
