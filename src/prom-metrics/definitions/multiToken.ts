@@ -72,7 +72,7 @@ export default async () => {
     ] = await Promise.all([
         em.query('SELECT COUNT(DISTINCT account_id) FROM token_account where total_balance::numeric > 0'),
         em.query('SELECT COUNT(*) as count FROM collection'),
-        em.query('SELECT SUM(supply) FROM token'),
+        em.query('SELECT COUNT(*) FROM token'),
         em.query('SELECT AVG(holders) FROM (SELECT COUNT(id) as holders FROM collection_account GROUP BY collection_id)'),
         em.query('SELECT AVG(tokens) FROM (SELECT COUNT(id) as tokens FROM token GROUP BY collection_id)'),
         em.query('SELECT AVG(tokens) FROM (SELECT COUNT(id) as tokens FROM token_account GROUP BY account_id)'),
