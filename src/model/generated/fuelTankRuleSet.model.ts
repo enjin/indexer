@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FuelTank} from "./fuelTank.model"
 import {MaxFuelBurnPerTransaction} from "./_maxFuelBurnPerTransaction"
@@ -16,29 +16,29 @@ export class FuelTankRuleSet {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     index!: number
 
     @Index_()
     @ManyToOne_(() => FuelTank, {nullable: true})
     tank!: FuelTank
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isFrozen!: boolean
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isPermittedExtrinsicsEmpty!: boolean
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isPermittedExtrinsicsNull!: boolean
 
-    @Column_("text", {array: true, nullable: true})
+    @StringColumn_({array: true, nullable: true})
     whitelistedCallers!: (string)[] | undefined | null
 
-    @Column_("text", {array: true, nullable: true})
+    @StringColumn_({array: true, nullable: true})
     whitelistedCollections!: (string | undefined | null)[] | undefined | null
 
-    @Column_("text", {array: true, nullable: true})
+    @StringColumn_({array: true, nullable: true})
     whitelistedPallets!: (string)[] | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new MaxFuelBurnPerTransaction(undefined, obj)}, nullable: true})
@@ -53,7 +53,7 @@ export class FuelTankRuleSet {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new RequireToken(undefined, obj)}, nullable: true})
     requireToken!: RequireToken | undefined | null
 
-    @Column_("text", {array: true, nullable: true})
+    @StringColumn_({array: true, nullable: true})
     permittedCalls!: (string)[] | undefined | null
 
     @OneToMany_(() => PermittedExtrinsics, e => e.ruleSet)

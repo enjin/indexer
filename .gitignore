@@ -6,3 +6,4 @@
 *.dev*
 .env
 /builds
+src/cli

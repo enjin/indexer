@@ -4,7 +4,7 @@ import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } fr
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { Collection, CollectionAccount, Listing, ListingSale, ListingStatus, Token } from '../../model'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -101,14 +101,19 @@ export class TopCollectionResolver {
         const builder = manager
             .createQueryBuilder()
             .addSelect('collectionId AS id')
-            .addSelect('(SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId) AS users')
+            // .addSelect('(SELECT COUNT(*)::int FROM collection_account a where a.collection_id = l.collectionId) AS users')
             .addSelect('metadata AS metadata')
             .addSelect('stats AS stats')
             .addSelect('volume_last_duration AS volume')
             .addSelect('sales_last_duration AS sales')
             .addSelect('category AS category')
+            .addSelect('users_last_duration AS users_last_duration')
             .addSelect(
                 'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
+            )
+            .addSelect(
+                '0.3 * (volume_last_duration / NULLIF(MAX(volume_last_duration) OVER(), 0)) + ' +
+                    '0.25 * (sales_last_duration / NULLIF(MAX(sales_last_duration) OVER(), 0)) AS trending_score'
             )
             .from((qb) => {
                 const inBuilder = qb
@@ -121,6 +126,7 @@ export class TopCollectionResolver {
                         .addSelect(`SUM(sale.amount * sale.price) AS volume_last_duration`)
                         .addSelect(`COUNT(sale.id)::int AS sales_last_duration`)
                         .addSelect(`0 AS volume_previous_duration`)
+                        .addSelect(`COUNT(collectionAccount.id)::int AS users_last_duration`)
                 } else {
                     inBuilder
                         .addSelect(
@@ -128,6 +134,9 @@ export class TopCollectionResolver {
                         )
                         .addSelect(
                             `SUM(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.amount * sale.price ELSE 0 END) AS volume_previous_duration`
+                        )
+                        .addSelect(
+                            `COUNT(CASE WHEN collectionAccount.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN 1 ELSE 0 END)::int AS users_last_duration`
                         )
                         .addSelect(
                             `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
@@ -148,6 +157,7 @@ export class TopCollectionResolver {
                     .innerJoin(Listing, 'listing', 'listing.id = sale.listing')
                     .innerJoin(Token, 'token', 'listing.make_asset_id_id = token.id')
                     .innerJoin(Collection, 'collection', 'token.collection = collection.id')
+                    .innerJoin(CollectionAccount, 'collectionAccount', 'collectionAccount.collection = collection.id')
                     .leftJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
                     .addGroupBy('collection.id')
 
@@ -157,6 +167,8 @@ export class TopCollectionResolver {
             .addOrderBy('id', 'DESC')
             .limit(limit)
             .offset(offset)
+
+        console.log(await builder.getRawMany())
 
         return builder.getRawMany()
     }

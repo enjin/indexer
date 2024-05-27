@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, OneToOne as OneToOne_, Index as Index_, JoinColumn as JoinColumn_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Registration} from "./registration.model"
 
@@ -16,10 +16,10 @@ export class Identity {
     @JoinColumn_()
     account!: Account
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isSub!: boolean
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     name!: string | undefined | null
 
     @Index_()
@@ -33,6 +33,6 @@ export class Identity {
     @OneToMany_(() => Identity, e => e.super)
     sub!: Identity[]
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 }

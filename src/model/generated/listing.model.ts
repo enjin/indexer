@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, OneToMany as OneToMany_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Token} from "./token.model"
@@ -31,25 +31,25 @@ export class Listing {
     @ManyToOne_(() => Token, {nullable: true})
     takeAssetId!: Token
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     amount!: bigint
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     price!: bigint
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     minTakeValue!: bigint
 
     @Column_("varchar", {length: 5, nullable: false})
     feeSide!: FeeSide
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     height!: number
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     deposit!: bigint
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     salt!: string
 
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingData(obj)}, nullable: false})
@@ -68,14 +68,14 @@ export class Listing {
     sales!: ListingSale[]
 
     @Index_()
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     highestPrice!: bigint
 
-    @Column_("bool", {nullable: true})
+    @BooleanColumn_({nullable: true})
     deadListing!: boolean | undefined | null
 
     @Index_()
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isActive!: boolean
 
     @Index_()
@@ -83,9 +83,9 @@ export class Listing {
     type!: ListingType
 
     @Index_()
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     updatedAt!: Date
 }

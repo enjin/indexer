@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, IntColumn as IntColumn_, OneToMany as OneToMany_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Balance} from "./_balance"
 import {Extrinsic} from "./extrinsic.model"
@@ -19,10 +19,10 @@ export class Account {
     id!: string
 
     @Index_()
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     address!: string
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     nonce!: number
 
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new Balance(undefined, obj)}, nullable: false})
@@ -43,20 +43,24 @@ export class Account {
     @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
 
+    @OneToOne_(() => Identity, e => e.account)
+    identity!: Identity | undefined | null
 
+    @OneToOne_(() => IdentityRegistrar, e => e.account)
+    registrar!: IdentityRegistrar | undefined | null
 
-    @Column_("int4", {nullable: true})
+    @IntColumn_({nullable: true})
     lastUpdateBlock!: number | undefined | null
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     username!: string | undefined | null
 
-    @Column_("timestamp with time zone", {nullable: true})
+    @DateTimeColumn_({nullable: true})
     verifiedAt!: Date | undefined | null
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     verified!: boolean
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     image!: string | undefined | null
 }

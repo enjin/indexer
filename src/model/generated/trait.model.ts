@@ -1,5 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
-import * as marshal from "./marshal"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {TraitToken} from "./traitToken.model"
 
@@ -16,13 +15,13 @@ export class Trait {
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Collection
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     traitType!: string
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     value!: string
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     count!: bigint
 
     @OneToMany_(() => TraitToken, e => e.trait)

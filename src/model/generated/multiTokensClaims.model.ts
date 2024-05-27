@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 
 @Entity_()
@@ -14,12 +14,12 @@ export class MultiTokensClaims {
     @ManyToOne_(() => Account, {nullable: true})
     account!: Account
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     ethAccount!: string
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     completed!: boolean
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 }

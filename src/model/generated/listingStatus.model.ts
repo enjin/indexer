@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {ListingStatusType} from "./_listingStatusType"
 import {Listing} from "./listing.model"
 
@@ -18,9 +18,9 @@ export class ListingStatus {
     @ManyToOne_(() => Listing, {nullable: true})
     listing!: Listing
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     height!: number
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 }

@@ -511,7 +511,7 @@ type CollectionAccount @entity {
   collection: Collection! @index
 
   # Extras
-  createdAt: DateTime!
+  createdAt: DateTime! @index
   updatedAt: DateTime!
 }
 
