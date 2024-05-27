@@ -44,7 +44,7 @@
     "pg": "^8.11.3",
     "prom-client": "^15.1.2",
     "type-graphql": "^1.2.0-rc.1",
-    "web3-validator": "^2.0.5"
+    "web3-validator": "^2.0.6"
   },
   "devDependencies": {
     "@polkadot/typegen": "^11.0.3",
