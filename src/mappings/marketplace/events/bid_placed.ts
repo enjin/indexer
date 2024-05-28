@@ -66,6 +66,7 @@ export async function bidPlaced(
         ctx.store.findOne<Listing>(Listing, {
             where: { id: listingId },
             relations: {
+                seller: true,
                 makeAssetId: {
                     collection: true,
                     bestListing: true,
