@@ -33,6 +33,7 @@ enum TopCollectionOrderBy {
     USERS = 'users',
     CATEGORY = 'category',
     TRENDING = 'trending_score',
+    TOP = 'top_score',
 }
 
 enum Order {
@@ -107,6 +108,10 @@ export class TopCollectionResolver {
                     'COALESCE(0.35 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) +' +
                     'COALESCE(0.20 * (avg_sale_change / NULLIF(MAX(avg_sale_change) OVER(), 0)),0) +' +
                     'COALESCE(0.25 * (users / NULLIF(MAX(users) OVER(), 0)), 0) AS trending_score'
+            )
+            .addSelect(
+                'COALESCE(0.80 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
+                    'COALESCE(0.20 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) AS top_score'
             )
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
