@@ -32,6 +32,7 @@ enum TopCollectionOrderBy {
     VOLUME_CHANGE = 'volume_change',
     USERS = 'users',
     CATEGORY = 'category',
+    TRENDING = 'trending_score',
 }
 
 enum Order {
@@ -102,12 +103,11 @@ export class TopCollectionResolver {
             .createQueryBuilder()
             .select('*')
             .addSelect(
-                '0.3 * (volume / NULLIF(MAX(volume) OVER(), 0)) + ' +
-                    '0.25 * (sales / NULLIF(MAX(sales) OVER(), 0)) +' +
-                    //  '0.15 * (avg_sale_change / NULLIF(MAX(avg_sale_change) OVER(), 0)) +' +
-                    '0.15 * (users / NULLIF(MAX(users) OVER(), 0)) AS trending_score'
+                'COALESCE(0.20 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
+                    'COALESCE(0.35 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) +' +
+                    'COALESCE(0.20 * (avg_sale_change / NULLIF(MAX(avg_sale_change) OVER(), 0)),0) +' +
+                    'COALESCE(0.25 * (users / NULLIF(MAX(users) OVER(), 0)), 0) AS trending_score'
             )
-
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
@@ -124,7 +124,9 @@ export class TopCollectionResolver {
                     .addSelect(
                         'CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END AS avg_sale_change'
                     )
-                    .addSelect('MAX(avg_sale_change) OVER() AS max_avg_sale_change')
+                    .addSelect(
+                        'MAX(CASE WHEN previous_avg_sale != 0 THEN ROUND((last_avg_sale - previous_avg_sale) * 100 / previous_avg_sale, 2) ELSE null END) OVER() AS max_avg_sale_change'
+                    )
 
                     .from((qb) => {
                         const inBuilder = qb
@@ -187,8 +189,6 @@ export class TopCollectionResolver {
             .addOrderBy('id', 'DESC')
             .limit(limit)
             .offset(offset)
-
-        console.log(await builder.getRawMany())
 
         return builder.getRawMany()
     }
