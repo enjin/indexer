@@ -86,6 +86,9 @@ export class Collection {
     @StringColumn_({nullable: true})
     category!: string | undefined | null
 
+    @DateTimeColumn_({nullable: true})
+    verifiedAt!: Date | undefined | null
+
     @BooleanColumn_({nullable: false})
     hidden!: boolean
 
