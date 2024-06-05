@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {CollectionApproval} from "./_collectionApproval"
 import {Account} from "./account.model"
@@ -13,13 +13,13 @@ export class CollectionAccount {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isFrozen!: boolean
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.map((val: any) => val.toJSON()), from: obj => obj == null ? undefined : marshal.fromList(obj, val => new CollectionApproval(undefined, marshal.nonNull(val)))}, nullable: true})
     approvals!: (CollectionApproval)[] | undefined | null
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     accountCount!: number
 
     @Index_()
@@ -30,9 +30,10 @@ export class CollectionAccount {
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Collection
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @Index_()
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     updatedAt!: Date
 }

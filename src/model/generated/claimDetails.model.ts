@@ -1,5 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_} from "typeorm"
-import * as marshal from "./marshal"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, BigIntColumn as BigIntColumn_} from "@subsquid/typeorm-store"
 
 @Entity_()
 export class ClaimDetails {
@@ -10,12 +9,12 @@ export class ClaimDetails {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("int4", {nullable: true})
+    @IntColumn_({nullable: true})
     exchangeRate!: number | undefined | null
 
-    @Column_("int4", {nullable: true})
+    @IntColumn_({nullable: true})
     delayClaimsPeriod!: number | undefined | null
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     totalUnclaimedAmount!: bigint
 }

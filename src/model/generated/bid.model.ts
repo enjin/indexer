@@ -1,5 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_} from "typeorm"
-import * as marshal from "./marshal"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {Account} from "./account.model"
 import {Listing} from "./listing.model"
 
@@ -16,19 +15,19 @@ export class Bid {
     @ManyToOne_(() => Account, {nullable: true})
     bidder!: Account
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     price!: bigint
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
     listing!: Listing
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     height!: number
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     extrinsicHash!: string | undefined | null
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 }

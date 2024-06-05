@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
@@ -21,13 +21,13 @@ export class Token {
     id!: string
 
     @Index_()
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     tokenId!: bigint
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     supply!: bigint
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isFrozen!: boolean
 
     @Column_("varchar", {length: 9, nullable: true})
@@ -39,19 +39,19 @@ export class Token {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : fromJsonTokenBehavior(obj)}, nullable: true})
     behavior!: TokenBehavior | undefined | null
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     listingForbidden!: boolean
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: true})
+    @BigIntColumn_({nullable: true})
     unitPrice!: bigint | undefined | null
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     minimumBalance!: bigint
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     mintDeposit!: bigint
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     attributeCount!: number
 
     @Index_()
@@ -85,13 +85,13 @@ export class Token {
     @ManyToOne_(() => ListingSale, {nullable: true})
     lastSale!: ListingSale | undefined | null
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     nonFungible!: boolean
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
     @Index_()
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 }

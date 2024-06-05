@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, StringColumn as StringColumn_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_, BooleanColumn as BooleanColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {MintPolicy} from "./_mintPolicy"
@@ -25,7 +25,7 @@ export class Collection {
     id!: string
 
     @Index_()
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     collectionId!: bigint
 
     @Index_()
@@ -41,19 +41,19 @@ export class Collection {
     @OneToMany_(() => RoyaltyCurrency, e => e.collection)
     explicitRoyaltyCurrencies!: RoyaltyCurrency[]
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     burnPolicy!: string | undefined | null
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new TransferPolicy(undefined, obj)}, nullable: true})
     transferPolicy!: TransferPolicy | undefined | null
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     attributePolicy!: string | undefined | null
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     attributeCount!: number
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     totalDeposit!: bigint
 
     @OneToMany_(() => Token, e => e.collection)
@@ -74,7 +74,7 @@ export class Collection {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionFlags(undefined, obj)}, nullable: false})
@@ -83,10 +83,10 @@ export class Collection {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionSocials(undefined, obj)}, nullable: false})
     socials!: CollectionSocials
 
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     category!: string | undefined | null
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     hidden!: boolean
 
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new CollectionStats(undefined, obj)}, nullable: false})

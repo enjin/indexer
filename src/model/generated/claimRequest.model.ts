@@ -1,5 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, Index as Index_} from "typeorm"
-import * as marshal from "./marshal"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, StringColumn as StringColumn_, Index as Index_, BigIntColumn as BigIntColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import {AccountClaimType} from "./_accountClaimType"
 
 @Entity_()
@@ -11,37 +10,37 @@ export class ClaimRequest {
     @PrimaryColumn_()
     id!: string
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     account!: string
 
     @Column_("varchar", {length: 9, nullable: false})
     acountType!: AccountClaimType
 
     @Index_({unique: true})
-    @Column_("text", {nullable: true})
+    @StringColumn_({nullable: true})
     hash!: string | undefined | null
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     amountClaimable!: bigint
 
-    @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
+    @BigIntColumn_({nullable: false})
     amountBurned!: bigint
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isEfiToken!: boolean
 
-    @Column_("int4", {nullable: true})
+    @IntColumn_({nullable: true})
     extrinsicIndex!: number | undefined | null
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isClaimed!: boolean
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isRejected!: boolean
 
-    @Column_("timestamp with time zone", {nullable: false})
+    @DateTimeColumn_({nullable: false})
     createdAt!: Date
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     createdBlock!: number
 }

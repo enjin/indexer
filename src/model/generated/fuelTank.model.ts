@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToMany as OneToMany_} from "typeorm"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {FuelTankUserAccounts} from "./fuelTankUserAccounts.model"
@@ -19,20 +19,20 @@ export class FuelTank {
     @ManyToOne_(() => Account, {nullable: true})
     tankAccount!: Account
 
-    @Column_("text", {nullable: false})
+    @StringColumn_({nullable: false})
     name!: string
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     owner!: Account
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     providesDeposit!: boolean
 
-    @Column_("bool", {nullable: false})
+    @BooleanColumn_({nullable: false})
     isFrozen!: boolean
 
-    @Column_("int4", {nullable: false})
+    @IntColumn_({nullable: false})
     accountCount!: number
 
     @OneToMany_(() => FuelTankUserAccounts, e => e.tank)
