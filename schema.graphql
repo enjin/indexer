@@ -447,7 +447,6 @@ type TraitToken @entity {
 type CollectionFlags {
   hiddenForLegalReasons: Boolean!
   featured: Boolean!
-  verified: Boolean!
 }
 
 type CollectionSocials {
@@ -487,6 +486,7 @@ type Collection @entity {
   flags: CollectionFlags!
   socials: CollectionSocials!
   category: String
+  verifiedAt: DateTime
   hidden: Boolean!
 
   # Marketplace analytics
