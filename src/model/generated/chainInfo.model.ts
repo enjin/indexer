@@ -33,6 +33,10 @@ export class ChainInfo {
     @DateTimeColumn_({nullable: false})
     timestamp!: Date
 
+    @Index_()
+    @StringColumn_({nullable: true})
+    validator!: string | undefined | null
+
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Marketplace(undefined, obj)}, nullable: true})
     marketplace!: Marketplace | undefined | null
 }

@@ -94,6 +94,7 @@ export const processor = new SubstrateBatchProcessor()
     .setFields({
         block: {
             timestamp: true,
+            validator: true,
         },
         call: {
             origin: true,
