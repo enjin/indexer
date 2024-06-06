@@ -5,7 +5,7 @@ import config from './config'
 import { CommonContext } from './mappings/types/contexts'
 import Rpc from './common/rpc'
 
-export async function chainState(ctx: CommonContext, block: BlockHeader<{ block: { timestamp: true } }>) {
+export async function chainState(ctx: CommonContext, block: BlockHeader<{ block: { timestamp: true; validator: true } }>) {
     try {
         const { api } = await Rpc.getInstance()
 
@@ -19,6 +19,7 @@ export async function chainState(ctx: CommonContext, block: BlockHeader<{ block:
         state.blockHash = block.hash
         state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
         state.timestamp = new Date(block.timestamp ?? 0)
+        state.validator = block.validator ?? null
         state.marketplace = new Marketplace({
             protocolFee: 25_000000,
             listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
