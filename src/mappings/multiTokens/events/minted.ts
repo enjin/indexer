@@ -15,6 +15,7 @@ import { computeTraits } from '../../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 import { Sns } from '../../../common/sns'
+import { processMetadata } from '../../../jobs/process-metadata'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.minted.matrixEnjinV603.is(event)) {
@@ -121,6 +122,7 @@ export async function minted(
 
     await Promise.all(promises)
 
+    processMetadata(token.id, 'token', true)
     computeTraits(data.collectionId.toString())
     syncCollectionStats(data.collectionId.toString())
 
