@@ -1,18 +1,12 @@
 import math, { BigNumber } from 'mathjs'
-import { Collection, Trait, Token } from '../../model'
-
-type Data = {
-    collection: Collection
-    totalSupply: bigint
-    entropy: number
-}
+import { Trait, Token } from '../../model'
 
 export const informationContentScoring = {
-    scoreToken(data: Data, token: Token) {
+    scoreToken(totalSupply: bigint, entropy: number, token: Token) {
         const traits = token.traits.map((trait) => trait.trait)
-        const tokenAttributesScore = this.getTokenAttributesScore(data.totalSupply, traits)
+        const tokenAttributesScore = this.getTokenAttributesScore(totalSupply, traits)
 
-        return math.bignumber(tokenAttributesScore).div(data.entropy)
+        return math.bignumber(tokenAttributesScore).div(entropy)
     },
 
     getTokenAttributesScore(totalSupply: bigint, tokenTraits: Trait[]) {
