@@ -594,6 +594,14 @@ type Token @entity {
   createdAt: DateTime! @index
 }
 
+type TokenRarity @entity {
+  id: ID!
+  collection: Collection!
+  token: Token!
+  score: Float!
+  rank: Int!
+}
+
 type TokenApproval {
   account: String!
   amount: BigInt!
