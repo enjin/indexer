@@ -1,8 +1,8 @@
 import Queue from 'bull'
-import math from 'mathjs'
-import { informationContentScoring } from 'src/open-rarity/handlers/information-content-scoring'
+import * as mathjs from 'mathjs'
+import { informationContentScoring } from '../open-rarity/handlers/information-content-scoring'
 import connection from '../connection'
-import { Collection, Token } from '../model'
+import { Collection, Token, TokenRarity } from '../model'
 import { JobData } from '../jobs/rarity-ranker'
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
@@ -17,6 +17,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const em = connection.manager
+
+    console.time('rarity-ranker')
 
     const [collection, tokens] = await Promise.all([
         em.findOneOrFail(Collection, {
@@ -35,6 +37,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         }),
     ])
 
+    console.timeLog('rarity-ranker', 'collection and tokens fetched')
+
     const totalSupply = collection.stats.supply
 
     // check if total supply is greater than 0
@@ -44,6 +48,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
 
+    console.timeLog('rarity-ranker', 'entropy calculated')
+
     if (!entropy) {
         return done(new Error('Collection entropy is 0'))
     }
@@ -52,21 +58,35 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
     })
 
-    tokenRarities.sort((a, b) => Number(math.compare(a.score, b.score)))
+    tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
 
     // rank tokens, if score of two tokens is same, then rank them same as well
 
     let rank = 1
     let previousScore = tokenRarities[0].score
 
-    tokenRarities.forEach((tokenRarity, index) => {
-        if (math.compare(tokenRarity.score.toNumber(), previousScore.toNumber()) !== 0) {
+    const tokenRanks = tokenRarities.map((tokenRarity, index) => {
+        if (mathjs.compare(tokenRarity.score.toNumber(), previousScore.toNumber()) !== 0) {
             rank = index + 1
             previousScore = tokenRarity.score
         }
 
-        console.log(`Token ID: ${tokenRarity.token.id}, Rank: ${rank}`)
+        return new TokenRarity({
+            id: `${tokenRarity.token.id}`,
+            collection,
+            token: tokenRarity.token,
+            score: tokenRarity.score.toNumber(),
+            rank,
+        })
     })
+
+    // delete existing token rarities
+    await em.delete(TokenRarity, { collection: { id: job.data.collectionId } })
+
+    // save new token rarities
+    await em.save(tokenRanks)
+
+    console.timeEnd('rarity-ranker')
 
     return done()
 }

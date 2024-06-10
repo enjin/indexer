@@ -1,31 +1,36 @@
-import math, { BigNumber } from 'mathjs'
+import * as mathjs from 'mathjs'
 import { Trait, Token } from '../../model'
 
 export const informationContentScoring = {
     scoreToken(totalSupply: bigint, entropy: number, token: Token) {
         const traits = token.traits.map((trait) => trait.trait)
+
+        if (traits.length === 0) {
+            return mathjs.bignumber(0)
+        }
+
         const tokenAttributesScore = this.getTokenAttributesScore(totalSupply, traits)
 
-        return math.bignumber(tokenAttributesScore).div(entropy)
+        return mathjs.bignumber(tokenAttributesScore).div(entropy)
     },
 
     getTokenAttributesScore(totalSupply: bigint, tokenTraits: Trait[]) {
-        const scores: BigNumber[] = []
+        const scores: mathjs.BigNumber[] = []
 
         tokenTraits.forEach((trait) => {
-            scores.push(math.bignumber(trait.count).div(math.bignumber(totalSupply)))
+            scores.push(mathjs.bignumber(trait.count).div(mathjs.bignumber(totalSupply)))
         })
 
-        return math.sum(math.log2(scores))
+        return mathjs.sum(mathjs.log2(scores))
     },
 
     collectionEntropy(totalSupply: bigint, traits: Trait[]) {
-        const collectionProbabilities: BigNumber[] = []
+        const collectionProbabilities: mathjs.BigNumber[] = []
 
         traits.forEach((trait) => {
-            collectionProbabilities.push(math.bignumber(trait.count).div(math.bignumber(totalSupply)))
+            collectionProbabilities.push(mathjs.bignumber(trait.count).div(mathjs.bignumber(totalSupply)))
         })
 
-        return math.dot(collectionProbabilities, math.log2(collectionProbabilities))
+        return mathjs.dot(collectionProbabilities, mathjs.log2(collectionProbabilities))
     },
 }
