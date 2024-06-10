@@ -64,6 +64,9 @@ export class CollectionRow {
     @Field({ nullable: true })
     category!: string
 
+    @Field({ nullable: true })
+    verifiedAt!: string
+
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
 
@@ -138,6 +141,7 @@ export class TopCollectionResolver {
                             .select('collection.id AS collectionId')
                             .addSelect('collection.metadata AS metadata')
                             .addSelect('collection.stats AS stats')
+                            .addSelect('collection.verifiedAt AS verifiedAt')
                             .addSelect('collection.category AS category')
                         if (timeFrame === Timeframe.ALL) {
                             inBuilder
