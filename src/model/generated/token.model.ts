@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, BigIntColumn as BigIntColumn_, Index as Index_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, OneToMany as OneToMany_, OneToOne as OneToOne_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
@@ -9,6 +9,7 @@ import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
 import {TraitToken} from "./traitToken.model"
 import {ListingSale} from "./listingSale.model"
+import {TokenRarity} from "./tokenRarity.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -84,6 +85,9 @@ export class Token {
     @Index_()
     @ManyToOne_(() => ListingSale, {nullable: true})
     lastSale!: ListingSale | undefined | null
+
+    @OneToOne_(() => TokenRarity, e => e.token)
+    rarity!: TokenRarity | undefined | null
 
     @BooleanColumn_({nullable: false})
     nonFungible!: boolean

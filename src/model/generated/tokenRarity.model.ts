@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, FloatColumn as FloatColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, OneToOne as OneToOne_, JoinColumn as JoinColumn_, FloatColumn as FloatColumn_, IntColumn as IntColumn_} from "@subsquid/typeorm-store"
 import {Collection} from "./collection.model"
 import {Token} from "./token.model"
 
@@ -15,8 +15,9 @@ export class TokenRarity {
     @ManyToOne_(() => Collection, {nullable: true})
     collection!: Collection
 
-    @Index_()
-    @ManyToOne_(() => Token, {nullable: true})
+    @Index_({unique: true})
+    @OneToOne_(() => Token, {nullable: true})
+    @JoinColumn_()
     token!: Token
 
     @FloatColumn_({nullable: false})
