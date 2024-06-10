@@ -141,7 +141,7 @@ export class TopCollectionResolver {
                             .select('collection.id AS collectionId')
                             .addSelect('collection.metadata AS metadata')
                             .addSelect('collection.stats AS stats')
-                            .addSelect('collection.verifiedAt AS verifiedAt')
+                            .addSelect('collection.verified_at AS verifiedAt')
                             .addSelect('collection.category AS category')
                         if (timeFrame === Timeframe.ALL) {
                             inBuilder
