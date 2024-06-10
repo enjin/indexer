@@ -37,8 +37,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         }),
     ])
 
-    console.timeLog('rarity-ranker', 'collection and tokens fetched')
-
     const totalSupply = collection.stats.supply
 
     // check if total supply is greater than 0
@@ -47,8 +45,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
-
-    console.timeLog('rarity-ranker', 'entropy calculated')
 
     if (!entropy) {
         return done(new Error('Collection entropy is 0'))
@@ -60,23 +56,21 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
 
-    // rank tokens, if score of two tokens is same, then rank them same as well
-
-    let rank = 1
-    let previousScore = tokenRarities[0].score
+    // sort by token.id if two tokens have the same score
+    tokenRarities.sort((a, b) => {
+        if (Number(mathjs.compare(a.score, b.score)) === 0) {
+            return Number(mathjs.compare(mathjs.bignumber(a.token.tokenId), mathjs.bignumber(b.token.tokenId)))
+        }
+        return 0
+    })
 
     const tokenRanks = tokenRarities.map((tokenRarity, index) => {
-        if (mathjs.compare(tokenRarity.score.toNumber(), previousScore.toNumber()) !== 0) {
-            rank += 1
-            previousScore = tokenRarity.score
-        }
-
         return new TokenRarity({
             id: `${tokenRarity.token.id}`,
             collection,
             token: tokenRarity.token,
             score: tokenRarity.score.toNumber(),
-            rank,
+            rank: index + 1,
         })
     })
 
