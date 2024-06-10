@@ -67,7 +67,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     const tokenRanks = tokenRarities.map((tokenRarity, index) => {
         if (mathjs.compare(tokenRarity.score.toNumber(), previousScore.toNumber()) !== 0) {
-            rank = index + 1
+            rank += 1
             previousScore = tokenRarity.score
         }
 

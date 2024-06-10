@@ -4,7 +4,7 @@ import Queue from 'bull'
 import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
 import { JobData } from '../jobs/compute-traits'
-import { rarityQueue } from '../jobs/rarity-ranker'
+import { computeRarityRank, rarityQueue } from '../jobs/rarity-ranker'
 
 type TraitValueMap = Map<string, bigint>
 
@@ -120,7 +120,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         await em.save(TraitToken, traitTokensToSave as any, { chunk: 1000 })
     }
 
-    rarityQueue.add({ collectionId })
+    computeRarityRank(collectionId)
 
     done(null, { timeElapsed: new Date().getTime() - start.getTime() })
 }
