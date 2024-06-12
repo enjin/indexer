@@ -480,6 +480,7 @@ type Collection @entity {
   tokenAccounts: [TokenAccount] @derivedFrom(field: "collection")
   attributes: [Attribute] @derivedFrom(field: "collection")
   traits: [Trait] @derivedFrom(field: "collection")
+  rarity: [TokenRarity] @derivedFrom(field: "collection")
 
   # Extras
   metadata: Metadata
@@ -587,11 +588,20 @@ type Token @entity {
   bestListing: Listing 
   recentListing: Listing
   lastSale: ListingSale
+  rarity: TokenRarity @derivedFrom(field: "token")
 
   # Extras
   nonFungible: Boolean!
   metadata: Metadata
   createdAt: DateTime! @index
+}
+
+type TokenRarity @entity {
+  id: ID!
+  collection: Collection!
+  token: Token! @unique
+  score: Float!
+  rank: Int!
 }
 
 type TokenApproval {

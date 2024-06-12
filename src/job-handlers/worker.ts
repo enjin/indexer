@@ -11,6 +11,7 @@ import { fetchBalanceQueue } from '../jobs/fetch-balance'
 import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
 import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
+import { rarityQueue } from '../jobs/rarity-ranker'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -23,11 +24,13 @@ async function main() {
     console.info('handling jobs...')
 
     traitsQueue.process(2, `${__dirname}/compute-traits.js`)
+    rarityQueue.process(2, `${__dirname}/rarity-ranker.js`)
     metadataQueue.process(
         process.env.MAX_WORKER_CONCURRENCY ? parseInt(process.env.MAX_WORKER_CONCURRENCY, 10) : 50,
         `${__dirname}/process-metadata.js`
     )
-    collectionStatsQueue.process(10, `${__dirname}/collection-stats.js`)
+    collectionStatsQueue.process(2, `${__dirname}/collection-stats.js`)
+
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
     fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
     fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
@@ -51,6 +54,7 @@ async function main() {
             new BullAdapter(fetchAccountQueue),
             new BullAdapter(fetchBalanceQueue),
             new BullAdapter(traitsQueue),
+            new BullAdapter(rarityQueue),
             new BullAdapter(fetchCollectionExtraQueue),
             new BullAdapter(invalidateExpiredListings),
         ],

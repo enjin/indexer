@@ -9,7 +9,7 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
         attempts: 3,
         backoff: {
             type: 'exponential',
-            delay: 3000,
+            delay: 4000,
         },
         removeOnComplete: true,
     },

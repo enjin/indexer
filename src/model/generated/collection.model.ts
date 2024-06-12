@@ -10,6 +10,7 @@ import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Trait} from "./trait.model"
+import {TokenRarity} from "./tokenRarity.model"
 import {Metadata} from "./_metadata"
 import {CollectionFlags} from "./_collectionFlags"
 import {CollectionSocials} from "./_collectionSocials"
@@ -70,6 +71,9 @@ export class Collection {
 
     @OneToMany_(() => Trait, e => e.collection)
     traits!: Trait[]
+
+    @OneToMany_(() => TokenRarity, e => e.collection)
+    rarity!: TokenRarity[]
 
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
