@@ -377,10 +377,7 @@ processor.run(
                 }
 
                 map.balances.processor.addAccountsToSet(Array.from(signers))
-
-                if (block.header.height > config.lastBlockHeight) {
-                    await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-                }
+                await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
 
                 _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
                 _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))

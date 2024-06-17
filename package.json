@@ -67,7 +67,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@subsquid/typeorm-config": "4.1.0",
+    "@subsquid/typeorm-config": "4.1.1",
     "@subsquid/util-internal-hex": "1.2.2",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.11"
