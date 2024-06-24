@@ -14,6 +14,7 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { isTokenFrozen } from './token_created'
 import { Sns } from '../../../common/sns'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.frozen.matrixEnjinV603.is(event)) {
@@ -168,6 +169,8 @@ export async function frozen(
             },
         })
     }
+
+    syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)
 }

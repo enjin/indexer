@@ -13,6 +13,7 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 import { FreezeType_Token as FreezeTypeToken_v500 } from '../../../types/generated/v500'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.thawed.matrixEnjinV603.is(event)) {
@@ -149,6 +150,8 @@ export async function thawed(
             },
         })
     }
+
+    syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)
 }

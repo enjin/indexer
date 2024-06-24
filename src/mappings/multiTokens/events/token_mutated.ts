@@ -14,8 +14,9 @@ import { isNonFungible } from '../utils/helpers'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { TokenMarketBehavior } from '../../../types/generated/v500'
+import { syncCollectionStats } from '../../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
+function getEventData(event: EventItem) {
     if (events.multiTokens.tokenMutated.matrixEnjinV603.is(event)) {
         const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV603.decode(event)
         return {
@@ -66,7 +67,7 @@ export async function tokenMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = getEventData(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
@@ -97,6 +98,8 @@ export async function tokenMutated(
 
     token.nonFungible = isNonFungible(token)
     await ctx.store.save(token)
+
+    syncCollectionStats(data.collectionId.toString())
 
     return getEvent(item, data)
 }
