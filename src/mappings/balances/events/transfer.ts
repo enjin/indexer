@@ -5,7 +5,7 @@ import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model
 import { CommonContext, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
+function getEventData(event: EventItem) {
     if (balances.transfer.matrixEnjinV603.is(event)) {
         return balances.transfer.matrixEnjinV603.decode(event)
     }
@@ -14,7 +14,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 }
 
 export async function transfer(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item)
+    const eventData = getEventData(item)
     if (!eventData) return undefined
 
     if (item.extrinsic) {

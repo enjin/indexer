@@ -19,6 +19,7 @@ import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
+import { syncAllBalances } from './jobs/fetch-balance'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -224,6 +225,7 @@ processor.run(
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
+                    await syncAllBalances(ctx, block.header)
                     metadataQueue.resume().catch(() => {})
                     syncAllCollections()
                 }
@@ -376,8 +378,10 @@ processor.run(
                     }
                 }
 
-                map.balances.processor.addAccountsToSet(Array.from(signers))
-                await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                if (block.header.height > config.lastBlockHeight) {
+                    map.balances.processor.addAccountsToSet(Array.from(signers))
+                    await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                }
 
                 _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
                 _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
