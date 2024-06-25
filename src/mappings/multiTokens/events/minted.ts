@@ -122,7 +122,7 @@ export async function minted(
 
     await Promise.all(promises)
 
-    processMetadata(token.id, 'token', true)
+    processMetadata(token.id, 'token')
     computeTraits(data.collectionId.toString())
     syncCollectionStats(data.collectionId.toString())
 
