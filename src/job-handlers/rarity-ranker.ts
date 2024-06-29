@@ -41,7 +41,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
     // check if total supply is greater than 0
     if (!totalSupply || totalSupply <= 0) {
-        return done(new Error('Total supply is 0'))
+        return done()
     }
 
     const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
