@@ -155,7 +155,7 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            processMetadata(token.id, 'token', false)
+            processMetadata(token.id, 'token')
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
