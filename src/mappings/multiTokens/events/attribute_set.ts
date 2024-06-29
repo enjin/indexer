@@ -155,14 +155,14 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            processMetadata(token.id, 'token', !skipSave)
+            processMetadata(token.id, 'token', false)
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection', !skipSave, !skipSave)
+            processMetadata(collection.id, 'collection', false, true)
         }
     }
     if (token) {
