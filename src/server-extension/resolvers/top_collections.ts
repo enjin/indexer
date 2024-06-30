@@ -150,7 +150,6 @@ export class TopCollectionResolver {
                                 .addSelect(`0 AS volume_previous_duration`)
                                 .addSelect(`1 AS last_avg_sale`)
                                 .addSelect(`1 AS previous_avg_sale`)
-                                .addSelect(`COUNT(*)::numeric AS users_last_duration`)
                                 .addSelect(`0 as last_sale`)
                         } else {
                             inBuilder
@@ -185,7 +184,7 @@ export class TopCollectionResolver {
                             .innerJoin(Listing, 'listing', 'listing.id = sale.listing')
                             .innerJoin(Token, 'token', 'listing.make_asset_id_id = token.id')
                             .innerJoin(Collection, 'collection', 'token.collection = collection.id')
-                            .innerJoin(CollectionAccount, 'collectionAccount', 'collectionAccount.collection = collection.id')
+
                             .leftJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
                             .addGroupBy('collection.id')
 
