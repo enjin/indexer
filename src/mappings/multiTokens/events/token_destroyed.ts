@@ -11,6 +11,7 @@ import {
     MultiTokensTokenDestroyed,
     RoyaltyCurrency,
     Token,
+    TokenRarity,
     TraitToken,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -119,6 +120,13 @@ export async function tokenDestroyed(
             },
         }),
         ctx.store.find(TraitToken, {
+            where: {
+                token: {
+                    id: token.id,
+                },
+            },
+        }),
+        ctx.store.find(TokenRarity, {
             where: {
                 token: {
                     id: token.id,
