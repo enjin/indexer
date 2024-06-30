@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Queue from 'bull'
 import * as mathjs from 'mathjs'
 import { informationContentScoring } from '../open-rarity/handlers/information-content-scoring'
