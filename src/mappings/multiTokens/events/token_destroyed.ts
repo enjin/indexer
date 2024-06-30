@@ -77,6 +77,7 @@ export async function tokenDestroyed(
         listingTake,
         royaltyCurrencies,
         traitTokens,
+        tokenRairty,
         accountTokenEvents,
         attributes,
     ] = await Promise.all([
@@ -161,6 +162,7 @@ export async function tokenDestroyed(
         ctx.store.remove(listingTake),
         ctx.store.remove(royaltyCurrencies),
         ctx.store.remove(traitTokens),
+        ctx.store.remove(tokenRairty),
         ctx.store.remove(attributes),
         ctx.store.save(updatedEvent),
     ])
