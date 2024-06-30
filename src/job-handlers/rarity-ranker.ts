@@ -47,7 +47,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     try {
         const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
 
-        if (!entropy) {
+        if (!entropy || collection.traits.length === 0) {
             return done()
         }
 
