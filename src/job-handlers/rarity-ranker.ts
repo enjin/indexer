@@ -48,7 +48,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
 
         if (!entropy) {
-            return done(new Error('Collection entropy is 0'))
+            return done()
         }
 
         const tokenRarities = tokens.map((token) => {
@@ -85,6 +85,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
         return done()
     } catch (error) {
+        console.log('Error in rarity ranker', job.data.collectionId, (error as any).message)
         console.error(error)
         return done(error as Error)
     }
