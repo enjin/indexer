@@ -4,7 +4,7 @@ import Queue from 'bull'
 import connection from '../connection'
 import { Collection, Token, Trait, TraitToken } from '../model'
 import { JobData } from '../jobs/compute-traits'
-import { computeRarityRank, rarityQueue } from '../jobs/rarity-ranker'
+import { computeRarityRank } from '../jobs/rarity-ranker'
 
 type TraitValueMap = Map<string, bigint>
 
