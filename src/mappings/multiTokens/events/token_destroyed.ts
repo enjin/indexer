@@ -155,6 +155,9 @@ export async function tokenDestroyed(
         return event
     })
 
+    console.log('TokenDestroyed.traitTokens', traitTokens.length)
+    console.log('TokenDestroyed.tokenRairty', tokenRairty.length)
+
     await Promise.all([
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
