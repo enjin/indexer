@@ -13,6 +13,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const setMembers =  {
     name: 'TechnicalCommittee.set_members',
@@ -125,6 +126,24 @@ export const execute =  {
         'TechnicalCommittee.execute',
         sts.struct({
             proposal: matrixEnjinV1005.Call,
+            lengthBound: sts.number(),
+        })
+    ),
+    /**
+     * Dispatch a proposal from a member using the `Member` origin.
+     * 
+     * Origin must be a member of the collective.
+     * 
+     * ## Complexity:
+     * - `O(B + M + P)` where:
+     * - `B` is `proposal` size in bytes (length-fee-bounded)
+     * - `M` members-count (code-bounded)
+     * - `P` complexity of dispatching `proposal`
+     */
+    matrixEnjinV1010: new CallType(
+        'TechnicalCommittee.execute',
+        sts.struct({
+            proposal: matrixEnjinV1010.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -375,6 +394,30 @@ export const propose =  {
         sts.struct({
             threshold: sts.number(),
             proposal: matrixEnjinV1005.Call,
+            lengthBound: sts.number(),
+        })
+    ),
+    /**
+     * Add a new proposal to either be voted on or executed directly.
+     * 
+     * Requires the sender to be member.
+     * 
+     * `threshold` determines whether `proposal` is executed directly (`threshold < 2`)
+     * or put up for voting.
+     * 
+     * ## Complexity
+     * - `O(B + M + P1)` or `O(B + M + P2)` where:
+     *   - `B` is `proposal` size in bytes (length-fee-bounded)
+     *   - `M` is members-count (code- and governance-bounded)
+     *   - branching is influenced by `threshold` where:
+     *     - `P1` is proposal execution complexity (`threshold < 2`)
+     *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
+     */
+    matrixEnjinV1010: new CallType(
+        'TechnicalCommittee.propose',
+        sts.struct({
+            threshold: sts.number(),
+            proposal: matrixEnjinV1010.Call,
             lengthBound: sts.number(),
         })
     ),

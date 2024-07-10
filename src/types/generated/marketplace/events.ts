@@ -1,6 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
+import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -18,6 +20,38 @@ export const listingCreated =  {
              * The listing
              */
             listing: matrixEnjinV603.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    matrixEnjinV1010: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1010.H256,
+            /**
+             * The listing
+             */
+            listing: matrixEnjinV1010.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    v500: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: v500.H256,
+            /**
+             * The listing
+             */
+            listing: v500.Listing,
         })
     ),
 }
@@ -150,6 +184,82 @@ export const listingConverted =  {
              * Id for the listing
              */
             listingId: matrixEnjinV1005.H256,
+        })
+    ),
+}
+
+export const expiredListingRemoved =  {
+    name: 'Marketplace.ExpiredListingRemoved',
+    /**
+     * An expired listing was removed
+     */
+    matrixEnjinV1010: new EventType(
+        'Marketplace.ExpiredListingRemoved',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1010.H256,
+        })
+    ),
+}
+
+export const counterOfferPlaced =  {
+    name: 'Marketplace.CounterOfferPlaced',
+    /**
+     * A counter offer was placed on a listing
+     */
+    matrixEnjinV1010: new EventType(
+        'Marketplace.CounterOfferPlaced',
+        sts.struct({
+            /**
+             * Id of the listing
+             */
+            listingId: matrixEnjinV1010.H256,
+            /**
+             * The counter offer
+             */
+            counterOffer: matrixEnjinV1010.CounterOffer,
+        })
+    ),
+}
+
+export const counterOfferAnswered =  {
+    name: 'Marketplace.CounterOfferAnswered',
+    /**
+     * A response was issued for a counter offer
+     */
+    matrixEnjinV1010: new EventType(
+        'Marketplace.CounterOfferAnswered',
+        sts.struct({
+            /**
+             * Id of the listing
+             */
+            listingId: matrixEnjinV1010.H256,
+            /**
+             * If the offer was accepted
+             */
+            accepted: sts.boolean(),
+        })
+    ),
+}
+
+export const migrationStep =  {
+    name: 'Marketplace.MigrationStep',
+    /**
+     * The migration step has completed
+     */
+    matrixEnjinV1010: new EventType(
+        'Marketplace.MigrationStep',
+        sts.struct({
+            /**
+             * The number of items processed within this step
+             */
+            itemsProcessed: sts.number(),
+            /**
+             * The migration phase
+             */
+            phase: sts.number(),
         })
     ),
 }

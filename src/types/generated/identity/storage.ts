@@ -1,5 +1,7 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
+import * as v1000 from '../v1000'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const identityOf =  {
     /**
@@ -8,6 +10,19 @@ export const identityOf =  {
      *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
      */
     matrixEnjinV1000: new StorageType('Identity.IdentityOf', 'Optional', [matrixEnjinV1000.AccountId32], matrixEnjinV1000.Registration) as IdentityOfMatrixEnjinV1000,
+    /**
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    matrixEnjinV1010: new StorageType('Identity.IdentityOf', 'Optional', [matrixEnjinV1010.AccountId32], sts.tuple(() => [matrixEnjinV1010.Registration, sts.option(() => sts.bytes())])) as IdentityOfMatrixEnjinV1010,
+    /**
+     *  Information that is pertinent to identify the entity behind an account.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    v1000: new StorageType('Identity.IdentityOf', 'Optional', [v1000.AccountId32], v1000.Registration) as IdentityOfV1000,
 }
 
 /**
@@ -27,6 +42,45 @@ export interface IdentityOfMatrixEnjinV1000  {
     getPairs(block: Block, key: matrixEnjinV1000.AccountId32): Promise<[k: matrixEnjinV1000.AccountId32, v: (matrixEnjinV1000.Registration | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1000.AccountId32, v: (matrixEnjinV1000.Registration | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1000.AccountId32): AsyncIterable<[k: matrixEnjinV1000.AccountId32, v: (matrixEnjinV1000.Registration | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1010.AccountId32): Promise<([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1010.AccountId32[]): Promise<([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1010.AccountId32): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1010.AccountId32, v: ([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1010.AccountId32): Promise<[k: matrixEnjinV1010.AccountId32, v: ([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: ([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: ([matrixEnjinV1010.Registration, (Bytes | undefined)] | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfV1000  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1000.AccountId32): Promise<(v1000.Registration | undefined)>
+    getMany(block: Block, keys: v1000.AccountId32[]): Promise<(v1000.Registration | undefined)[]>
+    getKeys(block: Block): Promise<v1000.AccountId32[]>
+    getKeys(block: Block, key: v1000.AccountId32): Promise<v1000.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1000.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1000.AccountId32): AsyncIterable<v1000.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
+    getPairs(block: Block, key: v1000.AccountId32): Promise<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1000.AccountId32): AsyncIterable<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
 }
 
 export const superOf =  {
@@ -108,4 +162,94 @@ export interface RegistrarsMatrixEnjinV1000  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): (matrixEnjinV1000.RegistrarInfo | undefined)[]
     get(block: Block): Promise<((matrixEnjinV1000.RegistrarInfo | undefined)[] | undefined)>
+}
+
+export const usernameAuthorities =  {
+    /**
+     *  A map of the accounts who are authorized to grant usernames.
+     */
+    matrixEnjinV1010: new StorageType('Identity.UsernameAuthorities', 'Optional', [matrixEnjinV1010.AccountId32], matrixEnjinV1010.AuthorityProperties) as UsernameAuthoritiesMatrixEnjinV1010,
+}
+
+/**
+ *  A map of the accounts who are authorized to grant usernames.
+ */
+export interface UsernameAuthoritiesMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1010.AccountId32): Promise<(matrixEnjinV1010.AuthorityProperties | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1010.AccountId32[]): Promise<(matrixEnjinV1010.AuthorityProperties | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1010.AccountId32): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.AuthorityProperties | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1010.AccountId32): Promise<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.AuthorityProperties | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.AuthorityProperties | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.AuthorityProperties | undefined)][]>
+}
+
+export const accountOfUsername =  {
+    /**
+     *  Reverse lookup from `username` to the `AccountId` that has registered it. The value should
+     *  be a key in the `IdentityOf` map, but it may not if the user has cleared their identity.
+     * 
+     *  Multiple usernames may map to the same `AccountId`, but `IdentityOf` will only map to one
+     *  primary username.
+     */
+    matrixEnjinV1010: new StorageType('Identity.AccountOfUsername', 'Optional', [sts.bytes()], matrixEnjinV1010.AccountId32) as AccountOfUsernameMatrixEnjinV1010,
+}
+
+/**
+ *  Reverse lookup from `username` to the `AccountId` that has registered it. The value should
+ *  be a key in the `IdentityOf` map, but it may not if the user has cleared their identity.
+ * 
+ *  Multiple usernames may map to the same `AccountId`, but `IdentityOf` will only map to one
+ *  primary username.
+ */
+export interface AccountOfUsernameMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: Bytes): Promise<(matrixEnjinV1010.AccountId32 | undefined)>
+    getMany(block: Block, keys: Bytes[]): Promise<(matrixEnjinV1010.AccountId32 | undefined)[]>
+    getKeys(block: Block): Promise<Bytes[]>
+    getKeys(block: Block, key: Bytes): Promise<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<Bytes[]>
+    getPairs(block: Block): Promise<[k: Bytes, v: (matrixEnjinV1010.AccountId32 | undefined)][]>
+    getPairs(block: Block, key: Bytes): Promise<[k: Bytes, v: (matrixEnjinV1010.AccountId32 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: Bytes, v: (matrixEnjinV1010.AccountId32 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<[k: Bytes, v: (matrixEnjinV1010.AccountId32 | undefined)][]>
+}
+
+export const pendingUsernames =  {
+    /**
+     *  Usernames that an authority has granted, but that the account controller has not confirmed
+     *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+     *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+     *  [`Call::accept_username`].
+     * 
+     *  First tuple item is the account and second is the acceptance deadline.
+     */
+    matrixEnjinV1010: new StorageType('Identity.PendingUsernames', 'Optional', [sts.bytes()], sts.tuple(() => [matrixEnjinV1010.AccountId32, sts.number()])) as PendingUsernamesMatrixEnjinV1010,
+}
+
+/**
+ *  Usernames that an authority has granted, but that the account controller has not confirmed
+ *  that they want it. Used primarily in cases where the `AccountId` cannot provide a signature
+ *  because they are a pure proxy, multisig, etc. In order to confirm it, they should call
+ *  [`Call::accept_username`].
+ * 
+ *  First tuple item is the account and second is the acceptance deadline.
+ */
+export interface PendingUsernamesMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: Bytes): Promise<([matrixEnjinV1010.AccountId32, number] | undefined)>
+    getMany(block: Block, keys: Bytes[]): Promise<([matrixEnjinV1010.AccountId32, number] | undefined)[]>
+    getKeys(block: Block): Promise<Bytes[]>
+    getKeys(block: Block, key: Bytes): Promise<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<Bytes[]>
+    getKeysPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<Bytes[]>
+    getPairs(block: Block): Promise<[k: Bytes, v: ([matrixEnjinV1010.AccountId32, number] | undefined)][]>
+    getPairs(block: Block, key: Bytes): Promise<[k: Bytes, v: ([matrixEnjinV1010.AccountId32, number] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: Bytes, v: ([matrixEnjinV1010.AccountId32, number] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: Bytes): AsyncIterable<[k: Bytes, v: ([matrixEnjinV1010.AccountId32, number] | undefined)][]>
 }

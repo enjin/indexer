@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const bountyProposed =  {
     name: 'Bounties.BountyProposed',
@@ -92,6 +93,60 @@ export const bountyExtended =  {
         'Bounties.BountyExtended',
         sts.struct({
             index: sts.number(),
+        })
+    ),
+}
+
+export const bountyApproved =  {
+    name: 'Bounties.BountyApproved',
+    /**
+     * A bounty is approved.
+     */
+    matrixEnjinV1010: new EventType(
+        'Bounties.BountyApproved',
+        sts.struct({
+            index: sts.number(),
+        })
+    ),
+}
+
+export const curatorProposed =  {
+    name: 'Bounties.CuratorProposed',
+    /**
+     * A bounty curator is proposed.
+     */
+    matrixEnjinV1010: new EventType(
+        'Bounties.CuratorProposed',
+        sts.struct({
+            bountyId: sts.number(),
+            curator: matrixEnjinV1010.AccountId32,
+        })
+    ),
+}
+
+export const curatorUnassigned =  {
+    name: 'Bounties.CuratorUnassigned',
+    /**
+     * A bounty curator is unassigned.
+     */
+    matrixEnjinV1010: new EventType(
+        'Bounties.CuratorUnassigned',
+        sts.struct({
+            bountyId: sts.number(),
+        })
+    ),
+}
+
+export const curatorAccepted =  {
+    name: 'Bounties.CuratorAccepted',
+    /**
+     * A bounty curator is accepted.
+     */
+    matrixEnjinV1010: new EventType(
+        'Bounties.CuratorAccepted',
+        sts.struct({
+            bountyId: sts.number(),
+            curator: matrixEnjinV1010.AccountId32,
         })
     ),
 }

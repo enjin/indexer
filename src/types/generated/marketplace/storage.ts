@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../sup
 import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const info =  {
     /**
@@ -50,6 +51,14 @@ export const listings =  {
      *  Listings by ID
      */
     matrixEnjinV603: new StorageType('Marketplace.Listings', 'Optional', [matrixEnjinV603.H256], matrixEnjinV603.Listing) as ListingsMatrixEnjinV603,
+    /**
+     *  Listings by ID
+     */
+    matrixEnjinV1010: new StorageType('Marketplace.Listings', 'Optional', [matrixEnjinV1010.H256], matrixEnjinV1010.Listing) as ListingsMatrixEnjinV1010,
+    /**
+     *  Listings by ID
+     */
+    v500: new StorageType('Marketplace.Listings', 'Optional', [v500.H256], v500.Listing) as ListingsV500,
 }
 
 /**
@@ -67,6 +76,56 @@ export interface ListingsMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.H256): Promise<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.H256): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1010.H256): Promise<(matrixEnjinV1010.Listing | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1010.H256[]): Promise<(matrixEnjinV1010.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1010.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1010.H256): Promise<matrixEnjinV1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1010.H256): AsyncIterable<matrixEnjinV1010.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1010.H256, v: (matrixEnjinV1010.Listing | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1010.H256): Promise<[k: matrixEnjinV1010.H256, v: (matrixEnjinV1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1010.H256, v: (matrixEnjinV1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1010.H256): AsyncIterable<[k: matrixEnjinV1010.H256, v: (matrixEnjinV1010.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV500  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v500.H256): Promise<(v500.Listing | undefined)>
+    getMany(block: Block, keys: v500.H256[]): Promise<(v500.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v500.H256[]>
+    getKeys(block: Block, key: v500.H256): Promise<v500.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v500.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<v500.H256[]>
+    getPairs(block: Block): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairs(block: Block, key: v500.H256): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
+}
+
+export const nextListingIdInput =  {
+    /**
+     *  Used to generate the next listing id. Increments by one every time a listing is created.
+     */
+    matrixEnjinV1010: new StorageType('Marketplace.NextListingIdInput', 'Default', [], sts.bigint()) as NextListingIdInputMatrixEnjinV1010,
+}
+
+/**
+ *  Used to generate the next listing id. Increments by one every time a listing is created.
+ */
+export interface NextListingIdInputMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block): Promise<(bigint | undefined)>
 }
 
 export const listingIdsByMakeAsset =  {

@@ -283,3 +283,140 @@ export const maxMessagesExhausted =  {
         })
     ),
 }
+
+export const startedExport =  {
+    name: 'DmpQueue.StartedExport',
+    /**
+     * The export of pages started.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.StartedExport',
+        sts.unit()
+    ),
+}
+
+export const exported =  {
+    name: 'DmpQueue.Exported',
+    /**
+     * The export of a page completed.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.Exported',
+        sts.struct({
+            page: sts.number(),
+        })
+    ),
+}
+
+export const exportFailed =  {
+    name: 'DmpQueue.ExportFailed',
+    /**
+     * The export of a page failed.
+     * 
+     * This should never be emitted.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.ExportFailed',
+        sts.struct({
+            page: sts.number(),
+        })
+    ),
+}
+
+export const completedExport =  {
+    name: 'DmpQueue.CompletedExport',
+    /**
+     * The export of pages completed.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.CompletedExport',
+        sts.unit()
+    ),
+}
+
+export const startedOverweightExport =  {
+    name: 'DmpQueue.StartedOverweightExport',
+    /**
+     * The export of overweight messages started.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.StartedOverweightExport',
+        sts.unit()
+    ),
+}
+
+export const exportedOverweight =  {
+    name: 'DmpQueue.ExportedOverweight',
+    /**
+     * The export of an overweight message completed.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.ExportedOverweight',
+        sts.struct({
+            index: sts.bigint(),
+        })
+    ),
+}
+
+export const exportOverweightFailed =  {
+    name: 'DmpQueue.ExportOverweightFailed',
+    /**
+     * The export of an overweight message failed.
+     * 
+     * This should never be emitted.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.ExportOverweightFailed',
+        sts.struct({
+            index: sts.bigint(),
+        })
+    ),
+}
+
+export const completedOverweightExport =  {
+    name: 'DmpQueue.CompletedOverweightExport',
+    /**
+     * The export of overweight messages completed.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.CompletedOverweightExport',
+        sts.unit()
+    ),
+}
+
+export const startedCleanup =  {
+    name: 'DmpQueue.StartedCleanup',
+    /**
+     * The cleanup of remaining pallet storage started.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.StartedCleanup',
+        sts.unit()
+    ),
+}
+
+export const cleanedSome =  {
+    name: 'DmpQueue.CleanedSome',
+    /**
+     * Some debris was cleaned up.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.CleanedSome',
+        sts.struct({
+            keysRemoved: sts.number(),
+        })
+    ),
+}
+
+export const completed =  {
+    name: 'DmpQueue.Completed',
+    /**
+     * The cleanup of remaining pallet storage completed.
+     */
+    matrixEnjinV1010: new EventType(
+        'DmpQueue.Completed',
+        sts.struct({
+            error: sts.boolean(),
+        })
+    ),
+}

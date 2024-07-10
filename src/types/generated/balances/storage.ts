@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../sup
 import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const totalIssuance =  {
     /**
@@ -299,6 +300,14 @@ export const holds =  {
      *  Holds on account balances.
      */
     matrixEnjinV603: new StorageType('Balances.Holds', 'Default', [matrixEnjinV603.AccountId32], sts.array(() => matrixEnjinV603.IdAmount)) as HoldsMatrixEnjinV603,
+    /**
+     *  Holds on account balances.
+     */
+    matrixEnjinV1010: new StorageType('Balances.Holds', 'Default', [matrixEnjinV1010.AccountId32], sts.array(() => matrixEnjinV1010.IdAmount)) as HoldsMatrixEnjinV1010,
+    /**
+     *  Holds on account balances.
+     */
+    v602: new StorageType('Balances.Holds', 'Default', [v602.AccountId32], sts.array(() => v602.IdAmount)) as HoldsV602,
 }
 
 /**
@@ -317,6 +326,42 @@ export interface HoldsMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.AccountId32): Promise<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.IdAmount[] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.IdAmount[] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.AccountId32): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.IdAmount[] | undefined)][]>
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface HoldsMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1010.IdAmount[]
+    get(block: Block, key: matrixEnjinV1010.AccountId32): Promise<(matrixEnjinV1010.IdAmount[] | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1010.AccountId32[]): Promise<(matrixEnjinV1010.IdAmount[] | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeys(block: Block, key: matrixEnjinV1010.AccountId32): Promise<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<matrixEnjinV1010.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.IdAmount[] | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1010.AccountId32): Promise<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1010.AccountId32): AsyncIterable<[k: matrixEnjinV1010.AccountId32, v: (matrixEnjinV1010.IdAmount[] | undefined)][]>
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface HoldsV602  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v602.IdAmount[]
+    get(block: Block, key: v602.AccountId32): Promise<(v602.IdAmount[] | undefined)>
+    getMany(block: Block, keys: v602.AccountId32[]): Promise<(v602.IdAmount[] | undefined)[]>
+    getKeys(block: Block): Promise<v602.AccountId32[]>
+    getKeys(block: Block, key: v602.AccountId32): Promise<v602.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v602.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v602.AccountId32): AsyncIterable<v602.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v602.AccountId32, v: (v602.IdAmount[] | undefined)][]>
+    getPairs(block: Block, key: v602.AccountId32): Promise<[k: v602.AccountId32, v: (v602.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v602.AccountId32, v: (v602.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v602.AccountId32): AsyncIterable<[k: v602.AccountId32, v: (v602.IdAmount[] | undefined)][]>
 }
 
 export const freezes =  {

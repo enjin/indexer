@@ -3,6 +3,7 @@ import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as matrixEnjinV1010 from '../matrixEnjinV1010'
 
 export const pendingValidationCode =  {
     /**
@@ -177,6 +178,16 @@ export const relevantMessagingState =  {
      * 
      *  This data is also absent from the genesis.
      */
+    matrixEnjinV1010: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], matrixEnjinV1010.MessagingStateSnapshot) as RelevantMessagingStateMatrixEnjinV1010,
+    /**
+     *  The snapshot of some state related to messaging relevant to the current parachain as per
+     *  the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
     v500: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], v500.MessagingStateSnapshot) as RelevantMessagingStateV500,
     /**
      *  The snapshot of some state related to messaging relevant to the current parachain as per
@@ -202,6 +213,20 @@ export const relevantMessagingState =  {
 export interface RelevantMessagingStateMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<(matrixEnjinV603.MessagingStateSnapshot | undefined)>
+}
+
+/**
+ *  The snapshot of some state related to messaging relevant to the current parachain as per
+ *  the relay parent.
+ * 
+ *  This field is meant to be updated each block with the validation data inherent. Therefore,
+ *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+ * 
+ *  This data is also absent from the genesis.
+ */
+export interface RelevantMessagingStateMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(matrixEnjinV1010.MessagingStateSnapshot | undefined)>
 }
 
 /**
@@ -242,6 +267,24 @@ export const hostConfiguration =  {
      *  This data is also absent from the genesis.
      */
     matrixEnjinV603: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], matrixEnjinV603.V4AbridgedHostConfiguration) as HostConfigurationMatrixEnjinV603,
+    /**
+     *  The parachain host configuration that was obtained from the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    matrixEnjinV1010: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], matrixEnjinV1010.V6AbridgedHostConfiguration) as HostConfigurationMatrixEnjinV1010,
+    /**
+     *  The parachain host configuration that was obtained from the relay parent.
+     * 
+     *  This field is meant to be updated each block with the validation data inherent. Therefore,
+     *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+     * 
+     *  This data is also absent from the genesis.
+     */
+    v500: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], v500.V2AbridgedHostConfiguration) as HostConfigurationV500,
 }
 
 /**
@@ -255,6 +298,32 @@ export const hostConfiguration =  {
 export interface HostConfigurationMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<(matrixEnjinV603.V4AbridgedHostConfiguration | undefined)>
+}
+
+/**
+ *  The parachain host configuration that was obtained from the relay parent.
+ * 
+ *  This field is meant to be updated each block with the validation data inherent. Therefore,
+ *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+ * 
+ *  This data is also absent from the genesis.
+ */
+export interface HostConfigurationMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(matrixEnjinV1010.V6AbridgedHostConfiguration | undefined)>
+}
+
+/**
+ *  The parachain host configuration that was obtained from the relay parent.
+ * 
+ *  This field is meant to be updated each block with the validation data inherent. Therefore,
+ *  before processing of the inherent, e.g. in `on_initialize` this data may be stale.
+ * 
+ *  This data is also absent from the genesis.
+ */
+export interface HostConfigurationV500  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(v500.V2AbridgedHostConfiguration | undefined)>
 }
 
 export const lastDmqMqcHead =  {
@@ -505,4 +574,89 @@ export const customValidationHeadData =  {
 export interface CustomValidationHeadDataMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<(Bytes | undefined)>
+}
+
+export const unincludedSegment =  {
+    /**
+     *  Latest included block descendants the runtime accepted. In other words, these are
+     *  ancestors of the currently executing block which have not been included in the observed
+     *  relay-chain state.
+     * 
+     *  The segment length is limited by the capacity returned from the [`ConsensusHook`] configured
+     *  in the pallet.
+     */
+    matrixEnjinV1010: new StorageType('ParachainSystem.UnincludedSegment', 'Default', [], sts.array(() => matrixEnjinV1010.Ancestor)) as UnincludedSegmentMatrixEnjinV1010,
+}
+
+/**
+ *  Latest included block descendants the runtime accepted. In other words, these are
+ *  ancestors of the currently executing block which have not been included in the observed
+ *  relay-chain state.
+ * 
+ *  The segment length is limited by the capacity returned from the [`ConsensusHook`] configured
+ *  in the pallet.
+ */
+export interface UnincludedSegmentMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1010.Ancestor[]
+    get(block: Block): Promise<(matrixEnjinV1010.Ancestor[] | undefined)>
+}
+
+export const aggregatedUnincludedSegment =  {
+    /**
+     *  Storage field that keeps track of bandwidth used by the unincluded segment along with the
+     *  latest HRMP watermark. Used for limiting the acceptance of new blocks with
+     *  respect to relay chain constraints.
+     */
+    matrixEnjinV1010: new StorageType('ParachainSystem.AggregatedUnincludedSegment', 'Optional', [], matrixEnjinV1010.SegmentTracker) as AggregatedUnincludedSegmentMatrixEnjinV1010,
+}
+
+/**
+ *  Storage field that keeps track of bandwidth used by the unincluded segment along with the
+ *  latest HRMP watermark. Used for limiting the acceptance of new blocks with
+ *  respect to relay chain constraints.
+ */
+export interface AggregatedUnincludedSegmentMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(matrixEnjinV1010.SegmentTracker | undefined)>
+}
+
+export const upgradeGoAhead =  {
+    /**
+     *  Optional upgrade go-ahead signal from the relay-chain.
+     * 
+     *  This storage item is a mirror of the corresponding value for the current parachain from the
+     *  relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is
+     *  set after the inherent.
+     */
+    matrixEnjinV1010: new StorageType('ParachainSystem.UpgradeGoAhead', 'Default', [], sts.option(() => matrixEnjinV1010.V6UpgradeGoAhead)) as UpgradeGoAheadMatrixEnjinV1010,
+}
+
+/**
+ *  Optional upgrade go-ahead signal from the relay-chain.
+ * 
+ *  This storage item is a mirror of the corresponding value for the current parachain from the
+ *  relay-chain. This value is ephemeral which means it doesn't hit the storage. This value is
+ *  set after the inherent.
+ */
+export interface UpgradeGoAheadMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): (matrixEnjinV1010.V6UpgradeGoAhead | undefined)
+    get(block: Block): Promise<((matrixEnjinV1010.V6UpgradeGoAhead | undefined) | undefined)>
+}
+
+export const upwardDeliveryFeeFactor =  {
+    /**
+     *  The factor to multiply the base delivery fee by for UMP.
+     */
+    matrixEnjinV1010: new StorageType('ParachainSystem.UpwardDeliveryFeeFactor', 'Default', [], matrixEnjinV1010.FixedU128) as UpwardDeliveryFeeFactorMatrixEnjinV1010,
+}
+
+/**
+ *  The factor to multiply the base delivery fee by for UMP.
+ */
+export interface UpwardDeliveryFeeFactorMatrixEnjinV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1010.FixedU128
+    get(block: Block): Promise<(matrixEnjinV1010.FixedU128 | undefined)>
 }
