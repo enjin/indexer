@@ -21,7 +21,7 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
         },
         withCredentials: false,
         timeout: 15000,
-        maxRedirects: url.startsWith('https://platform.production.enjinusercontent.com/') ? 3 : 1,
+        maxRedirects: url.startsWith('http://platform.production.enjinusercontent.com/') ? 3 : 2,
         httpsAgent: new https.Agent({ keepAlive: true, rejectUnauthorized: false }),
     })
 
