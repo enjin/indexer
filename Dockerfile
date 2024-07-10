@@ -1,7 +1,7 @@
 FROM node:18-alpine AS node
 
 FROM node AS node-with-gyp
-RUN apk add g++ make python3 curl
+RUN apk add g++ make python3
 
 FROM node-with-gyp AS builder
 WORKDIR /squid
@@ -24,6 +24,7 @@ COPY --from=deps /squid/package.json .
 COPY --from=deps /squid/package-lock.json .
 COPY --from=deps /squid/node_modules node_modules
 COPY --from=builder /squid/lib lib
+RUN apk add curl
 RUN echo -e "loglevel=silent\nupdate-notifier=false" > /squid/.npmrc
 ADD db db
 ADD schema.graphql .
