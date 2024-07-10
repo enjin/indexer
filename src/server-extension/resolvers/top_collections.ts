@@ -4,7 +4,7 @@ import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } fr
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, CollectionAccount, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -65,7 +65,7 @@ export class CollectionRow {
     category!: string
 
     @Field({ nullable: true })
-    verifiedAt!: string
+    verified_at!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
@@ -125,6 +125,7 @@ export class TopCollectionResolver {
                     .addSelect('stats AS stats')
                     .addSelect('volume_last_duration AS volume')
                     .addSelect('sales_last_duration AS sales')
+                    .addSelect('verified_at AS verified_at')
                     .addSelect('category AS category')
                     .addSelect(
                         'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
@@ -141,7 +142,7 @@ export class TopCollectionResolver {
                             .select('collection.id AS collectionId')
                             .addSelect('collection.metadata AS metadata')
                             .addSelect('collection.stats AS stats')
-                            .addSelect('collection.verified_at AS verifiedAt')
+                            .addSelect('collection.verified_at AS verified_at')
                             .addSelect('collection.category AS category')
                         if (timeFrame === Timeframe.ALL) {
                             inBuilder
@@ -184,7 +185,6 @@ export class TopCollectionResolver {
                             .innerJoin(Listing, 'listing', 'listing.id = sale.listing')
                             .innerJoin(Token, 'token', 'listing.make_asset_id_id = token.id')
                             .innerJoin(Collection, 'collection', 'token.collection = collection.id')
-
                             .leftJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)
                             .addGroupBy('collection.id')
 
