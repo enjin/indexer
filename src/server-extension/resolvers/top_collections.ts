@@ -125,7 +125,7 @@ export class TopCollectionResolver {
                     .addSelect('stats AS stats')
                     .addSelect('volume_last_duration AS volume')
                     .addSelect('sales_last_duration AS sales')
-                    .addSelect('verified_at AS verified_at')
+                    .addSelect('to_char(verified_at) AS verified_at')
                     .addSelect('category AS category')
                     .addSelect(
                         'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
