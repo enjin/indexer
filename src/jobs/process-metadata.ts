@@ -6,12 +6,13 @@ export type JobData = { resourceId: string; type: 'token' | 'collection'; force:
 export const metadataQueue = new Queue<JobData>('metadataQueue', {
     defaultJobOptions: {
         delay: 1000,
-        attempts: 3,
+        attempts: 4,
         backoff: {
             type: 'exponential',
-            delay: 4000,
+            delay: 5000,
         },
         removeOnComplete: true,
+        removeOnFail: true,
     },
     redis: redisConfig,
     settings: {

@@ -80,7 +80,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         await em.delete(TokenRarity, { collection: { id: job.data.collectionId } })
 
         // save new token rarities
-        await em.save(tokenRanks)
+        await em.save(tokenRanks, { chunk: 1000 })
 
         console.timeEnd('rarity-ranker')
 
