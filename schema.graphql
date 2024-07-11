@@ -931,6 +931,7 @@ type FuelTankRuleSet @entity {
   #for ease
   isPermittedExtrinsicsEmpty: Boolean!
   isPermittedExtrinsicsNull: Boolean!
+  requireSignature: String
 
   whitelistedCallers: [String!]
   whitelistedCollections: [String]

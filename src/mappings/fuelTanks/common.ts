@@ -42,6 +42,7 @@ export function rulesToMap(
     let permittedCalls: string[] | undefined
     let permittedExtrinsics: PermittedExtrinsics[] | undefined
     let whitelistedPallets: string[] | undefined
+    let requireSignature: string | undefined
 
     rules.forEach((rule, index) => {
         if (rule.__kind === 'WhitelistedCallers') {
@@ -61,6 +62,8 @@ export function rulesToMap(
                 tokenId: rule.value.tokenId,
                 collectionId: rule.value.collectionId,
             })
+        } else if (rule.__kind === 'RequireSignature') {
+            requireSignature = rule.value
         } else if (rule.__kind === 'PermittedCalls') {
             permittedCalls = rule.value.map((call) => call)
         } else if (rule.__kind === 'PermittedExtrinsics') {
@@ -86,6 +89,7 @@ export function rulesToMap(
         requireToken,
         permittedCalls,
         permittedExtrinsics,
+        requireSignature,
     }
 }
 

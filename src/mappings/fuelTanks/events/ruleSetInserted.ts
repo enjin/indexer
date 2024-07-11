@@ -104,6 +104,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         requireToken,
         permittedCalls,
         permittedExtrinsics,
+        requireSignature,
     } = rulesToMap(ruleSetId, 'ruleSet' in callData ? callData.ruleSet.rules : callData.rules)
 
     const ruleSet = new FuelTankRuleSet({
@@ -121,6 +122,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         tankFuelBudget,
         requireToken,
         permittedCalls,
+        requireSignature,
     })
     await ctx.store.save(ruleSet)
 
