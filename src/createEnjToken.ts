@@ -66,6 +66,9 @@ export async function createEnjToken(ctx: CommonContext, block: BlockHeader<{ bl
             attributeCount: 0,
             collection,
             nonFungible: false,
+            accountDepositCount: 0,
+            anyoneCanInfuse: true,
+            infusion: 0n,
             createdAt: new Date(block.timestamp ?? 0),
         })
 

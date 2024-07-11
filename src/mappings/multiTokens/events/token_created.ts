@@ -625,7 +625,7 @@ export async function tokenCreated(
             metadata: null,
             nonFungible: false,
             listingForbidden: callData.listingForbidden,
-            accountDepositCount: callData.accountDepositCount,
+            accountDepositCount: callData.accountDepositCount ?? 0,
             anyoneCanInfuse: callData.anyoneCanInfuse ?? true,
             nativeMetadata: callData.nativeMetadata,
             infusion: callData.infusion ?? 0n,
