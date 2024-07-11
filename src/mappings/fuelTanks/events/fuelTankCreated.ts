@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto'
 import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
 import { calls, events } from '../../../types/generated'
 import {
+    CoveragePolicy,
     Event as EventModel,
     Extrinsic,
     FuelTank,
@@ -28,6 +29,10 @@ function getEventData(event: EventItem) {
 
 function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1010.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1010.decode(call)
+        }
+
         if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.is(call)) {
             return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.decode(call)
         }
@@ -69,6 +74,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         }
 
         throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
+    }
+
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1010.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1010.decode(call)
     }
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call)) {
@@ -148,7 +157,10 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
     if (callData.descriptor.userAccountManagement) {
         userAccountManagement = new FuelTankUserAccountManagement({
             tankReservesAccountCreationDeposit: callData.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
-            tankReservesExistentialDeposit: callData.descriptor.userAccountManagement.tankReservesExistentialDeposit,
+            tankReservesExistentialDeposit:
+                'tankReservesExistentialDeposit' in callData.descriptor.userAccountManagement
+                    ? callData.descriptor.userAccountManagement.tankReservesExistentialDeposit
+                    : callData.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
         })
     }
 
@@ -159,7 +171,9 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
         owner,
         isFrozen: false,
         accountCount: 0,
-        providesDeposit: callData.descriptor.providesDeposit,
+        providesDeposit: 'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
+        coveragePolicy:
+            'coveragePolicy' in callData.descriptor ? CoveragePolicy[callData.descriptor.coveragePolicy.__kind] : null,
         userAccountManagement,
     })
 
@@ -193,7 +207,12 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
 
     if (callData.descriptor.ruleSets.length > 0) {
         callData.descriptor.ruleSets.forEach(async (ruleSet) => {
-            const [index, rules] = ruleSet
+            const index = ruleSet[0]
+            let rules = ruleSet[1] as any
+
+            if (!Array.isArray(rules)) {
+                rules = rules.rules
+            }
 
             const {
                 whitelistedCallers,

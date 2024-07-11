@@ -1,6 +1,7 @@
 import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, IntColumn as IntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
+import {CoveragePolicy} from "./_coveragePolicy"
 import {FuelTankUserAccounts} from "./fuelTankUserAccounts.model"
 import {FuelTankUserAccountManagement} from "./_fuelTankUserAccountManagement"
 import {FuelTankAccountRules} from "./fuelTankAccountRules.model"
@@ -34,6 +35,9 @@ export class FuelTank {
 
     @IntColumn_({nullable: false})
     accountCount!: number
+
+    @Column_("varchar", {length: 14, nullable: true})
+    coveragePolicy!: CoveragePolicy | undefined | null
 
     @OneToMany_(() => FuelTankUserAccounts, e => e.tank)
     userAccounts!: FuelTankUserAccounts[]

@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto'
 import { UnknownVersionError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import {
+    CoveragePolicy,
     Event as EventModel,
     FuelTank,
     FuelTankAccountRules,
@@ -36,7 +37,10 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
             tank.userAccountManagement = new FuelTankUserAccountManagement({
                 tankReservesAccountCreationDeposit:
                     eventData.mutation.userAccountManagement.value.tankReservesAccountCreationDeposit,
-                tankReservesExistentialDeposit: eventData.mutation.userAccountManagement.value.tankReservesExistentialDeposit,
+                tankReservesExistentialDeposit:
+                    'tankReservesExistentialDeposit' in eventData.mutation.userAccountManagement.value
+                        ? eventData.mutation.userAccountManagement.value.tankReservesExistentialDeposit
+                        : eventData.mutation.userAccountManagement.value.tankReservesAccountCreationDeposit,
             })
         } else {
             tank.userAccountManagement = null
@@ -45,6 +49,10 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
 
     if ('providesDeposit' in eventData.mutation && eventData.mutation.providesDeposit !== undefined) {
         tank.providesDeposit = eventData.mutation.providesDeposit
+    }
+
+    if ('coveragePolicy' in eventData.mutation && eventData.mutation.coveragePolicy !== undefined) {
+        tank.coveragePolicy = CoveragePolicy[eventData.mutation.coveragePolicy.__kind]
     }
 
     if (eventData.mutation.accountRules !== undefined) {

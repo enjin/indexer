@@ -943,6 +943,12 @@ type FuelTankRuleSet @entity {
   permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 
+
+enum CoveragePolicy {
+  Fees
+  FeesAndDeposit
+}
+
 type FuelTank @entity {
   id: ID!
 
@@ -952,6 +958,7 @@ type FuelTank @entity {
   providesDeposit: Boolean!
   isFrozen: Boolean!
   accountCount: Int!
+  coveragePolicy: CoveragePolicy
 
   userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
   userAccountManagement: FuelTankUserAccountManagement

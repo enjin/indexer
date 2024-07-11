@@ -6,6 +6,7 @@ import { DispatchRuleDescriptor as DispatchRuleDescriptorv1000 } from '../../typ
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1003 } from '../../types/generated/v1003'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1004 } from '../../types/generated/v1004'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1005 } from '../../types/generated/v1005'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorv1010 } from '../../types/generated/matrixEnjinV1010'
 
 import {
     MaxFuelBurnPerTransaction,
@@ -30,6 +31,7 @@ export function rulesToMap(
         | DispatchRuleDescriptorv1003[]
         | DispatchRuleDescriptorv1004[]
         | DispatchRuleDescriptorv1005[]
+        | DispatchRuleDescriptorv1010[]
 ) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -89,6 +91,10 @@ export function rulesToMap(
 
 export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.dispatch') {
+        if (fuelTanks.dispatch.matrixEnjinV1010.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1010.decode(call)
+        }
+
         if (fuelTanks.dispatch.matrixEnjinV1005.is(call)) {
             return fuelTanks.dispatch.matrixEnjinV1005.decode(call)
         }
@@ -146,6 +152,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
         }
 
         throw new UnknownVersionError(fuelTanks.dispatch.name)
+    }
+
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1010.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1010.decode(call)
     }
 
     if (fuelTanks.dispatchAndTouch.matrixEnjinV1005.is(call)) {
