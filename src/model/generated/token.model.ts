@@ -3,6 +3,7 @@ import * as marshal from "./marshal"
 import {FreezeState} from "./_freezeState"
 import {TokenCap, fromJsonTokenCap} from "./_tokenCap"
 import {TokenBehavior, fromJsonTokenBehavior} from "./_tokenBehavior"
+import {NativeTokenMetadata} from "./_nativeTokenMetadata"
 import {Collection} from "./collection.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
@@ -43,6 +44,9 @@ export class Token {
     @BooleanColumn_({nullable: false})
     listingForbidden!: boolean
 
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new NativeTokenMetadata(undefined, obj)}, nullable: true})
+    nativeMetadata!: NativeTokenMetadata | undefined | null
+
     @BigIntColumn_({nullable: true})
     unitPrice!: bigint | undefined | null
 
@@ -54,6 +58,15 @@ export class Token {
 
     @IntColumn_({nullable: false})
     attributeCount!: number
+
+    @IntColumn_({nullable: false})
+    accountDepositCount!: number
+
+    @BooleanColumn_({nullable: false})
+    anyoneCanInfuse!: boolean
+
+    @BigIntColumn_({nullable: false})
+    infusion!: bigint
 
     @Index_()
     @ManyToOne_(() => Collection, {nullable: true})

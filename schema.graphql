@@ -560,6 +560,12 @@ enum FreezeState {
   Never
 }
 
+type NativeTokenMetadata {
+  name: String!
+  symbol: String!
+  decimalCount: Int!
+}
+
 type Token @entity {
   id: ID!
 
@@ -571,12 +577,16 @@ type Token @entity {
   cap: TokenCap
   behavior: TokenBehavior
   listingForbidden: Boolean!
+  nativeMetadata: NativeTokenMetadata
 
   # Storage extras
   unitPrice: BigInt
   minimumBalance: BigInt!
   mintDeposit: BigInt!
   attributeCount: Int!
+  accountDepositCount: Int!
+  anyoneCanInfuse: Boolean!
+  infusion: BigInt!
 
   # Relations
   collection: Collection! @index

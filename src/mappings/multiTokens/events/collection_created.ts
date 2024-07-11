@@ -43,6 +43,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.force_create_collection') {
+        if (calls.multiTokens.forceCreateCollection.matrixEnjinV1010.is(call)) {
+            const data = calls.multiTokens.forceCreateCollection.matrixEnjinV1010.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.forceCreateCollection.matrixEnjinV603.is(call)) {
             const data = calls.multiTokens.forceCreateCollection.matrixEnjinV603.decode(call)
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.descriptor.policy.mint
@@ -63,6 +79,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.create_collection') {
+        if (calls.multiTokens.createCollection.matrixEnjinV1010.is(call)) {
+            const data = calls.multiTokens.createCollection.matrixEnjinV1010.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.createCollection.matrixEnjinV603.is(call)) {
             const data = calls.multiTokens.createCollection.matrixEnjinV603.decode(call)
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.descriptor.policy.mint
@@ -83,6 +115,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
+        if (calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1010.is(call)) {
+            const data = calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1010.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1000.is(call)) {
             const data = calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1000.decode(call)
             const { maxTokenCount, maxTokenSupply, forceSingleMint } = data.descriptor.policy.mint
@@ -126,6 +174,24 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
 }
 
 async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectionId: bigint) {
+    if (storage.multiTokens.collections.matrixEnjinV1010.is(block)) {
+        const data = await storage.multiTokens.collections.matrixEnjinV1010.get(block, collectionId)
+        const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
+        // eslint-disable-line @typescript-eslint/no-unused-vars
+        const assets = currencies?.map(([assetId, _]) => assetId)
+
+        if (data) {
+            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
+            return {
+                maxTokenCount: data.policy.mint.maxTokenCount,
+                maxTokenSupply: data.policy.mint.maxTokenSupply,
+                forceSingleMint: data.policy.mint.forceCollapsingSupply,
+                market,
+                explicitRoyaltyCurrencies: assets ?? [], // Check
+            }
+        }
+    }
+
     if (storage.multiTokens.collections.matrixEnjinV603.is(block)) {
         const data = await storage.multiTokens.collections.matrixEnjinV603.get(block, collectionId)
         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies

@@ -7,6 +7,7 @@ import {
     Extrinsic,
     FreezeState,
     MultiTokensTokenCreated,
+    NativeTokenMetadata,
     Royalty,
     Token,
     TokenBehaviorHasRoyalty,
@@ -26,6 +27,10 @@ import {
     TokenCap,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
+import {
+    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010,
+    FlexibleMintParams_CreateOrMint,
+} from '../../../types/generated/matrixEnjinV1010'
 import { CallItem, CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -91,6 +96,41 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.batch_mint') {
+        if (calls.multiTokens.batchMint.matrixEnjinV1010.is(call)) {
+            const { collectionId, recipients } = calls.multiTokens.batchMint.matrixEnjinV1010.decode(call)
+
+            const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
+
+            if (recipientCall) {
+                const params = recipientCall.params as DefaultMintParamsCreateToken_Enjin_v1010
+                const cap = params.cap ? getCapType(params.cap) : null
+                const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+                const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+                const unitPrice = 10_000_000_000_000_000n
+                const minimumBalance = 1n
+
+                return {
+                    collectionId,
+                    tokenId: params.tokenId,
+                    initialSupply: params.initialSupply,
+                    minimumBalance,
+                    unitPrice,
+                    cap,
+                    behavior,
+                    freezeState,
+                    listingForbidden: params.listingForbidden ?? false,
+                    nativeMetadata: new NativeTokenMetadata({
+                        decimalCount: params.metadata.decimalCount,
+                        name: params.metadata.name,
+                        symbol: params.metadata.symbol,
+                    }),
+                    anyoneCanInfuse: params.anyoneCanInfuse,
+                    infusion: params.infusion,
+                    accountDepositCount: params.accountDepositCount,
+                }
+            }
+        }
+
         if (calls.multiTokens.batchMint.matrixEnjinV603.is(call)) {
             const { collectionId, recipients } = calls.multiTokens.batchMint.matrixEnjinV603.decode(call)
 
@@ -189,6 +229,41 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.force_mint') {
+        if (calls.multiTokens.forceMint.matrixEnjinV1010.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.matrixEnjinV1010.decode(call)
+            const { params } = calls.multiTokens.forceMint.matrixEnjinV1010.decode(call)
+            if (params.__kind !== 'CreateOrMint') {
+                // eslint-disable-next-line no-console
+                console.log('Invalid params', params)
+                throw new Error('Invalid params')
+            }
+            const cap = params.value.cap ? getCapType(params.value.cap) : null
+            const behavior = params.value.behavior ? await getBehavior(ctx, params.value.behavior) : null
+            const freezeState = params.value.freezeState ? getFreezeState(params.value.freezeState) : null
+            const unitPrice: bigint = 10_000_000_000_000_000n
+            const minimumBalance = 1n
+
+            return {
+                collectionId,
+                tokenId: params.value.tokenId,
+                initialSupply: params.value.amount,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.value.listingForbidden ?? false,
+                nativeMetadata: new NativeTokenMetadata({
+                    decimalCount: params.value.metadata.decimalCount,
+                    name: params.value.metadata.name,
+                    symbol: params.value.metadata.symbol,
+                }),
+                anyoneCanInfuse: params.value.anyoneCanInfuse,
+                infusion: params.value.infusion,
+                accountDepositCount: params.value.accountDepositCount,
+            }
+        }
+
         if (calls.multiTokens.forceMint.matrixEnjinV1003.is(call)) {
             const { collectionId } = calls.multiTokens.forceMint.matrixEnjinV1003.decode(call)
             const params = calls.multiTokens.forceMint.matrixEnjinV1003.decode(call).params as DefaultMintParamsCreateToken_v500
@@ -301,6 +376,42 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.mint') {
+        if (calls.multiTokens.mint.matrixEnjinV1010.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.matrixEnjinV1010.decode(call)
+            const { params } = calls.multiTokens.mint.matrixEnjinV1010.decode(call)
+            if (params.__kind !== 'CreateToken') {
+                // eslint-disable-next-line no-console
+                console.error('Invalid params', call.name, params)
+                throw new Error('Invalid params')
+            }
+
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            const unitPrice: bigint = 10_000_000_000_000_000n
+            const minimumBalance = 1n
+
+            return {
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+                nativeMetadata: new NativeTokenMetadata({
+                    decimalCount: params.metadata.decimalCount,
+                    name: params.metadata.name,
+                    symbol: params.metadata.symbol,
+                }),
+                anyoneCanInfuse: params.anyoneCanInfuse,
+                infusion: params.infusion,
+                accountDepositCount: params.accountDepositCount,
+            }
+        }
+
         if (calls.multiTokens.mint.matrixEnjinV603.is(call)) {
             const { collectionId } = calls.multiTokens.mint.matrixEnjinV603.decode(call)
             const params = calls.multiTokens.mint.matrixEnjinV603.decode(call).params as DefaultMintParamsCreateToken_v500
@@ -514,6 +625,10 @@ export async function tokenCreated(
             metadata: null,
             nonFungible: false,
             listingForbidden: callData.listingForbidden,
+            accountDepositCount: callData.accountDepositCount,
+            anyoneCanInfuse: callData.anyoneCanInfuse ?? true,
+            nativeMetadata: callData.nativeMetadata,
+            infusion: callData.infusion ?? 0n,
             createdAt: new Date(block.timestamp ?? 0),
         })
 
