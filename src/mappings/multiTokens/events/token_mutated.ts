@@ -4,6 +4,7 @@ import {
     Event as EventModel,
     Extrinsic,
     MultiTokensTokenMutated,
+    NativeTokenMetadata,
     Royalty,
     Token,
     TokenBehaviorHasRoyalty,
@@ -17,11 +18,26 @@ import { TokenMarketBehavior } from '../../../types/generated/v500'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(event: EventItem) {
-    if (events.multiTokens.tokenMutated.matrixEnjinV603.is(event)) {
-        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV603.decode(event)
+    if (events.multiTokens.tokenMutated.matrixEnjinV1010.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV1010.decode(event)
+
         return {
             collectionId,
             tokenId,
+            behavior: mutation.behavior,
+            name: mutation.name,
+            anyoneCanInfuse: mutation.anyoneCanInfuse,
+            listingForbidden: mutation.listingForbidden,
+        }
+    }
+
+    if (events.multiTokens.tokenMutated.matrixEnjinV603.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV603.decode(event)
+
+        return {
+            collectionId,
+            tokenId,
+            metadata: mutation.metadata,
             behavior: mutation.behavior,
             listingForbidden: mutation.listingForbidden,
         }
@@ -86,6 +102,18 @@ export async function tokenMutated(
 
     if (data.listingForbidden.__kind === 'SomeMutation') {
         token.listingForbidden = data.listingForbidden.value
+    }
+
+    if (data.name && data.name.__kind === 'SomeMutation') {
+        token.nativeMetadata = new NativeTokenMetadata({
+            decimalCount: token.nativeMetadata?.decimalCount ?? 0,
+            symbol: token.nativeMetadata?.symbol ?? '',
+            name: data.name.value,
+        })
+    }
+
+    if (data.anyoneCanInfuse && data.anyoneCanInfuse.__kind === 'SomeMutation') {
+        token.anyoneCanInfuse = data.anyoneCanInfuse.value
     }
 
     if (data.behavior.__kind === 'SomeMutation') {

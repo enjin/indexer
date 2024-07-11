@@ -702,6 +702,7 @@ enum FeeSide {
 enum ListingType {
   FixedPrice
   Auction
+  Offer
 }
 
 type FixedPriceData {
@@ -714,7 +715,12 @@ type AuctionData {
   endHeight: Int!
 }
 
-union ListingData = FixedPriceData | AuctionData
+type OfferData {
+  listingType: ListingType!
+  expiration: Int!
+}
+
+union ListingData = FixedPriceData | AuctionData | OfferData
 
 type FixedPriceState {
   listingType: ListingType!
@@ -724,6 +730,16 @@ type FixedPriceState {
 type AuctionState {
   listingType: ListingType!
   highBid: Bid
+}
+
+type CounterOffer {
+  accountId: String!
+  price: BigInt!
+}
+
+type OfferState {
+   listingType: ListingType!
+  counter: CounterOffer
 }
 
 type Bid @entity {
@@ -741,7 +757,7 @@ type Bid @entity {
   createdAt: DateTime!
 }
 
-union ListingState = FixedPriceState | AuctionState
+union ListingState = FixedPriceState | AuctionState | OfferState
 
 enum ListingStatusType {
   Active

@@ -12,6 +12,10 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
+    if (fuelTanks.fuelTankMutated.matrixEnjinV1010.is(event)) {
+        return fuelTanks.fuelTankMutated.matrixEnjinV1010.decode(event)
+    }
+
     if (fuelTanks.fuelTankMutated.matrixEnjinV603.is(event)) {
         return fuelTanks.fuelTankMutated.matrixEnjinV603.decode(event)
     }
@@ -39,7 +43,7 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
         }
     }
 
-    if (eventData.mutation.providesDeposit !== undefined) {
+    if ('providesDeposit' in eventData.mutation && eventData.mutation.providesDeposit !== undefined) {
         tank.providesDeposit = eventData.mutation.providesDeposit
     }
 
