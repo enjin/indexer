@@ -81,7 +81,7 @@ export default async () => {
 
     indexer_multitokens_unique_holders_total.set(Number(uniqueHolders[0].count))
     indexer_multitokens_collections_total.set(Number(collectionsTotal[0].count))
-    indexer_multitokens_unique_tokens_total.set(Number(tokensTotal[0].sum))
+    indexer_multitokens_unique_tokens_total.set(Number(tokensTotal[0].count))
     indexer_multitokens_collection_holders_avg.set(parseInt(collectionHoldersAvg[0].avg, 10))
     indexer_multitokens_collection_tokens_avg.set(parseInt(collectionTokensAvg[0].avg, 10))
     indexer_multitokens_account_tokens_avg.set(parseInt(accountTokensAvg[0].avg, 10))
