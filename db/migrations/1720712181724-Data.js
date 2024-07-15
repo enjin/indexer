@@ -3,9 +3,9 @@ module.exports = class Data1720712181724 {
 
     async up(db) {
         await db.query(`ALTER TABLE "token" ADD "native_metadata" jsonb`)
-        await db.query(`ALTER TABLE "token" ADD "account_deposit_count" integer NOT NULL`)
-        await db.query(`ALTER TABLE "token" ADD "anyone_can_infuse" boolean NOT NULL`)
-        await db.query(`ALTER TABLE "token" ADD "infusion" numeric NOT NULL`)
+        await db.query(`ALTER TABLE "token" ADD "account_deposit_count" integer NOT NULL DEFAULT 0`)
+        await db.query(`ALTER TABLE "token" ADD "anyone_can_infuse" boolean NOT NULL DEFAULT false`)
+        await db.query(`ALTER TABLE "token" ADD "infusion" numeric NOT NULL DEFAULT 0`)
         await db.query(`ALTER TABLE "fuel_tank" ADD "coverage_policy" character varying(14)`)
         await db.query(`ALTER TABLE "fuel_tank_rule_set" ADD "require_signature" text`)
     }
