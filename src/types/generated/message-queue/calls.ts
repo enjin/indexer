@@ -1,15 +1,15 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const reapPage =  {
     name: 'MessageQueue.reap_page',
     /**
      * Remove a page which has no more messages remaining to be processed or is stale.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MessageQueue.reap_page',
         sts.struct({
-            messageOrigin: matrixEnjinV1010.AggregateMessageOrigin,
+            messageOrigin: v1010.AggregateMessageOrigin,
             pageIndex: sts.number(),
         })
     ),
@@ -32,13 +32,13 @@ export const executeOverweight =  {
      * 
      * Benchmark complexity considerations: O(index + weight_limit).
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MessageQueue.execute_overweight',
         sts.struct({
-            messageOrigin: matrixEnjinV1010.AggregateMessageOrigin,
+            messageOrigin: v1010.AggregateMessageOrigin,
             page: sts.number(),
             index: sts.number(),
-            weightLimit: matrixEnjinV1010.Weight,
+            weightLimit: v1010.Weight,
         })
     ),
 }

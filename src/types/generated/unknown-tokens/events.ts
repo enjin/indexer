@@ -1,7 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const deposited =  {
     name: 'UnknownTokens.Deposited',
@@ -18,21 +17,11 @@ export const deposited =  {
     /**
      * Deposit success.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'UnknownTokens.Deposited',
         sts.struct({
-            asset: matrixEnjinV1010.V4Asset,
-            who: matrixEnjinV1010.V4Location,
-        })
-    ),
-    /**
-     * Deposit success.
-     */
-    v500: new EventType(
-        'UnknownTokens.Deposited',
-        sts.struct({
-            asset: v500.V3MultiAsset,
-            who: v500.V3MultiLocation,
+            asset: v1010.V4Asset,
+            who: v1010.V4Location,
         })
     ),
 }
@@ -52,21 +41,11 @@ export const withdrawn =  {
     /**
      * Withdraw success.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'UnknownTokens.Withdrawn',
         sts.struct({
-            asset: matrixEnjinV1010.V4Asset,
-            who: matrixEnjinV1010.V4Location,
-        })
-    ),
-    /**
-     * Withdraw success.
-     */
-    v500: new EventType(
-        'UnknownTokens.Withdrawn',
-        sts.struct({
-            asset: v500.V3MultiAsset,
-            who: v500.V3MultiLocation,
+            asset: v1010.V4Asset,
+            who: v1010.V4Location,
         })
     ),
 }

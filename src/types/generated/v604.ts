@@ -44,15 +44,23 @@ export const RangeInclusive: sts.Type<RangeInclusive> = sts.struct(() => {
     }
 })
 
-export type XcmOperation = XcmOperation_ParachainFee | XcmOperation_XTokensTransfer
+export type VersionedAssetId = VersionedAssetId_V3
 
-export interface XcmOperation_ParachainFee {
-    __kind: 'ParachainFee'
-    value: V3MultiLocation
+export interface VersionedAssetId_V3 {
+    __kind: 'V3'
+    value: V3AssetId
 }
 
-export interface XcmOperation_XTokensTransfer {
-    __kind: 'XTokensTransfer'
+export type V3AssetId = V3AssetId_Abstract | V3AssetId_Concrete
+
+export interface V3AssetId_Abstract {
+    __kind: 'Abstract'
+    value: Bytes
+}
+
+export interface V3AssetId_Concrete {
+    __kind: 'Concrete'
+    value: V3MultiLocation
 }
 
 export interface V3MultiLocation {
@@ -279,35 +287,6 @@ export interface V3NetworkId_Westend {
 
 export interface V3NetworkId_Wococo {
     __kind: 'Wococo'
-}
-
-export interface MinimumWeightFeePair {
-    minimumWeight: Weight
-    fee: bigint
-}
-
-export interface Weight {
-    refTime: bigint
-    proofSize: bigint
-}
-
-export type VersionedAssetId = VersionedAssetId_V3
-
-export interface VersionedAssetId_V3 {
-    __kind: 'V3'
-    value: V3AssetId
-}
-
-export type V3AssetId = V3AssetId_Abstract | V3AssetId_Concrete
-
-export interface V3AssetId_Abstract {
-    __kind: 'Abstract'
-    value: Bytes
-}
-
-export interface V3AssetId_Concrete {
-    __kind: 'Concrete'
-    value: V3MultiLocation
 }
 
 export type AccountId32 = Bytes
@@ -1030,6 +1009,11 @@ export interface XcmpQueueCall_update_weight_restrict_decay {
 export interface XcmpQueueCall_update_xcmp_max_individual_weight {
     __kind: 'update_xcmp_max_individual_weight'
     new: Weight
+}
+
+export interface Weight {
+    refTime: bigint
+    proofSize: bigint
 }
 
 /**
@@ -5005,6 +4989,22 @@ export interface ParachainId_Moonbeam {
 
 export interface ParachainId_Statemint {
     __kind: 'Statemint'
+}
+
+export interface MinimumWeightFeePair {
+    minimumWeight: Weight
+    fee: bigint
+}
+
+export type XcmOperation = XcmOperation_ParachainFee | XcmOperation_XTokensTransfer
+
+export interface XcmOperation_ParachainFee {
+    __kind: 'ParachainFee'
+    value: V3MultiLocation
+}
+
+export interface XcmOperation_XTokensTransfer {
+    __kind: 'XTokensTransfer'
 }
 
 /**
@@ -11758,6 +11758,13 @@ export const Collection: sts.Type<Collection> = sts.struct(() => {
     }
 })
 
+export const AssetId: sts.Type<AssetId> = sts.struct(() => {
+    return  {
+        collectionId: sts.bigint(),
+        tokenId: sts.bigint(),
+    }
+})
+
 export const DefaultCollectionPolicy: sts.Type<DefaultCollectionPolicy> = sts.struct(() => {
     return  {
         mint: DefaultMintPolicy,
@@ -11827,6 +11834,13 @@ export const MatrixXcmEvent: sts.Type<MatrixXcmEvent> = sts.closedEnum(() => {
     return  {
         MinimumWeightUpdated: MinimumWeightFeePair,
         XcmTransferFailed: DispatchError,
+    }
+})
+
+export const MinimumWeightFeePair: sts.Type<MinimumWeightFeePair> = sts.struct(() => {
+    return  {
+        minimumWeight: Weight,
+        fee: sts.bigint(),
     }
 })
 
@@ -11919,6 +11933,13 @@ export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
     return  {
         Auction: AuctionData,
         FixedPrice: sts.unit(),
+    }
+})
+
+export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
+    return  {
+        startBlock: sts.number(),
+        endBlock: sts.number(),
     }
 })
 
@@ -12586,20 +12607,6 @@ export const TransactionData: sts.Type<TransactionData> = sts.struct(() => {
     }
 })
 
-export const AuctionData: sts.Type<AuctionData> = sts.struct(() => {
-    return  {
-        startBlock: sts.number(),
-        endBlock: sts.number(),
-    }
-})
-
-export const AssetId: sts.Type<AssetId> = sts.struct(() => {
-    return  {
-        collectionId: sts.bigint(),
-        tokenId: sts.bigint(),
-    }
-})
-
 export const DispatchRuleDescriptor: sts.Type<DispatchRuleDescriptor> = sts.closedEnum(() => {
     return  {
         MaxFuelBurnPerTransaction: MaxFuelBurnPerTransactionRule,
@@ -12643,15 +12650,6 @@ export const FuelTankDescriptor: sts.Type<FuelTankDescriptor> = sts.struct(() =>
         ruleSets: sts.array(() => sts.tuple(() => [sts.number(), sts.array(() => DispatchRuleDescriptor)])),
         providesDeposit: sts.boolean(),
         accountRules: sts.array(() => AccountRuleDescriptor),
-    }
-})
-
-export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
-    return  {
-        tokenId: sts.bigint(),
-        amount: sts.bigint(),
-        keepAlive: sts.boolean(),
-        removeTokenStorage: sts.boolean(),
     }
 })
 
@@ -12715,20 +12713,6 @@ export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
 })
 
 export const Signature = sts.bytes()
-
-export const MinimumWeightFeePair: sts.Type<MinimumWeightFeePair> = sts.struct(() => {
-    return  {
-        minimumWeight: Weight,
-        fee: sts.bigint(),
-    }
-})
-
-export const XcmOperation: sts.Type<XcmOperation> = sts.closedEnum(() => {
-    return  {
-        ParachainFee: V3MultiLocation,
-        XTokensTransfer: sts.unit(),
-    }
-})
 
 export const Weight: sts.Type<Weight> = sts.struct(() => {
     return  {
@@ -13974,6 +13958,15 @@ export const DefaultMintPolicyDescriptor: sts.Type<DefaultMintPolicyDescriptor> 
     }
 })
 
+export const DefaultBurnParams: sts.Type<DefaultBurnParams> = sts.struct(() => {
+    return  {
+        tokenId: sts.bigint(),
+        amount: sts.bigint(),
+        keepAlive: sts.boolean(),
+        removeTokenStorage: sts.boolean(),
+    }
+})
+
 export const Recipient: sts.Type<Recipient> = sts.struct(() => {
     return  {
         accountId: AccountId32,
@@ -14039,6 +14032,13 @@ export const ParachainId: sts.Type<ParachainId> = sts.closedEnum(() => {
         Acala: sts.unit(),
         Moonbeam: sts.unit(),
         Statemint: sts.unit(),
+    }
+})
+
+export const XcmOperation: sts.Type<XcmOperation> = sts.closedEnum(() => {
+    return  {
+        ParachainFee: V3MultiLocation,
+        XTokensTransfer: sts.unit(),
     }
 })
 

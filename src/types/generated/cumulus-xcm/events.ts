@@ -1,7 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const invalidFormat =  {
     name: 'CumulusXcm.InvalidFormat',
@@ -41,16 +40,8 @@ export const executedDownward =  {
      * Downward message executed with the given outcome.
      * \[ id, outcome \]
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'CumulusXcm.ExecutedDownward',
-        sts.tuple([sts.bytes(), matrixEnjinV1010.V4Outcome])
-    ),
-    /**
-     * Downward message executed with the given outcome.
-     * \[ id, outcome \]
-     */
-    v500: new EventType(
-        'CumulusXcm.ExecutedDownward',
-        sts.tuple([sts.bytes(), v500.V3Outcome])
+        sts.tuple([sts.bytes(), v1010.V4Outcome])
     ),
 }

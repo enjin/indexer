@@ -127,7 +127,7 @@ export const retrySet =  {
     /**
      * Set a retry configuration for some task.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Scheduler.RetrySet',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
@@ -143,7 +143,7 @@ export const retryCancelled =  {
     /**
      * Cancel a retry configuration for some task.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Scheduler.RetryCancelled',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
@@ -158,7 +158,7 @@ export const retryFailed =  {
      * The given task was unable to be retried since the agenda is full at that block or there
      * was not enough weight to reschedule it.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Scheduler.RetryFailed',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),

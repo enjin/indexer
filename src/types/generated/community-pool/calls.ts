@@ -1,7 +1,6 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const proposeSpend =  {
     name: 'CommunityPool.propose_spend',
@@ -106,29 +105,12 @@ export const spend =  {
      * 
      * Emits [`Event::AssetSpendApproved`] if successful.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'CommunityPool.spend',
         sts.struct({
             amount: sts.bigint(),
-            beneficiary: matrixEnjinV1010.AccountId32,
+            beneficiary: v1010.AccountId32,
             validFrom: sts.option(() => sts.number()),
-        })
-    ),
-    /**
-     * Propose and approve a spend of treasury funds.
-     * 
-     * - `origin`: Must be `SpendOrigin` with the `Success` value being at least `amount`.
-     * - `amount`: The amount to be transferred from the treasury to the `beneficiary`.
-     * - `beneficiary`: The destination account for the transfer.
-     * 
-     * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
-     * beneficiary.
-     */
-    v500: new CallType(
-        'CommunityPool.spend',
-        sts.struct({
-            amount: sts.bigint(),
-            beneficiary: v500.MultiAddress,
         })
     ),
 }
@@ -179,11 +161,11 @@ export const spendLocal =  {
      * 
      * Emits [`Event::SpendApproved`] if successful.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'CommunityPool.spend_local',
         sts.struct({
             amount: sts.bigint(),
-            beneficiary: matrixEnjinV1010.MultiAddress,
+            beneficiary: v1010.MultiAddress,
         })
     ),
 }
@@ -211,7 +193,7 @@ export const payout =  {
      * 
      * Emits [`Event::Paid`] if successful.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'CommunityPool.payout',
         sts.struct({
             index: sts.number(),
@@ -242,7 +224,7 @@ export const checkStatus =  {
      * Emits [`Event::PaymentFailed`] if the spend payout has failed.
      * Emits [`Event::SpendProcessed`] if the spend payout has succeed.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'CommunityPool.check_status',
         sts.struct({
             index: sts.number(),
@@ -270,7 +252,7 @@ export const voidSpend =  {
      * 
      * Emits [`Event::AssetSpendVoided`] if successful.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'CommunityPool.void_spend',
         sts.struct({
             index: sts.number(),

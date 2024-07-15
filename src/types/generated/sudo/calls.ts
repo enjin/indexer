@@ -7,6 +7,7 @@ import * as v1000 from '../v1000'
 import * as v1003 from '../v1003'
 import * as v1004 from '../v1004'
 import * as v1005 from '../v1005'
+import * as v1010 from '../v1010'
 
 export const sudo =  {
     name: 'Sudo.sudo',
@@ -122,6 +123,15 @@ export const sudo =  {
         'Sudo.sudo',
         sts.struct({
             call: v1005.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    v1010: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1010.Call,
         })
     ),
 }
@@ -254,6 +264,20 @@ export const sudoUncheckedWeight =  {
         sts.struct({
             call: v1005.Call,
             weight: v1005.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1010: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1010.Call,
+            weight: v1010.Weight,
         })
     ),
 }
@@ -409,5 +433,31 @@ export const sudoAs =  {
             who: v1005.MultiAddress,
             call: v1005.Call,
         })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1010: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1010.MultiAddress,
+            call: v1010.Call,
+        })
+    ),
+}
+
+export const removeKey =  {
+    name: 'Sudo.remove_key',
+    /**
+     * Permanently removes the sudo key.
+     * 
+     * **This cannot be un-done.**
+     */
+    v1010: new CallType(
+        'Sudo.remove_key',
+        sts.unit()
     ),
 }

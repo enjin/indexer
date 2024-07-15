@@ -7,7 +7,7 @@ import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 import * as matrixEnjinV1003 from '../matrixEnjinV1003'
 import * as v1003 from '../v1003'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const createCollection =  {
     name: 'MultiTokens.create_collection',
@@ -31,23 +31,10 @@ export const createCollection =  {
      * 
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.create_collection',
         sts.struct({
-            descriptor: matrixEnjinV1010.DefaultCollectionDescriptor,
-        })
-    ),
-    /**
-     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
-     * 
-     * # Errors
-     * 
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     */
-    v500: new CallType(
-        'MultiTokens.create_collection',
-        sts.struct({
-            descriptor: v500.DefaultCollectionDescriptor,
+            descriptor: v1010.DefaultCollectionDescriptor,
         })
     ),
 }
@@ -131,32 +118,12 @@ export const mutateToken =  {
      * - [`Error::TokenNotFound`] if Token does not exist
      * - [`Error::ConflictingLocation`] if the new location is already occupied
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.mutate_token',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            mutation: matrixEnjinV1010.DefaultTokenMutation,
-        })
-    ),
-    /**
-     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
-     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
-     * 
-     * # Errors
-     * 
-     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
-     *   assigned a royalty
-     * - [`Error::NoPermission`] if not the collection owner
-     * - [`Error::TokenNotFound`] if Token does not exist
-     * - [`Error::ConflictingLocation`] if the new location is already occupied
-     */
-    v500: new CallType(
-        'MultiTokens.mutate_token',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            mutation: v500.DefaultTokenMutation,
+            mutation: v1010.DefaultTokenMutation,
         })
     ),
 }
@@ -187,32 +154,6 @@ export const mint =  {
             recipient: matrixEnjinV603.MultiAddress,
             collectionId: sts.bigint(),
             params: matrixEnjinV603.DefaultMintParams,
-        })
-    ),
-    /**
-     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
-     * [`MintPolicy`](traits::CollectionPolicy::Mint).
-     * 
-     * # Errors
-     * 
-     * - [`Error::AmountZero`] if `amount == 0`.
-     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
-     * - [`Error::TokenNotFound`] if `Token` does not exist.
-     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
-     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
-     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
-     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
-     *   token deposit
-     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
-     *   mapped to another asset in `AssetIdsByLocation`
-     */
-    matrixEnjinV1010: new CallType(
-        'MultiTokens.mint',
-        sts.struct({
-            recipient: matrixEnjinV1010.MultiAddress,
-            collectionId: sts.bigint(),
-            params: matrixEnjinV1010.DefaultMintParams,
         })
     ),
     /**
@@ -267,6 +208,32 @@ export const mint =  {
             params: v600.DefaultMintParams,
         })
     ),
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * [`MintPolicy`](traits::CollectionPolicy::Mint).
+     * 
+     * # Errors
+     * 
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
+     * - [`Error::TokenNotFound`] if `Token` does not exist.
+     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
+     *   mapped to another asset in `AssetIdsByLocation`
+     */
+    v1010: new CallType(
+        'MultiTokens.mint',
+        sts.struct({
+            recipient: v1010.MultiAddress,
+            collectionId: sts.bigint(),
+            params: v1010.DefaultMintParams,
+        })
+    ),
 }
 
 export const burn =  {
@@ -304,29 +271,11 @@ export const burn =  {
      * - [`Error::DestroyForbiddenByAttributeCount`] if removing token from storage but the
      *   attribute count is greater than zero
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.burn',
         sts.struct({
             collectionId: sts.bigint(),
-            params: matrixEnjinV1010.DefaultBurnParams,
-        })
-    ),
-    /**
-     * Reduces the balance of `owner` by `amount` of `token_id` from `collection_id`.
-     * It also updates the total supply of `collection_id`.
-     * 
-     * # Errors
-     * - [`Error::CollectionNotFound`] if `collection` does not exist.
-     * - [`Error::BalanceLow`] if `owner` account does not has enough amount of any token in
-     *   `tokens` of `collection`.
-     * - [`Error::DepositUnreserveFailed`] if caller does not have enough reserved balance to
-     *   unreserve
-     */
-    v500: new CallType(
-        'MultiTokens.burn',
-        sts.struct({
-            collectionId: sts.bigint(),
-            params: v500.DefaultBurnParams,
+            params: v1010.DefaultBurnParams,
         })
     ),
 }
@@ -357,28 +306,12 @@ export const transfer =  {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.transfer',
         sts.struct({
-            recipient: matrixEnjinV1010.MultiAddress,
+            recipient: v1010.MultiAddress,
             collectionId: sts.bigint(),
-            params: matrixEnjinV1010.DefaultTransferParams,
-        })
-    ),
-    /**
-     * `operator` transfers to `recipient` for `collection_id` with `params`
-     * 
-     * # Errors
-     * 
-     * - [`Error::AmountZero`] if `amount == 0`.
-     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
-     */
-    v500: new CallType(
-        'MultiTokens.transfer',
-        sts.struct({
-            recipient: v500.MultiAddress,
-            collectionId: sts.bigint(),
-            params: v500.DefaultTransferParams,
+            params: v1010.DefaultTransferParams,
         })
     ),
 }
@@ -446,36 +379,14 @@ export const setAttribute =  {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
             value: sts.bytes(),
-            depositor: sts.option(() => matrixEnjinV1010.MultiAddress),
-        })
-    ),
-    /**
-     * Sets the attribute `key` to `value` for `collection_id`.
-     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
-     * the attribute is added to the token.
-     * 
-     * # Errors
-     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
-     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
-     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
-     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
-     *   storage.
-     */
-    v500: new CallType(
-        'MultiTokens.set_attribute',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-            key: sts.bytes(),
-            value: sts.bytes(),
+            depositor: sts.option(() => v1010.MultiAddress),
         })
     ),
 }
@@ -552,27 +463,11 @@ export const batchTransfer =  {
      * - [`Error::AmountZero`] if `amount == 0`.
      * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.batch_transfer',
         sts.struct({
             collectionId: sts.bigint(),
-            recipients: sts.array(() => matrixEnjinV1010.Recipient),
-        })
-    ),
-    /**
-     * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
-     * account. A single failure will fail all transfers.
-     * 
-     * # Errors
-     * 
-     * - [`Error::AmountZero`] if `amount == 0`.
-     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
-     */
-    v500: new CallType(
-        'MultiTokens.batch_transfer',
-        sts.struct({
-            collectionId: sts.bigint(),
-            recipients: sts.array(() => v500.Recipient),
+            recipients: sts.array(() => v1010.Recipient),
         })
     ),
 }
@@ -598,27 +493,6 @@ export const batchMint =  {
         sts.struct({
             collectionId: sts.bigint(),
             recipients: sts.array(() => matrixEnjinV603.Type_395),
-        })
-    ),
-    /**
-     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
-     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
-     * will fail all of them in the batch.
-     * 
-     * # Errors
-     * - [`Error::AmountZero`] if `amount == 0`.
-     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
-     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
-     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
-     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
-     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
-     *   token deposit
-     */
-    matrixEnjinV1010: new CallType(
-        'MultiTokens.batch_mint',
-        sts.struct({
-            collectionId: sts.bigint(),
-            recipients: sts.array(() => matrixEnjinV1010.Type_472),
         })
     ),
     /**
@@ -663,6 +537,27 @@ export const batchMint =  {
             recipients: sts.array(() => v600.Type_380),
         })
     ),
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
+     * will fail all of them in the batch.
+     * 
+     * # Errors
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     */
+    v1010: new CallType(
+        'MultiTokens.batch_mint',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => v1010.Type_463),
+        })
+    ),
 }
 
 export const batchSetAttribute =  {
@@ -705,36 +600,13 @@ export const batchSetAttribute =  {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.batch_set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
-            attributes: sts.array(() => matrixEnjinV1010.AttributeKeyValuePair),
-            depositor: sts.option(() => matrixEnjinV1010.MultiAddress),
-        })
-    ),
-    /**
-     * Collection owner sets `attributes` to `collection_id`
-     * 
-     * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
-     * the attribute is added to the token.
-     * 
-     * # Errors
-     * 
-     * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
-     * - [`Error::TokenNotFound`] if `token_id` is `Some` and does not exist.
-     * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
-     * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
-     *   storage.
-     */
-    v500: new CallType(
-        'MultiTokens.batch_set_attribute',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-            attributes: sts.array(() => v500.AttributeKeyValuePair),
+            attributes: sts.array(() => v1010.AttributeKeyValuePair),
+            depositor: sts.option(() => v1010.MultiAddress),
         })
     ),
 }
@@ -1046,30 +918,13 @@ export const forceTransfer =  {
      * 
      * Same as [`transfer`](Self::transfer)
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_transfer',
         sts.struct({
-            source: matrixEnjinV1010.MultiAddress,
-            destination: matrixEnjinV1010.MultiAddress,
+            source: v1010.MultiAddress,
+            destination: v1010.MultiAddress,
             collectionId: sts.bigint(),
-            params: matrixEnjinV1010.DefaultTransferParams,
-        })
-    ),
-    /**
-     * Exactly as [`transfer`](Self::transfer), except the origin must be root and the source
-     * account should be specified.
-     * 
-     * # Errors
-     * 
-     * Same as [`transfer`](Self::transfer)
-     */
-    v500: new CallType(
-        'MultiTokens.force_transfer',
-        sts.struct({
-            source: v500.MultiAddress,
-            destination: v500.MultiAddress,
-            collectionId: sts.bigint(),
-            params: v500.DefaultTransferParams,
+            params: v1010.DefaultTransferParams,
         })
     ),
 }
@@ -1089,21 +944,11 @@ export const forceSetCollection =  {
     /**
      * Set the Collections storage to the given `value`, origin must be root
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_set_collection',
         sts.struct({
             collectionId: sts.bigint(),
-            value: sts.option(() => matrixEnjinV1010.Collection),
-        })
-    ),
-    /**
-     * Set the Collections storage to the given `value`, origin must be root
-     */
-    v500: new CallType(
-        'MultiTokens.force_set_collection',
-        sts.struct({
-            collectionId: sts.bigint(),
-            value: sts.option(() => v500.Collection),
+            value: sts.option(() => v1010.Collection),
         })
     ),
 }
@@ -1119,17 +964,6 @@ export const forceSetToken =  {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => matrixEnjinV603.Token),
-        })
-    ),
-    /**
-     * Set the Tokens storage to the given `value`, origin must be root
-     */
-    matrixEnjinV1010: new CallType(
-        'MultiTokens.force_set_token',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            value: sts.option(() => matrixEnjinV1010.Token),
         })
     ),
     /**
@@ -1154,6 +988,17 @@ export const forceSetToken =  {
             value: sts.option(() => v600.Token),
         })
     ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    v1010: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => v1010.Token),
+        })
+    ),
 }
 
 export const forceSetAttribute =  {
@@ -1173,25 +1018,13 @@ export const forceSetAttribute =  {
     /**
      * Set the Tokens storage to the given `value`, origin must be root
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_set_attribute',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.option(() => sts.bigint()),
             key: sts.bytes(),
-            value: sts.option(() => matrixEnjinV1010.Attribute),
-        })
-    ),
-    /**
-     * Set the Tokens storage to the given `value`, origin must be root
-     */
-    v500: new CallType(
-        'MultiTokens.force_set_attribute',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.option(() => sts.bigint()),
-            key: sts.bytes(),
-            value: sts.option(() => v500.Attribute),
+            value: sts.option(() => v1010.Attribute),
         })
     ),
 }
@@ -1228,25 +1061,13 @@ export const forceSetTokenAccount =  {
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_set_token_account',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
-            accountId: matrixEnjinV1010.MultiAddress,
-            value: sts.option(() => matrixEnjinV1010.TokenAccount),
-        })
-    ),
-    /**
-     * Set the TokenAccounts storage to the given `value`, origin must be root
-     */
-    v500: new CallType(
-        'MultiTokens.force_set_token_account',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            accountId: v500.MultiAddress,
-            value: sts.option(() => v500.TokenAccount),
+            accountId: v1010.MultiAddress,
+            value: sts.option(() => v1010.TokenAccount),
         })
     ),
 }
@@ -1275,27 +1096,12 @@ export const forceCreateCollection =  {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_create_collection',
         sts.struct({
-            owner: matrixEnjinV1010.AccountId32,
+            owner: v1010.AccountId32,
             collectionId: sts.bigint(),
-            descriptor: matrixEnjinV1010.DefaultCollectionDescriptor,
-        })
-    ),
-    /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
-     */
-    v500: new CallType(
-        'MultiTokens.force_create_collection',
-        sts.struct({
-            owner: v500.AccountId32,
-            collectionId: sts.bigint(),
-            descriptor: v500.DefaultCollectionDescriptor,
+            descriptor: v1010.DefaultCollectionDescriptor,
         })
     ),
 }
@@ -1333,21 +1139,6 @@ export const forceMint =  {
     ),
     /**
      * Same as [`mint`](Self::mint), but it is callable by
-     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
-     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
-     */
-    matrixEnjinV1010: new CallType(
-        'MultiTokens.force_mint',
-        sts.struct({
-            caller: sts.option(() => matrixEnjinV1010.MultiAddress),
-            recipient: matrixEnjinV1010.MultiAddress,
-            collectionId: sts.bigint(),
-            params: matrixEnjinV1010.FlexibleMintParams,
-            depositor: sts.option(() => matrixEnjinV1010.MultiAddress),
-        })
-    ),
-    /**
-     * Same as [`mint`](Self::mint), but it is callable by
      * [`Config::ForceOrigin`].
      */
     v604: new CallType(
@@ -1375,6 +1166,21 @@ export const forceMint =  {
             depositor: sts.option(() => v1003.MultiAddress),
         })
     ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    v1010: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => v1010.MultiAddress),
+            recipient: v1010.MultiAddress,
+            collectionId: sts.bigint(),
+            params: v1010.FlexibleMintParams,
+            depositor: sts.option(() => v1010.MultiAddress),
+        })
+    ),
 }
 
 export const forceBurn =  {
@@ -1395,24 +1201,12 @@ export const forceBurn =  {
      * Same as [`burn`](Self::burn), but it is only callable by
      * [`Config::ForceOrigin`]. Executes the burn by `caller`.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_burn',
         sts.struct({
-            caller: matrixEnjinV1010.MultiAddress,
+            caller: v1010.MultiAddress,
             collectionId: sts.bigint(),
-            params: matrixEnjinV1010.DefaultBurnParams,
-        })
-    ),
-    /**
-     * Same as [`burn`](Self::burn), but it is only callable by
-     * [`Config::ForceOrigin`]. Executes the burn by `caller`.
-     */
-    v604: new CallType(
-        'MultiTokens.force_burn',
-        sts.struct({
-            caller: v604.MultiAddress,
-            collectionId: sts.bigint(),
-            params: v604.DefaultBurnParams,
+            params: v1010.DefaultBurnParams,
         })
     ),
 }
@@ -1559,36 +1353,13 @@ export const forceCreateEthereumCollection =  {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.force_create_ethereum_collection',
         sts.struct({
-            owner: matrixEnjinV1010.AccountId32,
-            claimer: matrixEnjinV1010.H160,
+            owner: v1010.AccountId32,
+            claimer: v1010.H160,
             ethereumCollectionId: sts.bigint(),
-            descriptor: matrixEnjinV1010.DefaultCollectionDescriptor,
-        })
-    ),
-    /**
-     * Creates a new collection from `descriptor` at `collection_id`, origin must be
-     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
-     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
-     * 
-     * # Params
-     * - `owner` - the account that will own the new collection
-     * - `claimer` - the ethereum address that will be able to claim the collection
-     * - `ethereum_collection_id` - the collection id on ethereum
-     * 
-     * # Errors
-     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
-     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
-     */
-    v1000: new CallType(
-        'MultiTokens.force_create_ethereum_collection',
-        sts.struct({
-            owner: v1000.AccountId32,
-            claimer: v1000.H160,
-            ethereumCollectionId: sts.bigint(),
-            descriptor: v1000.DefaultCollectionDescriptor,
+            descriptor: v1010.DefaultCollectionDescriptor,
         })
     ),
 }
@@ -1641,7 +1412,7 @@ export const updateAccountDeposit =  {
      * Can add or remove deposit for the number of accounts the token can accommodate. It is
      * permissionless if increased. Only the collection owner can decrease.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.update_account_deposit',
         sts.struct({
             collectionId: sts.bigint(),
@@ -1657,7 +1428,7 @@ export const infuse =  {
      * Infuses ENJ into the token. The actual amount reserved is amount * supply
      * It is permissionless if the anyone_can_infuse is true
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'MultiTokens.infuse',
         sts.struct({
             collectionId: sts.bigint(),

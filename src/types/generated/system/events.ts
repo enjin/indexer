@@ -3,7 +3,7 @@ import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const extrinsicSuccess =  {
     name: 'System.ExtrinsicSuccess',
@@ -118,10 +118,10 @@ export const upgradeAuthorized =  {
     /**
      * An upgrade was authorized.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'System.UpgradeAuthorized',
         sts.struct({
-            codeHash: matrixEnjinV1010.H256,
+            codeHash: v1010.H256,
             checkVersion: sts.boolean(),
         })
     ),

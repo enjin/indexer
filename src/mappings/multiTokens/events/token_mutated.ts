@@ -18,8 +18,8 @@ import { TokenMarketBehavior } from '../../../types/generated/v500'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(event: EventItem) {
-    if (events.multiTokens.tokenMutated.matrixEnjinV1010.is(event)) {
-        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV1010.decode(event)
+    if (events.multiTokens.tokenMutated.v1010.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.v1010.decode(event)
 
         return {
             collectionId,

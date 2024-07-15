@@ -289,7 +289,7 @@ export const startedExport =  {
     /**
      * The export of pages started.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.StartedExport',
         sts.unit()
     ),
@@ -300,7 +300,7 @@ export const exported =  {
     /**
      * The export of a page completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.Exported',
         sts.struct({
             page: sts.number(),
@@ -315,7 +315,7 @@ export const exportFailed =  {
      * 
      * This should never be emitted.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.ExportFailed',
         sts.struct({
             page: sts.number(),
@@ -328,7 +328,7 @@ export const completedExport =  {
     /**
      * The export of pages completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.CompletedExport',
         sts.unit()
     ),
@@ -339,7 +339,7 @@ export const startedOverweightExport =  {
     /**
      * The export of overweight messages started.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.StartedOverweightExport',
         sts.unit()
     ),
@@ -350,7 +350,7 @@ export const exportedOverweight =  {
     /**
      * The export of an overweight message completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.ExportedOverweight',
         sts.struct({
             index: sts.bigint(),
@@ -365,7 +365,7 @@ export const exportOverweightFailed =  {
      * 
      * This should never be emitted.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.ExportOverweightFailed',
         sts.struct({
             index: sts.bigint(),
@@ -378,7 +378,7 @@ export const completedOverweightExport =  {
     /**
      * The export of overweight messages completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.CompletedOverweightExport',
         sts.unit()
     ),
@@ -389,7 +389,7 @@ export const startedCleanup =  {
     /**
      * The cleanup of remaining pallet storage started.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.StartedCleanup',
         sts.unit()
     ),
@@ -400,7 +400,7 @@ export const cleanedSome =  {
     /**
      * Some debris was cleaned up.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.CleanedSome',
         sts.struct({
             keysRemoved: sts.number(),
@@ -413,7 +413,7 @@ export const completed =  {
     /**
      * The cleanup of remaining pallet storage completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'DmpQueue.Completed',
         sts.struct({
             error: sts.boolean(),

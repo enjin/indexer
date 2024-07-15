@@ -13,8 +13,8 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
-    if (fuelTanks.fuelTankMutated.matrixEnjinV1010.is(event)) {
-        return fuelTanks.fuelTankMutated.matrixEnjinV1010.decode(event)
+    if (fuelTanks.fuelTankMutated.v1010.is(event)) {
+        return fuelTanks.fuelTankMutated.v1010.decode(event)
     }
 
     if (fuelTanks.fuelTankMutated.matrixEnjinV603.is(event)) {

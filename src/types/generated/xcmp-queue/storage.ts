@@ -1,7 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const inboundXcmpStatus =  {
     /**
@@ -136,11 +135,7 @@ export const queueConfig =  {
     /**
      *  The configuration which controls the dynamics of the outbound queue.
      */
-    matrixEnjinV1010: new StorageType('XcmpQueue.QueueConfig', 'Default', [], matrixEnjinV1010.QueueConfigData) as QueueConfigMatrixEnjinV1010,
-    /**
-     *  The configuration which controls the dynamics of the outbound queue.
-     */
-    v500: new StorageType('XcmpQueue.QueueConfig', 'Default', [], v500.QueueConfigData) as QueueConfigV500,
+    v1010: new StorageType('XcmpQueue.QueueConfig', 'Default', [], v1010.QueueConfigData) as QueueConfigV1010,
 }
 
 /**
@@ -155,19 +150,10 @@ export interface QueueConfigMatrixEnjinV603  {
 /**
  *  The configuration which controls the dynamics of the outbound queue.
  */
-export interface QueueConfigMatrixEnjinV1010  {
+export interface QueueConfigV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.QueueConfigData
-    get(block: Block): Promise<(matrixEnjinV1010.QueueConfigData | undefined)>
-}
-
-/**
- *  The configuration which controls the dynamics of the outbound queue.
- */
-export interface QueueConfigV500  {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v500.QueueConfigData
-    get(block: Block): Promise<(v500.QueueConfigData | undefined)>
+    getDefault(block: Block): v1010.QueueConfigData
+    get(block: Block): Promise<(v1010.QueueConfigData | undefined)>
 }
 
 export const overweight =  {
@@ -261,7 +247,7 @@ export const inboundXcmpSuspended =  {
      *  NOTE: The PoV benchmarking cannot know this and will over-estimate, but the actual proof
      *  will be smaller.
      */
-    matrixEnjinV1010: new StorageType('XcmpQueue.InboundXcmpSuspended', 'Default', [], sts.array(() => matrixEnjinV1010.Id)) as InboundXcmpSuspendedMatrixEnjinV1010,
+    v1010: new StorageType('XcmpQueue.InboundXcmpSuspended', 'Default', [], sts.array(() => v1010.Id)) as InboundXcmpSuspendedV1010,
 }
 
 /**
@@ -274,33 +260,33 @@ export const inboundXcmpSuspended =  {
  *  NOTE: The PoV benchmarking cannot know this and will over-estimate, but the actual proof
  *  will be smaller.
  */
-export interface InboundXcmpSuspendedMatrixEnjinV1010  {
+export interface InboundXcmpSuspendedV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.Id[]
-    get(block: Block): Promise<(matrixEnjinV1010.Id[] | undefined)>
+    getDefault(block: Block): v1010.Id[]
+    get(block: Block): Promise<(v1010.Id[] | undefined)>
 }
 
 export const deliveryFeeFactor =  {
     /**
      *  The factor to multiply the base delivery fee by.
      */
-    matrixEnjinV1010: new StorageType('XcmpQueue.DeliveryFeeFactor', 'Default', [matrixEnjinV1010.Id], matrixEnjinV1010.FixedU128) as DeliveryFeeFactorMatrixEnjinV1010,
+    v1010: new StorageType('XcmpQueue.DeliveryFeeFactor', 'Default', [v1010.Id], v1010.FixedU128) as DeliveryFeeFactorV1010,
 }
 
 /**
  *  The factor to multiply the base delivery fee by.
  */
-export interface DeliveryFeeFactorMatrixEnjinV1010  {
+export interface DeliveryFeeFactorV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.FixedU128
-    get(block: Block, key: matrixEnjinV1010.Id): Promise<(matrixEnjinV1010.FixedU128 | undefined)>
-    getMany(block: Block, keys: matrixEnjinV1010.Id[]): Promise<(matrixEnjinV1010.FixedU128 | undefined)[]>
-    getKeys(block: Block): Promise<matrixEnjinV1010.Id[]>
-    getKeys(block: Block, key: matrixEnjinV1010.Id): Promise<matrixEnjinV1010.Id[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1010.Id[]>
-    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1010.Id): AsyncIterable<matrixEnjinV1010.Id[]>
-    getPairs(block: Block): Promise<[k: matrixEnjinV1010.Id, v: (matrixEnjinV1010.FixedU128 | undefined)][]>
-    getPairs(block: Block, key: matrixEnjinV1010.Id): Promise<[k: matrixEnjinV1010.Id, v: (matrixEnjinV1010.FixedU128 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1010.Id, v: (matrixEnjinV1010.FixedU128 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1010.Id): AsyncIterable<[k: matrixEnjinV1010.Id, v: (matrixEnjinV1010.FixedU128 | undefined)][]>
+    getDefault(block: Block): v1010.FixedU128
+    get(block: Block, key: v1010.Id): Promise<(v1010.FixedU128 | undefined)>
+    getMany(block: Block, keys: v1010.Id[]): Promise<(v1010.FixedU128 | undefined)[]>
+    getKeys(block: Block): Promise<v1010.Id[]>
+    getKeys(block: Block, key: v1010.Id): Promise<v1010.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1010.Id): AsyncIterable<v1010.Id[]>
+    getPairs(block: Block): Promise<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairs(block: Block, key: v1010.Id): Promise<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1010.Id): AsyncIterable<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
 }

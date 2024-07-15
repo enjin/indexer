@@ -7,7 +7,7 @@ export const upgradeStarted =  {
      * 
      * Its end is indicated by `UpgradeCompleted` or `UpgradeFailed`.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.UpgradeStarted',
         sts.struct({
             /**
@@ -28,7 +28,7 @@ export const upgradeCompleted =  {
      * 
      * This implies that all of its migrations completed successfully as well.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.UpgradeCompleted',
         sts.unit()
     ),
@@ -41,7 +41,7 @@ export const upgradeFailed =  {
      * 
      * This is very bad and will require governance intervention.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.UpgradeFailed',
         sts.unit()
     ),
@@ -52,7 +52,7 @@ export const migrationSkipped =  {
     /**
      * A migration was skipped since it was already executed in the past.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.MigrationSkipped',
         sts.struct({
             /**
@@ -68,7 +68,7 @@ export const migrationAdvanced =  {
     /**
      * A migration progressed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.MigrationAdvanced',
         sts.struct({
             /**
@@ -88,7 +88,7 @@ export const migrationCompleted =  {
     /**
      * A Migration completed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.MigrationCompleted',
         sts.struct({
             /**
@@ -110,7 +110,7 @@ export const migrationFailed =  {
      * 
      * This implies that the whole upgrade failed and governance intervention is required.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.MigrationFailed',
         sts.struct({
             /**
@@ -130,7 +130,7 @@ export const historicCleared =  {
     /**
      * The set of historical migrations has been cleared.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Migrations.HistoricCleared',
         sts.struct({
             /**

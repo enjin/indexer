@@ -3,7 +3,7 @@ import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const send =  {
     name: 'PolkadotXcm.send',
@@ -14,18 +14,11 @@ export const send =  {
             message: matrixEnjinV603.VersionedXcm,
         })
     ),
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.send',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            message: matrixEnjinV1010.VersionedXcm,
-        })
-    ),
-    v500: new CallType(
-        'PolkadotXcm.send',
-        sts.struct({
-            dest: v500.VersionedMultiLocation,
-            message: v500.VersionedXcm,
+            dest: v1010.VersionedLocation,
+            message: v1010.VersionedXcm,
         })
     ),
 }
@@ -78,38 +71,12 @@ export const teleportAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.teleport_assets',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
-            assets: matrixEnjinV1010.VersionedAssets,
-            feeAssetItem: sts.number(),
-        })
-    ),
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    v500: new CallType(
-        'PolkadotXcm.teleport_assets',
-        sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: v1010.VersionedLocation,
+            beneficiary: v1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -176,39 +143,12 @@ export const reserveTransferAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.reserve_transfer_assets',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
-            assets: matrixEnjinV1010.VersionedAssets,
-            feeAssetItem: sts.number(),
-        })
-    ),
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
-     * with all fees taken as needed from the asset.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     */
-    v500: new CallType(
-        'PolkadotXcm.reserve_transfer_assets',
-        sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: v1010.VersionedLocation,
+            beneficiary: v1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -246,31 +186,11 @@ export const execute =  {
      * the maximum amount of weight that the message could take to be executed, then no
      * execution attempt will be made.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.execute',
         sts.struct({
-            message: matrixEnjinV1010.Type_423,
-            maxWeight: matrixEnjinV1010.Weight,
-        })
-    ),
-    /**
-     * Execute an XCM message from a local, signed, origin.
-     * 
-     * An event is deposited indicating whether `msg` could be executed completely or only
-     * partially.
-     * 
-     * No more than `max_weight` will be used in its attempted execution. If this is less than the
-     * maximum amount of weight that the message could take to be executed, then no execution
-     * attempt will be made.
-     * 
-     * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
-     * to completion; only that *some* of it was executed.
-     */
-    v500: new CallType(
-        'PolkadotXcm.execute',
-        sts.struct({
-            message: v500.Type_338,
-            maxWeight: v500.Weight,
+            message: v1010.Type_414,
+            maxWeight: v1010.Weight,
         })
     ),
 }
@@ -306,21 +226,6 @@ export const forceXcmVersion =  {
      * Extoll that a particular destination can be communicated with through a particular
      * version of XCM.
      * 
-     * - `origin`: Must be an origin specified by AdminOrigin.
-     * - `location`: The destination that is being described.
-     * - `xcm_version`: The latest version of XCM that `location` supports.
-     */
-    matrixEnjinV1010: new CallType(
-        'PolkadotXcm.force_xcm_version',
-        sts.struct({
-            location: matrixEnjinV1010.V4Location,
-            version: sts.number(),
-        })
-    ),
-    /**
-     * Extoll that a particular destination can be communicated with through a particular
-     * version of XCM.
-     * 
      * - `origin`: Must be Root.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
@@ -339,6 +244,21 @@ export const forceXcmVersion =  {
         'PolkadotXcm.force_xcm_version',
         sts.struct({
             location: v1004.V3MultiLocation,
+            version: sts.number(),
+        })
+    ),
+    /**
+     * Extoll that a particular destination can be communicated with through a particular
+     * version of XCM.
+     * 
+     * - `origin`: Must be an origin specified by AdminOrigin.
+     * - `location`: The destination that is being described.
+     * - `xcm_version`: The latest version of XCM that `location` supports.
+     */
+    v1010: new CallType(
+        'PolkadotXcm.force_xcm_version',
+        sts.struct({
+            location: v1010.V4Location,
             version: sts.number(),
         })
     ),
@@ -381,22 +301,10 @@ export const forceSubscribeVersionNotify =  {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.force_subscribe_version_notify',
         sts.struct({
-            location: matrixEnjinV1010.VersionedLocation,
-        })
-    ),
-    /**
-     * Ask a location to notify us regarding their XCM version and any changes to it.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we should subscribe for XCM version notifications.
-     */
-    v500: new CallType(
-        'PolkadotXcm.force_subscribe_version_notify',
-        sts.struct({
-            location: v500.VersionedMultiLocation,
+            location: v1010.VersionedLocation,
         })
     ),
 }
@@ -425,24 +333,10 @@ export const forceUnsubscribeVersionNotify =  {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.force_unsubscribe_version_notify',
         sts.struct({
-            location: matrixEnjinV1010.VersionedLocation,
-        })
-    ),
-    /**
-     * Require that a particular destination should no longer notify us regarding any XCM
-     * version changes.
-     * 
-     * - `origin`: Must be Root.
-     * - `location`: The location to which we are currently subscribed for XCM version
-     *   notifications which we no longer desire.
-     */
-    v500: new CallType(
-        'PolkadotXcm.force_unsubscribe_version_notify',
-        sts.struct({
-            location: v500.VersionedMultiLocation,
+            location: v1010.VersionedLocation,
         })
     ),
 }
@@ -511,44 +405,14 @@ export const limitedReserveTransferAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.limited_reserve_transfer_assets',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
-            assets: matrixEnjinV1010.VersionedAssets,
+            dest: v1010.VersionedLocation,
+            beneficiary: v1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
             feeAssetItem: sts.number(),
-            weightLimit: matrixEnjinV1010.V3WeightLimit,
-        })
-    ),
-    /**
-     * Transfer some assets from the local chain to the sovereign account of a destination
-     * chain and forward a notification XCM.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the fee on the
-     *   `dest` side.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    v500: new CallType(
-        'PolkadotXcm.limited_reserve_transfer_assets',
-        sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
-            feeAssetItem: sts.number(),
-            weightLimit: v500.V3WeightLimit,
+            weightLimit: v1010.V3WeightLimit,
         })
     ),
 }
@@ -604,43 +468,14 @@ export const limitedTeleportAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.limited_teleport_assets',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
-            assets: matrixEnjinV1010.VersionedAssets,
+            dest: v1010.VersionedLocation,
+            beneficiary: v1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
             feeAssetItem: sts.number(),
-            weightLimit: matrixEnjinV1010.V3WeightLimit,
-        })
-    ),
-    /**
-     * Teleport some assets from the local chain to some destination chain.
-     * 
-     * Fee payment on the destination side is made from the asset in the `assets` vector of
-     * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-     * is needed than `weight_limit`, then the operation will fail and the assets send may be
-     * at risk.
-     * 
-     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
-     * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
-     *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
-     * - `beneficiary`: A beneficiary location for the assets in the context of `dest`. Will generally be
-     *   an `AccountId32` value.
-     * - `assets`: The assets to be withdrawn. The first item should be the currency used to to pay the fee on the
-     *   `dest` side. May not be empty.
-     * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
-     *   fees.
-     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
-     */
-    v500: new CallType(
-        'PolkadotXcm.limited_teleport_assets',
-        sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
-            feeAssetItem: sts.number(),
-            weightLimit: v500.V3WeightLimit,
+            weightLimit: v1010.V3WeightLimit,
         })
     ),
 }
@@ -698,14 +533,14 @@ export const transferAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.transfer_assets',
         sts.struct({
-            dest: matrixEnjinV1010.VersionedLocation,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
-            assets: matrixEnjinV1010.VersionedAssets,
+            dest: v1010.VersionedLocation,
+            beneficiary: v1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
             feeAssetItem: sts.number(),
-            weightLimit: matrixEnjinV1010.V3WeightLimit,
+            weightLimit: v1010.V3WeightLimit,
         })
     ),
 }
@@ -720,11 +555,11 @@ export const claimAssets =  {
      * was the latest when they were trapped.
      * - `beneficiary`: The location/account where the claimed assets will be deposited.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'PolkadotXcm.claim_assets',
         sts.struct({
-            assets: matrixEnjinV1010.VersionedAssets,
-            beneficiary: matrixEnjinV1010.VersionedLocation,
+            assets: v1010.VersionedAssets,
+            beneficiary: v1010.VersionedLocation,
         })
     ),
 }

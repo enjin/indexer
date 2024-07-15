@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const transferAllowDeath =  {
     name: 'Balances.transfer_allow_death',
@@ -174,24 +174,6 @@ export const forceSetBalance =  {
     ),
 }
 
-export const forceAdjustTotalIssuance =  {
-    name: 'Balances.force_adjust_total_issuance',
-    /**
-     * Adjust the total issuance in a saturating way.
-     * 
-     * Can only be called by root and always needs a positive `delta`.
-     * 
-     * # Example
-     */
-    matrixEnjinV1010: new CallType(
-        'Balances.force_adjust_total_issuance',
-        sts.struct({
-            direction: matrixEnjinV1010.AdjustmentDirection,
-            delta: sts.bigint(),
-        })
-    ),
-}
-
 export const setBalance =  {
     name: 'Balances.set_balance',
     /**
@@ -210,6 +192,24 @@ export const setBalance =  {
             who: v500.MultiAddress,
             newFree: sts.bigint(),
             newReserved: sts.bigint(),
+        })
+    ),
+}
+
+export const forceAdjustTotalIssuance =  {
+    name: 'Balances.force_adjust_total_issuance',
+    /**
+     * Adjust the total issuance in a saturating way.
+     * 
+     * Can only be called by root and always needs a positive `delta`.
+     * 
+     * # Example
+     */
+    v1010: new CallType(
+        'Balances.force_adjust_total_issuance',
+        sts.struct({
+            direction: v1010.AdjustmentDirection,
+            delta: sts.bigint(),
         })
     ),
 }

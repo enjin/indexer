@@ -30,7 +30,7 @@ import {
 import {
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010,
     FlexibleMintParams_CreateOrMint,
-} from '../../../types/generated/matrixEnjinV1010'
+} from '../../../types/generated/v1010'
 import { CallItem, CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -96,8 +96,8 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.batch_mint') {
-        if (calls.multiTokens.batchMint.matrixEnjinV1010.is(call)) {
-            const { collectionId, recipients } = calls.multiTokens.batchMint.matrixEnjinV1010.decode(call)
+        if (calls.multiTokens.batchMint.v1010.is(call)) {
+            const { collectionId, recipients } = calls.multiTokens.batchMint.v1010.decode(call)
 
             const recipientCall = recipients.find((r) => r.params.tokenId === event.tokenId && r.params.__kind === 'CreateToken')
 
@@ -229,9 +229,9 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.force_mint') {
-        if (calls.multiTokens.forceMint.matrixEnjinV1010.is(call)) {
-            const { collectionId } = calls.multiTokens.forceMint.matrixEnjinV1010.decode(call)
-            const { params } = calls.multiTokens.forceMint.matrixEnjinV1010.decode(call)
+        if (calls.multiTokens.forceMint.v1010.is(call)) {
+            const { collectionId } = calls.multiTokens.forceMint.v1010.decode(call)
+            const { params } = calls.multiTokens.forceMint.v1010.decode(call)
             if (params.__kind !== 'CreateOrMint') {
                 // eslint-disable-next-line no-console
                 console.log('Invalid params', params)
@@ -376,9 +376,9 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     }
 
     if (call.name === 'MultiTokens.mint') {
-        if (calls.multiTokens.mint.matrixEnjinV1010.is(call)) {
-            const { collectionId } = calls.multiTokens.mint.matrixEnjinV1010.decode(call)
-            const { params } = calls.multiTokens.mint.matrixEnjinV1010.decode(call)
+        if (calls.multiTokens.mint.v1010.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.v1010.decode(call)
+            const { params } = calls.multiTokens.mint.v1010.decode(call)
             if (params.__kind !== 'CreateToken') {
                 // eslint-disable-next-line no-console
                 console.error('Invalid params', call.name, params)

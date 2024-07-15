@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const remark =  {
     name: 'System.remark',
@@ -119,10 +119,10 @@ export const authorizeUpgrade =  {
      * 
      * This call requires Root origin.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'System.authorize_upgrade',
         sts.struct({
-            codeHash: matrixEnjinV1010.H256,
+            codeHash: v1010.H256,
         })
     ),
 }
@@ -139,10 +139,10 @@ export const authorizeUpgradeWithoutChecks =  {
      * 
      * This call requires Root origin.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'System.authorize_upgrade_without_checks',
         sts.struct({
-            codeHash: matrixEnjinV1010.H256,
+            codeHash: v1010.H256,
         })
     ),
 }
@@ -160,7 +160,7 @@ export const applyAuthorizedUpgrade =  {
      * 
      * All origins are allowed.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'System.apply_authorized_upgrade',
         sts.struct({
             code: sts.bytes(),

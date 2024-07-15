@@ -1,29 +1,29 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const processingFailed =  {
     name: 'MessageQueue.ProcessingFailed',
     /**
      * Message discarded due to an error in the `MessageProcessor` (usually a format error).
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'MessageQueue.ProcessingFailed',
         sts.struct({
             /**
              * The `blake2_256` hash of the message.
              */
-            id: matrixEnjinV1010.H256,
+            id: v1010.H256,
             /**
              * The queue of the message.
              */
-            origin: matrixEnjinV1010.AggregateMessageOrigin,
+            origin: v1010.AggregateMessageOrigin,
             /**
              * The error that occurred.
              * 
              * This error is pretty opaque. More fine-grained errors need to be emitted as events
              * by the `MessageProcessor`.
              */
-            error: matrixEnjinV1010.ProcessMessageError,
+            error: v1010.ProcessMessageError,
         })
     ),
 }
@@ -33,21 +33,21 @@ export const processed =  {
     /**
      * Message is processed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'MessageQueue.Processed',
         sts.struct({
             /**
              * The `blake2_256` hash of the message.
              */
-            id: matrixEnjinV1010.H256,
+            id: v1010.H256,
             /**
              * The queue of the message.
              */
-            origin: matrixEnjinV1010.AggregateMessageOrigin,
+            origin: v1010.AggregateMessageOrigin,
             /**
              * How much weight was used to process the message.
              */
-            weightUsed: matrixEnjinV1010.Weight,
+            weightUsed: v1010.Weight,
             /**
              * Whether the message was processed.
              * 
@@ -66,7 +66,7 @@ export const overweightEnqueued =  {
     /**
      * Message placed in overweight queue.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'MessageQueue.OverweightEnqueued',
         sts.struct({
             /**
@@ -76,7 +76,7 @@ export const overweightEnqueued =  {
             /**
              * The queue of the message.
              */
-            origin: matrixEnjinV1010.AggregateMessageOrigin,
+            origin: v1010.AggregateMessageOrigin,
             /**
              * The page of the message.
              */
@@ -94,13 +94,13 @@ export const pageReaped =  {
     /**
      * This page was reaped.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'MessageQueue.PageReaped',
         sts.struct({
             /**
              * The queue of the page.
              */
-            origin: matrixEnjinV1010.AggregateMessageOrigin,
+            origin: v1010.AggregateMessageOrigin,
             /**
              * The index of the page.
              */

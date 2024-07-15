@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const proxy =  {
     name: 'Proxy.proxy',
@@ -14,12 +14,12 @@ export const proxy =  {
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
      * - `call`: The call to be made by the `real` account.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.proxy',
         sts.struct({
-            real: matrixEnjinV1010.MultiAddress,
-            forceProxyType: sts.option(() => matrixEnjinV1010.ProxyType),
-            call: matrixEnjinV1010.Call,
+            real: v1010.MultiAddress,
+            forceProxyType: sts.option(() => v1010.ProxyType),
+            call: v1010.Call,
         })
     ),
 }
@@ -37,11 +37,11 @@ export const addProxy =  {
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.add_proxy',
         sts.struct({
-            delegate: matrixEnjinV1010.MultiAddress,
-            proxyType: matrixEnjinV1010.ProxyType,
+            delegate: v1010.MultiAddress,
+            proxyType: v1010.ProxyType,
             delay: sts.number(),
         })
     ),
@@ -58,11 +58,11 @@ export const removeProxy =  {
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.remove_proxy',
         sts.struct({
-            delegate: matrixEnjinV1010.MultiAddress,
-            proxyType: matrixEnjinV1010.ProxyType,
+            delegate: v1010.MultiAddress,
+            proxyType: v1010.ProxyType,
             delay: sts.number(),
         })
     ),
@@ -78,7 +78,7 @@ export const removeProxies =  {
      * WARNING: This may be called on accounts created by `pure`, however if done, then
      * the unreserved fees will be inaccessible. **All access to this account will be lost.**
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.remove_proxies',
         sts.unit()
     ),
@@ -106,10 +106,10 @@ export const createPure =  {
      * 
      * Fails if there are insufficient funds to pay for deposit.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.create_pure',
         sts.struct({
-            proxyType: matrixEnjinV1010.ProxyType,
+            proxyType: v1010.ProxyType,
             delay: sts.number(),
             index: sts.number(),
         })
@@ -136,11 +136,11 @@ export const killPure =  {
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.kill_pure',
         sts.struct({
-            spawner: matrixEnjinV1010.MultiAddress,
-            proxyType: matrixEnjinV1010.ProxyType,
+            spawner: v1010.MultiAddress,
+            proxyType: v1010.ProxyType,
             index: sts.number(),
             height: sts.number(),
             extIndex: sts.number(),
@@ -167,11 +167,11 @@ export const announce =  {
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.announce',
         sts.struct({
-            real: matrixEnjinV1010.MultiAddress,
-            callHash: matrixEnjinV1010.H256,
+            real: v1010.MultiAddress,
+            callHash: v1010.H256,
         })
     ),
 }
@@ -190,11 +190,11 @@ export const removeAnnouncement =  {
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.remove_announcement',
         sts.struct({
-            real: matrixEnjinV1010.MultiAddress,
-            callHash: matrixEnjinV1010.H256,
+            real: v1010.MultiAddress,
+            callHash: v1010.H256,
         })
     ),
 }
@@ -213,11 +213,11 @@ export const rejectAnnouncement =  {
      * - `delegate`: The account that previously announced the call.
      * - `call_hash`: The hash of the call to be made.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.reject_announcement',
         sts.struct({
-            delegate: matrixEnjinV1010.MultiAddress,
-            callHash: matrixEnjinV1010.H256,
+            delegate: v1010.MultiAddress,
+            callHash: v1010.H256,
         })
     ),
 }
@@ -237,13 +237,13 @@ export const proxyAnnounced =  {
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
      * - `call`: The call to be made by the `real` account.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Proxy.proxy_announced',
         sts.struct({
-            delegate: matrixEnjinV1010.MultiAddress,
-            real: matrixEnjinV1010.MultiAddress,
-            forceProxyType: sts.option(() => matrixEnjinV1010.ProxyType),
-            call: matrixEnjinV1010.Call,
+            delegate: v1010.MultiAddress,
+            real: v1010.MultiAddress,
+            forceProxyType: sts.option(() => v1010.ProxyType),
+            call: v1010.Call,
         })
     ),
 }

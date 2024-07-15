@@ -325,7 +325,7 @@ export const totalIssuanceForced =  {
     /**
      * The `TotalIssuance` was forcefully changed.
      */
-    matrixEnjinV1010: new EventType(
+    v1010: new EventType(
         'Balances.TotalIssuanceForced',
         sts.struct({
             old: sts.bigint(),

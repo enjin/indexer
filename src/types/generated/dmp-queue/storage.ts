@@ -1,6 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const configuration =  {
     /**
@@ -103,14 +103,14 @@ export const migrationStatus =  {
     /**
      *  The migration state of this pallet.
      */
-    matrixEnjinV1010: new StorageType('DmpQueue.MigrationStatus', 'Default', [], matrixEnjinV1010.MigrationState) as MigrationStatusMatrixEnjinV1010,
+    v1010: new StorageType('DmpQueue.MigrationStatus', 'Default', [], v1010.MigrationState) as MigrationStatusV1010,
 }
 
 /**
  *  The migration state of this pallet.
  */
-export interface MigrationStatusMatrixEnjinV1010  {
+export interface MigrationStatusV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.MigrationState
-    get(block: Block): Promise<(matrixEnjinV1010.MigrationState | undefined)>
+    getDefault(block: Block): v1010.MigrationState
+    get(block: Block): Promise<(v1010.MigrationState | undefined)>
 }

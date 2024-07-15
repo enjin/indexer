@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const authorities =  {
     /**
@@ -9,7 +9,7 @@ export const authorities =  {
      *  but we require the old authorities to verify the seal when validating a PoV. This will
      *  always be updated to the latest AuRa authorities in `on_finalize`.
      */
-    matrixEnjinV1010: new StorageType('AuraExt.Authorities', 'Default', [], sts.array(() => matrixEnjinV1010.Public)) as AuthoritiesMatrixEnjinV1010,
+    v1010: new StorageType('AuraExt.Authorities', 'Default', [], sts.array(() => v1010.Public)) as AuthoritiesV1010,
 }
 
 /**
@@ -19,10 +19,10 @@ export const authorities =  {
  *  but we require the old authorities to verify the seal when validating a PoV. This will
  *  always be updated to the latest AuRa authorities in `on_finalize`.
  */
-export interface AuthoritiesMatrixEnjinV1010  {
+export interface AuthoritiesV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.Public[]
-    get(block: Block): Promise<(matrixEnjinV1010.Public[] | undefined)>
+    getDefault(block: Block): v1010.Public[]
+    get(block: Block): Promise<(v1010.Public[] | undefined)>
 }
 
 export const slotInfo =  {
@@ -31,7 +31,7 @@ export const slotInfo =  {
      * 
      *  Updated on each block initialization.
      */
-    matrixEnjinV1010: new StorageType('AuraExt.SlotInfo', 'Optional', [], sts.tuple(() => [matrixEnjinV1010.Slot, sts.number()])) as SlotInfoMatrixEnjinV1010,
+    v1010: new StorageType('AuraExt.SlotInfo', 'Optional', [], sts.tuple(() => [v1010.Slot, sts.number()])) as SlotInfoV1010,
 }
 
 /**
@@ -39,7 +39,7 @@ export const slotInfo =  {
  * 
  *  Updated on each block initialization.
  */
-export interface SlotInfoMatrixEnjinV1010  {
+export interface SlotInfoV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<([matrixEnjinV1010.Slot, number] | undefined)>
+    get(block: Block): Promise<([v1010.Slot, number] | undefined)>
 }

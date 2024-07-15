@@ -4,8 +4,8 @@ import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../..
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
-    if (fuelTanks.accountRuleDataRemoved.matrixEnjinV1010.is(event)) {
-        return fuelTanks.accountRuleDataRemoved.matrixEnjinV1010.decode(event)
+    if (fuelTanks.accountRuleDataRemoved.v1010.is(event)) {
+        return fuelTanks.accountRuleDataRemoved.v1010.decode(event)
     }
 
     if (fuelTanks.accountRuleDataRemoved.matrixEnjinV1000.is(event)) {

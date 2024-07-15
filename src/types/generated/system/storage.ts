@@ -11,7 +11,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const account =  {
     /**
@@ -276,16 +276,6 @@ export const events =  {
      *  Events have a large in-memory size. Box the events to not go out-of-memory
      *  just in case someone still reads them from within the runtime.
      */
-    matrixEnjinV1010: new StorageType('System.Events', 'Default', [], sts.array(() => matrixEnjinV1010.EventRecord)) as EventsMatrixEnjinV1010,
-    /**
-     *  Events deposited for the current block.
-     * 
-     *  NOTE: The item is unbound and should therefore never be read on chain.
-     *  It could otherwise inflate the PoV size of a block.
-     * 
-     *  Events have a large in-memory size. Box the events to not go out-of-memory
-     *  just in case someone still reads them from within the runtime.
-     */
     v500: new StorageType('System.Events', 'Default', [], sts.array(() => v500.EventRecord)) as EventsV500,
     /**
      *  Events deposited for the current block.
@@ -357,6 +347,16 @@ export const events =  {
      *  just in case someone still reads them from within the runtime.
      */
     v1005: new StorageType('System.Events', 'Default', [], sts.array(() => v1005.EventRecord)) as EventsV1005,
+    /**
+     *  Events deposited for the current block.
+     * 
+     *  NOTE: The item is unbound and should therefore never be read on chain.
+     *  It could otherwise inflate the PoV size of a block.
+     * 
+     *  Events have a large in-memory size. Box the events to not go out-of-memory
+     *  just in case someone still reads them from within the runtime.
+     */
+    v1010: new StorageType('System.Events', 'Default', [], sts.array(() => v1010.EventRecord)) as EventsV1010,
 }
 
 /**
@@ -417,21 +417,6 @@ export interface EventsMatrixEnjinV1005  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV1005.EventRecord[]
     get(block: Block): Promise<(matrixEnjinV1005.EventRecord[] | undefined)>
-}
-
-/**
- *  Events deposited for the current block.
- * 
- *  NOTE: The item is unbound and should therefore never be read on chain.
- *  It could otherwise inflate the PoV size of a block.
- * 
- *  Events have a large in-memory size. Box the events to not go out-of-memory
- *  just in case someone still reads them from within the runtime.
- */
-export interface EventsMatrixEnjinV1010  {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): matrixEnjinV1010.EventRecord[]
-    get(block: Block): Promise<(matrixEnjinV1010.EventRecord[] | undefined)>
 }
 
 /**
@@ -552,6 +537,21 @@ export interface EventsV1005  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): v1005.EventRecord[]
     get(block: Block): Promise<(v1005.EventRecord[] | undefined)>
+}
+
+/**
+ *  Events deposited for the current block.
+ * 
+ *  NOTE: The item is unbound and should therefore never be read on chain.
+ *  It could otherwise inflate the PoV size of a block.
+ * 
+ *  Events have a large in-memory size. Box the events to not go out-of-memory
+ *  just in case someone still reads them from within the runtime.
+ */
+export interface EventsV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1010.EventRecord[]
+    get(block: Block): Promise<(v1010.EventRecord[] | undefined)>
 }
 
 export const eventCount =  {
@@ -681,13 +681,13 @@ export const inherentsApplied =  {
     /**
      *  Whether all inherents have been applied.
      */
-    matrixEnjinV1010: new StorageType('System.InherentsApplied', 'Default', [], sts.boolean()) as InherentsAppliedMatrixEnjinV1010,
+    v1010: new StorageType('System.InherentsApplied', 'Default', [], sts.boolean()) as InherentsAppliedV1010,
 }
 
 /**
  *  Whether all inherents have been applied.
  */
-export interface InherentsAppliedMatrixEnjinV1010  {
+export interface InherentsAppliedV1010  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
     get(block: Block): Promise<(boolean | undefined)>
@@ -697,13 +697,13 @@ export const authorizedUpgrade =  {
     /**
      *  `Some` if a code upgrade has been authorized.
      */
-    matrixEnjinV1010: new StorageType('System.AuthorizedUpgrade', 'Optional', [], matrixEnjinV1010.CodeUpgradeAuthorization) as AuthorizedUpgradeMatrixEnjinV1010,
+    v1010: new StorageType('System.AuthorizedUpgrade', 'Optional', [], v1010.CodeUpgradeAuthorization) as AuthorizedUpgradeV1010,
 }
 
 /**
  *  `Some` if a code upgrade has been authorized.
  */
-export interface AuthorizedUpgradeMatrixEnjinV1010  {
+export interface AuthorizedUpgradeV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(matrixEnjinV1010.CodeUpgradeAuthorization | undefined)>
+    get(block: Block): Promise<(v1010.CodeUpgradeAuthorization | undefined)>
 }

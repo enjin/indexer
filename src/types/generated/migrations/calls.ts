@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as matrixEnjinV1010 from '../matrixEnjinV1010'
+import * as v1010 from '../v1010'
 
 export const forceSetCursor =  {
     name: 'Migrations.force_set_cursor',
@@ -10,10 +10,10 @@ export const forceSetCursor =  {
      * restarting the migration process in this manner will not call the
      * [`MigrationStatusHandler::started`] hook or emit an `UpgradeStarted` event.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Migrations.force_set_cursor',
         sts.struct({
-            cursor: sts.option(() => matrixEnjinV1010.MigrationCursor),
+            cursor: sts.option(() => v1010.MigrationCursor),
         })
     ),
 }
@@ -28,7 +28,7 @@ export const forceSetActiveCursor =  {
      * `force_set_cursor` takes an absolute block number. Setting `started_at` to `None`
      * indicates that the current block number plus one should be used.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Migrations.force_set_active_cursor',
         sts.struct({
             index: sts.number(),
@@ -46,7 +46,7 @@ export const forceOnboardMbms =  {
      * This process happens automatically on a runtime upgrade. It is in place as an emergency
      * measurement. The cursor needs to be `None` for this to succeed.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Migrations.force_onboard_mbms',
         sts.unit()
     ),
@@ -61,10 +61,10 @@ export const clearHistoric =  {
      * `HistoricCleared` event. The first time `None` can be used. `limit` must be chosen in a
      * way that will result in a sensible weight.
      */
-    matrixEnjinV1010: new CallType(
+    v1010: new CallType(
         'Migrations.clear_historic',
         sts.struct({
-            selector: matrixEnjinV1010.HistoricCleanupSelector,
+            selector: v1010.HistoricCleanupSelector,
         })
     ),
 }
