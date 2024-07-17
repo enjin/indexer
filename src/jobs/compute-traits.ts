@@ -4,7 +4,7 @@ import { redisConfig } from './common'
 export type JobData = { collectionId: string }
 
 export const traitsQueue = new Queue<JobData>('traitsQueue', {
-    defaultJobOptions: { delay: 30_000, attempts: 2, removeOnComplete: true },
+    defaultJobOptions: { delay: 60_000, attempts: 2, removeOnComplete: true },
     redis: redisConfig,
     settings: {
         maxStalledCount: 3,
