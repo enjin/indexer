@@ -10,7 +10,7 @@ const config: ProcessorConfig = {
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
     },
     blockRange: {
-        from: process.env.BLOCK_RANGE_FROM ? parseInt(process.env.BLOCK_RANGE_FROM, 10) : 3115200,
+        from: 3115400,
     },
     redisHost: process.env.REDIS_HOST || 'indexer_redis',
     redisDb: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
