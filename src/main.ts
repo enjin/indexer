@@ -20,7 +20,6 @@ import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
-import { clearDatabase } from './clear'
 
 Sentry.init({
     dsn: config.sentryDsn,
