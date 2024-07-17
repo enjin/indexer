@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../sup
 import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as v1010 from '../v1010'
 
 export const info =  {
     /**
@@ -50,6 +51,10 @@ export const listings =  {
      *  Listings by ID
      */
     matrixEnjinV603: new StorageType('Marketplace.Listings', 'Optional', [matrixEnjinV603.H256], matrixEnjinV603.Listing) as ListingsMatrixEnjinV603,
+    /**
+     *  Listings by ID
+     */
+    v1010: new StorageType('Marketplace.Listings', 'Optional', [v1010.H256], v1010.Listing) as ListingsV1010,
 }
 
 /**
@@ -67,6 +72,23 @@ export interface ListingsMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.H256): Promise<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.H256): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1010.H256): Promise<(v1010.Listing | undefined)>
+    getMany(block: Block, keys: v1010.H256[]): Promise<(v1010.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v1010.H256[]>
+    getKeys(block: Block, key: v1010.H256): Promise<v1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<v1010.H256[]>
+    getPairs(block: Block): Promise<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
+    getPairs(block: Block, key: v1010.H256): Promise<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
 }
 
 export const listingIdsByMakeAsset =  {
@@ -151,4 +173,20 @@ export interface ListingIdsByAccountIdV500  {
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32, key2: v500.H256): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
+}
+
+export const nextListingIdInput =  {
+    /**
+     *  Used to generate the next listing id. Increments by one every time a listing is created.
+     */
+    v1010: new StorageType('Marketplace.NextListingIdInput', 'Default', [], sts.bigint()) as NextListingIdInputV1010,
+}
+
+/**
+ *  Used to generate the next listing id. Increments by one every time a listing is created.
+ */
+export interface NextListingIdInputV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block): Promise<(bigint | undefined)>
 }

@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const configuration =  {
     /**
@@ -96,4 +97,20 @@ export interface CounterForOverweightMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<(number | undefined)>
+}
+
+export const migrationStatus =  {
+    /**
+     *  The migration state of this pallet.
+     */
+    v1010: new StorageType('DmpQueue.MigrationStatus', 'Default', [], v1010.MigrationState) as MigrationStatusV1010,
+}
+
+/**
+ *  The migration state of this pallet.
+ */
+export interface MigrationStatusV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1010.MigrationState
+    get(block: Block): Promise<(v1010.MigrationState | undefined)>
 }

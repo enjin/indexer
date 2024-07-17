@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const proposalCount =  {
     /**
@@ -71,4 +72,44 @@ export interface ApprovalsMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number[]
     get(block: Block): Promise<(number[] | undefined)>
+}
+
+export const spendCount =  {
+    /**
+     *  The count of spends that have been made.
+     */
+    v1010: new StorageType('CommunityPool.SpendCount', 'Default', [], sts.number()) as SpendCountV1010,
+}
+
+/**
+ *  The count of spends that have been made.
+ */
+export interface SpendCountV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): number
+    get(block: Block): Promise<(number | undefined)>
+}
+
+export const spends =  {
+    /**
+     *  Spends that have been approved and being processed.
+     */
+    v1010: new StorageType('CommunityPool.Spends', 'Optional', [sts.number()], v1010.SpendStatus) as SpendsV1010,
+}
+
+/**
+ *  Spends that have been approved and being processed.
+ */
+export interface SpendsV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: number): Promise<(v1010.SpendStatus | undefined)>
+    getMany(block: Block, keys: number[]): Promise<(v1010.SpendStatus | undefined)[]>
+    getKeys(block: Block): Promise<number[]>
+    getKeys(block: Block, key: number): Promise<number[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
+    getPairs(block: Block): Promise<[k: number, v: (v1010.SpendStatus | undefined)][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (v1010.SpendStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: (v1010.SpendStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: number): AsyncIterable<[k: number, v: (v1010.SpendStatus | undefined)][]>
 }

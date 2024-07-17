@@ -121,3 +121,48 @@ export const permanentlyOverweight =  {
         })
     ),
 }
+
+export const retrySet =  {
+    name: 'Scheduler.RetrySet',
+    /**
+     * Set a retry configuration for some task.
+     */
+    v1010: new EventType(
+        'Scheduler.RetrySet',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            period: sts.number(),
+            retries: sts.number(),
+        })
+    ),
+}
+
+export const retryCancelled =  {
+    name: 'Scheduler.RetryCancelled',
+    /**
+     * Cancel a retry configuration for some task.
+     */
+    v1010: new EventType(
+        'Scheduler.RetryCancelled',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+        })
+    ),
+}
+
+export const retryFailed =  {
+    name: 'Scheduler.RetryFailed',
+    /**
+     * The given task was unable to be retried since the agenda is full at that block or there
+     * was not enough weight to reschedule it.
+     */
+    v1010: new EventType(
+        'Scheduler.RetryFailed',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+        })
+    ),
+}

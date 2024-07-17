@@ -13,6 +13,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
+import * as v1010 from '../v1010'
 
 export const schedule =  {
     name: 'Scheduler.schedule',
@@ -182,6 +183,18 @@ export const schedule =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: v1005.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    v1010: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: v1010.Call,
         })
     ),
 }
@@ -384,6 +397,19 @@ export const scheduleNamed =  {
             call: v1005.Call,
         })
     ),
+    /**
+     * Schedule a named task.
+     */
+    v1010: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: v1010.Call,
+        })
+    ),
 }
 
 export const cancelNamed =  {
@@ -579,6 +605,18 @@ export const scheduleAfter =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: v1005.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
+     */
+    v1010: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: v1010.Call,
         })
     ),
 }
@@ -777,6 +815,97 @@ export const scheduleNamedAfter =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: v1005.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
+     */
+    v1010: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: v1010.Call,
+        })
+    ),
+}
+
+export const setRetry =  {
+    name: 'Scheduler.set_retry',
+    /**
+     * Set a retry configuration for a task so that, in case its scheduled run fails, it will
+     * be retried after `period` blocks, for a total amount of `retries` retries or until it
+     * succeeds.
+     * 
+     * Tasks which need to be scheduled for a retry are still subject to weight metering and
+     * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
+     * normally while the task is retrying.
+     * 
+     * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
+     * clones of the original task. Their retry configuration will be derived from the
+     * original task's configuration, but will have a lower value for `remaining` than the
+     * original `total_retries`.
+     */
+    v1010: new CallType(
+        'Scheduler.set_retry',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            retries: sts.number(),
+            period: sts.number(),
+        })
+    ),
+}
+
+export const setRetryNamed =  {
+    name: 'Scheduler.set_retry_named',
+    /**
+     * Set a retry configuration for a named task so that, in case its scheduled run fails, it
+     * will be retried after `period` blocks, for a total amount of `retries` retries or until
+     * it succeeds.
+     * 
+     * Tasks which need to be scheduled for a retry are still subject to weight metering and
+     * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
+     * normally while the task is retrying.
+     * 
+     * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
+     * clones of the original task. Their retry configuration will be derived from the
+     * original task's configuration, but will have a lower value for `remaining` than the
+     * original `total_retries`.
+     */
+    v1010: new CallType(
+        'Scheduler.set_retry_named',
+        sts.struct({
+            id: sts.bytes(),
+            retries: sts.number(),
+            period: sts.number(),
+        })
+    ),
+}
+
+export const cancelRetry =  {
+    name: 'Scheduler.cancel_retry',
+    /**
+     * Removes the retry configuration of a task.
+     */
+    v1010: new CallType(
+        'Scheduler.cancel_retry',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+        })
+    ),
+}
+
+export const cancelRetryNamed =  {
+    name: 'Scheduler.cancel_retry_named',
+    /**
+     * Cancel the retry configuration of a named task.
+     */
+    v1010: new CallType(
+        'Scheduler.cancel_retry_named',
+        sts.struct({
+            id: sts.bytes(),
         })
     ),
 }

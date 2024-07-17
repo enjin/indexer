@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
+import * as v1010 from '../v1010'
 
 export const identitySet =  {
     name: 'Identity.IdentitySet',
@@ -139,6 +140,103 @@ export const subIdentityRevoked =  {
             sub: matrixEnjinV1000.AccountId32,
             main: matrixEnjinV1000.AccountId32,
             deposit: sts.bigint(),
+        })
+    ),
+}
+
+export const authorityAdded =  {
+    name: 'Identity.AuthorityAdded',
+    /**
+     * A username authority was added.
+     */
+    v1010: new EventType(
+        'Identity.AuthorityAdded',
+        sts.struct({
+            authority: v1010.AccountId32,
+        })
+    ),
+}
+
+export const authorityRemoved =  {
+    name: 'Identity.AuthorityRemoved',
+    /**
+     * A username authority was removed.
+     */
+    v1010: new EventType(
+        'Identity.AuthorityRemoved',
+        sts.struct({
+            authority: v1010.AccountId32,
+        })
+    ),
+}
+
+export const usernameSet =  {
+    name: 'Identity.UsernameSet',
+    /**
+     * A username was set for `who`.
+     */
+    v1010: new EventType(
+        'Identity.UsernameSet',
+        sts.struct({
+            who: v1010.AccountId32,
+            username: sts.bytes(),
+        })
+    ),
+}
+
+export const usernameQueued =  {
+    name: 'Identity.UsernameQueued',
+    /**
+     * A username was queued, but `who` must accept it prior to `expiration`.
+     */
+    v1010: new EventType(
+        'Identity.UsernameQueued',
+        sts.struct({
+            who: v1010.AccountId32,
+            username: sts.bytes(),
+            expiration: sts.number(),
+        })
+    ),
+}
+
+export const preapprovalExpired =  {
+    name: 'Identity.PreapprovalExpired',
+    /**
+     * A queued username passed its expiration without being claimed and was removed.
+     */
+    v1010: new EventType(
+        'Identity.PreapprovalExpired',
+        sts.struct({
+            whose: v1010.AccountId32,
+        })
+    ),
+}
+
+export const primaryUsernameSet =  {
+    name: 'Identity.PrimaryUsernameSet',
+    /**
+     * A username was set as a primary and can be looked up from `who`.
+     */
+    v1010: new EventType(
+        'Identity.PrimaryUsernameSet',
+        sts.struct({
+            who: v1010.AccountId32,
+            username: sts.bytes(),
+        })
+    ),
+}
+
+export const danglingUsernameRemoved =  {
+    name: 'Identity.DanglingUsernameRemoved',
+    /**
+     * A dangling username (as in, a username corresponding to an account that has removed its
+     * identity) has been removed.
+     */
+    v1010: new EventType(
+        'Identity.DanglingUsernameRemoved',
+        sts.struct({
+            who: v1010.AccountId32,
+            username: sts.bytes(),
         })
     ),
 }

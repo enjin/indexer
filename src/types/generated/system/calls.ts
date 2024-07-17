@@ -1,4 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import * as v1010 from '../v1010'
 
 export const remark =  {
     name: 'System.remark',
@@ -106,6 +107,63 @@ export const remarkWithEvent =  {
         'System.remark_with_event',
         sts.struct({
             remark: sts.bytes(),
+        })
+    ),
+}
+
+export const authorizeUpgrade =  {
+    name: 'System.authorize_upgrade',
+    /**
+     * Authorize an upgrade to a given `code_hash` for the runtime. The runtime can be supplied
+     * later.
+     * 
+     * This call requires Root origin.
+     */
+    v1010: new CallType(
+        'System.authorize_upgrade',
+        sts.struct({
+            codeHash: v1010.H256,
+        })
+    ),
+}
+
+export const authorizeUpgradeWithoutChecks =  {
+    name: 'System.authorize_upgrade_without_checks',
+    /**
+     * Authorize an upgrade to a given `code_hash` for the runtime. The runtime can be supplied
+     * later.
+     * 
+     * WARNING: This authorizes an upgrade that will take place without any safety checks, for
+     * example that the spec name remains the same and that the version number increases. Not
+     * recommended for normal use. Use `authorize_upgrade` instead.
+     * 
+     * This call requires Root origin.
+     */
+    v1010: new CallType(
+        'System.authorize_upgrade_without_checks',
+        sts.struct({
+            codeHash: v1010.H256,
+        })
+    ),
+}
+
+export const applyAuthorizedUpgrade =  {
+    name: 'System.apply_authorized_upgrade',
+    /**
+     * Provide the preimage (runtime binary) `code` for an upgrade that has been authorized.
+     * 
+     * If the authorization required a version check, this call will ensure the spec name
+     * remains unchanged and that the spec version has increased.
+     * 
+     * Depending on the runtime's `OnSetCode` configuration, this function may directly apply
+     * the new `code` in the same block or attempt to schedule the upgrade.
+     * 
+     * All origins are allowed.
+     */
+    v1010: new CallType(
+        'System.apply_authorized_upgrade',
+        sts.struct({
+            code: sts.bytes(),
         })
     ),
 }

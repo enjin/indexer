@@ -1,11 +1,6 @@
-import { DataSource } from '@subsquid/archive-registry'
-
-type Parameters<T> = T extends (...args: infer T) => any ? T : never
-
-enum HandlerParams {
-    NAME,
-    OPTIONS,
-    FUNC,
+interface DataSource {
+    archive: string | null
+    chain: string
 }
 
 export interface ProcessorConfig {

@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../suppo
 import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as v1000 from '../v1000'
+import * as v1010 from '../v1010'
 
 export const sudid =  {
     name: 'Sudo.Sudid',
@@ -45,6 +46,22 @@ export const keyChanged =  {
             oldSudoer: sts.option(() => v500.AccountId32),
         })
     ),
+    /**
+     * The sudo key has been updated.
+     */
+    v1010: new EventType(
+        'Sudo.KeyChanged',
+        sts.struct({
+            /**
+             * The old sudo key (if one was previously set).
+             */
+            old: sts.option(() => v1010.AccountId32),
+            /**
+             * The new sudo key (if one was set).
+             */
+            new: v1010.AccountId32,
+        })
+    ),
 }
 
 export const sudoAsDone =  {
@@ -75,5 +92,16 @@ export const sudoAsDone =  {
         sts.struct({
             sudoResult: sts.result(() => sts.unit(), () => v1000.DispatchError),
         })
+    ),
+}
+
+export const keyRemoved =  {
+    name: 'Sudo.KeyRemoved',
+    /**
+     * The key was permanently removed.
+     */
+    v1010: new EventType(
+        'Sudo.KeyRemoved',
+        sts.unit()
     ),
 }

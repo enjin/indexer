@@ -15,6 +15,8 @@ import {
     ListingStatusType,
     ListingType,
     MarketplaceListingCreated,
+    OfferData,
+    OfferState,
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -23,6 +25,10 @@ import { Sns } from '../../../common/sns'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.listingCreated.v1010.is(event)) {
+        return events.marketplace.listingCreated.v1010.decode(event)
+    }
+
     if (events.marketplace.listingCreated.matrixEnjinV603.is(event)) {
         return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
     }
@@ -47,7 +53,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [Even
         new AccountTokenEvent({
             id: item.id,
             token: new Token({ id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` }),
-            from: new Account({ id: data.listing.seller }),
+            from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             event,
         }),
     ]
@@ -71,24 +77,49 @@ export async function listingCreated(
         ctx.store.findOne<Token>(Token, {
             where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
         }),
-        getOrCreateAccount(ctx, data.listing.seller),
+        getOrCreateAccount(ctx, 'creator' in data.listing ? data.listing.creator : data.listing.seller),
     ])
 
     if (!makeAssetId || !takeAssetId) return undefined
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
-    const listingData =
-        data.listing.data.__kind === ListingType.FixedPrice
-            ? new FixedPriceData({ listingType: ListingType.FixedPrice })
-            : new AuctionData({
-                  listingType: ListingType.Auction,
-                  startHeight: data.listing.data.value.startBlock,
-                  endHeight: data.listing.data.value.endBlock,
-              })
-    const listingState =
-        data.listing.state.__kind === ListingType.FixedPrice.toString()
-            ? new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
-            : new AuctionState({ listingType: ListingType.Auction })
+    let listingData
+    let listingState
+
+    switch (data.listing.data.__kind) {
+        case ListingType.FixedPrice:
+            listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
+            break
+        case ListingType.Auction:
+            listingData = new AuctionData({
+                listingType: ListingType.Auction,
+                startHeight: data.listing.data.value.startBlock,
+                endHeight: data.listing.data.value.endBlock,
+            })
+            break
+        case ListingType.Offer:
+            listingData = new OfferData({
+                listingType: ListingType.Offer,
+                expiration: data.listing.data.value.expiration,
+            })
+            break
+        default:
+            throw new Error('Unknown listing type')
+    }
+
+    switch (data.listing.state.__kind) {
+        case ListingType.FixedPrice:
+            listingState = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
+            break
+        case ListingType.Auction:
+            listingState = new AuctionState({ listingType: ListingType.Auction })
+            break
+        case ListingType.Offer:
+            listingState = new OfferState({ listingType: ListingType.Offer })
+            break
+        default:
+            throw new Error('Unknown listing type')
+    }
 
     const listing = new Listing({
         id: listingId,
@@ -98,10 +129,10 @@ export async function listingCreated(
         amount: data.listing.amount,
         price: data.listing.price,
         highestPrice: data.listing.price,
-        minTakeValue: data.listing.minTakeValue,
+        minTakeValue: 'minTakeValue' in data.listing ? data.listing.minTakeValue : data.listing.minReceived,
         feeSide,
         height: data.listing.creationBlock,
-        deposit: data.listing.deposit,
+        deposit: typeof data.listing.deposit === 'bigint' ? data.listing.deposit : data.listing.deposit.amount,
         salt: data.listing.salt,
         data: listingData,
         state: listingState,

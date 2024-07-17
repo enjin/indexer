@@ -3,6 +3,7 @@ import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
+import * as v1010 from '../v1010'
 
 export const attempted =  {
     name: 'PolkadotXcm.Attempted',
@@ -40,6 +41,15 @@ export const attempted =  {
         'PolkadotXcm.Attempted',
         sts.struct({
             outcome: v1004.V3Outcome,
+        })
+    ),
+    /**
+     * Execution of an XCM message was attempted.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.Attempted',
+        sts.struct({
+            outcome: v1010.V4Outcome,
         })
     ),
 }
@@ -85,6 +95,18 @@ export const sent =  {
             origin: v1004.V3MultiLocation,
             destination: v1004.V3MultiLocation,
             message: sts.array(() => v1004.V3Instruction),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * A XCM message was sent.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.Sent',
+        sts.struct({
+            origin: v1010.V4Location,
+            destination: v1010.V4Location,
+            message: sts.array(() => v1010.V4Instruction),
             messageId: sts.bytes(),
         })
     ),
@@ -138,6 +160,18 @@ export const unexpectedResponse =  {
             queryId: sts.bigint(),
         })
     ),
+    /**
+     * Query response received which does not match a registered query. This may be because a
+     * matching query was never registered, it may be because it is a duplicate response, or
+     * because the query timed out.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.UnexpectedResponse',
+        sts.struct({
+            origin: v1010.V4Location,
+            queryId: sts.bigint(),
+        })
+    ),
 }
 
 export const responseReady =  {
@@ -182,6 +216,17 @@ export const responseReady =  {
         sts.struct({
             queryId: sts.bigint(),
             response: v1004.V3Response,
+        })
+    ),
+    /**
+     * Query response has been received and is ready for taking with `take_response`. There is
+     * no registered notification call.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.ResponseReady',
+        sts.struct({
+            queryId: sts.bigint(),
+            response: v1010.V4Response,
         })
     ),
 }
@@ -440,6 +485,19 @@ export const invalidResponder =  {
             expectedLocation: sts.option(() => v1004.V3MultiLocation),
         })
     ),
+    /**
+     * Expected query response has been received but the origin location of the response does
+     * not match that expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.InvalidResponder',
+        sts.struct({
+            origin: v1010.V4Location,
+            queryId: sts.bigint(),
+            expectedLocation: sts.option(() => v1010.V4Location),
+        })
+    ),
 }
 
 export const invalidResponderVersion =  {
@@ -503,6 +561,22 @@ export const invalidResponderVersion =  {
         'PolkadotXcm.InvalidResponderVersion',
         sts.struct({
             origin: v1004.V3MultiLocation,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * Expected query response has been received but the expected origin location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.InvalidResponderVersion',
+        sts.struct({
+            origin: v1010.V4Location,
             queryId: sts.bigint(),
         })
     ),
@@ -590,6 +664,17 @@ export const assetsTrapped =  {
             assets: v1004.VersionedMultiAssets,
         })
     ),
+    /**
+     * Some assets have been placed in an asset trap.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.AssetsTrapped',
+        sts.struct({
+            hash: v1010.H256,
+            origin: v1010.V4Location,
+            assets: v1010.VersionedAssets,
+        })
+    ),
 }
 
 export const versionChangeNotified =  {
@@ -644,6 +729,20 @@ export const versionChangeNotified =  {
             messageId: sts.bytes(),
         })
     ),
+    /**
+     * An XCM version change notification message has been attempted to be sent.
+     * 
+     * The cost of sending it (borne by the chain) is included.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.VersionChangeNotified',
+        sts.struct({
+            destination: v1010.V4Location,
+            result: sts.number(),
+            cost: sts.array(() => v1010.V4Asset),
+            messageId: sts.bytes(),
+        })
+    ),
 }
 
 export const supportedVersionChanged =  {
@@ -687,6 +786,17 @@ export const supportedVersionChanged =  {
         'PolkadotXcm.SupportedVersionChanged',
         sts.struct({
             location: v1004.V3MultiLocation,
+            version: sts.number(),
+        })
+    ),
+    /**
+     * The supported version of a location has been changed. This might be through an
+     * automatic notification or a manual intervention.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.SupportedVersionChanged',
+        sts.struct({
+            location: v1010.V4Location,
             version: sts.number(),
         })
     ),
@@ -738,6 +848,18 @@ export const notifyTargetSendFail =  {
             error: v1004.V3Error,
         })
     ),
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * sending the notification to it.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.NotifyTargetSendFail',
+        sts.struct({
+            location: v1010.V4Location,
+            queryId: sts.bigint(),
+            error: v1010.V3Error,
+        })
+    ),
 }
 
 export const notifyTargetMigrationFail =  {
@@ -781,6 +903,17 @@ export const notifyTargetMigrationFail =  {
         'PolkadotXcm.NotifyTargetMigrationFail',
         sts.struct({
             location: v1004.VersionedMultiLocation,
+            queryId: sts.bigint(),
+        })
+    ),
+    /**
+     * A given location which had a version change subscription was dropped owing to an error
+     * migrating the location to our new XCM format.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.NotifyTargetMigrationFail',
+        sts.struct({
+            location: v1010.VersionedLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -850,6 +983,22 @@ export const invalidQuerierVersion =  {
             queryId: sts.bigint(),
         })
     ),
+    /**
+     * Expected query response has been received but the expected querier location placed in
+     * storage by this runtime previously cannot be decoded. The query remains registered.
+     * 
+     * This is unexpected (since a location placed in storage in a previously executing
+     * runtime should be readable prior to query timeout) and dangerous since the possibly
+     * valid response will be dropped. Manual governance intervention is probably going to be
+     * needed.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.InvalidQuerierVersion',
+        sts.struct({
+            origin: v1010.V4Location,
+            queryId: sts.bigint(),
+        })
+    ),
 }
 
 export const invalidQuerier =  {
@@ -904,6 +1053,20 @@ export const invalidQuerier =  {
             maybeActualQuerier: sts.option(() => v1004.V3MultiLocation),
         })
     ),
+    /**
+     * Expected query response has been received but the querier location of the response does
+     * not match the expected. The query remains registered for a later, valid, response to
+     * be received and acted upon.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.InvalidQuerier',
+        sts.struct({
+            origin: v1010.V4Location,
+            queryId: sts.bigint(),
+            expectedQuerier: v1010.V4Location,
+            maybeActualQuerier: sts.option(() => v1010.V4Location),
+        })
+    ),
 }
 
 export const versionNotifyStarted =  {
@@ -952,6 +1115,18 @@ export const versionNotifyStarted =  {
             messageId: sts.bytes(),
         })
     ),
+    /**
+     * A remote has requested XCM version change notification from us and we have honored it.
+     * A version information message is sent to them and its cost is included.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.VersionNotifyStarted',
+        sts.struct({
+            destination: v1010.V4Location,
+            cost: sts.array(() => v1010.V4Asset),
+            messageId: sts.bytes(),
+        })
+    ),
 }
 
 export const versionNotifyRequested =  {
@@ -993,6 +1168,17 @@ export const versionNotifyRequested =  {
         sts.struct({
             destination: v1004.V3MultiLocation,
             cost: sts.array(() => v1004.V3MultiAsset),
+            messageId: sts.bytes(),
+        })
+    ),
+    /**
+     * We have requested that a remote chain send us XCM version change notifications.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.VersionNotifyRequested',
+        sts.struct({
+            destination: v1010.V4Location,
+            cost: sts.array(() => v1010.V4Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -1040,6 +1226,18 @@ export const versionNotifyUnrequested =  {
             messageId: sts.bytes(),
         })
     ),
+    /**
+     * We have requested that a remote chain stops sending us XCM version change
+     * notifications.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.VersionNotifyUnrequested',
+        sts.struct({
+            destination: v1010.V4Location,
+            cost: sts.array(() => v1010.V4Asset),
+            messageId: sts.bytes(),
+        })
+    ),
 }
 
 export const feesPaid =  {
@@ -1080,6 +1278,16 @@ export const feesPaid =  {
         sts.struct({
             paying: v1004.V3MultiLocation,
             fees: sts.array(() => v1004.V3MultiAsset),
+        })
+    ),
+    /**
+     * Fees were paid from a location for an operation (often for using `SendXcm`).
+     */
+    v1010: new EventType(
+        'PolkadotXcm.FeesPaid',
+        sts.struct({
+            paying: v1010.V4Location,
+            fees: sts.array(() => v1010.V4Asset),
         })
     ),
 }
@@ -1124,6 +1332,30 @@ export const assetsClaimed =  {
             hash: v1004.H256,
             origin: v1004.V3MultiLocation,
             assets: v1004.VersionedMultiAssets,
+        })
+    ),
+    /**
+     * Some assets have been claimed from an asset trap
+     */
+    v1010: new EventType(
+        'PolkadotXcm.AssetsClaimed',
+        sts.struct({
+            hash: v1010.H256,
+            origin: v1010.V4Location,
+            assets: v1010.VersionedAssets,
+        })
+    ),
+}
+
+export const versionMigrationFinished =  {
+    name: 'PolkadotXcm.VersionMigrationFinished',
+    /**
+     * A XCM version migration finished.
+     */
+    v1010: new EventType(
+        'PolkadotXcm.VersionMigrationFinished',
+        sts.struct({
+            version: sts.number(),
         })
     ),
 }

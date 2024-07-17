@@ -560,6 +560,12 @@ enum FreezeState {
   Never
 }
 
+type NativeTokenMetadata {
+  name: String!
+  symbol: String!
+  decimalCount: Int!
+}
+
 type Token @entity {
   id: ID!
 
@@ -571,12 +577,16 @@ type Token @entity {
   cap: TokenCap
   behavior: TokenBehavior
   listingForbidden: Boolean!
+  nativeMetadata: NativeTokenMetadata
 
   # Storage extras
   unitPrice: BigInt
   minimumBalance: BigInt!
   mintDeposit: BigInt!
   attributeCount: Int!
+  accountDepositCount: Int!
+  anyoneCanInfuse: Boolean!
+  infusion: BigInt!
 
   # Relations
   collection: Collection! @index
@@ -692,6 +702,7 @@ enum FeeSide {
 enum ListingType {
   FixedPrice
   Auction
+  Offer
 }
 
 type FixedPriceData {
@@ -704,7 +715,12 @@ type AuctionData {
   endHeight: Int!
 }
 
-union ListingData = FixedPriceData | AuctionData
+type OfferData {
+  listingType: ListingType!
+  expiration: Int!
+}
+
+union ListingData = FixedPriceData | AuctionData | OfferData
 
 type FixedPriceState {
   listingType: ListingType!
@@ -714,6 +730,16 @@ type FixedPriceState {
 type AuctionState {
   listingType: ListingType!
   highBid: Bid
+}
+
+type CounterOffer {
+  accountId: String!
+  price: BigInt!
+}
+
+type OfferState {
+   listingType: ListingType!
+  counter: CounterOffer
 }
 
 type Bid @entity {
@@ -731,7 +757,7 @@ type Bid @entity {
   createdAt: DateTime!
 }
 
-union ListingState = FixedPriceState | AuctionState
+union ListingState = FixedPriceState | AuctionState | OfferState
 
 enum ListingStatusType {
   Active
@@ -905,6 +931,7 @@ type FuelTankRuleSet @entity {
   #for ease
   isPermittedExtrinsicsEmpty: Boolean!
   isPermittedExtrinsicsNull: Boolean!
+  requireSignature: String
 
   whitelistedCallers: [String!]
   whitelistedCollections: [String]
@@ -917,6 +944,12 @@ type FuelTankRuleSet @entity {
   permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 
+
+enum CoveragePolicy {
+  Fees
+  FeesAndDeposit
+}
+
 type FuelTank @entity {
   id: ID!
 
@@ -926,6 +959,7 @@ type FuelTank @entity {
   providesDeposit: Boolean!
   isFrozen: Boolean!
   accountCount: Int!
+  coveragePolicy: CoveragePolicy
 
   userAccounts: [FuelTankUserAccounts] @derivedFrom(field: "tank")
   userAccountManagement: FuelTankUserAccountManagement

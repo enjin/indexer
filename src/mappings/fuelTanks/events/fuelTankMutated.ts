@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto'
 import { UnknownVersionError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import {
+    CoveragePolicy,
     Event as EventModel,
     FuelTank,
     FuelTankAccountRules,
@@ -12,6 +13,10 @@ import {
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
+    if (fuelTanks.fuelTankMutated.v1010.is(event)) {
+        return fuelTanks.fuelTankMutated.v1010.decode(event)
+    }
+
     if (fuelTanks.fuelTankMutated.matrixEnjinV603.is(event)) {
         return fuelTanks.fuelTankMutated.matrixEnjinV603.decode(event)
     }
@@ -32,15 +37,22 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
             tank.userAccountManagement = new FuelTankUserAccountManagement({
                 tankReservesAccountCreationDeposit:
                     eventData.mutation.userAccountManagement.value.tankReservesAccountCreationDeposit,
-                tankReservesExistentialDeposit: eventData.mutation.userAccountManagement.value.tankReservesExistentialDeposit,
+                tankReservesExistentialDeposit:
+                    'tankReservesExistentialDeposit' in eventData.mutation.userAccountManagement.value
+                        ? eventData.mutation.userAccountManagement.value.tankReservesExistentialDeposit
+                        : eventData.mutation.userAccountManagement.value.tankReservesAccountCreationDeposit,
             })
         } else {
             tank.userAccountManagement = null
         }
     }
 
-    if (eventData.mutation.providesDeposit !== undefined) {
+    if ('providesDeposit' in eventData.mutation && eventData.mutation.providesDeposit !== undefined) {
         tank.providesDeposit = eventData.mutation.providesDeposit
+    }
+
+    if ('coveragePolicy' in eventData.mutation && eventData.mutation.coveragePolicy !== undefined) {
+        tank.coveragePolicy = CoveragePolicy[eventData.mutation.coveragePolicy.__kind]
     }
 
     if (eventData.mutation.accountRules !== undefined) {

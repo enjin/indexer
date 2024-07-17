@@ -2,6 +2,7 @@ import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../sup
 import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as v1010 from '../v1010'
 
 export const queryCounter =  {
     /**
@@ -24,6 +25,10 @@ export const queries =  {
      *  The ongoing queries.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.Queries', 'Optional', [sts.bigint()], matrixEnjinV603.QueryStatus) as QueriesMatrixEnjinV603,
+    /**
+     *  The ongoing queries.
+     */
+    v1010: new StorageType('PolkadotXcm.Queries', 'Optional', [sts.bigint()], v1010.QueryStatus) as QueriesV1010,
 }
 
 /**
@@ -41,6 +46,23 @@ export interface QueriesMatrixEnjinV603  {
     getPairs(block: Block, key: bigint): Promise<[k: bigint, v: (matrixEnjinV603.QueryStatus | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: (matrixEnjinV603.QueryStatus | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<[k: bigint, v: (matrixEnjinV603.QueryStatus | undefined)][]>
+}
+
+/**
+ *  The ongoing queries.
+ */
+export interface QueriesV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: bigint): Promise<(v1010.QueryStatus | undefined)>
+    getMany(block: Block, keys: bigint[]): Promise<(v1010.QueryStatus | undefined)[]>
+    getKeys(block: Block): Promise<bigint[]>
+    getKeys(block: Block, key: bigint): Promise<bigint[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
+    getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
+    getPairs(block: Block): Promise<[k: bigint, v: (v1010.QueryStatus | undefined)][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: (v1010.QueryStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: (v1010.QueryStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<[k: bigint, v: (v1010.QueryStatus | undefined)][]>
 }
 
 export const assetTraps =  {
@@ -96,6 +118,10 @@ export const supportedVersion =  {
      *  The Latest versions that we know various locations support.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.SupportedVersion', 'Optional', [sts.number(), matrixEnjinV603.VersionedMultiLocation], sts.number()) as SupportedVersionMatrixEnjinV603,
+    /**
+     *  The Latest versions that we know various locations support.
+     */
+    v1010: new StorageType('PolkadotXcm.SupportedVersion', 'Optional', [sts.number(), v1010.VersionedLocation], sts.number()) as SupportedVersionV1010,
 }
 
 /**
@@ -119,11 +145,36 @@ export interface SupportedVersionMatrixEnjinV603  {
     getPairsPaged(pageSize: number, block: Block, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: (number | undefined)][]>
 }
 
+/**
+ *  The Latest versions that we know various locations support.
+ */
+export interface SupportedVersionV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<(number | undefined)>
+    getMany(block: Block, keys: [number, v1010.VersionedLocation][]): Promise<(number | undefined)[]>
+    getKeys(block: Block): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+    getPairs(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (number | undefined)][]>
+}
+
 export const versionNotifiers =  {
     /**
      *  All locations that we have requested version notifications from.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.VersionNotifiers', 'Optional', [sts.number(), matrixEnjinV603.VersionedMultiLocation], sts.bigint()) as VersionNotifiersMatrixEnjinV603,
+    /**
+     *  All locations that we have requested version notifications from.
+     */
+    v1010: new StorageType('PolkadotXcm.VersionNotifiers', 'Optional', [sts.number(), v1010.VersionedLocation], sts.bigint()) as VersionNotifiersV1010,
 }
 
 /**
@@ -147,12 +198,38 @@ export interface VersionNotifiersMatrixEnjinV603  {
     getPairsPaged(pageSize: number, block: Block, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: (bigint | undefined)][]>
 }
 
+/**
+ *  All locations that we have requested version notifications from.
+ */
+export interface VersionNotifiersV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<(bigint | undefined)>
+    getMany(block: Block, keys: [number, v1010.VersionedLocation][]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+    getPairs(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[k: [number, v1010.VersionedLocation], v: (bigint | undefined)][]>
+}
+
 export const versionNotifyTargets =  {
     /**
      *  The target locations that are subscribed to our version changes, as well as the most recent
      *  of our versions we informed them of.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.VersionNotifyTargets', 'Optional', [sts.number(), matrixEnjinV603.VersionedMultiLocation], sts.tuple(() => [sts.bigint(), matrixEnjinV603.Weight, sts.number()])) as VersionNotifyTargetsMatrixEnjinV603,
+    /**
+     *  The target locations that are subscribed to our version changes, as well as the most recent
+     *  of our versions we informed them of.
+     */
+    v1010: new StorageType('PolkadotXcm.VersionNotifyTargets', 'Optional', [sts.number(), v1010.VersionedLocation], sts.tuple(() => [sts.bigint(), v1010.Weight, sts.number()])) as VersionNotifyTargetsV1010,
 }
 
 /**
@@ -177,6 +254,28 @@ export interface VersionNotifyTargetsMatrixEnjinV603  {
     getPairsPaged(pageSize: number, block: Block, key1: number, key2: matrixEnjinV603.VersionedMultiLocation): AsyncIterable<[k: [number, matrixEnjinV603.VersionedMultiLocation], v: ([bigint, matrixEnjinV603.Weight, number] | undefined)][]>
 }
 
+/**
+ *  The target locations that are subscribed to our version changes, as well as the most recent
+ *  of our versions we informed them of.
+ */
+export interface VersionNotifyTargetsV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<([bigint, v1010.Weight, number] | undefined)>
+    getMany(block: Block, keys: [number, v1010.VersionedLocation][]): Promise<([bigint, v1010.Weight, number] | undefined)[]>
+    getKeys(block: Block): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number): Promise<[number, v1010.VersionedLocation][]>
+    getKeys(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[number, v1010.VersionedLocation][]>
+    getPairs(block: Block): Promise<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+    getPairs(block: Block, key1: number, key2: v1010.VersionedLocation): Promise<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number, key2: v1010.VersionedLocation): AsyncIterable<[k: [number, v1010.VersionedLocation], v: ([bigint, v1010.Weight, number] | undefined)][]>
+}
+
 export const versionDiscoveryQueue =  {
     /**
      *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
@@ -184,6 +283,12 @@ export const versionDiscoveryQueue =  {
      *  which is used as a prioritization.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.VersionDiscoveryQueue', 'Default', [], sts.array(() => sts.tuple(() => [matrixEnjinV603.VersionedMultiLocation, sts.number()]))) as VersionDiscoveryQueueMatrixEnjinV603,
+    /**
+     *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+     *  the `u32` counter is the number of times that a send to the destination has been attempted,
+     *  which is used as a prioritization.
+     */
+    v1010: new StorageType('PolkadotXcm.VersionDiscoveryQueue', 'Default', [], sts.array(() => sts.tuple(() => [v1010.VersionedLocation, sts.number()]))) as VersionDiscoveryQueueV1010,
 }
 
 /**
@@ -195,6 +300,17 @@ export interface VersionDiscoveryQueueMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [matrixEnjinV603.VersionedMultiLocation, number][]
     get(block: Block): Promise<([matrixEnjinV603.VersionedMultiLocation, number][] | undefined)>
+}
+
+/**
+ *  Destinations whose latest XCM version we would like to know. Duplicates not allowed, and
+ *  the `u32` counter is the number of times that a send to the destination has been attempted,
+ *  which is used as a prioritization.
+ */
+export interface VersionDiscoveryQueueV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1010.VersionedLocation, number][]
+    get(block: Block): Promise<([v1010.VersionedLocation, number][] | undefined)>
 }
 
 export const currentMigration =  {
@@ -225,6 +341,10 @@ export const remoteLockedFungibles =  {
      *  Fungible assets which we know are locked on a remote chain.
      */
     v604: new StorageType('PolkadotXcm.RemoteLockedFungibles', 'Optional', [sts.number(), v604.AccountId32, v604.VersionedAssetId], v604.RemoteLockedFungibleRecord) as RemoteLockedFungiblesV604,
+    /**
+     *  Fungible assets which we know are locked on a remote chain.
+     */
+    v1010: new StorageType('PolkadotXcm.RemoteLockedFungibles', 'Optional', [sts.number(), v1010.AccountId32, v1010.VersionedAssetId], v1010.RemoteLockedFungibleRecord) as RemoteLockedFungiblesV1010,
 }
 
 /**
@@ -302,11 +422,40 @@ export interface RemoteLockedFungiblesV604  {
     getPairsPaged(pageSize: number, block: Block, key1: number, key2: v604.AccountId32, key3: v604.VersionedAssetId): AsyncIterable<[k: [number, v604.AccountId32, v604.VersionedAssetId], v: (v604.RemoteLockedFungibleRecord | undefined)][]>
 }
 
+/**
+ *  Fungible assets which we know are locked on a remote chain.
+ */
+export interface RemoteLockedFungiblesV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: number, key2: v1010.AccountId32, key3: v1010.VersionedAssetId): Promise<(v1010.RemoteLockedFungibleRecord | undefined)>
+    getMany(block: Block, keys: [number, v1010.AccountId32, v1010.VersionedAssetId][]): Promise<(v1010.RemoteLockedFungibleRecord | undefined)[]>
+    getKeys(block: Block): Promise<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeys(block: Block, key1: number): Promise<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeys(block: Block, key1: number, key2: v1010.AccountId32): Promise<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeys(block: Block, key1: number, key2: v1010.AccountId32, key3: v1010.VersionedAssetId): Promise<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number, key2: v1010.AccountId32): AsyncIterable<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getKeysPaged(pageSize: number, block: Block, key1: number, key2: v1010.AccountId32, key3: v1010.VersionedAssetId): AsyncIterable<[number, v1010.AccountId32, v1010.VersionedAssetId][]>
+    getPairs(block: Block): Promise<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairs(block: Block, key1: number): Promise<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairs(block: Block, key1: number, key2: v1010.AccountId32): Promise<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairs(block: Block, key1: number, key2: v1010.AccountId32, key3: v1010.VersionedAssetId): Promise<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number): AsyncIterable<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number, key2: v1010.AccountId32): AsyncIterable<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: number, key2: v1010.AccountId32, key3: v1010.VersionedAssetId): AsyncIterable<[k: [number, v1010.AccountId32, v1010.VersionedAssetId], v: (v1010.RemoteLockedFungibleRecord | undefined)][]>
+}
+
 export const lockedFungibles =  {
     /**
      *  Fungible assets which we know are locked on this chain.
      */
     matrixEnjinV603: new StorageType('PolkadotXcm.LockedFungibles', 'Optional', [matrixEnjinV603.AccountId32], sts.array(() => sts.tuple(() => [sts.bigint(), matrixEnjinV603.VersionedMultiLocation]))) as LockedFungiblesMatrixEnjinV603,
+    /**
+     *  Fungible assets which we know are locked on this chain.
+     */
+    v1010: new StorageType('PolkadotXcm.LockedFungibles', 'Optional', [v1010.AccountId32], sts.array(() => sts.tuple(() => [sts.bigint(), v1010.VersionedLocation]))) as LockedFungiblesV1010,
 }
 
 /**
@@ -324,6 +473,23 @@ export interface LockedFungiblesMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.AccountId32): Promise<[k: matrixEnjinV603.AccountId32, v: ([bigint, matrixEnjinV603.VersionedMultiLocation][] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: ([bigint, matrixEnjinV603.VersionedMultiLocation][] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.AccountId32): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: ([bigint, matrixEnjinV603.VersionedMultiLocation][] | undefined)][]>
+}
+
+/**
+ *  Fungible assets which we know are locked on this chain.
+ */
+export interface LockedFungiblesV1010  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1010.AccountId32): Promise<([bigint, v1010.VersionedLocation][] | undefined)>
+    getMany(block: Block, keys: v1010.AccountId32[]): Promise<([bigint, v1010.VersionedLocation][] | undefined)[]>
+    getKeys(block: Block): Promise<v1010.AccountId32[]>
+    getKeys(block: Block, key: v1010.AccountId32): Promise<v1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1010.AccountId32): AsyncIterable<v1010.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1010.AccountId32, v: ([bigint, v1010.VersionedLocation][] | undefined)][]>
+    getPairs(block: Block, key: v1010.AccountId32): Promise<[k: v1010.AccountId32, v: ([bigint, v1010.VersionedLocation][] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.AccountId32, v: ([bigint, v1010.VersionedLocation][] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1010.AccountId32): AsyncIterable<[k: v1010.AccountId32, v: ([bigint, v1010.VersionedLocation][] | undefined)][]>
 }
 
 export const xcmExecutionSuspended =  {

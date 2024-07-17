@@ -32,6 +32,9 @@ export class FuelTankRuleSet {
     @BooleanColumn_({nullable: false})
     isPermittedExtrinsicsNull!: boolean
 
+    @StringColumn_({nullable: true})
+    requireSignature!: string | undefined | null
+
     @StringColumn_({array: true, nullable: true})
     whitelistedCallers!: (string)[] | undefined | null
 

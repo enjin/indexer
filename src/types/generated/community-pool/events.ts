@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const proposed =  {
     name: 'CommunityPool.Proposed',
@@ -120,6 +121,76 @@ export const updatedInactive =  {
         sts.struct({
             reactivated: sts.bigint(),
             deactivated: sts.bigint(),
+        })
+    ),
+}
+
+export const assetSpendApproved =  {
+    name: 'CommunityPool.AssetSpendApproved',
+    /**
+     * A new asset spend proposal has been approved.
+     */
+    v1010: new EventType(
+        'CommunityPool.AssetSpendApproved',
+        sts.struct({
+            index: sts.number(),
+            amount: sts.bigint(),
+            beneficiary: v1010.AccountId32,
+            validFrom: sts.number(),
+            expireAt: sts.number(),
+        })
+    ),
+}
+
+export const assetSpendVoided =  {
+    name: 'CommunityPool.AssetSpendVoided',
+    /**
+     * An approved spend was voided.
+     */
+    v1010: new EventType(
+        'CommunityPool.AssetSpendVoided',
+        sts.struct({
+            index: sts.number(),
+        })
+    ),
+}
+
+export const paid =  {
+    name: 'CommunityPool.Paid',
+    /**
+     * A payment happened.
+     */
+    v1010: new EventType(
+        'CommunityPool.Paid',
+        sts.struct({
+            index: sts.number(),
+        })
+    ),
+}
+
+export const paymentFailed =  {
+    name: 'CommunityPool.PaymentFailed',
+    /**
+     * A payment failed and can be retried.
+     */
+    v1010: new EventType(
+        'CommunityPool.PaymentFailed',
+        sts.struct({
+            index: sts.number(),
+        })
+    ),
+}
+
+export const spendProcessed =  {
+    name: 'CommunityPool.SpendProcessed',
+    /**
+     * A spend was processed and removed from the storage. It might have been successfully
+     * paid or it may have expired.
+     */
+    v1010: new EventType(
+        'CommunityPool.SpendProcessed',
+        sts.struct({
+            index: sts.number(),
         })
     ),
 }

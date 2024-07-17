@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const notePreimage =  {
     name: 'Preimage.note_preimage',
@@ -62,6 +63,21 @@ export const unrequestPreimage =  {
         'Preimage.unrequest_preimage',
         sts.struct({
             hash: matrixEnjinV603.H256,
+        })
+    ),
+}
+
+export const ensureUpdated =  {
+    name: 'Preimage.ensure_updated',
+    /**
+     * Ensure that the a bulk of pre-images is upgraded.
+     * 
+     * The caller pays no fee if at least 90% of pre-images were successfully updated.
+     */
+    v1010: new CallType(
+        'Preimage.ensure_updated',
+        sts.struct({
+            hashes: sts.array(() => v1010.H256),
         })
     ),
 }

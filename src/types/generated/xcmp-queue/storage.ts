@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const inboundXcmpStatus =  {
     /**
@@ -131,6 +132,10 @@ export const queueConfig =  {
      *  The configuration which controls the dynamics of the outbound queue.
      */
     matrixEnjinV603: new StorageType('XcmpQueue.QueueConfig', 'Default', [], matrixEnjinV603.QueueConfigData) as QueueConfigMatrixEnjinV603,
+    /**
+     *  The configuration which controls the dynamics of the outbound queue.
+     */
+    v1010: new StorageType('XcmpQueue.QueueConfig', 'Default', [], v1010.QueueConfigData) as QueueConfigV1010,
 }
 
 /**
@@ -140,6 +145,15 @@ export interface QueueConfigMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.QueueConfigData
     get(block: Block): Promise<(matrixEnjinV603.QueueConfigData | undefined)>
+}
+
+/**
+ *  The configuration which controls the dynamics of the outbound queue.
+ */
+export interface QueueConfigV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1010.QueueConfigData
+    get(block: Block): Promise<(v1010.QueueConfigData | undefined)>
 }
 
 export const overweight =  {
@@ -220,4 +234,59 @@ export interface QueueSuspendedMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
     get(block: Block): Promise<(boolean | undefined)>
+}
+
+export const inboundXcmpSuspended =  {
+    /**
+     *  The suspended inbound XCMP channels. All others are not suspended.
+     * 
+     *  This is a `StorageValue` instead of a `StorageMap` since we expect multiple reads per block
+     *  to different keys with a one byte payload. The access to `BoundedBTreeSet` will be cached
+     *  within the block and therefore only included once in the proof size.
+     * 
+     *  NOTE: The PoV benchmarking cannot know this and will over-estimate, but the actual proof
+     *  will be smaller.
+     */
+    v1010: new StorageType('XcmpQueue.InboundXcmpSuspended', 'Default', [], sts.array(() => v1010.Id)) as InboundXcmpSuspendedV1010,
+}
+
+/**
+ *  The suspended inbound XCMP channels. All others are not suspended.
+ * 
+ *  This is a `StorageValue` instead of a `StorageMap` since we expect multiple reads per block
+ *  to different keys with a one byte payload. The access to `BoundedBTreeSet` will be cached
+ *  within the block and therefore only included once in the proof size.
+ * 
+ *  NOTE: The PoV benchmarking cannot know this and will over-estimate, but the actual proof
+ *  will be smaller.
+ */
+export interface InboundXcmpSuspendedV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1010.Id[]
+    get(block: Block): Promise<(v1010.Id[] | undefined)>
+}
+
+export const deliveryFeeFactor =  {
+    /**
+     *  The factor to multiply the base delivery fee by.
+     */
+    v1010: new StorageType('XcmpQueue.DeliveryFeeFactor', 'Default', [v1010.Id], v1010.FixedU128) as DeliveryFeeFactorV1010,
+}
+
+/**
+ *  The factor to multiply the base delivery fee by.
+ */
+export interface DeliveryFeeFactorV1010  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1010.FixedU128
+    get(block: Block, key: v1010.Id): Promise<(v1010.FixedU128 | undefined)>
+    getMany(block: Block, keys: v1010.Id[]): Promise<(v1010.FixedU128 | undefined)[]>
+    getKeys(block: Block): Promise<v1010.Id[]>
+    getKeys(block: Block, key: v1010.Id): Promise<v1010.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1010.Id): AsyncIterable<v1010.Id[]>
+    getPairs(block: Block): Promise<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairs(block: Block, key: v1010.Id): Promise<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1010.Id): AsyncIterable<[k: v1010.Id, v: (v1010.FixedU128 | undefined)][]>
 }

@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
+import * as v1010 from '../v1010'
 
 export const transfer =  {
     name: 'XTokens.transfer',
@@ -26,6 +27,29 @@ export const transfer =  {
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer native currencies.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer',
+        sts.struct({
+            currencyId: v1010.AssetId,
+            amount: sts.bigint(),
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
+        })
+    ),
 }
 
 export const transferMultiasset =  {
@@ -50,6 +74,28 @@ export const transferMultiasset =  {
             asset: matrixEnjinV603.VersionedMultiAsset,
             dest: matrixEnjinV603.VersionedMultiLocation,
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
+        })
+    ),
+    /**
+     * Transfer `Asset`.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer_multiasset',
+        sts.struct({
+            asset: v1010.VersionedAsset,
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
         })
     ),
 }
@@ -89,6 +135,39 @@ export const transferWithFee =  {
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer native currencies specifying the fee and amount as
+     * separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the amount to be spent to pay for execution in destination
+     * chain. Both fee and amount will be subtracted form the callers
+     * balance.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer_with_fee',
+        sts.struct({
+            currencyId: v1010.AssetId,
+            amount: sts.bigint(),
+            fee: sts.bigint(),
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
+        })
+    ),
 }
 
 export const transferMultiassetWithFee =  {
@@ -125,6 +204,38 @@ export const transferMultiassetWithFee =  {
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer `Asset` specifying the fee and amount as separate.
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee` is the Asset to be spent to pay for execution in
+     * destination chain. Both fee and amount will be subtracted form the
+     * callers balance For now we only accept fee and asset having the same
+     * `Location` id.
+     * 
+     * If `fee` is not high enough to cover for the execution costs in the
+     * destination chain, then the assets will be trapped in the
+     * destination chain
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer_multiasset_with_fee',
+        sts.struct({
+            asset: v1010.VersionedAsset,
+            fee: v1010.VersionedAsset,
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
+        })
+    ),
 }
 
 export const transferMulticurrencies =  {
@@ -155,6 +266,32 @@ export const transferMulticurrencies =  {
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
         })
     ),
+    /**
+     * Transfer several currencies specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the currencies tuple that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer_multicurrencies',
+        sts.struct({
+            currencies: sts.array(() => sts.tuple(() => [v1010.AssetId, sts.bigint()])),
+            feeItem: sts.number(),
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
+        })
+    ),
 }
 
 export const transferMultiassets =  {
@@ -183,6 +320,32 @@ export const transferMultiassets =  {
             feeItem: sts.number(),
             dest: matrixEnjinV603.VersionedMultiLocation,
             destWeightLimit: matrixEnjinV603.V3WeightLimit,
+        })
+    ),
+    /**
+     * Transfer several `Asset` specifying the item to be used as fee
+     * 
+     * `dest_weight_limit` is the weight for XCM execution on the dest
+     * chain, and it would be charged from the transferred assets. If set
+     * below requirements, the execution may fail and assets wouldn't be
+     * received.
+     * 
+     * `fee_item` is index of the Assets that we want to use for
+     * payment
+     * 
+     * It's a no-op if any error on local XCM execution or message sending.
+     * Note sending assets out per se doesn't guarantee they would be
+     * received. Receiving depends on if the XCM message could be delivered
+     * by the network, and if the receiving chain would handle
+     * messages correctly.
+     */
+    v1010: new CallType(
+        'XTokens.transfer_multiassets',
+        sts.struct({
+            assets: v1010.VersionedAssets,
+            feeItem: sts.number(),
+            dest: v1010.VersionedLocation,
+            destWeightLimit: v1010.V3WeightLimit,
         })
     ),
 }

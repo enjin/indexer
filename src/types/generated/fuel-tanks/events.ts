@@ -5,6 +5,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
+import * as v1010 from '../v1010'
 
 export const fuelTankCreated =  {
     name: 'FuelTanks.FuelTankCreated',
@@ -46,6 +47,22 @@ export const fuelTankMutated =  {
              * The mutation that was applied
              */
             mutation: matrixEnjinV603.DefaultTankMutation,
+        })
+    ),
+    /**
+     * A [`FuelTank`] was mutated
+     */
+    v1010: new EventType(
+        'FuelTanks.FuelTankMutated',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v1010.AccountId32,
+            /**
+             * The mutation that was applied
+             */
+            mutation: v1010.DefaultTankMutation,
         })
     ),
 }
@@ -314,6 +331,31 @@ export const accountRuleDataRemoved =  {
              * The [`DispatchRuleKind`] that was removed
              */
             ruleKind: v1000.DispatchRuleKind,
+        })
+    ),
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    v1010: new EventType(
+        'FuelTanks.AccountRuleDataRemoved',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v1010.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was removed
+             */
+            userId: v1010.AccountId32,
+            /**
+             * The id of the rule set that was removed
+             */
+            ruleSetId: sts.number(),
+            /**
+             * The [`DispatchRuleKind`] that was removed
+             */
+            ruleKind: v1010.DispatchRuleKind,
         })
     ),
 }
@@ -615,6 +657,26 @@ export const consumptionSet =  {
              * The new [`Consumption`](crate::Consumption)
              */
             consumption: matrixEnjinV603.Consumption,
+        })
+    ),
+}
+
+export const migrationStep =  {
+    name: 'FuelTanks.MigrationStep',
+    /**
+     * The migration step has completed
+     */
+    v1010: new EventType(
+        'FuelTanks.MigrationStep',
+        sts.struct({
+            /**
+             * The number of items processed within this step
+             */
+            itemsProcessed: sts.number(),
+            /**
+             * The migration phase
+             */
+            phase: sts.number(),
         })
     ),
 }

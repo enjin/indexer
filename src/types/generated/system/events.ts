@@ -3,6 +3,7 @@ import * as v500 from '../v500'
 import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
+import * as v1010 from '../v1010'
 
 export const extrinsicSuccess =  {
     name: 'System.ExtrinsicSuccess',
@@ -108,6 +109,20 @@ export const remarked =  {
         sts.struct({
             sender: matrixEnjinV603.AccountId32,
             hash: matrixEnjinV603.H256,
+        })
+    ),
+}
+
+export const upgradeAuthorized =  {
+    name: 'System.UpgradeAuthorized',
+    /**
+     * An upgrade was authorized.
+     */
+    v1010: new EventType(
+        'System.UpgradeAuthorized',
+        sts.struct({
+            codeHash: v1010.H256,
+            checkVersion: sts.boolean(),
         })
     ),
 }
