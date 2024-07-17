@@ -20,6 +20,7 @@ import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
+import { clearDatabase } from './clear'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -196,12 +197,20 @@ function getParticipants(args: any, signer: string): string[] {
     return [signer]
 }
 
+let x = 1
+
 processor.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
         supportHotBlocks: true,
     }),
     async (ctx) => {
+        if (x == 1) {
+            ctx.log.error('Clearing')
+            await clearDatabase()
+            x++
+        }
+
         try {
             ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 

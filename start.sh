@@ -4,7 +4,6 @@ set -e
 role=${CONTAINER_ROLE:-app}
 
 if [ "$role" = "processor" ]; then
-    npm run db:refresh
     npm run db:migrate
     npm run processor:start
 elif [ "$role" = "graphql" ]; then
