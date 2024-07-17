@@ -9,6 +9,9 @@ export interface ProcessorConfig {
     lastBlockHeight: number
     genesisHash: string
     batchSize?: number
+    blockRange: {
+        from: number
+    }
     redisHost: string
     redisDb: number
     dataSource: DataSource
