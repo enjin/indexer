@@ -197,20 +197,12 @@ function getParticipants(args: any, signer: string): string[] {
     return [signer]
 }
 
-let x = 1
-
 processor.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
         supportHotBlocks: true,
     }),
     async (ctx) => {
-        if (x == 1) {
-            ctx.log.error('Clearing')
-            await clearDatabase()
-            x++
-        }
-
         try {
             ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 
