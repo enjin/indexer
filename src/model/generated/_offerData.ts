@@ -5,13 +5,13 @@ import {ListingType} from "./_listingType"
 export class OfferData {
     public readonly isTypeOf = 'OfferData'
     private _listingType!: ListingType
-    private _expiration!: number
+    private _expiration!: number | undefined | null
 
     constructor(props?: Partial<Omit<OfferData, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listingType = marshal.enumFromJson(json.listingType, ListingType)
-            this._expiration = marshal.int.fromJSON(json.expiration)
+            this._expiration = json.expiration == null ? undefined : marshal.int.fromJSON(json.expiration)
         }
     }
 
@@ -24,12 +24,11 @@ export class OfferData {
         this._listingType = value
     }
 
-    get expiration(): number {
-        assert(this._expiration != null, 'uninitialized access')
+    get expiration(): number | undefined | null {
         return this._expiration
     }
 
-    set expiration(value: number) {
+    set expiration(value: number | undefined | null) {
         this._expiration = value
     }
 
