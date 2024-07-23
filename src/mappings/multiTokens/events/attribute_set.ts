@@ -163,6 +163,8 @@ export async function attributeSet(
             collection.attributeCount += 1
             await ctx.store.save(collection)
             processMetadata(collection.id, 'collection', false, true)
+        } else {
+            throwError(`[AttributeSet] call was made on a non existing collection or token`, 'warning')
         }
     }
     if (token) {

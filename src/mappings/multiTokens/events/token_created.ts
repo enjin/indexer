@@ -27,10 +27,7 @@ import {
     TokenCap,
     DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
 } from '../../../types/generated/matrixEnjinV603'
-import {
-    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010,
-    FlexibleMintParams_CreateOrMint,
-} from '../../../types/generated/v1010'
+import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010 } from '../../../types/generated/v1010'
 import { CallItem, CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 
