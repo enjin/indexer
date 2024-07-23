@@ -1,11 +1,9 @@
-import { hexToString } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
 import { processMetadata } from '../../../jobs/process-metadata'
 import { computeTraits } from '../../../jobs/compute-traits'
-import { safeString } from '../../../common/tools'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.attributeRemoved.matrixEnjinV603.is(event)) {
@@ -42,7 +40,7 @@ export async function attributeRemoved(
     if (skipSave) return getEvent(item, data)
 
     const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
-    const attributeId = `${id}-${safeString(hexToString(data.key))}`
+    const attributeId = `${id}-${data.key}`
     const attribute = await ctx.store.findOne<Attribute>(Attribute, {
         where: { id: attributeId },
         relations: {
@@ -82,6 +80,8 @@ export async function attributeRemoved(
         }
 
         await ctx.store.remove(attribute)
+    } else {
+        throwError(`[AttributeRemoved] call was made on a non existing collection or token`, 'warning')
     }
     return getEvent(item, data)
 }
