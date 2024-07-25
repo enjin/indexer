@@ -107,10 +107,10 @@ export class TopCollectionResolver {
             .createQueryBuilder()
             .select('*')
             .addSelect(
-                'COALESCE(0.20 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
+                'COALESCE(0.35 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
                     'COALESCE(0.35 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) +' +
                     'COALESCE(0.20 * (avg_sale_change / NULLIF(MAX(avg_sale_change) OVER(), 0)),0) +' +
-                    'COALESCE(0.25 * (users / NULLIF(MAX(users) OVER(), 0)), 0) AS trending_score'
+                    'COALESCE(0.10 * (users / NULLIF(MAX(users) OVER(), 0)), 0) AS trending_score'
             )
             .addSelect(
                 'COALESCE(0.80 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
