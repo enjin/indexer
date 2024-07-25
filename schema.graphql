@@ -717,7 +717,7 @@ type AuctionData {
 
 type OfferData {
   listingType: ListingType!
-  expiration: Int!
+  expiration: Int
 }
 
 union ListingData = FixedPriceData | AuctionData | OfferData

@@ -12,12 +12,19 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.decode(call)
         }
 
+        if (calls.polkadotXcm.limitedTeleportAssets.v1010.is(call)) {
+            return calls.polkadotXcm.limitedTeleportAssets.v1010.decode(call)
+        }
+
         throw new UnknownVersionError(calls.polkadotXcm.limitedTeleportAssets.name)
     }
 
     if (call.name === 'PolkadotXcm.teleport_assets') {
         if (calls.polkadotXcm.teleportAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.teleportAssets.matrixEnjinV603.decode(call)
+        }
+        if (calls.polkadotXcm.teleportAssets.v1010.is(call)) {
+            return calls.polkadotXcm.teleportAssets.v1010.decode(call)
         }
 
         throw new UnknownVersionError(calls.polkadotXcm.teleportAssets.name)
@@ -26,6 +33,9 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'PolkadotXcm.limited_reserve_transfer_assets') {
         if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
+        }
+        if (calls.polkadotXcm.limitedReserveTransferAssets.v1010.is(call)) {
+            return calls.polkadotXcm.limitedReserveTransferAssets.v1010.decode(call)
         }
 
         throw new UnknownVersionError(calls.polkadotXcm.limitedReserveTransferAssets.name)
@@ -54,6 +64,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
 
         if (data.matrixEnjinV603.is(call)) {
             callData = data.matrixEnjinV603.decode(call)
+        }
+
+        if (data.v1010.is(call)) {
+            callData = data.v1010.decode(call)
         }
 
         if (data.v1005.is(call)) {
