@@ -44,10 +44,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         syncCollectionStats(_c.collectionId)
         computeTraits(_c.collectionId)
 
-        await em.update(Collection, { id: _c.collectionId }, collection as any).catch((err) => {
-            // eslint-disable-next-line no-console
-            console.error('Error: Updating collection', _c.collectionId, err)
-        })
+        return em.update(Collection, { id: _c.collectionId }, collection as any)
     })
 
     await Promise.all(collectionsPromise)

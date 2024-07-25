@@ -93,6 +93,7 @@ export class Collection {
     @DateTimeColumn_({nullable: true})
     verifiedAt!: Date | undefined | null
 
+    @Index_()
     @BooleanColumn_({nullable: false})
     hidden!: boolean
 
