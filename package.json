@@ -51,7 +51,7 @@
     "@polkadot/typegen": "^12.2.1",
     "@subsquid/substrate-metadata-explorer": "^3.1.2",
     "@subsquid/substrate-typegen": "^8.0.2",
-    "@subsquid/typeorm-codegen": "^2.0.1",
+    "@subsquid/typeorm-codegen": "^2.0.2",
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.7",
     "@types/mime-types": "^2.1.4",
