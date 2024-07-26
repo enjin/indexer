@@ -489,7 +489,7 @@ type Collection @entity {
   socials: CollectionSocials!
   category: String
   verifiedAt: DateTime
-  hidden: Boolean!
+  hidden: Boolean! @index
 
   # Marketplace analytics
   stats: CollectionStats!
@@ -717,7 +717,7 @@ type AuctionData {
 
 type OfferData {
   listingType: ListingType!
-  expiration: Int!
+  expiration: Int
 }
 
 union ListingData = FixedPriceData | AuctionData | OfferData
