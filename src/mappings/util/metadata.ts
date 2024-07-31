@@ -27,7 +27,10 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
 
     let finalUrl = url.replace('ipfs://', 'https://ipfs.io/ipfs/')
     if (job.attemptsMade > 1) {
-        finalUrl = url.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/')
+        finalUrl = url.replace('ipfs://', 'https://ipfs.enjin.services/ipfs/')
+        if (finalUrl.startsWith('https://ipfs.enjin.services/ipfs/')) {
+            api.defaults.headers['x-pinata-gateway-token'] = process.env.PINATA_GATEWAY_TOKEN as string
+        }
         job.log(`Fetching metadata from ${finalUrl} attempt ${job.attemptsMade}`)
     }
 
