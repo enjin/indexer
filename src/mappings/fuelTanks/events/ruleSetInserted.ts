@@ -73,13 +73,15 @@ function getCallData(call: CallItem) {
         return calls.fuelTanks.insertRuleSet.v500.decode(call)
     }
 
-    console.error(call)
-
     throw new UnknownVersionError(calls.fuelTanks.insertRuleSet.name)
 }
 
 export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
+
+    if (item.call.name === calls.fuelTanks.createFuelTank.name) {
+        return undefined
+    }
 
     const eventData = getEventData(item)
 
