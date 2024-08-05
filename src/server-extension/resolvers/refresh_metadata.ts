@@ -84,8 +84,9 @@ export class RefreshMetadataResolver {
 
         if (!isToken) {
             syncCollectionStats(collectionId)
-            computeTraits(collectionId)
         }
+
+        computeTraits(collectionId)
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }
