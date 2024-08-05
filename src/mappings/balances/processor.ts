@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
@@ -284,7 +285,6 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
         const accountInfos = await getBalances(ctx, block, chunked)
 
         if (accountInfos === undefined || accountInfos.length === 0) {
-            // eslint-disable-next-line no-continue
             continue
         }
 
@@ -295,7 +295,23 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
             const accountInfo = accountInfos[i]
 
             if (accountInfo === undefined) {
-                // eslint-disable-next-line no-continue
+                accounts.push(
+                    new Account({
+                        id,
+                        address: encodeId(id),
+                        nonce: 0,
+                        verified: false,
+                        balance: new Balance({
+                            transferable: 0n,
+                            free: 0n,
+                            reserved: 0n,
+                            frozen: 0n,
+                            miscFrozen: 0n,
+                            feeFrozen: 0n,
+                        }),
+                    })
+                )
+
                 continue
             }
 
