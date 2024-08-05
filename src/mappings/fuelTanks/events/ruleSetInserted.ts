@@ -13,10 +13,6 @@ function getEventData(event: EventItem) {
 }
 
 function getCallData(call: CallItem) {
-    if (calls.fuelTanks.insertRuleSet.v1010.is(call)) {
-        return calls.fuelTanks.insertRuleSet.v1010.decode(call)
-    }
-
     if (calls.fuelTanks.insertRuleSet.matrixEnjinV1005.is(call)) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV1005.decode(call)
     }
@@ -35,6 +31,10 @@ function getCallData(call: CallItem) {
 
     if (calls.fuelTanks.insertRuleSet.matrixEnjinV603.is(call)) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
+    }
+
+    if (calls.fuelTanks.insertRuleSet.v1010.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1010.decode(call)
     }
 
     if (calls.fuelTanks.insertRuleSet.v1005.is(call)) {
@@ -78,6 +78,10 @@ function getCallData(call: CallItem) {
 
 export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
+
+    if (item.call.name === calls.fuelTanks.createFuelTank.name) {
+        return undefined
+    }
 
     const eventData = getEventData(item)
 

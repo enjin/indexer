@@ -76,10 +76,6 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
     }
 
-    if (calls.fuelTanks.createFuelTank.v1010.is(call)) {
-        return calls.fuelTanks.createFuelTank.v1010.decode(call)
-    }
-
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call)) {
         return calls.fuelTanks.createFuelTank.matrixEnjinV1005.decode(call)
     }
@@ -98,6 +94,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV603.is(call)) {
         return calls.fuelTanks.createFuelTank.matrixEnjinV603.decode(call)
+    }
+
+    if (calls.fuelTanks.createFuelTank.v1010.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1010.decode(call)
     }
 
     if (calls.fuelTanks.createFuelTank.v1005.is(call)) {
