@@ -11,6 +11,7 @@
 <!-- markdown-link-check-disable-next-line -->
 [![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fx.com%2Fenjin)](https://x.com/enjin)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=social)](https://youtube.com/c/EnjinTV)
+<!-- markdown-link-check-disable-next-line -->
 [![Blog URL](https://img.shields.io/badge/-blog-blue)](https://enjin.io/blog)
 
 </div>
