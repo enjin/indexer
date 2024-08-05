@@ -1,3 +1,4 @@
+import { hexToString } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
@@ -108,7 +109,7 @@ export async function tokenMutated(
         token.nativeMetadata = new NativeTokenMetadata({
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,
             symbol: token.nativeMetadata?.symbol ?? '',
-            name: data.name.value,
+            name: hexToString(data.name.value),
         })
     }
 

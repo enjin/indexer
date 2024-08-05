@@ -1,3 +1,4 @@
+import { hexToString } from '@polkadot/util'
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events, calls, storage } from '../../../types/generated'
 import {
@@ -118,8 +119,8 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
                     listingForbidden: params.listingForbidden ?? false,
                     nativeMetadata: new NativeTokenMetadata({
                         decimalCount: params.metadata.decimalCount,
-                        name: params.metadata.name,
-                        symbol: params.metadata.symbol,
+                        name: hexToString(params.metadata.name),
+                        symbol: hexToString(params.metadata.symbol),
                     }),
                     anyoneCanInfuse: params.anyoneCanInfuse,
                     infusion: params.infusion,
@@ -252,8 +253,8 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
                 listingForbidden: params.value.listingForbidden ?? false,
                 nativeMetadata: new NativeTokenMetadata({
                     decimalCount: params.value.metadata.decimalCount,
-                    name: params.value.metadata.name,
-                    symbol: params.value.metadata.symbol,
+                    name: hexToString(params.value.metadata.name),
+                    symbol: hexToString(params.value.metadata.symbol),
                 }),
                 anyoneCanInfuse: params.value.anyoneCanInfuse,
                 infusion: params.value.infusion,
@@ -400,8 +401,8 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
                 listingForbidden: params.listingForbidden ?? false,
                 nativeMetadata: new NativeTokenMetadata({
                     decimalCount: params.metadata.decimalCount,
-                    name: params.metadata.name,
-                    symbol: params.metadata.symbol,
+                    name: hexToString(params.metadata.name),
+                    symbol: hexToString(params.metadata.symbol),
                 }),
                 anyoneCanInfuse: params.anyoneCanInfuse,
                 infusion: params.infusion,
