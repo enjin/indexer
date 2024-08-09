@@ -26,7 +26,7 @@ import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.listingCreated.v1011.is(event)) {
-        return events.marketplace.listingCreated.v1010.decode(event)
+        return events.marketplace.listingCreated.v1011.decode(event)
     }
 
     if (events.marketplace.listingCreated.v1010.is(event)) {
