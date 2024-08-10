@@ -738,6 +738,7 @@ type CounterOffer {
 }
 
 type OfferState {
+  listingType: ListingType!
   counterOfferCount: Int!
 }
 

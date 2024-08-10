@@ -1,15 +1,27 @@
 import assert from "assert"
 import * as marshal from "./marshal"
+import {ListingType} from "./_listingType"
 
 export class OfferState {
     public readonly isTypeOf = 'OfferState'
+    private _listingType!: ListingType
     private _counterOfferCount!: number
 
     constructor(props?: Partial<Omit<OfferState, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
+            this._listingType = marshal.enumFromJson(json.listingType, ListingType)
             this._counterOfferCount = marshal.int.fromJSON(json.counterOfferCount)
         }
+    }
+
+    get listingType(): ListingType {
+        assert(this._listingType != null, 'uninitialized access')
+        return this._listingType
+    }
+
+    set listingType(value: ListingType) {
+        this._listingType = value
     }
 
     get counterOfferCount(): number {
@@ -24,6 +36,7 @@ export class OfferState {
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
+            listingType: this.listingType,
             counterOfferCount: this.counterOfferCount,
         }
     }
