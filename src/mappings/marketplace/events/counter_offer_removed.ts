@@ -9,6 +9,7 @@ import {
     Extrinsic,
     Listing,
     MarketplaceCounterOfferRemoved,
+    OfferState,
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -64,6 +65,11 @@ export async function counterOfferRemoved(
     const account = await getOrCreateAccount(ctx, data.creator)
     assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
+
+    listing.state = new OfferState({
+        listingType: listing.state.listingType,
+        counterOfferCount: listing.state.counterOfferCount - 1,
+    })
 
     const offer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
 
