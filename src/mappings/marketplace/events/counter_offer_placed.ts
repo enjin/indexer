@@ -5,6 +5,7 @@ import {
     AccountTokenEvent,
     AuctionState,
     Bid,
+    CounterOffer,
     Event as EventModel,
     Extrinsic,
     Listing,
@@ -81,9 +82,17 @@ export async function counterOfferPlaced(
     listing.updatedAt = new Date(block.timestamp ?? 0)
     const account = await getOrCreateAccount(ctx, data.counterOffer.deposit.depositor)
 
-    
+    const offer = new CounterOffer({
+        id: `${listing.id}-${account.id}`,
+        listing,
+        buyerPrice: data.counterOffer.buyerPrice,
+        amount: data.counterOffer.deposit.amount,
+        sellerPrice: data.counterOffer.sellerPrice,
+        account,
+        createdAt: new Date(block.timestamp ?? 0),
+    })
 
-    await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
+    await Promise.all([ctx.store.save(offer), ctx.store.save(listing)])
 
     return getEvent(item, data, listing, account)
 }

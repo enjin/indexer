@@ -119,7 +119,7 @@ export async function listingCreated(
             listingState = new AuctionState({ listingType: ListingType.Auction })
             break
         case ListingType.Offer:
-            listingState = new OfferState({ listingType: ListingType.Offer })
+            listingState = new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 })
             break
         default:
             throw new Error('Unknown listing type')
