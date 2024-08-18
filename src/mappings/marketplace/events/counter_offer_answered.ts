@@ -51,7 +51,7 @@ function getEvent(
 
     const event = new EventModel({
         id: item.id,
-        name: MarketplaceBidPlaced.name,
+        name: MarketplaceCounterOfferAnswered.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
