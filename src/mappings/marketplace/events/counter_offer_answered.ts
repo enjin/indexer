@@ -56,7 +56,7 @@ function getEvent(
         tokenId: listing.makeAssetId.id,
         data: new MarketplaceCounterOfferAnswered({
             listing: listing.id,
-            creator: data.creator,
+            creator: account.id,
             response,
         }),
     })
