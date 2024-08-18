@@ -7,7 +7,6 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
-    MarketplaceBidPlaced,
     MarketplaceCounterOfferAnswered,
     CounterOfferResponse,
     Token,
@@ -20,7 +19,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
+function getEventData(event: EventItem) {
     if (events.marketplace.counterOfferAnswered.v1011.is(event)) {
         return events.marketplace.counterOfferAnswered.v1011.decode(event)
     }
@@ -56,7 +55,7 @@ function getEvent(
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
         data: new MarketplaceCounterOfferAnswered({
-            listing: data.listingId.substring(2),
+            listing: listing.id,
             creator: data.creator,
             response,
         }),
@@ -78,7 +77,7 @@ export async function counterOfferAnswered(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = getEventData(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

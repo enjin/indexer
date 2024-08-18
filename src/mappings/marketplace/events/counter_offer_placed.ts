@@ -16,7 +16,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
+function getEventData(event: EventItem) {
     if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
         return events.marketplace.counterOfferPlaced.v1011.decode(event)
     }
@@ -60,7 +60,7 @@ export async function counterOfferPlaced(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = getEventData(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
