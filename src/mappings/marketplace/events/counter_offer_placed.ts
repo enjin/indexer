@@ -1,23 +1,21 @@
+import assert from 'assert'
 import { UnknownVersionError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
-    AuctionState,
-    Bid,
     CounterOffer,
     Event as EventModel,
     Extrinsic,
     Listing,
-    ListingType,
     MarketplaceBidPlaced,
     MarketplaceCounterOfferPlaced,
+    OfferState,
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
-import { getBestListing, getOrCreateAccount } from '../../util/entities'
-import { syncCollectionStats } from '../../../jobs/collection-stats'
+import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
@@ -69,18 +67,17 @@ export async function counterOfferPlaced(
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
-        relations: {
-            seller: true,
-            makeAssetId: {
-                collection: true,
-                bestListing: true,
-            },
-        },
     })
 
-    if (!listing || !listing.makeAssetId) return undefined
+    if (!listing) return undefined
     listing.updatedAt = new Date(block.timestamp ?? 0)
     const account = await getOrCreateAccount(ctx, data.counterOffer.deposit.depositor)
+    assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
+
+    listing.state = new OfferState({
+        listingType: listing.state.listingType,
+        counterOfferCount: listing.state.counterOfferCount + 1,
+    })
 
     const offer = new CounterOffer({
         id: `${listing.id}-${account.id}`,
@@ -91,6 +88,21 @@ export async function counterOfferPlaced(
         account,
         createdAt: new Date(block.timestamp ?? 0),
     })
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                buyerPrice: data.counterOffer.buyerPrice?.toString(),
+                amount: data.counterOffer.deposit.amount.toString(),
+                sellerPrice: data.counterOffer.sellerPrice.toString(),
+                account: account.id,
+                listing: listing.id,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     await Promise.all([ctx.store.save(offer), ctx.store.save(listing)])
 
