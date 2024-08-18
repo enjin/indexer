@@ -740,11 +740,6 @@ type AuctionState {
   highBid: Bid
 }
 
-type CounterOffer {
-  accountId: String!
-  price: BigInt!
-}
-
 type OfferState {
   listingType: ListingType!
   counterOfferCount: Int!
@@ -787,6 +782,17 @@ type ListingSale @entity {
   price: BigInt!
   buyer: Account! @index
   listing: Listing! @index
+  createdAt: DateTime!
+}
+
+type CounterOffer @entity {
+  id: ID!
+
+  sellerPrice: BigInt
+  buyerPrice: BigInt
+  amount: BigInt!
+  account: Account!
+  listing: Listing!
   createdAt: DateTime!
 }
 

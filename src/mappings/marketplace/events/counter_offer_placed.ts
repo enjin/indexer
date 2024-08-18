@@ -15,7 +15,7 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
-import { getBestListing } from '../../util/entities'
+import { getBestListing, getOrCreateAccount } from '../../util/entities'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
@@ -25,7 +25,12 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnknownVersionError(events.marketplace.bidPlaced.name)
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
+function getEvent(
+    item: EventItem,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceBidPlaced.name,
@@ -74,18 +79,11 @@ export async function counterOfferPlaced(
 
     if (!listing || !listing.makeAssetId) return undefined
     listing.updatedAt = new Date(block.timestamp ?? 0)
+    const account = await getOrCreateAccount(ctx, data.counterOffer.deposit.depositor)
+
+    
 
     await Promise.all([ctx.store.save(bid), ctx.store.save(listing)])
-
-    if (listing.makeAssetId.bestListing?.id === listing.id) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        if (bestListing?.id !== listing.id) {
-            listing.makeAssetId.bestListing = bestListing
-            ctx.store.save(listing.makeAssetId)
-        }
-    }
-
-    syncCollectionStats(listing.makeAssetId.collection.id)``
 
     return getEvent(item, data, listing, account)
 }
