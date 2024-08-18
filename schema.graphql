@@ -84,7 +84,8 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered
+  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred 
 
@@ -113,14 +114,6 @@ type MarketplaceBidPlaced {
   bid: Bid!
 }
 
-type MarketplaceCounterOfferPlaced {
-  listing: Listing!
-  accountId: Account!
-  buyerPrice: BigInt
-  sellerPrice: BigInt!
-  depositAmount: BigInt!
-}
-
 type MarketplaceListingCancelled {
   listing: Listing!
 }
@@ -137,6 +130,42 @@ type MarketplaceListingFilled {
   protocolFee: BigInt!
   royalty: BigInt!
 }
+
+type MarketplaceCounterOfferPlaced {
+  listing: Listing!
+  accountId: Account!
+  buyerPrice: BigInt
+  sellerPrice: BigInt!
+  depositAmount: BigInt!
+}
+
+enum CounterOfferResponseType {
+  Accept
+  Counter
+  Reject
+}
+
+type CounterOfferResponseAccept {
+   kind: CounterOfferResponseType!
+}
+
+type CounterOfferResponseCounter{
+  kind: CounterOfferResponseType!
+  value: BigInt!
+}
+
+type CounterOfferResponseReject {
+  kind: CounterOfferResponseType!
+}
+
+union CounterOfferResponse = CounterOfferResponseAccept | CounterOfferResponseCounter | CounterOfferResponseReject
+
+type MarketplaceCounterOfferAnswered {
+  listing: Listing!
+  creator: Account!
+  response: CounterOfferResponse!
+}
+
 
 type MultiTokensApproved {
   collectionId: BigInt!
