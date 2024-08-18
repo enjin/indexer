@@ -1,23 +1,24 @@
 import assert from "assert"
 import * as marshal from "./marshal"
 import {Listing} from "./listing.model"
-import {CounterOffer} from "./_counterOffer"
 import {Account} from "./account.model"
 
 export class MarketplaceCounterOfferPlaced {
     public readonly isTypeOf = 'MarketplaceCounterOfferPlaced'
     private _listing!: string
-    private _offer!: CounterOffer
     private _accountId!: string
-    private _price!: bigint
+    private _buyerPrice!: bigint | undefined | null
+    private _sellerPrice!: bigint
+    private _depositAmount!: bigint
 
     constructor(props?: Partial<Omit<MarketplaceCounterOfferPlaced, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)
-            this._offer = new CounterOffer(undefined, marshal.nonNull(json.offer))
             this._accountId = marshal.string.fromJSON(json.accountId)
-            this._price = marshal.bigint.fromJSON(json.price)
+            this._buyerPrice = json.buyerPrice == null ? undefined : marshal.bigint.fromJSON(json.buyerPrice)
+            this._sellerPrice = marshal.bigint.fromJSON(json.sellerPrice)
+            this._depositAmount = marshal.bigint.fromJSON(json.depositAmount)
         }
     }
 
@@ -30,15 +31,6 @@ export class MarketplaceCounterOfferPlaced {
         this._listing = value
     }
 
-    get offer(): CounterOffer {
-        assert(this._offer != null, 'uninitialized access')
-        return this._offer
-    }
-
-    set offer(value: CounterOffer) {
-        this._offer = value
-    }
-
     get accountId(): string {
         assert(this._accountId != null, 'uninitialized access')
         return this._accountId
@@ -48,22 +40,40 @@ export class MarketplaceCounterOfferPlaced {
         this._accountId = value
     }
 
-    get price(): bigint {
-        assert(this._price != null, 'uninitialized access')
-        return this._price
+    get buyerPrice(): bigint | undefined | null {
+        return this._buyerPrice
     }
 
-    set price(value: bigint) {
-        this._price = value
+    set buyerPrice(value: bigint | undefined | null) {
+        this._buyerPrice = value
+    }
+
+    get sellerPrice(): bigint {
+        assert(this._sellerPrice != null, 'uninitialized access')
+        return this._sellerPrice
+    }
+
+    set sellerPrice(value: bigint) {
+        this._sellerPrice = value
+    }
+
+    get depositAmount(): bigint {
+        assert(this._depositAmount != null, 'uninitialized access')
+        return this._depositAmount
+    }
+
+    set depositAmount(value: bigint) {
+        this._depositAmount = value
     }
 
     toJSON(): object {
         return {
             isTypeOf: this.isTypeOf,
             listing: this.listing,
-            offer: this.offer.toJSON(),
             accountId: this.accountId,
-            price: marshal.bigint.toJSON(this.price),
+            buyerPrice: this.buyerPrice == null ? undefined : marshal.bigint.toJSON(this.buyerPrice),
+            sellerPrice: marshal.bigint.toJSON(this.sellerPrice),
+            depositAmount: marshal.bigint.toJSON(this.depositAmount),
         }
     }
 }

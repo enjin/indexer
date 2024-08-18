@@ -10,6 +10,7 @@ import {
     Listing,
     ListingType,
     MarketplaceBidPlaced,
+    MarketplaceCounterOfferPlaced,
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -21,27 +22,22 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
         return events.marketplace.counterOfferPlaced.v1011.decode(event)
     }
-    if (events.marketplace.counterOfferPlaced.v1010.is(event)) {
-        return events.marketplace.counterOfferPlaced.v1010.decode(event)
-    }
     throw new UnknownVersionError(events.marketplace.bidPlaced.name)
 }
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing,
-    account: Account
-): [EventModel, AccountTokenEvent] | undefined {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceBidPlaced.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
-        data: new counterOfferPlaced({
-            listing: listing.id,
-            bid: `${listing.id}-${data.bid.bidder}-${data.bid.price}`,
+        data: new MarketplaceCounterOfferPlaced({
+            listing: data.listingId.substring(2),
+            accountId: data.counterOffer.deposit.depositor,
+            buyerPrice: data.counterOffer.buyerPrice,
+            depositAmount: data.counterOffer.deposit.amount,
+            sellerPrice: data.counterOffer.sellerPrice,
         }),
     })
 

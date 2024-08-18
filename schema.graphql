@@ -115,9 +115,10 @@ type MarketplaceBidPlaced {
 
 type MarketplaceCounterOfferPlaced {
   listing: Listing!
-  offer: CounterOffer!
   accountId: Account!
-  price: BigInt!
+  buyerPrice: BigInt
+  sellerPrice: BigInt!
+  depositAmount: BigInt!
 }
 
 type MarketplaceListingCancelled {
