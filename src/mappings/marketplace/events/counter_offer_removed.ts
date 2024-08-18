@@ -16,10 +16,10 @@ import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.counterOfferAnswered.v1011.is(event)) {
-        return events.marketplace.counterOfferAnswered.v1011.decode(event)
+    if (events.marketplace.counterOfferRemoved.v1011.is(event)) {
+        return events.marketplace.counterOfferRemoved.v1011.decode(event)
     }
-    throw new UnknownVersionError(events.marketplace.counterOfferAnswered.name)
+    throw new UnknownVersionError(events.marketplace.counterOfferRemoved.name)
 }
 
 function getEvent(
@@ -51,7 +51,7 @@ function getEvent(
     ]
 }
 
-export async function counterOffer(
+export async function counterOfferRemoved(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
@@ -72,7 +72,6 @@ export async function counterOffer(
             id: item.id,
             name: item.name,
             body: {
-                response: data.response.__kind,
                 account: account.id,
                 listing: listing.id,
                 extrinsic: item.extrinsic.id,
