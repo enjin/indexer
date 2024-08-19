@@ -84,9 +84,10 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
+  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
-  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred
+  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred 
 
 type BalancesTransfer {
   from: Account!
@@ -129,6 +130,47 @@ type MarketplaceListingFilled {
   protocolFee: BigInt!
   royalty: BigInt!
 }
+
+type MarketplaceCounterOfferPlaced {
+  listing: Listing!
+  accountId: Account!
+  buyerPrice: BigInt
+  sellerPrice: BigInt!
+  depositAmount: BigInt!
+}
+
+enum CounterOfferResponseType {
+  Accept
+  Counter
+  Reject
+}
+
+type CounterOfferResponseAccept {
+   kind: CounterOfferResponseType!
+}
+
+type CounterOfferResponseCounter{
+  kind: CounterOfferResponseType!
+  value: BigInt!
+}
+
+type CounterOfferResponseReject {
+  kind: CounterOfferResponseType!
+}
+
+union CounterOfferResponse = CounterOfferResponseAccept | CounterOfferResponseCounter | CounterOfferResponseReject
+
+type MarketplaceCounterOfferAnswered {
+  listing: Listing!
+  creator: Account!
+  response: CounterOfferResponse!
+}
+
+type MarketplaceCounterOfferRemoved {
+  listing: Listing!
+  creator: Account!
+}
+
 
 type MultiTokensApproved {
   collectionId: BigInt!
@@ -732,14 +774,9 @@ type AuctionState {
   highBid: Bid
 }
 
-type CounterOffer {
-  accountId: String!
-  price: BigInt!
-}
-
 type OfferState {
-   listingType: ListingType!
-  counter: CounterOffer
+  listingType: ListingType!
+  counterOfferCount: Int!
 }
 
 type Bid @entity {
@@ -779,6 +816,17 @@ type ListingSale @entity {
   price: BigInt!
   buyer: Account! @index
   listing: Listing! @index
+  createdAt: DateTime!
+}
+
+type CounterOffer @entity {
+  id: ID!
+
+  sellerPrice: BigInt
+  buyerPrice: BigInt
+  amount: BigInt!
+  account: Account!
+  listing: Listing!
   createdAt: DateTime!
 }
 
