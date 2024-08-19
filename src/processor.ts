@@ -22,6 +22,7 @@ export const processor = new SubstrateBatchProcessor()
             events.multiTokens.tokenMutated.name,
             events.multiTokens.tokenAccountCreated.name,
             events.multiTokens.tokenAccountDestroyed.name,
+            events.multiTokens.infused.name,
             events.multiTokens.minted.name,
             events.multiTokens.burned.name,
             events.multiTokens.attributeSet.name,
