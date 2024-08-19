@@ -186,14 +186,23 @@ async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallIte
     }
 }
 
-function getParticipants(args: any, signer: string): string[] {
+function getParticipants(args: any, _events: EventItem[], signer: string): string[] {
+    const accounts = new Set<string>([signer])
     const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
     if (accountsFromArgs) {
-        const accounts = new Set<string>(accountsFromArgs)
-        return Array.from(accounts.add(signer))
+        accountsFromArgs.forEach(accounts.add, accounts)
     }
 
-    return [signer]
+    if (_events.length > 0) {
+        for (const eventItem of _events) {
+            const accountsFromEventArgs = JSON.stringify(eventItem.args).match(/\b0x[0-9a-fA-F]{64}\b/g)
+            if (accountsFromEventArgs && accountsFromEventArgs.length > 0) {
+                accountsFromEventArgs.forEach(accounts.add, accounts)
+            }
+        }
+    }
+
+    return Array.from(accounts)
 }
 
 processor.run(
@@ -331,7 +340,7 @@ processor.run(
                         }),
                         fuelTank,
                         createdAt: new Date(block.header.timestamp ?? 0),
-                        participants: getParticipants(call.args, publicKey),
+                        participants: getParticipants(call.args, extrinsic.events, publicKey),
                     })
 
                     // Hotfix for adding listing seller to participant
