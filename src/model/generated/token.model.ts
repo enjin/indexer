@@ -108,6 +108,9 @@ export class Token {
     @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new Metadata(undefined, obj)}, nullable: true})
     metadata!: Metadata | undefined | null
 
+    @DateTimeColumn_({nullable: true})
+    updatedAt!: Date | undefined | null
+
     @Index_()
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
