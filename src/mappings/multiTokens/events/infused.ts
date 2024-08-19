@@ -1,3 +1,4 @@
+import { Sns } from 'src/common/sns'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -51,6 +52,20 @@ export async function infused(ctx: CommonContext, block: BlockHeader, item: Even
     token.infusion += data.amount
 
     await ctx.store.save(token)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId,
+                tokenId: data.tokenId,
+                amount: data.amount,
+                accountId: data.accountId,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
 
     return getEvent(item, data, token)
 }
