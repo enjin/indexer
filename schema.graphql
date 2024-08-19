@@ -645,6 +645,7 @@ type Token @entity {
   # Extras
   nonFungible: Boolean!
   metadata: Metadata
+  updatedAt: DateTime
   createdAt: DateTime! @index
 }
 

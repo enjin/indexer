@@ -108,7 +108,7 @@ export async function tokenMutated(
     if (data.name && data.name.__kind === 'SomeMutation') {
         token.nativeMetadata = new NativeTokenMetadata({
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,
-            symbol: token.nativeMetadata?.symbol ?? '',
+            symbol: hexToString(token.nativeMetadata?.symbol) ?? '',
             name: hexToString(data.name.value),
         })
     }
@@ -126,6 +126,7 @@ export async function tokenMutated(
     }
 
     token.nonFungible = isNonFungible(token)
+    token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
     syncCollectionStats(data.collectionId.toString())
