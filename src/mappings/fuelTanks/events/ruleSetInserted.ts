@@ -33,6 +33,10 @@ function getCallData(call: CallItem) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV603.decode(call)
     }
 
+    if (calls.fuelTanks.insertRuleSet.v1012.is(call)) {
+        return calls.fuelTanks.insertRuleSet.v1012.decode(call)
+    }
+
     if (calls.fuelTanks.insertRuleSet.v1011.is(call)) {
         return calls.fuelTanks.insertRuleSet.v1011.decode(call)
     }

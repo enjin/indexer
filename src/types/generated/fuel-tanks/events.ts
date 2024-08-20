@@ -6,6 +6,7 @@ import * as v604 from '../v604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 import * as v1010 from '../v1010'
+import * as v1012 from '../v1012'
 
 export const fuelTankCreated =  {
     name: 'FuelTanks.FuelTankCreated',
@@ -356,6 +357,31 @@ export const accountRuleDataRemoved =  {
              * The [`DispatchRuleKind`] that was removed
              */
             ruleKind: v1010.DispatchRuleKind,
+        })
+    ),
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    v1012: new EventType(
+        'FuelTanks.AccountRuleDataRemoved',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v1012.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was removed
+             */
+            userId: v1012.AccountId32,
+            /**
+             * The id of the rule set that was removed
+             */
+            ruleSetId: sts.number(),
+            /**
+             * The [`DispatchRuleKind`] that was removed
+             */
+            ruleKind: v1012.DispatchRuleKind,
         })
     ),
 }
