@@ -82,6 +82,18 @@ export class CollectionRow {
     @Field(() => Int, { nullable: false })
     users!: number
 
+    @Field({ nullable: true })
+    trending_score!: string
+
+    @Field({ nullable: true })
+    top_score!: string
+
+    @Field({ nullable: true })
+    max_volume!: string
+
+    @Field({ nullable: true })
+    max_sales!: string
+
     constructor(props: Partial<CollectionRow>) {
         Object.assign(this, props)
     }
@@ -107,14 +119,13 @@ export class TopCollectionResolver {
             .createQueryBuilder()
             .select('*')
             .addSelect(
-                'COALESCE(0.35 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
-                    'COALESCE(0.35 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) +' +
-                    'COALESCE(0.20 * (avg_sale_change / NULLIF(MAX(avg_sale_change) OVER(), 0)),0) +' +
-                    'COALESCE(0.10 * (users / NULLIF(MAX(users) OVER(), 0)), 0) AS trending_score'
+                '(COALESCE(0.35 * (volume::numeric / max_volume::numeric),0) + ' +
+                    'COALESCE(0.35 * (sales::numeric / max_sales::numeric), 0) +' +
+                    'COALESCE(0.20 * (avg_sale_change::numeric / NULLIF(MAX(avg_sale_change) OVER(), 0)::numeric),0) +' +
+                    'COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS trending_score'
             )
             .addSelect(
-                'COALESCE(0.80 * (volume / NULLIF(MAX(volume) OVER(), 0)),0) + ' +
-                    'COALESCE(0.20 * (sales / NULLIF(MAX(sales) OVER(), 0)), 0) AS top_score'
+                `(0.80 * COALESCE(volume::numeric / max_volume::numeric, 0) + 0.20 * COALESCE(sales::numeric / max_sales::numeric)) AS top_score`
             )
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
@@ -124,6 +135,8 @@ export class TopCollectionResolver {
                     .addSelect('metadata AS metadata')
                     .addSelect('stats AS stats')
                     .addSelect('volume_last_duration AS volume')
+                    .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS max_volume')
+                    .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS max_sales')
                     .addSelect('sales_last_duration AS sales')
                     .addSelect('verified_at::text AS "verifiedAt"')
                     .addSelect('category AS category')
