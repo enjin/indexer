@@ -14,6 +14,7 @@ import {
     CounterOfferResponseType,
     CounterOfferResponseCounter,
     CounterOfferResponseReject,
+    ListingType,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
@@ -92,7 +93,8 @@ export async function counterOfferAnswered(
     })
 
     const account = await getOrCreateAccount(ctx, data.creator)
-    assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
+    console.log('listing', listing)
+    assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     if (item.extrinsic) {
