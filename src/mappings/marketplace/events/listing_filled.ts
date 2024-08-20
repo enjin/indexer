@@ -81,10 +81,12 @@ export async function listingFilled(
 
     if (!listing || !listing.makeAssetId) return undefined
 
-    listing.state = new FixedPriceState({
-        listingType: ListingType.FixedPrice,
-        amountFilled: listing.amount - data.amountRemaining,
-    })
+    if (listing.state.listingType === ListingType.FixedPrice) {
+        listing.state = new FixedPriceState({
+            listingType: ListingType.FixedPrice,
+            amountFilled: listing.amount - data.amountRemaining,
+        })
+    }
 
     if (data.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({

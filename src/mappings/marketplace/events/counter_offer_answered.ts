@@ -93,7 +93,6 @@ export async function counterOfferAnswered(
     })
 
     const account = await getOrCreateAccount(ctx, data.creator)
-    console.log('listing', listing)
     assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
