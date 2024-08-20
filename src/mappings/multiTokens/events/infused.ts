@@ -1,4 +1,4 @@
-import { Sns } from 'src/common/sns'
+import { Sns } from '../../../common/sns'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
