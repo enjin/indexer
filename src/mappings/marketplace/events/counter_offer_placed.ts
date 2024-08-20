@@ -66,6 +66,12 @@ export async function counterOfferPlaced(
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
     })
 
     if (!listing) return undefined
