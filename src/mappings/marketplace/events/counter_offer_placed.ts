@@ -21,7 +21,7 @@ function getEventData(event: EventItem) {
         return events.marketplace.counterOfferPlaced.v1010.decode(event)
     }
 
-    if (events.marketplace.counterOfferPlaced.v1010.is(event)) {
+    if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
         return events.marketplace.counterOfferPlaced.v1011.decode(event)
     }
     throw new UnknownVersionError(events.marketplace.counterOfferPlaced.name)
