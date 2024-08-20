@@ -49,6 +49,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.decode(call)
         }
 
+        if (calls.fuelTanks.forceCreateFuelTank.v1012.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1012.decode(call)
+        }
+
         if (calls.fuelTanks.forceCreateFuelTank.v1011.is(call)) {
             return calls.fuelTanks.forceCreateFuelTank.v1011.decode(call)
         }
