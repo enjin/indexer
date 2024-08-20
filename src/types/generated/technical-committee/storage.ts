@@ -15,6 +15,7 @@ import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as v1012 from '../v1012'
 
 export const proposals =  {
     /**
@@ -97,6 +98,10 @@ export const proposalOf =  {
      *  Actual proposal for a given hash, if it's current.
      */
     v1011: new StorageType('TechnicalCommittee.ProposalOf', 'Optional', [v1011.H256], v1011.Call) as ProposalOfV1011,
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    v1012: new StorageType('TechnicalCommittee.ProposalOf', 'Optional', [v1012.H256], v1012.Call) as ProposalOfV1012,
 }
 
 /**
@@ -369,6 +374,23 @@ export interface ProposalOfV1011  {
     getPairs(block: Block, key: v1011.H256): Promise<[k: v1011.H256, v: (v1011.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1011.H256, v: (v1011.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: v1011.H256): AsyncIterable<[k: v1011.H256, v: (v1011.Call | undefined)][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface ProposalOfV1012  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1012.H256): Promise<(v1012.Call | undefined)>
+    getMany(block: Block, keys: v1012.H256[]): Promise<(v1012.Call | undefined)[]>
+    getKeys(block: Block): Promise<v1012.H256[]>
+    getKeys(block: Block, key: v1012.H256): Promise<v1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1012.H256): AsyncIterable<v1012.H256[]>
+    getPairs(block: Block): Promise<[k: v1012.H256, v: (v1012.Call | undefined)][]>
+    getPairs(block: Block, key: v1012.H256): Promise<[k: v1012.H256, v: (v1012.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1012.H256, v: (v1012.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1012.H256): AsyncIterable<[k: v1012.H256, v: (v1012.Call | undefined)][]>
 }
 
 export const voting =  {

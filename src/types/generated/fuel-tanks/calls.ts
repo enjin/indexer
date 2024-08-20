@@ -15,6 +15,7 @@ import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as v1012 from '../v1012'
 
 export const createFuelTank =  {
     name: 'FuelTanks.create_fuel_tank',
@@ -222,6 +223,23 @@ export const createFuelTank =  {
             descriptor: v1011.FuelTankDescriptor,
         })
     ),
+    /**
+     * Creates a fuel tank, given a `descriptor`.
+     * 
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    v1012: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: v1012.FuelTankDescriptor,
+        })
+    ),
 }
 
 export const mutateFuelTank =  {
@@ -411,6 +429,28 @@ export const removeAccountRuleData =  {
             userId: v1010.MultiAddress,
             ruleSetId: sts.number(),
             ruleKind: v1010.DispatchRuleKind,
+        })
+    ),
+    /**
+     * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
+     * the fuel tank or the rule set to be frozen.
+     * 
+     * ### Errors
+     * 
+     * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
+     * - [`Error::NoPermission`] if called by non-owner
+     * - [`Error::AccountNotFound`] if account does not exist for `user_id`
+     * - [`Error::RuleSetNotFound`] if rule set does not exist for `rule_set_id`
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::RuleNotFound`] if rule does not exist for `rule_kind`
+     */
+    v1012: new CallType(
+        'FuelTanks.remove_account_rule_data',
+        sts.struct({
+            tankId: v1012.MultiAddress,
+            userId: v1012.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleKind: v1012.DispatchRuleKind,
         })
     ),
 }
@@ -693,6 +733,25 @@ export const dispatch =  {
             settings: sts.option(() => v1011.DispatchSettings),
         })
     ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    v1012: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: v1012.MultiAddress,
+            ruleSetId: sts.number(),
+            call: v1012.Call,
+            settings: sts.option(() => v1012.DispatchSettings),
+        })
+    ),
 }
 
 export const dispatchAndTouch =  {
@@ -959,6 +1018,24 @@ export const dispatchAndTouch =  {
             ruleSetId: sts.number(),
             call: v1011.Call,
             settings: sts.option(() => v1011.DispatchSettings),
+        })
+    ),
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    v1012: new CallType(
+        'FuelTanks.dispatch_and_touch',
+        sts.struct({
+            tankId: v1012.MultiAddress,
+            ruleSetId: sts.number(),
+            call: v1012.Call,
+            settings: sts.option(() => v1012.DispatchSettings),
         })
     ),
 }
@@ -1344,6 +1421,32 @@ export const insertRuleSet =  {
             ruleSet: v1011.RuleSetDescriptor,
         })
     ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    v1012: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: v1012.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: v1012.RuleSetDescriptor,
+        })
+    ),
 }
 
 export const removeRuleSet =  {
@@ -1608,6 +1711,20 @@ export const forceCreateFuelTank =  {
         sts.struct({
             owner: v1011.MultiAddress,
             descriptor: v1011.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    v1012: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: v1012.MultiAddress,
+            descriptor: v1012.FuelTankDescriptor,
         })
     ),
 }
