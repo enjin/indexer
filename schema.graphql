@@ -87,7 +87,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
-  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred 
+  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
 
 type BalancesTransfer {
   from: Account!
@@ -293,6 +293,13 @@ type MultiTokensUnapproved {
   tokenId: BigInt
   owner: Account!
   operator: Account!
+}
+
+type MultiTokensInfused {
+  collectionId: BigInt!
+  tokenId: BigInt
+  accountId: Account!
+  amount: BigInt!
 }
 
 type ClaimsClaimRequested {

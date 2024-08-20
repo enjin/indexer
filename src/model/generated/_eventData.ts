@@ -35,8 +35,9 @@ import {MultiTokensClaimedCollections} from "./_multiTokensClaimedCollections"
 import {MultiTokensClaimTokensInitiated} from "./_multiTokensClaimTokensInitiated"
 import {MultiTokensClaimTokensCompleted} from "./_multiTokensClaimTokensCompleted"
 import {MultiTokensCollectionTransferred} from "./_multiTokensCollectionTransferred"
+import {MultiTokensInfused} from "./_multiTokensInfused"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -77,6 +78,7 @@ export function fromJsonEventData(json: any): EventData {
         case 'MultiTokensClaimTokensInitiated': return new MultiTokensClaimTokensInitiated(undefined, json)
         case 'MultiTokensClaimTokensCompleted': return new MultiTokensClaimTokensCompleted(undefined, json)
         case 'MultiTokensCollectionTransferred': return new MultiTokensCollectionTransferred(undefined, json)
+        case 'MultiTokensInfused': return new MultiTokensInfused(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }

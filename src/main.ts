@@ -58,6 +58,8 @@ async function handleEvents(
             return map.multiTokens.events.frozen(ctx, block, item, skipSave)
         case events.multiTokens.minted.name:
             return map.multiTokens.events.minted(ctx, block, item, skipSave)
+        case events.multiTokens.infused.name:
+            return map.multiTokens.events.infused(ctx, block, item, skipSave)
         case events.multiTokens.reserved.name:
             return map.multiTokens.events.reserved(ctx, block, item, skipSave)
         case events.multiTokens.thawed.name:
