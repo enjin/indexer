@@ -84,9 +84,6 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
     }
 
-    console.log('call', call)
-    console.log('calls.fuelTanks.createFuelTankIsv1012', calls.fuelTanks.createFuelTank.v1012.is(call))
-
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call)) {
         return calls.fuelTanks.createFuelTank.matrixEnjinV1005.decode(call)
     }
