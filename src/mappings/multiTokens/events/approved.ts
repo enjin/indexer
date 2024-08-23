@@ -9,6 +9,7 @@ import {
     Extrinsic,
 } from '../../../model'
 import { encodeId } from '../../../common/tools'
+import { Sns } from '../../../common/sns'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
@@ -94,6 +95,18 @@ export async function approved(
         collectionAccount.approvals = approvals
         collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
+    }
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId.toString(),
+                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     return getEvent(item, data)
