@@ -2,6 +2,7 @@ import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
+import { Sns } from '../../../common/sns'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 
 function getEventData(event: EventItem) {
@@ -68,6 +69,18 @@ export async function unapproved(
         } else {
             throwError(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
         }
+    }
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: data.collectionId.toString(),
+                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                extrinsic: item.extrinsic.id,
+            },
+        })
     }
 
     return getEvent(item, data)
