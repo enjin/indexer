@@ -103,6 +103,7 @@ export async function approved(
             name: item.name,
             body: {
                 collectionId: data.collectionId.toString(),
+                address,
                 tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },

@@ -144,6 +144,8 @@ export async function thawed(
             id: item.id,
             name: item.name,
             body: {
+                kind: data.freezeType,
+                address: data.collectionAccount ?? data.tokenAccount,
                 collectionId: data.collectionId.toString(),
                 tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
