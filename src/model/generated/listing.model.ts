@@ -8,6 +8,7 @@ import {ListingState, fromJsonListingState} from "./_listingState"
 import {Bid} from "./bid.model"
 import {ListingStatus} from "./listingStatus.model"
 import {ListingSale} from "./listingSale.model"
+import {CounterOffer} from "./counterOffer.model"
 import {ListingType} from "./_listingType"
 
 @Entity_()
@@ -66,6 +67,9 @@ export class Listing {
 
     @OneToMany_(() => ListingSale, e => e.listing)
     sales!: ListingSale[]
+
+    @OneToMany_(() => CounterOffer, e => e.listing)
+    counterOffers!: CounterOffer[]
 
     @Index_()
     @BigIntColumn_({nullable: false})
