@@ -41,12 +41,20 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
+    let collectionId = data.listing.makeAssetId.collectionId.toString()
+    let tokenId = `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`
+
+    if (data.listing.data.__kind === 'Offer') {
+        collectionId = data.listing.takeAssetId.collectionId.toString()
+        tokenId = `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}`
+    }
+
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.listing.makeAssetId.collectionId.toString(),
-        tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
+        collectionId,
+        tokenId,
         data: new MarketplaceListingCreated({
             listing: data.listingId.substring(2),
         }),
@@ -56,7 +64,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [Even
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` }),
+            token: new Token({ id: tokenId }),
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             event,
         }),
@@ -154,11 +162,12 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    // update best listing
-    if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
-        makeAssetId.bestListing = listing
+    if (data.listing.data.__kind !== 'Offer') {
+        if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
+            makeAssetId.bestListing = listing
+        }
+        makeAssetId.recentListing = listing
     }
-    makeAssetId.recentListing = listing
 
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
