@@ -53,8 +53,8 @@ function getEvent(
         id: item.id,
         name: MarketplaceCounterOfferAnswered.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId: listing.takeAssetId.collection.id,
+        tokenId: listing.takeAssetId.id,
         data: new MarketplaceCounterOfferAnswered({
             listing: listing.id,
             creator: account.id,
@@ -66,7 +66,7 @@ function getEvent(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            token: new Token({ id: listing.takeAssetId.id }),
             from: account,
             event,
         }),
@@ -85,7 +85,7 @@ export async function counterOfferAnswered(
     const listing = await ctx.store.findOneOrFail(Listing, {
         where: { id: listingId },
         relations: {
-            makeAssetId: {
+            takeAssetId: {
                 collection: true,
                 bestListing: true,
             },
