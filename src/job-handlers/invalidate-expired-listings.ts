@@ -1,4 +1,5 @@
 import Queue from 'bull'
+import { Brackets } from 'typeorm'
 import connection from '../connection'
 import { Listing, ListingType } from '../model'
 
@@ -22,10 +23,21 @@ export default async (job: Queue.Job, done: Queue.DoneCallback) => {
             .update()
             .set({ isActive: false })
             .where('listing.is_active = true')
-            .andWhere('listing.type = :type', { type: ListingType.Auction })
-            .andWhere("(listing.data->>'endHeight')::int < :height ", { height })
+            .andWhere('listing.type IN (:...types)', { types: [ListingType.Auction, ListingType.Offer] })
+            .andWhere(
+                new Brackets((qb) => {
+                    qb.where("listing.type = :type AND (listing.data->>'endHeight')::int < :height", {
+                        type: ListingType.Auction,
+                        height,
+                    }).orWhere("listing.type = :type AND (listing.data->>'expiration')::int < :height", {
+                        type: ListingType.Offer,
+                        height,
+                    })
+                })
+            )
             .returning('id')
             .execute()
+
         done(null, { at: height, affected: q.affected, raw: q.raw })
     })
 }
