@@ -61,7 +61,16 @@ export async function counterOfferRemoved(
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOneByOrFail<Listing>(Listing, { id: listingId })
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+        where: { id: listingId },
+        relations: {
+            makeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
+    })
+
     const account = await getOrCreateAccount(ctx, data.creator)
     assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)

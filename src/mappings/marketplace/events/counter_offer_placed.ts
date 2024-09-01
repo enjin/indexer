@@ -17,6 +17,10 @@ import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(event: EventItem) {
+    if (events.marketplace.counterOfferPlaced.v1010.is(event)) {
+        return events.marketplace.counterOfferPlaced.v1010.decode(event)
+    }
+
     if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
         return events.marketplace.counterOfferPlaced.v1011.decode(event)
     }
@@ -33,14 +37,14 @@ function getEvent(
         id: item.id,
         name: MarketplaceCounterOfferPlaced.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId: listing.takeAssetId.collection.id,
+        tokenId: listing.takeAssetId.id,
         data: new MarketplaceCounterOfferPlaced({
             listing: listing.id,
-            accountId: data.counterOffer.deposit.depositor,
-            buyerPrice: data.counterOffer.buyerPrice,
-            depositAmount: data.counterOffer.deposit.amount,
-            sellerPrice: data.counterOffer.sellerPrice,
+            accountId: 'deposit' in data.counterOffer ? data.counterOffer.deposit.depositor : data.counterOffer.accountId,
+            buyerPrice: 'price' in data.counterOffer ? data.counterOffer.price : data.counterOffer.buyerPrice,
+            depositAmount: 'deposit' in data.counterOffer ? data.counterOffer.deposit.amount : 1n,
+            sellerPrice: 'sellerPrice' in data.counterOffer ? data.counterOffer.sellerPrice : 1n,
         }),
     })
 
@@ -48,7 +52,7 @@ function getEvent(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            token: new Token({ id: listing.takeAssetId.id }),
             from: account,
             event,
         }),
@@ -64,13 +68,24 @@ export async function counterOfferPlaced(
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOne<Listing>(Listing, {
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
+        relations: {
+            takeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
     })
+
+    const accountId = 'deposit' in data.counterOffer ? data.counterOffer.deposit.depositor : data.counterOffer.accountId
+    const buyerPrice = 'price' in data.counterOffer ? data.counterOffer.price : data.counterOffer.buyerPrice
+    const depositAmount = 'deposit' in data.counterOffer ? data.counterOffer.deposit.amount : 1n
+    const sellerPrice = 'sellerPrice' in data.counterOffer ? data.counterOffer.sellerPrice : 1n
 
     if (!listing) return undefined
     listing.updatedAt = new Date(block.timestamp ?? 0)
-    const account = await getOrCreateAccount(ctx, data.counterOffer.deposit.depositor)
+    const account = await getOrCreateAccount(ctx, accountId)
     assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
 
     listing.state = new OfferState({
@@ -81,9 +96,9 @@ export async function counterOfferPlaced(
     const offer = new CounterOffer({
         id: `${listing.id}-${account.id}`,
         listing,
-        buyerPrice: data.counterOffer.buyerPrice,
-        amount: data.counterOffer.deposit.amount,
-        sellerPrice: data.counterOffer.sellerPrice,
+        buyerPrice,
+        amount: depositAmount,
+        sellerPrice,
         account,
         createdAt: new Date(block.timestamp ?? 0),
     })
@@ -93,9 +108,9 @@ export async function counterOfferPlaced(
             id: item.id,
             name: item.name,
             body: {
-                buyerPrice: data.counterOffer.buyerPrice?.toString(),
-                amount: data.counterOffer.deposit.amount.toString(),
-                sellerPrice: data.counterOffer.sellerPrice.toString(),
+                buyerPrice: buyerPrice?.toString(),
+                amount: depositAmount.toString(),
+                sellerPrice: sellerPrice.toString(),
                 account: account.id,
                 listing: listing.id,
                 extrinsic: item.extrinsic.id,

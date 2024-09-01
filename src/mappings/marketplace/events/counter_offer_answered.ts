@@ -14,6 +14,7 @@ import {
     CounterOfferResponseType,
     CounterOfferResponseCounter,
     CounterOfferResponseReject,
+    ListingType,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
@@ -52,8 +53,8 @@ function getEvent(
         id: item.id,
         name: MarketplaceCounterOfferAnswered.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId: listing.takeAssetId.collection.id,
+        tokenId: listing.takeAssetId.id,
         data: new MarketplaceCounterOfferAnswered({
             listing: listing.id,
             creator: account.id,
@@ -65,7 +66,7 @@ function getEvent(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            token: new Token({ id: listing.takeAssetId.id }),
             from: account,
             event,
         }),
@@ -81,9 +82,18 @@ export async function counterOfferAnswered(
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOneByOrFail<Listing>(Listing, { id: listingId })
+    const listing = await ctx.store.findOneOrFail(Listing, {
+        where: { id: listingId },
+        relations: {
+            takeAssetId: {
+                collection: true,
+                bestListing: true,
+            },
+        },
+    })
+
     const account = await getOrCreateAccount(ctx, data.creator)
-    assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
+    assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     if (item.extrinsic) {

@@ -859,6 +859,7 @@ type Listing @entity {
   bids: [Bid] @derivedFrom(field: "listing")
   status: [ListingStatus] @derivedFrom(field: "listing")
   sales: [ListingSale] @derivedFrom(field: "listing")
+  counterOffers: [CounterOffer] @derivedFrom(field: "listing")
 
   # Extras
   highestPrice: BigInt! @index

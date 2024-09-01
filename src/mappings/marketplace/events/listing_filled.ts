@@ -31,12 +31,20 @@ function getEvent(
     data: ReturnType<typeof getEventData>,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
+    let collectionId = listing.makeAssetId.collection.id
+    let tokenId = listing.makeAssetId.id
+
+    if (listing.data.listingType === ListingType.Offer) {
+        collectionId = listing.takeAssetId.collection.id
+        tokenId = listing.takeAssetId.id
+    }
+
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingFilled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId,
+        tokenId,
         data: new MarketplaceListingFilled({
             listing: listing.id,
             buyer: data.buyer,
@@ -76,15 +84,20 @@ export async function listingFilled(
                 collection: true,
                 bestListing: true,
             },
+            takeAssetId: {
+                collection: true,
+            },
         },
     })
 
     if (!listing || !listing.makeAssetId) return undefined
 
-    listing.state = new FixedPriceState({
-        listingType: ListingType.FixedPrice,
-        amountFilled: listing.amount - data.amountRemaining,
-    })
+    if (listing.state.listingType === ListingType.FixedPrice) {
+        listing.state = new FixedPriceState({
+            listingType: ListingType.FixedPrice,
+            amountFilled: listing.amount - data.amountRemaining,
+        })
+    }
 
     if (data.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({
@@ -113,17 +126,17 @@ export async function listingFilled(
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
-    if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
-        const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
-        listing.makeAssetId.bestListing = null
-        if (bestListing) {
-            listing.makeAssetId.bestListing = bestListing
+    if (listing.data.listingType !== ListingType.Offer) {
+        if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
+            const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
+            listing.makeAssetId.bestListing = null
+            if (bestListing) {
+                listing.makeAssetId.bestListing = bestListing
+            }
         }
+        await ctx.store.save(listing.makeAssetId)
+        syncCollectionStats(listing.makeAssetId.collection.id)
     }
-
-    await ctx.store.save(listing.makeAssetId)
-
-    syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
