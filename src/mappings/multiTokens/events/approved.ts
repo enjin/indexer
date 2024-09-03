@@ -102,8 +102,10 @@ export async function approved(
             id: item.id,
             name: item.name,
             body: {
-                collectionId: data.collectionId.toString(),
+                kind: data.tokenId !== undefined ? 'token' : 'collection',
                 address,
+                operator: data.operator,
+                collectionId: data.collectionId.toString(),
                 tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
