@@ -76,7 +76,9 @@ export async function unapproved(
             id: item.id,
             name: item.name,
             body: {
+                kind: data.tokenId !== undefined ? 'token' : 'collection',
                 address,
+                operator: data.operator,
                 collectionId: data.collectionId.toString(),
                 tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
