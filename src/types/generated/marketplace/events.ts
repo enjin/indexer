@@ -1,8 +1,10 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
+import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -20,6 +22,38 @@ export const listingCreated =  {
              * The listing
              */
             listing: matrixEnjinV603.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    matrixEnjinV1012: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1012.H256,
+            /**
+             * The listing
+             */
+            listing: matrixEnjinV1012.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    v500: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: v500.H256,
+            /**
+             * The listing
+             */
+            listing: v500.Listing,
         })
     ),
     /**
@@ -88,6 +122,74 @@ export const listingFilled =  {
              * account that filled the listing
              */
             buyer: matrixEnjinV603.AccountId32,
+            /**
+             * The amount that was filled
+             */
+            amountFilled: sts.bigint(),
+            /**
+             * Amount remaining to be filled
+             */
+            amountRemaining: sts.bigint(),
+            /**
+             * Amount paid as protocol fee
+             */
+            protocolFee: sts.bigint(),
+            /**
+             * Amount that went to royalties
+             */
+            royalty: sts.bigint(),
+        })
+    ),
+    /**
+     * A listing was filled or partially filled
+     */
+    matrixEnjinV1012: new EventType(
+        'Marketplace.ListingFilled',
+        sts.struct({
+            /**
+             * ID of the listing
+             */
+            listingId: matrixEnjinV1012.H256,
+            /**
+             * account that filled the listing
+             */
+            buyer: matrixEnjinV1012.AccountId32,
+            /**
+             * The price it was filled with
+             */
+            price: sts.bigint(),
+            /**
+             * The amount that was filled
+             */
+            amountFilled: sts.bigint(),
+            /**
+             * Amount remaining to be filled
+             */
+            amountRemaining: sts.bigint(),
+            /**
+             * Amount paid as protocol fee
+             */
+            protocolFee: sts.bigint(),
+            /**
+             * Amount that went to royalties
+             */
+            royalty: sts.bigint(),
+        })
+    ),
+    /**
+     * A listing was filled or partially filled
+     */
+    v500: new EventType(
+        'Marketplace.ListingFilled',
+        sts.struct({
+            /**
+             * ID of the listing
+             */
+            listingId: v500.H256,
+            /**
+             * account that filled the listing
+             */
+            buyer: v500.AccountId32,
             /**
              * The amount that was filled
              */
@@ -229,19 +331,35 @@ export const expiredListingRemoved =  {
     /**
      * An expired listing was removed
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Marketplace.ExpiredListingRemoved',
         sts.struct({
             /**
              * Id for the listing
              */
-            listingId: v1010.H256,
+            listingId: matrixEnjinV1012.H256,
         })
     ),
 }
 
 export const counterOfferPlaced =  {
     name: 'Marketplace.CounterOfferPlaced',
+    /**
+     * A counter offer was placed on a listing
+     */
+    matrixEnjinV1012: new EventType(
+        'Marketplace.CounterOfferPlaced',
+        sts.struct({
+            /**
+             * Id of the listing
+             */
+            listingId: matrixEnjinV1012.H256,
+            /**
+             * The counter offer
+             */
+            counterOffer: matrixEnjinV1012.CounterOffer,
+        })
+    ),
     /**
      * A counter offer was placed on a listing
      */
@@ -281,6 +399,26 @@ export const counterOfferAnswered =  {
     /**
      * A response was issued for a counter offer
      */
+    matrixEnjinV1012: new EventType(
+        'Marketplace.CounterOfferAnswered',
+        sts.struct({
+            /**
+             * Id of the listing
+             */
+            listingId: matrixEnjinV1012.H256,
+            /**
+             * The account that created the counter offer
+             */
+            creator: matrixEnjinV1012.AccountId32,
+            /**
+             * The response to the counter offer
+             */
+            response: matrixEnjinV1012.CounterOfferResponse,
+        })
+    ),
+    /**
+     * A response was issued for a counter offer
+     */
     v1010: new EventType(
         'Marketplace.CounterOfferAnswered',
         sts.struct({
@@ -316,12 +454,32 @@ export const counterOfferAnswered =  {
     ),
 }
 
+export const counterOfferRemoved =  {
+    name: 'Marketplace.CounterOfferRemoved',
+    /**
+     * A counter offer was removed
+     */
+    matrixEnjinV1012: new EventType(
+        'Marketplace.CounterOfferRemoved',
+        sts.struct({
+            /**
+             * Id of the listing
+             */
+            listingId: matrixEnjinV1012.H256,
+            /**
+             * The account that created the counter offer
+             */
+            creator: matrixEnjinV1012.AccountId32,
+        })
+    ),
+}
+
 export const migrationStep =  {
     name: 'Marketplace.MigrationStep',
     /**
      * The migration step has completed
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Marketplace.MigrationStep',
         sts.struct({
             /**
@@ -332,26 +490,6 @@ export const migrationStep =  {
              * The migration phase
              */
             phase: sts.number(),
-        })
-    ),
-}
-
-export const counterOfferRemoved =  {
-    name: 'Marketplace.CounterOfferRemoved',
-    /**
-     * A counter offer was removed
-     */
-    v1011: new EventType(
-        'Marketplace.CounterOfferRemoved',
-        sts.struct({
-            /**
-             * Id of the listing
-             */
-            listingId: v1011.H256,
-            /**
-             * The account that created the counter offer
-             */
-            creator: v1011.AccountId32,
         })
     ),
 }

@@ -1,6 +1,6 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const statusFor =  {
     /**
@@ -48,22 +48,22 @@ export const requestStatusFor =  {
     /**
      *  The request status of a given hash.
      */
-    v1010: new StorageType('Preimage.RequestStatusFor', 'Optional', [v1010.H256], v1010.RequestStatus) as RequestStatusForV1010,
+    matrixEnjinV1012: new StorageType('Preimage.RequestStatusFor', 'Optional', [matrixEnjinV1012.H256], matrixEnjinV1012.RequestStatus) as RequestStatusForMatrixEnjinV1012,
 }
 
 /**
  *  The request status of a given hash.
  */
-export interface RequestStatusForV1010  {
+export interface RequestStatusForMatrixEnjinV1012  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1010.H256): Promise<(v1010.RequestStatus | undefined)>
-    getMany(block: Block, keys: v1010.H256[]): Promise<(v1010.RequestStatus | undefined)[]>
-    getKeys(block: Block): Promise<v1010.H256[]>
-    getKeys(block: Block, key: v1010.H256): Promise<v1010.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<v1010.H256[]>
-    getPairs(block: Block): Promise<[k: v1010.H256, v: (v1010.RequestStatus | undefined)][]>
-    getPairs(block: Block, key: v1010.H256): Promise<[k: v1010.H256, v: (v1010.RequestStatus | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.H256, v: (v1010.RequestStatus | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<[k: v1010.H256, v: (v1010.RequestStatus | undefined)][]>
+    get(block: Block, key: matrixEnjinV1012.H256): Promise<(matrixEnjinV1012.RequestStatus | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1012.H256[]): Promise<(matrixEnjinV1012.RequestStatus | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1012.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1012.H256): Promise<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<matrixEnjinV1012.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.RequestStatus | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1012.H256): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.RequestStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.RequestStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.RequestStatus | undefined)][]>
 }

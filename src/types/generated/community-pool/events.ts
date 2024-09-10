@@ -1,6 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const proposed =  {
     name: 'CommunityPool.Proposed',
@@ -130,12 +130,12 @@ export const assetSpendApproved =  {
     /**
      * A new asset spend proposal has been approved.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'CommunityPool.AssetSpendApproved',
         sts.struct({
             index: sts.number(),
             amount: sts.bigint(),
-            beneficiary: v1010.AccountId32,
+            beneficiary: matrixEnjinV1012.AccountId32,
             validFrom: sts.number(),
             expireAt: sts.number(),
         })
@@ -147,7 +147,7 @@ export const assetSpendVoided =  {
     /**
      * An approved spend was voided.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'CommunityPool.AssetSpendVoided',
         sts.struct({
             index: sts.number(),
@@ -160,7 +160,7 @@ export const paid =  {
     /**
      * A payment happened.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'CommunityPool.Paid',
         sts.struct({
             index: sts.number(),
@@ -173,7 +173,7 @@ export const paymentFailed =  {
     /**
      * A payment failed and can be retried.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'CommunityPool.PaymentFailed',
         sts.struct({
             index: sts.number(),
@@ -187,7 +187,7 @@ export const spendProcessed =  {
      * A spend was processed and removed from the storage. It might have been successfully
      * paid or it may have expired.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'CommunityPool.SpendProcessed',
         sts.struct({
             index: sts.number(),

@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const cursor =  {
     /**
@@ -7,7 +7,7 @@ export const cursor =  {
      * 
      *  `None` indicates that no migration is running.
      */
-    v1010: new StorageType('Migrations.Cursor', 'Optional', [], v1010.MigrationCursor) as CursorV1010,
+    matrixEnjinV1012: new StorageType('Migrations.Cursor', 'Optional', [], matrixEnjinV1012.MigrationCursor) as CursorMatrixEnjinV1012,
 }
 
 /**
@@ -15,9 +15,9 @@ export const cursor =  {
  * 
  *  `None` indicates that no migration is running.
  */
-export interface CursorV1010  {
+export interface CursorMatrixEnjinV1012  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v1010.MigrationCursor | undefined)>
+    get(block: Block): Promise<(matrixEnjinV1012.MigrationCursor | undefined)>
 }
 
 export const historic =  {
@@ -27,7 +27,7 @@ export const historic =  {
      *  This is used as blacklist, to not re-execute migrations that have not been removed from the
      *  codebase yet. Governance can regularly clear this out via `clear_historic`.
      */
-    v1010: new StorageType('Migrations.Historic', 'Optional', [sts.bytes()], sts.unit()) as HistoricV1010,
+    matrixEnjinV1012: new StorageType('Migrations.Historic', 'Optional', [sts.bytes()], sts.unit()) as HistoricMatrixEnjinV1012,
 }
 
 /**
@@ -36,7 +36,7 @@ export const historic =  {
  *  This is used as blacklist, to not re-execute migrations that have not been removed from the
  *  codebase yet. Governance can regularly clear this out via `clear_historic`.
  */
-export interface HistoricV1010  {
+export interface HistoricMatrixEnjinV1012  {
     is(block: RuntimeCtx): boolean
     get(block: Block, key: Bytes): Promise<(null | undefined)>
     getMany(block: Block, keys: Bytes[]): Promise<(null | undefined)[]>

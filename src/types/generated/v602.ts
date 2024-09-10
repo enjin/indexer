@@ -6358,6 +6358,16 @@ export interface BalancesCall_upgrade_accounts {
     who: AccountId32[]
 }
 
+export interface IdAmount {
+    amount: bigint
+}
+
+export const IdAmount: sts.Type<IdAmount> = sts.struct(() => {
+    return  {
+        amount: sts.bigint(),
+    }
+})
+
 export interface AccountData {
     free: bigint
     reserved: bigint

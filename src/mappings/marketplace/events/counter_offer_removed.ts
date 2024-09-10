@@ -17,8 +17,8 @@ import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(event: EventItem) {
-    if (events.marketplace.counterOfferRemoved.v1011.is(event)) {
-        return events.marketplace.counterOfferRemoved.v1011.decode(event)
+    if (events.marketplace.counterOfferRemoved.matrixEnjinV1012.is(event)) {
+        return events.marketplace.counterOfferRemoved.matrixEnjinV1012.decode(event)
     }
     throw new UnknownVersionError(events.marketplace.counterOfferRemoved.name)
 }

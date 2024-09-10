@@ -1,151 +1,5 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
-export type MigrationCursor = MigrationCursor_Active | MigrationCursor_Stuck
-
-export interface MigrationCursor_Active {
-    __kind: 'Active'
-    value: ActiveCursor
-}
-
-export interface MigrationCursor_Stuck {
-    __kind: 'Stuck'
-}
-
-export interface ActiveCursor {
-    index: number
-    innerCursor?: (Bytes | undefined)
-    startedAt: number
-}
-
-export interface Announcement {
-    real: AccountId32
-    callHash: H256
-    height: number
-}
-
-export const Announcement: sts.Type<Announcement> = sts.struct(() => {
-    return  {
-        real: AccountId32,
-        callHash: H256,
-        height: sts.number(),
-    }
-})
-
-export interface ProxyDefinition {
-    delegate: AccountId32
-    proxyType: ProxyType
-    delay: number
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_Governance {
-    __kind: 'Governance'
-}
-
-export interface ProxyType_Tokens {
-    __kind: 'Tokens'
-}
-
-export const ProxyDefinition: sts.Type<ProxyDefinition> = sts.struct(() => {
-    return  {
-        delegate: AccountId32,
-        proxyType: ProxyType,
-        delay: sts.number(),
-    }
-})
-
-export interface Page {
-    remaining: number
-    remainingSize: number
-    firstIndex: number
-    first: number
-    last: number
-    heap: Bytes
-}
-
-export const Page: sts.Type<Page> = sts.struct(() => {
-    return  {
-        remaining: sts.number(),
-        remainingSize: sts.number(),
-        firstIndex: sts.number(),
-        first: sts.number(),
-        last: sts.number(),
-        heap: sts.bytes(),
-    }
-})
-
-export type AggregateMessageOrigin = AggregateMessageOrigin_Here | AggregateMessageOrigin_Parent | AggregateMessageOrigin_Sibling
-
-export interface AggregateMessageOrigin_Here {
-    __kind: 'Here'
-}
-
-export interface AggregateMessageOrigin_Parent {
-    __kind: 'Parent'
-}
-
-export interface AggregateMessageOrigin_Sibling {
-    __kind: 'Sibling'
-    value: Id
-}
-
-export interface BookState {
-    begin: number
-    end: number
-    count: number
-    readyNeighbours?: (Neighbours | undefined)
-    messageCount: bigint
-    size: bigint
-}
-
-export interface Neighbours {
-    prev: AggregateMessageOrigin
-    next: AggregateMessageOrigin
-}
-
-export const BookState: sts.Type<BookState> = sts.struct(() => {
-    return  {
-        begin: sts.number(),
-        end: sts.number(),
-        count: sts.number(),
-        readyNeighbours: sts.option(() => Neighbours),
-        messageCount: sts.bigint(),
-        size: sts.bigint(),
-    }
-})
-
-export const Neighbours: sts.Type<Neighbours> = sts.struct(() => {
-    return  {
-        prev: AggregateMessageOrigin,
-        next: AggregateMessageOrigin,
-    }
-})
-
-export type Slot = bigint
-
-export const Slot = sts.bigint()
-
-export type Public = Bytes
-
-export const Public = sts.bytes()
-
-export interface AuthorityProperties {
-    suffix: Bytes
-    allocation: number
-}
-
-export const AuthorityProperties: sts.Type<AuthorityProperties> = sts.struct(() => {
-    return  {
-        suffix: sts.bytes(),
-        allocation: sts.number(),
-    }
-})
-
 export interface Registration {
     judgements: [number, Judgement][]
     deposit: bigint
@@ -1247,57 +1101,6 @@ export interface MinimumWeightFeePair {
     minimumWeight: Weight
     fee: bigint
 }
-
-export type MigrationState = MigrationState_Completed | MigrationState_CompletedExport | MigrationState_CompletedOverweightExport | MigrationState_NotStarted | MigrationState_StartedCleanup | MigrationState_StartedExport | MigrationState_StartedOverweightExport
-
-export interface MigrationState_Completed {
-    __kind: 'Completed'
-}
-
-export interface MigrationState_CompletedExport {
-    __kind: 'CompletedExport'
-}
-
-export interface MigrationState_CompletedOverweightExport {
-    __kind: 'CompletedOverweightExport'
-}
-
-export interface MigrationState_NotStarted {
-    __kind: 'NotStarted'
-}
-
-export interface MigrationState_StartedCleanup {
-    __kind: 'StartedCleanup'
-    cursor?: (Bytes | undefined)
-}
-
-export interface MigrationState_StartedExport {
-    __kind: 'StartedExport'
-    nextBeginUsed: number
-}
-
-export interface MigrationState_StartedOverweightExport {
-    __kind: 'StartedOverweightExport'
-    nextOverweightIndex: bigint
-}
-
-export const MigrationState: sts.Type<MigrationState> = sts.closedEnum(() => {
-    return  {
-        Completed: sts.unit(),
-        CompletedExport: sts.unit(),
-        CompletedOverweightExport: sts.unit(),
-        NotStarted: sts.unit(),
-        StartedCleanup: sts.enumStruct({
-            cursor: sts.option(() => sts.bytes()),
-        }),
-        StartedExport: sts.enumStruct({
-            nextBeginUsed: sts.number(),
-        }),
-        StartedOverweightExport: sts.enumStruct({
-            nextOverweightIndex: sts.bigint(),
-        }),
-    }
-})
 
 export type VersionedAssetId = VersionedAssetId_V3 | VersionedAssetId_V4
 
@@ -2752,10 +2555,6 @@ export const V2NetworkId: sts.Type<V2NetworkId> = sts.closedEnum(() => {
     }
 })
 
-export type Id = number
-
-export const Id = sts.number()
-
 export interface QueueConfigData {
     suspendThreshold: number
     dropThreshold: number
@@ -2770,45 +2569,7 @@ export const QueueConfigData: sts.Type<QueueConfigData> = sts.struct(() => {
     }
 })
 
-export interface SpendStatus {
-    amount: bigint
-    beneficiary: AccountId32
-    validFrom: number
-    expireAt: number
-    status: PaymentState
-}
-
-export type PaymentState = PaymentState_Attempted | PaymentState_Failed | PaymentState_Pending
-
-export interface PaymentState_Attempted {
-    __kind: 'Attempted'
-}
-
-export interface PaymentState_Failed {
-    __kind: 'Failed'
-}
-
-export interface PaymentState_Pending {
-    __kind: 'Pending'
-}
-
-export const SpendStatus: sts.Type<SpendStatus> = sts.struct(() => {
-    return  {
-        amount: sts.bigint(),
-        beneficiary: AccountId32,
-        validFrom: sts.number(),
-        expireAt: sts.number(),
-        status: PaymentState,
-    }
-})
-
-export const PaymentState: sts.Type<PaymentState> = sts.closedEnum(() => {
-    return  {
-        Attempted: sts.unit(),
-        Failed: sts.unit(),
-        Pending: sts.unit(),
-    }
-})
+export type H256 = Bytes
 
 export type Call = Call_Balances | Call_Bounties | Call_Claims | Call_CollatorStaking | Call_CommunityPool | Call_Council | Call_CumulusXcm | Call_Democracy | Call_DmpQueue | Call_ExtrinsicPause | Call_FuelTanks | Call_Identity | Call_Marketplace | Call_MatrixUtility | Call_MatrixXcm | Call_MessageQueue | Call_Migrations | Call_MultiTokens | Call_Multisig | Call_OrmlXcm | Call_ParachainInfo | Call_ParachainSystem | Call_PolkadotXcm | Call_Pools | Call_Preimage | Call_Proxy | Call_SafeMode | Call_Scheduler | Call_Session | Call_Sudo | Call_System | Call_TechnicalCommittee | Call_TechnicalMembership | Call_Timestamp | Call_Utility | Call_XTokens | Call_XcmpQueue
 
@@ -3471,6 +3232,8 @@ export interface Type_364_SiblingParachain {
     value: Id
 }
 
+export type Id = number
+
 export type Type_361 = Type_361_Member | Type_361_Members | Type_361__Phantom
 
 export interface Type_361_Member {
@@ -3992,6 +3755,8 @@ export interface SessionKeys {
     pools: Public
 }
 
+export type Public = Bytes
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -4448,6 +4213,20 @@ export interface ProxyCall_remove_proxy {
     delegate: MultiAddress
     proxyType: ProxyType
     delay: number
+}
+
+export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_Governance {
+    __kind: 'Governance'
+}
+
+export interface ProxyType_Tokens {
+    __kind: 'Tokens'
 }
 
 /**
@@ -7650,6 +7429,23 @@ export interface MigrationsCall_force_set_cursor {
     cursor?: (MigrationCursor | undefined)
 }
 
+export type MigrationCursor = MigrationCursor_Active | MigrationCursor_Stuck
+
+export interface MigrationCursor_Active {
+    __kind: 'Active'
+    value: ActiveCursor
+}
+
+export interface MigrationCursor_Stuck {
+    __kind: 'Stuck'
+}
+
+export interface ActiveCursor {
+    index: number
+    innerCursor?: (Bytes | undefined)
+    startedAt: number
+}
+
 export type HistoricCleanupSelector = HistoricCleanupSelector_Specific | HistoricCleanupSelector_Wildcard
 
 export interface HistoricCleanupSelector_Specific {
@@ -7698,6 +7494,21 @@ export interface MessageQueueCall_reap_page {
     __kind: 'reap_page'
     messageOrigin: AggregateMessageOrigin
     pageIndex: number
+}
+
+export type AggregateMessageOrigin = AggregateMessageOrigin_Here | AggregateMessageOrigin_Parent | AggregateMessageOrigin_Sibling
+
+export interface AggregateMessageOrigin_Here {
+    __kind: 'Here'
+}
+
+export interface AggregateMessageOrigin_Parent {
+    __kind: 'Parent'
+}
+
+export interface AggregateMessageOrigin_Sibling {
+    __kind: 'Sibling'
+    value: Id
 }
 
 /**
@@ -10296,20 +10107,6 @@ export const HoldReason: sts.Type<HoldReason> = sts.closedEnum(() => {
     }
 })
 
-export interface RetryConfig {
-    totalRetries: number
-    remaining: number
-    period: number
-}
-
-export const RetryConfig: sts.Type<RetryConfig> = sts.struct(() => {
-    return  {
-        totalRetries: sts.number(),
-        remaining: sts.number(),
-        period: sts.number(),
-    }
-})
-
 export interface Scheduled {
     maybeId?: (Bytes | undefined)
     priority: number
@@ -10338,116 +10135,6 @@ export const Bounded: sts.Type<Bounded> = sts.closedEnum(() => {
             hash: H256,
             len: sts.number(),
         }),
-    }
-})
-
-export type H256 = Bytes
-
-export type RequestStatus = RequestStatus_Requested | RequestStatus_Unrequested
-
-export interface RequestStatus_Requested {
-    __kind: 'Requested'
-    maybeTicket?: ([AccountId32, HoldConsideration] | undefined)
-    count: number
-    maybeLen?: (number | undefined)
-}
-
-export interface RequestStatus_Unrequested {
-    __kind: 'Unrequested'
-    ticket: [AccountId32, HoldConsideration]
-    len: number
-}
-
-export type HoldConsideration = bigint
-
-export const RequestStatus: sts.Type<RequestStatus> = sts.closedEnum(() => {
-    return  {
-        Requested: sts.enumStruct({
-            maybeTicket: sts.option(() => sts.tuple(() => [AccountId32, HoldConsideration])),
-            count: sts.number(),
-            maybeLen: sts.option(() => sts.number()),
-        }),
-        Unrequested: sts.enumStruct({
-            ticket: sts.tuple(() => [AccountId32, HoldConsideration]),
-            len: sts.number(),
-        }),
-    }
-})
-
-export const HoldConsideration = sts.bigint()
-
-export type FixedU128 = bigint
-
-export const FixedU128 = sts.bigint()
-
-export type V6UpgradeGoAhead = V6UpgradeGoAhead_Abort | V6UpgradeGoAhead_GoAhead
-
-export interface V6UpgradeGoAhead_Abort {
-    __kind: 'Abort'
-}
-
-export interface V6UpgradeGoAhead_GoAhead {
-    __kind: 'GoAhead'
-}
-
-export const V6UpgradeGoAhead: sts.Type<V6UpgradeGoAhead> = sts.closedEnum(() => {
-    return  {
-        Abort: sts.unit(),
-        GoAhead: sts.unit(),
-    }
-})
-
-export interface SegmentTracker {
-    usedBandwidth: UsedBandwidth
-    hrmpWatermark?: (number | undefined)
-    consumedGoAheadSignal?: (V6UpgradeGoAhead | undefined)
-}
-
-export interface UsedBandwidth {
-    umpMsgCount: number
-    umpTotalBytes: number
-    hrmpOutgoing: [Id, HrmpChannelUpdate][]
-}
-
-export interface HrmpChannelUpdate {
-    msgCount: number
-    totalBytes: number
-}
-
-export const SegmentTracker: sts.Type<SegmentTracker> = sts.struct(() => {
-    return  {
-        usedBandwidth: UsedBandwidth,
-        hrmpWatermark: sts.option(() => sts.number()),
-        consumedGoAheadSignal: sts.option(() => V6UpgradeGoAhead),
-    }
-})
-
-export const UsedBandwidth: sts.Type<UsedBandwidth> = sts.struct(() => {
-    return  {
-        umpMsgCount: sts.number(),
-        umpTotalBytes: sts.number(),
-        hrmpOutgoing: sts.array(() => sts.tuple(() => [Id, HrmpChannelUpdate])),
-    }
-})
-
-export const HrmpChannelUpdate: sts.Type<HrmpChannelUpdate> = sts.struct(() => {
-    return  {
-        msgCount: sts.number(),
-        totalBytes: sts.number(),
-    }
-})
-
-export interface Ancestor {
-    usedBandwidth: UsedBandwidth
-    paraHeadHash?: (H256 | undefined)
-    consumedGoAheadSignal?: (V6UpgradeGoAhead | undefined)
-}
-
-export const Ancestor: sts.Type<Ancestor> = sts.struct(() => {
-    return  {
-        usedBandwidth: UsedBandwidth,
-        paraHeadHash: sts.option(() => H256),
-        consumedGoAheadSignal: sts.option(() => V6UpgradeGoAhead),
     }
 })
 
@@ -10532,22 +10219,12 @@ export const V6AbridgedHrmpChannel: sts.Type<V6AbridgedHrmpChannel> = sts.struct
     }
 })
 
+export const Id = sts.number()
+
 export const RelayDispatchQueueRemainingCapacity: sts.Type<RelayDispatchQueueRemainingCapacity> = sts.struct(() => {
     return  {
         remainingCount: sts.number(),
         remainingSize: sts.number(),
-    }
-})
-
-export interface CodeUpgradeAuthorization {
-    codeHash: H256
-    checkVersion: boolean
-}
-
-export const CodeUpgradeAuthorization: sts.Type<CodeUpgradeAuthorization> = sts.struct(() => {
-    return  {
-        codeHash: H256,
-        checkVersion: sts.boolean(),
     }
 })
 
@@ -14867,6 +14544,62 @@ export const UtilityEvent: sts.Type<UtilityEvent> = sts.closedEnum(() => {
     }
 })
 
+export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
+    return  {
+        Arithmetic: ArithmeticError,
+        BadOrigin: sts.unit(),
+        CannotLookup: sts.unit(),
+        ConsumerRemaining: sts.unit(),
+        Corruption: sts.unit(),
+        Exhausted: sts.unit(),
+        Module: ModuleError,
+        NoProviders: sts.unit(),
+        Other: sts.unit(),
+        RootNotAllowed: sts.unit(),
+        Token: TokenError,
+        TooManyConsumers: sts.unit(),
+        Transactional: TransactionalError,
+        Unavailable: sts.unit(),
+    }
+})
+
+export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
+    return  {
+        LimitReached: sts.unit(),
+        NoLayer: sts.unit(),
+    }
+})
+
+export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
+    return  {
+        BelowMinimum: sts.unit(),
+        Blocked: sts.unit(),
+        CannotCreate: sts.unit(),
+        CannotCreateHold: sts.unit(),
+        Frozen: sts.unit(),
+        FundsUnavailable: sts.unit(),
+        NotExpendable: sts.unit(),
+        OnlyProvider: sts.unit(),
+        UnknownAsset: sts.unit(),
+        Unsupported: sts.unit(),
+    }
+})
+
+export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
+    return  {
+        index: sts.number(),
+        error: sts.bytes(),
+    }
+})
+
+export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
+    return  {
+        DivisionByZero: sts.unit(),
+        Overflow: sts.unit(),
+        Underflow: sts.unit(),
+    }
+})
+
 /**
  * The `Event` enum of this pallet
  */
@@ -15108,6 +14841,13 @@ export const SafeModeEvent: sts.Type<SafeModeEvent> = sts.closedEnum(() => {
         Extended: sts.enumStruct({
             until: sts.number(),
         }),
+    }
+})
+
+export const ExitReason: sts.Type<ExitReason> = sts.closedEnum(() => {
+    return  {
+        Force: sts.unit(),
+        Timeout: sts.unit(),
     }
 })
 
@@ -15730,6 +15470,24 @@ export const MessageQueueEvent: sts.Type<MessageQueueEvent> = sts.closedEnum(() 
             origin: AggregateMessageOrigin,
             error: ProcessMessageError,
         }),
+    }
+})
+
+export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
+    return  {
+        BadFormat: sts.unit(),
+        Corrupt: sts.unit(),
+        Overweight: Weight,
+        Unsupported: sts.unit(),
+        Yield: sts.unit(),
+    }
+})
+
+export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
+    return  {
+        Here: sts.unit(),
+        Parent: sts.unit(),
+        Sibling: Id,
     }
 })
 
@@ -16461,40 +16219,13 @@ export const Phase: sts.Type<Phase> = sts.closedEnum(() => {
     }
 })
 
-export const HistoricCleanupSelector: sts.Type<HistoricCleanupSelector> = sts.closedEnum(() => {
+export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
     return  {
-        Specific: sts.array(() => sts.bytes()),
-        Wildcard: sts.enumStruct({
-            limit: sts.option(() => sts.number()),
-            previousCursor: sts.option(() => sts.bytes()),
-        }),
+        Any: sts.unit(),
+        Governance: sts.unit(),
+        Tokens: sts.unit(),
     }
 })
-
-export const MigrationCursor: sts.Type<MigrationCursor> = sts.closedEnum(() => {
-    return  {
-        Active: ActiveCursor,
-        Stuck: sts.unit(),
-    }
-})
-
-export const ActiveCursor: sts.Type<ActiveCursor> = sts.struct(() => {
-    return  {
-        index: sts.number(),
-        innerCursor: sts.option(() => sts.bytes()),
-        startedAt: sts.number(),
-    }
-})
-
-export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
-    return  {
-        Ecdsa: Signature,
-        Ed25519: sts.bytes(),
-        Sr25519: sts.bytes(),
-    }
-})
-
-export const Signature = sts.bytes()
 
 export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
     return  {
@@ -16728,6 +16459,16 @@ export const DefaultMintParams: sts.Type<DefaultMintParams> = sts.closedEnum(() 
             amount: sts.bigint(),
             depositor: sts.option(() => AccountId32),
         }),
+    }
+})
+
+export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
+    return  {
+        Address20: sts.bytes(),
+        Address32: sts.bytes(),
+        Id: AccountId32,
+        Index: sts.unit(),
+        Raw: sts.bytes(),
     }
 })
 
@@ -17560,20 +17301,10 @@ export const Timepoint: sts.Type<Timepoint> = sts.struct(() => {
     }
 })
 
-export const MultiAddress: sts.Type<MultiAddress> = sts.closedEnum(() => {
+export const Weight: sts.Type<Weight> = sts.struct(() => {
     return  {
-        Address20: sts.bytes(),
-        Address32: sts.bytes(),
-        Id: AccountId32,
-        Index: sts.unit(),
-        Raw: sts.bytes(),
-    }
-})
-
-export const AdjustmentDirection: sts.Type<AdjustmentDirection> = sts.closedEnum(() => {
-    return  {
-        Decrease: sts.unit(),
-        Increase: sts.unit(),
+        refTime: sts.bigint(),
+        proofSize: sts.bigint(),
     }
 })
 
@@ -17924,6 +17655,8 @@ export const SessionKeys: sts.Type<SessionKeys> = sts.struct(() => {
         pools: Public,
     }
 })
+
+export const Public = sts.bytes()
 
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
@@ -18493,6 +18226,8 @@ export const MultiTokensCall: sts.Type<MultiTokensCall> = sts.closedEnum(() => {
     }
 })
 
+export const Signature = sts.bytes()
+
 /**
  * Contains a variant per dispatchable extrinsic that this pallet has.
  */
@@ -18509,6 +18244,31 @@ export const MigrationsCall: sts.Type<MigrationsCall> = sts.closedEnum(() => {
         }),
         force_set_cursor: sts.enumStruct({
             cursor: sts.option(() => MigrationCursor),
+        }),
+    }
+})
+
+export const MigrationCursor: sts.Type<MigrationCursor> = sts.closedEnum(() => {
+    return  {
+        Active: ActiveCursor,
+        Stuck: sts.unit(),
+    }
+})
+
+export const ActiveCursor: sts.Type<ActiveCursor> = sts.struct(() => {
+    return  {
+        index: sts.number(),
+        innerCursor: sts.option(() => sts.bytes()),
+        startedAt: sts.number(),
+    }
+})
+
+export const HistoricCleanupSelector: sts.Type<HistoricCleanupSelector> = sts.closedEnum(() => {
+    return  {
+        Specific: sts.array(() => sts.bytes()),
+        Wildcard: sts.enumStruct({
+            limit: sts.option(() => sts.number()),
+            previousCursor: sts.option(() => sts.bytes()),
         }),
     }
 })
@@ -18741,6 +18501,14 @@ export const IdentityCall: sts.Type<IdentityCall> = sts.closedEnum(() => {
             username: sts.bytes(),
             signature: sts.option(() => MultiSignature),
         }),
+    }
+})
+
+export const MultiSignature: sts.Type<MultiSignature> = sts.closedEnum(() => {
+    return  {
+        Ecdsa: Signature,
+        Ed25519: sts.bytes(),
+        Sr25519: sts.bytes(),
     }
 })
 
@@ -19180,99 +18948,10 @@ export const BalancesCall: sts.Type<BalancesCall> = sts.closedEnum(() => {
     }
 })
 
-export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+export const AdjustmentDirection: sts.Type<AdjustmentDirection> = sts.closedEnum(() => {
     return  {
-        Any: sts.unit(),
-        Governance: sts.unit(),
-        Tokens: sts.unit(),
-    }
-})
-
-export const DispatchError: sts.Type<DispatchError> = sts.closedEnum(() => {
-    return  {
-        Arithmetic: ArithmeticError,
-        BadOrigin: sts.unit(),
-        CannotLookup: sts.unit(),
-        ConsumerRemaining: sts.unit(),
-        Corruption: sts.unit(),
-        Exhausted: sts.unit(),
-        Module: ModuleError,
-        NoProviders: sts.unit(),
-        Other: sts.unit(),
-        RootNotAllowed: sts.unit(),
-        Token: TokenError,
-        TooManyConsumers: sts.unit(),
-        Transactional: TransactionalError,
-        Unavailable: sts.unit(),
-    }
-})
-
-export const TransactionalError: sts.Type<TransactionalError> = sts.closedEnum(() => {
-    return  {
-        LimitReached: sts.unit(),
-        NoLayer: sts.unit(),
-    }
-})
-
-export const TokenError: sts.Type<TokenError> = sts.closedEnum(() => {
-    return  {
-        BelowMinimum: sts.unit(),
-        Blocked: sts.unit(),
-        CannotCreate: sts.unit(),
-        CannotCreateHold: sts.unit(),
-        Frozen: sts.unit(),
-        FundsUnavailable: sts.unit(),
-        NotExpendable: sts.unit(),
-        OnlyProvider: sts.unit(),
-        UnknownAsset: sts.unit(),
-        Unsupported: sts.unit(),
-    }
-})
-
-export const ModuleError: sts.Type<ModuleError> = sts.struct(() => {
-    return  {
-        index: sts.number(),
-        error: sts.bytes(),
-    }
-})
-
-export const ArithmeticError: sts.Type<ArithmeticError> = sts.closedEnum(() => {
-    return  {
-        DivisionByZero: sts.unit(),
-        Overflow: sts.unit(),
-        Underflow: sts.unit(),
-    }
-})
-
-export const Weight: sts.Type<Weight> = sts.struct(() => {
-    return  {
-        refTime: sts.bigint(),
-        proofSize: sts.bigint(),
-    }
-})
-
-export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
-    return  {
-        BadFormat: sts.unit(),
-        Corrupt: sts.unit(),
-        Overweight: Weight,
-        Unsupported: sts.unit(),
-        Yield: sts.unit(),
-    }
-})
-
-export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
-    return  {
-        Here: sts.unit(),
-        Parent: sts.unit(),
-        Sibling: Id,
-    }
-})
-
-export const ExitReason: sts.Type<ExitReason> = sts.closedEnum(() => {
-    return  {
-        Force: sts.unit(),
-        Timeout: sts.unit(),
+        Decrease: sts.unit(),
+        Increase: sts.unit(),
     }
 })
 
@@ -19386,6 +19065,8 @@ export const Approval: sts.Type<Approval> = sts.struct(() => {
         expiration: sts.option(() => sts.number()),
     }
 })
+
+export const AccountId32 = sts.bytes()
 
 export const Token: sts.Type<Token> = sts.struct(() => {
     return  {
@@ -19587,6 +19268,8 @@ export const VersionedAssets: sts.Type<VersionedAssets> = sts.closedEnum(() => {
     }
 })
 
+export const H256 = sts.bytes()
+
 export const V4Response: sts.Type<V4Response> = sts.closedEnum(() => {
     return  {
         Assets: sts.array(() => V4Asset),
@@ -19772,7 +19455,3 @@ export const V4Outcome: sts.Type<V4Outcome> = sts.closedEnum(() => {
         }),
     }
 })
-
-export const AccountId32 = sts.bytes()
-
-export const H256 = sts.bytes()

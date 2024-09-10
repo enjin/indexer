@@ -19,6 +19,10 @@ import { syncCollectionStats } from '../../../jobs/collection-stats'
 import { Sns } from '../../../common/sns'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.marketplace.listingFilled.matrixEnjinV1012.is(event)) {
+        return events.marketplace.listingFilled.matrixEnjinV1012.decode(event)
+    }
+
     if (events.marketplace.listingFilled.matrixEnjinV603.is(event)) {
         return events.marketplace.listingFilled.matrixEnjinV603.decode(event)
     }

@@ -1,15 +1,15 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const proxyExecuted =  {
     name: 'Proxy.ProxyExecuted',
     /**
      * A proxy was executed correctly, with the given.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Proxy.ProxyExecuted',
         sts.struct({
-            result: sts.result(() => sts.unit(), () => v1010.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV1012.DispatchError),
         })
     ),
 }
@@ -20,12 +20,12 @@ export const pureCreated =  {
      * A pure account has been created by new proxy with given
      * disambiguation index and proxy type.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Proxy.PureCreated',
         sts.struct({
-            pure: v1010.AccountId32,
-            who: v1010.AccountId32,
-            proxyType: v1010.ProxyType,
+            pure: matrixEnjinV1012.AccountId32,
+            who: matrixEnjinV1012.AccountId32,
+            proxyType: matrixEnjinV1012.ProxyType,
             disambiguationIndex: sts.number(),
         })
     ),
@@ -36,12 +36,12 @@ export const announced =  {
     /**
      * An announcement was placed to make a call in the future.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Proxy.Announced',
         sts.struct({
-            real: v1010.AccountId32,
-            proxy: v1010.AccountId32,
-            callHash: v1010.H256,
+            real: matrixEnjinV1012.AccountId32,
+            proxy: matrixEnjinV1012.AccountId32,
+            callHash: matrixEnjinV1012.H256,
         })
     ),
 }
@@ -51,12 +51,12 @@ export const proxyAdded =  {
     /**
      * A proxy was added.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Proxy.ProxyAdded',
         sts.struct({
-            delegator: v1010.AccountId32,
-            delegatee: v1010.AccountId32,
-            proxyType: v1010.ProxyType,
+            delegator: matrixEnjinV1012.AccountId32,
+            delegatee: matrixEnjinV1012.AccountId32,
+            proxyType: matrixEnjinV1012.ProxyType,
             delay: sts.number(),
         })
     ),
@@ -67,12 +67,12 @@ export const proxyRemoved =  {
     /**
      * A proxy was removed.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'Proxy.ProxyRemoved',
         sts.struct({
-            delegator: v1010.AccountId32,
-            delegatee: v1010.AccountId32,
-            proxyType: v1010.ProxyType,
+            delegator: matrixEnjinV1012.AccountId32,
+            delegatee: matrixEnjinV1012.AccountId32,
+            proxyType: matrixEnjinV1012.ProxyType,
             delay: sts.number(),
         })
     ),

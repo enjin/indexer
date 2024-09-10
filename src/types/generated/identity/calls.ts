@@ -1,6 +1,6 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const addRegistrar =  {
     name: 'Identity.add_registrar',
@@ -380,10 +380,10 @@ export const addUsernameAuthority =  {
      * The authority can grant up to `allocation` usernames. To top up their allocation, they
      * should just issue (or request via governance) a new `add_username_authority` call.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.add_username_authority',
         sts.struct({
-            authority: v1010.MultiAddress,
+            authority: matrixEnjinV1012.MultiAddress,
             suffix: sts.bytes(),
             allocation: sts.number(),
         })
@@ -395,10 +395,10 @@ export const removeUsernameAuthority =  {
     /**
      * Remove `authority` from the username authorities.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.remove_username_authority',
         sts.struct({
-            authority: v1010.MultiAddress,
+            authority: matrixEnjinV1012.MultiAddress,
         })
     ),
 }
@@ -416,12 +416,12 @@ export const setUsernameFor =  {
      *   - When combined with the suffix of the issuing authority be _less than_ the
      *     `MaxUsernameLength`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.set_username_for',
         sts.struct({
-            who: v1010.MultiAddress,
+            who: matrixEnjinV1012.MultiAddress,
             username: sts.bytes(),
-            signature: sts.option(() => v1010.MultiSignature),
+            signature: sts.option(() => matrixEnjinV1012.MultiSignature),
         })
     ),
 }
@@ -432,7 +432,7 @@ export const acceptUsername =  {
      * Accept a given username that an `authority` granted. The call must include the full
      * username, as in `username.suffix`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.accept_username',
         sts.struct({
             username: sts.bytes(),
@@ -447,7 +447,7 @@ export const removeExpiredApproval =  {
      * accepted by the user and must now be beyond its expiration. The call must include the
      * full username, as in `username.suffix`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.remove_expired_approval',
         sts.struct({
             username: sts.bytes(),
@@ -460,7 +460,7 @@ export const setPrimaryUsername =  {
     /**
      * Set a given username as the primary. The username should include the suffix.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.set_primary_username',
         sts.struct({
             username: sts.bytes(),
@@ -474,7 +474,7 @@ export const removeDanglingUsername =  {
      * Remove a username that corresponds to an account with no identity. Exists when a user
      * gets a username but then calls `clear_identity`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Identity.remove_dangling_username',
         sts.struct({
             username: sts.bytes(),

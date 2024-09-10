@@ -1,20 +1,20 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const authorities =  {
     /**
      *  The current authority set.
      */
-    v1010: new StorageType('Aura.Authorities', 'Default', [], sts.array(() => v1010.Public)) as AuthoritiesV1010,
+    matrixEnjinV1012: new StorageType('Aura.Authorities', 'Default', [], sts.array(() => matrixEnjinV1012.Public)) as AuthoritiesMatrixEnjinV1012,
 }
 
 /**
  *  The current authority set.
  */
-export interface AuthoritiesV1010  {
+export interface AuthoritiesMatrixEnjinV1012  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1010.Public[]
-    get(block: Block): Promise<(v1010.Public[] | undefined)>
+    getDefault(block: Block): matrixEnjinV1012.Public[]
+    get(block: Block): Promise<(matrixEnjinV1012.Public[] | undefined)>
 }
 
 export const currentSlot =  {
@@ -23,7 +23,7 @@ export const currentSlot =  {
      * 
      *  This will be set in `on_initialize`.
      */
-    v1010: new StorageType('Aura.CurrentSlot', 'Default', [], v1010.Slot) as CurrentSlotV1010,
+    matrixEnjinV1012: new StorageType('Aura.CurrentSlot', 'Default', [], matrixEnjinV1012.Slot) as CurrentSlotMatrixEnjinV1012,
 }
 
 /**
@@ -31,8 +31,8 @@ export const currentSlot =  {
  * 
  *  This will be set in `on_initialize`.
  */
-export interface CurrentSlotV1010  {
+export interface CurrentSlotMatrixEnjinV1012  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1010.Slot
-    get(block: Block): Promise<(v1010.Slot | undefined)>
+    getDefault(block: Block): matrixEnjinV1012.Slot
+    get(block: Block): Promise<(matrixEnjinV1012.Slot | undefined)>
 }
