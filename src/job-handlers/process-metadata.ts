@@ -141,20 +141,16 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         await em.save(resource)
 
         if (jobData.type === 'collection' && jobData.allTokens === true) {
-            const uri = attributes.find((a) => a.key === 'uri')
+            // eslint-disable-next-line no-console
+            console.log('Processing all tokens in collection', jobData.resourceId)
 
-            if (uri && uri.value.includes('{id}')) {
-                // eslint-disable-next-line no-console
-                console.log('Processing all tokens in collection', jobData.resourceId)
+            const batch = tokensInBatch(em, jobData.resourceId)
 
-                const batch = tokensInBatch(em, jobData.resourceId)
-
-                // eslint-disable-next-line no-restricted-syntax
-                for await (const tokens of batch) {
-                    tokens.forEach((token) => {
-                        processMetadata(token.id, 'token', true)
-                    })
-                }
+            // eslint-disable-next-line no-restricted-syntax
+            for await (const tokens of batch) {
+                tokens.forEach((token) => {
+                    processMetadata(token.id, 'token', true)
+                })
             }
         }
         done(null, { id: jobData.resourceId })
