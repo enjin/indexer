@@ -638,6 +638,37 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
 }
 
 async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
+    if (storage.multiTokens.tokens.matrixEnjinV1012.is(block)) {
+        const data = await storage.multiTokens.tokens.matrixEnjinV1012.get(block, collectionId, tokenId)
+
+        if (data) {
+            const cap = data.cap ? getCapType(data.cap) : null
+            const behavior = data.marketBehavior ? await getBehavior(ctx, data.marketBehavior) : null
+            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : null
+            const unitPrice: bigint = 10_000_000_000_000_000n
+
+            return {
+                collectionId,
+                tokenId,
+                infusion: data.infusion,
+                initialSupply: data.supply,
+                minimumBalance: 1n,
+                anyoneCanInfuse: data.anyoneCanInfuse,
+                unitPrice,
+                cap,
+                nativeMetadata: new NativeTokenMetadata({
+                    decimalCount: data.metadata.decimalCount,
+                    name: hexToString(data.metadata.name),
+                    symbol: hexToString(data.metadata.symbol),
+                }),
+                accountDepositCount: data.accountCount,
+                behavior,
+                freezeState,
+                listingForbidden: data.listingForbidden ?? false,
+            }
+        }
+    }
+
     if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
         const data = await storage.multiTokens.tokens.matrixEnjinV603.get(block, collectionId, tokenId)
 
@@ -663,17 +694,7 @@ async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: 
         }
     }
 
-    return {
-        collectionId,
-        tokenId,
-        initialSupply: 0n,
-        minimumBalance: 1n,
-        unitPrice: 10_000_000_000_000_000n,
-        cap: null,
-        behavior: null,
-        freezeState: null,
-        listingForbidden: false,
-    }
+    throw new UnknownVersionError('storage.multiTokens.token')
 }
 
 export async function tokenCreated(
