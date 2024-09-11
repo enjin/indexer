@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, IntColumn as IntColumn_, ManyToOne as ManyToOne_, Index as Index_, BooleanColumn as BooleanColumn_, StringColumn as StringColumn_, BigIntColumn as BigIntColumn_, OneToMany as OneToMany_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {FuelTank} from "./fuelTank.model"
 import {MaxFuelBurnPerTransaction} from "./_maxFuelBurnPerTransaction"
@@ -58,6 +58,9 @@ export class FuelTankRuleSet {
 
     @StringColumn_({array: true, nullable: true})
     permittedCalls!: (string)[] | undefined | null
+
+    @BigIntColumn_({nullable: true})
+    minimumInfusion!: bigint | undefined | null
 
     @OneToMany_(() => PermittedExtrinsics, e => e.ruleSet)
     permittedExtrinsics!: PermittedExtrinsics[]

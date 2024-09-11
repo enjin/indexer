@@ -13,6 +13,10 @@ function getEventData(event: EventItem) {
 }
 
 function getCallData(call: CallItem) {
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1012.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1012.decode(call)
+    }
+
     if (calls.fuelTanks.insertRuleSet.matrixEnjinV1005.is(call)) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV1005.decode(call)
     }
@@ -117,6 +121,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         permittedCalls,
         permittedExtrinsics,
         requireSignature,
+        minimumInfusion,
     } = rulesToMap(ruleSetId, 'ruleSet' in callData ? callData.ruleSet.rules : callData.rules)
 
     const ruleSet = new FuelTankRuleSet({
@@ -134,6 +139,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         tankFuelBudget,
         requireToken,
         permittedCalls,
+        minimumInfusion,
         requireSignature,
     })
     await ctx.store.save(ruleSet)

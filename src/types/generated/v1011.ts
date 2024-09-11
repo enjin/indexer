@@ -1,18 +1,5 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
-export type AccountId32 = Bytes
-
-export interface CounterOffer {
-    sellerPrice: bigint
-    buyerPrice?: (bigint | undefined)
-    deposit: Deposit
-}
-
-export interface Deposit {
-    depositor: AccountId32
-    amount: bigint
-}
-
 export interface Listing {
     creator: AccountId32
     makeAssetId: AssetId
@@ -83,6 +70,11 @@ export interface AuctionData {
     endBlock: number
 }
 
+export interface Deposit {
+    depositor: AccountId32
+    amount: bigint
+}
+
 export type FeeSide = FeeSide_Make | FeeSide_NoFee | FeeSide_Take
 
 export interface FeeSide_Make {
@@ -101,6 +93,8 @@ export interface AssetId {
     collectionId: bigint
     tokenId: bigint
 }
+
+export type AccountId32 = Bytes
 
 export type H256 = Bytes
 
@@ -11950,6 +11944,12 @@ export interface MarketplaceEvent_ProtocolFeeSet {
      * The new protocol fee
      */
     protocolFee: Perbill
+}
+
+export interface CounterOffer {
+    sellerPrice: bigint
+    buyerPrice?: (bigint | undefined)
+    deposit: Deposit
 }
 
 /**

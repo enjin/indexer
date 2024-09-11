@@ -6,6 +6,7 @@ import * as v604 from '../v604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as v1000 from '../v1000'
 import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 
 export const fuelTankCreated =  {
@@ -48,6 +49,38 @@ export const fuelTankMutated =  {
              * The mutation that was applied
              */
             mutation: matrixEnjinV603.DefaultTankMutation,
+        })
+    ),
+    /**
+     * A [`FuelTank`] was mutated
+     */
+    matrixEnjinV1012: new EventType(
+        'FuelTanks.FuelTankMutated',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: matrixEnjinV1012.AccountId32,
+            /**
+             * The mutation that was applied
+             */
+            mutation: matrixEnjinV1012.DefaultTankMutation,
+        })
+    ),
+    /**
+     * A [`FuelTank`] was mutated
+     */
+    v500: new EventType(
+        'FuelTanks.FuelTankMutated',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: v500.AccountId32,
+            /**
+             * The mutation that was applied
+             */
+            mutation: v500.DefaultTankMutation,
         })
     ),
     /**
@@ -282,6 +315,31 @@ export const accountRuleDataRemoved =  {
              * The [`DispatchRuleKind`] that was removed
              */
             ruleKind: matrixEnjinV1000.DispatchRuleKind,
+        })
+    ),
+    /**
+     * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
+     * [`RuleSetId`](Config::RuleSetId)
+     */
+    matrixEnjinV1012: new EventType(
+        'FuelTanks.AccountRuleDataRemoved',
+        sts.struct({
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) of the [`FuelTank`]
+             */
+            tankId: matrixEnjinV1012.AccountId32,
+            /**
+             * The [`AccountId`](frame_system::Config::AccountId) that was removed
+             */
+            userId: matrixEnjinV1012.AccountId32,
+            /**
+             * The id of the rule set that was removed
+             */
+            ruleSetId: sts.number(),
+            /**
+             * The [`DispatchRuleKind`] that was removed
+             */
+            ruleKind: matrixEnjinV1012.DispatchRuleKind,
         })
     ),
     /**
@@ -692,7 +750,7 @@ export const migrationStep =  {
     /**
      * The migration step has completed
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'FuelTanks.MigrationStep',
         sts.struct({
             /**

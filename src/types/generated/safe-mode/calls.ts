@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const enter =  {
     name: 'SafeMode.enter',
@@ -11,7 +11,7 @@ export const enter =  {
      * Errors with [`Error::Entered`] if the safe-mode is already entered.
      * Errors with [`Error::NotConfigured`] if the deposit amount is `None`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.enter',
         sts.unit()
     ),
@@ -27,7 +27,7 @@ export const forceEnter =  {
      * 
      * Can only be called by the [`Config::ForceEnterOrigin`] origin.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.force_enter',
         sts.unit()
     ),
@@ -48,7 +48,7 @@ export const extend =  {
      * currency to reserve. This call can be disabled for all origins by configuring
      * [`Config::ExtendDepositAmount`] to `None`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.extend',
         sts.unit()
     ),
@@ -64,7 +64,7 @@ export const forceExtend =  {
      * 
      * Can only be called by the [`Config::ForceExtendOrigin`] origin.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.force_extend',
         sts.unit()
     ),
@@ -83,7 +83,7 @@ export const forceExit =  {
      * Emits an [`Event::Exited`] with [`ExitReason::Timeout`] event when deactivated in the
      * hook.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.force_exit',
         sts.unit()
     ),
@@ -102,10 +102,10 @@ export const forceSlashDeposit =  {
      * 
      * Can only be called by the [`Config::ForceDepositOrigin`] origin.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.force_slash_deposit',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             block: sts.number(),
         })
     ),
@@ -127,10 +127,10 @@ export const releaseDeposit =  {
      * passed since safe-mode was entered. Errors with [`Error::NoDeposit`] if the payee has no
      * reserved currency at the block specified.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.release_deposit',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             block: sts.number(),
         })
     ),
@@ -151,10 +151,10 @@ export const forceReleaseDeposit =  {
      * 
      * Can only be called by the [`Config::ForceDepositOrigin`] origin.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'SafeMode.force_release_deposit',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             block: sts.number(),
         })
     ),

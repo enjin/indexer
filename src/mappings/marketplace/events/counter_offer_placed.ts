@@ -17,6 +17,10 @@ import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
 function getEventData(event: EventItem) {
+    if (events.marketplace.counterOfferPlaced.matrixEnjinV1012.is(event)) {
+        return events.marketplace.counterOfferPlaced.matrixEnjinV1012.decode(event)
+    }
+
     if (events.marketplace.counterOfferPlaced.v1010.is(event)) {
         return events.marketplace.counterOfferPlaced.v1010.decode(event)
     }

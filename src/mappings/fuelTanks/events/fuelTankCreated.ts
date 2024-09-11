@@ -29,6 +29,10 @@ function getEventData(event: EventItem) {
 
 function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.decode(call)
+        }
+
         if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.is(call)) {
             return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.decode(call)
         }
@@ -82,6 +86,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         }
 
         throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
+    }
+
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1012.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1012.decode(call)
     }
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call)) {
@@ -240,6 +248,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
                 requireToken,
                 permittedCalls,
                 permittedExtrinsics,
+                minimumInfusion,
             } = rulesToMap(`${fuelTank.id}-${index}`, rules)
 
             const ruleSetModel = new FuelTankRuleSet({
@@ -257,6 +266,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
                 tankFuelBudget,
                 requireToken,
                 permittedCalls,
+                minimumInfusion,
             })
 
             await ctx.store.save(ruleSetModel)

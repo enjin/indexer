@@ -1,10 +1,30 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 
 export const proxy =  {
     name: 'Proxy.proxy',
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    matrixEnjinV1012: new CallType(
+        'Proxy.proxy',
+        sts.struct({
+            real: matrixEnjinV1012.MultiAddress,
+            forceProxyType: sts.option(() => matrixEnjinV1012.ProxyType),
+            call: matrixEnjinV1012.Call,
+        })
+    ),
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
@@ -77,11 +97,11 @@ export const addProxy =  {
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.add_proxy',
         sts.struct({
-            delegate: v1010.MultiAddress,
-            proxyType: v1010.ProxyType,
+            delegate: matrixEnjinV1012.MultiAddress,
+            proxyType: matrixEnjinV1012.ProxyType,
             delay: sts.number(),
         })
     ),
@@ -98,11 +118,11 @@ export const removeProxy =  {
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.remove_proxy',
         sts.struct({
-            delegate: v1010.MultiAddress,
-            proxyType: v1010.ProxyType,
+            delegate: matrixEnjinV1012.MultiAddress,
+            proxyType: matrixEnjinV1012.ProxyType,
             delay: sts.number(),
         })
     ),
@@ -118,7 +138,7 @@ export const removeProxies =  {
      * WARNING: This may be called on accounts created by `pure`, however if done, then
      * the unreserved fees will be inaccessible. **All access to this account will be lost.**
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.remove_proxies',
         sts.unit()
     ),
@@ -146,10 +166,10 @@ export const createPure =  {
      * 
      * Fails if there are insufficient funds to pay for deposit.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.create_pure',
         sts.struct({
-            proxyType: v1010.ProxyType,
+            proxyType: matrixEnjinV1012.ProxyType,
             delay: sts.number(),
             index: sts.number(),
         })
@@ -176,11 +196,11 @@ export const killPure =  {
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.kill_pure',
         sts.struct({
-            spawner: v1010.MultiAddress,
-            proxyType: v1010.ProxyType,
+            spawner: matrixEnjinV1012.MultiAddress,
+            proxyType: matrixEnjinV1012.ProxyType,
             index: sts.number(),
             height: sts.number(),
             extIndex: sts.number(),
@@ -207,11 +227,11 @@ export const announce =  {
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.announce',
         sts.struct({
-            real: v1010.MultiAddress,
-            callHash: v1010.H256,
+            real: matrixEnjinV1012.MultiAddress,
+            callHash: matrixEnjinV1012.H256,
         })
     ),
 }
@@ -230,11 +250,11 @@ export const removeAnnouncement =  {
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.remove_announcement',
         sts.struct({
-            real: v1010.MultiAddress,
-            callHash: v1010.H256,
+            real: matrixEnjinV1012.MultiAddress,
+            callHash: matrixEnjinV1012.H256,
         })
     ),
 }
@@ -253,17 +273,39 @@ export const rejectAnnouncement =  {
      * - `delegate`: The account that previously announced the call.
      * - `call_hash`: The hash of the call to be made.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Proxy.reject_announcement',
         sts.struct({
-            delegate: v1010.MultiAddress,
-            callHash: v1010.H256,
+            delegate: matrixEnjinV1012.MultiAddress,
+            callHash: matrixEnjinV1012.H256,
         })
     ),
 }
 
 export const proxyAnnounced =  {
     name: 'Proxy.proxy_announced',
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    matrixEnjinV1012: new CallType(
+        'Proxy.proxy_announced',
+        sts.struct({
+            delegate: matrixEnjinV1012.MultiAddress,
+            real: matrixEnjinV1012.MultiAddress,
+            forceProxyType: sts.option(() => matrixEnjinV1012.ProxyType),
+            call: matrixEnjinV1012.Call,
+        })
+    ),
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.

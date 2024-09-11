@@ -4,6 +4,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const info =  {
     /**
@@ -55,6 +56,14 @@ export const listings =  {
     /**
      *  Listings by ID
      */
+    matrixEnjinV1012: new StorageType('Marketplace.Listings', 'Optional', [matrixEnjinV1012.H256], matrixEnjinV1012.Listing) as ListingsMatrixEnjinV1012,
+    /**
+     *  Listings by ID
+     */
+    v500: new StorageType('Marketplace.Listings', 'Optional', [v500.H256], v500.Listing) as ListingsV500,
+    /**
+     *  Listings by ID
+     */
     v1010: new StorageType('Marketplace.Listings', 'Optional', [v1010.H256], v1010.Listing) as ListingsV1010,
     /**
      *  Listings by ID
@@ -77,6 +86,40 @@ export interface ListingsMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.H256): Promise<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.H256): AsyncIterable<[k: matrixEnjinV603.H256, v: (matrixEnjinV603.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsMatrixEnjinV1012  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1012.H256): Promise<(matrixEnjinV1012.Listing | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1012.H256[]): Promise<(matrixEnjinV1012.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1012.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1012.H256): Promise<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<matrixEnjinV1012.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Listing | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1012.H256): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV500  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v500.H256): Promise<(v500.Listing | undefined)>
+    getMany(block: Block, keys: v500.H256[]): Promise<(v500.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v500.H256[]>
+    getKeys(block: Block, key: v500.H256): Promise<v500.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v500.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<v500.H256[]>
+    getPairs(block: Block): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairs(block: Block, key: v500.H256): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
 }
 
 /**
@@ -111,6 +154,66 @@ export interface ListingsV1011  {
     getPairs(block: Block, key: v1011.H256): Promise<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: v1011.H256): AsyncIterable<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
+}
+
+export const counterOffers =  {
+    /**
+     *  Counter offers by listing id and account
+     */
+    matrixEnjinV1012: new StorageType('Marketplace.CounterOffers', 'Optional', [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], matrixEnjinV1012.CounterOffer) as CounterOffersMatrixEnjinV1012,
+}
+
+/**
+ *  Counter offers by listing id and account
+ */
+export interface CounterOffersMatrixEnjinV1012  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: matrixEnjinV1012.H256, key2: matrixEnjinV1012.AccountId32): Promise<(matrixEnjinV1012.CounterOffer | undefined)>
+    getMany(block: Block, keys: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]): Promise<(matrixEnjinV1012.CounterOffer | undefined)[]>
+    getKeys(block: Block): Promise<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getKeys(block: Block, key1: matrixEnjinV1012.H256): Promise<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getKeys(block: Block, key1: matrixEnjinV1012.H256, key2: matrixEnjinV1012.AccountId32): Promise<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block, key1: matrixEnjinV1012.H256): AsyncIterable<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block, key1: matrixEnjinV1012.H256, key2: matrixEnjinV1012.AccountId32): AsyncIterable<[matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32][]>
+    getPairs(block: Block): Promise<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+    getPairs(block: Block, key1: matrixEnjinV1012.H256): Promise<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+    getPairs(block: Block, key1: matrixEnjinV1012.H256, key2: matrixEnjinV1012.AccountId32): Promise<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: matrixEnjinV1012.H256): AsyncIterable<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: matrixEnjinV1012.H256, key2: matrixEnjinV1012.AccountId32): AsyncIterable<[k: [matrixEnjinV1012.H256, matrixEnjinV1012.AccountId32], v: (matrixEnjinV1012.CounterOffer | undefined)][]>
+}
+
+export const nextListingIdInput =  {
+    /**
+     *  Used to generate the next listing id. Increments by one every time a listing is created.
+     */
+    matrixEnjinV1012: new StorageType('Marketplace.NextListingIdInput', 'Default', [], sts.bigint()) as NextListingIdInputMatrixEnjinV1012,
+}
+
+/**
+ *  Used to generate the next listing id. Increments by one every time a listing is created.
+ */
+export interface NextListingIdInputMatrixEnjinV1012  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): bigint
+    get(block: Block): Promise<(bigint | undefined)>
+}
+
+export const pendingListingIds =  {
+    /**
+     *  Listing ids that will be processed in on idle
+     */
+    matrixEnjinV1012: new StorageType('Marketplace.PendingListingIds', 'Default', [], sts.array(() => matrixEnjinV1012.H256)) as PendingListingIdsMatrixEnjinV1012,
+}
+
+/**
+ *  Listing ids that will be processed in on idle
+ */
+export interface PendingListingIdsMatrixEnjinV1012  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): matrixEnjinV1012.H256[]
+    get(block: Block): Promise<(matrixEnjinV1012.H256[] | undefined)>
 }
 
 export const listingIdsByMakeAsset =  {
@@ -195,64 +298,4 @@ export interface ListingIdsByAccountIdV500  {
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32, key2: v500.H256): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-}
-
-export const nextListingIdInput =  {
-    /**
-     *  Used to generate the next listing id. Increments by one every time a listing is created.
-     */
-    v1010: new StorageType('Marketplace.NextListingIdInput', 'Default', [], sts.bigint()) as NextListingIdInputV1010,
-}
-
-/**
- *  Used to generate the next listing id. Increments by one every time a listing is created.
- */
-export interface NextListingIdInputV1010  {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): bigint
-    get(block: Block): Promise<(bigint | undefined)>
-}
-
-export const counterOffers =  {
-    /**
-     *  Counter offers by listing id and account
-     */
-    v1011: new StorageType('Marketplace.CounterOffers', 'Optional', [v1011.H256, v1011.AccountId32], v1011.CounterOffer) as CounterOffersV1011,
-}
-
-/**
- *  Counter offers by listing id and account
- */
-export interface CounterOffersV1011  {
-    is(block: RuntimeCtx): boolean
-    get(block: Block, key1: v1011.H256, key2: v1011.AccountId32): Promise<(v1011.CounterOffer | undefined)>
-    getMany(block: Block, keys: [v1011.H256, v1011.AccountId32][]): Promise<(v1011.CounterOffer | undefined)[]>
-    getKeys(block: Block): Promise<[v1011.H256, v1011.AccountId32][]>
-    getKeys(block: Block, key1: v1011.H256): Promise<[v1011.H256, v1011.AccountId32][]>
-    getKeys(block: Block, key1: v1011.H256, key2: v1011.AccountId32): Promise<[v1011.H256, v1011.AccountId32][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v1011.H256, v1011.AccountId32][]>
-    getKeysPaged(pageSize: number, block: Block, key1: v1011.H256): AsyncIterable<[v1011.H256, v1011.AccountId32][]>
-    getKeysPaged(pageSize: number, block: Block, key1: v1011.H256, key2: v1011.AccountId32): AsyncIterable<[v1011.H256, v1011.AccountId32][]>
-    getPairs(block: Block): Promise<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-    getPairs(block: Block, key1: v1011.H256): Promise<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-    getPairs(block: Block, key1: v1011.H256, key2: v1011.AccountId32): Promise<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: v1011.H256): AsyncIterable<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: v1011.H256, key2: v1011.AccountId32): AsyncIterable<[k: [v1011.H256, v1011.AccountId32], v: (v1011.CounterOffer | undefined)][]>
-}
-
-export const pendingListingIds =  {
-    /**
-     *  Listing ids that will be processed in on idle
-     */
-    v1011: new StorageType('Marketplace.PendingListingIds', 'Default', [], sts.array(() => v1011.H256)) as PendingListingIdsV1011,
-}
-
-/**
- *  Listing ids that will be processed in on idle
- */
-export interface PendingListingIdsV1011  {
-    is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1011.H256[]
-    get(block: Block): Promise<(v1011.H256[] | undefined)>
 }

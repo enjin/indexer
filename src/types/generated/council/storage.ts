@@ -15,6 +15,7 @@ import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 
 export const proposals =  {
@@ -54,6 +55,10 @@ export const proposalOf =  {
      *  Actual proposal for a given hash, if it's current.
      */
     matrixEnjinV1005: new StorageType('Council.ProposalOf', 'Optional', [matrixEnjinV1005.H256], matrixEnjinV1005.Call) as ProposalOfMatrixEnjinV1005,
+    /**
+     *  Actual proposal for a given hash, if it's current.
+     */
+    matrixEnjinV1012: new StorageType('Council.ProposalOf', 'Optional', [matrixEnjinV1012.H256], matrixEnjinV1012.Call) as ProposalOfMatrixEnjinV1012,
     /**
      *  Actual proposal for a given hash, if it's current.
      */
@@ -187,6 +192,23 @@ export interface ProposalOfMatrixEnjinV1005  {
     getPairs(block: Block, key: matrixEnjinV1005.H256): Promise<[k: matrixEnjinV1005.H256, v: (matrixEnjinV1005.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1005.H256, v: (matrixEnjinV1005.Call | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1005.H256): AsyncIterable<[k: matrixEnjinV1005.H256, v: (matrixEnjinV1005.Call | undefined)][]>
+}
+
+/**
+ *  Actual proposal for a given hash, if it's current.
+ */
+export interface ProposalOfMatrixEnjinV1012  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: matrixEnjinV1012.H256): Promise<(matrixEnjinV1012.Call | undefined)>
+    getMany(block: Block, keys: matrixEnjinV1012.H256[]): Promise<(matrixEnjinV1012.Call | undefined)[]>
+    getKeys(block: Block): Promise<matrixEnjinV1012.H256[]>
+    getKeys(block: Block, key: matrixEnjinV1012.H256): Promise<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixEnjinV1012.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<matrixEnjinV1012.H256[]>
+    getPairs(block: Block): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Call | undefined)][]>
+    getPairs(block: Block, key: matrixEnjinV1012.H256): Promise<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Call | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV1012.H256): AsyncIterable<[k: matrixEnjinV1012.H256, v: (matrixEnjinV1012.Call | undefined)][]>
 }
 
 /**

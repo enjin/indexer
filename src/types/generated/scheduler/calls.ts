@@ -15,6 +15,7 @@ import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1005 from '../v1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 
 export const schedule =  {
@@ -77,6 +78,18 @@ export const schedule =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1005.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    matrixEnjinV1012: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1012.Call,
         })
     ),
     /**
@@ -304,6 +317,19 @@ export const scheduleNamed =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1005.Call,
+        })
+    ),
+    /**
+     * Schedule a named task.
+     */
+    matrixEnjinV1012: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1012.Call,
         })
     ),
     /**
@@ -541,6 +567,18 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
+     */
+    matrixEnjinV1012: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1012.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
      * 
      * # <weight>
      * Same as [`schedule`].
@@ -766,6 +804,19 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
+     */
+    matrixEnjinV1012: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1012.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
      * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
@@ -950,7 +1001,7 @@ export const setRetry =  {
      * original task's configuration, but will have a lower value for `remaining` than the
      * original `total_retries`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Scheduler.set_retry',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
@@ -976,7 +1027,7 @@ export const setRetryNamed =  {
      * original task's configuration, but will have a lower value for `remaining` than the
      * original `total_retries`.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Scheduler.set_retry_named',
         sts.struct({
             id: sts.bytes(),
@@ -991,7 +1042,7 @@ export const cancelRetry =  {
     /**
      * Removes the retry configuration of a task.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Scheduler.cancel_retry',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
@@ -1004,7 +1055,7 @@ export const cancelRetryNamed =  {
     /**
      * Cancel the retry configuration of a named task.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'Scheduler.cancel_retry_named',
         sts.struct({
             id: sts.bytes(),

@@ -1,6 +1,8 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import * as v500 from '../v500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const proposeSpend =  {
     name: 'CommunityPool.propose_spend',
@@ -105,6 +107,59 @@ export const spend =  {
      * 
      * Emits [`Event::AssetSpendApproved`] if successful.
      */
+    matrixEnjinV1012: new CallType(
+        'CommunityPool.spend',
+        sts.struct({
+            amount: sts.bigint(),
+            beneficiary: matrixEnjinV1012.AccountId32,
+            validFrom: sts.option(() => sts.number()),
+        })
+    ),
+    /**
+     * Propose and approve a spend of treasury funds.
+     * 
+     * - `origin`: Must be `SpendOrigin` with the `Success` value being at least `amount`.
+     * - `amount`: The amount to be transferred from the treasury to the `beneficiary`.
+     * - `beneficiary`: The destination account for the transfer.
+     * 
+     * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
+     * beneficiary.
+     */
+    v500: new CallType(
+        'CommunityPool.spend',
+        sts.struct({
+            amount: sts.bigint(),
+            beneficiary: v500.MultiAddress,
+        })
+    ),
+    /**
+     * Propose and approve a spend of treasury funds.
+     * 
+     * ## Dispatch Origin
+     * 
+     * Must be [`Config::SpendOrigin`] with the `Success` value being at least
+     * `amount` of `asset_kind` in the native asset. The amount of `asset_kind` is converted
+     * for assertion using the [`Config::BalanceConverter`].
+     * 
+     * ## Details
+     * 
+     * Create an approved spend for transferring a specific `amount` of `asset_kind` to a
+     * designated beneficiary. The spend must be claimed using the `payout` dispatchable within
+     * the [`Config::PayoutPeriod`].
+     * 
+     * ### Parameters
+     * - `asset_kind`: An indicator of the specific asset class to be spent.
+     * - `amount`: The amount to be transferred from the treasury to the `beneficiary`.
+     * - `beneficiary`: The beneficiary of the spend.
+     * - `valid_from`: The block number from which the spend can be claimed. It can refer to
+     *   the past if the resulting spend has not yet expired according to the
+     *   [`Config::PayoutPeriod`]. If `None`, the spend can be claimed immediately after
+     *   approval.
+     * 
+     * ## Events
+     * 
+     * Emits [`Event::AssetSpendApproved`] if successful.
+     */
     v1010: new CallType(
         'CommunityPool.spend',
         sts.struct({
@@ -161,11 +216,11 @@ export const spendLocal =  {
      * 
      * Emits [`Event::SpendApproved`] if successful.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'CommunityPool.spend_local',
         sts.struct({
             amount: sts.bigint(),
-            beneficiary: v1010.MultiAddress,
+            beneficiary: matrixEnjinV1012.MultiAddress,
         })
     ),
 }
@@ -193,7 +248,7 @@ export const payout =  {
      * 
      * Emits [`Event::Paid`] if successful.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'CommunityPool.payout',
         sts.struct({
             index: sts.number(),
@@ -224,7 +279,7 @@ export const checkStatus =  {
      * Emits [`Event::PaymentFailed`] if the spend payout has failed.
      * Emits [`Event::SpendProcessed`] if the spend payout has succeed.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'CommunityPool.check_status',
         sts.struct({
             index: sts.number(),
@@ -252,7 +307,7 @@ export const voidSpend =  {
      * 
      * Emits [`Event::AssetSpendVoided`] if successful.
      */
-    v1010: new CallType(
+    matrixEnjinV1012: new CallType(
         'CommunityPool.void_spend',
         sts.struct({
             index: sts.number(),

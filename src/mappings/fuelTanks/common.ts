@@ -9,6 +9,7 @@ import { DispatchRuleDescriptor as DispatchRuleDescriptorv1005 } from '../../typ
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1010 } from '../../types/generated/v1010'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1011 } from '../../types/generated/v1011'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1012 } from '../../types/generated/v1012'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorvMatrix1012 } from '../../types/generated/matrixEnjinV1012'
 
 import {
     MaxFuelBurnPerTransaction,
@@ -36,6 +37,7 @@ export function rulesToMap(
         | DispatchRuleDescriptorv1010[]
         | DispatchRuleDescriptorv1011[]
         | DispatchRuleDescriptorv1012[]
+        | DispatchRuleDescriptorvMatrix1012[]
 ) {
     let whitelistedCallers: string[] | undefined
     let whitelistedCollections: string[] | undefined
@@ -47,6 +49,7 @@ export function rulesToMap(
     let permittedExtrinsics: PermittedExtrinsics[] | undefined
     let whitelistedPallets: string[] | undefined
     let requireSignature: string | undefined
+    let minimumInfusion: bigint | undefined
 
     rules.forEach((rule, index) => {
         if (rule.__kind === 'WhitelistedCallers') {
@@ -80,6 +83,8 @@ export function rulesToMap(
                         extrinsicName: r.value.__kind,
                     })
             )
+        } else if (rule.__kind === 'MinimumInfusion') {
+            minimumInfusion = rule.value
         }
     })
 
@@ -94,11 +99,16 @@ export function rulesToMap(
         permittedCalls,
         permittedExtrinsics,
         requireSignature,
+        minimumInfusion,
     }
 }
 
 export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.dispatch') {
+        if (fuelTanks.dispatch.matrixEnjinV1012.is(call)) {
+            return fuelTanks.dispatch.matrixEnjinV1012.decode(call)
+        }
+
         if (fuelTanks.dispatch.matrixEnjinV1005.is(call)) {
             return fuelTanks.dispatch.matrixEnjinV1005.decode(call)
         }
@@ -168,6 +178,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
         }
 
         throw new UnknownVersionError(fuelTanks.dispatch.name)
+    }
+
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1012.decode(call)
     }
 
     if (fuelTanks.dispatchAndTouch.matrixEnjinV1005.is(call)) {

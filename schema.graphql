@@ -998,6 +998,7 @@ type FuelTankRuleSet @entity {
   tankFuelBudget: TankFuelBudget
   requireToken: RequireToken
   permittedCalls: [String!]
+  minimumInfusion: BigInt
   permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 

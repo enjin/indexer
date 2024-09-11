@@ -1,12 +1,12 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v1010 from '../v1010'
+import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const entered =  {
     name: 'SafeMode.Entered',
     /**
      * The safe-mode was entered until inclusively this block.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.Entered',
         sts.struct({
             until: sts.number(),
@@ -19,7 +19,7 @@ export const extended =  {
     /**
      * The safe-mode was extended until inclusively this block.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.Extended',
         sts.struct({
             until: sts.number(),
@@ -32,10 +32,10 @@ export const exited =  {
     /**
      * Exited the safe-mode for a specific reason.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.Exited',
         sts.struct({
-            reason: v1010.ExitReason,
+            reason: matrixEnjinV1012.ExitReason,
         })
     ),
 }
@@ -45,10 +45,10 @@ export const depositPlaced =  {
     /**
      * An account reserved funds for either entering or extending the safe-mode.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.DepositPlaced',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             amount: sts.bigint(),
         })
     ),
@@ -59,10 +59,10 @@ export const depositReleased =  {
     /**
      * An account had a reserve released that was reserved.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.DepositReleased',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             amount: sts.bigint(),
         })
     ),
@@ -73,10 +73,10 @@ export const depositSlashed =  {
     /**
      * An account had reserve slashed that was reserved.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.DepositSlashed',
         sts.struct({
-            account: v1010.AccountId32,
+            account: matrixEnjinV1012.AccountId32,
             amount: sts.bigint(),
         })
     ),
@@ -89,7 +89,7 @@ export const cannotDeposit =  {
      * 
      * This error comes from the underlying `Currency`.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.CannotDeposit',
         sts.unit()
     ),
@@ -102,7 +102,7 @@ export const cannotRelease =  {
      * 
      * This error comes from the underlying `Currency`.
      */
-    v1010: new EventType(
+    matrixEnjinV1012: new EventType(
         'SafeMode.CannotRelease',
         sts.unit()
     ),

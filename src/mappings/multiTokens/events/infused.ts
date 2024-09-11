@@ -5,8 +5,8 @@ import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { UnknownVersionError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.multiTokens.infused.v1010.is(event)) {
-        return events.multiTokens.infused.v1010.decode(event)
+    if (events.multiTokens.infused.matrixEnjinV1012.is(event)) {
+        return events.multiTokens.infused.matrixEnjinV1012.decode(event)
     }
 
     throw new UnknownVersionError(events.multiTokens.infused.name)
