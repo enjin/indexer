@@ -9,11 +9,8 @@ export interface ProcessorConfig {
     lastBlockHeight: number
     genesisHash: string
     batchSize?: number
-    redisHost: string
-    redisDb: number
     dataSource: DataSource
-    redisSupportsTls: boolean
-    redisPort: number
+    redisUrl: string
     marketplaceUrl: string
     sentryDsn?: string
     amazonSns: {
