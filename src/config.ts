@@ -13,11 +13,11 @@ const config: ProcessorConfig = {
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
     amazonSns: {
-        topicArn: process.env.SNS_TOPIC_ARN || '',
-        region: process.env.SQS_REGION || '',
+        topicArn: process.env.AWS_SNS_TOPIC_ARN || process.env.SNS_TOPIC_ARN || '',
+        region: process.env.AWS_DEFAULT_REGION || process.env.SQS_REGION || '',
         credentials: {
-            accessKeyId: process.env.SQS_ACCESS_KEY || '',
-            secretAccessKey: process.env.SQS_SECRET_KEY || '',
+            accessKeyId: process.env.AWS_ACCESS_KEY || process.env.SQS_ACCESS_KEY || '',
+            secretAccessKey: process.env.AWS_SECRET_KEY || process.env.SQS_SECRET_KEY || '',
         },
     },
 }
