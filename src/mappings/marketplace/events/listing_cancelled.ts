@@ -106,6 +106,7 @@ export async function listingCancelled(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
+                    tokenId: `${listing.makeAssetId.collection.collectionId}-${listing.makeAssetId.tokenId}`,
                 },
                 extrinsic: item.extrinsic.id,
             },
