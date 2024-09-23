@@ -9,7 +9,9 @@ const config: ProcessorConfig = {
         archive: process.env.ARCHIVE_ENDPOINT || null,
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
     },
-    redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+    redisUrl:
+        process.env.REDIS_URL ||
+        `${process.env.REDIS_SUPPORTS_TLS ? 'rediss' : 'redis'}://${process.env.REDIS_HOST}:${process.env.REDIS_PORT ?? 6379}/${process.env.REDIS_DB ?? 0}`,
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
     amazonSns: {
