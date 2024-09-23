@@ -12,7 +12,7 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
             delay: 5000,
         },
         removeOnComplete: true,
-        removeOnFail: true,
+        removeOnFail: false,
     },
     redis: redisConfig,
     settings: {
