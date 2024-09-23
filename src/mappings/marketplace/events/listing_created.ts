@@ -83,10 +83,9 @@ export async function listingCreated(
     const data = getEventData(ctx, item)
     if (!data) return undefined
     const listingId = data.listingId.substring(2)
-    const tokenId = `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`
     const [makeAssetId, takeAssetId, account] = await Promise.all([
         ctx.store.findOne<Token>(Token, {
-            where: { id: tokenId },
+            where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
             relations: {
                 bestListing: true,
             },
@@ -193,7 +192,9 @@ export async function listingCreated(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    tokenId,
+                    type: listing.type.toString(),
+                    makeAssetId: makeAssetId.id,
+                    takeAssetId: takeAssetId.id,
                 },
                 extrinsic: item.extrinsic.id,
             },

@@ -90,7 +90,7 @@ export async function counterOfferRemoved(
                 account: account.id,
                 listing: listing.id,
                 extrinsic: item.extrinsic.id,
-                tokenId: `${listing.makeAssetId.collection.collectionId}-${listing.makeAssetId.tokenId}`,
+                tokenId: listing.takeAssetId.id,
             },
         })
     }
