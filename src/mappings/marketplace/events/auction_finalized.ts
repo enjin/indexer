@@ -130,6 +130,7 @@ export async function auctionFinalized(
                     amount: listing.amount.toString(),
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
+                    tokenId: listing.makeAssetId.id,
                 },
                 winningBid: data.winningBid
                     ? {

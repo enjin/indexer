@@ -128,6 +128,7 @@ export async function bidPlaced(
                     amount: listing.amount.toString(),
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
+                    tokenId: listing.makeAssetId.id,
                 },
                 lastBid: lastBid
                     ? {
