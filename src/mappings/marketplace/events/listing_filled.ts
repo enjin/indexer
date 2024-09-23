@@ -157,7 +157,7 @@ export async function listingFilled(
                     },
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    tokenId: `${listing.makeAssetId.collection.collectionId}-${listing.makeAssetId.tokenId}`,
+                    tokenId: listing.makeAssetId.id,
                 },
                 buyer: { id: data.buyer },
                 amountFilled: data.amountFilled,
