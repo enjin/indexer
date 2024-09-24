@@ -34,7 +34,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await Promise.all([ctx.store.insert(claim)])
+    await Promise.all([ctx.store.save(claim)])
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
