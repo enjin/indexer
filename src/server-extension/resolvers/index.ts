@@ -10,6 +10,7 @@ import { RefreshCollectionsResolver } from './refresh_collections'
 import { FuelTanksAccountsResolver } from './fueltanks-accounts'
 import { ClaimableCollectionIdsResolver } from './claimable_colllection_ids'
 import { SyncCollectionsResolver } from './sync_collections'
+import { DeleteTokenTraitsResolver } from './delete_token_traits'
 
 export {
     TokenSalesHistoryResolver,
@@ -24,4 +25,5 @@ export {
     MyTokensResolver,
     ClaimsAccountNonceResolver,
     SyncCollectionsResolver,
+    DeleteTokenTraitsResolver,
 }
