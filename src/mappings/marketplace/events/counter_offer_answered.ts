@@ -90,6 +90,7 @@ export async function counterOfferAnswered(
     const listing = await ctx.store.findOneOrFail(Listing, {
         where: { id: listingId },
         relations: {
+            seller: true,
             takeAssetId: {
                 collection: true,
                 bestListing: true,

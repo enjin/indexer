@@ -64,6 +64,7 @@ export async function counterOfferRemoved(
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
+            seller: true,
             takeAssetId: {
                 collection: true,
                 bestListing: true,
