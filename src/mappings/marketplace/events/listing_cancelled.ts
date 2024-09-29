@@ -39,7 +39,7 @@ function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenE
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: listing.makeAssetId,
+            token: listing.type === ListingType.Offer ? listing.takeAssetId : listing.makeAssetId,
             from: listing.seller,
             event,
         }),
