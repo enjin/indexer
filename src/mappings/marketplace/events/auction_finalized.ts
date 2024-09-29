@@ -130,7 +130,6 @@ export async function auctionFinalized(
                     amount: listing.amount.toString(),
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
-                    tokenId: listing.makeAssetId.id,
                 },
                 winningBid: data.winningBid
                     ? {
@@ -142,6 +141,7 @@ export async function auctionFinalized(
                     : null,
                 protocolFee: data.protocolFee,
                 royalty: data.royalty,
+                token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

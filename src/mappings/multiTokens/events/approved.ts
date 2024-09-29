@@ -106,7 +106,8 @@ export async function approved(
                 address,
                 operator: data.operator,
                 collectionId: data.collectionId.toString(),
-                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                tokenId: data.tokenId ?? null,
+                token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
         })

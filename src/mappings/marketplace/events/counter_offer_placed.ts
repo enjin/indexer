@@ -118,7 +118,7 @@ export async function counterOfferPlaced(
                 account: account.id,
                 listing: listing.id,
                 extrinsic: item.extrinsic.id,
-                tokenId: listing.takeAssetId.id,
+                token: listing.takeAssetId.id,
             },
         })
     }

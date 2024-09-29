@@ -166,7 +166,8 @@ export async function frozen(
                 kind: data.freezeType,
                 address: data.collectionAccount ?? data.tokenAccount,
                 collectionId: data.collectionId.toString(),
-                tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                tokenId: data.tokenId ?? null,
+                token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
         })
