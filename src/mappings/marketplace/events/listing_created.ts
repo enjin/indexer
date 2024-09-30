@@ -196,6 +196,7 @@ export async function listingCreated(
                     makeAssetId: makeAssetId.id,
                     takeAssetId: takeAssetId.id,
                 },
+                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

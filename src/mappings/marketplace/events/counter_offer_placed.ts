@@ -75,6 +75,7 @@ export async function counterOfferPlaced(
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
+            seller: true,
             takeAssetId: {
                 collection: true,
                 bestListing: true,
@@ -112,13 +113,25 @@ export async function counterOfferPlaced(
             id: item.id,
             name: item.name,
             body: {
+                listing: {
+                    id: listing.id,
+                    price: listing.price.toString(),
+                    amount: listing.amount.toString(),
+                    highestPrice: listing.highestPrice.toString(),
+                    seller: {
+                        id: listing.seller.id,
+                    },
+                    data: listing.data.toJSON(),
+                    state: listing.state.toJSON(),
+                    type: listing.type.toString(),
+                    takeAssetId: listing.takeAssetId.id,
+                },
                 buyerPrice: buyerPrice?.toString(),
                 amount: depositAmount.toString(),
                 sellerPrice: sellerPrice.toString(),
-                account: account.id,
-                listing: listing.id,
+                account: { id: account.id },
                 extrinsic: item.extrinsic.id,
-                tokenId: listing.takeAssetId.id,
+                token: listing.takeAssetId.id,
             },
         })
     }

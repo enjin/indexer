@@ -7,6 +7,7 @@ import {
     Listing,
     ListingStatus,
     ListingStatusType,
+    ListingType,
     MarketplaceListingCancelled,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -27,8 +28,8 @@ function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenE
         id: item.id,
         name: MarketplaceListingCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
+        collectionId: listing.type === ListingType.Offer ? listing.takeAssetId.collection.id : listing.makeAssetId.collection.id,
+        tokenId: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
         data: new MarketplaceListingCancelled({
             listing: listing.id,
         }),
@@ -38,7 +39,7 @@ function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenE
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: listing.makeAssetId,
+            token: listing.type === ListingType.Offer ? listing.takeAssetId : listing.makeAssetId,
             from: listing.seller,
             event,
         }),
@@ -62,6 +63,9 @@ export async function listingCancelled(
                 collection: true,
                 bestListing: true,
             },
+            takeAssetId: {
+                collection: true,
+            },
         },
     })
 
@@ -80,7 +84,7 @@ export async function listingCancelled(
 
     await Promise.all([ctx.store.insert(listingStatus), ctx.store.save(listing)])
 
-    if (listing.makeAssetId.bestListing?.id === listing.id) {
+    if (listing.makeAssetId.bestListing?.id === listing.id && listing.type !== ListingType.Offer) {
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         listing.makeAssetId.bestListing = null
         if (bestListing) {
@@ -104,10 +108,11 @@ export async function listingCancelled(
                     seller: {
                         id: listing.seller.id,
                     },
+                    type: listing.type.toString(),
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    tokenId: listing.makeAssetId.id,
                 },
+                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

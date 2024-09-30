@@ -36,11 +36,11 @@ function getEvent(
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     let collectionId = listing.makeAssetId.collection.id
-    let tokenId = listing.makeAssetId.id
+    let token = listing.makeAssetId
 
     if (listing.data.listingType === ListingType.Offer) {
         collectionId = listing.takeAssetId.collection.id
-        tokenId = listing.takeAssetId.id
+        token = listing.takeAssetId
     }
 
     const event = new EventModel({
@@ -48,7 +48,7 @@ function getEvent(
         name: MarketplaceListingFilled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId,
-        tokenId,
+        tokenId: token.id,
         data: new MarketplaceListingFilled({
             listing: listing.id,
             buyer: data.buyer,
@@ -63,7 +63,7 @@ function getEvent(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: listing.makeAssetId,
+            token,
             from: listing.seller,
             to: new Account({ id: data.buyer }),
             event,
@@ -155,10 +155,11 @@ export async function listingFilled(
                     seller: {
                         id: listing.seller.id,
                     },
+                    type: listing.type.toString(),
                     data: listing.data.toJSON(),
                     state: listing.state.toJSON(),
-                    tokenId: listing.makeAssetId.id,
                 },
+                token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
                 buyer: { id: data.buyer },
                 amountFilled: data.amountFilled,
                 amountRemaining: data.amountRemaining,

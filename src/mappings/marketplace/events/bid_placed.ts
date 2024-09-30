@@ -128,7 +128,6 @@ export async function bidPlaced(
                     amount: listing.amount.toString(),
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
-                    tokenId: listing.makeAssetId.id,
                 },
                 lastBid: lastBid
                     ? {
@@ -146,6 +145,7 @@ export async function bidPlaced(
                         id: bid.bidder.id,
                     },
                 },
+                token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })

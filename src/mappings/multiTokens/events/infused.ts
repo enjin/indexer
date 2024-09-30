@@ -60,6 +60,7 @@ export async function infused(ctx: CommonContext, block: BlockHeader, item: Even
             body: {
                 collectionId: data.collectionId,
                 tokenId: data.tokenId,
+                token: `${data.collectionId}-${data.tokenId}`,
                 amount: data.amount,
                 accountId: data.accountId,
                 extrinsic: item.extrinsic.id,
