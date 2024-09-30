@@ -21,6 +21,14 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
 })
 
 export const processMetadata = async (resourceId: string, type: JobData['type'], force = false, allTokens = false) => {
+    if (force) {
+        // on force, remove existing job and add a new one
+        const existingJob = await metadataQueue.getJob(`${type}-${resourceId}`)
+        if (existingJob) {
+            await existingJob.remove()
+        }
+    }
+
     metadataQueue.add({ resourceId, type, force, allTokens }, { jobId: `${type}-${resourceId}` }).catch(() => {
         // eslint-disable-next-line no-console
         console.log('Closing connection as Redis is not available')
