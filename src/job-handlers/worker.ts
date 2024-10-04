@@ -12,6 +12,7 @@ import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
 import { invalidateExpiredListings } from '../jobs/invalidate-expired-listings'
 import { rarityQueue } from '../jobs/rarity-ranker'
+import { deleteTraitsQueue } from '../jobs/delete-traits'
 
 async function main() {
     if (!connection.isInitialized) {
@@ -35,6 +36,7 @@ async function main() {
     fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
     fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
     invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
+    deleteTraitsQueue.process(1, `${__dirname}/delete-traits.js`)
 
     traitsQueue.on('global:failed', (job, err) => {
         throwError(`traitsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
