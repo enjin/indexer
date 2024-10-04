@@ -18,19 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
-
-      - name: Build & Push image
-        run: |
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          export VERSION=$VERSION
-          docker compose build indexer_processor
-          docker compose push indexer_processor
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
