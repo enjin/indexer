@@ -2,6 +2,7 @@
 import { Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
+import { deleteTokenTraits } from '../../jobs/delete-traits'
 
 @Resolver()
 export class DeleteTokenTraitsResolver {
@@ -14,21 +15,7 @@ export class DeleteTokenTraitsResolver {
         })
         tokenId: string
     ): Promise<boolean> {
-        const manager = await this.tx()
-
-        await manager.query(
-            `
-            DELETE FROM trait_token WHERE token_id = $1
-        `,
-            [tokenId]
-        )
-
-        await manager.query(
-            `
-            DELETE FROM token_rarity WHERE token_id = $1
-        `,
-            [tokenId]
-        )
+        await deleteTokenTraits(tokenId)
 
         return true
     }
