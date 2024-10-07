@@ -129,6 +129,7 @@ export async function counterOfferAnswered(
                     takeAssetId: listing.takeAssetId.id,
                 },
                 buyerPrice: counterOffer.buyerPrice?.toString(),
+                sellerPrice: counterOffer.sellerPrice?.toString(),
                 counterOfferCreator: { id: counterOffer.account.id },
                 response: data.response.__kind,
                 account: { id: account.id },
