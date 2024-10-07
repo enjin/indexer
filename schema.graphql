@@ -128,7 +128,8 @@ type MarketplaceListingFilled {
   amountFilled: BigInt!
   amountRemaining: BigInt!
   protocolFee: BigInt!
-  price: BigInt!
+  #TODO: make me required
+  price: BigInt 
   royalty: BigInt!
 }
 
