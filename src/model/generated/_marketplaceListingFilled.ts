@@ -10,6 +10,7 @@ export class MarketplaceListingFilled {
     private _amountFilled!: bigint
     private _amountRemaining!: bigint
     private _protocolFee!: bigint
+    private _price!: bigint
     private _royalty!: bigint
 
     constructor(props?: Partial<Omit<MarketplaceListingFilled, 'toJSON'>>, json?: any) {
@@ -20,6 +21,7 @@ export class MarketplaceListingFilled {
             this._amountFilled = marshal.bigint.fromJSON(json.amountFilled)
             this._amountRemaining = marshal.bigint.fromJSON(json.amountRemaining)
             this._protocolFee = marshal.bigint.fromJSON(json.protocolFee)
+            this._price = marshal.bigint.fromJSON(json.price)
             this._royalty = marshal.bigint.fromJSON(json.royalty)
         }
     }
@@ -69,6 +71,15 @@ export class MarketplaceListingFilled {
         this._protocolFee = value
     }
 
+    get price(): bigint {
+        assert(this._price != null, 'uninitialized access')
+        return this._price
+    }
+
+    set price(value: bigint) {
+        this._price = value
+    }
+
     get royalty(): bigint {
         assert(this._royalty != null, 'uninitialized access')
         return this._royalty
@@ -86,6 +97,7 @@ export class MarketplaceListingFilled {
             amountFilled: marshal.bigint.toJSON(this.amountFilled),
             amountRemaining: marshal.bigint.toJSON(this.amountRemaining),
             protocolFee: marshal.bigint.toJSON(this.protocolFee),
+            price: marshal.bigint.toJSON(this.price),
             royalty: marshal.bigint.toJSON(this.royalty),
         }
     }
