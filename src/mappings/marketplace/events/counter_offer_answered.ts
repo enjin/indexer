@@ -102,8 +102,9 @@ export async function counterOfferAnswered(
     assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
+    const counterOffer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
+
     if (data.response.__kind === 'Counter') {
-        const counterOffer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
         counterOffer.buyerPrice = data.response.value
 
         await ctx.store.save(counterOffer)
@@ -127,6 +128,8 @@ export async function counterOfferAnswered(
                     type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
+                buyerPrice: counterOffer.buyerPrice?.toString(),
+                counterOfferCreator: { id: counterOffer.account.id },
                 response: data.response.__kind,
                 account: { id: account.id },
                 extrinsic: item.extrinsic.id,
