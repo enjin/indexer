@@ -199,7 +199,7 @@ export class TopCollectionResolver {
                             .innerJoin(
                                 Token,
                                 'token',
-                                "listing.make_asset_id_id = token.id AND listing.make_asset_id_id != '0-0'"
+                                "(listing.make_asset_id_id = token.id AND listing.make_asset_id_id != '0-0') OR (listing.take_asset_id_id = token.id AND listing.take_asset_id_id != '0-0')"
                             )
                             .innerJoin(Collection, 'collection', 'token.collection = collection.id')
                             .leftJoin(ListingStatus, 'status', `listing.id = status.listing AND status.type = 'Finalized'`)

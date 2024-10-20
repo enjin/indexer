@@ -172,96 +172,97 @@ async function getSystemAccountBalances(ctx: CommonContext, block: BlockHeader, 
 function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
     const ids: string[] = []
     switch (event.name) {
-        case 'Balances.BalanceSet': {
-            const account = getBalanceSetAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.Burned': {
+        case balances.burned.name: {
             const account = getBurnedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Deposit': {
-            const account = getDepositAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.DustLost': {
-            const account = getDustLostAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.Endowed': {
-            const account = getEndowedAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.Frozen': {
+        case balances.frozen.name: {
             const account = getFrozenAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Locked': {
+        case balances.locked.name: {
             const account = getLockedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Minted': {
+        case balances.minted.name: {
             const account = getMintedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.ReserveRepatriated': {
-            const accounts = getReserveRepatriatedAccounts(ctx, event)
-            ids.push(...accounts)
-            break
-        }
-        case 'Balances.Reserved': {
-            const account = getReservedAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.Restored': {
+        case balances.restored.name: {
             const account = getRestoredAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Slashed': {
-            const account = getSlashedAccount(ctx, event)
-            ids.push(account)
-            break
-        }
-        case 'Balances.Suspended': {
+        case balances.suspended.name: {
             const account = getSuspendedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Thawed': {
+        case balances.thawed.name: {
             const account = getThawedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Unlocked': {
+        case balances.unlocked.name: {
             const account = getUnlockedAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Unreserved': {
-            const account = getUnreservedAccount(ctx, event)
+        case balances.dustLost.name: {
+            const account = getDustLostAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Withdraw': {
-            const account = getWithdrawAccount(ctx, event)
+        case balances.balanceSet.name: {
+            const account = getBalanceSetAccount(ctx, event)
             ids.push(account)
             break
         }
-        case 'Balances.Transfer': {
+        case balances.transfer.name: {
             const accounts = getTransferAccounts(ctx, event)
             ids.push(...accounts)
             break
         }
+        case balances.endowed.name: {
+            const account = getEndowedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.deposit.name: {
+            const account = getDepositAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.reserved.name: {
+            const account = getReservedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.unreserved.name: {
+            const account = getUnreservedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.withdraw.name: {
+            const account = getWithdrawAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.slashed.name: {
+            const account = getSlashedAccount(ctx, event)
+            ids.push(account)
+            break
+        }
+        case balances.reserveRepatriated.name: {
+            const accounts = getReserveRepatriatedAccounts(ctx, event)
+            ids.push(...accounts)
+            break
+        }
+
         default: {
             break
         }

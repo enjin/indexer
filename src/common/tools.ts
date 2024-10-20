@@ -1,5 +1,4 @@
 import * as ss58 from '@subsquid/ss58'
-import { decodeHex } from '@subsquid/util-internal-hex'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
@@ -43,36 +42,6 @@ export function isAddressSS58(address: Uint8Array) {
         default:
             return false
     }
-}
-
-export function getOriginAccountId(origin: any) {
-    if (!origin) return undefined
-    switch (origin.__kind) {
-        case 'system':
-            switch (origin.value.__kind) {
-                case 'Signed':
-                    return encodeId(decodeHex(origin.value.value))
-                default:
-                    return undefined
-            }
-        default:
-            return undefined
-    }
-}
-
-export function saturatingSumBigInt(
-    a: bigint,
-    b: bigint,
-    { max, min }: { max: null | bigint; min: bigint } = { max: null, min: 0n }
-): bigint {
-    const sum = BigInt(a) + BigInt(b)
-    if (sum < min) {
-        return min
-    }
-    if (max && sum > max) {
-        return max
-    }
-    return sum
 }
 
 // eslint-disable-next-line no-control-regex
