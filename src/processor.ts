@@ -4,7 +4,7 @@ import { events, calls } from './types/generated'
 
 export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
-    .setBlockRange({ from: 0 })
+    .setBlockRange({ from: config.dataSource.fromBlock })
     .addCall({
         name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
         stack: true,

@@ -1,6 +1,7 @@
 interface DataSource {
     archive: string | null
     chain: string
+    fromBlock: number
 }
 
 export interface ProcessorConfig {

@@ -8,6 +8,7 @@ const config: ProcessorConfig = {
     dataSource: {
         archive: process.env.ARCHIVE_ENDPOINT || null,
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
+        fromBlock: process.env.FROM_BLOCK ? parseInt(process.env.FROM_BLOCK, 10) : 0,
     },
     redisUrl:
         process.env.REDIS_URL ||
