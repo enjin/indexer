@@ -646,11 +646,12 @@ type Token @entity {
   listings: [Listing] @derivedFrom(field: "makeAssetId")
   offers: [Listing] @derivedFrom(field: "takeAssetId")
   traits: [TraitToken] @derivedFrom(field: "token")
+  rarity: TokenRarity @derivedFrom(field: "token")
+
   bestListing: Listing 
   recentListing: Listing
   lastSale: ListingSale
-  rarity: TokenRarity @derivedFrom(field: "token")
-
+  
   # Extras
   nonFungible: Boolean!
   metadata: Metadata
