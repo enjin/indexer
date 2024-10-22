@@ -14,6 +14,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
+    MarketplaceOfferCreated,
     MarketplaceListingCreated,
     OfferData,
     OfferState,
@@ -45,30 +46,37 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
-    let collectionId = data.listing.makeAssetId.collectionId.toString()
-    let tokenId = `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`
+    let event: EventModel
 
-    if (data.listing.data.__kind === 'Offer') {
-        collectionId = data.listing.takeAssetId.collectionId.toString()
-        tokenId = `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}`
-    }
-
-    const event = new EventModel({
+    event = new EventModel({
         id: item.id,
         name: MarketplaceListingCreated.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId,
-        tokenId,
+        collectionId: data.listing.makeAssetId.collectionId.toString(),
+        tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
         data: new MarketplaceListingCreated({
             listing: data.listingId.substring(2),
         }),
     })
 
+    if (data.listing.data.__kind === ListingType.Offer) {
+        event = new EventModel({
+            id: item.id,
+            name: MarketplaceOfferCreated.name,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            collectionId: data.listing.takeAssetId.collectionId.toString(),
+            tokenId: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}`,
+            data: new MarketplaceOfferCreated({
+                listing: data.listingId.substring(2),
+            }),
+        })
+    }
+
     return [
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: tokenId }),
+            token: new Token({ id: event.tokenId! }),
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             event,
         }),
