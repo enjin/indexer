@@ -839,6 +839,9 @@ type CounterOffer @entity {
   account: Account!
   listing: Listing!
   createdAt: DateTime!
+
+  # extra
+  lastAction: Account!
 }
 
 type Listing @entity {

@@ -21,13 +21,14 @@ function getEventData(event: EventItem) {
         return events.marketplace.counterOfferPlaced.matrixEnjinV1012.decode(event)
     }
 
+    if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
+        return events.marketplace.counterOfferPlaced.v1011.decode(event)
+    }
+
     if (events.marketplace.counterOfferPlaced.v1010.is(event)) {
         return events.marketplace.counterOfferPlaced.v1010.decode(event)
     }
 
-    if (events.marketplace.counterOfferPlaced.v1011.is(event)) {
-        return events.marketplace.counterOfferPlaced.v1011.decode(event)
-    }
     throw new UnknownVersionError(events.marketplace.counterOfferPlaced.name)
 }
 
@@ -106,6 +107,7 @@ export async function counterOfferPlaced(
         sellerPrice,
         account,
         createdAt: new Date(block.timestamp ?? 0),
+        lastAction: account,
     })
 
     if (item.extrinsic) {
