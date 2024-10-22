@@ -213,7 +213,7 @@ function getParticipants(args: any, _events: EventItem[], signer: string): strin
     return Array.from(accounts)
 }
 
-processor.run(
+/* processor.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
         supportHotBlocks: true,
@@ -415,4 +415,4 @@ processor.run(
             throw error
         }
     }
-)
+) */
