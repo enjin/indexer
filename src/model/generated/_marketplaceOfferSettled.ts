@@ -3,14 +3,14 @@ import * as marshal from "./marshal"
 import {Listing} from "./listing.model"
 import {Account} from "./account.model"
 
-export class MakretplaceOfferSettled {
-    public readonly isTypeOf = 'MakretplaceOfferSettled'
+export class MarketplaceOfferSettled {
+    public readonly isTypeOf = 'MarketplaceOfferSettled'
     private _listing!: string
     private _buyer!: string
     private _amount!: bigint | undefined | null
     private _price!: bigint
 
-    constructor(props?: Partial<Omit<MakretplaceOfferSettled, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<MarketplaceOfferSettled, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)

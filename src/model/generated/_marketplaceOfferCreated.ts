@@ -2,11 +2,11 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {Listing} from "./listing.model"
 
-export class MakretplaceOfferCreated {
-    public readonly isTypeOf = 'MakretplaceOfferCreated'
+export class MarketplaceOfferCreated {
+    public readonly isTypeOf = 'MarketplaceOfferCreated'
     private _listing!: string
 
-    constructor(props?: Partial<Omit<MakretplaceOfferCreated, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<MarketplaceOfferCreated, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._listing = marshal.string.fromJSON(json.listing)
