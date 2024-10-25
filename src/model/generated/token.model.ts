@@ -9,8 +9,8 @@ import {TokenAccount} from "./tokenAccount.model"
 import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
 import {TraitToken} from "./traitToken.model"
-import {ListingSale} from "./listingSale.model"
 import {TokenRarity} from "./tokenRarity.model"
+import {ListingSale} from "./listingSale.model"
 import {Metadata} from "./_metadata"
 
 @Entity_()
@@ -87,6 +87,9 @@ export class Token {
     @OneToMany_(() => TraitToken, e => e.token)
     traits!: TraitToken[]
 
+    @OneToOne_(() => TokenRarity, e => e.token)
+    rarity!: TokenRarity | undefined | null
+
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})
     bestListing!: Listing | undefined | null
@@ -98,9 +101,6 @@ export class Token {
     @Index_()
     @ManyToOne_(() => ListingSale, {nullable: true})
     lastSale!: ListingSale | undefined | null
-
-    @OneToOne_(() => TokenRarity, e => e.token)
-    rarity!: TokenRarity | undefined | null
 
     @BooleanColumn_({nullable: false})
     nonFungible!: boolean
