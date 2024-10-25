@@ -31,6 +31,7 @@ export async function claimTokensCompleted(
         body: {
             account: data.destination,
             ethAccount: data.ethereumAddress,
+            extrinsic: item.extrinsic?.id,
         },
     })
 
