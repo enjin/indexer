@@ -39,6 +39,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         .addSelect('token.metadata')
         .addSelect('token.supply')
         .where('token.collection = :collectionId', { collectionId })
+        .andWhere('token.supply > 0')
         .getMany()
 
     await em.query(`DELETE FROM trait_token USING trait WHERE trait.id = trait_token.trait_id AND trait.collection_id = $1`, [

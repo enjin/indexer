@@ -106,6 +106,7 @@ export async function counterOfferAnswered(
 
     if (data.response.__kind === 'Counter') {
         counterOffer.buyerPrice = data.response.value
+        counterOffer.sellerPrice = data.response.value
 
         await ctx.store.save(counterOffer)
     }
@@ -128,6 +129,7 @@ export async function counterOfferAnswered(
                     type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
+                lastAction: account.id,
                 buyerPrice: counterOffer.buyerPrice?.toString(),
                 sellerPrice: counterOffer.sellerPrice?.toString(),
                 response: data.response.__kind,

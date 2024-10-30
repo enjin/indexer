@@ -89,7 +89,6 @@ export async function counterOfferPlaced(
     const depositAmount = 'deposit' in data.counterOffer ? data.counterOffer.deposit.amount : 1n
     const sellerPrice = 'sellerPrice' in data.counterOffer ? data.counterOffer.sellerPrice : 1n
 
-    if (!listing) return undefined
     listing.updatedAt = new Date(block.timestamp ?? 0)
     const account = await getOrCreateAccount(ctx, accountId)
     assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
