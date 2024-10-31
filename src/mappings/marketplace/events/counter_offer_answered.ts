@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { UnknownVersionError } from '../../../common/errors'
-import { events } from '../../../types/generated'
+import { calls, events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -17,7 +17,7 @@ import {
     ListingType,
     CounterOffer,
 } from '../../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem, CallItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
@@ -30,6 +30,22 @@ function getEventData(event: EventItem) {
         return events.marketplace.counterOfferAnswered.v1011.decode(event)
     }
     throw new UnknownVersionError(events.marketplace.counterOfferAnswered.name)
+}
+
+function getCallData(call: CallItem) {
+    if (calls.marketplace.answerCounterOffer.matrixEnjinV1012.is(call)) {
+        return calls.marketplace.answerCounterOffer.matrixEnjinV1012.decode(call)
+    }
+
+    if (calls.marketplace.answerCounterOffer.v1011.is(call)) {
+        return calls.marketplace.answerCounterOffer.v1011.decode(call)
+    }
+
+    if (calls.marketplace.answerCounterOffer.v1010.is(call)) {
+        return calls.marketplace.answerCounterOffer.v1010.decode(call)
+    }
+
+    throw new UnknownVersionError(calls.marketplace.answerCounterOffer.name)
 }
 
 function getEvent(
@@ -83,7 +99,11 @@ export async function counterOfferAnswered(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
+    assert(item.extrinsic, 'Extrinsic is required')
+    assert(item.extrinsic.call, 'Call is required')
+
     const data = getEventData(item)
+    const call = getCallData(item.extrinsic.call)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
