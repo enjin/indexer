@@ -66,7 +66,7 @@ export class CollectionRow {
     category!: string
 
     @Field({ nullable: true })
-    verifiedAt!: string
+    verified_at!: string
 
     @Field({ nullable: false })
     created_at!: string
@@ -142,7 +142,7 @@ export class TopCollectionResolver {
                     .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS max_volume')
                     .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS max_sales')
                     .addSelect('sales_last_duration AS sales')
-                    .addSelect('verified_at::text AS "verifiedAt"')
+                    .addSelect('verified_at::text AS "verified_at"')
                     .addSelect('created_at::text AS "created_at"')
                     .addSelect('category AS category')
                     .addSelect(
