@@ -27,6 +27,7 @@ const timeFrameMap = {
 }
 
 enum TopCollectionOrderBy {
+    CREATED_AT = 'created_at',
     VOLUME = 'volume',
     SALES = 'sales',
     VOLUME_CHANGE = 'volume_change',
@@ -65,7 +66,10 @@ export class CollectionRow {
     category!: string
 
     @Field({ nullable: true })
-    verifiedAt!: string
+    verified_at!: string
+
+    @Field({ nullable: false })
+    created_at!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
@@ -138,7 +142,8 @@ export class TopCollectionResolver {
                     .addSelect('NULLIF(MAX(volume_last_duration) OVER(), 0) AS max_volume')
                     .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS max_sales')
                     .addSelect('sales_last_duration AS sales')
-                    .addSelect('verified_at::text AS "verifiedAt"')
+                    .addSelect('verified_at::text AS "verified_at"')
+                    .addSelect('created_at::text AS "created_at"')
                     .addSelect('category AS category')
                     .addSelect(
                         'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
@@ -156,6 +161,7 @@ export class TopCollectionResolver {
                             .addSelect('collection.metadata AS metadata')
                             .addSelect('collection.stats AS stats')
                             .addSelect('collection.verified_at AS verified_at')
+                            .addSelect('collection.created_at AS created_at')
                             .addSelect('collection.category AS category')
                         if (timeFrame === Timeframe.ALL) {
                             inBuilder
