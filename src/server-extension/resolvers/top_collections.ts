@@ -69,7 +69,7 @@ export class CollectionRow {
     verifiedAt!: string
 
     @Field({ nullable: false })
-    createdAt!: string
+    created_at!: string
 
     @Field(() => Json, { nullable: true })
     stats!: typeof JSON
