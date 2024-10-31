@@ -27,6 +27,7 @@ import {MarketplaceCounterOfferAnswered} from "./_marketplaceCounterOfferAnswere
 import {MarketplaceCounterOfferRemoved} from "./_marketplaceCounterOfferRemoved"
 import {MarketplaceOfferCreated} from "./_marketplaceOfferCreated"
 import {MarketplaceOfferSettled} from "./_marketplaceOfferSettled"
+import {MarketplaceOfferCancelled} from "./_marketplaceOfferCancelled"
 import {BalancesTransfer} from "./_balancesTransfer"
 import {TeleportBalanceWithdrawn} from "./_teleportBalanceWithdrawn"
 import {ClaimsClaimRequested} from "./_claimsClaimRequested"
@@ -39,7 +40,7 @@ import {MultiTokensClaimTokensCompleted} from "./_multiTokensClaimTokensComplete
 import {MultiTokensCollectionTransferred} from "./_multiTokensCollectionTransferred"
 import {MultiTokensInfused} from "./_multiTokensInfused"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -72,6 +73,7 @@ export function fromJsonEventData(json: any): EventData {
         case 'MarketplaceCounterOfferRemoved': return new MarketplaceCounterOfferRemoved(undefined, json)
         case 'MarketplaceOfferCreated': return new MarketplaceOfferCreated(undefined, json)
         case 'MarketplaceOfferSettled': return new MarketplaceOfferSettled(undefined, json)
+        case 'MarketplaceOfferCancelled': return new MarketplaceOfferCancelled(undefined, json)
         case 'BalancesTransfer': return new BalancesTransfer(undefined, json)
         case 'TeleportBalanceWithdrawn': return new TeleportBalanceWithdrawn(undefined, json)
         case 'ClaimsClaimRequested': return new ClaimsClaimRequested(undefined, json)
