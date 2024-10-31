@@ -143,7 +143,7 @@ export class TopCollectionResolver {
                     .addSelect('NULLIF(MAX(sales_last_duration) OVER(), 0) AS max_sales')
                     .addSelect('sales_last_duration AS sales')
                     .addSelect('verified_at::text AS "verifiedAt"')
-                    .addSelect('created_at::text AS "createdAt"')
+                   .addSelect('created_at::text AS "created_at"')
                     .addSelect('category AS category')
                     .addSelect(
                         'CASE WHEN volume_previous_duration != 0 THEN ROUND((volume_last_duration - volume_previous_duration) * 100 / volume_previous_duration, 2) ELSE null END AS volume_change'
