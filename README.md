@@ -5,24 +5,18 @@
 </p>
 
 <div align="center">
-
+	
 [![Discord](https://img.shields.io/discord/783393889548501023)](https://discord.gg/EUKexwF5RM)
 [![Medium](https://img.shields.io/badge/Medium-gray?logo=medium)](https://medium.com/@enjin)
-<!-- markdown-link-check-disable-next-line -->
-[![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fx.com%2Fenjin)](https://x.com/enjin)
-[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=social)](https://youtube.com/c/EnjinTV)
-<!-- markdown-link-check-disable-next-line -->
-[![Blog URL](https://img.shields.io/badge/-blog-blue)](https://enjin.io/blog)
-
+[![X](https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2Fenjin&style=flat&logo=x&label=%40enjin)](https://x.com/enjin)
+[![YouTube](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=flat&logo=youtube)](https://youtube.com/c/EnjinTV)
+[![Enjin Block](https://img.shields.io/badge/Visit-blog-blue.svg)](https://enjin.io/blog)
+	
 </div>
 
 ## Introduction
 
 The Enjin Matrixchain Indexer is a Squid that serves processed blockchain data for other applications and dApps that require a more performant approach to retrieve the data as well as filtering, sorting, and relationships.
-
-> [!NOTE]
-<!-- markdown-link-check-disable-next-line -->
-> You can find a hosted version of this indexer available at Subsquid Aquarium in the following URL: https://squid.subsquid.io/matrixchain/graphql
 
 ### What is a Squid?
 
@@ -46,16 +40,18 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 The indexer is composed of 4 containers
 1. **indexer_db** - a postgres database that stores the processed data;
-2. **indexer_processor** - the worker that transforms and saves the blockchain data;
-3. **indexer_graphql** - the GraphQL API that exposes the processed data;
-4. **indexer_worker** - the queue worker that processes the metadata of assets. 
+2. **indexer_redis** - a redis instance used for cache and queue;
+3. **indexer_processor** - the worker that transforms and saves the blockchain data;
+4. **indexer_graphql** - the GraphQL API that exposes the processed data;
+5. **indexer_worker** - the queue worker that processes the metadata of assets. 
 
 ## Metadata
 
 The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
-npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.blockchain.io --out typegen/matrixVersion.jsonl
+npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.blockchain.enjin.io --out typegen/matrixVersion.jsonl
+npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.canary.enjin.io --out typegen/canaryVersion.jsonl
 ```
 
 In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Matrixchain** so make sure you save them and use the proper WSS endpoint to gather them.
