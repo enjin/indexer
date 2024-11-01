@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.682.0",
-    "@bull-board/api": "^6.3.2",
+    "@bull-board/api": "^6.3.3",
     "@bull-board/express": "^6.3.3",
     "@polkadot/api": "^12.4.2",
     "@polkadot/keyring": "^13.2.2",
