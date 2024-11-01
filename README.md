@@ -10,7 +10,7 @@
 [![Medium](https://img.shields.io/badge/Medium-gray?logo=medium)](https://medium.com/@enjin)
 [![X](https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2Fenjin&style=flat&logo=x&label=%40enjin)](https://x.com/enjin)
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=flat&logo=youtube)](https://youtube.com/c/EnjinTV)
-[![Enjin Block](https://img.shields.io/badge/Visit-blog-blue.svg)](https://enjin.io/blog)
+[![Enjin Block](https://img.shields.io/badge/Visit-blog-blue.svg)](https://enjin.io/blog) <!-- markdown-link-check-disable-line -->
 	
 </div>
 
