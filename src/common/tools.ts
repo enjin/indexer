@@ -10,7 +10,7 @@ export function isValidAddress(address: any) {
     try {
         encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))
         return true
-    } catch (_) {
+    } catch (_e) {
         return false
     }
 }

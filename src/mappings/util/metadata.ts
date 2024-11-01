@@ -78,7 +78,7 @@ function parseMedia(value: string | Media[]) {
                 )
         }
         return null
-    } catch (_) {
+    } catch (_e) {
         return null
     }
 }
@@ -205,7 +205,7 @@ export function metadataParser(
                     metadata.attributes = parseArrayAttributes(attributes)
                 }
             }
-        } catch (_) {
+        } catch (_e) {
             /* empty */
         }
     }
