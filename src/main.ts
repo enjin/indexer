@@ -4,7 +4,6 @@ import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
-import { rewriteFramesIntegration } from '@sentry/integrations'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
@@ -20,11 +19,13 @@ import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
 
 Sentry.init({
     dsn: config.sentryDsn,
+    integrations: [nodeProfilingIntegration()],
     tracesSampleRate: 1.0,
-    integrations: [rewriteFramesIntegration()],
+    profilesSampleRate: 1.0,
 })
 
 async function handleEvents(
