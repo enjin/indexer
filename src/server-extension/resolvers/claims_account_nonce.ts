@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
 import Rpc from '../../common/rpc'

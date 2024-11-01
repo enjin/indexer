@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { syncAllCollections } from '../../jobs/collection-stats'

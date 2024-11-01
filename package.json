@@ -15,8 +15,8 @@
     "generate:types": "npm run generate:defs && npm run generate:meta",
     "generate:defs": "npx tsx node_modules/.bin/polkadot-types-from-defs --package matrixchain-indexer/common/interfaces --input ./src/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io",
     "generate:meta": "npx tsx node_modules/.bin/polkadot-types-from-chain --package matrixchain-indexer/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io --output ./src/common/interfaces",
-    "lint": "eslint src --ext .ts,.js",
-    "fix": "eslint src --ext .ts,.js --fix",
+    "lint": "eslint src ",
+    "fix": "eslint src --fix",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
   "dependencies": {

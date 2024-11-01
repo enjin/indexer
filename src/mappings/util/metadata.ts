@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import Axios from 'axios'
 import https from 'https'
 import Queue from 'bull'
@@ -42,7 +41,6 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
         throw new Error(`Failed to fetch metadata from ${url}`)
     } catch (error: unknown) {
         if (!Axios.isAxiosError(error)) {
-            // eslint-disable-next-line no-console
             job.log(`Failed to fetch metadata from ${url} (non-axios) : ${(error as any).toString()}`)
             throw error
         }
@@ -80,7 +78,7 @@ function parseMedia(value: string | Media[]) {
                 )
         }
         return null
-    } catch (e) {
+    } catch (_) {
         return null
     }
 }
@@ -88,7 +86,6 @@ function parseMedia(value: string | Media[]) {
 function parseObjectProperties(value: object) {
     const properties: any = {}
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const [k, v] of Object.entries(value)) {
         if (typeof v === 'object' && v !== null && 'value' in v && v.value && typeof v.value !== 'object') {
             properties[k] = v
@@ -208,7 +205,7 @@ export function metadataParser(
                     metadata.attributes = parseArrayAttributes(attributes)
                 }
             }
-        } catch (e) {
+        } catch (_) {
             /* empty */
         }
     }

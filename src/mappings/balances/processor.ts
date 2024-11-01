@@ -1,5 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-await-in-loop */
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
 import { UnknownVersionError } from '../../common/errors'
@@ -280,9 +278,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
     const accountIds = Array.from(accountsSet)
     if (accountIds.length === 0) return
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const chunked of chunk(accountIds, 100)) {
-        // eslint-disable-next-line no-await-in-loop
         const accountInfos = await getBalances(ctx, block, chunked)
 
         if (accountInfos === undefined || accountInfos.length === 0) {

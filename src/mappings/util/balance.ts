@@ -15,9 +15,8 @@ export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
     const { api } = await Rpc.getInstance()
 
     // We could use a multi query but that would be error prone
-    // eslint-disable-next-line no-restricted-syntax
+
     for (const id of ids) {
-        // eslint-disable-next-line no-await-in-loop
         const balance = await api.query.system.account(id)
         accounts.push({
             address: id,

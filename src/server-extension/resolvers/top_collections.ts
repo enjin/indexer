@@ -1,5 +1,3 @@
-/* eslint-disable max-classes-per-file */
-
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } from 'type-graphql'
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'

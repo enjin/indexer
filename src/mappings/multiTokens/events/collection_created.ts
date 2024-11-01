@@ -225,7 +225,7 @@ async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectio
     if (storage.multiTokens.collections.v1010.is(block)) {
         const data = await storage.multiTokens.collections.v1010.get(block, collectionId)
         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
-        // eslint-disable-line @typescript-eslint/no-unused-vars
+
         const assets = currencies?.map(([assetId, _]) => assetId)
 
         if (data) {
@@ -243,7 +243,7 @@ async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectio
     if (storage.multiTokens.collections.matrixEnjinV603.is(block)) {
         const data = await storage.multiTokens.collections.matrixEnjinV603.get(block, collectionId)
         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
-        // eslint-disable-line @typescript-eslint/no-unused-vars
+
         const assets = currencies?.map(([assetId, _]) => assetId)
 
         if (data) {

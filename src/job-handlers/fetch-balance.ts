@@ -17,9 +17,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     const { ids } = job.data
     const data: SystemAccount[] = await fetchBalances(ids)
 
-    // eslint-disable-next-line no-restricted-syntax
     for (const systemAccount of data) {
-        // eslint-disable-next-line no-await-in-loop
         const account: Account = await getOrCreateAccount({ store: em } as any, decodeAddress(systemAccount.address))
 
         account.nonce = systemAccount.nonce
@@ -29,7 +27,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         account.balance.transferable = account.balance.free - account.balance.miscFrozen
         account.balance.feeFrozen = 0n
 
-        // eslint-disable-next-line no-await-in-loop
         await em.save<Account>(account)
     }
 

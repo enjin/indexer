@@ -15,7 +15,6 @@ class Rpc {
 
     public static async getInstance(): Promise<Rpc> {
         if (!this._instance) {
-            // eslint-disable-next-line @typescript-eslint/no-shadow
             const types = Object.values(definitions).reduce((res): object => ({ ...res }), {})
 
             const api = await ApiPromise.create({

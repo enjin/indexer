@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import { UnknownVersionError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
@@ -92,11 +91,10 @@ export async function collectionMutated(
                 )
                 if (rc) {
                     royaltyCurrencies.splice(royaltyCurrencies.indexOf(rc), 1)
-                    // eslint-disable-next-line no-continue
+
                     continue
                 }
 
-                // eslint-disable-next-line no-await-in-loop
                 const token = await ctx.store.findOne<Token>(Token, {
                     where: { id: `${currency.collectionId}-${currency.tokenId}` },
                 })
@@ -113,7 +111,6 @@ export async function collectionMutated(
                         token,
                     })
 
-                    // eslint-disable-next-line no-await-in-loop
                     await ctx.store.insert(royaltyCurrency)
                 }
             }

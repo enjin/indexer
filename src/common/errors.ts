@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import * as Sentry from '@sentry/node'
 
 export class UnknownVersionError extends Error {
