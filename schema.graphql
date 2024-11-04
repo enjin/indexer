@@ -85,7 +85,7 @@ union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiToken
   | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
   | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
   | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
-  | MarketplaceOfferCreated | MarketplaceOfferSettled
+  | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled
   | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
   | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
   | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
@@ -183,6 +183,10 @@ type MarketplaceOfferSettled {
   buyer: Account!
   amount: BigInt
   price: BigInt!
+}
+
+type MarketplaceOfferCancelled {
+  listing: Listing!
 }
 
 
@@ -851,6 +855,9 @@ type CounterOffer @entity {
   account: Account!
   listing: Listing!
   createdAt: DateTime!
+
+  # extra
+  lastAction: Account!
 }
 
 type Listing @entity {

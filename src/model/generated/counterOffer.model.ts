@@ -30,4 +30,8 @@ export class CounterOffer {
 
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
+
+    @Index_()
+    @ManyToOne_(() => Account, {nullable: true})
+    lastAction!: Account
 }

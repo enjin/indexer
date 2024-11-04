@@ -147,7 +147,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             for await (const tokens of batch) {
                 tokens.forEach((token) => {
-                    processMetadata(token.id, 'token', true)
+                    processMetadata(token.id, 'token', jobData.force)
                 })
             }
         }
