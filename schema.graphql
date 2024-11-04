@@ -189,7 +189,6 @@ type MarketplaceOfferCancelled {
   listing: Listing!
 }
 
-
 type MultiTokensApproved {
   collectionId: BigInt!
   tokenId: BigInt
@@ -857,7 +856,7 @@ type CounterOffer @entity {
   createdAt: DateTime!
 
   # extra
-  lastAction: Account!
+  lastAction: Account #TODO: make me required
 }
 
 type Listing @entity {

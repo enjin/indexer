@@ -33,5 +33,5 @@ export class CounterOffer {
 
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
-    lastAction!: Account
+    lastAction!: Account | undefined | null
 }
