@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { UnknownVersionError } from '../../../common/errors'
-import { calls, events } from '../../../types/generated'
+import { events } from '../../../types/generated'
 import {
     Account,
     AccountTokenEvent,
@@ -17,7 +17,7 @@ import {
     ListingType,
     CounterOffer,
 } from '../../../model'
-import { CommonContext, BlockHeader, EventItem, CallItem } from '../../types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { Sns } from '../../../common/sns'
 import { getOrCreateAccount } from '../../util/entities'
 
