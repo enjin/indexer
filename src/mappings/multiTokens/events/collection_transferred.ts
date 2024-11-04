@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import { throwError, UnknownVersionError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '../../../model'

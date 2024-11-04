@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import Queue from 'bull'
 import { redisConfig } from './common'
 import { BlockHeader, CommonContext } from '../mappings/types/contexts'

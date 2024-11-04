@@ -1,10 +1,7 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
-import { rewriteFramesIntegration } from '@sentry/integrations'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createEnjToken } from './createEnjToken'
@@ -20,11 +17,13 @@ import { metadataQueue } from './jobs/process-metadata'
 import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
+import { nodeProfilingIntegration } from '@sentry/profiling-node'
 
 Sentry.init({
     dsn: config.sentryDsn,
+    integrations: [nodeProfilingIntegration()],
     tracesSampleRate: 1.0,
-    integrations: [rewriteFramesIntegration()],
+    profilesSampleRate: 1.0,
 })
 
 async function handleEvents(
@@ -222,7 +221,6 @@ processor.run(
         try {
             ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 
-            // eslint-disable-next-line no-restricted-syntax
             for (const block of ctx.blocks) {
                 const extrinsics: Extrinsic[] = []
                 const signers = new Set<string>()
@@ -258,12 +256,10 @@ processor.run(
                     let fuelTank = null
 
                     if (!call) {
-                        // eslint-disable-next-line no-continue
                         continue
                     }
 
                     if (['ParachainSystem.set_validation_data', 'Timestamp.set'].includes(call.name)) {
-                        // eslint-disable-next-line no-continue
                         continue
                     }
 
@@ -303,14 +299,11 @@ processor.run(
                                     : null,
                         })
 
-                        // eslint-disable-next-line no-restricted-syntax
                         for (const eventItem of block.events) {
                             if (eventItem.name !== 'Balances.Withdraw' || eventItem.extrinsic?.id !== id) {
-                                // eslint-disable-next-line no-continue
                                 continue
                             }
 
-                            // eslint-disable-next-line no-await-in-loop
                             const transfer = await map.balances.events.withdraw(
                                 ctx as unknown as CommonContext,
                                 block.header,
@@ -323,7 +316,6 @@ processor.run(
                         }
                     }
 
-                    // eslint-disable-next-line no-await-in-loop
                     const signer = await getOrCreateAccount(ctx as unknown as CommonContext, publicKey)
                     const callName = call.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
@@ -363,7 +355,7 @@ processor.run(
                             call.args.call?.value?.__kind === 'finalize_auction')
                     ) {
                         const listingId = call.args.call?.value?.listingId ?? call.args.listingId
-                        // eslint-disable-next-line no-await-in-loop
+
                         const listing = await ctx.store.findOne(Listing, {
                             where: { id: hexStripPrefix(listingId) },
                             relations: { seller: true },
@@ -381,8 +373,6 @@ processor.run(
                     await handleCalls(ctx as unknown as CommonContext, block.header, call)
                 }
                 for (const eventItem of block.events) {
-                    // eslint-disable-next-line no-await-in-loop
-
                     const event = await handleEvents(ctx as unknown as CommonContext, block.header, eventItem, false)
 
                     if (event) {

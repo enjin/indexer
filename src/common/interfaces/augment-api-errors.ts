@@ -17,6 +17,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       DeadAccount: AugmentedError<ApiType>;
       /**
+       * The delta cannot be zero.
+       **/
+      DeltaZero: AugmentedError<ApiType>;
+      /**
        * Value too low to create account due to existential deposit.
        **/
       ExistentialDeposit: AugmentedError<ApiType>;
@@ -33,6 +37,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InsufficientBalance: AugmentedError<ApiType>;
       /**
+       * The issuance cannot be modified since it is already deactivated.
+       **/
+      IssuanceDeactivated: AugmentedError<ApiType>;
+      /**
        * Account liquidity restrictions prevent withdrawal.
        **/
       LiquidityRestrictions: AugmentedError<ApiType>;
@@ -41,7 +49,7 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       TooManyFreezes: AugmentedError<ApiType>;
       /**
-       * Number of holds exceed `MaxHolds`.
+       * Number of holds exceed `VariantCountOf<T::RuntimeHoldReason>`.
        **/
       TooManyHolds: AugmentedError<ApiType>;
       /**
@@ -226,6 +234,22 @@ declare module '@polkadot/api-base/types/errors' {
     };
     communityPool: {
       /**
+       * The payment has already been attempted.
+       **/
+      AlreadyAttempted: AugmentedError<ApiType>;
+      /**
+       * The spend is not yet eligible for payout.
+       **/
+      EarlyPayout: AugmentedError<ApiType>;
+      /**
+       * The balance of the asset kind is not convertible to the balance of the native asset.
+       **/
+      FailedToConvertBalance: AugmentedError<ApiType>;
+      /**
+       * The payment has neither failed nor succeeded yet.
+       **/
+      Inconclusive: AugmentedError<ApiType>;
+      /**
        * The spend origin is valid but the amount it is allowed to spend is lower than the
        * amount to be spent.
        **/
@@ -235,13 +259,25 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InsufficientProposersBalance: AugmentedError<ApiType>;
       /**
-       * No proposal or bounty at that index.
+       * No proposal, bounty or spend at that index.
        **/
       InvalidIndex: AugmentedError<ApiType>;
+      /**
+       * The payout was not yet attempted/claimed.
+       **/
+      NotAttempted: AugmentedError<ApiType>;
+      /**
+       * There was some issue with the mechanism of payment.
+       **/
+      PayoutError: AugmentedError<ApiType>;
       /**
        * Proposal has not been approved.
        **/
       ProposalNotApproved: AugmentedError<ApiType>;
+      /**
+       * The spend has expired and cannot be claimed.
+       **/
+      SpendExpired: AugmentedError<ApiType>;
       /**
        * Too many approvals in the queue.
        **/
@@ -269,6 +305,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NotMember: AugmentedError<ApiType>;
       /**
+       * Prime account is not a member
+       **/
+      PrimeAccountNotMember: AugmentedError<ApiType>;
+      /**
        * Proposal must exist
        **/
       ProposalMissing: AugmentedError<ApiType>;
@@ -292,12 +332,6 @@ declare module '@polkadot/api-base/types/errors' {
        * The given weight bound for the proposal was too low.
        **/
       WrongProposalWeight: AugmentedError<ApiType>;
-      /**
-       * Generic error
-       **/
-      [key: string]: AugmentedError<ApiType>;
-    };
-    cumulusXcm: {
       /**
        * Generic error
        **/
@@ -401,20 +435,6 @@ declare module '@polkadot/api-base/types/errors' {
        * Invalid upper bound.
        **/
       WrongUpperBound: AugmentedError<ApiType>;
-      /**
-       * Generic error
-       **/
-      [key: string]: AugmentedError<ApiType>;
-    };
-    dmpQueue: {
-      /**
-       * The amount of weight given is possibly not enough for executing the message.
-       **/
-      OverLimit: AugmentedError<ApiType>;
-      /**
-       * The message index given is unknown.
-       **/
-      Unknown: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -570,9 +590,21 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InvalidJudgement: AugmentedError<ApiType>;
       /**
+       * The signature on a username was not valid.
+       **/
+      InvalidSignature: AugmentedError<ApiType>;
+      /**
+       * The provided suffix is too long.
+       **/
+      InvalidSuffix: AugmentedError<ApiType>;
+      /**
        * The target is invalid.
        **/
       InvalidTarget: AugmentedError<ApiType>;
+      /**
+       * The username does not meet the requirements.
+       **/
+      InvalidUsername: AugmentedError<ApiType>;
       /**
        * The provided judgement was for a different identity.
        **/
@@ -586,9 +618,17 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       JudgementPaymentFailed: AugmentedError<ApiType>;
       /**
+       * The authority cannot allocate any more usernames.
+       **/
+      NoAllocation: AugmentedError<ApiType>;
+      /**
        * No identity found.
        **/
       NoIdentity: AugmentedError<ApiType>;
+      /**
+       * The username cannot be forcefully removed because it can still be accepted.
+       **/
+      NotExpired: AugmentedError<ApiType>;
       /**
        * Account isn't found.
        **/
@@ -606,13 +646,21 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NotSub: AugmentedError<ApiType>;
       /**
+       * The sender does not have permission to issue a username.
+       **/
+      NotUsernameAuthority: AugmentedError<ApiType>;
+      /**
+       * The requested username does not exist.
+       **/
+      NoUsername: AugmentedError<ApiType>;
+      /**
+       * Setting this username requires a signature, but none was provided.
+       **/
+      RequiresSignature: AugmentedError<ApiType>;
+      /**
        * Sticky judgement.
        **/
       StickyJudgement: AugmentedError<ApiType>;
-      /**
-       * Too many additional fields.
-       **/
-      TooManyFields: AugmentedError<ApiType>;
       /**
        * Maximum amount of registrars reached. Cannot add any more.
        **/
@@ -621,6 +669,10 @@ declare module '@polkadot/api-base/types/errors' {
        * Too many subs-accounts.
        **/
       TooManySubAccounts: AugmentedError<ApiType>;
+      /**
+       * The username is already taken.
+       **/
+      UsernameTaken: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -635,6 +687,22 @@ declare module '@polkadot/api-base/types/errors' {
        * The seller is not allowed to buy their own listing
        **/
       BuyerIsSeller: AugmentedError<ApiType>;
+      /**
+       * Cannot cancel auction after end block
+       **/
+      CannotCancelAuctionAfterEndBlock: AugmentedError<ApiType>;
+      /**
+       * Cannot cancel auction with active bid
+       **/
+      CannotCancelAuctionWithBid: AugmentedError<ApiType>;
+      /**
+       * Cannot place a counter offer on own offer
+       **/
+      CannotCounterSelf: AugmentedError<ApiType>;
+      /**
+       * The counter offer already exists
+       **/
+      CounterOfferExists: AugmentedError<ApiType>;
       /**
        * The currency is not allowed to be used as a royalty payment
        **/
@@ -656,6 +724,14 @@ declare module '@polkadot/api-base/types/errors' {
        * minimum requirement
        **/
       InvalidAuctionStart: AugmentedError<ApiType>;
+      /**
+       * The expiration block must be in the future
+       **/
+      InvalidExpiration: AugmentedError<ApiType>;
+      /**
+       * The fee side does not match the listing type
+       **/
+      InvalidFeeSide: AugmentedError<ApiType>;
       /**
        * The price is invalid
        **/
@@ -693,9 +769,17 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       MakeAssetFrozen: AugmentedError<ApiType>;
       /**
+       * Max number of pending listing ids has been exceeded
+       **/
+      MaxPendingListingIdsExceeded: AugmentedError<ApiType>;
+      /**
        * The max rounding error was exceeded
        **/
       MaxRoundingErrorExceeded: AugmentedError<ApiType>;
+      /**
+       * A counter offer is required but does not exist
+       **/
+      NoCounterOffer: AugmentedError<ApiType>;
       /**
        * Neither the make side or the take side of the listing is considered a currency
        **/
@@ -705,13 +789,21 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NoPermission: AugmentedError<ApiType>;
       /**
-       * Take asset is frozen
+       * The listing is not expired and cannot be removed
        **/
-      TakeAssetFrozen: AugmentedError<ApiType>;
+      NotExpired: AugmentedError<ApiType>;
+      /**
+       * Offers do not support partial fills
+       **/
+      PartialFillNotAllowed: AugmentedError<ApiType>;
       /**
        * The take value is under the minimum requirement
        **/
-      TakeValueUnderMinimum: AugmentedError<ApiType>;
+      ReceivedValueUnderMinimum: AugmentedError<ApiType>;
+      /**
+       * Take asset is frozen
+       **/
+      TakeAssetFrozen: AugmentedError<ApiType>;
       /**
        * Transfer params could not be created
        **/
@@ -720,6 +812,10 @@ declare module '@polkadot/api-base/types/errors' {
        * the order cannot be filled
        **/
       UnableToFill: AugmentedError<ApiType>;
+      /**
+       * The passed `current_price` does not match the actual current price
+       **/
+      WrongCurrentPrice: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -744,6 +840,64 @@ declare module '@polkadot/api-base/types/errors' {
        * Asset is not cross-chain transferable
        **/
       NotTransferable: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    messageQueue: {
+      /**
+       * The message was already processed and cannot be processed again.
+       **/
+      AlreadyProcessed: AugmentedError<ApiType>;
+      /**
+       * There is temporarily not enough weight to continue servicing messages.
+       **/
+      InsufficientWeight: AugmentedError<ApiType>;
+      /**
+       * The referenced message could not be found.
+       **/
+      NoMessage: AugmentedError<ApiType>;
+      /**
+       * Page to be reaped does not exist.
+       **/
+      NoPage: AugmentedError<ApiType>;
+      /**
+       * Page is not reapable because it has items remaining to be processed and is not old
+       * enough.
+       **/
+      NotReapable: AugmentedError<ApiType>;
+      /**
+       * The message is queued for future execution.
+       **/
+      Queued: AugmentedError<ApiType>;
+      /**
+       * The queue is paused and no message can be executed from it.
+       * 
+       * This can change at any time and may resolve in the future by re-trying.
+       **/
+      QueuePaused: AugmentedError<ApiType>;
+      /**
+       * Another call is in progress and needs to finish before this call can happen.
+       **/
+      RecursiveDisallowed: AugmentedError<ApiType>;
+      /**
+       * This message is temporarily unprocessable.
+       * 
+       * Such errors are expected, but not guaranteed, to resolve themselves eventually through
+       * retrying.
+       **/
+      TemporarilyUnprocessable: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    migrations: {
+      /**
+       * The operation cannot complete since some MBMs are ongoing.
+       **/
+      Ongoing: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -813,6 +967,15 @@ declare module '@polkadot/api-base/types/errors' {
     };
     multiTokens: {
       /**
+       * When a depositor is used to mint a token, it is disallowed to also add to the token
+       * account deposit
+       **/
+      AccountDepositNotAllowedWithDepositor: AugmentedError<ApiType>;
+      /**
+       * The account already owns the collection. Transferring to self is not allowed.
+       **/
+      AlreadyCollectionOwner: AugmentedError<ApiType>;
+      /**
        * Tried to set an expiration that has already passed
        **/
       AlreadyExpired: AugmentedError<ApiType>;
@@ -820,10 +983,6 @@ declare module '@polkadot/api-base/types/errors' {
        * An amount of zero was used when it's not allowed
        **/
       AmountZero: AugmentedError<ApiType>;
-      /**
-       * The balance is below the minimum required balance
-       **/
-      BalanceBelowMinimumRequirement: AugmentedError<ApiType>;
       /**
        * Not enough balance to perform the operation.
        **/
@@ -858,7 +1017,7 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       CollectionNotFound: AugmentedError<ApiType>;
       /**
-       * Conflicting MultiLocation for an AssetId
+       * Conflicting Location for an AssetId
        **/
       ConflictingLocation: AugmentedError<ApiType>;
       /**
@@ -908,9 +1067,17 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       IdleOperationQueueFull: AugmentedError<ApiType>;
       /**
+       * The token is not compatible with this operation
+       **/
+      IncompatibleToken: AugmentedError<ApiType>;
+      /**
        * Not enough allowance to perform the operation
        **/
       InsufficientAllowance: AugmentedError<ApiType>;
+      /**
+       * The operation would cause the deposit to drop below the minimum allowed
+       **/
+      InsufficientDeposit: AugmentedError<ApiType>;
       /**
        * Provided attribute count doesnt match the count is storage
        **/
@@ -940,11 +1107,6 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InvalidMintParams: AugmentedError<ApiType>;
       /**
-       * The unit price cannot be zero, cannot decrease, and `unit_price * total_supply` must
-       * be greater than `TokenAccountDeposit`
-       **/
-      InvalidUnitPrice: AugmentedError<ApiType>;
-      /**
        * The balance is locked or restricted
        **/
       LiquidityRestrictions: AugmentedError<ApiType>;
@@ -952,6 +1114,10 @@ declare module '@polkadot/api-base/types/errors' {
        * The max number of approvals for this account was exceeded
        **/
       MaxApprovalsExceeded: AugmentedError<ApiType>;
+      /**
+       * Decimal count is higher than the maximum
+       **/
+      MaxDecimalCountExceeded: AugmentedError<ApiType>;
       /**
        * Tried to mint more tokens than allowed
        **/
@@ -964,6 +1130,10 @@ declare module '@polkadot/api-base/types/errors' {
        * There is nothing to claim
        **/
       NoClaimAvailable: AugmentedError<ApiType>;
+      /**
+       * The collection has no pending transfer
+       **/
+      NoPendingCollectionTransfer: AugmentedError<ApiType>;
       /**
        * Caller is not allowed to execute this extrinsic
        **/
@@ -1032,21 +1202,6 @@ declare module '@polkadot/api-base/types/errors' {
        * The passed `current_amount` does not match the actual current amount of the approval
        **/
       WrongCurrentApprovedAmount: AugmentedError<ApiType>;
-      /**
-       * Generic error
-       **/
-      [key: string]: AugmentedError<ApiType>;
-    };
-    multiTokensMigration: {
-      /**
-       * Indicates that a migration call happened, although the migration is already closed
-       **/
-      MigrationAlreadyCompleted: AugmentedError<ApiType>;
-      /**
-       * Indicates that a finalize call happened, although the migration pallet is not in an
-       * ongoing migration
-       **/
-      OnlyFinalizeOngoing: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -1131,11 +1286,15 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       BadVersion: AugmentedError<ApiType>;
       /**
+       * Could not check-out the assets for teleportation to the destination chain.
+       **/
+      CannotCheckOutTeleport: AugmentedError<ApiType>;
+      /**
        * Could not re-anchor the assets to declare the fees for the destination chain.
        **/
       CannotReanchor: AugmentedError<ApiType>;
       /**
-       * The destination `MultiLocation` provided cannot be inverted.
+       * The destination `Location` provided cannot be inverted.
        **/
       DestinationNotInvertible: AugmentedError<ApiType>;
       /**
@@ -1155,13 +1314,25 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InUse: AugmentedError<ApiType>;
       /**
-       * Invalid asset for the operation.
+       * Invalid non-concrete asset.
        **/
-      InvalidAsset: AugmentedError<ApiType>;
+      InvalidAssetNotConcrete: AugmentedError<ApiType>;
+      /**
+       * Invalid asset, reserve chain could not be determined for it.
+       **/
+      InvalidAssetUnknownReserve: AugmentedError<ApiType>;
+      /**
+       * Invalid asset, do not support remote asset reserves with different fees reserves.
+       **/
+      InvalidAssetUnsupportedReserve: AugmentedError<ApiType>;
       /**
        * Origin is invalid for sending.
        **/
       InvalidOrigin: AugmentedError<ApiType>;
+      /**
+       * Local XCM execution incomplete.
+       **/
+      LocalExecutionIncomplete: AugmentedError<ApiType>;
       /**
        * A remote lock with the corresponding data could not be found.
        **/
@@ -1175,8 +1346,8 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NoSubscription: AugmentedError<ApiType>;
       /**
-       * There was some other issue (i.e. not to do with routing) in sending the message. Perhaps
-       * a lack of space for buffering the message.
+       * There was some other issue (i.e. not to do with routing) in sending the message.
+       * Perhaps a lack of space for buffering the message.
        **/
       SendFailure: AugmentedError<ApiType>;
       /**
@@ -1187,6 +1358,10 @@ declare module '@polkadot/api-base/types/errors' {
        * The asset owner has too many locks on the asset.
        **/
       TooManyLocks: AugmentedError<ApiType>;
+      /**
+       * Too many assets with different reserve locations have been attempted for transfer.
+       **/
+      TooManyReserves: AugmentedError<ApiType>;
       /**
        * The desired destination was unreachable, generally because there is a no way of routing
        * to it.
@@ -1240,6 +1415,86 @@ declare module '@polkadot/api-base/types/errors' {
        * Preimage is too large to store on-chain.
        **/
       TooBig: AugmentedError<ApiType>;
+      /**
+       * Too few hashes were requested to be upgraded (i.e. zero).
+       **/
+      TooFew: AugmentedError<ApiType>;
+      /**
+       * More than `MAX_HASH_UPGRADE_BULK_COUNT` hashes were requested to be upgraded at once.
+       **/
+      TooMany: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    proxy: {
+      /**
+       * Account is already a proxy.
+       **/
+      Duplicate: AugmentedError<ApiType>;
+      /**
+       * Call may not be made by proxy because it may escalate its privileges.
+       **/
+      NoPermission: AugmentedError<ApiType>;
+      /**
+       * Cannot add self as proxy.
+       **/
+      NoSelfProxy: AugmentedError<ApiType>;
+      /**
+       * Proxy registration not found.
+       **/
+      NotFound: AugmentedError<ApiType>;
+      /**
+       * Sender is not a proxy of the account to be proxied.
+       **/
+      NotProxy: AugmentedError<ApiType>;
+      /**
+       * There are too many proxies registered or too many announcements pending.
+       **/
+      TooMany: AugmentedError<ApiType>;
+      /**
+       * Announcement, if made at all, was made too recently.
+       **/
+      Unannounced: AugmentedError<ApiType>;
+      /**
+       * A call which is incompatible with the proxy type's filter was attempted.
+       **/
+      Unproxyable: AugmentedError<ApiType>;
+      /**
+       * Generic error
+       **/
+      [key: string]: AugmentedError<ApiType>;
+    };
+    safeMode: {
+      /**
+       * The account already has a deposit reserved and can therefore not enter or extend again.
+       **/
+      AlreadyDeposited: AugmentedError<ApiType>;
+      /**
+       * This deposit cannot be released yet.
+       **/
+      CannotReleaseYet: AugmentedError<ApiType>;
+      /**
+       * An error from the underlying `Currency`.
+       **/
+      CurrencyError: AugmentedError<ApiType>;
+      /**
+       * The safe-mode is (already or still) entered.
+       **/
+      Entered: AugmentedError<ApiType>;
+      /**
+       * The safe-mode is (already or still) exited.
+       **/
+      Exited: AugmentedError<ApiType>;
+      /**
+       * There is no balance reserved.
+       **/
+      NoDeposit: AugmentedError<ApiType>;
+      /**
+       * This functionality of the pallet is disabled by the configuration.
+       **/
+      NotConfigured: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -1314,6 +1569,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InvalidSpecName: AugmentedError<ApiType>;
       /**
+       * A multi-block migration is ongoing and prevents the current code from being replaced.
+       **/
+      MultiBlockMigrationsOngoing: AugmentedError<ApiType>;
+      /**
        * Suicide called when the account has non-default composite data.
        **/
       NonDefaultComposite: AugmentedError<ApiType>;
@@ -1322,10 +1581,18 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NonZeroRefCount: AugmentedError<ApiType>;
       /**
+       * No upgrade authorized.
+       **/
+      NothingAuthorized: AugmentedError<ApiType>;
+      /**
        * The specification version is not allowed to decrease between the current runtime
        * and the new runtime.
        **/
       SpecVersionNeedsToIncrease: AugmentedError<ApiType>;
+      /**
+       * The submitted code is not authorized.
+       **/
+      Unauthorized: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -1348,6 +1615,10 @@ declare module '@polkadot/api-base/types/errors' {
        * Account is not a member
        **/
       NotMember: AugmentedError<ApiType>;
+      /**
+       * Prime account is not a member
+       **/
+      PrimeAccountNotMember: AugmentedError<ApiType>;
       /**
        * Proposal must exist
        **/
@@ -1425,25 +1696,17 @@ declare module '@polkadot/api-base/types/errors' {
     };
     xcmpQueue: {
       /**
-       * Bad overweight index.
+       * The execution is already resumed.
        **/
-      BadOverweightIndex: AugmentedError<ApiType>;
+      AlreadyResumed: AugmentedError<ApiType>;
       /**
-       * Bad XCM data.
+       * The execution is already suspended.
        **/
-      BadXcm: AugmentedError<ApiType>;
+      AlreadySuspended: AugmentedError<ApiType>;
       /**
-       * Bad XCM origin.
+       * Setting the queue config failed since one of its values was invalid.
        **/
-      BadXcmOrigin: AugmentedError<ApiType>;
-      /**
-       * Failed to send XCM message.
-       **/
-      FailedToSend: AugmentedError<ApiType>;
-      /**
-       * Provided weight is possibly not enough to execute the message.
-       **/
-      WeightOverLimit: AugmentedError<ApiType>;
+      BadQueueConfig: AugmentedError<ApiType>;
       /**
        * Generic error
        **/
@@ -1455,7 +1718,7 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       AssetHasNoReserve: AugmentedError<ApiType>;
       /**
-       * The specified index does not exist in a MultiAssets struct.
+       * The specified index does not exist in a Assets struct.
        **/
       AssetIndexNonExistent: AugmentedError<ApiType>;
       /**
@@ -1469,7 +1732,7 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       CannotReanchor: AugmentedError<ApiType>;
       /**
-       * The destination `MultiLocation` provided cannot be inverted.
+       * The destination `Location` provided cannot be inverted.
        **/
       DestinationNotInvertible: AugmentedError<ApiType>;
       /**
@@ -1486,7 +1749,7 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InvalidAncestry: AugmentedError<ApiType>;
       /**
-       * The MultiAsset is invalid.
+       * The Asset is invalid.
        **/
       InvalidAsset: AugmentedError<ApiType>;
       /**
@@ -1506,9 +1769,13 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       NotCrossChainTransferableCurrency: AugmentedError<ApiType>;
       /**
-       * Not supported MultiLocation
+       * Not supported Location
        **/
-      NotSupportedMultiLocation: AugmentedError<ApiType>;
+      NotSupportedLocation: AugmentedError<ApiType>;
+      /**
+       * Asset transfer is limited by RateLimiter.
+       **/
+      RateLimited: AugmentedError<ApiType>;
       /**
        * The number of assets to be sent is over the maximum.
        **/

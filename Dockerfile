@@ -4,13 +4,21 @@ FROM node AS node-with-gyp
 RUN apk add g++ make python3
 
 FROM node-with-gyp AS builder
+
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+
 WORKDIR /squid
+
 ADD package.json .
 ADD package-lock.json .
+
 RUN npm ci
+
 ADD tsconfig.json .
 ADD src src
-RUN npm run build
+
+RUN npm run build:prod
 
 FROM node-with-gyp AS deps
 WORKDIR /squid
@@ -37,7 +45,7 @@ EXPOSE 8080
 
 FROM squid AS matrixchain-indexer
 
-LABEL org.opencontainers.image.source=https://github.com/efinity/indexer
+LABEL org.opencontainers.image.source=https://github.com/enjin/indexer
 LABEL org.opencontainers.image.description="Enjin Matrixchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
 

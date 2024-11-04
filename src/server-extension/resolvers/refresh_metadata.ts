@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'

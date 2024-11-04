@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import client from 'prom-client'
 import register from '../registry'
 import connection from '../../connection'

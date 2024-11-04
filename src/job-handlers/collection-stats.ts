@@ -55,7 +55,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             .getRawOne(),
     ]
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const [sales, [{ floor_price }], { tokenCount, supply }] = await Promise.all(promises)
 
     const stats = new CollectionStats({

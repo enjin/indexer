@@ -7,3 +7,5 @@
 .env
 /builds
 src/cli
+# Sentry Config File
+.sentryclirc

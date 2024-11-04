@@ -16,7 +16,6 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
     const limit = 500
 
     while (true) {
-        // eslint-disable-next-line no-await-in-loop
         const items = await em
             .getRepository(Token)
             .createQueryBuilder('token')
@@ -146,7 +145,6 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             const batch = tokensInBatch(em, jobData.resourceId)
 
-            // eslint-disable-next-line no-restricted-syntax
             for await (const tokens of batch) {
                 tokens.forEach((token) => {
                     processMetadata(token.id, 'token', true)

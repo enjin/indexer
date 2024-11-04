@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   indexer_db:
     container_name: indexer_db
@@ -35,6 +33,8 @@ services:
       CONTAINER_ROLE: processor
     build:
       context: .
+      args:
+        SENTRY_AUTH_TOKEN:
     volumes:
       - .env:/squid/.env
     depends_on:

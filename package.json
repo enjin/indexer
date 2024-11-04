@@ -6,13 +6,18 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
+    "build:prod": "rm -rf lib && tsc && npm run sentry:sourcemaps",
     "db:migrate": "npx squid-typeorm-migration apply",
     "processor:start": "node -r dotenv/config lib/main.js",
     "query-node:start": "squid-graphql-server --subscriptions",
     "prom:start": "node -r dotenv/config lib/prom-metrics/index.js",
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
-    "lint": "eslint src --ext .ts,.js",
-    "fix": "eslint src --ext .ts,.js --fix"
+    "generate:types": "npm run generate:defs && npm run generate:meta",
+    "generate:defs": "npx tsx node_modules/.bin/polkadot-types-from-defs --package matrixchain-indexer/common/interfaces --input ./src/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io",
+    "generate:meta": "npx tsx node_modules/.bin/polkadot-types-from-chain --package matrixchain-indexer/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io --output ./src/common/interfaces",
+    "lint": "eslint src ",
+    "fix": "eslint src --fix",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.682.0",
@@ -23,8 +28,9 @@
     "@polkadot/types": "^14.2.2",
     "@polkadot/util": "^13.2.2",
     "@polkadot/util-crypto": "^13.2.2",
-    "@sentry/integrations": "^7.119.2",
-    "@sentry/node": "^7.119.2",
+    "@sentry/cli": "^2.38.1",
+    "@sentry/node": "^8.36.0",
+    "@sentry/profiling-node": "^8.36.0",
     "@subsquid/archive-registry": "^3.3.2",
     "@subsquid/cli": "^3.0.0",
     "@subsquid/graphql-server": "^4.9.0",
@@ -55,12 +61,10 @@
     "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.13",
     "@types/mime-types": "^2.1.4",
-    "@types/node": "^20.11.16",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^18.0.0",
+    "@types/node": "^22.8.6",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.2.5",
@@ -69,7 +73,7 @@
   "peerDependencies": {
     "@subsquid/typeorm-config": "4.1.1",
     "@subsquid/util-internal-hex": "1.2.2",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.11"
   }
 }
