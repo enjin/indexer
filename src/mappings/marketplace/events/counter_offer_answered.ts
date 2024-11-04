@@ -32,22 +32,6 @@ function getEventData(event: EventItem) {
     throw new UnknownVersionError(events.marketplace.counterOfferAnswered.name)
 }
 
-function getCallData(call: CallItem) {
-    if (calls.marketplace.answerCounterOffer.matrixEnjinV1012.is(call)) {
-        return calls.marketplace.answerCounterOffer.matrixEnjinV1012.decode(call)
-    }
-
-    if (calls.marketplace.answerCounterOffer.v1011.is(call)) {
-        return calls.marketplace.answerCounterOffer.v1011.decode(call)
-    }
-
-    if (calls.marketplace.answerCounterOffer.v1010.is(call)) {
-        return calls.marketplace.answerCounterOffer.v1010.decode(call)
-    }
-
-    throw new UnknownVersionError(calls.marketplace.answerCounterOffer.name)
-}
-
 function getEvent(
     item: EventItem,
     data: ReturnType<typeof getEventData>,
@@ -100,10 +84,8 @@ export async function counterOfferAnswered(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     assert(item.extrinsic, 'Extrinsic is required')
-    assert(item.extrinsic.call, 'Call is required')
 
     const data = getEventData(item)
-    const call = getCallData(item.extrinsic.call)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
@@ -118,15 +100,24 @@ export async function counterOfferAnswered(
         },
     })
 
-    const account = await getOrCreateAccount(ctx, data.creator)
     assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
+
+    const account = await getOrCreateAccount(ctx, data.creator)
+    const signer = await getOrCreateAccount(ctx, (item.extrinsic.signature!.address! as any).value)
+
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
     const counterOffer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
 
     if (data.response.__kind === 'Counter') {
-        counterOffer.buyerPrice = data.response.value
-        counterOffer.sellerPrice = data.response.value
+        if (signer.id !== account.id) {
+            assert(signer.id === listing.seller.id, 'Only the seller can counter offer')
+            counterOffer.lastAction = signer
+            counterOffer.buyerPrice = data.response.value
+        } else {
+            counterOffer.lastAction = account
+            counterOffer.sellerPrice = data.response.value
+        }
 
         await ctx.store.save(counterOffer)
     }
@@ -149,7 +140,7 @@ export async function counterOfferAnswered(
                     type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
-                lastAction: account.id,
+                lastAction: counterOffer.lastAction,
                 buyerPrice: counterOffer.buyerPrice?.toString(),
                 sellerPrice: counterOffer.sellerPrice?.toString(),
                 response: data.response.__kind,
