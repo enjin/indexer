@@ -25,7 +25,7 @@
     "@bull-board/express": "^6.3.3",
     "@polkadot/api": "^14.2.2",
     "@polkadot/keyring": "^13.2.2",
-    "@polkadot/types": "^14.2.2",
+    "@polkadot/types": "^14.2.3",
     "@polkadot/util": "^13.2.2",
     "@polkadot/util-crypto": "^13.2.2",
     "@sentry/cli": "^2.38.1",
