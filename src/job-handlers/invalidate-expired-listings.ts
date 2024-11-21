@@ -26,11 +26,11 @@ export default async (job: Queue.Job, done: Queue.DoneCallback) => {
             .andWhere('listing.type IN (:...types)', { types: [ListingType.Auction, ListingType.Offer] })
             .andWhere(
                 new Brackets((qb) => {
-                    qb.where("listing.type = :type AND (listing.data->>'endHeight')::int < :height", {
-                        type: ListingType.Auction,
+                    qb.where("listing.type = :auctionType AND (listing.data->>'endHeight')::int < :height", {
+                        auctionType: ListingType.Auction,
                         height,
-                    }).orWhere("listing.type = :type AND (listing.data->>'expiration')::int < :height", {
-                        type: ListingType.Offer,
+                    }).orWhere("listing.type = :offerType AND (listing.data->>'expiration')::int < :height", {
+                        offerType: ListingType.Offer,
                         height,
                     })
                 })
