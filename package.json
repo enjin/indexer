@@ -30,7 +30,7 @@
     "@polkadot/util-crypto": "^13.2.2",
     "@sentry/cli": "^2.38.2",
     "@sentry/node": "^8.36.0",
-    "@sentry/profiling-node": "^8.38.0",
+    "@sentry/profiling-node": "^8.41.0",
     "@subsquid/archive-registry": "^3.3.2",
     "@subsquid/cli": "^3.0.1",
     "@subsquid/graphql-server": "^4.9.0",
