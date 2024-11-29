@@ -23,7 +23,7 @@
     "@aws-sdk/client-sns": "^3.699.0",
     "@bull-board/api": "^6.5.3",
     "@bull-board/express": "^6.5.3",
-    "@polkadot/api": "^14.3.1",
+    "@polkadot/api": "^15.0.1",
     "@polkadot/keyring": "^13.2.3",
     "@polkadot/types": "^14.3.1",
     "@polkadot/util": "^13.2.3",
