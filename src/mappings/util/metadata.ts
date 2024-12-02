@@ -35,13 +35,17 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
 
     try {
         const { status, data } = await api.get(finalUrl)
-        if (status < 400) {
+        if (status >= 200 && status < 300) {
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 return data
             }
+
             job.log(`Invalid response from ${url}`)
             job.log(data)
+        } else {
+            job.log(`Status code ${status} received from ${url}`)
         }
+
         throw new Error(`Failed to fetch metadata from ${url}`)
     } catch (error: unknown) {
         if (!Axios.isAxiosError(error)) {
@@ -58,8 +62,6 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
             job.log(`url: ${error.response.request.res.responseUrl} status: ${error.response.status.toString()}`)
             job.log(`redirectsCount: ${error.response.request.res.redirects.length.toString()}`)
             job.log(error.response.data)
-        } else {
-            job.log(`UnknownError: ${url} ${error.message}`)
         }
 
         throw error
