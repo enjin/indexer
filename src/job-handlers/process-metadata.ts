@@ -98,7 +98,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         let metadata = new Metadata()
 
         if (uriAttribute) {
-            const response = await connection.query<MetadataType[]>('select * from metadata.metadata where id = $1 LIMIT 1', [
+            const response = await em.connection.query<MetadataType[]>('select * from metadata.metadata where id = $1 LIMIT 1', [
                 jobData.resourceId,
             ])
 
@@ -113,12 +113,12 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
                 if (externalResponse) {
                     if (response.length > 0) {
-                        await connection.query(
+                        await em.connection.query(
                             'update metadata.metadata set metadata = $1, uri = $2, last_updated_at = NOW() where id = $3',
                             [externalResponse, uriAttribute.value, jobData.resourceId]
                         )
                     } else {
-                        await connection.query(
+                        await em.connection.query(
                             'insert into metadata.metadata (id, metadata, uri, last_updated_at) values ($1, $2, $3, NOW())',
                             [jobData.resourceId, externalResponse, uriAttribute.value]
                         )
