@@ -108,6 +108,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 typeof response[0].metadata === 'object' &&
                 !jobData.force
             ) {
+                job.log(`Metadata for ${jobData.resourceId} already exists`)
+                job.log(JSON.stringify(response[0].metadata))
                 externalMetadata = response[0].metadata
             } else {
                 const externalResponse = await fetchMetadata(uriAttribute.value, job)
