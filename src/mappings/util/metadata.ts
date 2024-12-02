@@ -36,7 +36,11 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
     try {
         const { status, data } = await api.get(finalUrl)
         if (status < 400) {
-            return data
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                return data
+            }
+            job.log(`Failed to fetch metadata from ${url} (invalid response)`)
+            job.log(data)
         }
         throw new Error(`Failed to fetch metadata from ${url}`)
     } catch (error: unknown) {
