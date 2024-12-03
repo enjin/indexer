@@ -23,7 +23,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
     }
 
-    connection.manager.transaction('READ COMMITTED', async (em) => {
+    connection.manager.transaction('READ UNCOMMITTED', async (em) => {
         const traitTypeMap = new Map<string, TraitValueMap>()
         const tokenTraitMap = new Map<string, string[]>()
 

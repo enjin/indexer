@@ -17,7 +17,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
     }
 
-    connection.manager.transaction('READ COMMITTED', async (em) => {
+    connection.manager.transaction('REPEATABLE READ', async (em) => {
         try {
             const [collection, tokens] = await Promise.all([
                 em.findOneOrFail(Collection, {

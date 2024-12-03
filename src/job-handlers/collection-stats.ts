@@ -17,7 +17,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const { collectionId } = job.data
-    connection.manager.transaction('READ COMMITTED', async (em) => {
+    connection.manager.transaction('READ UNCOMMITTED', async (em) => {
         const promises = [
             em
                 .createQueryBuilder()

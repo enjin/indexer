@@ -42,7 +42,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     }
 
     const jobData = job.data
-    connection.manager.transaction('READ COMMITTED', async (em) => {
+    connection.manager.transaction('READ UNCOMMITTED', async (em) => {
         let resource: Collection | Token | null
         let attributes: Attribute[] = []
         let collectionUriAttribute: Attribute | null = null
