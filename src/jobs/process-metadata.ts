@@ -11,7 +11,7 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
             type: 'exponential',
             delay: 5000,
         },
-        removeOnComplete: false,
+        removeOnComplete: true,
         removeOnFail: false,
     },
     redis: redisConfig,
@@ -21,10 +21,6 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
 })
 
 export const processMetadata = async (resourceId: string, type: JobData['type'], force = false, allTokens = false) => {
-    console.log(
-        `[processMetadata] Processing ${type}-${resourceId} with force=${force} and allTokens=${allTokens}, ${new Date().getTime()}`
-    )
-
     if (force) {
         // on force, remove existing job and add a new one
         const existingJob = await metadataQueue.getJob(`${type}-${resourceId}`)
