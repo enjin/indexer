@@ -29,9 +29,5 @@ export const processMetadata = async (resourceId: string, type: JobData['type'],
         }
     }
 
-    metadataQueue.add({ resourceId, type, force, allTokens }, { jobId: `${type}-${resourceId}` }).catch(() => {
-        // eslint-disable-next-line no-console
-        console.log('Closing connection as Redis is not available')
-        metadataQueue.close(true)
-    })
+    metadataQueue.add({ resourceId, type, force, allTokens }, { jobId: `${type}-${resourceId}` })
 }
