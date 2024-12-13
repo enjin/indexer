@@ -158,6 +158,7 @@ export function metadataParser(
         image: string | null | undefined
         fallback_image: string | null | undefined
         media: Media[]
+        keywords: string[] | undefined
         properties: unknown
         attributes: unknown
     } | null
@@ -170,6 +171,9 @@ export function metadataParser(
     }
     if (externalMetadata?.external_url) {
         metadata.externalUrl = safeString(externalMetadata.external_url)
+    }
+    if (externalMetadata?.keywords && Array.isArray(externalMetadata.keywords)) {
+        metadata.keywords = externalMetadata.keywords
     }
     if (externalMetadata?.image) {
         metadata.fallbackImage = safeString(externalMetadata.image)

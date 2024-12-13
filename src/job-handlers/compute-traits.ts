@@ -49,11 +49,14 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
         tokens.forEach((token) => {
             if (!token.metadata || !token.metadata.attributes || !isPlainObject(token.metadata.attributes)) return
-            const attributes = token.metadata.attributes as Record<string, { value: string } | string>
+            const attributes = token.metadata.attributes as Record<string, { value: string; display_name?: string } | string>
             Object.entries(attributes).forEach(([traitType, data]) => {
                 let value = data as string
                 if (typeof data === 'object') {
                     value = data.value
+                    if (data.display_name) {
+                        traitType = data.display_name
+                    }
                 }
 
                 if (!value) return
@@ -70,7 +73,10 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                     tType.set(value, token.supply)
                 }
 
-                tokenTraitMap.set(token.id, [...(tokenTraitMap.get(token.id) || []), `${collectionId}-${traitType}-${value}`])
+                tokenTraitMap.set(token.id, [
+                    ...(tokenTraitMap.get(token.id) || []),
+                    hash(`${collectionId}-${traitType}-${value}`),
+                ])
             })
         })
 
@@ -108,7 +114,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 traitTokensToSave.push(
                     new TraitToken({
                         id: hash(`${trait}-${tokenId}`),
-                        trait: new Trait({ id: hash(trait) }),
+                        trait: new Trait({ id: trait }),
                         token: new Token({ id: tokenId }),
                     })
                 )
