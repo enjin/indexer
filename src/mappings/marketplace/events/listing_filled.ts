@@ -147,7 +147,10 @@ export async function listingFilled(
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
-    if (listing.data.listingType !== ListingType.Offer) {
+    if (listing.data.listingType === ListingType.Offer) {
+        await ctx.store.save(listing.takeAssetId)
+        syncCollectionStats(listing.takeAssetId.collection.id)
+    } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
             listing.makeAssetId.bestListing = null
