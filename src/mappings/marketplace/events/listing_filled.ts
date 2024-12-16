@@ -134,12 +134,16 @@ export async function listingFilled(
         id: `${listingId}-${item.id}`,
         amount: data.amountFilled,
         buyer: new Account({ id: data.buyer }),
-        price: listing.price,
+        price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
         listing,
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    listing.makeAssetId.lastSale = sale
+    if (listing.state.listingType === ListingType.Offer) {
+        listing.takeAssetId.lastSale = sale
+    } else {
+        listing.makeAssetId.lastSale = sale
+    }
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
