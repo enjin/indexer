@@ -38,6 +38,7 @@ export class TokenSalesHistoryResolver {
             .createQueryBuilder('listing_sale')
             .leftJoinAndMapOne('listing_sale.listing', Listing, 'listing', 'listing_sale.listing_id = listing.id')
             .where('listing.make_asset_id_id = :id', { id })
+            .orWhere('listing.take_asset_id_id = :id', { id })
             .select('DATE(listing_sale.created_at) AS day')
             .addSelect('COUNT(*) AS trades')
             .addSelect('SUM(listing_sale.price) AS price')

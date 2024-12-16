@@ -134,16 +134,23 @@ export async function listingFilled(
         id: `${listingId}-${item.id}`,
         amount: data.amountFilled,
         buyer: new Account({ id: data.buyer }),
-        price: listing.price,
+        price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
         listing,
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    listing.makeAssetId.lastSale = sale
+    if (listing.state.listingType === ListingType.Offer) {
+        listing.takeAssetId.lastSale = sale
+    } else {
+        listing.makeAssetId.lastSale = sale
+    }
 
     await Promise.all([ctx.store.save(listing), ctx.store.save(sale)])
 
-    if (listing.data.listingType !== ListingType.Offer) {
+    if (listing.data.listingType === ListingType.Offer) {
+        await ctx.store.save(listing.takeAssetId)
+        syncCollectionStats(listing.takeAssetId.collection.id)
+    } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
             listing.makeAssetId.bestListing = null
