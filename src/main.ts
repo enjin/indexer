@@ -18,7 +18,6 @@ import { getTankDataFromCall } from './mappings/fuelTanks/common'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
 import { nodeProfilingIntegration } from '@sentry/profiling-node'
-import reSyncInfusion from './re-sync-infusion'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -213,8 +212,6 @@ function getParticipants(args: any, _events: EventItem[], signer: string): strin
     return Array.from(accounts)
 }
 
-let hasInfusionFixExecuted = false
-
 processor.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
@@ -222,11 +219,6 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            if (!hasInfusionFixExecuted) {
-                await reSyncInfusion(ctx as unknown as CommonContext, ctx.blocks[0].header)
-                hasInfusionFixExecuted = true
-            }
-
             ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 
             for (const block of ctx.blocks) {
