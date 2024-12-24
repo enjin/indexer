@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { BlockHeader, CommonContext } from './mappings/types/contexts'
 import { MoreThan } from 'typeorm'
 import { Token } from './model'
@@ -8,6 +9,9 @@ const syncToken = async (ctx: CommonContext, block: BlockHeader, token: Token) =
         const [collectionId, tokenId] = token.id.split('-')
         const data = await multiTokens.tokens.matrixEnjinV1012.get(block, BigInt(collectionId), BigInt(tokenId))
         if (!data) throw new Error(`Data not found for token ${token.id}`)
+        console.log(
+            `[reSyncInfusion] Updating token ${token.id} with infusion ${data.infusion}, exisiting infusion ${token.infusion}`
+        )
         token.infusion = data.infusion
         await ctx.store.save(token)
     }
