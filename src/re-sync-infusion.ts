@@ -14,6 +14,8 @@ const syncToken = async (ctx: CommonContext, block: BlockHeader, token: Token) =
 }
 
 export default async function reSyncInfusion(ctx: CommonContext, block: BlockHeader): Promise<void> {
+    console.log(`[reSyncInfusion] Updating assets with infusion`)
+
     const assetsWithInfusion = await ctx.store.find(Token, { where: { infusion: MoreThan(0n) } })
 
     for (const asset of assetsWithInfusion) {
