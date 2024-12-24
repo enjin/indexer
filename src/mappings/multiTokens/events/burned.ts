@@ -90,8 +90,11 @@ export async function burned(
 
     if (token) {
         token.supply -= data.amount
-        computeTraits(data.collectionId.toString())
+        if (token.supply < 1n) {
+            token.infusion = 0n
+        }
         await ctx.store.save(token)
+        computeTraits(data.collectionId.toString())
         syncCollectionStats(data.collectionId.toString())
     } else {
         throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
