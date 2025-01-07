@@ -20,7 +20,7 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
   "dependencies": {
-    "@aws-sdk/client-sns": "^3.716.0",
+    "@aws-sdk/client-sns": "^3.723.0",
     "@bull-board/api": "^6.5.3",
     "@bull-board/express": "^6.5.3",
     "@polkadot/api": "^15.0.1",
