@@ -5,6 +5,7 @@ import * as matrixEnjinV1005 from '../matrixEnjinV1005'
 import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixEnjinV1014 from '../matrixEnjinV1014'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -490,6 +491,22 @@ export const migrationStep =  {
              * The migration phase
              */
             phase: sts.number(),
+        })
+    ),
+}
+
+export const listingRemovedUnderMinimum =  {
+    name: 'Marketplace.ListingRemovedUnderMinimum',
+    /**
+     * Tried to settle a listing with take value under the minimum requirement
+     */
+    matrixEnjinV1014: new EventType(
+        'Marketplace.ListingRemovedUnderMinimum',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1014.H256,
         })
     ),
 }
