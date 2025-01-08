@@ -50,8 +50,7 @@ The indexer is composed of 4 containers
 The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
-npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.blockchain.enjin.io --out typegen/matrixVersion.jsonl
-npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.canary.enjin.io --out typegen/canaryVersion.jsonl
+npm run metadata:fetch
 ```
 
 In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Matrixchain** so make sure you save them and use the proper WSS endpoint to gather them.
@@ -61,7 +60,7 @@ In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Ma
 The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadata from **Enjin Matrixchain** and **Canary Matrixchain** into a single file. Then you can use the following command:
 
 ```bash
-npx squid-substrate-typegen typegen/typegen.json
+npm run metadata:typegen
 ```
 
 ## Codegen
@@ -69,7 +68,7 @@ npx squid-substrate-typegen typegen/typegen.json
 The codegen tool is used for generating the model classes based on the GraphQL schema. If you edit the `schema.graphql` you should regenerate it by running:
 
 ```bash
-npx squid-typeorm-codegen
+npm run schema:codegen
 ```
 
 ## Migrations
