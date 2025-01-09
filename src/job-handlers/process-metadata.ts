@@ -96,24 +96,21 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             if (uriAttribute && uriAttribute.value) {
                 metadataOriginType = MetadataOriginType.Offchain
-                metadataOriginUrl = uriAttribute.value.replace('ipfs://', 'https://ipfs.io/ipfs/')
-
-                if (uriAttribute.value.startsWith('ipfs://')) {
-                    metadataOriginType = MetadataOriginType.Ipfs
-                }
+                metadataOriginUrl = uriAttribute.value
             } else {
                 for (const a of attributes) {
                     if (a.key === 'fallback_image' || a.key === 'image' || a.key === 'media') {
-                        metadataOriginType = MetadataOriginType.Onchain
+                        metadataOriginType = MetadataOriginType.Offchain
                         if (a.key === 'media') {
                             const firstUrl = parseMedia(a.value)?.at(0)?.url
                             if (firstUrl) {
                                 metadataOriginUrl = firstUrl
-                                if (firstUrl.startsWith('ipfs://')) {
-                                    metadataOriginType = MetadataOriginType.Ipfs
-                                }
                                 break
                             }
+                        }
+
+                        if (a.value) {
+                            metadataOriginUrl = a.value
                         }
                     }
                 }
@@ -122,8 +119,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             let externalMetadata: any = {}
             let metadata = new Metadata({
                 lastUpdated: new Date(),
-                originUrl: metadataOriginUrl,
-                originType: metadataOriginType,
+                originUrl: metadataOriginUrl ? metadataOriginUrl.replace('ipfs://', 'https://ipfs.io/ipfs/') : null,
+                originType: metadataOriginUrl?.startsWith('ipfs://') ? MetadataOriginType.Ipfs : metadataOriginType,
             })
 
             if (uriAttribute) {
