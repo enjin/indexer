@@ -382,10 +382,13 @@ processor.run(
 
                     if (event) {
                         if (Array.isArray(event)) {
-                            eventsCollection.push(event[0])
-                            accountTokenEvents.push(event[1])
+                            ctx.store.insert(event[0])
+                            ctx.store.insert(event[1])
+                            // eventsCollection.push(event[0])
+                            // accountTokenEvents.push(event[1])
                         } else {
-                            eventsCollection.push(event)
+                            ctx.store.insert(event)
+                            // eventsCollection.push(event)
                         }
                     }
                 }
@@ -396,8 +399,8 @@ processor.run(
                 }
 
                 _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
