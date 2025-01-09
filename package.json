@@ -65,7 +65,7 @@
     "@types/lodash": "^4.17.14",
     "@types/mime-types": "^2.1.4",
     "@types/node": "^22.8.6",
-    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
