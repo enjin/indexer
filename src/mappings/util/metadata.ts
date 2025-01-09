@@ -68,7 +68,7 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
     }
 }
 
-function parseMedia(value: string | Media[]) {
+export function parseMedia(value: string | Media[]) {
     try {
         const media = typeof value === 'string' ? JSON.parse(value) : value
         if (typeof media === 'object' && Array.isArray(media)) {

@@ -2,6 +2,7 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {MetadataMedia} from "./_metadataMedia"
 import {MetadataMeta} from "./_metadataMeta"
+import {MetadataOriginType} from "./_metadataOriginType"
 
 export class Metadata {
     private _name!: string | undefined | null
@@ -11,6 +12,9 @@ export class Metadata {
     private _fallbackImage!: string | undefined | null
     private _media!: (MetadataMedia | undefined | null)[] | undefined | null
     private _meta!: MetadataMeta | undefined | null
+    private _originUrl!: string | undefined | null
+    private _originType!: MetadataOriginType | undefined | null
+    private _lastUpdated!: Date | undefined | null
     private _attributes!: unknown | undefined | null
 
     constructor(props?: Partial<Omit<Metadata, 'toJSON'>>, json?: any) {
@@ -23,6 +27,9 @@ export class Metadata {
             this._fallbackImage = json.fallbackImage == null ? undefined : marshal.string.fromJSON(json.fallbackImage)
             this._media = json.media == null ? undefined : marshal.fromList(json.media, val => val == null ? undefined : new MetadataMedia(undefined, val))
             this._meta = json.meta == null ? undefined : new MetadataMeta(undefined, json.meta)
+            this._originUrl = json.originUrl == null ? undefined : marshal.string.fromJSON(json.originUrl)
+            this._originType = json.originType == null ? undefined : marshal.enumFromJson(json.originType, MetadataOriginType)
+            this._lastUpdated = json.lastUpdated == null ? undefined : marshal.datetime.fromJSON(json.lastUpdated)
             this._attributes = json.attributes
         }
     }
@@ -83,6 +90,30 @@ export class Metadata {
         this._meta = value
     }
 
+    get originUrl(): string | undefined | null {
+        return this._originUrl
+    }
+
+    set originUrl(value: string | undefined | null) {
+        this._originUrl = value
+    }
+
+    get originType(): MetadataOriginType | undefined | null {
+        return this._originType
+    }
+
+    set originType(value: MetadataOriginType | undefined | null) {
+        this._originType = value
+    }
+
+    get lastUpdated(): Date | undefined | null {
+        return this._lastUpdated
+    }
+
+    set lastUpdated(value: Date | undefined | null) {
+        this._lastUpdated = value
+    }
+
     get attributes(): unknown | undefined | null {
         return this._attributes
     }
@@ -100,6 +131,9 @@ export class Metadata {
             fallbackImage: this.fallbackImage,
             media: this.media == null ? undefined : this.media.map((val: any) => val == null ? undefined : val.toJSON()),
             meta: this.meta == null ? undefined : this.meta.toJSON(),
+            originUrl: this.originUrl,
+            originType: this.originType,
+            lastUpdated: this.lastUpdated == null ? undefined : marshal.datetime.toJSON(this.lastUpdated),
             attributes: this.attributes,
         }
     }

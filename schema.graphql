@@ -732,6 +732,13 @@ type MetadataMedia {
   type: String
 }
 
+enum MetadataOriginType {
+  Onchain
+  Offchain
+  Ipfs
+  Unknown
+}
+
 type Metadata {
   name: String
   description: String
@@ -740,6 +747,9 @@ type Metadata {
   fallbackImage: String
   media: [MetadataMedia]
   meta: MetadataMeta
+  originUrl: String
+  originType: MetadataOriginType
+  lastUpdated: DateTime
   attributes: JSON
 }
 
