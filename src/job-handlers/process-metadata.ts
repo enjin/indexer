@@ -2,8 +2,8 @@ import { EntityManager, IsNull } from 'typeorm'
 import Queue from 'bull'
 import connection from '../connection'
 import { JobData, processMetadata } from '../jobs/process-metadata'
-import { Attribute, Collection, Metadata, Token } from '../model'
-import { fetchMetadata, metadataParser } from '../mappings/util/metadata'
+import { Attribute, Collection, Metadata, MetadataOriginType, Token } from '../model'
+import { fetchMetadata, metadataParser, parseMedia } from '../mappings/util/metadata'
 
 type MetadataType = {
     id: string
@@ -78,6 +78,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             }
 
             let uriAttribute = null
+            let metadataOriginType = MetadataOriginType.Unknown
+            let metadataOriginUrl = null
 
             if (collectionUriAttribute && collectionUriAttribute.value.includes('{id}')) {
                 uriAttribute = { ...collectionUriAttribute, value: collectionUriAttribute.value.replace('{id}', resource.id) }
@@ -92,8 +94,34 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
                 uriAttribute = { ...uriAttribute, value: uriAttribute.value.replace('{id}', resource.id) }
             }
 
+            if (uriAttribute && uriAttribute.value) {
+                metadataOriginType = MetadataOriginType.Offchain
+                metadataOriginUrl = uriAttribute.value
+            } else {
+                for (const a of attributes) {
+                    if (a.key === 'fallback_image' || a.key === 'image' || a.key === 'media') {
+                        metadataOriginType = MetadataOriginType.Offchain
+                        if (a.key === 'media') {
+                            const firstUrl = parseMedia(a.value)?.at(0)?.url
+                            if (firstUrl) {
+                                metadataOriginUrl = firstUrl
+                                break
+                            }
+                        }
+
+                        if (a.value) {
+                            metadataOriginUrl = a.value
+                        }
+                    }
+                }
+            }
+
             let externalMetadata: any = {}
-            let metadata = new Metadata()
+            let metadata = new Metadata({
+                lastUpdated: new Date(),
+                originUrl: metadataOriginUrl ? metadataOriginUrl.replace('ipfs://', 'https://ipfs.io/ipfs/') : null,
+                originType: metadataOriginUrl?.startsWith('ipfs://') ? MetadataOriginType.Ipfs : metadataOriginType,
+            })
 
             if (uriAttribute) {
                 const response = await em.connection.query<MetadataType[]>(
