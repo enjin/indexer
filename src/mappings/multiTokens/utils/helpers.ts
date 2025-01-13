@@ -25,7 +25,7 @@ export function isNonFungible(token: Token): boolean {
     if (token.cap?.type === CapType.SingleMint) {
         // If the token is set as SingleMint and only one was minted it is non-fungible
         // If more than one was minted it is fungible.
-        return token.supply === 1n
+        return token.supply <= 1n
     }
 
     // All other cases we can't be sure if it is fungible or non-fungible.
