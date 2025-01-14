@@ -36,6 +36,9 @@ const server = http.createServer(async (req, res) => {
         await throttledUpdateMetrics()
         res.setHeader('Content-Type', register.contentType)
         res.end(await register.metrics())
+    } else if (req.url === '/health') {
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ status: 'ok' }))
     } else {
         res.writeHead(404)
         res.end()
