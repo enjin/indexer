@@ -591,7 +591,6 @@ union TokenCap = TokenCapSingleMint | TokenCapSupply
 
 type TokenCapSingleMint {
   type: CapType!
-  supply: BigInt!
 }
 
 type TokenCapSupply {
