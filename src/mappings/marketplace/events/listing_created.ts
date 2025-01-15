@@ -19,7 +19,6 @@ import {
     OfferData,
     OfferState,
     Token,
-    TokenAccount,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -46,12 +45,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnknownVersionError(events.marketplace.listingCreated.name)
 }
 
-async function getEvent(
-    ctx: CommonContext,
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
     event = new EventModel({
@@ -78,21 +72,12 @@ async function getEvent(
         })
     }
 
-    let to = null
-    if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
-        if (tokenOwner) {
-            to = tokenOwner.account
-        }
-    }
-
     return [
         event,
         new AccountTokenEvent({
             id: item.id,
             token: new Token({ id: event.tokenId! }),
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
-            to,
             event,
         }),
     ]
@@ -225,5 +210,5 @@ export async function listingCreated(
         })
     }
 
-    return await getEvent(ctx, item, data, listing)
+    return getEvent(item, data)
 }
