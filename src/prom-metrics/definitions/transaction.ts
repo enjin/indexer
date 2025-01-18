@@ -34,7 +34,9 @@ export default async () => {
 
     const [extrinsicsTotal, enjTransferTotal, tokenTransferTotal] = await Promise.all([
         em.query('SELECT COUNT(*) FROM extrinsic WHERE success = true'),
-        em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'Balances' AND success = true"),
+        em.query(
+            "SELECT COUNT(*) FROM extrinsic WHERE method IN ('transfer', 'transfer_keep_alive', 'transfer_allow_death', 'force_transfer', 'transfer_all') AND pallet = 'Balances' AND success = true"
+        ),
         em.query("SELECT COUNT(*) FROM extrinsic WHERE method = 'transfer' AND pallet = 'MultiTokens' AND success = true"),
     ])
 
