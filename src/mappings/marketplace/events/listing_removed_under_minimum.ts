@@ -8,8 +8,7 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    MarketplaceListingCancelled,
-    MarketplaceOfferCancelled,
+    MarketplaceListingRemovedUnderMinimum,
     Token,
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -26,31 +25,16 @@ function getEventData(event: EventItem) {
 }
 
 function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
-    let event: EventModel
-
-    event = new EventModel({
+    const event = new EventModel({
         id: item.id,
-        name: MarketplaceListingCancelled.name,
+        name: MarketplaceListingRemovedUnderMinimum.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: listing.makeAssetId.collection.id,
         tokenId: listing.makeAssetId.id,
-        data: new MarketplaceListingCancelled({
+        data: new MarketplaceListingRemovedUnderMinimum({
             listing: listing.id,
         }),
     })
-
-    if (listing.type === ListingType.Offer) {
-        event = new EventModel({
-            id: item.id,
-            name: MarketplaceOfferCancelled.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
-            data: new MarketplaceOfferCancelled({
-                listing: listing.id,
-            }),
-        })
-    }
 
     return [
         event,
