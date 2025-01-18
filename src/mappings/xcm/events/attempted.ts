@@ -8,6 +8,10 @@ import config from '../../../config'
 
 async function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'PolkadotXcm.limited_teleport_assets') {
+        if (calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is(call)) {
+            return calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call)
+        }
+
         if (calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV603.decode(call)
         }
@@ -20,6 +24,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'PolkadotXcm.teleport_assets') {
+        if (calls.polkadotXcm.teleportAssets.matrixEnjinV1012.is(call)) {
+            return calls.polkadotXcm.teleportAssets.matrixEnjinV1012.decode(call)
+        }
+
         if (calls.polkadotXcm.teleportAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.teleportAssets.matrixEnjinV603.decode(call)
         }
@@ -31,6 +39,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'PolkadotXcm.limited_reserve_transfer_assets') {
+        if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV1012.is(call)) {
+            return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
+        }
+
         if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
         }
@@ -45,6 +57,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         const data = call.name === 'FuelTanks.dispatch' ? calls.fuelTanks.dispatch : calls.fuelTanks.dispatchAndTouch
 
         let callData: any = null
+
+        if (data.matrixEnjinV1012.is(call)) {
+            callData = data.matrixEnjinV1012.decode(call)
+        }
 
         if (data.matrixEnjinV1005.is(call)) {
             callData = data.matrixEnjinV1005.decode(call)
@@ -113,7 +129,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             return callData!.call.value
         }
 
-        return undefined
+        throw new Error('Unsupported call')
     }
 
     throw new UnsupportedCallError(call.name)
