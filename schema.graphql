@@ -897,6 +897,7 @@ type Listing @entity {
   deadListing: Boolean
   isActive: Boolean! @index
   type: ListingType! @index
+  hasRoyaltyIncreased: Boolean @index
 
   createdAt: DateTime! @index
   updatedAt: DateTime!
