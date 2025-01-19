@@ -134,6 +134,8 @@ async function handleEvents(
             return map.marketplace.events.counterOfferAnswered(ctx, block, item)
         case events.marketplace.counterOfferRemoved.name:
             return map.marketplace.events.counterOfferRemoved(ctx, block, item)
+        case events.marketplace.listingRemovedUnderMinimum.name:
+            return map.marketplace.events.listingRemovedUnderMinimum(ctx, block, item)
         case events.polkadotXcm.attempted.name:
             return map.xcm.events.attempted(ctx, block, item)
         case events.fuelTanks.accountAdded.name:
