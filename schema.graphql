@@ -819,6 +819,8 @@ type OfferState {
   counterOfferCount: Int!
 }
 
+union ListingState = FixedPriceState | AuctionState | OfferState
+
 type Bid @entity {
   id: ID!
 
@@ -834,7 +836,7 @@ type Bid @entity {
   createdAt: DateTime!
 }
 
-union ListingState = FixedPriceState | AuctionState | OfferState
+
 
 enum ListingStatusType {
   Active
