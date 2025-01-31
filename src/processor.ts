@@ -69,6 +69,7 @@ export const processor = new SubstrateBatchProcessor()
             events.marketplace.counterOfferPlaced.name,
             events.marketplace.counterOfferAnswered.name,
             events.marketplace.counterOfferRemoved.name,
+            events.marketplace.listingRemovedUnderMinimum.name,
             events.polkadotXcm.attempted.name,
             events.fuelTanks.accountAdded.name,
             events.fuelTanks.accountRemoved.name,

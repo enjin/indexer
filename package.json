@@ -57,7 +57,7 @@
     "web3-validator": "^2.0.6"
   },
   "devDependencies": {
-    "@polkadot/typegen": "^15.2.1",
+    "@polkadot/typegen": "^15.3.1",
     "@subsquid/substrate-metadata-explorer": "^3.1.2",
     "@subsquid/substrate-typegen": "^8.0.2",
     "@subsquid/typeorm-codegen": "^2.0.2",
@@ -67,9 +67,9 @@
     "@types/node": "^22.8.6",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
-    "eslint": "^9.17.0",
+    "eslint": "^9.18.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-prettier": "^5.2.2",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3"
   },

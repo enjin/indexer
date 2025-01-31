@@ -87,6 +87,10 @@ export class Listing {
     type!: ListingType
 
     @Index_()
+    @BooleanColumn_({nullable: true})
+    hasRoyaltyIncreased!: boolean | undefined | null
+
+    @Index_()
     @DateTimeColumn_({nullable: false})
     createdAt!: Date
 
