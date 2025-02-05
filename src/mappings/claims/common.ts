@@ -21,7 +21,9 @@ async function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
         return claims.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnsupportedEventError('Claims.TotalUnclaimedAmount')
+    // In case the delay period doesn't match the type, this could happen at genesis for example
+    // We just return the current default value for the blockchain
+    return 7200
 }
 
 async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {

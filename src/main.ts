@@ -1,6 +1,5 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
-import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
@@ -224,7 +223,9 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            ctx.log.info(`Last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
+            ctx.log.info(
+                `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
+            )
 
             for (const block of ctx.blocks) {
                 // const extrinsics: Extrinsic[] = []
@@ -406,7 +407,7 @@ processor.run(
 
                 // _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
                 // _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                // _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                //  _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

@@ -35,14 +35,12 @@ import { getOrCreateAccount } from '../../util/entities'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
-        console.log(`Cap: ${cap.value}`)
         return new TokenCapSupply({
             type: CapType.Supply,
             supply: cap.value,
         })
     }
 
-    console.log(`Cap: ${cap.__kind === 'CollapsingSupply' ? cap.value : 0n}`)
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
         supply: cap.__kind === 'CollapsingSupply' ? cap.value : 0n,
@@ -707,10 +705,8 @@ export async function tokenCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(item)
-    console.log(eventData)
     if (!eventData) return undefined
 
-    console.log(`Token ${eventData.collectionId}-${eventData.tokenId} created`)
     if (skipSave && item.call) {
         const token = await ctx.store.findOne(Token, {
             where: { id: `${eventData.collectionId}-${eventData.tokenId}` },

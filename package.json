@@ -2,7 +2,7 @@
   "name": "matrixchain-indexer",
   "private": true,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
@@ -78,5 +78,8 @@
     "@subsquid/util-internal-hex": "1.2.2",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.11"
+  },
+  "volta": {
+    "node": "20.18.2"
   }
 }
