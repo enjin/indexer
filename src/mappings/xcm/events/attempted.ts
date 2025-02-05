@@ -112,11 +112,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             callData = data.v500.decode(call)
         }
 
-        ctx.log.info(`Kind: ${callData?.call._kind}`)
-        ctx.log.info(`Value Kind: ${callData?.call.value.__kind}`)
-        ctx.log.info(callData?.call)
-
-        if (callData?.call.value.__kind in ['teleport_assets', 'limited_teleport_assets']) {
+        if (
+            callData?.call.__kind === 'PolkadotXcm' &&
+            ['teleport_assets', 'limited_teleport_assets'].includes(callData?.call.value.__kind)
+        ) {
             return callData!.call.value
         }
     }
