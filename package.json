@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "build:prod": "rm -rf lib && tsc && npm run sentry:sourcemaps && npm run sentry:sourcemaps",
+    "build:prod": "rm -rf lib && tsc && npm run sentry:sourcemaps",
     "db:migrate": "npx squid-typeorm-migration apply",
     "processor:start": "node -r dotenv/config lib/main.js",
     "query-node:start": "squid-graphql-server --subscriptions",
