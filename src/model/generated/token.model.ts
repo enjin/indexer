@@ -51,7 +51,11 @@ export class Token {
     @Column_('jsonb', {
         transformer: {
             to: (obj) => (obj == null ? undefined : obj.toJSON()),
-            from: (obj) => (obj == null ? undefined : fromJsonTokenCap(obj)),
+            from: (obj) => {
+                console.log(this.id)
+                console.log(obj)
+                return obj == null ? undefined : fromJsonTokenCap(obj)
+            },
         },
         nullable: true,
     })
