@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/node'
+import { CallItem } from 'matrixchain-indexer/mappings/types/contexts'
 
 export class UnknownVersionError extends Error {
     constructor(name: string) {
@@ -7,8 +8,8 @@ export class UnknownVersionError extends Error {
 }
 
 export class UnsupportedCallError extends Error {
-    constructor(name: string) {
-        super(`${name} is not supported`)
+    constructor(call: CallItem) {
+        super(`${call.name} at ${call.block.height} is not supported`)
     }
 }
 

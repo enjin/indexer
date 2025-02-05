@@ -111,17 +111,18 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             callData = data.v500.decode(call)
         }
 
+        ctx.log.info(callData?.call._kind)
+        ctx.log.info(callData?.call.value.__kind)
+
         if (
             callData?.call.__kind === 'PolkadotXcm' &&
             callData?.call.value.__kind in ['teleport_assets', 'limited_teleport_assets']
         ) {
             return callData!.call.value
         }
-
-        throw new Error('Unsupported call')
     }
 
-    throw new UnsupportedCallError(call.name)
+    throw new UnsupportedCallError(call)
 }
 
 export async function attempted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

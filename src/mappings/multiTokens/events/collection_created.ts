@@ -198,7 +198,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         throw new UnknownVersionError(calls.multiTokens.forceCreateEthereumCollection.name)
     }
 
-    throw new UnsupportedCallError(call.name)
+    throw new UnsupportedCallError(call)
 }
 
 function getEventData(event: EventItem) {
