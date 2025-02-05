@@ -74,6 +74,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         if (data.matrixEnjinV603.is(call)) {
             callData = data.matrixEnjinV603.decode(call)
         }
+
         if (data.v1012.is(call)) {
             callData = data.v1012.decode(call)
         }
@@ -111,13 +112,11 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             callData = data.v500.decode(call)
         }
 
-        ctx.log.info(callData?.call._kind)
-        ctx.log.info(callData?.call.value.__kind)
+        ctx.log.info(`Kind: ${callData?.call._kind}`)
+        ctx.log.info(`Value Kind: ${callData?.call.value.__kind}`)
+        ctx.log.info(callData?.call)
 
-        if (
-            callData?.call.__kind === 'PolkadotXcm' &&
-            callData?.call.value.__kind in ['teleport_assets', 'limited_teleport_assets']
-        ) {
+        if (callData?.call.value.__kind in ['teleport_assets', 'limited_teleport_assets']) {
             return callData!.call.value
         }
     }
