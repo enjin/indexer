@@ -224,7 +224,7 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
+            ctx.log.info(`Last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 
             for (const block of ctx.blocks) {
                 // const extrinsics: Extrinsic[] = []
