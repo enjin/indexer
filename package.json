@@ -14,7 +14,7 @@
     "worker:start": "node -r dotenv/config lib/job-handlers/worker.js",
     "metadata:fetch": "rm -rf typegen/canaryVersion.jsonl typegen/matrixVersion.jsonl && npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.blockchain.enjin.io --out typegen/matrixVersion.jsonl && npx squid-substrate-metadata-explorer --rpc wss://archive.matrix.canary.enjin.io --out typegen/canaryVersion.jsonl",
     "metadata:typegen": "rm -rf typegen/chainSpecVersions.jsonl && cat typegen/matrixVersion.jsonl typegen/canaryVersion.jsonl > typegen/chainSpecVersions.jsonl && npx squid-substrate-typegen typegen/typegen.json",
-    "schema:codegen": "npx squid-substrate-typegen typegen/typegen.json",
+    "schema:codegen": "npx squid-typeorm-codegen",
     "generate:types": "npm run generate:defs && npm run generate:meta",
     "generate:defs": "npx tsx node_modules/.bin/polkadot-types-from-defs --package matrixchain-indexer/common/interfaces --input ./src/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io",
     "generate:meta": "npx tsx node_modules/.bin/polkadot-types-from-chain --package matrixchain-indexer/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io --output ./src/common/interfaces",

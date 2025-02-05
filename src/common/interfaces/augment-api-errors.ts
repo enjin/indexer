@@ -556,6 +556,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       RuleSetNotFound: AugmentedError<ApiType>;
       /**
+       * Cannot create a fuel tank with empty rule sets
+       **/
+      RuleSetsCannotBeEmpty: AugmentedError<ApiType>;
+      /**
        * Fuel tank cannot be used due to restrictions
        **/
       UsageRestricted: AugmentedError<ApiType>;
@@ -688,6 +692,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       BuyerIsSeller: AugmentedError<ApiType>;
       /**
+       * The seller cannot accept their own counter offer
+       **/
+      CannotAcceptOwnCounterOffer: AugmentedError<ApiType>;
+      /**
        * Cannot cancel auction after end block
        **/
       CannotCancelAuctionAfterEndBlock: AugmentedError<ApiType>;
@@ -740,6 +748,10 @@ declare module '@polkadot/api-base/types/errors' {
        * A listing with this id already exists
        **/
       ListingAlreadyExists: AugmentedError<ApiType>;
+      /**
+       * The listing is expired and cannot be filled
+       **/
+      ListingExpired: AugmentedError<ApiType>;
       /**
        * Listing is forbidden for this token
        **/

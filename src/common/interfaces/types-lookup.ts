@@ -2735,7 +2735,11 @@ declare module '@polkadot/types/lookup' {
       readonly itemsProcessed: u32;
       readonly phase: u8;
     } & Struct;
-    readonly type: 'ListingCreated' | 'ListingCancelled' | 'ListingFilled' | 'BidPlaced' | 'AuctionFinalized' | 'ProtocolFeeSet' | 'ExpiredListingRemoved' | 'CounterOfferPlaced' | 'CounterOfferAnswered' | 'CounterOfferRemoved' | 'MigrationStep';
+    readonly isListingRemovedUnderMinimum: boolean;
+    readonly asListingRemovedUnderMinimum: {
+      readonly listingId: H256;
+    } & Struct;
+    readonly type: 'ListingCreated' | 'ListingCancelled' | 'ListingFilled' | 'BidPlaced' | 'AuctionFinalized' | 'ProtocolFeeSet' | 'ExpiredListingRemoved' | 'CounterOfferPlaced' | 'CounterOfferAnswered' | 'CounterOfferRemoved' | 'MigrationStep' | 'ListingRemovedUnderMinimum';
   }
 
   /** @name PalletMarketplaceFeaturesListing (257) */
@@ -6676,7 +6680,8 @@ declare module '@polkadot/types/lookup' {
     readonly isFuelTankFrozen: boolean;
     readonly isCallerDoesNotHaveRuleSetTokenBalance: boolean;
     readonly isNoDataToRemove: boolean;
-    readonly type: 'FuelTankNotFound' | 'FuelTankAlreadyExists' | 'InsufficientBalance' | 'UsageRestricted' | 'FuelTankOutOfFunds' | 'RuleSetNotFound' | 'RuleNotFound' | 'NoPermission' | 'AccountAlreadyExists' | 'AccountNotFound' | 'DestroyWithExistingAccounts' | 'DestroyUnfrozenTank' | 'MaxRuleSetsExceeded' | 'UserRuleDataExceededMaxSize' | 'DecodeUserRuleDataFailed' | 'RequiresFrozenTankOrRuleset' | 'RequiresFrozenTank' | 'MissingRequiredRule' | 'MissingRequiredRuleUserData' | 'InvalidRuleSet' | 'AccountContainsRuleData' | 'CannotRemoveRuleThatIsStoringAccountData' | 'DuplicateRuleKinds' | 'DepositCalculationError' | 'FuelTankFrozen' | 'CallerDoesNotHaveRuleSetTokenBalance' | 'NoDataToRemove';
+    readonly isRuleSetsCannotBeEmpty: boolean;
+    readonly type: 'FuelTankNotFound' | 'FuelTankAlreadyExists' | 'InsufficientBalance' | 'UsageRestricted' | 'FuelTankOutOfFunds' | 'RuleSetNotFound' | 'RuleNotFound' | 'NoPermission' | 'AccountAlreadyExists' | 'AccountNotFound' | 'DestroyWithExistingAccounts' | 'DestroyUnfrozenTank' | 'MaxRuleSetsExceeded' | 'UserRuleDataExceededMaxSize' | 'DecodeUserRuleDataFailed' | 'RequiresFrozenTankOrRuleset' | 'RequiresFrozenTank' | 'MissingRequiredRule' | 'MissingRequiredRuleUserData' | 'InvalidRuleSet' | 'AccountContainsRuleData' | 'CannotRemoveRuleThatIsStoringAccountData' | 'DuplicateRuleKinds' | 'DepositCalculationError' | 'FuelTankFrozen' | 'CallerDoesNotHaveRuleSetTokenBalance' | 'NoDataToRemove' | 'RuleSetsCannotBeEmpty';
   }
 
   /** @name PalletMarketplaceMarketPlaceInfo (776) */
@@ -6720,7 +6725,9 @@ declare module '@polkadot/types/lookup' {
     readonly isCannotCounterSelf: boolean;
     readonly isMaxPendingListingIdsExceeded: boolean;
     readonly isCounterOfferExists: boolean;
-    readonly type: 'UnableToFill' | 'ListingNotFound' | 'NoPermission' | 'MaxRoundingErrorExceeded' | 'LowBaseCurrencyBalance' | 'LowTokenBalance' | 'TransferParamCreationFailed' | 'ReceivedValueUnderMinimum' | 'ListingAlreadyExists' | 'InvalidAuctionStart' | 'InvalidAuctionEnd' | 'InactiveAuction' | 'AuctionNotOver' | 'ListingIsWrongType' | 'InvalidAmount' | 'InvalidPrice' | 'ListingForbidden' | 'NoCurrency' | 'ListingNotActive' | 'CurrencyNotAllowedAsRoyalty' | 'BuyerIsSeller' | 'MakeAssetFrozen' | 'TakeAssetFrozen' | 'CannotCancelAuctionWithBid' | 'CannotCancelAuctionAfterEndBlock' | 'InvalidExpiration' | 'NotExpired' | 'NoCounterOffer' | 'PartialFillNotAllowed' | 'InvalidFeeSide' | 'WrongCurrentPrice' | 'CannotCounterSelf' | 'MaxPendingListingIdsExceeded' | 'CounterOfferExists';
+    readonly isListingExpired: boolean;
+    readonly isCannotAcceptOwnCounterOffer: boolean;
+    readonly type: 'UnableToFill' | 'ListingNotFound' | 'NoPermission' | 'MaxRoundingErrorExceeded' | 'LowBaseCurrencyBalance' | 'LowTokenBalance' | 'TransferParamCreationFailed' | 'ReceivedValueUnderMinimum' | 'ListingAlreadyExists' | 'InvalidAuctionStart' | 'InvalidAuctionEnd' | 'InactiveAuction' | 'AuctionNotOver' | 'ListingIsWrongType' | 'InvalidAmount' | 'InvalidPrice' | 'ListingForbidden' | 'NoCurrency' | 'ListingNotActive' | 'CurrencyNotAllowedAsRoyalty' | 'BuyerIsSeller' | 'MakeAssetFrozen' | 'TakeAssetFrozen' | 'CannotCancelAuctionWithBid' | 'CannotCancelAuctionAfterEndBlock' | 'InvalidExpiration' | 'NotExpired' | 'NoCounterOffer' | 'PartialFillNotAllowed' | 'InvalidFeeSide' | 'WrongCurrentPrice' | 'CannotCounterSelf' | 'MaxPendingListingIdsExceeded' | 'CounterOfferExists' | 'ListingExpired' | 'CannotAcceptOwnCounterOffer';
   }
 
   /** @name EpCoreFrameTypesExtrinsicInfo (780) */
