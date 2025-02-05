@@ -27,7 +27,6 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         if (calls.polkadotXcm.teleportAssets.matrixEnjinV1012.is(call)) {
             return calls.polkadotXcm.teleportAssets.matrixEnjinV1012.decode(call)
         }
-
         if (calls.polkadotXcm.teleportAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.teleportAssets.matrixEnjinV603.decode(call)
         }
@@ -42,7 +41,6 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV1012.is(call)) {
             return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
         }
-
         if (calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.is(call)) {
             return calls.polkadotXcm.limitedReserveTransferAssets.matrixEnjinV603.decode(call)
         }
@@ -61,63 +59,54 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         if (data.matrixEnjinV1012.is(call)) {
             callData = data.matrixEnjinV1012.decode(call)
         }
-
         if (data.matrixEnjinV1005.is(call)) {
             callData = data.matrixEnjinV1005.decode(call)
         }
-
         if (data.matrixEnjinV1004.is(call)) {
             callData = data.matrixEnjinV1004.decode(call)
         }
-
         if (data.matrixEnjinV1003.is(call)) {
             callData = data.matrixEnjinV1003.decode(call)
         }
-
         if (data.matrixEnjinV1000.is(call)) {
             callData = data.matrixEnjinV1000.decode(call)
         }
-
         if (data.matrixEnjinV603.is(call)) {
             callData = data.matrixEnjinV603.decode(call)
         }
-
+        if (data.v1012.is(call)) {
+            callData = data.v1012.decode(call)
+        }
+        if (data.v1011.is(call)) {
+            callData = data.v1011.decode(call)
+        }
         if (data.v1010.is(call)) {
             callData = data.v1010.decode(call)
         }
-
         if (data.v1005.is(call)) {
             callData = data.v1005.decode(call)
         }
-
         if (data.v1004.is(call)) {
             callData = data.v1004.decode(call)
         }
-
         if (data.v1003.is(call)) {
             callData = data.v1003.decode(call)
         }
-
         if (data.v1000.is(call)) {
             callData = data.v1000.decode(call)
         }
-
         if (data.v604.is(call)) {
             callData = data.v604.decode(call)
         }
-
         if (data.v602.is(call)) {
             callData = data.v602.decode(call)
         }
-
         if (data.v601.is(call)) {
             callData = data.v601.decode(call)
         }
-
         if (data.v600.is(call)) {
             callData = data.v600.decode(call)
         }
-
         if (data.v500.is(call)) {
             callData = data.v500.decode(call)
         }
