@@ -52,7 +52,6 @@ export class Token {
         transformer: {
             to: (obj) => (obj == null ? undefined : obj.toJSON()),
             from: (obj) => {
-                console.log(this.id)
                 console.log(obj)
                 return obj == null ? undefined : fromJsonTokenCap(obj)
             },
