@@ -127,6 +127,8 @@ export async function minted(
     syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
+        console.log(`Item ID: ${item.id}`)
+        console.log(`Item name: ${item.name}`)
         await Sns.getInstance().send({
             id: item.id,
             name: item.name,

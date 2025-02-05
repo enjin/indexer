@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "build:prod": "rm -rf lib && tsc && npm run sentry:sourcemaps",
+    "build:prod": "rm -rf lib && tsc && npm run sentry:sourcemaps && npm run sentry:sourcemaps",
     "db:migrate": "npx squid-typeorm-migration apply",
     "processor:start": "node -r dotenv/config lib/main.js",
     "query-node:start": "squid-graphql-server --subscriptions",
@@ -31,7 +31,6 @@
     "@polkadot/types": "^15.5.2",
     "@polkadot/util": "^13.3.1",
     "@polkadot/util-crypto": "^13.2.2",
-    "@sentry/cli": "^2.41.1",
     "@sentry/node": "^8.54.0",
     "@sentry/profiling-node": "^8.54.0",
     "@subsquid/archive-registry": "^3.3.2",
@@ -58,6 +57,7 @@
   },
   "devDependencies": {
     "@polkadot/typegen": "^15.5.2",
+    "@sentry/cli": "^2.41.1",
     "@subsquid/substrate-metadata-explorer": "^3.1.2",
     "@subsquid/substrate-typegen": "^8.0.2",
     "@subsquid/typeorm-codegen": "^2.0.2",
