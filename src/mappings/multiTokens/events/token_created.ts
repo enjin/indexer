@@ -42,7 +42,7 @@ export function getCapType(cap: TokenCap) {
         })
     }
 
-    console.log(`Cap: ${cap.value ?? 0n}`)
+    console.log(`Cap: ${cap.__kind === 'CollapsingSupply' ? cap.value : 0n}`)
     return new TokenCapSingleMint({
         type: CapType.SingleMint,
         supply: cap.__kind === 'CollapsingSupply' ? cap.value : 0n,
