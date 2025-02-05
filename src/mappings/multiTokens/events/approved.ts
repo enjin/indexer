@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import {
     CollectionAccount,
     TokenAccount,
@@ -18,7 +18,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return events.multiTokens.approved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.approved.name)
+    throw new UnsupportedEventError(events.multiTokens.approved.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

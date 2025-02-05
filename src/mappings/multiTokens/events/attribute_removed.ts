@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
@@ -10,7 +10,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return events.multiTokens.attributeRemoved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.attributeRemoved.name)
+    throw new UnsupportedEventError(events.multiTokens.attributeRemoved.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

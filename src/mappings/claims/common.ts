@@ -1,5 +1,5 @@
 import { CommonContext, BlockHeader } from '../types/contexts'
-import { UnknownVersionError } from '../../common/errors'
+import { UnsupportedEventError } from '../../common/errors'
 import { claims } from '../../types/generated/storage'
 import { ClaimDetails } from '../../model'
 
@@ -21,7 +21,7 @@ async function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
         return claims.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnknownVersionError('Claims.TotalUnclaimedAmount')
+    throw new UnsupportedEventError('Claims.TotalUnclaimedAmount')
 }
 
 async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {
@@ -37,7 +37,7 @@ async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {
         return claims.exchangeRate.v500.get(block)
     }
 
-    throw new UnknownVersionError('Claims.ExchangeRate')
+    throw new UnsupportedEventError('Claims.ExchangeRate')
 }
 
 export async function updateClaimDetails(ctx: CommonContext, block: BlockHeader) {

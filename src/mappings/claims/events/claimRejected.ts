@@ -1,5 +1,5 @@
 import { claims } from '../../../types/generated/events'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { ClaimRequest, ClaimDetails, Event as EventModel } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getTotalUnclaimedAmount } from '../common'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return claims.claimRejected.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(claims.claimRejected.matrixEnjinV603.name)
+    throw new UnsupportedEventError(claims.claimRejected.matrixEnjinV603.name)
 }
 
 export async function claimRejected(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

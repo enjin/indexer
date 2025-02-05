@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnsupportedEventError } from '../../../common/errors'
 import { events, calls } from '../../../types/generated'
 import { Event as EventModel, Identity, Registration } from '../../../model'
 import { CommonContext, CallItem, BlockHeader, EventItem } from '../../types/contexts'
@@ -10,7 +10,7 @@ function getEventData(event: EventItem) {
         return events.identity.subIdentityAdded.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(events.identity.subIdentityAdded.name)
+    throw new UnsupportedEventError(events.identity.subIdentityAdded.name)
 }
 
 function getCallData(call: CallItem) {
@@ -18,7 +18,7 @@ function getCallData(call: CallItem) {
         return calls.identity.addSub.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(calls.identity.addSub.name)
+    throw new UnsupportedEventError(calls.identity.addSub.name)
 }
 
 export async function subIdentityAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTank, FuelTankUserAccounts } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
@@ -21,7 +21,7 @@ function getEventData(event: EventItem) {
         return fuelTanks.accountAdded.v500.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.accountAdded.name)
+    throw new UnsupportedEventError(fuelTanks.accountAdded.name)
 }
 
 export async function accountAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -7,7 +7,7 @@ function getEventData(event: EventItem) {
     if (events.multiTokens.collectionAccountDestroyed.matrixEnjinV603.is(event)) {
         return events.multiTokens.collectionAccountDestroyed.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(events.multiTokens.collectionAccountDestroyed.name)
+    throw new UnsupportedEventError(events.multiTokens.collectionAccountDestroyed.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

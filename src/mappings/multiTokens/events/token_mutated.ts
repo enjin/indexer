@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Event as EventModel,
@@ -57,7 +57,7 @@ function getEventData(event: EventItem) {
         }
     }
 
-    throw new UnknownVersionError(events.multiTokens.tokenMutated.name)
+    throw new UnsupportedEventError(events.multiTokens.tokenMutated.name)
 }
 
 async function getBehavior(

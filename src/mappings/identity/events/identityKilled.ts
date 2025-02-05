@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Event as EventModel, Identity, Registration } from '../../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../types/contexts'
@@ -8,7 +8,7 @@ function getEventData(event: EventItem) {
         return events.identity.identityKilled.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(events.identity.identityKilled.name)
+    throw new UnsupportedEventError(events.identity.identityKilled.name)
 }
 
 export async function identityKilled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

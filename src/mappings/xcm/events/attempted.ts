@@ -1,5 +1,5 @@
 import { hexToU8a } from '@polkadot/util'
-import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
+import { UnsupportedEventError, UnsupportedCallError } from '../../../common/errors'
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../../model'
 import { calls } from '../../../types/generated'
 import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
@@ -20,7 +20,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.polkadotXcm.limitedTeleportAssets.v1010.decode(call)
         }
 
-        throw new UnknownVersionError(calls.polkadotXcm.limitedTeleportAssets.name)
+        throw new UnsupportedEventError(calls.polkadotXcm.limitedTeleportAssets.name)
     }
 
     if (call.name === 'PolkadotXcm.teleport_assets') {
@@ -34,7 +34,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.polkadotXcm.teleportAssets.v1010.decode(call)
         }
 
-        throw new UnknownVersionError(calls.polkadotXcm.teleportAssets.name)
+        throw new UnsupportedEventError(calls.polkadotXcm.teleportAssets.name)
     }
 
     if (call.name === 'PolkadotXcm.limited_reserve_transfer_assets') {
@@ -48,7 +48,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.polkadotXcm.limitedReserveTransferAssets.v1010.decode(call)
         }
 
-        throw new UnknownVersionError(calls.polkadotXcm.limitedReserveTransferAssets.name)
+        throw new UnsupportedEventError(calls.polkadotXcm.limitedReserveTransferAssets.name)
     }
 
     if (call.name === 'FuelTanks.dispatch_and_touch' || call.name === 'FuelTanks.dispatch') {

@@ -1,6 +1,6 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
-import { UnknownVersionError } from '../../common/errors'
+import { UnsupportedEventError } from '../../common/errors'
 import { Balance, Event as EventModel, Account } from '../../model'
 import { encodeId } from '../../common/tools'
 import { balances } from '../../types/generated/events'
@@ -11,49 +11,49 @@ function getBurnedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.burned.matrixEnjinV603.is(event)) {
         return balances.burned.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.burned.name)
+    throw new UnsupportedEventError(balances.burned.name)
 }
 
 function getFrozenAccount(ctx: CommonContext, event: EventItem) {
     if (balances.frozen.matrixEnjinV603.is(event)) {
         return balances.frozen.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.frozen.name)
+    throw new UnsupportedEventError(balances.frozen.name)
 }
 
 function getLockedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.locked.matrixEnjinV603.is(event)) {
         return balances.locked.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.locked.name)
+    throw new UnsupportedEventError(balances.locked.name)
 }
 
 function getMintedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.minted.matrixEnjinV603.is(event)) {
         return balances.minted.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.minted.name)
+    throw new UnsupportedEventError(balances.minted.name)
 }
 
 function getRestoredAccount(ctx: CommonContext, event: EventItem) {
     if (balances.restored.matrixEnjinV603.is(event)) {
         return balances.restored.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.restored.name)
+    throw new UnsupportedEventError(balances.restored.name)
 }
 
 function getSuspendedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.suspended.matrixEnjinV603.is(event)) {
         return balances.suspended.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.suspended.name)
+    throw new UnsupportedEventError(balances.suspended.name)
 }
 
 function getThawedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.thawed.matrixEnjinV603.is(event)) {
         return balances.thawed.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.thawed.name)
+    throw new UnsupportedEventError(balances.thawed.name)
 }
 
 function getUnlockedAccount(ctx: CommonContext, event: EventItem) {
@@ -61,7 +61,7 @@ function getUnlockedAccount(ctx: CommonContext, event: EventItem) {
         return balances.unlocked.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.unlocked.name)
+    throw new UnsupportedEventError(balances.unlocked.name)
 }
 
 function getDustLostAccount(ctx: CommonContext, event: EventItem) {
@@ -69,7 +69,7 @@ function getDustLostAccount(ctx: CommonContext, event: EventItem) {
         return balances.dustLost.matrixEnjinV603.decode(event).account
     }
 
-    throw new UnknownVersionError(balances.dustLost.name)
+    throw new UnsupportedEventError(balances.dustLost.name)
 }
 
 function getBalanceSetAccount(ctx: CommonContext, event: EventItem) {
@@ -85,21 +85,21 @@ function getBalanceSetAccount(ctx: CommonContext, event: EventItem) {
         return balances.balanceSet.v500.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.balanceSet.name)
+    throw new UnsupportedEventError(balances.balanceSet.name)
 }
 
 function getTransferAccounts(ctx: CommonContext, event: EventItem) {
     if (balances.transfer.matrixEnjinV603.is(event)) {
         return [balances.transfer.matrixEnjinV603.decode(event).from, balances.transfer.matrixEnjinV603.decode(event).to]
     }
-    throw new UnknownVersionError(balances.transfer.name)
+    throw new UnsupportedEventError(balances.transfer.name)
 }
 
 function getEndowedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.endowed.matrixEnjinV603.is(event)) {
         return balances.endowed.matrixEnjinV603.decode(event).account
     }
-    throw new UnknownVersionError(balances.endowed.name)
+    throw new UnsupportedEventError(balances.endowed.name)
 }
 
 function getDepositAccount(ctx: CommonContext, event: EventItem) {
@@ -107,7 +107,7 @@ function getDepositAccount(ctx: CommonContext, event: EventItem) {
         return balances.deposit.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.deposit.name)
+    throw new UnsupportedEventError(balances.deposit.name)
 }
 
 function getReservedAccount(ctx: CommonContext, event: EventItem) {
@@ -115,7 +115,7 @@ function getReservedAccount(ctx: CommonContext, event: EventItem) {
         return balances.reserved.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.reserved.name)
+    throw new UnsupportedEventError(balances.reserved.name)
 }
 
 function getUnreservedAccount(ctx: CommonContext, event: EventItem) {
@@ -123,7 +123,7 @@ function getUnreservedAccount(ctx: CommonContext, event: EventItem) {
         return balances.unreserved.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.unreserved.name)
+    throw new UnsupportedEventError(balances.unreserved.name)
 }
 
 function getWithdrawAccount(ctx: CommonContext, event: EventItem) {
@@ -131,14 +131,14 @@ function getWithdrawAccount(ctx: CommonContext, event: EventItem) {
         return balances.withdraw.matrixEnjinV603.decode(event).who
     }
 
-    throw new UnknownVersionError(balances.withdraw.name)
+    throw new UnsupportedEventError(balances.withdraw.name)
 }
 
 function getSlashedAccount(ctx: CommonContext, event: EventItem) {
     if (balances.slashed.matrixEnjinV603.is(event)) {
         return balances.slashed.matrixEnjinV603.decode(event).who
     }
-    throw new UnknownVersionError(balances.slashed.name)
+    throw new UnsupportedEventError(balances.slashed.name)
 }
 
 function getReserveRepatriatedAccounts(ctx: CommonContext, event: EventItem) {
@@ -148,7 +148,7 @@ function getReserveRepatriatedAccounts(ctx: CommonContext, event: EventItem) {
             balances.reserveRepatriated.matrixEnjinV603.decode(event).to,
         ]
     }
-    throw new UnknownVersionError(balances.reserveRepatriated.name)
+    throw new UnsupportedEventError(balances.reserveRepatriated.name)
 }
 
 async function getSystemAccountBalances(ctx: CommonContext, block: BlockHeader, accounts: string[]) {
@@ -164,7 +164,7 @@ async function getSystemAccountBalances(ctx: CommonContext, block: BlockHeader, 
         return systemAccount.v500.getMany(block, accounts)
     }
 
-    throw new UnknownVersionError('system.account')
+    throw new UnsupportedEventError('system.account')
 }
 
 function processBalancesEventItem(ctx: CommonContext, event: EventItem) {

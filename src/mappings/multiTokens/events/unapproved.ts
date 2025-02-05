@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensUnapproved, TokenAccount } from '../../../model'
 import { encodeId } from '../../../common/tools'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
     if (events.multiTokens.unapproved.matrixEnjinV603.is(event)) {
         return events.multiTokens.unapproved.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(events.multiTokens.unapproved.name)
+    throw new UnsupportedEventError(events.multiTokens.unapproved.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

@@ -2,14 +2,14 @@ import { hexToString } from '@polkadot/util'
 import { TokenAccount } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 
 function getEventData(eventItem: EventItem) {
     if (events.multiTokens.unreserved.matrixEnjinV603.is(eventItem)) {
         return events.multiTokens.unreserved.matrixEnjinV603.decode(eventItem)
     }
 
-    throw new UnknownVersionError(events.multiTokens.unreserved.name)
+    throw new UnsupportedEventError(events.multiTokens.unreserved.name)
 }
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {

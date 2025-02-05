@@ -1,4 +1,4 @@
-import { UnknownVersionError, UnsupportedCallError } from '../../../common/errors'
+import { UnsupportedEventError, UnsupportedCallError } from '../../../common/errors'
 import { events, calls, storage } from '../../../types/generated'
 import {
     Collection,
@@ -91,7 +91,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.forceCreateCollection.name)
+        throw new UnsupportedEventError(calls.multiTokens.forceCreateCollection.name)
     }
 
     if (call.name === 'MultiTokens.create_collection') {
@@ -143,7 +143,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.createCollection.name)
+        throw new UnsupportedEventError(calls.multiTokens.createCollection.name)
     }
 
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
@@ -195,7 +195,7 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.forceCreateEthereumCollection.name)
+        throw new UnsupportedEventError(calls.multiTokens.forceCreateEthereumCollection.name)
     }
 
     throw new UnsupportedCallError(call)
@@ -206,7 +206,7 @@ function getEventData(event: EventItem) {
         return events.multiTokens.collectionCreated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.collectionCreated.name)
+    throw new UnsupportedEventError(events.multiTokens.collectionCreated.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

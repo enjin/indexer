@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -8,7 +8,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.claimTokensCompleted.matrixEnjinV1000.is(event)) {
         return events.multiTokens.claimTokensCompleted.matrixEnjinV1000.decode(event)
     }
-    throw new UnknownVersionError(events.multiTokens.claimTokensCompleted.name)
+    throw new UnsupportedEventError(events.multiTokens.claimTokensCompleted.name)
 }
 
 export async function claimTokensCompleted(

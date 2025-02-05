@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -30,20 +30,21 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.listingCreated.matrixEnjinV1012.is(event)) {
         return events.marketplace.listingCreated.matrixEnjinV1012.decode(event)
     }
-
-    if (events.marketplace.listingCreated.v1011.is(event)) {
-        return events.marketplace.listingCreated.v1011.decode(event)
-    }
-
-    if (events.marketplace.listingCreated.v1010.is(event)) {
-        return events.marketplace.listingCreated.v1010.decode(event)
-    }
-
     if (events.marketplace.listingCreated.matrixEnjinV603.is(event)) {
         return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.marketplace.listingCreated.name)
+    if (events.marketplace.listingCreated.v1011.is(event)) {
+        return events.marketplace.listingCreated.v1011.decode(event)
+    }
+    if (events.marketplace.listingCreated.v1010.is(event)) {
+        return events.marketplace.listingCreated.v1010.decode(event)
+    }
+    if (events.marketplace.listingCreated.v500.is(event)) {
+        return events.marketplace.listingCreated.v500.decode(event)
+    }
+
+    throw new UnsupportedEventError(events.marketplace.listingCreated.name)
 }
 
 async function getEvent(

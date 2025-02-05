@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTankUserAccounts, FuelTank } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -8,7 +8,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return fuelTanks.accountRemoved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.accountRemoved.name)
+    throw new UnsupportedEventError(fuelTanks.accountRemoved.name)
 }
 
 export async function accountRemoved(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

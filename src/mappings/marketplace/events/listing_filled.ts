@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -29,7 +29,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return events.marketplace.listingFilled.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.marketplace.listingFilled.name)
+    throw new UnsupportedEventError(events.marketplace.listingFilled.name)
 }
 
 function getEvent(

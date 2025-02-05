@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -32,7 +32,7 @@ function getEventData(event: EventItem) {
         return fuelTanks.accountRuleDataRemoved.v500.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.accountRuleDataRemoved.name)
+    throw new UnsupportedEventError(fuelTanks.accountRuleDataRemoved.name)
 }
 
 const uc = <T extends string>(x: T) => (x.charAt(0).toLowerCase() + x.slice(1)) as Uncapitalize<T>

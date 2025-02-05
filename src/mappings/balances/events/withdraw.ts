@@ -1,5 +1,5 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { balances } from '../../../types/generated/events'
 import { CommonContext, EventItem } from '../../types/contexts'
 
@@ -8,7 +8,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return balances.withdraw.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(balances.withdraw.name)
+    throw new UnsupportedEventError(balances.withdraw.name)
 }
 
 export async function withdraw(ctx: CommonContext, block: BlockHeader, item: EventItem) {

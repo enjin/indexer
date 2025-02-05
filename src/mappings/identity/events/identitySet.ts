@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnsupportedEventError } from '../../../common/errors'
 import { calls, events } from '../../../types/generated'
 import { Event as EventModel, Identity, JudgementType, Registration } from '../../../model'
 import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
@@ -11,7 +11,7 @@ function getEventData(event: EventItem) {
         return events.identity.identitySet.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(events.identity.identitySet.name)
+    throw new UnsupportedEventError(events.identity.identitySet.name)
 }
 
 function getCallData(call: CallItem) {
@@ -19,7 +19,7 @@ function getCallData(call: CallItem) {
         return calls.identity.setIdentity.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(calls.identity.setIdentity.name)
+    throw new UnsupportedEventError(calls.identity.setIdentity.name)
 }
 
 const dataToValue = (raw: Data) => {

@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import { Event as EventModel, FuelTank, FuelTankRuleSet } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -8,7 +8,7 @@ function getEventData(event: EventItem) {
         return fuelTanks.freezeStateMutated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.freezeStateMutated.name)
+    throw new UnsupportedEventError(fuelTanks.freezeStateMutated.name)
 }
 
 export async function freezeStateMutated(

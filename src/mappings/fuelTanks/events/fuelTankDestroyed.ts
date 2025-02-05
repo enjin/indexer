@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import {
     Event as EventModel,
@@ -16,7 +16,7 @@ function getEventData(event: EventItem) {
         return fuelTanks.fuelTankDestroyed.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.fuelTankDestroyed.name)
+    throw new UnsupportedEventError(fuelTanks.fuelTankDestroyed.name)
 }
 
 export async function fuelTankDestroyed(

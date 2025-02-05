@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     AccountTokenEvent,
@@ -26,7 +26,7 @@ function getEventData(event: EventItem) {
         return { collectionId, tokenId, caller }
     }
 
-    throw new UnknownVersionError(events.multiTokens.tokenDestroyed.name)
+    throw new UnsupportedEventError(events.multiTokens.tokenDestroyed.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

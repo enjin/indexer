@@ -1,6 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnsupportedEventError } from '../../../common/errors'
 import { calls, events } from '../../../types/generated'
 import {
     CoveragePolicy,
@@ -24,7 +24,7 @@ function getEventData(event: EventItem) {
         return events.fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.fuelTanks.fuelTankCreated.name)
+    throw new UnsupportedEventError(events.fuelTanks.fuelTankCreated.name)
 }
 
 function getCallData(ctx: CommonContext, call: CallItem) {
@@ -85,7 +85,7 @@ function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.fuelTanks.forceCreateFuelTank.v604.decode(call)
         }
 
-        throw new UnknownVersionError(calls.fuelTanks.forceCreateFuelTank.name)
+        throw new UnsupportedEventError(calls.fuelTanks.forceCreateFuelTank.name)
     }
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1012.is(call)) {
@@ -160,7 +160,7 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         return calls.fuelTanks.createFuelTank.v500.decode(call)
     }
 
-    throw new UnknownVersionError(calls.fuelTanks.createFuelTank.name)
+    throw new UnsupportedEventError(calls.fuelTanks.createFuelTank.name)
 }
 
 export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

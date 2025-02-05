@@ -3,14 +3,14 @@ import { TokenAccount, TokenNamedReserve } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.reserved.matrixEnjinV603.is(event)) {
         return events.multiTokens.reserved.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.reserved.name)
+    throw new UnsupportedEventError(events.multiTokens.reserved.name)
 }
 
 export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
