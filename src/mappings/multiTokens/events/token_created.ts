@@ -707,8 +707,10 @@ export async function tokenCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = getEventData(item)
+    console.log(eventData)
     if (!eventData) return undefined
 
+    console.log(`Token ${eventData.collectionId}-${eventData.tokenId} created`)
     if (skipSave && item.call) {
         const token = await ctx.store.findOne(Token, {
             where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
