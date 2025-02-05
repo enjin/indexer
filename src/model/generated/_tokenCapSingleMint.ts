@@ -1,6 +1,6 @@
-import assert from "assert"
-import * as marshal from "./marshal"
-import {CapType} from "./_capType"
+import assert from 'assert'
+import * as marshal from './marshal'
+import { CapType } from './_capType'
 
 export class TokenCapSingleMint {
     public readonly isTypeOf = 'TokenCapSingleMint'
@@ -10,6 +10,9 @@ export class TokenCapSingleMint {
     constructor(props?: Partial<Omit<TokenCapSingleMint, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
+            console.log(`${this.isTypeOf}`)
+            console.log(json)
+
             this._type = marshal.enumFromJson(json.type, CapType)
             this._supply = marshal.bigint.fromJSON(json.supply)
         }
