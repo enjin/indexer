@@ -19,7 +19,7 @@ export function collectionMutated(event: EventItem): CollectionMutatedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function collectionMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionMutated.name,

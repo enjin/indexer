@@ -20,7 +20,7 @@ export function withdrawn(event: EventItem): WithdrawnEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof withdrawn>) {
+export function withdrawnEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,

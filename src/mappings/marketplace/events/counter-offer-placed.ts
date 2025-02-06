@@ -30,9 +30,9 @@ export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {
         })
 }
 
-function getEvent(
+export function counterOfferPlacedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

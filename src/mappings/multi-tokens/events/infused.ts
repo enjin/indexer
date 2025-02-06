@@ -20,9 +20,9 @@ export function infused(event: EventItem): InfusedEvent {
         })
 }
 
-function getEvent(
+export function infusedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

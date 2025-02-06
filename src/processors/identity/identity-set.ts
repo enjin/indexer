@@ -3,16 +3,9 @@ import { CallNotDefinedError, UnsupportedEventError } from '../../common/errors'
 import { calls, events } from '../../types/generated'
 import { Event as EventModel, Identity, JudgementType, Registration } from '../../model'
 import { CommonContext, BlockHeader, CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { Data } from '../../types/generated/v1003'
 import * as mappings from './../../mappings'
-function getCallData(call: CallItem) {
-    if (calls.identity.setIdentity.matrixEnjinV1000.is(call)) {
-        return calls.identity.setIdentity.matrixEnjinV1000.decode(call)
-    }
-
-    throw new UnsupportedEventError(calls.identity.setIdentity.name)
-}
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {

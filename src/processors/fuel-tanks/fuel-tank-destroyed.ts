@@ -9,7 +9,7 @@ import {
     FuelTankRuleSet,
     PermittedExtrinsics,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 export async function fuelTankDestroyed(
     ctx: CommonContext,

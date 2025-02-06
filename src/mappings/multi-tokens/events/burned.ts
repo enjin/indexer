@@ -20,9 +20,9 @@ export function burned(event: EventItem): BurnedEvent {
         })
 }
 
-function getEvent(
+export function burnedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({

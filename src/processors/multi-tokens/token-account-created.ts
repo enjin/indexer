@@ -10,7 +10,7 @@ import {
     TokenAccount,
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 export async function tokenAccountCreated(
     ctx: CommonContext,

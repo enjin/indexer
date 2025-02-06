@@ -21,7 +21,7 @@ export function tokenAccountDestroyed(event: EventItem): TokenAccountDestroyedEv
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function tokenAccountDestroyedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenAccountDestroyed.name,

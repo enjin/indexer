@@ -1,7 +1,7 @@
 import { claims } from '../../types/generated/events'
 import { UnsupportedEventError } from '../../common/errors'
 import { ClaimRequest, ClaimDetails, Event as EventModel } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
 export async function claimRejected(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

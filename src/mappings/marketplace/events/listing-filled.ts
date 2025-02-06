@@ -39,9 +39,9 @@ export function listingFilled(event: EventItem): ListingFilledEvent {
         })
 }
 
-function getEvent(
+export function listingFilledEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel

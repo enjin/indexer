@@ -1,8 +1,8 @@
 import { UnsupportedEventError } from '../../common/errors'
 import { identity } from '../../types/generated/events'
 import { Event as EventModel, JudgementType, Registration } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 export async function judgementUnrequested(
     ctx: CommonContext,

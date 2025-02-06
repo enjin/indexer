@@ -25,7 +25,7 @@ function poolMutated(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof poolMutated>) {
+export function poolMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
     const mutation: any = {}
     if (data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
         mutation.newCommission = data.mutation.newCommission.value

@@ -1,7 +1,7 @@
 import { UnsupportedEventError } from '../../common/errors'
 import { fuelTanks } from '../../types/generated/events'
 import { Event as EventModel, FuelTank, FuelTankRuleSet } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 export async function freezeStateMutated(
     ctx: CommonContext,

@@ -21,7 +21,7 @@ export function thawed(event: EventItem): ThawedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function thawedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensThawed.name,

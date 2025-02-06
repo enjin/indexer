@@ -20,7 +20,7 @@ export function tokenCreated(event: EventItem): TokenCreatedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function tokenCreatedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenCreated.name,

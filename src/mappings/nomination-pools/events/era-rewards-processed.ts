@@ -24,7 +24,7 @@ function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof eraRewardsProcessed>, rate: bigint = 0n) {
+export function eraRewardsProcessedEventModel(item: EventItem, data: any, rate: bigint = 0n): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

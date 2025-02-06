@@ -31,7 +31,7 @@ export function tokenMutated(event: EventItem): TokenMutatedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function tokenMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenMutated.name,

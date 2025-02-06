@@ -11,7 +11,7 @@ import {
     MarketplaceListingRemovedUnderMinimum,
     Token,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import { getBestListing } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

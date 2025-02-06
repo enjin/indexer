@@ -18,7 +18,7 @@ function poolSlashed(event: EventItem): PoolSlashedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof poolSlashed>) {
+export function poolSlashedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsPoolSlashed.name,

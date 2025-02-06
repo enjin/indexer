@@ -36,9 +36,9 @@ export function counterOfferAnswered(event: EventItem): CounterOfferAnsweredEven
         })
 }
 
-function getEvent(
+export function counterOfferAnsweredEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

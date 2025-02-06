@@ -17,7 +17,7 @@ export function destroyed(event: EventItem): DestroyedEvent {
         })
 }
 
-export function getEvent(item: EventItem, data: ReturnType<typeof destroyed>) {
+export function destroyedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsDestroyed.name,

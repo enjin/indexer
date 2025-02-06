@@ -1,7 +1,7 @@
 import { UnsupportedEventError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Event as EventModel, Identity, Registration } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 export async function identityKilled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.identity.events.identityKilled(item)

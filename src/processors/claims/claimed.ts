@@ -3,10 +3,11 @@ import { UnsupportedEventError } from '../../common/errors'
 import { claims } from '../../types/generated/events'
 import { claims as claimsStorage } from '../../types/generated/storage'
 import { ClaimDetails, Event as EventModel, Extrinsic, ClaimRequest, Claim, ClaimsClaimed } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
+
 function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
     if (claimsStorage.delayClaimsPeriod.matrixEnjinV603.is(block)) {
         return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)

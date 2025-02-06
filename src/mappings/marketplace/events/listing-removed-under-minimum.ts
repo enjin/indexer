@@ -27,7 +27,10 @@ export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnde
         })
 }
 
-function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
+export function listingRemovedUnderMinimumEventModel(
+    item: EventItem,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceListingRemovedUnderMinimum.name,

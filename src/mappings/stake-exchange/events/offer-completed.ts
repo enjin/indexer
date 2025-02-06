@@ -17,7 +17,7 @@ function offerCompleted(event: EventItem): OfferCompletedEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof offerCompleted>) {
+export function offerCompletedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCompleted.name,

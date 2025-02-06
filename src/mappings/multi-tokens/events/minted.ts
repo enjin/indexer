@@ -21,9 +21,9 @@ export function minted(event: EventItem): MintedEvent {
         })
 }
 
-function getEvent(
+export function mintedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

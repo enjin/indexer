@@ -15,7 +15,7 @@ import {
     Token,
 } from '../../model'
 import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { safeString } from '../../common/tools'
 import { computeTraits } from '../../jobs/compute-traits'
 import { processMetadata } from '../../jobs/process-metadata'

@@ -3,15 +3,8 @@ import { CallNotDefinedError, UnsupportedEventError } from '../../common/errors'
 import { events, calls } from '../../types/generated'
 import { Event as EventModel, Identity, Registration } from '../../model'
 import { CommonContext, CallItem, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
-function getCallData(call: CallItem) {
-    if (calls.identity.addSub.matrixEnjinV1000.is(call)) {
-        return calls.identity.addSub.matrixEnjinV1000.decode(call)
-    }
-
-    throw new UnsupportedEventError(calls.identity.addSub.name)
-}
 
 export async function subIdentityAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()

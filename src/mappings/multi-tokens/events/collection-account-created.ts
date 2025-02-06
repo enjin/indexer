@@ -21,7 +21,7 @@ export function collectionAccountCreated(event: EventItem): CollectionAccountCre
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function collectionAccountCreatedEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionAccountCreated.name,

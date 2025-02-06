@@ -5,7 +5,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../common/types/contex
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { computeTraits } from '../../jobs/compute-traits'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function burned(

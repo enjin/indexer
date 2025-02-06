@@ -26,9 +26,9 @@ export function counterOfferRemoved(event: EventItem): CounterOfferRemovedEvent 
         })
 }
 
-function getEvent(
+export function counterOfferRemovedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

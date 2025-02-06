@@ -21,7 +21,7 @@ export function created(event: EventItem): CreatedEvent {
         })
 }
 
-export function getEvent(item: EventItem, data: ReturnType<typeof created>) {
+export function createdEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,

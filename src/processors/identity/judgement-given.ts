@@ -2,15 +2,8 @@ import { CallNotDefinedError, UnsupportedEventError } from '../../common/errors'
 import { events, calls } from '../../types/generated'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../model'
 import { CommonContext, BlockHeader, EventItem, CallItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
-function getCallData(call: CallItem) {
-    if (calls.identity.provideJudgement.matrixEnjinV1000.is(call)) {
-        return calls.identity.provideJudgement.matrixEnjinV1000.decode(call)
-    }
-
-    throw new UnsupportedEventError(calls.identity.provideJudgement.name)
-}
 
 export async function judgementGiven(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()

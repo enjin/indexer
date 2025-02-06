@@ -27,9 +27,9 @@ export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
         })
 }
 
-function getEvent(
+export function auctionFinalizedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({

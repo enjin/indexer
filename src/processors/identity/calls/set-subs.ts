@@ -2,16 +2,8 @@ import { hexToString, hexToU8a } from '@polkadot/util'
 import { UnsupportedEventError } from '../../../common/errors'
 import { Event as EventModel, Identity, Registration } from '../../../model'
 import { CommonContext, BlockHeader, CallItem } from 'matrixchain-indexer/common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { identity } from '../../../types/generated/calls'
-
-function getCallData(ctx: CommonContext, call: CallItem) {
-    if (identity.setSubs.matrixEnjinV1000.is(call)) {
-        return identity.setSubs.matrixEnjinV1000.decode(call)
-    }
-
-    throw new UnsupportedEventError(identity.setSubs.name)
-}
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
     const callData = getCallData(ctx, item)

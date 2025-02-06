@@ -4,14 +4,6 @@ import { Event as EventModel, Identity } from '../../../model'
 import { CommonContext, CallItem, BlockHeader } from 'matrixchain-indexer/common/types/contexts'
 import { identity } from '../../../types/generated/calls'
 
-function getCallData(call: CallItem) {
-    if (identity.renameSub.matrixEnjinV1000.is(call)) {
-        return identity.renameSub.matrixEnjinV1000.decode(call)
-    }
-
-    throw new UnsupportedEventError(identity.renameSub.name)
-}
-
 export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
     const callData = getCallData(item)
 

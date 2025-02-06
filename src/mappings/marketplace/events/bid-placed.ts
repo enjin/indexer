@@ -26,9 +26,9 @@ export function bidPlaced(event: EventItem): BidPlacedEvent {
         })
 }
 
-function getEvent(
+export function bidPlacedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

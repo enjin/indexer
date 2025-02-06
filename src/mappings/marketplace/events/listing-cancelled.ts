@@ -26,7 +26,7 @@ export function listingCancelled(event: EventItem): ListingCancelledEvent {
         })
 }
 
-function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
+export function listingCancelledEventModel(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
     event = new EventModel({

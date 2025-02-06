@@ -39,10 +39,9 @@ export function listingCreated(event: EventItem): ListingCreatedEvent {
         })
 }
 
-async function getEvent(
-    ctx: CommonContext,
+async function listingCreatedEventModel(
     item: EventItem,
-    data: ReturnType<typeof getEventData>,
+    data: any,
     listing: Listing
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     let event: EventModel
@@ -73,10 +72,10 @@ async function getEvent(
 
     let to = null
     if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
-        if (tokenOwner) {
-            to = tokenOwner.account
-        }
+        // const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
+        // if (tokenOwner) {
+        //     to = tokenOwner.account
+        // }
     }
 
     return [

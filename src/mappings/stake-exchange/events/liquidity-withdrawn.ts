@@ -18,7 +18,7 @@ function liquidityWithdrawn(event: EventItem): LiquidityWithdrawnEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof liquidityWithdrawn>) {
+export function liquidityWithdrawnEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeLiquidityWithdrawn.name,

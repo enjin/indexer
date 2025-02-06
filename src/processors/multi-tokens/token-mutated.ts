@@ -14,7 +14,7 @@ import {
 } from '../../model'
 import { isNonFungible } from 'matrixchain-indexer/mappings/matrix/multi-tokens/helpers'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { TokenMarketBehavior } from '../../types/generated/v500'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'

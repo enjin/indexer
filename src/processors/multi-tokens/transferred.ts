@@ -10,7 +10,7 @@ import {
     TokenAccount,
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

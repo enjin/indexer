@@ -22,7 +22,7 @@ export function frozen(event: EventItem): FrozenEvent {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function frozenEventModel(item: EventItem, data: any): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensFrozen.name,

@@ -4,7 +4,7 @@ import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokens
 import { isNonFungible } from 'matrixchain-indexer/mappings/matrix/multi-tokens/helpers'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { computeTraits } from '../../jobs/compute-traits'
-import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
