@@ -70,7 +70,7 @@ async function listingCreatedEventModel(
         })
     }
 
-    let to = null
+    const to = null
     if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
         // const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
         // if (tokenOwner) {

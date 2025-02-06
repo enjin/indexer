@@ -17,7 +17,7 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
     const data = mappings.multiTokens.events.approved(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.approvedEventModel(item, data)
 
     const address = data.owner
 
@@ -28,7 +28,7 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
 
         if (!tokenAccount) {
             throwError(`[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 
         const approvals = tokenAccount.approvals ?? []
@@ -50,7 +50,7 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
 
         if (!collectionAccount) {
             throwError(`[Approved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 
         const approvals = collectionAccount.approvals ?? []
@@ -82,5 +82,5 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
         })
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.approvedEventModel(item, data)
 }

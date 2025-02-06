@@ -30,7 +30,7 @@ export async function attributeSet(
     const data = mappings.multiTokens.events.attributeSet(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.attributeSetEventModel(item, data)
 
     const key = safeString(hexToString(data.key))
     const value = safeString(hexToString(data.value))
@@ -92,7 +92,7 @@ export async function attributeSet(
 
         if (!token) {
             throwError(`[AttributeSet] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.attributeSetEventModel(item, data)
         }
     }
 
@@ -149,5 +149,5 @@ export async function attributeSet(
         computeTraits(collection.id)
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.attributeSetEventModel(item, data)
 }

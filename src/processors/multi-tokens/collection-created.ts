@@ -97,10 +97,10 @@ export async function collectionCreated(
             ctx.store.save(collection)
         }
 
-        return getEvent(item, eventData)
+        return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    let callData = await getCallData(ctx, item.call)
+    let callData = await mappings.multiTokens.calls.createCollection(ctx, item.call)
 
     if (callData === undefined) {
         callData = await getCollectionId(ctx, block, eventData.collectionId)
@@ -178,5 +178,5 @@ export async function collectionCreated(
         })
     }
 
-    return getEvent(item, eventData)
+    return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
 }

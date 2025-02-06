@@ -128,5 +128,5 @@ export async function listingFilled(
         })
     }
 
-    return getEvent(item, data, listing)
+    return mappings.marketplace.events.listingFilledEventModel(item, data, listing)
 }

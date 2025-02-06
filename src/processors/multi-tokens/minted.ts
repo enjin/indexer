@@ -34,12 +34,12 @@ export async function minted(
 
     if (skipSave) {
         await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
     if (!token) {
         throwError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
     token.supply += data.amount
@@ -54,7 +54,7 @@ export async function minted(
         throwError(`[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`, 'fatal')
 
         await Promise.all(promises)
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
     tokenAccount.balance += data.amount
@@ -84,5 +84,5 @@ export async function minted(
         })
     }
 
-    return getEvent(item, data, token)
+    return mappings.multiTokens.events.mintedEventModel(item, data, token)
 }

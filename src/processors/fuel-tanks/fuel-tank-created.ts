@@ -25,7 +25,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
 
     const eventData = mappings.fuelTanks.events.fuelTankCreated(item)
 
-    const callData = getCallData(ctx, item.call)
+    const callData = mappings.fuelTanks.calls.createFuelTank(ctx, item.call)
 
     if (!eventData || !callData) return undefined
 

@@ -90,5 +90,5 @@ export async function listingCancelled(
         })
     }
 
-    return getEvent(item, listing)
+    return mappings.marketplace.events.listingCancelledEventModel(item, listing)
 }

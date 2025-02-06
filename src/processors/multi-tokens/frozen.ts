@@ -26,7 +26,7 @@ export async function frozen(
     const data = mappings.multiTokens.events.frozen(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.frozenEventModel(item, data)
 
     if (data.tokenAccount) {
         const address = data.tokenAccount
@@ -36,7 +36,7 @@ export async function frozen(
 
         if (!tokenAccount) {
             throwError(`[Frozen] We have not found collection ${address}-${data.collectionId}-${data.tokenId}`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.frozenEventModel(item, data)
         }
 
         tokenAccount.isFrozen = true
@@ -50,7 +50,7 @@ export async function frozen(
 
         if (!collectionAccount) {
             throwError(`[Frozen] We have not found collection ${data.collectionId}-${address}`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.frozenEventModel(item, data)
         }
 
         collectionAccount.isFrozen = true
@@ -63,7 +63,7 @@ export async function frozen(
 
         if (!token) {
             throwError(`[Frozen] We have not found collection ${data.collectionId}-${data.tokenId}`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.frozenEventModel(item, data)
         }
 
         switch (data.freezeState?.__kind) {
@@ -91,7 +91,7 @@ export async function frozen(
 
         if (!collection) {
             throwError(`[Frozen] We have not found collection ${data.collectionId.toString()}`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.frozenEventModel(item, data)
         }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
@@ -115,5 +115,5 @@ export async function frozen(
 
     syncCollectionStats(data.collectionId.toString())
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.frozenEventModel(item, data)
 }

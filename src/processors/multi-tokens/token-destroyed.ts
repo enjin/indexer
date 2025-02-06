@@ -30,7 +30,7 @@ export async function tokenDestroyed(
     const data = mappings.multiTokens.events.tokenDestroyed(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 
     const token = await ctx.store.findOneBy<Token>(Token, {
         id: `${data.collectionId}-${data.tokenId}`,
@@ -38,7 +38,7 @@ export async function tokenDestroyed(
 
     if (!token) {
         throwError(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+        return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
     }
 
     token.bestListing = null
@@ -162,5 +162,5 @@ export async function tokenDestroyed(
         })
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 }

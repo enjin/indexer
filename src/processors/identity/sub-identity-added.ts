@@ -10,7 +10,7 @@ export async function subIdentityAdded(ctx: CommonContext, block: BlockHeader, i
     if (!item.call) throw new CallNotDefinedError()
 
     const eventData = mappings.identity.events.subIdentityAdded(item)
-    const callData = getCallData(item.call)
+    const callData = mappings.identity.calls.addSub(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.sub)
     const { main } = eventData

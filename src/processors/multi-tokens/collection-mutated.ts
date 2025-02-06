@@ -36,7 +36,7 @@ export async function collectionMutated(
     const data = mappings.multiTokens.events.collectionMutated(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -44,7 +44,7 @@ export async function collectionMutated(
 
     if (!collection) {
         throwError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
-        return getEvent(item, data)
+        return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
     }
 
     if (data.mutation.owner) {
@@ -132,5 +132,5 @@ export async function collectionMutated(
 
     await ctx.store.save(collection)
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
 }

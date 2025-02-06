@@ -14,7 +14,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
 
     const eventData = mappings.fuelTanks.events.ruleSetInserted(item)
 
-    const callData = getCallData(item.call)
+    const callData = mappings.fuelTanks.calls.insertRuleSet(item.call)
     if (!eventData || !callData) return undefined
 
     const { tankId } = eventData

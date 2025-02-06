@@ -13,7 +13,7 @@ export async function collectionAccountDestroyed(
     const data = mappings.multiTokens.events.collectionAccountDestroyed(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.collectionAccountDestroyedEventModel(item, data)
 
     const address = data.accountId
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
@@ -25,5 +25,5 @@ export async function collectionAccountDestroyed(
         throwError(`[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.collectionAccountDestroyedEventModel(item, data)
 }

@@ -89,5 +89,5 @@ export async function listingRemovedUnderMinimum(
         })
     }
 
-    return getEvent(item, listing)
+    return mappings.marketplace.events.listingRemovedUnderMinimumEventModel(item, listing)
 }

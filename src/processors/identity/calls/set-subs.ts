@@ -6,7 +6,7 @@ import { getOrCreateAccount } from '../../common/util/entities'
 import { identity } from '../../../types/generated/calls'
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
-    const callData = getCallData(ctx, item)
+    const callData = mappings.identity.calls.setSubs(item)
 
     if (!item.extrinsic!.signature) {
         throw new Error('No signature')

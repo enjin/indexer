@@ -14,7 +14,7 @@ export async function collectionAccountCreated(
     if (!data) return undefined
 
     if (skipSave) {
-        return getEvent(item, data)
+        return mappings.multiTokens.events.collectionAccountCreatedEventModel(item, data)
     }
 
     const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
@@ -37,5 +37,5 @@ export async function collectionAccountCreated(
         await ctx.store.save(newCollectionAccount)
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.collectionAccountCreatedEventModel(item, data)
 }

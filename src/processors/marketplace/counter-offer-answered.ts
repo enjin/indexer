@@ -97,5 +97,5 @@ export async function counterOfferAnswered(
 
     await Promise.all([ctx.store.save(listing)])
 
-    return getEvent(item, data, listing, account)
+    return mappings.marketplace.events.counterOfferAnsweredEventModel(item, data, listing, account)
 }

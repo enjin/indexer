@@ -22,7 +22,7 @@ export async function collectionDestroyed(
     const data = mappings.multiTokens.events.collectionDestroyed(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 
     const collectionId = data.collectionId.toString()
 
@@ -50,5 +50,5 @@ export async function collectionDestroyed(
         })
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 }

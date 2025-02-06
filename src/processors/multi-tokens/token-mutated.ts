@@ -48,7 +48,7 @@ export async function tokenMutated(
     const data = mappings.multiTokens.events.tokenMutated(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -59,7 +59,7 @@ export async function tokenMutated(
 
     if (!token) {
         throwError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data)
+        return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
     }
 
     if (data.listingForbidden.__kind === 'SomeMutation') {
@@ -92,5 +92,5 @@ export async function tokenMutated(
 
     syncCollectionStats(data.collectionId.toString())
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }

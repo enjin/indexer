@@ -15,7 +15,7 @@ export async function unapproved(
     const data = mappings.multiTokens.events.unapproved(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.unapprovedEventModel(item, data)
 
     const address = data.owner
 
@@ -65,5 +65,5 @@ export async function unapproved(
         })
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.unapprovedEventModel(item, data)
 }

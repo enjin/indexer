@@ -32,12 +32,12 @@ export async function transferred(
     if (skipSave) {
         await Promise.all([getOrCreateAccount(ctx, data.from), getOrCreateAccount(ctx, data.to)])
 
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.transferredEventModel(item, data, token)
     }
 
     if (!token) {
         throwError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.transferredEventModel(item, data, token)
     }
 
     const fromAddress = data.from
@@ -89,5 +89,5 @@ export async function transferred(
         })
     }
 
-    return getEvent(item, data, token)
+    return mappings.multiTokens.events.transferredEventModel(item, data, token)
 }

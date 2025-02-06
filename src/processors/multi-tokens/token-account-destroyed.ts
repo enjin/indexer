@@ -12,7 +12,7 @@ export async function tokenAccountDestroyed(
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenAccountDestroyed(item)
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
 
     const collectionAccount = await ctx.store.findOneBy<CollectionAccount>(CollectionAccount, {
         id: `${data.collectionId}-${data.accountId}`,
@@ -24,7 +24,7 @@ export async function tokenAccountDestroyed(
             'fatal'
         )
 
-        return getEvent(item, data)
+        return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
     }
 
     collectionAccount.accountCount -= 1
@@ -43,5 +43,5 @@ export async function tokenAccountDestroyed(
         )
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.tokenAccountDestroyedEventModel(item, data)
 }

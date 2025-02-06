@@ -75,5 +75,5 @@ export async function counterOfferRemoved(
 
     await Promise.all([ctx.store.remove(offer), ctx.store.save(listing)])
 
-    return getEvent(item, data, listing, account)
+    return mappings.marketplace.events.counterOfferRemovedEventModel(item, data, listing, account)
 }

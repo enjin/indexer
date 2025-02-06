@@ -5,7 +5,7 @@ import { CommonContext, CallItem, BlockHeader } from 'matrixchain-indexer/common
 import { identity } from '../../../types/generated/calls'
 
 export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
-    const callData = getCallData(item)
+    const callData = mappings.identity.calls.renameSub(item)
 
     const id = callData.sub.__kind !== 'Index' ? callData.sub.value : null
 

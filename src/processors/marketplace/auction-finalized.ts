@@ -109,5 +109,5 @@ export async function auctionFinalized(
         })
     }
 
-    return getEvent(item, data, listing)
+    return mappings.marketplace.events.auctionFinalizedEventModel(item, data, listing)
 }

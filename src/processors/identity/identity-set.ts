@@ -19,7 +19,7 @@ export async function identitySet(ctx: CommonContext, block: BlockHeader, item: 
     if (!item.call) throw new CallNotDefinedError()
 
     const eventData = mappings.identity.events.identitySet(item)
-    const callData = getCallData(item.call)
+    const callData = mappings.identity.calls.setIdentity(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.who)
     let additional: { key: string | null; value: string | null }[] = []

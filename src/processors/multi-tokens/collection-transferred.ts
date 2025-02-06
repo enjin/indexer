@@ -15,7 +15,7 @@ export async function collectionTransferred(
     const data = mappings.multiTokens.events.collectionTransferred(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
         where: { id: data.collectionId.toString() },
@@ -23,7 +23,7 @@ export async function collectionTransferred(
 
     if (!collection) {
         throwError(`[CollectionTransferred] We have not found collection ${data.collectionId.toString()}`, 'fatal')
-        return getEvent(item, data)
+        return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
     }
 
     collection.owner = await getOrCreateAccount(ctx, data.newOwner)
@@ -42,5 +42,5 @@ export async function collectionTransferred(
         })
     }
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
 }

@@ -31,7 +31,7 @@ export async function tokenAccountCreated(
             ctx.store.save(tokenAccount)
         }
 
-        return getEvent(item, data)
+        return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
     }
 
     const collection = new Collection({ id: data.collectionId.toString() })
@@ -83,5 +83,5 @@ export async function tokenAccountCreated(
 
     await ctx.store.save(tokenAccount)
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)
 }

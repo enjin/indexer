@@ -15,7 +15,7 @@ export async function attributeRemoved(
     const data = mappings.multiTokens.events.attributeRemoved(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
 
     const id = data.tokenId !== undefined ? `${data.collectionId}-${data.tokenId}` : data.collectionId.toString()
     const attributeId = `${id}-${data.key}`
@@ -35,7 +35,7 @@ export async function attributeRemoved(
 
             if (!token) {
                 throwError(`[AttributeRemoved] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-                return getEvent(item, data)
+                return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
             }
 
             token.attributeCount -= 1
@@ -49,7 +49,7 @@ export async function attributeRemoved(
 
             if (!collection) {
                 throwError(`[AttributeRemoved] We have not found collection ${data.collectionId}.`, 'fatal')
-                return getEvent(item, data)
+                return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
             }
 
             collection.attributeCount -= 1
@@ -61,5 +61,5 @@ export async function attributeRemoved(
     } else {
         throwError(`[AttributeRemoved] call was made on a non existing collection or token`, 'warning')
     }
-    return getEvent(item, data)
+    return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
 }

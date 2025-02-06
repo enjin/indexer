@@ -25,7 +25,7 @@ export async function thawed(
     const data = mappings.multiTokens.events.thawed(item)
     if (!data) return undefined
 
-    if (skipSave) return getEvent(item, data)
+    if (skipSave) return mappings.multiTokens.events.thawedEventModel(item, data)
 
     if (data.tokenAccount) {
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
@@ -37,7 +37,7 @@ export async function thawed(
                 `[Thawed] We have not found token account ${data.tokenAccount}-${data.collectionId}-${data.tokenId}.`,
                 'fatal'
             )
-            return getEvent(item, data)
+            return mappings.multiTokens.events.thawedEventModel(item, data)
         }
 
         tokenAccount.isFrozen = false
@@ -51,7 +51,7 @@ export async function thawed(
 
         if (!collectionAccount) {
             throwError(`[Thawed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.thawedEventModel(item, data)
         }
 
         collectionAccount.isFrozen = false
@@ -64,7 +64,7 @@ export async function thawed(
 
         if (!token) {
             throwError(`[Thawed] We have not found collection account ${data.collectionId}-${data.tokenId}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.thawedEventModel(item, data)
         }
 
         token.isFrozen = false
@@ -76,7 +76,7 @@ export async function thawed(
 
         if (!collection) {
             throwError(`[Thawed] We have not found collection ${data.collectionId.toString()}.`, 'fatal')
-            return getEvent(item, data)
+            return mappings.multiTokens.events.thawedEventModel(item, data)
         }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: false })
@@ -100,5 +100,5 @@ export async function thawed(
 
     syncCollectionStats(data.collectionId.toString())
 
-    return getEvent(item, data)
+    return mappings.multiTokens.events.thawedEventModel(item, data)
 }

@@ -164,7 +164,7 @@ export async function tokenCreated(
             ctx.store.save(token)
         }
 
-        return getEvent(item, eventData)
+        return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
     }
 
     if (item.call) {
@@ -174,10 +174,10 @@ export async function tokenCreated(
 
         if (collection === null) {
             throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
-            return getEvent(item, eventData)
+            return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
         }
 
-        let callData = await getCallData(ctx, item.call, eventData)
+        let callData = await mappings.multiTokens.calls.mint(ctx, item.call, eventData)
 
         if (callData === undefined) {
             callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
@@ -209,5 +209,5 @@ export async function tokenCreated(
         await ctx.store.save(token)
     }
 
-    return getEvent(item, eventData)
+    return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
 }

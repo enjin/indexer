@@ -9,7 +9,7 @@ export async function judgementGiven(ctx: CommonContext, block: BlockHeader, ite
     if (!item.call) throw new CallNotDefinedError()
 
     const eventData = mappings.identity.events.judgementGiven(item)
-    const callData = getCallData(item.call)
+    const callData = mappings.identity.calls.provideJudgement(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.target)
 

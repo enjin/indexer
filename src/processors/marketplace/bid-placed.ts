@@ -116,5 +116,5 @@ export async function bidPlaced(
         })
     }
 
-    return getEvent(item, data, listing, account)
+    return mappings.marketplace.events.bidPlacedEventModel(item, data, listing, account)
 }

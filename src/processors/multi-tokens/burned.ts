@@ -25,7 +25,7 @@ export async function burned(
 
     if (skipSave) {
         await getOrCreateAccount(ctx, data.accountId)
-        return getEvent(item, data, token)
+        return mappings.multiTokens.events.burnedEventModel(item, data, token)
     }
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
@@ -69,5 +69,5 @@ export async function burned(
         })
     }
 
-    return getEvent(item, data, token)
+    return mappings.multiTokens.events.burnedEventModel(item, data, token)
 }
