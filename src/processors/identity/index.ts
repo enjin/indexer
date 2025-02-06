@@ -1,10 +1,25 @@
-export * from './identity-cleared'
-export * from './identity-killed'
-export * from './identity-set'
-export * from './judgement-given'
-export * from './judgement-requested'
-export * from './judgement-unrequested'
-export * from './registrar-added'
-export * from './sub-identity-added'
-export * from './sub-identity-removed'
-export * from './sub-identity-revoked'
+import { identityCleared } from './identity-cleared'
+import { identityKilled } from './identity-killed'
+import { identitySet } from './identity-set'
+import { judgementGiven } from './judgement-given'
+import { judgementRequested } from './judgement-requested'
+import { judgementUnrequested } from './judgement-unrequested'
+import { registrarAdded } from './registrar-added'
+import { subIdentityAdded } from './sub-identity-added'
+import { subIdentityRemoved } from './sub-identity-removed'
+import { subIdentityRevoked } from './sub-identity-revoked'
+
+export const identity = {
+    identityCleared,
+    identityKilled,
+    identitySet,
+    judgementGiven,
+    judgementRequested,
+    judgementUnrequested,
+    registrarAdded,
+    subIdentityAdded,
+    subIdentityRemoved,
+    subIdentityRevoked,
+}
+
+export default identity

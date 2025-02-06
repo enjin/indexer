@@ -1,8 +1,8 @@
 import Queue from 'bull'
 import { redisConfig } from './common'
-import { BlockHeader, CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext } from '../common/types/contexts'
 import { system } from '../types/generated/storage'
-import { addAccountsToSet, saveAccounts } from 'matrixchain-indexer/processors/balances/processor'
+import { addAccountsToSet, saveAccounts } from '../processors/balances/save'
 
 export type JobData = { ids: `0x${string}`[] }
 
@@ -28,12 +28,12 @@ export async function syncAllBalances(ctx: CommonContext, block: BlockHeader) {
             return system.account.matrixEnjinV603
         }
 
-        if (system.account.v602.is(block)) {
-            return system.account.v602
+        if (system.account.matrixV602.is(block)) {
+            return system.account.matrixV602
         }
 
-        if (system.account.v500.is(block)) {
-            return system.account.v500
+        if (system.account.matrixV500.is(block)) {
+            return system.account.matrixV500
         }
 
         throw new Error('Unknown storage version')

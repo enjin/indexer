@@ -2,7 +2,7 @@ import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, Lis
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { getBestListing, getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { getBestListing, getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function bidPlaced(

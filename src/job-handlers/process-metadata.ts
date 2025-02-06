@@ -3,7 +3,7 @@ import Queue from 'bull'
 import connection from '../connection'
 import { JobData, processMetadata } from '../jobs/process-metadata'
 import { Attribute, Collection, Metadata, MetadataOriginType, Token } from '../model'
-import { fetchMetadata, metadataParser, parseMedia } from 'matrixchain-indexer/common/util/metadata'
+import { fetchMetadata, metadataParser, parseMedia } from '../common/util/metadata'
 
 type MetadataType = {
     id: string

@@ -2,7 +2,7 @@ import { BlockHeader } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
 import config from './config'
-import { CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext } from './common/types/contexts'
 import Rpc from './common/rpc'
 
 export async function chainState(ctx: CommonContext, block: BlockHeader<{ block: { timestamp: true; validator: true } }>) {

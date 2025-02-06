@@ -15,7 +15,6 @@ import {
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { rulesToMap } from './common'
 import { safeJsonString } from '../../common/tools'
 import * as mappings from './../../mappings'
 

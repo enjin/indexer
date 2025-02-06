@@ -1,6 +1,5 @@
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { ClaimDetails } from '../../model'
-import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
 
 export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
@@ -9,7 +8,7 @@ export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeade
     const claimDetails = new ClaimDetails({
         id: '0',
         delayClaimsPeriod: eventData.delayTime,
-        totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
+        totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(ctx, block),
     })
 
     await ctx.store.save(claimDetails)

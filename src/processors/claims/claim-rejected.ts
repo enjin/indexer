@@ -1,6 +1,5 @@
 import { ClaimDetails, ClaimRequest, Event as EventModel } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
 
 export async function claimRejected(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
@@ -12,7 +11,7 @@ export async function claimRejected(ctx: CommonContext, block: BlockHeader, item
 
     const claimDetails = new ClaimDetails({
         id: '0',
-        totalUnclaimedAmount: await getTotalUnclaimedAmount(ctx, block),
+        totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(ctx, block),
     })
 
     claimREeq.isRejected = true

@@ -1,19 +1,8 @@
 import { LessThan } from 'typeorm'
-import { UnsupportedEventError } from '../../common/errors'
-import { claims as claimsStorage } from '../../types/generated/storage'
 import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, Extrinsic } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
-
-function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
-    if (claimsStorage.delayClaimsPeriod.matrixEnjinV603.is(block)) {
-        return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)
-    }
-
-    throw new UnsupportedEventError('Claims.DelayClaimsPeriod')
-}
 
 export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
@@ -26,14 +15,14 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     const claimAccount = eventData.ethereumAddress?.toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
-    const period = claimDetails.delayClaimsPeriod || (await getDelayPeriod(ctx, block))
+    const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(ctx, block))
 
     if (!period) {
         throw new Error('Delay period is not set')
     }
 
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
-        getTotalUnclaimedAmount(ctx, block),
+        mappings.claims.storage.totalUnclaimedAmount(ctx, block),
         ctx.store.find(ClaimRequest, {
             where: {
                 account: claimAccount,

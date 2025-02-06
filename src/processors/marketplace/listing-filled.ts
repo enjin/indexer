@@ -10,7 +10,7 @@ import {
     ListingType,
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getBestListing } from 'matrixchain-indexer/common/util/entities'
+import { getBestListing } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

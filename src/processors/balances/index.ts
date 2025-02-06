@@ -1,5 +1,9 @@
-import * as processor from './processor'
+import { save, saveAccounts, addAccountsToSet } from './save'
 
-export default {
-    processor,
+export const balances = {
+    save,
+    saveAccounts,
+    addAccountsToSet,
 }
+
+export default balances

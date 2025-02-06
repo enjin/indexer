@@ -1,6 +1,6 @@
 import { u8aToHex } from '@polkadot/util'
 import { Account, Balance, Listing } from '../../model'
-import { CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext } from '../types/contexts'
 import { encodeId } from '../tools'
 
 export async function getOrCreateAccount(ctx: CommonContext, publicKey: Uint8Array | string): Promise<Account> {

@@ -1,22 +1,12 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { storage } from '../../types/generated'
 import { Event as EventModel, IdentityRegistrar } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 
-function getRegistrars(block: BlockHeader) {
-    if (storage.identity.registrars.matrixEnjinV1000.is(block)) {
-        return storage.identity.registrars.matrixEnjinV1000.get(block)
-    }
-
-    throw new UnsupportedEventError('Identity.Registrars')
-}
-
 export async function registrarAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.identity.events.registrarAdded(item)
 
-    const registrars = await getRegistrars(block)
+    const registrars = await mappings.identity.storage.registrars(block)
 
     if (!registrars) {
         throw new Error('No registrars found')
