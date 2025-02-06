@@ -7,5 +7,5 @@ export function fuelTankCreated(event: EventItem) {
         return fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnsupportedEventError(fuelTanks.fuelTankCreated)
+            throw new UnsupportedEventError(event)
 }

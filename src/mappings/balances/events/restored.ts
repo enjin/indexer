@@ -8,11 +8,11 @@ type RestoredEvent = {
     amount: bigint
 }
 
-export function restored(event: EventItem) {
+export function restored(event: EventItem): RestoredEvent {
     return match(event)
         .returnType<RestoredEvent>()
         .when(balances.restored.matrixEnjinV603.is, () => balances.restored.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.restored)
+            throw new UnsupportedEventError(event)
         })
 }

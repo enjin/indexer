@@ -9,12 +9,12 @@ type NominatedEvent = {
     validators: any
 }
 
-export function nominated(event: EventItem) {
+export function nominated(event: EventItem): NominatedEvent {
     return match(event)
         .returnType<NominatedEvent>()
         .when(nominationPools.nominated.enjinV101.is, () => nominationPools.nominated.enjinV101.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.nominated)
+            throw new UnsupportedEventError(event)
         })
 }
 

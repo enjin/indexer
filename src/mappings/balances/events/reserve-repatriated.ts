@@ -10,11 +10,11 @@ type ReserveRepatriatedEvent = {
     destinationStatus: any
 }
 
-export function reserveRepatriatedAccounts(event: EventItem) {
+export function reserveRepatriatedAccounts(event: EventItem): ReserveRepatriatedEvent {
     return match(event)
         .returnType<ReserveRepatriatedEvent>()
         .when(balances.reserveRepatriated.matrixEnjinV603.is, () => balances.reserveRepatriated.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.reserveRepatriated)
+            throw new UnsupportedEventError(event)
         })
 }

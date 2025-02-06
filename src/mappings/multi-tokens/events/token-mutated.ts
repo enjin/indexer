@@ -13,9 +13,8 @@ type TokenMutatedEvent = {
     metadata?: any
 }
 
-export function tokenMutated(event: EventItem) {
+export function tokenMutated(event: EventItem): TokenMutatedEvent {
     return match(event)
-        .returnType<TokenMutatedEvent>()
         .when(multiTokens.tokenMutated.matrixEnjinV1012.is, (e) => {
             const { collectionId, tokenId, mutation } = multiTokens.tokenMutated.matrixEnjinV1012.decode(e)
             return {

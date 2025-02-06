@@ -11,11 +11,11 @@ type ValidatorPrefsSetEvent = {
     }
 }
 
-export function validatorPrefsSet(event: EventItem) {
+export function validatorPrefsSet(event: EventItem): ValidatorPrefsSetEvent {
     return match(event)
         .returnType<ValidatorPrefsSetEvent>()
         .when(staking.validatorPrefsSet.enjinV100.is, () => staking.validatorPrefsSet.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(staking.validatorPrefsSet)
+            throw new UnsupportedEventError(event)
         })
 }

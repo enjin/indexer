@@ -8,11 +8,11 @@ type BidPlacedEvent = {
     bid: any
 }
 
-export function bidPlaced(event: EventItem) {
+export function bidPlaced(event: EventItem): BidPlacedEvent {
     return match(event)
         .returnType<BidPlacedEvent>()
         .when(marketplace.bidPlaced.matrixEnjinV603.is, marketplace.bidPlaced.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.bidPlaced)
+            throw new UnsupportedEventError(event)
         })
 }

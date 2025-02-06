@@ -9,11 +9,11 @@ type SubIdentityRemovedEvent = {
     deposit: bigint
 }
 
-export function subIdentityRemoved(event: EventItem) {
+export function subIdentityRemoved(event: EventItem): SubIdentityRemovedEvent {
     return match(event)
         .returnType<SubIdentityRemovedEvent>()
         .when(identity.subIdentityRemoved.matrixEnjinV1000.is, () => identity.subIdentityRemoved.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.subIdentityRemoved)
+            throw new UnsupportedEventError(event)
         })
 }

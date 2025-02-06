@@ -9,11 +9,11 @@ type TransferEvent = {
     amount: bigint
 }
 
-export function eventData(event: EventItem) {
+export function eventData(event: EventItem): TransferEvent {
     return match(event)
         .returnType<TransferEvent>()
         .when(balances.transfer.matrixEnjinV603.is, () => balances.transfer.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.transfer)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -7,6 +7,6 @@ export function ruleSetInserted(event: EventItem) {
     return match(event)
         .when(fuelTanks.ruleSetInserted.matrixEnjinV603.is, () => fuelTanks.ruleSetInserted.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(fuelTanks.ruleSetInserted)
+            throw new UnsupportedEventError(event)
         })
 }

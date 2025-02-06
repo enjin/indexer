@@ -12,7 +12,7 @@ type ListingFilledEvent = {
     royalty: bigint
 }
 
-export function listingFilled(event: EventItem) {
+export function listingFilled(event: EventItem): ListingFilledEvent {
     return match(event)
         .returnType<ListingFilledEvent>()
         .when(marketplace.listingFilled.matrixEnjinV1012.is, marketplace.listingFilled.matrixEnjinV1012.decode)
@@ -24,6 +24,6 @@ export function listingFilled(event: EventItem) {
         .when(marketplace.listingFilled.v1031.is, marketplace.listingFilled.v1031.decode)
         .when(marketplace.listingFilled.v110.is, marketplace.listingFilled.v110.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.listingFilled)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -7,7 +7,7 @@ type ListingRemovedUnderMinimumEvent = {
     listingId: string
 }
 
-export function listingRemovedUnderMinimum(event: EventItem) {
+export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnderMinimumEvent {
     return match(event)
         .returnType<ListingRemovedUnderMinimumEvent>()
         .when(
@@ -15,6 +15,6 @@ export function listingRemovedUnderMinimum(event: EventItem) {
             marketplace.listingRemovedUnderMinimum.matrixEnjinV1014.decode
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.listingRemovedUnderMinimum)
+            throw new UnsupportedEventError(event)
         })
 }

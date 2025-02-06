@@ -10,7 +10,7 @@ type BondedEvent = {
     bonded: bigint
 }
 
-export function bonded(event: EventItem) {
+export function bonded(event: EventItem): BondedEvent {
     return match(event)
         .returnType<BondedEvent>()
         .when(nominationPools.bonded.enjinV101.is, () => nominationPools.bonded.enjinV101.decode(event))
@@ -18,7 +18,7 @@ export function bonded(event: EventItem) {
         .when(nominationPools.bonded.v104.is, () => nominationPools.bonded.v104.decode(event))
         .when(nominationPools.bonded.v100.is, () => nominationPools.bonded.v100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.bonded)
+            throw new UnsupportedEventError(event)
         })
 }
 

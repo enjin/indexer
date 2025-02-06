@@ -9,9 +9,8 @@ type ClaimedCollectionsEvent = {
     collectionIds: any
 }
 
-export function claimedCollections(event: EventItem) {
+export function claimedCollections(event: EventItem): ClaimedCollectionsEvent {
     return match(event)
-        .returnType<ClaimedCollectionsEvent>()
         .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)
         .when(multiTokens.claimedCollections.matrixEnjinV603.is, multiTokens.claimedCollections.matrixEnjinV603.decode)
         .when(multiTokens.claimedCollections.matrixV1000.is, multiTokens.claimedCollections.matrixV1000.decode)
@@ -21,6 +20,6 @@ export function claimedCollections(event: EventItem) {
         .when(multiTokens.claimedCollections.v1021.is, multiTokens.claimedCollections.v1021.decode)
         .when(multiTokens.claimedCollections.v106.is, multiTokens.claimedCollections.v106.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.claimedCollections)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -16,11 +16,11 @@ function getPoolShares(block: BlockHeader, poolId: number) {
             storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError('NominationPools.EarlyBirdShares')
+            throw new UnsupportedEventError(event)
         })
 }
 
-function earlyBirdSharesCaptured(event: EventItem) {
+function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent {
     return match(event)
         .returnType<EarlyBirdSharesCapturedEvent>()
         .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, () =>

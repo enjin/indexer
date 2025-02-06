@@ -11,11 +11,11 @@ type RewardPaidEvent = {
     bonus: bigint
 }
 
-export function rewardPaid(event: EventItem) {
+export function rewardPaid(event: EventItem): RewardPaidEvent {
     return match(event)
         .returnType<RewardPaidEvent>()
         .when(nominationPools.rewardPaid.enjinV100.is, () => nominationPools.rewardPaid.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.rewardPaid)
+            throw new UnsupportedEventError(event)
         })
 }

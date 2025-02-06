@@ -8,11 +8,11 @@ type WithdrawEvent = {
     amount: bigint
 }
 
-export function eventData(event: EventItem) {
+export function withdraw(event: EventItem): WithdrawEvent {
     return match(event)
         .returnType<WithdrawEvent>()
         .when(balances.withdraw.matrixEnjinV603.is, () => balances.withdraw.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.unreserved)
+            throw new UnsupportedEventError(event)
         })
 }

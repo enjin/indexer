@@ -8,11 +8,11 @@ type DustLostEvent = {
     amount: bigint
 }
 
-export function dustLost(event: EventItem) {
+export function dustLost(event: EventItem): DustLostEvent {
     return match(event)
         .returnType<DustLostEvent>()
         .when(balances.dustLost.matrixEnjinV603.is, () => balances.dustLost.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.dustLost)
+            throw new UnsupportedEventError(event)
         })
 }

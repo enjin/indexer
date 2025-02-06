@@ -8,11 +8,11 @@ type MintedEvent = {
     amount: bigint
 }
 
-export function minted(event: EventItem) {
+export function minted(event: EventItem): MintedEvent {
     return match(event)
         .returnType<MintedEvent>()
         .when(balances.minted.matrixEnjinV603.is, () => balances.minted.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.minted)
+            throw new UnsupportedEventError(event)
         })
 }

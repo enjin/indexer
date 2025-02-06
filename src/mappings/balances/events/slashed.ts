@@ -8,11 +8,11 @@ type SlashedEvent = {
     amount: bigint
 }
 
-export function slashed(event: EventItem) {
+export function slashed(event: EventItem): SlashedEvent {
     return match(event)
         .returnType<SlashedEvent>()
         .when(balances.slashed.matrixEnjinV603.is, () => balances.slashed.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.slashed)
+            throw new UnsupportedEventError(event)
         })
 }

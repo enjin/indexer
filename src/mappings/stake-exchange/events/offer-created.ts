@@ -13,7 +13,7 @@ type OfferCreatedEvent = {
     }
 }
 
-function offerCreated(event: EventItem) {
+function offerCreated(event: EventItem): OfferCreatedEvent {
     return match(event)
         .returnType<OfferCreatedEvent>()
         .when(stakeExchange.offerCreated.enjinV1023.is, () => stakeExchange.offerCreated.enjinV1023.decode(event))
@@ -26,7 +26,7 @@ function offerCreated(event: EventItem) {
         .when(stakeExchange.offerCreated.v101.is, () => stakeExchange.offerCreated.v101.decode(event))
         .when(stakeExchange.offerCreated.v100.is, () => stakeExchange.offerCreated.v100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(stakeExchange.offerCreated)
+            throw new UnsupportedEventError(event)
         })
 }
 

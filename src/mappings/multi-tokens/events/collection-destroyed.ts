@@ -8,13 +8,13 @@ type CollectionDestroyedEvent = {
     caller: string
 }
 
-export function collectionDestroyed(event: EventItem) {
+export function collectionDestroyed(event: EventItem): CollectionDestroyedEvent {
     return match(event)
         .returnType<CollectionDestroyedEvent>()
         .when(multiTokens.collectionDestroyed.matrixEnjinV603.is, () =>
             multiTokens.collectionDestroyed.matrixEnjinV603.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.collectionDestroyed)
+            throw new UnsupportedEventError(event)
         })
 }

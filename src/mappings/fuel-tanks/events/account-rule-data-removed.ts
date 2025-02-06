@@ -26,6 +26,6 @@ export function accountRuleDataRemoved(event: EventItem) {
         .when(fuelTanks.accountRuleDataRemoved.v1021.is, () => fuelTanks.accountRuleDataRemoved.v1021.decode(event))
         .when(fuelTanks.accountRuleDataRemoved.v102.is, () => fuelTanks.accountRuleDataRemoved.v102.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(fuelTanks.accountRuleDataRemoved)
+            throw new UnsupportedEventError(event)
         })
 }

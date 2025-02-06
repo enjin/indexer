@@ -8,11 +8,11 @@ type ClaimRejectedEvent = {
     transactionHash: string
 }
 
-export function claimRejected(event: EventItem) {
+export function claimRejected(event: EventItem): ClaimRejectedEvent {
     return match(event)
         .returnType<ClaimRejectedEvent>()
         .when(claims.claimRejected.matrixEnjinV603.is, () => claims.claimRejected.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(claims.claimRejected.matrixEnjinV603)
+            throw new UnsupportedEventError(event)
         })
 }

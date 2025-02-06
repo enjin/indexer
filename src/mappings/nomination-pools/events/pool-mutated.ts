@@ -28,7 +28,7 @@ function poolMutated(event: EventItem) {
         .when(nominationPools.poolMutated.v104.is, () => nominationPools.poolMutated.v104.decode(event))
         .when(nominationPools.poolMutated.v102.is, () => nominationPools.poolMutated.v102.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.poolMutated)
+            throw new UnsupportedEventError(event)
         })
 }
 

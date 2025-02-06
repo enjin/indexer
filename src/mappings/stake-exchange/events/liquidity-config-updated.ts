@@ -8,13 +8,13 @@ type LiquidityConfigUpdatedEvent = {
     config: any
 }
 
-function liquidityConfigUpdated(event: EventItem) {
+function liquidityConfigUpdated(event: EventItem): LiquidityConfigUpdatedEvent {
     return match(event)
         .returnType<LiquidityConfigUpdatedEvent>()
         .when(stakeExchange.liquidityConfigUpdated.enjinV100.is, () =>
             stakeExchange.liquidityConfigUpdated.enjinV100.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(stakeExchange.liquidityConfigUpdated)
+            throw new UnsupportedEventError(event)
         })
 }

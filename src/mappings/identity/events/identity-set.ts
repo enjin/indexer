@@ -7,11 +7,11 @@ type IdentitySetEvent = {
     who: string
 }
 
-export function identitySet(event: EventItem) {
+export function identitySet(event: EventItem): IdentitySetEvent {
     return match(event)
         .returnType<IdentitySetEvent>()
         .when(identity.identitySet.matrixEnjinV1000.is, () => identity.identitySet.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.identitySet)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -10,9 +10,8 @@ type TokenCreatedEvent = {
     initialSupply: bigint
 }
 
-export function tokenCreated(event: EventItem) {
+export function tokenCreated(event: EventItem): TokenCreatedEvent {
     return match(event)
-        .returnType<TokenCreatedEvent>()
         .when(multiTokens.tokenCreated.matrixEnjinV603.is, (e) => {
             const { collectionId, tokenId, issuer, initialSupply } = multiTokens.tokenCreated.matrixEnjinV603.decode(e)
             return match(issuer)

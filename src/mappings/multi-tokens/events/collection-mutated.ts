@@ -8,12 +8,12 @@ type CollectionMutatedEvent = {
     mutation: any
 }
 
-export function collectionMutated(event: EventItem) {
+export function collectionMutated(event: EventItem): CollectionMutatedEvent {
     return match(event)
         .returnType<CollectionMutatedEvent>()
         .when(multiTokens.collectionMutated.matrixEnjinV603.is, () => multiTokens.collectionMutated.matrixEnjinV603.decode(event))
         .when(multiTokens.collectionMutated.v1050.is, () => multiTokens.collectionMutated.v1050.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.collectionMutated)
+            throw new UnsupportedEventError(event)
         })
 }

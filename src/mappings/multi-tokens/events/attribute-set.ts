@@ -10,11 +10,11 @@ type AttributeSetEvent = {
     value: string
 }
 
-export function attributeSet(event: EventItem) {
+export function attributeSet(event: EventItem): AttributeSetEvent {
     return match(event)
         .returnType<AttributeSetEvent>()
         .when(multiTokens.attributeSet.matrixEnjinV603.is, multiTokens.attributeSet.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.attributeSet)
+            throw new UnsupportedEventError(event)
         })
 }

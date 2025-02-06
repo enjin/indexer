@@ -8,13 +8,13 @@ type EarlyBirdBonusPaymentUnlockedEvent = {
     nextPaymentBlock: number
 }
 
-export function earlyBirdBonusPaymentUnlocked(event: EventItem) {
+export function earlyBirdBonusPaymentUnlocked(event: EventItem): EarlyBirdBonusPaymentUnlockedEvent {
     return match(event)
         .returnType<EarlyBirdBonusPaymentUnlockedEvent>()
         .when(nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.is, () =>
             nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.earlyBirdBonusPaymentUnlocked)
+            throw new UnsupportedEventError(event)
         })
 }

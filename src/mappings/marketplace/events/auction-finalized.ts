@@ -10,11 +10,11 @@ type AuctionFinalizedEvent = {
     royalty: bigint
 }
 
-export function auctionFinalized(event: EventItem) {
+export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
     return match(event)
         .returnType<AuctionFinalizedEvent>()
         .when(marketplace.auctionFinalized.matrixEnjinV603.is, marketplace.auctionFinalized.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.auctionFinalized)
+            throw new UnsupportedEventError(event)
         })
 }

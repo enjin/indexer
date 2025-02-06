@@ -9,11 +9,11 @@ type EraPaidEvent = {
     remainder: bigint
 }
 
-export function eraPaid(event: EventItem) {
+export function eraPaid(event: EventItem): EraPaidEvent {
     return match(event)
         .returnType<EraPaidEvent>()
         .when(staking.eraPaid.enjinV100.is, () => staking.eraPaid.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(staking.eraPaid.enjinV100)
+            throw new UnsupportedEventError(event)
         })
 }

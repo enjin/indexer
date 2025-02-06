@@ -8,12 +8,12 @@ type OfferCompletedEvent = {
     offerId: bigint
 }
 
-function offerCompleted(event: EventItem) {
+function offerCompleted(event: EventItem): OfferCompletedEvent {
     return match(event)
         .returnType<OfferCompletedEvent>()
         .when(stakeExchange.offerCompleted.enjinV110.is, () => stakeExchange.offerCompleted.enjinV110.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(stakeExchange.offerCompleted)
+            throw new UnsupportedEventError(event)
         })
 }
 

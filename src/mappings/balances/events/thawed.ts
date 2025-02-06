@@ -8,11 +8,11 @@ type ThawedEvent = {
     amount: bigint
 }
 
-export function thawed(event: EventItem) {
+export function thawed(event: EventItem): ThawedEvent {
     return match(event)
         .returnType<ThawedEvent>()
         .when(balances.thawed.matrixEnjinV603.is, () => balances.thawed.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.thawed)
+            throw new UnsupportedEventError(event)
         })
 }

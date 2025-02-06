@@ -8,7 +8,7 @@ type CollectionAccountCreatedEvent = {
     accountId: string
 }
 
-export function collectionAccountCreated(event: EventItem) {
+export function collectionAccountCreated(event: EventItem): CollectionAccountCreatedEvent {
     return match(event)
         .returnType<CollectionAccountCreatedEvent>()
         .when(
@@ -16,6 +16,6 @@ export function collectionAccountCreated(event: EventItem) {
             multiTokens.collectionAccountCreated.matrixEnjinV603.decode
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.collectionAccountCreated)
+            throw new UnsupportedEventError(event)
         })
 }

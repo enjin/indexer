@@ -9,13 +9,13 @@ type TokenAccountDestroyedEvent = {
     accountId: string
 }
 
-export function tokenAccountDestroyed(event: EventItem) {
+export function tokenAccountDestroyed(event: EventItem): TokenAccountDestroyedEvent {
     return match(event)
         .returnType<TokenAccountDestroyedEvent>()
         .when(multiTokens.tokenAccountDestroyed.matrixEnjinV603.is, () =>
             multiTokens.tokenAccountDestroyed.matrixEnjinV603.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.tokenAccountDestroyed)
+            throw new UnsupportedEventError(event)
         })
 }

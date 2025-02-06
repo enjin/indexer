@@ -10,13 +10,13 @@ type TokenAccountCreatedEvent = {
     balance: bigint
 }
 
-export function tokenAccountCreated(event: EventItem) {
+export function tokenAccountCreated(event: EventItem): TokenAccountCreatedEvent {
     return match(event)
         .returnType<TokenAccountCreatedEvent>()
         .when(multiTokens.tokenAccountCreated.matrixEnjinV603.is, () =>
             multiTokens.tokenAccountCreated.matrixEnjinV603.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.tokenAccountCreated)
+            throw new UnsupportedEventError(event)
         })
 }

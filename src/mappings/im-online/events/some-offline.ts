@@ -7,11 +7,11 @@ type SomeOfflineEvent = {
     offline: any
 }
 
-export function someOffline(event: EventItem) {
+export function someOffline(event: EventItem): SomeOfflineEvent {
     return match(event)
         .returnType<SomeOfflineEvent>()
         .when(imOnline.someOffline.enjinV100.is, () => imOnline.someOffline.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(imOnline.someOffline)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -8,11 +8,11 @@ type ReservedEvent = {
     amount: bigint
 }
 
-export function reserved(event: EventItem) {
+export function reserved(event: EventItem): ReservedEvent {
     return match(event)
         .returnType<ReservedEvent>()
         .when(balances.reserved.matrixEnjinV603.is, () => balances.reserved.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.reserved)
+            throw new UnsupportedEventError(event)
         })
 }

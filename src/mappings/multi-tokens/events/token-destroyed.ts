@@ -9,11 +9,11 @@ type TokenDestroyedEvent = {
     caller: string
 }
 
-export function tokenDestroyed(event: EventItem) {
+export function tokenDestroyed(event: EventItem): TokenDestroyedEvent {
     return match(event)
         .returnType<TokenDestroyedEvent>()
         .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, () => multiTokens.tokenDestroyed.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.tokenDestroyed)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -12,7 +12,7 @@ type EraRewardsProcessedEvent = {
     reinvested: bigint
 }
 
-function eraRewardsProcessed(event: EventItem) {
+function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent {
     return match(event)
         .returnType<EraRewardsProcessedEvent>()
         .when(nominationPools.eraRewardsProcessed.enjinV101.is, () => nominationPools.eraRewardsProcessed.enjinV101.decode(event))
@@ -20,7 +20,7 @@ function eraRewardsProcessed(event: EventItem) {
         .when(nominationPools.eraRewardsProcessed.v104.is, () => nominationPools.eraRewardsProcessed.v104.decode(event))
         .when(nominationPools.eraRewardsProcessed.v102.is, () => nominationPools.eraRewardsProcessed.v102.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.eraRewardsProcessed)
+            throw new UnsupportedEventError(event)
         })
 }
 

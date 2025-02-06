@@ -7,6 +7,6 @@ export function ruleSetRemoved(event: EventItem) {
     return match(event)
         .when(fuelTanks.ruleSetRemoved.matrixEnjinV603.is, () => fuelTanks.ruleSetRemoved.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(fuelTanks.ruleSetRemoved)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -8,12 +8,12 @@ type OfferCancelledEvent = {
     offerId: bigint
 }
 
-function offerCancelled(event: EventItem) {
+function offerCancelled(event: EventItem): OfferCancelledEvent {
     return match(event)
         .returnType<OfferCancelledEvent>()
         .when(stakeExchange.offerCancelled.enjinV100.is, () => stakeExchange.offerCancelled.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(stakeExchange.offerCancelled)
+            throw new UnsupportedEventError(event)
         })
 }
 

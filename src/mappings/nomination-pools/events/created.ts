@@ -10,14 +10,14 @@ type CreatedEvent = {
     capacity: bigint
 }
 
-export function created(event: EventItem) {
+export function created(event: EventItem): CreatedEvent {
     return match(event)
         .returnType<CreatedEvent>()
         .when(nominationPools.created.enjinV100.is, () => nominationPools.created.enjinV100.decode(event))
         .when(nominationPools.created.v101.is, () => nominationPools.created.v101.decode(event))
         .when(nominationPools.created.v100.is, () => nominationPools.created.v100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.created)
+            throw new UnsupportedEventError(event)
         })
 }
 

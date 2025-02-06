@@ -8,11 +8,11 @@ type IdentityKilledEvent = {
     deposit: bigint
 }
 
-export function identityKilled(event: EventItem) {
+export function identityKilled(event: EventItem): IdentityKilledEvent {
     return match(event)
         .returnType<IdentityKilledEvent>()
         .when(identity.identityKilled.matrixEnjinV1000.is, () => identity.identityKilled.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.identityKilled)
+            throw new UnsupportedEventError(event)
         })
 }

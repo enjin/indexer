@@ -7,11 +7,11 @@ type RegistrarAddedEvent = {
     registrarIndex: number
 }
 
-export function registrarAdded(event: EventItem) {
+export function registrarAdded(event: EventItem): RegistrarAddedEvent {
     return match(event)
         .returnType<RegistrarAddedEvent>()
         .when(identity.registrarAdded.matrixEnjinV1000.is, () => identity.registrarAdded.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.registrarAdded)
+            throw new UnsupportedEventError(event)
         })
 }

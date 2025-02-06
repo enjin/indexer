@@ -8,11 +8,11 @@ type JudgementGivenEvent = {
     registrarIndex: number
 }
 
-export function judgementGiven(event: EventItem) {
+export function judgementGiven(event: EventItem): JudgementGivenEvent {
     return match(event)
         .returnType<JudgementGivenEvent>()
         .when(identity.judgementGiven.matrixEnjinV1000.is, () => identity.judgementGiven.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.judgementGiven)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -8,11 +8,11 @@ type ClaimTokensCompletedEvent = {
     ethereumAddress: string
 }
 
-export function claimTokensCompleted(event: EventItem) {
+export function claimTokensCompleted(event: EventItem): ClaimTokensCompletedEvent {
     return match(event)
         .returnType<ClaimTokensCompletedEvent>()
         .when(multiTokens.claimTokensCompleted.matrixEnjinV1000.is, multiTokens.claimTokensCompleted.matrixEnjinV1000.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.claimTokensCompleted)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -8,11 +8,11 @@ type EndowedEvent = {
     freeBalance: bigint
 }
 
-export function endowed(event: EventItem) {
+export function endowed(event: EventItem): EndowedEvent {
     return match(event)
         .returnType<EndowedEvent>()
         .when(balances.endowed.matrixEnjinV603.is, () => balances.endowed.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.endowed)
+            throw new UnsupportedEventError(event)
         })
 }

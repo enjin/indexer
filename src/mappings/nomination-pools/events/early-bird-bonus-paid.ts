@@ -10,12 +10,12 @@ type EarlyBirdBonusPaidEvent = {
     totalAccounts: number
 }
 
-function earlyBirdBonusPaid(event: EventItem) {
+function earlyBirdBonusPaid(event: EventItem): EarlyBirdBonusPaidEvent {
     return match(event)
         .returnType<EarlyBirdBonusPaidEvent>()
         .when(nominationPools.earlyBirdBonusPaid.enjinV1023.is, () => nominationPools.earlyBirdBonusPaid.enjinV1023.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.earlyBirdBonusPaid)
+            throw new UnsupportedEventError(event)
         })
 }
 

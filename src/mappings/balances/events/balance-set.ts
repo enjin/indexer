@@ -8,7 +8,7 @@ type BalanceSetEvent = {
     free: bigint
 }
 
-export function balanceSet(event: EventItem) {
+export function balanceSet(event: EventItem): BalanceSetEvent {
     return match(event)
         .returnType<BalanceSetEvent>()
         .when(balances.balanceSet.matrixEnjinV603.is, () => balances.balanceSet.matrixEnjinV603.decode(event))
@@ -17,6 +17,6 @@ export function balanceSet(event: EventItem) {
         .when(balances.balanceSet.v104.is, () => balances.balanceSet.v104.decode(event))
         .when(balances.balanceSet.v100.is, () => balances.balanceSet.v100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.balanceSet)
+            throw new UnsupportedEventError(event)
         })
 }

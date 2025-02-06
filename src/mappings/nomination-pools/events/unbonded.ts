@@ -12,12 +12,12 @@ type UnbondedEvent = {
     era: number
 }
 
-export function unbonded(event: EventItem) {
+export function unbonded(event: EventItem): UnbondedEvent {
     return match(event)
         .returnType<UnbondedEvent>()
         .when(nominationPools.unbonded.enjinV100.is, () => nominationPools.unbonded.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.unbonded)
+            throw new UnsupportedEventError(event)
         })
 }
 

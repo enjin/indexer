@@ -8,7 +8,7 @@ type ListingCreatedEvent = {
     listing: any
 }
 
-export function listingCreated(event: EventItem) {
+export function listingCreated(event: EventItem): ListingCreatedEvent {
     return match(event)
         .returnType<ListingCreatedEvent>()
         .when(marketplace.listingCreated.matrixEnjinV1012.is, marketplace.listingCreated.matrixEnjinV1012.decode)
@@ -23,6 +23,6 @@ export function listingCreated(event: EventItem) {
         .when(marketplace.listingCreated.v1030.is, marketplace.listingCreated.v1030.decode)
         .when(marketplace.listingCreated.v110.is, marketplace.listingCreated.v110.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.listingCreated)
+            throw new UnsupportedEventError(event)
         })
 }

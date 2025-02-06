@@ -12,9 +12,8 @@ type FrozenEvent = {
     tokenAccount?: string
 }
 
-export function frozen(event: EventItem) {
+export function frozen(event: EventItem): FrozenEvent {
     return match(event)
-        .returnType<FrozenEvent>()
         .when(multiTokens.frozen.matrixEnjinV603.is, (e) => {
             const { collectionId, freezeType } = multiTokens.frozen.matrixEnjinV603.decode(e)
 

@@ -8,11 +8,11 @@ type ClaimMintedEvent = {
     amount: bigint
 }
 
-export function claimMinted(event: EventItem) {
+export function claimMinted(event: EventItem): ClaimMintedEvent {
     return match(event)
         .returnType<ClaimMintedEvent>()
         .when(claims.claimMinted.matrixEnjinV603.is, () => claims.claimMinted.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(claims.claimMinted)
+            throw new UnsupportedEventError(event)
         })
 }

@@ -7,11 +7,11 @@ type ListingCancelledEvent = {
     listingId: string
 }
 
-export function listingCancelled(event: EventItem) {
+export function listingCancelled(event: EventItem): ListingCancelledEvent {
     return match(event)
         .returnType<ListingCancelledEvent>()
         .when(marketplace.listingCancelled.matrixEnjinV603.is, marketplace.listingCancelled.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.listingCancelled)
+            throw new UnsupportedEventError(event)
         })
 }

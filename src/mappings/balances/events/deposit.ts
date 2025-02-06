@@ -8,11 +8,11 @@ type DepositEvent = {
     amount: bigint
 }
 
-export function deposit(event: EventItem) {
+export function deposit(event: EventItem): DepositEvent {
     return match(event)
         .returnType<DepositEvent>()
         .when(balances.deposit.matrixEnjinV603.is, () => balances.deposit.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.deposit)
+            throw new UnsupportedEventError(event)
         })
 }

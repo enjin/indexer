@@ -8,11 +8,11 @@ type CounterOfferRemovedEvent = {
     creator: string
 }
 
-export function counterOfferRemoved(event: EventItem) {
+export function counterOfferRemoved(event: EventItem): CounterOfferRemovedEvent {
     return match(event)
         .returnType<CounterOfferRemovedEvent>()
         .when(marketplace.counterOfferRemoved.matrixEnjinV1012.is, marketplace.counterOfferRemoved.matrixEnjinV1012.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.counterOfferRemoved)
+            throw new UnsupportedEventError(event)
         })
 }

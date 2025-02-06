@@ -8,7 +8,7 @@ type CounterOfferPlacedEvent = {
     counterOffer: any
 }
 
-export function counterOfferPlaced(event: EventItem) {
+export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {
     return match(event)
         .returnType<CounterOfferPlacedEvent>()
         .when(marketplace.counterOfferPlaced.matrixEnjinV1012.is, marketplace.counterOfferPlaced.matrixEnjinV1012.decode)
@@ -17,6 +17,6 @@ export function counterOfferPlaced(event: EventItem) {
         .when(marketplace.counterOfferPlaced.v1031.is, marketplace.counterOfferPlaced.v1031.decode)
         .when(marketplace.counterOfferPlaced.v1030.is, marketplace.counterOfferPlaced.v1030.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(marketplace.counterOfferPlaced)
+            throw new UnsupportedEventError(event)
         })
 }

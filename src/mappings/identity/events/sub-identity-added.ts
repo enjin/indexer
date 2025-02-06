@@ -9,11 +9,11 @@ type SubIdentityAddedEvent = {
     deposit: bigint
 }
 
-export function subIdentityAdded(event: EventItem) {
+export function subIdentityAdded(event: EventItem): SubIdentityAddedEvent {
     return match(event)
         .returnType<SubIdentityAddedEvent>()
         .when(identity.subIdentityAdded.matrixEnjinV1000.is, () => identity.subIdentityAdded.matrixEnjinV1000.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.subIdentityAdded)
+            throw new UnsupportedEventError(event)
         })
 }

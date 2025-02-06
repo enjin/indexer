@@ -9,12 +9,12 @@ type LiquidityAddedEvent = {
     offerId: bigint
 }
 
-function liquidityAdded(event: EventItem) {
+function liquidityAdded(event: EventItem): LiquidityAddedEvent {
     return match(event)
         .returnType<LiquidityAddedEvent>()
         .when(stakeExchange.liquidityAdded.enjinV100.is, () => stakeExchange.liquidityAdded.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(stakeExchange.liquidityAdded)
+            throw new UnsupportedEventError(event)
         })
 }
 

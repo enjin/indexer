@@ -7,11 +7,11 @@ type DelayTimeForClaimSetEvent = {
     delayTime: number
 }
 
-export function delayTimeForClaimSet(event: EventItem) {
+export function delayTimeForClaimSet(event: EventItem): DelayTimeForClaimSetEvent {
     return match(event)
         .returnType<DelayTimeForClaimSetEvent>()
         .when(claims.delayTimeForClaimSet.matrixEnjinV603.is, () => claims.delayTimeForClaimSet.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(claims.delayTimeForClaimSet)
+            throw new UnsupportedEventError(event)
         })
 }

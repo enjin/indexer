@@ -8,11 +8,11 @@ type UnlockedEvent = {
     amount: bigint
 }
 
-export function getUnlocked(event: EventItem) {
+export function unlocked(event: EventItem): UnlockedEvent {
     return match(event)
         .returnType<UnlockedEvent>()
         .when(balances.unlocked.matrixEnjinV603.is, () => balances.unlocked.matrixEnjinV603.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(balances.unlocked)
+            throw new UnsupportedEventError(event)
         })
 }

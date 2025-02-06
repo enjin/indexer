@@ -17,6 +17,6 @@ export function approved(event: EventItem): ApprovedEvent {
         .returnType<ApprovedEvent>()
         .when(multiTokens.approved.matrixEnjinV603.is, multiTokens.approved.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.approved)
+            throw new UnsupportedEventError(event)
         })
 }

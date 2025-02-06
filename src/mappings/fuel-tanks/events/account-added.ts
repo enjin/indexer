@@ -14,6 +14,6 @@ export function accountAdded(event: EventItem) {
         .when(fuelTanks.accountAdded.v1021.is, () => fuelTanks.accountAdded.v1021.decode(event))
         .when(fuelTanks.accountAdded.v102.is, () => fuelTanks.accountAdded.v102.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(fuelTanks.accountAdded)
+            throw new UnsupportedEventError(event)
         })
 }

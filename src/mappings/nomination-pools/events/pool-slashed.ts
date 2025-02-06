@@ -9,12 +9,12 @@ type PoolSlashedEvent = {
     balance: bigint
 }
 
-function poolSlashed(event: EventItem) {
+function poolSlashed(event: EventItem): PoolSlashedEvent {
     return match(event)
         .returnType<PoolSlashedEvent>()
         .when(nominationPools.poolSlashed.enjinV100.is, () => nominationPools.poolSlashed.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.poolSlashed)
+            throw new UnsupportedEventError(event)
         })
 }
 

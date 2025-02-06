@@ -33,5 +33,5 @@ export function fuelTankMutated(event: EventItem) {
         return fuelTanks.fuelTankMutated.v102.decode(event)
     }
 
-    throw new UnsupportedEventError(fuelTanks.fuelTankMutated)
+            throw new UnsupportedEventError(event)
 }

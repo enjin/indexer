@@ -11,12 +11,12 @@ type WithdrawnEvent = {
     points: bigint
 }
 
-export function withdrawn(event: EventItem) {
+export function withdrawn(event: EventItem): WithdrawnEvent {
     return match(event)
         .returnType<WithdrawnEvent>()
         .when(nominationPools.withdrawn.enjinV100.is, () => nominationPools.withdrawn.enjinV100.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.withdrawn)
+            throw new UnsupportedEventError(event)
         })
 }
 

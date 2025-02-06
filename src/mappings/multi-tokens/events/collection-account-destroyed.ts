@@ -8,7 +8,7 @@ type CollectionAccountDestroyedEvent = {
     accountId: string
 }
 
-export function collectionAccountDestroyed(event: EventItem) {
+export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyedEvent {
     return match(event)
         .returnType<CollectionAccountDestroyedEvent>()
         .when(
@@ -16,6 +16,6 @@ export function collectionAccountDestroyed(event: EventItem) {
             multiTokens.collectionAccountDestroyed.matrixEnjinV603.decode
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.collectionAccountDestroyed)
+            throw new UnsupportedEventError(event)
         })
 }
