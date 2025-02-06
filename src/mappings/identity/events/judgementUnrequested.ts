@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { identity } from '../../../types/generated/events'
 import { Event as EventModel, JudgementType, Registration } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return identity.judgementUnrequested.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(identity.judgementUnrequested.name)
+    throw new UnsupportedEventError(identity.judgementUnrequested.name)
 }
 
 export async function judgementUnrequested(

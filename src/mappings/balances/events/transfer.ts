@@ -1,5 +1,5 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { balances } from '../../../types/generated/events'
 import { BalancesTransfer, Event as EventModel, Extrinsic } from '../../../model'
 import { CommonContext, EventItem } from '../../types/contexts'
@@ -10,7 +10,7 @@ function getEventData(event: EventItem) {
         return balances.transfer.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(balances.transfer.name)
+    throw new UnsupportedEventError(balances.transfer.name)
 }
 
 export async function transfer(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

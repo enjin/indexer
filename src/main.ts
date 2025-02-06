@@ -1,6 +1,5 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
-import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
@@ -224,13 +223,15 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            ctx.log.info(`last block of batch: ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
+            ctx.log.info(
+                `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
+            )
 
             for (const block of ctx.blocks) {
-                const extrinsics: Extrinsic[] = []
-                const signers = new Set<string>()
-                const eventsCollection: Event[] = []
-                const accountTokenEvents: AccountTokenEvent[] = []
+                // const extrinsics: Extrinsic[] = []
+                // const signers = new Set<string>()
+                // const eventsCollection: Event[] = []
+                // const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 0) {
                     await createEnjToken(ctx as unknown as CommonContext, block.header)
@@ -370,8 +371,14 @@ processor.run(
                         }
                     }
 
-                    signers.add(publicKey)
-                    extrinsics.push(extrinsicM)
+                    // signers.add(publicKey)
+                    // extrinsics.push(extrinsicM)
+                    if (block.header.height > config.lastBlockHeight) {
+                        map.balances.processor.addAccountsToSet([publicKey])
+                        await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                    }
+
+                    ctx.store.insert(extrinsicM)
                 }
 
                 for (const call of block.calls) {
@@ -382,22 +389,25 @@ processor.run(
 
                     if (event) {
                         if (Array.isArray(event)) {
-                            eventsCollection.push(event[0])
-                            accountTokenEvents.push(event[1])
+                            // eventsCollection.push(event[0])
+                            // accountTokenEvents.push(event[1])
+                            ctx.store.insert(event[0])
+                            ctx.store.insert(event[1])
                         } else {
-                            eventsCollection.push(event)
+                            // eventsCollection.push(event)
+                            ctx.store.insert(event)
                         }
                     }
                 }
 
-                if (block.header.height > config.lastBlockHeight) {
-                    map.balances.processor.addAccountsToSet(Array.from(signers))
-                    await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
-                }
+                // if (block.header.height > config.lastBlockHeight) {
+                //     map.balances.processor.addAccountsToSet(Array.from(signers))
+                //     await map.balances.processor.saveAccounts(ctx as unknown as CommonContext, block.header)
+                // }
 
-                _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                //  _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

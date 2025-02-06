@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Collection,
@@ -58,7 +58,7 @@ function getEventData(event: EventItem) {
         }
     }
 
-    throw new UnknownVersionError(events.multiTokens.thawed.name)
+    throw new UnsupportedEventError(events.multiTokens.thawed.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

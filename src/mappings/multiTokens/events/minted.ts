@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -32,7 +32,7 @@ function getEventData(event: EventItem) {
         }
     }
 
-    throw new UnknownVersionError(events.multiTokens.minted.name)
+    throw new UnsupportedEventError(events.multiTokens.minted.name)
 }
 
 function getEvent(

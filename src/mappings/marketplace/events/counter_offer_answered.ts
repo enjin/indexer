@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -29,7 +29,7 @@ function getEventData(event: EventItem) {
     if (events.marketplace.counterOfferAnswered.v1011.is(event)) {
         return events.marketplace.counterOfferAnswered.v1011.decode(event)
     }
-    throw new UnknownVersionError(events.marketplace.counterOfferAnswered.name)
+    throw new UnsupportedEventError(events.marketplace.counterOfferAnswered.name)
 }
 
 function getEvent(

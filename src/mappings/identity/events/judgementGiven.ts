@@ -1,4 +1,4 @@
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnsupportedEventError } from '../../../common/errors'
 import { events, calls } from '../../../types/generated'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../../model'
 import { CommonContext, BlockHeader, EventItem, CallItem } from '../../types/contexts'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return events.identity.judgementGiven.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(events.identity.judgementGiven.name)
+    throw new UnsupportedEventError(events.identity.judgementGiven.name)
 }
 
 function getCallData(call: CallItem) {
@@ -17,7 +17,7 @@ function getCallData(call: CallItem) {
         return calls.identity.provideJudgement.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(calls.identity.provideJudgement.name)
+    throw new UnsupportedEventError(calls.identity.provideJudgement.name)
 }
 
 export async function judgementGiven(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

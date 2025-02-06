@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     AccountTokenEvent,
@@ -21,7 +21,7 @@ function getEventData(event: EventItem) {
         return events.marketplace.listingRemovedUnderMinimum.matrixEnjinV1014.decode(event)
     }
 
-    throw new UnknownVersionError(events.marketplace.listingRemovedUnderMinimum.name)
+    throw new UnsupportedEventError(events.marketplace.listingRemovedUnderMinimum.name)
 }
 
 function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {

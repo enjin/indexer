@@ -2,14 +2,14 @@ import { Sns } from '../../../common/sns'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.infused.matrixEnjinV1012.is(event)) {
         return events.multiTokens.infused.matrixEnjinV1012.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.infused.name)
+    throw new UnsupportedEventError(events.multiTokens.infused.name)
 }
 
 function getEvent(

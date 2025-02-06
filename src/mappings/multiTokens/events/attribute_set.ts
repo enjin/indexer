@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Attribute,
@@ -24,7 +24,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.attributeSet.matrixEnjinV603.is(event)) {
         return events.multiTokens.attributeSet.matrixEnjinV603.decode(event)
     }
-    throw new UnknownVersionError(events.multiTokens.attributeSet.name)
+    throw new UnsupportedEventError(events.multiTokens.attributeSet.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

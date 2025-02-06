@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events, calls, storage } from '../../../types/generated'
 import {
     CapType,
@@ -260,7 +260,7 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.batchMint.name)
+        throw new UnsupportedEventError(calls.multiTokens.batchMint.name)
     }
 
     if (call.name === 'MultiTokens.force_mint') {
@@ -442,7 +442,7 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.forceMint.name)
+        throw new UnsupportedEventError(calls.multiTokens.forceMint.name)
     }
 
     if (call.name === 'MultiTokens.mint') {
@@ -599,10 +599,10 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
             }
         }
 
-        throw new UnknownVersionError(calls.multiTokens.mint.name)
+        throw new UnsupportedEventError(calls.multiTokens.mint.name)
     }
 
-    throw new UnknownVersionError(call.name)
+    throw new UnsupportedEventError(call.name)
 }
 
 function getEventData(event: EventItem) {
@@ -619,7 +619,7 @@ function getEventData(event: EventItem) {
         }
     }
 
-    throw new UnknownVersionError(events.multiTokens.tokenCreated.name)
+    throw new UnsupportedEventError(events.multiTokens.tokenCreated.name)
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
@@ -695,7 +695,7 @@ async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: 
         }
     }
 
-    throw new UnknownVersionError('storage.multiTokens.token')
+    throw new UnsupportedEventError('storage.multiTokens.token')
 }
 
 export async function tokenCreated(

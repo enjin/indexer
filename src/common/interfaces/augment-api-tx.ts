@@ -1076,8 +1076,10 @@ declare module '@polkadot/api-base/types/submittable' {
     fuelTanks: {
       /**
        * Adds new account for `user_id` to fuel tank at `tank_id`. An account is
-       * required to dispatch calls. A deposit is required, and may be paid by
-       * the user or the fuel tank, depending on the settings.
+       * required to dispatch calls. A deposit of [`Config::AccountCreationDeposit`] is required.
+       * 
+       * If called by the owner, the deposit is always paid from the fuel tank, otherwise it may
+       * be paid by the user or the fuel tank, depending on the tank's `user_account_management`.
        * 
        * ### Errors
        * 
@@ -1491,10 +1493,9 @@ declare module '@polkadot/api-base/types/submittable' {
     };
     marketplace: {
       /**
-       * Responds to a counter offer on a listing. The caller must be the seller of the listing.
-       * If the counter offer is accepted, the listing will be filled. If it's rejected, the
-       * counter offer is deleted. It can also be updated with a `Counter` response. Only the
-       * buyer and seller may call this extrinsic.
+       * Responds to a counter offer on a listing. If the counter offer is accepted, the listing
+       * will be filled. If it's rejected, the counter offer is deleted. It can also be updated
+       * with a `Counter` response. Only the buyer and seller may call this extrinsic.
        * 
        * ### Parameters
        * - `listing_id` - the id of the offer that will be countered

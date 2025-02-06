@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import { Event as EventModel, Identity, Registration } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -8,7 +8,7 @@ function getEventData(event: EventItem) {
         return events.identity.identityCleared.matrixEnjinV1000.decode(event)
     }
 
-    throw new UnknownVersionError(events.identity.identityCleared.name)
+    throw new UnsupportedEventError(events.identity.identityCleared.name)
 }
 
 export async function identityCleared(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

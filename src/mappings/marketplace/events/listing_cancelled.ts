@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     AccountTokenEvent,
@@ -22,7 +22,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return events.marketplace.listingCancelled.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.marketplace.listingCancelled.name)
+    throw new UnsupportedEventError(events.marketplace.listingCancelled.name)
 }
 
 function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {

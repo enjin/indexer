@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { claims } from '../../../types/generated/events'
 import { AccountClaimType, ClaimRequest, ClaimDetails, Event as EventModel } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return claims.claimMinted.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(claims.claimMinted.name)
+    throw new UnsupportedEventError(claims.claimMinted.name)
 }
 
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

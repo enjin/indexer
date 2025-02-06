@@ -1,4 +1,4 @@
-import { CallNotDefinedError, UnknownVersionError } from '../../../common/errors'
+import { CallNotDefinedError, UnsupportedEventError } from '../../../common/errors'
 import { events, calls } from '../../../types/generated'
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../../model'
 import { CommonContext, EventItem, BlockHeader, CallItem } from '../../types/contexts'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return events.fuelTanks.ruleSetInserted.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.fuelTanks.ruleSetInserted.name)
+    throw new UnsupportedEventError(events.fuelTanks.ruleSetInserted.name)
 }
 
 function getCallData(call: CallItem) {
@@ -85,7 +85,7 @@ function getCallData(call: CallItem) {
         return calls.fuelTanks.insertRuleSet.v500.decode(call)
     }
 
-    throw new UnknownVersionError(calls.fuelTanks.insertRuleSet.name)
+    throw new UnsupportedEventError(calls.fuelTanks.insertRuleSet.name)
 }
 
 export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

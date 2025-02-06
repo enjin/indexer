@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -20,7 +20,7 @@ function getEventData(event: EventItem) {
     if (events.marketplace.counterOfferRemoved.matrixEnjinV1012.is(event)) {
         return events.marketplace.counterOfferRemoved.matrixEnjinV1012.decode(event)
     }
-    throw new UnknownVersionError(events.marketplace.counterOfferRemoved.name)
+    throw new UnsupportedEventError(events.marketplace.counterOfferRemoved.name)
 }
 
 function getEvent(

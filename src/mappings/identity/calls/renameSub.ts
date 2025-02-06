@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { Event as EventModel, Identity } from '../../../model'
 import { CommonContext, CallItem, BlockHeader } from '../../types/contexts'
 import { identity } from '../../../types/generated/calls'
@@ -9,7 +9,7 @@ function getCallData(call: CallItem) {
         return identity.renameSub.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(identity.renameSub.name)
+    throw new UnsupportedEventError(identity.renameSub.name)
 }
 
 export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {

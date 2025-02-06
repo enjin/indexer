@@ -1,4 +1,4 @@
-import { UnknownVersionError, throwError } from '../../../common/errors'
+import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { events } from '../../../types/generated'
 import {
     Account,
@@ -20,7 +20,7 @@ function getEventData(event: EventItem) {
         return events.multiTokens.burned.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(events.multiTokens.burned.name)
+    throw new UnsupportedEventError(events.multiTokens.burned.name)
 }
 
 function getEvent(

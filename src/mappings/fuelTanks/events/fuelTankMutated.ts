@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { fuelTanks } from '../../../types/generated/events'
 import {
     CoveragePolicy,
@@ -24,7 +24,7 @@ function getEventData(event: EventItem) {
         return fuelTanks.fuelTankMutated.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(fuelTanks.fuelTankMutated.name)
+    throw new UnsupportedEventError(fuelTanks.fuelTankMutated.name)
 }
 
 export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

@@ -1,5 +1,5 @@
 import { LessThan } from 'typeorm'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { claims } from '../../../types/generated/events'
 import { claims as claimsStorage } from '../../../types/generated/storage'
 import { ClaimDetails, Event as EventModel, Extrinsic, ClaimRequest, Claim, ClaimsClaimed } from '../../../model'
@@ -12,7 +12,7 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return claims.claimed.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(claims.claimed.name)
+    throw new UnsupportedEventError(claims.claimed.name)
 }
 
 function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
@@ -20,7 +20,7 @@ function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
         return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnknownVersionError('Claims.DelayClaimsPeriod')
+    throw new UnsupportedEventError('Claims.DelayClaimsPeriod')
 }
 
 export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

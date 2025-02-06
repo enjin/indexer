@@ -1,5 +1,5 @@
 import { hexToString, hexToU8a } from '@polkadot/util'
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { Event as EventModel, Identity, Registration } from '../../../model'
 import { CommonContext, BlockHeader, CallItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
@@ -10,7 +10,7 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         return identity.setSubs.matrixEnjinV1000.decode(call)
     }
 
-    throw new UnknownVersionError(identity.setSubs.name)
+    throw new UnsupportedEventError(identity.setSubs.name)
 }
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {

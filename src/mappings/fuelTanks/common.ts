@@ -21,7 +21,7 @@ import {
 } from '../../model'
 import { CommonContext, CallItem } from '../types/contexts'
 import { fuelTanks } from '../../types/generated/calls'
-import { UnknownVersionError } from '../../common/errors'
+import { UnsupportedEventError } from '../../common/errors'
 
 export function rulesToMap(
     ruleId: string,
@@ -177,7 +177,7 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
             return fuelTanks.dispatch.v500.decode(call)
         }
 
-        throw new UnknownVersionError(fuelTanks.dispatch.name)
+        throw new UnsupportedEventError(fuelTanks.dispatch.name)
     }
 
     if (fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call)) {
@@ -252,5 +252,5 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
         return fuelTanks.dispatchAndTouch.v500.decode(call)
     }
 
-    throw new UnknownVersionError(fuelTanks.dispatchAndTouch.name)
+    throw new UnsupportedEventError(fuelTanks.dispatchAndTouch.name)
 }

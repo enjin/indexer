@@ -1,5 +1,5 @@
 import { CommonContext, BlockHeader } from '../types/contexts'
-import { UnknownVersionError } from '../../common/errors'
+import { UnsupportedEventError } from '../../common/errors'
 import { claims } from '../../types/generated/storage'
 import { ClaimDetails } from '../../model'
 
@@ -21,7 +21,9 @@ async function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
         return claims.delayClaimsPeriod.matrixEnjinV603.get(block)
     }
 
-    throw new UnknownVersionError('Claims.TotalUnclaimedAmount')
+    // In case the delay period doesn't match the type, this could happen at genesis for example
+    // We just return the current default value for the blockchain
+    return 7200
 }
 
 async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {
@@ -37,7 +39,7 @@ async function getExchangeRate(ctx: CommonContext, block: BlockHeader) {
         return claims.exchangeRate.v500.get(block)
     }
 
-    throw new UnknownVersionError('Claims.ExchangeRate')
+    throw new UnsupportedEventError('Claims.ExchangeRate')
 }
 
 export async function updateClaimDetails(ctx: CommonContext, block: BlockHeader) {

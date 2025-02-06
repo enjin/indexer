@@ -677,6 +677,10 @@ declare module '@polkadot/api-base/types/events' {
        **/
       ListingFilled: AugmentedEvent<ApiType, [listingId: H256, buyer: AccountId32, price: u128, amountFilled: u128, amountRemaining: u128, protocolFee: u128, royalty: u128], { listingId: H256, buyer: AccountId32, price: u128, amountFilled: u128, amountRemaining: u128, protocolFee: u128, royalty: u128 }>;
       /**
+       * Tried to settle a listing with take value under the minimum requirement
+       **/
+      ListingRemovedUnderMinimum: AugmentedEvent<ApiType, [listingId: H256], { listingId: H256 }>;
+      /**
        * The migration step has completed
        **/
       MigrationStep: AugmentedEvent<ApiType, [itemsProcessed: u32, phase: u8], { itemsProcessed: u32, phase: u8 }>;

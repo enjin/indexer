@@ -1,4 +1,4 @@
-import { UnknownVersionError } from '../../../common/errors'
+import { UnsupportedEventError } from '../../../common/errors'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { ClaimDetails } from '../../../model'
 import { claims } from '../../../types/generated/events'
@@ -9,7 +9,7 @@ function getEventData(event: EventItem) {
         return claims.exchangeRateSet.matrixEnjinV603.decode(event)
     }
 
-    throw new UnknownVersionError(claims.exchangeRateSet.name)
+    throw new UnsupportedEventError(claims.exchangeRateSet.name)
 }
 
 export async function exchangeRateSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {

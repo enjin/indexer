@@ -1,7 +1,7 @@
 // Auto-generated via `yarn polkadot-types-from-defs`, do not edit
 /* eslint-disable */
 
- 
+/* eslint-disable sort-keys */
 
 export default {
   /**
@@ -2520,7 +2520,10 @@ export default {
       },
       MigrationStep: {
         itemsProcessed: 'u32',
-        phase: 'u8'
+        phase: 'u8',
+      },
+      ListingRemovedUnderMinimum: {
+        listingId: 'H256'
       }
     }
   },
@@ -6157,7 +6160,7 @@ export default {
    * Lookup775: pallet_fuel_tanks::pallet::Error<T>
    **/
   PalletFuelTanksError: {
-    _enum: ['FuelTankNotFound', 'FuelTankAlreadyExists', 'InsufficientBalance', 'UsageRestricted', 'FuelTankOutOfFunds', 'RuleSetNotFound', 'RuleNotFound', 'NoPermission', 'AccountAlreadyExists', 'AccountNotFound', 'DestroyWithExistingAccounts', 'DestroyUnfrozenTank', 'MaxRuleSetsExceeded', 'UserRuleDataExceededMaxSize', 'DecodeUserRuleDataFailed', 'RequiresFrozenTankOrRuleset', 'RequiresFrozenTank', 'MissingRequiredRule', 'MissingRequiredRuleUserData', 'InvalidRuleSet', 'AccountContainsRuleData', 'CannotRemoveRuleThatIsStoringAccountData', 'DuplicateRuleKinds', 'DepositCalculationError', 'FuelTankFrozen', 'CallerDoesNotHaveRuleSetTokenBalance', 'NoDataToRemove']
+    _enum: ['FuelTankNotFound', 'FuelTankAlreadyExists', 'InsufficientBalance', 'UsageRestricted', 'FuelTankOutOfFunds', 'RuleSetNotFound', 'RuleNotFound', 'NoPermission', 'AccountAlreadyExists', 'AccountNotFound', 'DestroyWithExistingAccounts', 'DestroyUnfrozenTank', 'MaxRuleSetsExceeded', 'UserRuleDataExceededMaxSize', 'DecodeUserRuleDataFailed', 'RequiresFrozenTankOrRuleset', 'RequiresFrozenTank', 'MissingRequiredRule', 'MissingRequiredRuleUserData', 'InvalidRuleSet', 'AccountContainsRuleData', 'CannotRemoveRuleThatIsStoringAccountData', 'DuplicateRuleKinds', 'DepositCalculationError', 'FuelTankFrozen', 'CallerDoesNotHaveRuleSetTokenBalance', 'NoDataToRemove', 'RuleSetsCannotBeEmpty']
   },
   /**
    * Lookup776: pallet_marketplace::types::MarketPlaceInfo
@@ -6169,7 +6172,7 @@ export default {
    * Lookup779: pallet_marketplace::pallet::Error<T>
    **/
   PalletMarketplaceError: {
-    _enum: ['UnableToFill', 'ListingNotFound', 'NoPermission', 'MaxRoundingErrorExceeded', 'LowBaseCurrencyBalance', 'LowTokenBalance', 'TransferParamCreationFailed', 'ReceivedValueUnderMinimum', 'ListingAlreadyExists', 'InvalidAuctionStart', 'InvalidAuctionEnd', 'InactiveAuction', 'AuctionNotOver', 'ListingIsWrongType', 'InvalidAmount', 'InvalidPrice', 'ListingForbidden', 'NoCurrency', 'ListingNotActive', 'CurrencyNotAllowedAsRoyalty', 'BuyerIsSeller', 'MakeAssetFrozen', 'TakeAssetFrozen', 'CannotCancelAuctionWithBid', 'CannotCancelAuctionAfterEndBlock', 'InvalidExpiration', 'NotExpired', 'NoCounterOffer', 'PartialFillNotAllowed', 'InvalidFeeSide', 'WrongCurrentPrice', 'CannotCounterSelf', 'MaxPendingListingIdsExceeded', 'CounterOfferExists']
+    _enum: ['UnableToFill', 'ListingNotFound', 'NoPermission', 'MaxRoundingErrorExceeded', 'LowBaseCurrencyBalance', 'LowTokenBalance', 'TransferParamCreationFailed', 'ReceivedValueUnderMinimum', 'ListingAlreadyExists', 'InvalidAuctionStart', 'InvalidAuctionEnd', 'InactiveAuction', 'AuctionNotOver', 'ListingIsWrongType', 'InvalidAmount', 'InvalidPrice', 'ListingForbidden', 'NoCurrency', 'ListingNotActive', 'CurrencyNotAllowedAsRoyalty', 'BuyerIsSeller', 'MakeAssetFrozen', 'TakeAssetFrozen', 'CannotCancelAuctionWithBid', 'CannotCancelAuctionAfterEndBlock', 'InvalidExpiration', 'NotExpired', 'NoCounterOffer', 'PartialFillNotAllowed', 'InvalidFeeSide', 'WrongCurrentPrice', 'CannotCounterSelf', 'MaxPendingListingIdsExceeded', 'CounterOfferExists', 'ListingExpired', 'CannotAcceptOwnCounterOffer']
   },
   /**
    * Lookup780: ep_core::frame::types::ExtrinsicInfo<enjin_matrix_runtime::MaxNameLength>
