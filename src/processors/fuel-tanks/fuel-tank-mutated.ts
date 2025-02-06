@@ -1,6 +1,4 @@
 import { randomBytes } from 'crypto'
-import { UnsupportedEventError } from '../../common/errors'
-import { fuelTanks } from '../../types/generated/events'
 import {
     CoveragePolicy,
     Event as EventModel,
@@ -10,8 +8,9 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
+
 export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.fuelTankMutated(item)
     if (!eventData) return undefined

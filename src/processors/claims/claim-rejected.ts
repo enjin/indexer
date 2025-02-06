@@ -1,9 +1,8 @@
-import { claims } from '../../types/generated/events'
-import { UnsupportedEventError } from '../../common/errors'
-import { ClaimRequest, ClaimDetails, Event as EventModel } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { ClaimDetails, ClaimRequest, Event as EventModel } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
+
 export async function claimRejected(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.claims.events.claimRejected(item)
 

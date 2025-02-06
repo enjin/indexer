@@ -1,7 +1,5 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensClaimedCollections } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

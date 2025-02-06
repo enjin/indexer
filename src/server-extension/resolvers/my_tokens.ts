@@ -1,5 +1,5 @@
-import { Field, ObjectType, Query, Resolver, ID, Int, registerEnumType, ArgsType, Args } from 'type-graphql'
-import { Json, BigInteger } from '@subsquid/graphql-server'
+import { Args, ArgsType, Field, ID, Int, ObjectType, Query, registerEnumType, Resolver } from 'type-graphql'
+import { BigInteger, Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator'

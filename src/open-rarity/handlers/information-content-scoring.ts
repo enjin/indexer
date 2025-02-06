@@ -1,5 +1,5 @@
 import * as mathjs from 'mathjs'
-import { Trait, Token } from '../../model'
+import { Token, Trait } from '../../model'
 
 export const informationContentScoring = {
     scoreToken(totalSupply: bigint, entropy: number, token: Token) {

@@ -1,4 +1,4 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType } from 'type-graphql'
+import { Arg, Field, ObjectType, Query, registerEnumType, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'

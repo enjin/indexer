@@ -1,4 +1,4 @@
-import { UnsupportedCallError, UnsupportedEventError } from '@enjin/indexer/common/errors'
+import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'

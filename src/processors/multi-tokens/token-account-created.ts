@@ -1,17 +1,9 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensTokenAccountCreated,
-    Token,
-    TokenAccount,
-} from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
+
 export async function tokenAccountCreated(
     ctx: CommonContext,
     block: BlockHeader,

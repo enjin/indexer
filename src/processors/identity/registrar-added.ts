@@ -1,9 +1,10 @@
 import { UnsupportedEventError } from '../../common/errors'
-import { events, storage } from '../../types/generated'
+import { storage } from '../../types/generated'
 import { Event as EventModel, IdentityRegistrar } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
+
 function getRegistrars(block: BlockHeader) {
     if (storage.identity.registrars.matrixEnjinV1000.is(block)) {
         return storage.identity.registrars.matrixEnjinV1000.get(block)

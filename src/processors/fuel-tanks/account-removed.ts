@@ -1,8 +1,7 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { fuelTanks } from '../../types/generated/events'
-import { Event as EventModel, FuelTankUserAccounts, FuelTank } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { Event as EventModel, FuelTank, FuelTankUserAccounts } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
+
 export async function accountRemoved(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.accountRemoved(item)
 

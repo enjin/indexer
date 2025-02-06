@@ -1,13 +1,11 @@
 import { hexToString } from '@polkadot/util'
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events, calls, storage } from '../../types/generated'
+import { throwError, UnsupportedEventError } from '../../common/errors'
+import { storage } from '../../types/generated'
 import {
     CapType,
     Collection,
     Event as EventModel,
-    Extrinsic,
     FreezeState,
-    MultiTokensTokenCreated,
     NativeTokenMetadata,
     Royalty,
     Token,
@@ -17,20 +15,9 @@ import {
     TokenCapSingleMint,
     TokenCapSupply,
 } from '../../model'
-import {
-    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v500,
-    FreezeState as FreezeState_v500,
-    SufficiencyParam_Sufficient,
-    TokenMarketBehavior,
-} from '../../types/generated/v500'
-import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_v600 } from '../../types/generated/v600'
-import {
-    TokenCap,
-    DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v603,
-} from '../../types/generated/matrixEnjinV603'
-import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010 } from '../../types/generated/v1010'
-import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1012 } from '../../types/generated/matrixEnjinV1012'
-import { CallItem, CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { FreezeState as FreezeState_v500, TokenMarketBehavior } from '../../types/generated/v500'
+import { TokenCap } from '../../types/generated/matrixEnjinV603'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 

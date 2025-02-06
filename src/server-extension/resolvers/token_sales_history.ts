@@ -1,4 +1,4 @@
-import { Field, ObjectType, Query, Resolver, Arg } from 'type-graphql'
+import { Arg, Field, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { Listing, ListingSale } from '../../model'

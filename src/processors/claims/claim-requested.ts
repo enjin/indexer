@@ -1,9 +1,8 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { claims } from '../../types/generated/events'
 import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
+
 export async function claimRequested(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 

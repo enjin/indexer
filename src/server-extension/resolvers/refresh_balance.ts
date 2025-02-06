@@ -1,4 +1,4 @@
-import { Query, Resolver, Arg } from 'type-graphql'
+import { Arg, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'

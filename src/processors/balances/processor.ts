@@ -1,10 +1,8 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
-import { UnsupportedEventError } from '../../common/errors'
-import { Balance, Event as EventModel, Account } from '../../model'
+import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId } from '../../common/tools'
 import { balances } from '../../types/generated/events'
-import { account as systemAccount } from '../../types/generated/system/storage'
 import { CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
 
 function processBalancesEventItem(ctx: CommonContext, event: EventItem) {

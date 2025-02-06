@@ -1,8 +1,6 @@
 import { hexToU8a } from '@polkadot/util'
-import { UnsupportedEventError, UnsupportedCallError } from '../../common/errors'
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
-import { calls } from '../../types/generated'
-import { CommonContext, BlockHeader, CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import config from '../../config'
 

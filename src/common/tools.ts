@@ -6,6 +6,7 @@ import config from '../config'
 export function isMainnet() {
     return config.chainName === 'enjin-matrix'
 }
+
 export function isValidAddress(address: any) {
     try {
         encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))

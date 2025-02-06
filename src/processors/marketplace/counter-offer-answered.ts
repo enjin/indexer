@@ -1,23 +1,6 @@
 import assert from 'assert'
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketplaceCounterOfferAnswered,
-    CounterOfferResponse,
-    Token,
-    CounterOfferResponseAccept,
-    CounterOfferResponseType,
-    CounterOfferResponseCounter,
-    CounterOfferResponseReject,
-    ListingType,
-    CounterOffer,
-} from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingType } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { getOrCreateAccount } from '../../common/util/entities'

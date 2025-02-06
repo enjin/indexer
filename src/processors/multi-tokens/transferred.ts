@@ -1,19 +1,9 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensTransferred,
-    Token,
-    TokenAccount,
-} from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
-import * as mappings from './../../mappings'
 import * as mappings from './../../mappings'
 
 export async function transferred(

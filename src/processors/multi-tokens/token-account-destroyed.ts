@@ -1,7 +1,6 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensTokenAccountDestroyed, TokenAccount } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { CollectionAccount, Event as EventModel, TokenAccount } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
 export async function tokenAccountDestroyed(

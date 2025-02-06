@@ -1,17 +1,7 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Attribute,
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensCollectionDestroyed,
-    RoyaltyCurrency,
-    Trait,
-} from '../../model'
+import { Attribute, Collection, Event as EventModel, RoyaltyCurrency, Trait } from '../../model'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 
 export async function collectionDestroyed(
     ctx: CommonContext,

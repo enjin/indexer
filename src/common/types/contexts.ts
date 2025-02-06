@@ -1,9 +1,9 @@
 import {
-    DataHandlerContext,
-    SubstrateBatchProcessorFields,
-    Event,
     BlockHeader as _BlockHeader,
     Call,
+    DataHandlerContext,
+    Event,
+    SubstrateBatchProcessorFields,
 } from '@subsquid/substrate-processor'
 import { Store } from '@subsquid/typeorm-store'
 import { processor } from '../../processor'

@@ -12,14 +12,14 @@ import { DispatchRuleDescriptor as DispatchRuleDescriptorv1012 } from '../../typ
 import { DispatchRuleDescriptor as DispatchRuleDescriptorvMatrix1012 } from '../../types/generated/matrixEnjinV1012'
 
 import {
-    MaxFuelBurnPerTransaction,
-    UserFuelBudget,
-    TankFuelBudget,
-    RequireToken,
-    PermittedExtrinsics,
     FuelTankRuleSet,
+    MaxFuelBurnPerTransaction,
+    PermittedExtrinsics,
+    RequireToken,
+    TankFuelBudget,
+    UserFuelBudget,
 } from '../../model'
-import { CommonContext, CallItem } from 'matrixchain-indexer/common/types/contexts'
+import { CallItem, CommonContext } from 'matrixchain-indexer/common/types/contexts'
 import { fuelTanks } from '../../types/generated/calls'
 import { UnsupportedEventError } from '../../common/errors'
 

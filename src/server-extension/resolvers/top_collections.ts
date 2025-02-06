@@ -1,4 +1,4 @@
-import { Field, ObjectType, Query, Resolver, Arg, registerEnumType, ID, Int } from 'type-graphql'
+import { Arg, Field, ID, Int, ObjectType, Query, registerEnumType, Resolver } from 'type-graphql'
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'

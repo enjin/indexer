@@ -1,16 +1,8 @@
 import { throwError } from '../../common/errors'
-import {
-    CollectionAccount,
-    TokenAccount,
-    TokenApproval,
-    CollectionApproval,
-    Event as EventModel,
-    MultiTokensApproved,
-    Extrinsic,
-} from '../../model'
+import { CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '../../model'
 import { encodeId } from '../../common/tools'
 import { Sns } from '../../common/sns'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
 export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventModel | undefined> {

@@ -1,18 +1,5 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Account,
-    AccountTokenEvent,
-    AuctionState,
-    Bid,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    ListingType,
-    MarketplaceBidPlaced,
-    Token,
-} from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { getBestListing, getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'

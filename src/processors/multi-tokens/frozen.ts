@@ -1,17 +1,6 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensFrozen,
-    Token,
-    TokenAccount,
-    TransferPolicy,
-    FreezeState,
-} from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { Collection, CollectionAccount, Event as EventModel, FreezeState, Token, TokenAccount, TransferPolicy } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { isTokenFrozen } from './token_created'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

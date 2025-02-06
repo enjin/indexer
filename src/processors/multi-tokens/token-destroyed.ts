@@ -1,20 +1,17 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
+import { throwError } from '../../common/errors'
 import {
     AccountTokenEvent,
     Attribute,
     Event as EventModel,
-    Extrinsic,
     Listing,
     ListingSale,
     ListingStatus,
-    MultiTokensTokenDestroyed,
     RoyaltyCurrency,
     Token,
     TokenRarity,
     TraitToken,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 

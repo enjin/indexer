@@ -1,12 +1,8 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
 import {
-    Account,
     AccountTokenEvent,
     AuctionData,
     AuctionState,
     Event as EventModel,
-    Extrinsic,
     FeeSide,
     FixedPriceData,
     FixedPriceState,
@@ -14,14 +10,11 @@ import {
     ListingStatus,
     ListingStatusType,
     ListingType,
-    MarketplaceOfferCreated,
-    MarketplaceListingCreated,
     OfferData,
     OfferState,
     Token,
-    TokenAccount,
 } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

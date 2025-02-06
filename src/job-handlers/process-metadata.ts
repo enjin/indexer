@@ -11,6 +11,7 @@ type MetadataType = {
     uri: string
     last_updated_at: Date
 }
+
 async function* tokensInBatch(em: EntityManager, collectionId: string) {
     let skip = 0
     const limit = 500

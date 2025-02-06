@@ -1,7 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { randomBytes } from 'crypto'
-import { CallNotDefinedError, UnsupportedEventError } from '../../common/errors'
-import { calls, events } from '../../types/generated'
+import { CallNotDefinedError } from '../../common/errors'
 import {
     CoveragePolicy,
     Event as EventModel,
@@ -14,7 +13,7 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem, CallItem } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { rulesToMap } from './common'
 import { safeJsonString } from '../../common/tools'
@@ -25,7 +24,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
 
     const eventData = mappings.fuelTanks.events.fuelTankCreated(item)
 
-    const callData = mappings.fuelTanks.calls.createFuelTank(ctx, item.call)
+    const callData = mappings.fuelTanks.calls.createFuelTank(item.call)
 
     if (!eventData || !callData) return undefined
 

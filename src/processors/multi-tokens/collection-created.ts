@@ -1,21 +1,18 @@
-import { UnsupportedEventError, UnsupportedCallError } from '../../common/errors'
-import { events, calls, storage } from '../../types/generated'
+import { storage } from '../../types/generated'
 import {
     Collection,
     CollectionFlags,
     CollectionSocials,
     CollectionStats,
     Event as EventModel,
-    Extrinsic,
     MarketPolicy,
     MintPolicy,
-    MultiTokensCollectionCreated,
     Royalty,
     RoyaltyCurrency,
     Token,
     TransferPolicy,
 } from '../../model'
-import { CommonContext, BlockHeader, CallItem, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'

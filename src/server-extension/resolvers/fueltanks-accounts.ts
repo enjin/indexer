@@ -1,4 +1,4 @@
-import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
+import { Arg, Field, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { hexToU8a } from '@polkadot/util'
 import Rpc from '../../common/rpc'

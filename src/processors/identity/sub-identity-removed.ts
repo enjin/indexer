@@ -1,9 +1,8 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { events } from '../../types/generated'
 import { Event as EventModel, Identity } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
+
 export async function subIdentityRemoved(
     ctx: CommonContext,
     block: BlockHeader,

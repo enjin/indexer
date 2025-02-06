@@ -1,6 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
+import { throwError } from '../../common/errors'
 import {
     Attribute,
     Collection,
@@ -8,13 +7,11 @@ import {
     CollectionSocials,
     CollectionStats,
     Event as EventModel,
-    Extrinsic,
     Metadata,
     MintPolicy,
-    MultiTokensAttributeSet,
     Token,
 } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { safeString } from '../../common/tools'
 import { computeTraits } from '../../jobs/compute-traits'

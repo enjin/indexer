@@ -12,7 +12,6 @@ import {
     MarketplaceListingCreated,
     MarketplaceOfferCreated,
     Token,
-    TokenAccount,
 } from '@enjin/indexer/model'
 
 type ListingCreatedEvent = {

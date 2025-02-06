@@ -1,8 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount } from '../../model'
-import { events } from '../../types/generated'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
-import { UnsupportedEventError, throwError } from '../../common/errors'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
 import * as mappings from './../../mappings'
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {

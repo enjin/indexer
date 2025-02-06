@@ -1,19 +1,8 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Collection,
-    CollectionAccount,
-    Event as EventModel,
-    Extrinsic,
-    MultiTokensThawed,
-    Token,
-    TokenAccount,
-    TransferPolicy,
-} from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { FreezeType_Token as FreezeTypeToken_v500 } from '../../types/generated/v500'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function thawed(

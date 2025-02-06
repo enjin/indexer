@@ -1,17 +1,6 @@
-import { UnsupportedEventError, throwError } from '../../common/errors'
-import { events } from '../../types/generated'
-import {
-    Collection,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketPolicy,
-    MultiTokensCollectionMutated,
-    Royalty,
-    RoyaltyCurrency,
-    Token,
-} from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { throwError } from '../../common/errors'
+import { Collection, Event as EventModel, Listing, MarketPolicy, Royalty, RoyaltyCurrency, Token } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { DefaultRoyalty } from '../../types/generated/v500'
 import { Sns } from '../../common/sns'

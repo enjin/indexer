@@ -1,9 +1,8 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { identity } from '../../types/generated/events'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
+
 export async function judgementRequested(
     ctx: CommonContext,
     block: BlockHeader,

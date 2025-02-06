@@ -1,9 +1,8 @@
-import { UnsupportedEventError } from '../../common/errors'
-import { claims } from '../../types/generated/events'
-import { AccountClaimType, ClaimRequest, ClaimDetails, Event as EventModel } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import { AccountClaimType, ClaimDetails, ClaimRequest, Event as EventModel } from '../../model'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getTotalUnclaimedAmount } from './common'
 import * as mappings from './../../mappings'
+
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.claims.events.claimMinted(item)
 
