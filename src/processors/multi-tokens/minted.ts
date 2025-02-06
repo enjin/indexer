@@ -1,6 +1,5 @@
 import { throwError } from '../../common/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { isNonFungible } from 'matrixchain-indexer/mappings/matrix/multi-tokens/helpers'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../common/util/entities'
@@ -8,6 +7,7 @@ import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { processMetadata } from '../../jobs/process-metadata'
+import { isNonFungible } from '@enjin/indexer/processors/multi-tokens/utils/helpers'
 
 export async function minted(
     ctx: CommonContext,

@@ -38,7 +38,7 @@ export function listingCreated(event: EventItem): ListingCreatedEvent {
         })
 }
 
-async function listingCreatedEventModel(
+export async function listingCreatedEventModel(
     item: EventItem,
     data: any,
     listing: Listing

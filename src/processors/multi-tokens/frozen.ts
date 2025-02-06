@@ -1,10 +1,10 @@
 import { throwError } from '../../common/errors'
 import { Collection, CollectionAccount, Event as EventModel, FreezeState, Token, TokenAccount, TransferPolicy } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { isTokenFrozen } from './token_created'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
+import { isTokenFrozen } from '@enjin/indexer/processors/multi-tokens/token-created'
 
 export async function frozen(
     ctx: CommonContext,

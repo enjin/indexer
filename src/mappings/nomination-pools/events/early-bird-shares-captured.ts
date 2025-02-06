@@ -16,7 +16,7 @@ function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent
             nominationPools.earlyBirdSharesCaptured.enjinV1022.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(nominationPools.earlyBirdSharesCaptured)
+            throw new UnsupportedEventError(event)
         })
 }
 

@@ -10,6 +10,7 @@ const config: ProcessorConfig = {
         chain: process.env.CHAIN_ENDPOINT || 'wss://archive.matrix.blockchain.enjin.io',
         fromBlock: process.env.FROM_BLOCK ? parseInt(process.env.FROM_BLOCK, 10) : 0,
     },
+    erasPerYear: process.env.ERAS_PER_YEAR ? parseInt(process.env.ERAS_PER_YEAR, 10) : 365,
     redisUrl:
         process.env.REDIS_URL ||
         `${process.env.REDIS_SUPPORTS_TLS ? 'rediss' : 'redis'}://${process.env.REDIS_HOST}:${process.env.REDIS_PORT ?? 6379}/${process.env.REDIS_DB ?? 0}`,
@@ -23,6 +24,7 @@ const config: ProcessorConfig = {
             secretAccessKey: process.env.AWS_SECRET_KEY || process.env.SQS_SECRET_KEY || '',
         },
     },
+    wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
 }
 
 export default config

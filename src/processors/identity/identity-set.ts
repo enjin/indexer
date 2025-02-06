@@ -3,8 +3,8 @@ import { CallNotDefinedError } from '../../common/errors'
 import { Event as EventModel, Identity, JudgementType, Registration } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { Data } from '../../types/generated/v1003'
 import * as mappings from './../../mappings'
+import { Data } from '@enjin/indexer/types/generated/v1032'
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {

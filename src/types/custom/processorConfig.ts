@@ -9,6 +9,7 @@ export interface ProcessorConfig {
     prefix: number | string
     lastBlockHeight: number
     genesisHash: string
+    erasPerYear: number
     batchSize?: number
     dataSource: DataSource
     redisUrl: string
@@ -22,4 +23,5 @@ export interface ProcessorConfig {
             secretAccessKey: string
         }
     }
+    wsReconnectDelay: number
 }

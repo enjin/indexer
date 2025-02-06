@@ -15,7 +15,6 @@ import {
     TokenCapSingleMint,
     TokenCapSupply,
 } from '../../model'
-import { FreezeState as FreezeState_v500, TokenMarketBehavior } from '../../types/generated/v500'
 import { TokenCap } from '../../types/generated/matrixEnjinV603'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
@@ -164,7 +163,7 @@ export async function tokenCreated(
             return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
         }
 
-        let callData = await mappings.multiTokens.calls.mint(ctx, item.call, eventData)
+        let callData = await mappings.multiTokens.calls.mint(item.call)
 
         if (callData === undefined) {
             callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)

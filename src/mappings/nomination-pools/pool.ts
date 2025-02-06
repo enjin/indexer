@@ -4,7 +4,7 @@ import { constants, storage } from '../../types/generated'
 import { BlockHeader, CommonContext } from '../types/contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
-import { UnknownVersionError } from '../../common/errors'
+import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 
 const EMPTY_H256 = new Uint8Array(15)
 const MOD_PREFIX = stringToU8a('modl')
@@ -20,8 +20,20 @@ export function createAccount(block: BlockHeader, poolId: string, index: number)
 async function fetchPoolBalance(block: BlockHeader, poolId: string) {
     const accounts = [createAccount(block, poolId, 1), createAccount(block, poolId, 2), createAccount(block, poolId, 3)]
 
-    if (storage.system.account.enjinV100.is(block)) {
-        return storage.system.account.enjinV100.getMany(block, accounts)
+    if (storage.system.account.matrixEnjinV603.is(block)) {
+        return storage.system.account.matrixEnjinV603.getMany(block, accounts)
+    }
+
+    if (storage.system.account.matrixV500.is(block)) {
+        return storage.system.account.matrixV500.getMany(block, accounts)
+    }
+
+    if (storage.system.account.matrixV602.is(block)) {
+        return storage.system.account.matrixV602.getMany(block, accounts)
+    }
+
+    if (storage.system.account.v100.is(block)) {
+        return storage.system.account.v100.getMany(block, accounts)
     }
 
     if (storage.system.account.v104.is(block)) {
@@ -32,7 +44,7 @@ async function fetchPoolBalance(block: BlockHeader, poolId: string) {
         return storage.system.account.v100.getMany(block, accounts)
     }
 
-    throw new UnknownVersionError('System.Account')
+    throw new UnsupportedStorageError('System.Account')
 }
 
 async function getPoolPointsStorage(block: BlockHeader, poolId: string) {
@@ -60,7 +72,7 @@ async function getPoolPointsStorage(block: BlockHeader, poolId: string) {
         return storage.multiTokens.tokens.v100.get(block, 1n, BigInt(poolId))
     }
 
-    throw new UnknownVersionError('MultiTokens.Tokens')
+    throw new UnsupportedStorageError('MultiTokens.Tokens')
 }
 
 async function getActiveStake(block: BlockHeader, poolId: string) {
@@ -80,7 +92,7 @@ async function getActiveStake(block: BlockHeader, poolId: string) {
         return storage.staking.ledger.v100.get(block, createAccount(block, poolId, 1))
     }
 
-    throw new UnknownVersionError('Staking.Ledger')
+    throw new UnsupportedStorageError('Staking.Ledger')
 }
 
 export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId: string) {

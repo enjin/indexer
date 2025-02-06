@@ -80,5 +80,5 @@ export async function counterOfferPlaced(
 
     await Promise.all([ctx.store.save(offer), ctx.store.save(listing)])
 
-    return mappings.marketplace.events.counterOfferPlacedEventModel(item, data, offer, listing, account)
+    return mappings.marketplace.events.counterOfferPlacedEventModel(item, data, listing, account)
 }

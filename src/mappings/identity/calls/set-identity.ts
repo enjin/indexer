@@ -7,7 +7,7 @@ type SetIdentityCall = {
     info: any
 }
 
-export function setIdentity(call: CallItem) {
+export function setIdentity(call: CallItem): SetIdentityCall {
     return match(call)
         .returnType<SetIdentityCall>()
         .when(calls.identity.setIdentity.matrixEnjinV1000.is, () => calls.identity.setIdentity.matrixEnjinV1000.decode(call))

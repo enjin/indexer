@@ -10,7 +10,7 @@ type ProvideJudgementCall = {
     identity: any
 }
 
-export function provideJudgement(call: CallItem) {
+export function provideJudgement(call: CallItem): ProvideJudgementCall {
     return match(call)
         .returnType<ProvideJudgementCall>()
         .when(calls.identity.provideJudgement.matrixEnjinV1000.is, () =>

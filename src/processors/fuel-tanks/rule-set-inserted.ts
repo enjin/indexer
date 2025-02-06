@@ -12,12 +12,11 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
     }
 
     const eventData = mappings.fuelTanks.events.ruleSetInserted(item)
-
     const callData = mappings.fuelTanks.calls.insertRuleSet(item.call)
+
     if (!eventData || !callData) return undefined
 
-    const { tankId } = eventData
-    const ruleSetId = `${tankId}-${eventData.ruleSetId}`
+    const ruleSetId = `${eventData.tankId}-${eventData.ruleSetId}`
 
     const [pE, rS] = await Promise.all([
         ctx.store.find(PermittedExtrinsics, { where: { ruleSet: { id: ruleSetId } } }),
@@ -45,7 +44,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         index: eventData.ruleSetId,
         isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
         isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
-        tank: new FuelTank({ id: tankId }),
+        tank: new FuelTank({ id: eventData.tankId }),
         isFrozen: false,
         whitelistedCallers,
         whitelistedCollections,

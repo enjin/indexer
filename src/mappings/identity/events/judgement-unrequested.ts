@@ -15,6 +15,6 @@ export function judgementUnrequested(event: EventItem): JudgementUnrequestedEven
             identity.judgementUnrequested.matrixEnjinV1000.decode(event)
         )
         .otherwise(() => {
-            throw new UnsupportedEventError(identity.judgementUnrequested)
+            throw new UnsupportedEventError(event)
         })
 }

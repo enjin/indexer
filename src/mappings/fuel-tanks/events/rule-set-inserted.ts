@@ -4,6 +4,7 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 
 type RuleSetInsertedEvent = {
+    tankId: string
     ruleSetId: number
 }
 

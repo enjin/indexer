@@ -27,7 +27,7 @@ export function tokenMutated(event: EventItem): TokenMutatedEvent {
         .when(multiTokens.tokenMutated.v1030.is, multiTokens.tokenMutated.v1030.decode)
         .when(multiTokens.tokenMutated.v100.is, multiTokens.tokenMutated.v100.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.tokenMutated)
+            throw new UnsupportedEventError(event)
         })
 }
 
