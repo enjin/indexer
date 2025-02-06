@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const inboundXcmpStatus =  {
@@ -141,11 +141,11 @@ export const queueConfig =  {
     /**
      *  The configuration which controls the dynamics of the outbound queue.
      */
-    v500: new StorageType('XcmpQueue.QueueConfig', 'Default', [], v500.QueueConfigData) as QueueConfigV500,
+    matrixV500: new StorageType('XcmpQueue.QueueConfig', 'Default', [], matrixV500.QueueConfigData) as QueueConfigMatrixV500,
     /**
      *  The configuration which controls the dynamics of the outbound queue.
      */
-    v1010: new StorageType('XcmpQueue.QueueConfig', 'Default', [], v1010.QueueConfigData) as QueueConfigV1010,
+    matrixV1010: new StorageType('XcmpQueue.QueueConfig', 'Default', [], matrixV1010.QueueConfigData) as QueueConfigMatrixV1010,
 }
 
 /**
@@ -169,19 +169,19 @@ export interface QueueConfigMatrixEnjinV1012  {
 /**
  *  The configuration which controls the dynamics of the outbound queue.
  */
-export interface QueueConfigV500  {
+export interface QueueConfigMatrixV500  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v500.QueueConfigData
-    get(block: Block): Promise<(v500.QueueConfigData | undefined)>
+    getDefault(block: Block): matrixV500.QueueConfigData
+    get(block: Block): Promise<(matrixV500.QueueConfigData | undefined)>
 }
 
 /**
  *  The configuration which controls the dynamics of the outbound queue.
  */
-export interface QueueConfigV1010  {
+export interface QueueConfigMatrixV1010  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v1010.QueueConfigData
-    get(block: Block): Promise<(v1010.QueueConfigData | undefined)>
+    getDefault(block: Block): matrixV1010.QueueConfigData
+    get(block: Block): Promise<(matrixV1010.QueueConfigData | undefined)>
 }
 
 export const overweight =  {

@@ -1,22 +1,22 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v600 from '../v600'
-import * as v601 from '../v601'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV600 from '../matrixV600'
+import * as matrixV601 from '../matrixV601'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
-import * as v1000 from '../v1000'
+import * as matrixV1000 from '../matrixV1000'
 import * as matrixEnjinV1003 from '../matrixEnjinV1003'
-import * as v1003 from '../v1003'
+import * as matrixV1003 from '../matrixV1003'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
+import * as matrixV1004 from '../matrixV1004'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
-import * as v1005 from '../v1005'
-import * as v1010 from '../v1010'
-import * as v1011 from '../v1011'
+import * as matrixV1005 from '../matrixV1005'
+import * as matrixV1010 from '../matrixV1010'
+import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as v1012 from '../v1012'
+import * as matrixV1012 from '../matrixV1012'
 
 export const setMembers =  {
     name: 'TechnicalCommittee.set_members',
@@ -163,10 +163,10 @@ export const execute =  {
      * - 1 event
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v500.Call,
+            proposal: matrixV500.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -183,10 +183,10 @@ export const execute =  {
      * - 1 event
      * # </weight>
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v600.Call,
+            proposal: matrixV600.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -203,10 +203,10 @@ export const execute =  {
      * - 1 event
      * # </weight>
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v601.Call,
+            proposal: matrixV601.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -221,10 +221,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v602.Call,
+            proposal: matrixV602.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -239,10 +239,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v604: new CallType(
+    matrixV604: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v604.Call,
+            proposal: matrixV604.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -257,10 +257,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1000.Call,
+            proposal: matrixV1000.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -275,30 +275,30 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1003.Call,
+            proposal: matrixV1003.Call,
             lengthBound: sts.number(),
         })
     ),
     /**
      * See [`Pallet::execute`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1004.Call,
+            proposal: matrixV1004.Call,
             lengthBound: sts.number(),
         })
     ),
     /**
      * See [`Pallet::execute`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1005.Call,
+            proposal: matrixV1005.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -313,10 +313,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1010.Call,
+            proposal: matrixV1010.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -331,10 +331,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1011.Call,
+            proposal: matrixV1011.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -349,10 +349,10 @@ export const execute =  {
      * - `M` members-count (code-bounded)
      * - `P` complexity of dispatching `proposal`
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'TechnicalCommittee.execute',
         sts.struct({
-            proposal: v1012.Call,
+            proposal: matrixV1012.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -507,11 +507,11 @@ export const propose =  {
      *   - 1 event
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v500.Call,
+            proposal: matrixV500.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -544,11 +544,11 @@ export const propose =  {
      *   - 1 event
      * # </weight>
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v600.Call,
+            proposal: matrixV600.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -581,11 +581,11 @@ export const propose =  {
      *   - 1 event
      * # </weight>
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v601.Call,
+            proposal: matrixV601.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -605,11 +605,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v602.Call,
+            proposal: matrixV602.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -629,11 +629,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v604: new CallType(
+    matrixV604: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v604.Call,
+            proposal: matrixV604.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -653,11 +653,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1000.Call,
+            proposal: matrixV1000.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -677,33 +677,33 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1003.Call,
+            proposal: matrixV1003.Call,
             lengthBound: sts.number(),
         })
     ),
     /**
      * See [`Pallet::propose`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1004.Call,
+            proposal: matrixV1004.Call,
             lengthBound: sts.number(),
         })
     ),
     /**
      * See [`Pallet::propose`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1005.Call,
+            proposal: matrixV1005.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -723,11 +723,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1010.Call,
+            proposal: matrixV1010.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -747,11 +747,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1011.Call,
+            proposal: matrixV1011.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -771,11 +771,11 @@ export const propose =  {
      *     - `P1` is proposal execution complexity (`threshold < 2`)
      *     - `P2` is proposals-count (code-bounded) (`threshold >= 2`)
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'TechnicalCommittee.propose',
         sts.struct({
             threshold: sts.number(),
-            proposal: v1012.Call,
+            proposal: matrixV1012.Call,
             lengthBound: sts.number(),
         })
     ),
@@ -901,10 +901,10 @@ export const closeOldWeight =  {
      * - up to 3 events
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'TechnicalCommittee.close_old_weight',
         sts.struct({
-            proposalHash: v500.H256,
+            proposalHash: matrixV500.H256,
             index: sts.number(),
             proposalWeightBound: sts.bigint(),
             lengthBound: sts.number(),

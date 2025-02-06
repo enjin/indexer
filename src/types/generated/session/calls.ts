@@ -1,4 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import * as enjinV100 from '../enjinV100'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const setKeys =  {
@@ -18,6 +19,24 @@ export const setKeys =  {
         'Session.set_keys',
         sts.struct({
             keys: matrixEnjinV603.SessionKeys,
+            proof: sts.bytes(),
+        })
+    ),
+    /**
+     * Sets the session key(s) of the function caller to `keys`.
+     * Allows an account to set its session key prior to becoming a validator.
+     * This doesn't take effect until the next session.
+     * 
+     * The dispatch origin of this function must be signed.
+     * 
+     * ## Complexity
+     * - `O(1)`. Actual cost depends on the number of length of `T::Keys::key_ids()` which is
+     *   fixed.
+     */
+    enjinV100: new CallType(
+        'Session.set_keys',
+        sts.struct({
+            keys: enjinV100.SessionKeys,
             proof: sts.bytes(),
         })
     ),

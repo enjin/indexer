@@ -1,8 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
+import * as matrixV1004 from '../matrixV1004'
 
 export const invalidFormat =  {
     name: 'DmpQueue.InvalidFormat',
@@ -27,7 +27,7 @@ export const invalidFormat =  {
     /**
      * Downward message is invalid XCM.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'DmpQueue.InvalidFormat',
         sts.struct({
             messageId: sts.bytes(),
@@ -36,7 +36,7 @@ export const invalidFormat =  {
     /**
      * Downward message is invalid XCM.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.InvalidFormat',
         sts.struct({
             messageHash: sts.bytes(),
@@ -67,7 +67,7 @@ export const unsupportedVersion =  {
     /**
      * Downward message is unsupported version of XCM.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'DmpQueue.UnsupportedVersion',
         sts.struct({
             messageId: sts.bytes(),
@@ -76,7 +76,7 @@ export const unsupportedVersion =  {
     /**
      * Downward message is unsupported version of XCM.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.UnsupportedVersion',
         sts.struct({
             messageHash: sts.bytes(),
@@ -110,22 +110,22 @@ export const executedDownward =  {
     /**
      * Downward message executed with the given outcome.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'DmpQueue.ExecutedDownward',
         sts.struct({
             messageId: sts.bytes(),
-            outcome: v500.V3Outcome,
+            outcome: matrixV500.V3Outcome,
         })
     ),
     /**
      * Downward message executed with the given outcome.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.ExecutedDownward',
         sts.struct({
             messageHash: sts.bytes(),
             messageId: sts.bytes(),
-            outcome: v1004.V3Outcome,
+            outcome: matrixV1004.V3Outcome,
         })
     ),
 }
@@ -158,24 +158,24 @@ export const weightExhausted =  {
     /**
      * The weight limit for handling downward messages was reached.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'DmpQueue.WeightExhausted',
         sts.struct({
             messageId: sts.bytes(),
-            remainingWeight: v500.Weight,
-            requiredWeight: v500.Weight,
+            remainingWeight: matrixV500.Weight,
+            requiredWeight: matrixV500.Weight,
         })
     ),
     /**
      * The weight limit for handling downward messages was reached.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.WeightExhausted',
         sts.struct({
             messageHash: sts.bytes(),
             messageId: sts.bytes(),
-            remainingWeight: v1004.Weight,
-            requiredWeight: v1004.Weight,
+            remainingWeight: matrixV1004.Weight,
+            requiredWeight: matrixV1004.Weight,
         })
     ),
 }
@@ -208,24 +208,24 @@ export const overweightEnqueued =  {
     /**
      * Downward message is overweight and was placed in the overweight queue.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'DmpQueue.OverweightEnqueued',
         sts.struct({
             messageId: sts.bytes(),
             overweightIndex: sts.bigint(),
-            requiredWeight: v500.Weight,
+            requiredWeight: matrixV500.Weight,
         })
     ),
     /**
      * Downward message is overweight and was placed in the overweight queue.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.OverweightEnqueued',
         sts.struct({
             messageHash: sts.bytes(),
             messageId: sts.bytes(),
             overweightIndex: sts.bigint(),
-            requiredWeight: v1004.Weight,
+            requiredWeight: matrixV1004.Weight,
         })
     ),
 }
@@ -267,7 +267,7 @@ export const maxMessagesExhausted =  {
     /**
      * The maximum number of downward messages was.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'DmpQueue.MaxMessagesExhausted',
         sts.struct({
             messageId: sts.bytes(),
@@ -276,7 +276,7 @@ export const maxMessagesExhausted =  {
     /**
      * The maximum number of downward messages was reached.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'DmpQueue.MaxMessagesExhausted',
         sts.struct({
             messageHash: sts.bytes(),

@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const proposeSpend =  {
@@ -125,11 +125,11 @@ export const spend =  {
      * NOTE: For record-keeping purposes, the proposer is deemed to be equivalent to the
      * beneficiary.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'CommunityPool.spend',
         sts.struct({
             amount: sts.bigint(),
-            beneficiary: v500.MultiAddress,
+            beneficiary: matrixV500.MultiAddress,
         })
     ),
     /**
@@ -160,11 +160,11 @@ export const spend =  {
      * 
      * Emits [`Event::AssetSpendApproved`] if successful.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'CommunityPool.spend',
         sts.struct({
             amount: sts.bigint(),
-            beneficiary: v1010.AccountId32,
+            beneficiary: matrixV1010.AccountId32,
             validFrom: sts.option(() => sts.number()),
         })
     ),

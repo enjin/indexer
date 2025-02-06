@@ -1,8 +1,8 @@
 import Queue from 'bull'
 import { redisConfig } from './common'
-import { BlockHeader, CommonContext } from '../mappings/types/contexts'
+import { BlockHeader, CommonContext } from 'matrixchain-indexer/common/types/contexts'
 import { system } from '../types/generated/storage'
-import { addAccountsToSet, saveAccounts } from '../mappings/balances/processor'
+import { addAccountsToSet, saveAccounts } from 'matrixchain-indexer/processors/balances/processor'
 
 export type JobData = { ids: `0x${string}`[] }
 

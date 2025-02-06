@@ -1,5 +1,7 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as enjinV100 from '../enjinV100'
+import * as v104 from '../v104'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const claimRequested =  {
@@ -31,6 +33,35 @@ export const claimRequested =  {
              * ENJ amount claimable
              */
             amountClaimable: sts.bigint(),
+        })
+    ),
+    /**
+     * Claim has been requested by an account through the Relayer. `[who, amount,
+     * transaction_hash, is_efi_token, is_early_bird]`
+     */
+    v104: new EventType(
+        'Claims.ClaimRequested',
+        sts.struct({
+            /**
+             * The account which requests the claim through the Relayer
+             */
+            who: v104.Account,
+            /**
+             * The amount of burned tokens
+             */
+            amount: sts.bigint(),
+            /**
+             * Hash of the transaction in which the tokens were burnt
+             */
+            transactionHash: v104.H256,
+            /**
+             * If the burnt token is EFI or not
+             */
+            isEfiToken: sts.boolean(),
+            /**
+             * If the claim requested is for early bird
+             */
+            isEarlyBird: sts.boolean(),
         })
     ),
 }
@@ -174,10 +205,52 @@ export const claimedEnj =  {
     /**
      * A user burned EFI in order to begin a claim of ENJ.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Claims.ClaimedEnj',
         sts.struct({
-            who: v500.AccountId32,
+            who: matrixV500.AccountId32,
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const earlyBirdRewardCreated =  {
+    name: 'Claims.EarlyBirdRewardCreated',
+    /**
+     * Someone got an early bird reward based on ENJ2 Staked in nomination pool `[who,
+     * amount]`
+     */
+    enjinV100: new EventType(
+        'Claims.EarlyBirdRewardCreated',
+        sts.struct({
+            /**
+             * The account that received the early bird reward
+             */
+            who: enjinV100.AccountId32,
+            /**
+             * The early bird amount received by account
+             */
+            amount: sts.bigint(),
+        })
+    ),
+}
+
+export const claimedEarlyBirdReward =  {
+    name: 'Claims.ClaimedEarlyBirdReward',
+    /**
+     * Someone got an early bird reward `[who,
+     * amount]`
+     */
+    v104: new EventType(
+        'Claims.ClaimedEarlyBirdReward',
+        sts.struct({
+            /**
+             * The account that received the early bird reward
+             */
+            who: v104.AccountId32,
+            /**
+             * The amount for early bird bonus received by account
+             */
             amount: sts.bigint(),
         })
     ),

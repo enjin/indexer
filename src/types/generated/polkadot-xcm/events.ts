@@ -1,9 +1,9 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
-import * as v1010 from '../v1010'
+import * as matrixV1004 from '../matrixV1004'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const attempted =  {
@@ -40,26 +40,26 @@ export const attempted =  {
      * 
      * \[ outcome \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.Attempted',
-        v500.V3Outcome
+        matrixV500.V3Outcome
     ),
     /**
      * Execution of an XCM message was attempted.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.Attempted',
         sts.struct({
-            outcome: v1004.V3Outcome,
+            outcome: matrixV1004.V3Outcome,
         })
     ),
     /**
      * Execution of an XCM message was attempted.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.Attempted',
         sts.struct({
-            outcome: v1010.V4Outcome,
+            outcome: matrixV1010.V4Outcome,
         })
     ),
 }
@@ -104,31 +104,31 @@ export const sent =  {
      * 
      * \[ origin, destination, message \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.Sent',
-        sts.tuple([v500.V3MultiLocation, v500.V3MultiLocation, sts.array(() => v500.V3Instruction)])
+        sts.tuple([matrixV500.V3MultiLocation, matrixV500.V3MultiLocation, sts.array(() => matrixV500.V3Instruction)])
     ),
     /**
      * A XCM message was sent.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.Sent',
         sts.struct({
-            origin: v1004.V3MultiLocation,
-            destination: v1004.V3MultiLocation,
-            message: sts.array(() => v1004.V3Instruction),
+            origin: matrixV1004.V3MultiLocation,
+            destination: matrixV1004.V3MultiLocation,
+            message: sts.array(() => matrixV1004.V3Instruction),
             messageId: sts.bytes(),
         })
     ),
     /**
      * A XCM message was sent.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.Sent',
         sts.struct({
-            origin: v1010.V4Location,
-            destination: v1010.V4Location,
-            message: sts.array(() => v1010.V4Instruction),
+            origin: matrixV1010.V4Location,
+            destination: matrixV1010.V4Location,
+            message: sts.array(() => matrixV1010.V4Instruction),
             messageId: sts.bytes(),
         })
     ),
@@ -178,19 +178,19 @@ export const unexpectedResponse =  {
      * 
      * \[ origin location, id \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.UnexpectedResponse',
-        sts.tuple([v500.V3MultiLocation, sts.bigint()])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint()])
     ),
     /**
      * Query response received which does not match a registered query. This may be because a
      * matching query was never registered, it may be because it is a duplicate response, or
      * because the query timed out.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.UnexpectedResponse',
         sts.struct({
-            origin: v1004.V3MultiLocation,
+            origin: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -199,10 +199,10 @@ export const unexpectedResponse =  {
      * matching query was never registered, it may be because it is a duplicate response, or
      * because the query timed out.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.UnexpectedResponse',
         sts.struct({
-            origin: v1010.V4Location,
+            origin: matrixV1010.V4Location,
             queryId: sts.bigint(),
         })
     ),
@@ -248,30 +248,30 @@ export const responseReady =  {
      * 
      * \[ id, response \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.ResponseReady',
-        sts.tuple([sts.bigint(), v500.V3Response])
+        sts.tuple([sts.bigint(), matrixV500.V3Response])
     ),
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.ResponseReady',
         sts.struct({
             queryId: sts.bigint(),
-            response: v1004.V3Response,
+            response: matrixV1004.V3Response,
         })
     ),
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.ResponseReady',
         sts.struct({
             queryId: sts.bigint(),
-            response: v1010.V4Response,
+            response: matrixV1010.V4Response,
         })
     ),
 }
@@ -306,7 +306,7 @@ export const notified =  {
      * 
      * \[ id, pallet index, call index \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.Notified',
         sts.tuple([sts.bigint(), sts.number(), sts.number()])
     ),
@@ -314,7 +314,7 @@ export const notified =  {
      * Query response has been received and query is removed. The registered notification has
      * been dispatched and executed successfully.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.Notified',
         sts.struct({
             queryId: sts.bigint(),
@@ -359,23 +359,23 @@ export const notifyOverweight =  {
      * 
      * \[ id, pallet index, call index, actual weight, max budgeted weight \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.NotifyOverweight',
-        sts.tuple([sts.bigint(), sts.number(), sts.number(), v500.Weight, v500.Weight])
+        sts.tuple([sts.bigint(), sts.number(), sts.number(), matrixV500.Weight, matrixV500.Weight])
     ),
     /**
      * Query response has been received and query is removed. The registered notification could
      * not be dispatched because the dispatch weight is greater than the maximum weight
      * originally budgeted by this runtime for the query result.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.NotifyOverweight',
         sts.struct({
             queryId: sts.bigint(),
             palletIndex: sts.number(),
             callIndex: sts.number(),
-            actualWeight: v1004.Weight,
-            maxBudgetedWeight: v1004.Weight,
+            actualWeight: matrixV1004.Weight,
+            maxBudgetedWeight: matrixV1004.Weight,
         })
     ),
 }
@@ -410,7 +410,7 @@ export const notifyDispatchError =  {
      * 
      * \[ id, pallet index, call index \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.NotifyDispatchError',
         sts.tuple([sts.bigint(), sts.number(), sts.number()])
     ),
@@ -418,7 +418,7 @@ export const notifyDispatchError =  {
      * Query response has been received and query is removed. There was a general error with
      * dispatching the notification call.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.NotifyDispatchError',
         sts.struct({
             queryId: sts.bigint(),
@@ -461,7 +461,7 @@ export const notifyDecodeFailed =  {
      * 
      * \[ id, pallet index, call index \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.NotifyDecodeFailed',
         sts.tuple([sts.bigint(), sts.number(), sts.number()])
     ),
@@ -470,7 +470,7 @@ export const notifyDecodeFailed =  {
      * decoded into a `Call`; this might be due to dispatch function having a signature which
      * is not `(origin, QueryId, Response)`.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.NotifyDecodeFailed',
         sts.struct({
             queryId: sts.bigint(),
@@ -526,21 +526,21 @@ export const invalidResponder =  {
      * 
      * \[ origin location, id, expected location \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.InvalidResponder',
-        sts.tuple([v500.V3MultiLocation, sts.bigint(), sts.option(() => v500.V3MultiLocation)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint(), sts.option(() => matrixV500.V3MultiLocation)])
     ),
     /**
      * Expected query response has been received but the origin location of the response does
      * not match that expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.InvalidResponder',
         sts.struct({
-            origin: v1004.V3MultiLocation,
+            origin: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
-            expectedLocation: sts.option(() => v1004.V3MultiLocation),
+            expectedLocation: sts.option(() => matrixV1004.V3MultiLocation),
         })
     ),
     /**
@@ -548,12 +548,12 @@ export const invalidResponder =  {
      * not match that expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.InvalidResponder',
         sts.struct({
-            origin: v1010.V4Location,
+            origin: matrixV1010.V4Location,
             queryId: sts.bigint(),
-            expectedLocation: sts.option(() => v1010.V4Location),
+            expectedLocation: sts.option(() => matrixV1010.V4Location),
         })
     ),
 }
@@ -618,9 +618,9 @@ export const invalidResponderVersion =  {
      * 
      * \[ origin location, id \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.InvalidResponderVersion',
-        sts.tuple([v500.V3MultiLocation, sts.bigint()])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint()])
     ),
     /**
      * Expected query response has been received but the expected origin location placed in
@@ -631,10 +631,10 @@ export const invalidResponderVersion =  {
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.InvalidResponderVersion',
         sts.struct({
-            origin: v1004.V3MultiLocation,
+            origin: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -647,10 +647,10 @@ export const invalidResponderVersion =  {
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.InvalidResponderVersion',
         sts.struct({
-            origin: v1010.V4Location,
+            origin: matrixV1010.V4Location,
             queryId: sts.bigint(),
         })
     ),
@@ -681,14 +681,14 @@ export const responseTaken =  {
      * 
      * \[ id \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.ResponseTaken',
         sts.bigint()
     ),
     /**
      * Received query response has been read and removed.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.ResponseTaken',
         sts.struct({
             queryId: sts.bigint(),
@@ -734,30 +734,30 @@ export const assetsTrapped =  {
      * 
      * \[ hash, origin, assets \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.AssetsTrapped',
-        sts.tuple([v500.H256, v500.V3MultiLocation, v500.VersionedMultiAssets])
+        sts.tuple([matrixV500.H256, matrixV500.V3MultiLocation, matrixV500.VersionedMultiAssets])
     ),
     /**
      * Some assets have been placed in an asset trap.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.AssetsTrapped',
         sts.struct({
-            hash: v1004.H256,
-            origin: v1004.V3MultiLocation,
-            assets: v1004.VersionedMultiAssets,
+            hash: matrixV1004.H256,
+            origin: matrixV1004.V3MultiLocation,
+            assets: matrixV1004.VersionedMultiAssets,
         })
     ),
     /**
      * Some assets have been placed in an asset trap.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.AssetsTrapped',
         sts.struct({
-            hash: v1010.H256,
-            origin: v1010.V4Location,
-            assets: v1010.VersionedAssets,
+            hash: matrixV1010.H256,
+            origin: matrixV1010.V4Location,
+            assets: matrixV1010.VersionedAssets,
         })
     ),
 }
@@ -810,21 +810,21 @@ export const versionChangeNotified =  {
      * 
      * \[ destination, result, cost \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.VersionChangeNotified',
-        sts.tuple([v500.V3MultiLocation, sts.number(), sts.array(() => v500.V3MultiAsset)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.number(), sts.array(() => matrixV500.V3MultiAsset)])
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
      * 
      * The cost of sending it (borne by the chain) is included.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.VersionChangeNotified',
         sts.struct({
-            destination: v1004.V3MultiLocation,
+            destination: matrixV1004.V3MultiLocation,
             result: sts.number(),
-            cost: sts.array(() => v1004.V3MultiAsset),
+            cost: sts.array(() => matrixV1004.V3MultiAsset),
             messageId: sts.bytes(),
         })
     ),
@@ -833,12 +833,12 @@ export const versionChangeNotified =  {
      * 
      * The cost of sending it (borne by the chain) is included.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.VersionChangeNotified',
         sts.struct({
-            destination: v1010.V4Location,
+            destination: matrixV1010.V4Location,
             result: sts.number(),
-            cost: sts.array(() => v1010.V4Asset),
+            cost: sts.array(() => matrixV1010.V4Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -884,18 +884,18 @@ export const supportedVersionChanged =  {
      * 
      * \[ location, XCM version \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.SupportedVersionChanged',
-        sts.tuple([v500.V3MultiLocation, sts.number()])
+        sts.tuple([matrixV500.V3MultiLocation, sts.number()])
     ),
     /**
      * The supported version of a location has been changed. This might be through an
      * automatic notification or a manual intervention.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.SupportedVersionChanged',
         sts.struct({
-            location: v1004.V3MultiLocation,
+            location: matrixV1004.V3MultiLocation,
             version: sts.number(),
         })
     ),
@@ -903,10 +903,10 @@ export const supportedVersionChanged =  {
      * The supported version of a location has been changed. This might be through an
      * automatic notification or a manual intervention.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.SupportedVersionChanged',
         sts.struct({
-            location: v1010.V4Location,
+            location: matrixV1010.V4Location,
             version: sts.number(),
         })
     ),
@@ -954,32 +954,32 @@ export const notifyTargetSendFail =  {
      * 
      * \[ location, query ID, error \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.NotifyTargetSendFail',
-        sts.tuple([v500.V3MultiLocation, sts.bigint(), v500.V3Error])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint(), matrixV500.V3Error])
     ),
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * sending the notification to it.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.NotifyTargetSendFail',
         sts.struct({
-            location: v1004.V3MultiLocation,
+            location: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
-            error: v1004.V3Error,
+            error: matrixV1004.V3Error,
         })
     ),
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * sending the notification to it.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.NotifyTargetSendFail',
         sts.struct({
-            location: v1010.V4Location,
+            location: matrixV1010.V4Location,
             queryId: sts.bigint(),
-            error: v1010.V3Error,
+            error: matrixV1010.V3Error,
         })
     ),
 }
@@ -1024,18 +1024,18 @@ export const notifyTargetMigrationFail =  {
      * 
      * \[ location, query ID \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.NotifyTargetMigrationFail',
-        sts.tuple([v500.VersionedMultiLocation, sts.bigint()])
+        sts.tuple([matrixV500.VersionedMultiLocation, sts.bigint()])
     ),
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * migrating the location to our new XCM format.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.NotifyTargetMigrationFail',
         sts.struct({
-            location: v1004.VersionedMultiLocation,
+            location: matrixV1004.VersionedMultiLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -1043,10 +1043,10 @@ export const notifyTargetMigrationFail =  {
      * A given location which had a version change subscription was dropped owing to an error
      * migrating the location to our new XCM format.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.NotifyTargetMigrationFail',
         sts.struct({
-            location: v1010.VersionedLocation,
+            location: matrixV1010.VersionedLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -1112,9 +1112,9 @@ export const invalidQuerierVersion =  {
      * 
      * \[ origin location, id \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.InvalidQuerierVersion',
-        sts.tuple([v500.V3MultiLocation, sts.bigint()])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint()])
     ),
     /**
      * Expected query response has been received but the expected querier location placed in
@@ -1125,10 +1125,10 @@ export const invalidQuerierVersion =  {
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.InvalidQuerierVersion',
         sts.struct({
-            origin: v1004.V3MultiLocation,
+            origin: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
         })
     ),
@@ -1141,10 +1141,10 @@ export const invalidQuerierVersion =  {
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.InvalidQuerierVersion',
         sts.struct({
-            origin: v1010.V4Location,
+            origin: matrixV1010.V4Location,
             queryId: sts.bigint(),
         })
     ),
@@ -1198,22 +1198,22 @@ export const invalidQuerier =  {
      * 
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.InvalidQuerier',
-        sts.tuple([v500.V3MultiLocation, sts.bigint(), v500.V3MultiLocation, sts.option(() => v500.V3MultiLocation)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint(), matrixV500.V3MultiLocation, sts.option(() => matrixV500.V3MultiLocation)])
     ),
     /**
      * Expected query response has been received but the querier location of the response does
      * not match the expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.InvalidQuerier',
         sts.struct({
-            origin: v1004.V3MultiLocation,
+            origin: matrixV1004.V3MultiLocation,
             queryId: sts.bigint(),
-            expectedQuerier: v1004.V3MultiLocation,
-            maybeActualQuerier: sts.option(() => v1004.V3MultiLocation),
+            expectedQuerier: matrixV1004.V3MultiLocation,
+            maybeActualQuerier: sts.option(() => matrixV1004.V3MultiLocation),
         })
     ),
     /**
@@ -1221,13 +1221,13 @@ export const invalidQuerier =  {
      * not match the expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.InvalidQuerier',
         sts.struct({
-            origin: v1010.V4Location,
+            origin: matrixV1010.V4Location,
             queryId: sts.bigint(),
-            expectedQuerier: v1010.V4Location,
-            maybeActualQuerier: sts.option(() => v1010.V4Location),
+            expectedQuerier: matrixV1010.V4Location,
+            maybeActualQuerier: sts.option(() => matrixV1010.V4Location),
         })
     ),
 }
@@ -1274,19 +1274,19 @@ export const versionNotifyStarted =  {
      * 
      * \[ destination location, cost \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.VersionNotifyStarted',
-        sts.tuple([v500.V3MultiLocation, sts.array(() => v500.V3MultiAsset)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.array(() => matrixV500.V3MultiAsset)])
     ),
     /**
      * A remote has requested XCM version change notification from us and we have honored it.
      * A version information message is sent to them and its cost is included.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.VersionNotifyStarted',
         sts.struct({
-            destination: v1004.V3MultiLocation,
-            cost: sts.array(() => v1004.V3MultiAsset),
+            destination: matrixV1004.V3MultiLocation,
+            cost: sts.array(() => matrixV1004.V3MultiAsset),
             messageId: sts.bytes(),
         })
     ),
@@ -1294,11 +1294,11 @@ export const versionNotifyStarted =  {
      * A remote has requested XCM version change notification from us and we have honored it.
      * A version information message is sent to them and its cost is included.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.VersionNotifyStarted',
         sts.struct({
-            destination: v1010.V4Location,
-            cost: sts.array(() => v1010.V4Asset),
+            destination: matrixV1010.V4Location,
+            cost: sts.array(() => matrixV1010.V4Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -1342,29 +1342,29 @@ export const versionNotifyRequested =  {
      * 
      * \[ destination location, cost \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.VersionNotifyRequested',
-        sts.tuple([v500.V3MultiLocation, sts.array(() => v500.V3MultiAsset)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.array(() => matrixV500.V3MultiAsset)])
     ),
     /**
      * We have requested that a remote chain send us XCM version change notifications.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.VersionNotifyRequested',
         sts.struct({
-            destination: v1004.V3MultiLocation,
-            cost: sts.array(() => v1004.V3MultiAsset),
+            destination: matrixV1004.V3MultiLocation,
+            cost: sts.array(() => matrixV1004.V3MultiAsset),
             messageId: sts.bytes(),
         })
     ),
     /**
      * We have requested that a remote chain send us XCM version change notifications.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.VersionNotifyRequested',
         sts.struct({
-            destination: v1010.V4Location,
-            cost: sts.array(() => v1010.V4Asset),
+            destination: matrixV1010.V4Location,
+            cost: sts.array(() => matrixV1010.V4Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -1409,18 +1409,18 @@ export const versionNotifyUnrequested =  {
      * 
      * \[ destination location, cost \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.VersionNotifyUnrequested',
-        sts.tuple([v500.V3MultiLocation, sts.array(() => v500.V3MultiAsset)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.array(() => matrixV500.V3MultiAsset)])
     ),
     /**
      * We have requested that a remote chain stops sending us XCM version change notifications.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.VersionNotifyUnrequested',
         sts.struct({
-            destination: v1004.V3MultiLocation,
-            cost: sts.array(() => v1004.V3MultiAsset),
+            destination: matrixV1004.V3MultiLocation,
+            cost: sts.array(() => matrixV1004.V3MultiAsset),
             messageId: sts.bytes(),
         })
     ),
@@ -1428,11 +1428,11 @@ export const versionNotifyUnrequested =  {
      * We have requested that a remote chain stops sending us XCM version change
      * notifications.
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.VersionNotifyUnrequested',
         sts.struct({
-            destination: v1010.V4Location,
-            cost: sts.array(() => v1010.V4Asset),
+            destination: matrixV1010.V4Location,
+            cost: sts.array(() => matrixV1010.V4Asset),
             messageId: sts.bytes(),
         })
     ),
@@ -1474,28 +1474,28 @@ export const feesPaid =  {
      * 
      * \[ paying location, fees \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.FeesPaid',
-        sts.tuple([v500.V3MultiLocation, sts.array(() => v500.V3MultiAsset)])
+        sts.tuple([matrixV500.V3MultiLocation, sts.array(() => matrixV500.V3MultiAsset)])
     ),
     /**
      * Fees were paid from a location for an operation (often for using `SendXcm`).
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.FeesPaid',
         sts.struct({
-            paying: v1004.V3MultiLocation,
-            fees: sts.array(() => v1004.V3MultiAsset),
+            paying: matrixV1004.V3MultiLocation,
+            fees: sts.array(() => matrixV1004.V3MultiAsset),
         })
     ),
     /**
      * Fees were paid from a location for an operation (often for using `SendXcm`).
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.FeesPaid',
         sts.struct({
-            paying: v1010.V4Location,
-            fees: sts.array(() => v1010.V4Asset),
+            paying: matrixV1010.V4Location,
+            fees: sts.array(() => matrixV1010.V4Asset),
         })
     ),
 }
@@ -1538,30 +1538,30 @@ export const assetsClaimed =  {
      * 
      * \[ hash, origin, assets \]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'PolkadotXcm.AssetsClaimed',
-        sts.tuple([v500.H256, v500.V3MultiLocation, v500.VersionedMultiAssets])
+        sts.tuple([matrixV500.H256, matrixV500.V3MultiLocation, matrixV500.VersionedMultiAssets])
     ),
     /**
      * Some assets have been claimed from an asset trap
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'PolkadotXcm.AssetsClaimed',
         sts.struct({
-            hash: v1004.H256,
-            origin: v1004.V3MultiLocation,
-            assets: v1004.VersionedMultiAssets,
+            hash: matrixV1004.H256,
+            origin: matrixV1004.V3MultiLocation,
+            assets: matrixV1004.VersionedMultiAssets,
         })
     ),
     /**
      * Some assets have been claimed from an asset trap
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'PolkadotXcm.AssetsClaimed',
         sts.struct({
-            hash: v1010.H256,
-            origin: v1010.V4Location,
-            assets: v1010.VersionedAssets,
+            hash: matrixV1010.H256,
+            origin: matrixV1010.V4Location,
+            assets: matrixV1010.VersionedAssets,
         })
     ),
 }

@@ -1,18 +1,18 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
-import * as v1000 from '../v1000'
+import * as matrixV1000 from '../matrixV1000'
 import * as matrixEnjinV1003 from '../matrixEnjinV1003'
-import * as v1003 from '../v1003'
+import * as matrixV1003 from '../matrixV1003'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
+import * as matrixV1004 from '../matrixV1004'
 import * as matrixEnjinV1005 from '../matrixEnjinV1005'
-import * as v1005 from '../v1005'
-import * as v1010 from '../v1010'
-import * as v1011 from '../v1011'
+import * as matrixV1005 from '../matrixV1005'
+import * as matrixV1010 from '../matrixV1010'
+import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as v1012 from '../v1012'
+import * as matrixV1012 from '../matrixV1012'
 
 export const batch =  {
     name: 'MatrixUtility.batch',
@@ -139,10 +139,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v604: new CallType(
+    matrixV604: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v604.Call),
+            calls: sts.array(() => matrixV604.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -161,10 +161,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1000.Call),
+            calls: sts.array(() => matrixV1000.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -183,30 +183,30 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1003.Call),
+            calls: sts.array(() => matrixV1003.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
     /**
      * See [`Pallet::batch`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1004.Call),
+            calls: sts.array(() => matrixV1004.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
     /**
      * See [`Pallet::batch`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1005.Call),
+            calls: sts.array(() => matrixV1005.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -225,10 +225,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1010.Call),
+            calls: sts.array(() => matrixV1010.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -247,10 +247,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1011.Call),
+            calls: sts.array(() => matrixV1011.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -269,10 +269,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'MatrixUtility.batch',
         sts.struct({
-            calls: sts.array(() => v1012.Call),
+            calls: sts.array(() => matrixV1012.Call),
             continueOnFailure: sts.boolean(),
         })
     ),

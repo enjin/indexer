@@ -1,10 +1,16 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as enjinV110 from '../enjinV110'
+import * as v110 from '../v110'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
-import * as v1010 from '../v1010'
-import * as v1011 from '../v1011'
+import * as matrixV604 from '../matrixV604'
+import * as matrixV1010 from '../matrixV1010'
+import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1030 from '../v1030'
+import * as v1031 from '../v1031'
+import * as enjinV1032 from '../enjinV1032'
+import * as v1050 from '../v1050'
 
 export const info =  {
     /**
@@ -14,11 +20,11 @@ export const info =  {
     /**
      *  Stores information about the marketplace
      */
-    v500: new StorageType('Marketplace.Info', 'Default', [], v500.MarketPlaceInfo) as InfoV500,
+    matrixV500: new StorageType('Marketplace.Info', 'Default', [], matrixV500.MarketPlaceInfo) as InfoMatrixV500,
     /**
      *  Stores information about the marketplace
      */
-    v604: new StorageType('Marketplace.Info', 'Default', [], v604.MarketPlaceInfo) as InfoV604,
+    matrixV604: new StorageType('Marketplace.Info', 'Default', [], matrixV604.MarketPlaceInfo) as InfoMatrixV604,
 }
 
 /**
@@ -33,19 +39,19 @@ export interface InfoMatrixEnjinV603  {
 /**
  *  Stores information about the marketplace
  */
-export interface InfoV500  {
+export interface InfoMatrixV500  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v500.MarketPlaceInfo
-    get(block: Block): Promise<(v500.MarketPlaceInfo | undefined)>
+    getDefault(block: Block): matrixV500.MarketPlaceInfo
+    get(block: Block): Promise<(matrixV500.MarketPlaceInfo | undefined)>
 }
 
 /**
  *  Stores information about the marketplace
  */
-export interface InfoV604  {
+export interface InfoMatrixV604  {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): v604.MarketPlaceInfo
-    get(block: Block): Promise<(v604.MarketPlaceInfo | undefined)>
+    getDefault(block: Block): matrixV604.MarketPlaceInfo
+    get(block: Block): Promise<(matrixV604.MarketPlaceInfo | undefined)>
 }
 
 export const listings =  {
@@ -60,15 +66,39 @@ export const listings =  {
     /**
      *  Listings by ID
      */
-    v500: new StorageType('Marketplace.Listings', 'Optional', [v500.H256], v500.Listing) as ListingsV500,
+    matrixV500: new StorageType('Marketplace.Listings', 'Optional', [matrixV500.H256], matrixV500.Listing) as ListingsMatrixV500,
     /**
      *  Listings by ID
      */
-    v1010: new StorageType('Marketplace.Listings', 'Optional', [v1010.H256], v1010.Listing) as ListingsV1010,
+    matrixV1010: new StorageType('Marketplace.Listings', 'Optional', [matrixV1010.H256], matrixV1010.Listing) as ListingsMatrixV1010,
     /**
      *  Listings by ID
      */
-    v1011: new StorageType('Marketplace.Listings', 'Optional', [v1011.H256], v1011.Listing) as ListingsV1011,
+    matrixV1011: new StorageType('Marketplace.Listings', 'Optional', [matrixV1011.H256], matrixV1011.Listing) as ListingsMatrixV1011,
+    /**
+     *  Listings by ID
+     */
+    enjinV110: new StorageType('Marketplace.Listings', 'Optional', [enjinV110.H256], enjinV110.Listing) as ListingsEnjinV110,
+    /**
+     *  Listings by ID
+     */
+    enjinV1032: new StorageType('Marketplace.Listings', 'Optional', [enjinV1032.H256], enjinV1032.Listing) as ListingsEnjinV1032,
+    /**
+     *  Listings by ID
+     */
+    v110: new StorageType('Marketplace.Listings', 'Optional', [v110.H256], v110.Listing) as ListingsV110,
+    /**
+     *  Listings by ID
+     */
+    v1030: new StorageType('Marketplace.Listings', 'Optional', [v1030.H256], v1030.Listing) as ListingsV1030,
+    /**
+     *  Listings by ID
+     */
+    v1031: new StorageType('Marketplace.Listings', 'Optional', [v1031.H256], v1031.Listing) as ListingsV1031,
+    /**
+     *  Listings by ID (real storage)
+     */
+    v1050: new StorageType('Marketplace.Listings', 'Optional', [v1050.H256], v1050.Listing) as ListingsV1050,
 }
 
 /**
@@ -108,52 +138,154 @@ export interface ListingsMatrixEnjinV1012  {
 /**
  *  Listings by ID
  */
-export interface ListingsV500  {
+export interface ListingsMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v500.H256): Promise<(v500.Listing | undefined)>
-    getMany(block: Block, keys: v500.H256[]): Promise<(v500.Listing | undefined)[]>
-    getKeys(block: Block): Promise<v500.H256[]>
-    getKeys(block: Block, key: v500.H256): Promise<v500.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v500.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<v500.H256[]>
-    getPairs(block: Block): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
-    getPairs(block: Block, key: v500.H256): Promise<[k: v500.H256, v: (v500.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v500.H256): AsyncIterable<[k: v500.H256, v: (v500.Listing | undefined)][]>
+    get(block: Block, key: matrixV500.H256): Promise<(matrixV500.Listing | undefined)>
+    getMany(block: Block, keys: matrixV500.H256[]): Promise<(matrixV500.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixV500.H256[]>
+    getKeys(block: Block, key: matrixV500.H256): Promise<matrixV500.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV500.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV500.H256): AsyncIterable<matrixV500.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV500.H256, v: (matrixV500.Listing | undefined)][]>
+    getPairs(block: Block, key: matrixV500.H256): Promise<[k: matrixV500.H256, v: (matrixV500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV500.H256, v: (matrixV500.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV500.H256): AsyncIterable<[k: matrixV500.H256, v: (matrixV500.Listing | undefined)][]>
 }
 
 /**
  *  Listings by ID
  */
-export interface ListingsV1010  {
+export interface ListingsMatrixV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1010.H256): Promise<(v1010.Listing | undefined)>
-    getMany(block: Block, keys: v1010.H256[]): Promise<(v1010.Listing | undefined)[]>
-    getKeys(block: Block): Promise<v1010.H256[]>
-    getKeys(block: Block, key: v1010.H256): Promise<v1010.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<v1010.H256[]>
-    getPairs(block: Block): Promise<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
-    getPairs(block: Block, key: v1010.H256): Promise<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v1010.H256): AsyncIterable<[k: v1010.H256, v: (v1010.Listing | undefined)][]>
+    get(block: Block, key: matrixV1010.H256): Promise<(matrixV1010.Listing | undefined)>
+    getMany(block: Block, keys: matrixV1010.H256[]): Promise<(matrixV1010.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1010.H256[]>
+    getKeys(block: Block, key: matrixV1010.H256): Promise<matrixV1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1010.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1010.H256): AsyncIterable<matrixV1010.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1010.H256, v: (matrixV1010.Listing | undefined)][]>
+    getPairs(block: Block, key: matrixV1010.H256): Promise<[k: matrixV1010.H256, v: (matrixV1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1010.H256, v: (matrixV1010.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV1010.H256): AsyncIterable<[k: matrixV1010.H256, v: (matrixV1010.Listing | undefined)][]>
 }
 
 /**
  *  Listings by ID
  */
-export interface ListingsV1011  {
+export interface ListingsMatrixV1011  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1011.H256): Promise<(v1011.Listing | undefined)>
-    getMany(block: Block, keys: v1011.H256[]): Promise<(v1011.Listing | undefined)[]>
-    getKeys(block: Block): Promise<v1011.H256[]>
-    getKeys(block: Block, key: v1011.H256): Promise<v1011.H256[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1011.H256[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1011.H256): AsyncIterable<v1011.H256[]>
-    getPairs(block: Block): Promise<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
-    getPairs(block: Block, key: v1011.H256): Promise<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v1011.H256): AsyncIterable<[k: v1011.H256, v: (v1011.Listing | undefined)][]>
+    get(block: Block, key: matrixV1011.H256): Promise<(matrixV1011.Listing | undefined)>
+    getMany(block: Block, keys: matrixV1011.H256[]): Promise<(matrixV1011.Listing | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1011.H256[]>
+    getKeys(block: Block, key: matrixV1011.H256): Promise<matrixV1011.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1011.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1011.H256): AsyncIterable<matrixV1011.H256[]>
+    getPairs(block: Block): Promise<[k: matrixV1011.H256, v: (matrixV1011.Listing | undefined)][]>
+    getPairs(block: Block, key: matrixV1011.H256): Promise<[k: matrixV1011.H256, v: (matrixV1011.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1011.H256, v: (matrixV1011.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV1011.H256): AsyncIterable<[k: matrixV1011.H256, v: (matrixV1011.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsEnjinV110  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV110.H256): Promise<(enjinV110.Listing | undefined)>
+    getMany(block: Block, keys: enjinV110.H256[]): Promise<(enjinV110.Listing | undefined)[]>
+    getKeys(block: Block): Promise<enjinV110.H256[]>
+    getKeys(block: Block, key: enjinV110.H256): Promise<enjinV110.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV110.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV110.H256): AsyncIterable<enjinV110.H256[]>
+    getPairs(block: Block): Promise<[k: enjinV110.H256, v: (enjinV110.Listing | undefined)][]>
+    getPairs(block: Block, key: enjinV110.H256): Promise<[k: enjinV110.H256, v: (enjinV110.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV110.H256, v: (enjinV110.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV110.H256): AsyncIterable<[k: enjinV110.H256, v: (enjinV110.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsEnjinV1032  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1032.H256): Promise<(enjinV1032.Listing | undefined)>
+    getMany(block: Block, keys: enjinV1032.H256[]): Promise<(enjinV1032.Listing | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1032.H256[]>
+    getKeys(block: Block, key: enjinV1032.H256): Promise<enjinV1032.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1032.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1032.H256): AsyncIterable<enjinV1032.H256[]>
+    getPairs(block: Block): Promise<[k: enjinV1032.H256, v: (enjinV1032.Listing | undefined)][]>
+    getPairs(block: Block, key: enjinV1032.H256): Promise<[k: enjinV1032.H256, v: (enjinV1032.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV1032.H256, v: (enjinV1032.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV1032.H256): AsyncIterable<[k: enjinV1032.H256, v: (enjinV1032.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV110  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v110.H256): Promise<(v110.Listing | undefined)>
+    getMany(block: Block, keys: v110.H256[]): Promise<(v110.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v110.H256[]>
+    getKeys(block: Block, key: v110.H256): Promise<v110.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v110.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v110.H256): AsyncIterable<v110.H256[]>
+    getPairs(block: Block): Promise<[k: v110.H256, v: (v110.Listing | undefined)][]>
+    getPairs(block: Block, key: v110.H256): Promise<[k: v110.H256, v: (v110.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v110.H256, v: (v110.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v110.H256): AsyncIterable<[k: v110.H256, v: (v110.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV1030  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1030.H256): Promise<(v1030.Listing | undefined)>
+    getMany(block: Block, keys: v1030.H256[]): Promise<(v1030.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v1030.H256[]>
+    getKeys(block: Block, key: v1030.H256): Promise<v1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1030.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1030.H256): AsyncIterable<v1030.H256[]>
+    getPairs(block: Block): Promise<[k: v1030.H256, v: (v1030.Listing | undefined)][]>
+    getPairs(block: Block, key: v1030.H256): Promise<[k: v1030.H256, v: (v1030.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1030.H256, v: (v1030.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1030.H256): AsyncIterable<[k: v1030.H256, v: (v1030.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID
+ */
+export interface ListingsV1031  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1031.H256): Promise<(v1031.Listing | undefined)>
+    getMany(block: Block, keys: v1031.H256[]): Promise<(v1031.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v1031.H256[]>
+    getKeys(block: Block, key: v1031.H256): Promise<v1031.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1031.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1031.H256): AsyncIterable<v1031.H256[]>
+    getPairs(block: Block): Promise<[k: v1031.H256, v: (v1031.Listing | undefined)][]>
+    getPairs(block: Block, key: v1031.H256): Promise<[k: v1031.H256, v: (v1031.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1031.H256, v: (v1031.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1031.H256): AsyncIterable<[k: v1031.H256, v: (v1031.Listing | undefined)][]>
+}
+
+/**
+ *  Listings by ID (real storage)
+ */
+export interface ListingsV1050  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1050.H256): Promise<(v1050.Listing | undefined)>
+    getMany(block: Block, keys: v1050.H256[]): Promise<(v1050.Listing | undefined)[]>
+    getKeys(block: Block): Promise<v1050.H256[]>
+    getKeys(block: Block, key: v1050.H256): Promise<v1050.H256[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1050.H256[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1050.H256): AsyncIterable<v1050.H256[]>
+    getPairs(block: Block): Promise<[k: v1050.H256, v: (v1050.Listing | undefined)][]>
+    getPairs(block: Block, key: v1050.H256): Promise<[k: v1050.H256, v: (v1050.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1050.H256, v: (v1050.Listing | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1050.H256): AsyncIterable<[k: v1050.H256, v: (v1050.Listing | undefined)][]>
 }
 
 export const counterOffers =  {
@@ -220,82 +352,135 @@ export const listingIdsByMakeAsset =  {
     /**
      *  Listing Ids by make asset's collection id and token id
      */
-    v500: new StorageType('Marketplace.ListingIdsByMakeAsset', 'Optional', [sts.bigint(), sts.bigint()], v500.H256) as ListingIdsByMakeAssetV500,
+    matrixV500: new StorageType('Marketplace.ListingIdsByMakeAsset', 'Optional', [sts.bigint(), sts.bigint()], matrixV500.H256) as ListingIdsByMakeAssetMatrixV500,
 }
 
 /**
  *  Listing Ids by make asset's collection id and token id
  */
-export interface ListingIdsByMakeAssetV500  {
+export interface ListingIdsByMakeAssetMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key1: bigint, key2: bigint): Promise<(v500.H256 | undefined)>
-    getMany(block: Block, keys: [bigint, bigint][]): Promise<(v500.H256 | undefined)[]>
+    get(block: Block, key1: bigint, key2: bigint): Promise<(matrixV500.H256 | undefined)>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
     getKeys(block: Block): Promise<[bigint, bigint][]>
     getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
     getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(block: Block): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
 }
 
 export const listingIdsByTakeAsset =  {
     /**
      *  Listing Ids by take asset's collection id and token id
      */
-    v500: new StorageType('Marketplace.ListingIdsByTakeAsset', 'Optional', [sts.bigint(), sts.bigint()], v500.H256) as ListingIdsByTakeAssetV500,
+    matrixV500: new StorageType('Marketplace.ListingIdsByTakeAsset', 'Optional', [sts.bigint(), sts.bigint()], matrixV500.H256) as ListingIdsByTakeAssetMatrixV500,
 }
 
 /**
  *  Listing Ids by take asset's collection id and token id
  */
-export interface ListingIdsByTakeAssetV500  {
+export interface ListingIdsByTakeAssetMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key1: bigint, key2: bigint): Promise<(v500.H256 | undefined)>
-    getMany(block: Block, keys: [bigint, bigint][]): Promise<(v500.H256 | undefined)[]>
+    get(block: Block, key1: bigint, key2: bigint): Promise<(matrixV500.H256 | undefined)>
+    getMany(block: Block, keys: [bigint, bigint][]): Promise<(matrixV500.H256 | undefined)[]>
     getKeys(block: Block): Promise<[bigint, bigint][]>
     getKeys(block: Block, key1: bigint): Promise<[bigint, bigint][]>
     getKeys(block: Block, key1: bigint, key2: bigint): Promise<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[bigint, bigint][]>
     getKeysPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[bigint, bigint][]>
-    getPairs(block: Block): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: (v500.H256 | undefined)][]>
+    getPairs(block: Block): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairs(block: Block, key1: bigint): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairs(block: Block, key1: bigint, key2: bigint): Promise<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: bigint, key2: bigint): AsyncIterable<[k: [bigint, bigint], v: (matrixV500.H256 | undefined)][]>
 }
 
 export const listingIdsByAccountId =  {
     /**
      *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
      */
-    v500: new StorageType('Marketplace.ListingIdsByAccountId', 'Optional', [v500.AccountId32, v500.H256], sts.unit()) as ListingIdsByAccountIdV500,
+    matrixV500: new StorageType('Marketplace.ListingIdsByAccountId', 'Optional', [matrixV500.AccountId32, matrixV500.H256], sts.unit()) as ListingIdsByAccountIdMatrixV500,
 }
 
 /**
  *  Listing Ids by [`AccountId`](frame_system::Config::AccountId)
  */
-export interface ListingIdsByAccountIdV500  {
+export interface ListingIdsByAccountIdMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key1: v500.AccountId32, key2: v500.H256): Promise<(null | undefined)>
-    getMany(block: Block, keys: [v500.AccountId32, v500.H256][]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<[v500.AccountId32, v500.H256][]>
-    getKeys(block: Block, key1: v500.AccountId32): Promise<[v500.AccountId32, v500.H256][]>
-    getKeys(block: Block, key1: v500.AccountId32, key2: v500.H256): Promise<[v500.AccountId32, v500.H256][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v500.AccountId32, v500.H256][]>
-    getKeysPaged(pageSize: number, block: Block, key1: v500.AccountId32): AsyncIterable<[v500.AccountId32, v500.H256][]>
-    getKeysPaged(pageSize: number, block: Block, key1: v500.AccountId32, key2: v500.H256): AsyncIterable<[v500.AccountId32, v500.H256][]>
-    getPairs(block: Block): Promise<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-    getPairs(block: Block, key1: v500.AccountId32): Promise<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-    getPairs(block: Block, key1: v500.AccountId32, key2: v500.H256): Promise<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key1: v500.AccountId32, key2: v500.H256): AsyncIterable<[k: [v500.AccountId32, v500.H256], v: (null | undefined)][]>
+    get(block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): Promise<(null | undefined)>
+    getMany(block: Block, keys: [matrixV500.AccountId32, matrixV500.H256][]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeys(block: Block, key1: matrixV500.AccountId32): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeys(block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): Promise<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(pageSize: number, block: Block, key1: matrixV500.AccountId32): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getKeysPaged(pageSize: number, block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): AsyncIterable<[matrixV500.AccountId32, matrixV500.H256][]>
+    getPairs(block: Block): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+    getPairs(block: Block, key1: matrixV500.AccountId32): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+    getPairs(block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): Promise<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: matrixV500.AccountId32): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: matrixV500.AccountId32, key2: matrixV500.H256): AsyncIterable<[k: [matrixV500.AccountId32, matrixV500.H256], v: (null | undefined)][]>
+}
+
+export const pendingActions =  {
+    /**
+     *  Actions that will be processed in on idle
+     */
+    v1050: new StorageType('Marketplace.PendingActions', 'Default', [], sts.array(() => v1050.PendingAction)) as PendingActionsV1050,
+}
+
+/**
+ *  Actions that will be processed in on idle
+ */
+export interface PendingActionsV1050  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1050.PendingAction[]
+    get(block: Block): Promise<(v1050.PendingAction[] | undefined)>
+}
+
+export const whitelistedAccounts =  {
+    v1050: new StorageType('Marketplace.WhitelistedAccounts', 'Optional', [v1050.H256, v1050.AccountId32], v1050.WhitelistedAccount) as WhitelistedAccountsV1050,
+}
+
+export interface WhitelistedAccountsV1050  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key1: v1050.H256, key2: v1050.AccountId32): Promise<(v1050.WhitelistedAccount | undefined)>
+    getMany(block: Block, keys: [v1050.H256, v1050.AccountId32][]): Promise<(v1050.WhitelistedAccount | undefined)[]>
+    getKeys(block: Block): Promise<[v1050.H256, v1050.AccountId32][]>
+    getKeys(block: Block, key1: v1050.H256): Promise<[v1050.H256, v1050.AccountId32][]>
+    getKeys(block: Block, key1: v1050.H256, key2: v1050.AccountId32): Promise<[v1050.H256, v1050.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v1050.H256, v1050.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block, key1: v1050.H256): AsyncIterable<[v1050.H256, v1050.AccountId32][]>
+    getKeysPaged(pageSize: number, block: Block, key1: v1050.H256, key2: v1050.AccountId32): AsyncIterable<[v1050.H256, v1050.AccountId32][]>
+    getPairs(block: Block): Promise<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+    getPairs(block: Block, key1: v1050.H256): Promise<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+    getPairs(block: Block, key1: v1050.H256, key2: v1050.AccountId32): Promise<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: v1050.H256): AsyncIterable<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key1: v1050.H256, key2: v1050.AccountId32): AsyncIterable<[k: [v1050.H256, v1050.AccountId32], v: (v1050.WhitelistedAccount | undefined)][]>
+}
+
+export const upgradeBlockNumber =  {
+    /**
+     *  The block number that the upgrade took place on
+     */
+    v1050: new StorageType('Marketplace.UpgradeBlockNumber', 'Optional', [], sts.number()) as UpgradeBlockNumberV1050,
+}
+
+/**
+ *  The block number that the upgrade took place on
+ */
+export interface UpgradeBlockNumberV1050  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(number | undefined)>
 }

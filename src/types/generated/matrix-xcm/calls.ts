@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
-import * as v1010 from '../v1010'
+import * as matrixV604 from '../matrixV604'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const transferToParachain =  {
@@ -124,21 +124,21 @@ export const forceSetMinimumWeight =  {
     /**
      * Update xcm fees amount to be used in xcm.Withdraw message
      */
-    v604: new CallType(
+    matrixV604: new CallType(
         'MatrixXcm.force_set_minimum_weight',
         sts.struct({
-            xcmCall: v604.XcmOperation,
-            xcmWeightFeeMisc: v604.MinimumWeightFeePair,
+            xcmCall: matrixV604.XcmOperation,
+            xcmWeightFeeMisc: matrixV604.MinimumWeightFeePair,
         })
     ),
     /**
      * Update xcm fees amount to be used in xcm.Withdraw message
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'MatrixXcm.force_set_minimum_weight',
         sts.struct({
-            xcmCall: v1010.XcmOperation,
-            xcmWeightFeeMisc: v1010.MinimumWeightFeePair,
+            xcmCall: matrixV1010.XcmOperation,
+            xcmWeightFeeMisc: matrixV1010.MinimumWeightFeePair,
         })
     ),
 }

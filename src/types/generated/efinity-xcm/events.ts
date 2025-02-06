@@ -1,15 +1,15 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 
 export const minimumWeightUpdated =  {
     name: 'EfinityXcm.MinimumWeightUpdated',
     /**
      * Xcm fee and weight updated
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'EfinityXcm.MinimumWeightUpdated',
-        v500.MinimumWeightFeePair
+        matrixV500.MinimumWeightFeePair
     ),
 }
 
@@ -18,15 +18,15 @@ export const xcmTransferFailed =  {
     /**
      * XCM transfer failed
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'EfinityXcm.XcmTransferFailed',
-        v500.DispatchError
+        matrixV500.DispatchError
     ),
     /**
      * XCM transfer failed
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'EfinityXcm.XcmTransferFailed',
-        v602.DispatchError
+        matrixV602.DispatchError
     ),
 }

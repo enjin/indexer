@@ -1,8 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 
 export const proposed =  {
     name: 'Council.Proposed',
@@ -80,31 +80,31 @@ export const executed =  {
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Council.Executed',
         sts.struct({
-            proposalHash: v500.H256,
-            result: sts.result(() => sts.unit(), () => v500.DispatchError),
+            proposalHash: matrixV500.H256,
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'Council.Executed',
         sts.struct({
-            proposalHash: v602.H256,
-            result: sts.result(() => sts.unit(), () => v602.DispatchError),
+            proposalHash: matrixV602.H256,
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
      */
-    v604: new EventType(
+    matrixV604: new EventType(
         'Council.Executed',
         sts.struct({
-            proposalHash: v604.H256,
-            result: sts.result(() => sts.unit(), () => v604.DispatchError),
+            proposalHash: matrixV604.H256,
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }
@@ -124,31 +124,31 @@ export const memberExecuted =  {
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Council.MemberExecuted',
         sts.struct({
-            proposalHash: v500.H256,
-            result: sts.result(() => sts.unit(), () => v500.DispatchError),
+            proposalHash: matrixV500.H256,
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'Council.MemberExecuted',
         sts.struct({
-            proposalHash: v602.H256,
-            result: sts.result(() => sts.unit(), () => v602.DispatchError),
+            proposalHash: matrixV602.H256,
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
      */
-    v604: new EventType(
+    matrixV604: new EventType(
         'Council.MemberExecuted',
         sts.struct({
-            proposalHash: v604.H256,
-            result: sts.result(() => sts.unit(), () => v604.DispatchError),
+            proposalHash: matrixV604.H256,
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }

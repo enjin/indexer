@@ -1,5 +1,7 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
+import * as enjinV101 from '../enjinV101'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1050 from '../v1050'
 
 export const processingFailed =  {
     name: 'MessageQueue.ProcessingFailed',
@@ -24,6 +26,40 @@ export const processingFailed =  {
              * by the `MessageProcessor`.
              */
             error: matrixEnjinV1012.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    enjinV101: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            id: sts.bytes(),
+            origin: enjinV101.AggregateMessageOrigin,
+            error: enjinV101.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    v1050: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: v1050.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: v1050.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             * 
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: v1050.ProcessMessageError,
         })
     ),
 }
@@ -59,6 +95,18 @@ export const processed =  {
             success: sts.boolean(),
         })
     ),
+    /**
+     * Message is processed.
+     */
+    enjinV101: new EventType(
+        'MessageQueue.Processed',
+        sts.struct({
+            id: sts.bytes(),
+            origin: enjinV101.AggregateMessageOrigin,
+            weightUsed: enjinV101.Weight,
+            success: sts.boolean(),
+        })
+    ),
 }
 
 export const overweightEnqueued =  {
@@ -87,6 +135,18 @@ export const overweightEnqueued =  {
             messageIndex: sts.number(),
         })
     ),
+    /**
+     * Message placed in overweight queue.
+     */
+    enjinV101: new EventType(
+        'MessageQueue.OverweightEnqueued',
+        sts.struct({
+            id: sts.bytes(),
+            origin: enjinV101.AggregateMessageOrigin,
+            pageIndex: sts.number(),
+            messageIndex: sts.number(),
+        })
+    ),
 }
 
 export const pageReaped =  {
@@ -104,6 +164,16 @@ export const pageReaped =  {
             /**
              * The index of the page.
              */
+            index: sts.number(),
+        })
+    ),
+    /**
+     * This page was reaped.
+     */
+    enjinV101: new EventType(
+        'MessageQueue.PageReaped',
+        sts.struct({
+            origin: enjinV101.AggregateMessageOrigin,
             index: sts.number(),
         })
     ),

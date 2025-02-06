@@ -1,13 +1,13 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 
 export const batchDispatched =  {
     name: 'EfinityUtility.BatchDispatched',
     /**
      * Batch of calls dispatched without errors.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'EfinityUtility.BatchDispatched',
         sts.unit()
     ),
@@ -19,17 +19,17 @@ export const batchPartiallyDispatched =  {
      * Batch of calls dispatched, but some calls resulted in error.
      * Indexes and errors of failing dispatch calls are provided.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'EfinityUtility.BatchPartiallyDispatched',
-        sts.array(() => sts.tuple(() => [sts.number(), v500.DispatchError]))
+        sts.array(() => sts.tuple(() => [sts.number(), matrixV500.DispatchError]))
     ),
     /**
      * Batch of calls dispatched, but some calls resulted in error.
      * Indexes and errors of failing dispatch calls are provided.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'EfinityUtility.BatchPartiallyDispatched',
-        sts.array(() => sts.tuple(() => [sts.number(), v602.DispatchError]))
+        sts.array(() => sts.tuple(() => [sts.number(), matrixV602.DispatchError]))
     ),
 }
 
@@ -39,22 +39,22 @@ export const batchFailed =  {
      * Batch of calls did not disptach completely.
      * Index and error of the failing dispatch call is provided.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'EfinityUtility.BatchFailed',
         sts.struct({
             index: sts.number(),
-            error: v500.DispatchError,
+            error: matrixV500.DispatchError,
         })
     ),
     /**
      * Batch of calls did not disptach completely.
      * Index and error of the failing dispatch call is provided.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'EfinityUtility.BatchFailed',
         sts.struct({
             index: sts.number(),
-            error: v602.DispatchError,
+            error: matrixV602.DispatchError,
         })
     ),
 }

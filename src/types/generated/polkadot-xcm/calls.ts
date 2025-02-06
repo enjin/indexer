@@ -1,9 +1,9 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
-import * as v1010 from '../v1010'
+import * as matrixV1004 from '../matrixV1004'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const send =  {
@@ -22,18 +22,18 @@ export const send =  {
             message: matrixEnjinV1012.VersionedXcm,
         })
     ),
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.send',
         sts.struct({
-            dest: v500.VersionedMultiLocation,
-            message: v500.VersionedXcm,
+            dest: matrixV500.VersionedMultiLocation,
+            message: matrixV500.VersionedXcm,
         })
     ),
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.send',
         sts.struct({
-            dest: v1010.VersionedLocation,
-            message: v1010.VersionedXcm,
+            dest: matrixV1010.VersionedLocation,
+            message: matrixV1010.VersionedXcm,
         })
     ),
 }
@@ -112,12 +112,12 @@ export const teleportAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.teleport_assets',
         sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: matrixV500.VersionedMultiLocation,
+            beneficiary: matrixV500.VersionedMultiLocation,
+            assets: matrixV500.VersionedMultiAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -141,12 +141,12 @@ export const teleportAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.teleport_assets',
         sts.struct({
-            dest: v1010.VersionedLocation,
-            beneficiary: v1010.VersionedLocation,
-            assets: v1010.VersionedAssets,
+            dest: matrixV1010.VersionedLocation,
+            beneficiary: matrixV1010.VersionedLocation,
+            assets: matrixV1010.VersionedAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -240,12 +240,12 @@ export const reserveTransferAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.reserve_transfer_assets',
         sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: matrixV500.VersionedMultiLocation,
+            beneficiary: matrixV500.VersionedMultiLocation,
+            assets: matrixV500.VersionedMultiAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -281,12 +281,12 @@ export const reserveTransferAssets =  {
      * - `fee_asset_item`: The index into `assets` of the item which should be used to pay
      *   fees.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.reserve_transfer_assets',
         sts.struct({
-            dest: v1010.VersionedLocation,
-            beneficiary: v1010.VersionedLocation,
-            assets: v1010.VersionedAssets,
+            dest: matrixV1010.VersionedLocation,
+            beneficiary: matrixV1010.VersionedLocation,
+            assets: matrixV1010.VersionedAssets,
             feeAssetItem: sts.number(),
         })
     ),
@@ -344,11 +344,11 @@ export const execute =  {
      * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
      * to completion; only that *some* of it was executed.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.execute',
         sts.struct({
-            message: v500.Type_338,
-            maxWeight: v500.Weight,
+            message: matrixV500.Type_338,
+            maxWeight: matrixV500.Weight,
         })
     ),
     /**
@@ -361,11 +361,11 @@ export const execute =  {
      * the maximum amount of weight that the message could take to be executed, then no
      * execution attempt will be made.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.execute',
         sts.struct({
-            message: v1010.Type_414,
-            maxWeight: v1010.Weight,
+            message: matrixV1010.Type_414,
+            maxWeight: matrixV1010.Weight,
         })
     ),
 }
@@ -420,20 +420,20 @@ export const forceXcmVersion =  {
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.force_xcm_version',
         sts.struct({
-            location: v500.V3MultiLocation,
+            location: matrixV500.V3MultiLocation,
             xcmVersion: sts.number(),
         })
     ),
     /**
      * See [`Pallet::force_xcm_version`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'PolkadotXcm.force_xcm_version',
         sts.struct({
-            location: v1004.V3MultiLocation,
+            location: matrixV1004.V3MultiLocation,
             version: sts.number(),
         })
     ),
@@ -445,10 +445,10 @@ export const forceXcmVersion =  {
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.force_xcm_version',
         sts.struct({
-            location: v1010.V4Location,
+            location: matrixV1010.V4Location,
             version: sts.number(),
         })
     ),
@@ -503,10 +503,10 @@ export const forceSubscribeVersionNotify =  {
      * - `origin`: Must be Root.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.force_subscribe_version_notify',
         sts.struct({
-            location: v500.VersionedMultiLocation,
+            location: matrixV500.VersionedMultiLocation,
         })
     ),
     /**
@@ -515,10 +515,10 @@ export const forceSubscribeVersionNotify =  {
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.force_subscribe_version_notify',
         sts.struct({
-            location: v1010.VersionedLocation,
+            location: matrixV1010.VersionedLocation,
         })
     ),
 }
@@ -561,10 +561,10 @@ export const forceUnsubscribeVersionNotify =  {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.force_unsubscribe_version_notify',
         sts.struct({
-            location: v500.VersionedMultiLocation,
+            location: matrixV500.VersionedMultiLocation,
         })
     ),
     /**
@@ -575,10 +575,10 @@ export const forceUnsubscribeVersionNotify =  {
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.force_unsubscribe_version_notify',
         sts.struct({
-            location: v1010.VersionedLocation,
+            location: matrixV1010.VersionedLocation,
         })
     ),
 }
@@ -677,14 +677,14 @@ export const limitedReserveTransferAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.limited_reserve_transfer_assets',
         sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: matrixV500.VersionedMultiLocation,
+            beneficiary: matrixV500.VersionedMultiLocation,
+            assets: matrixV500.VersionedMultiAssets,
             feeAssetItem: sts.number(),
-            weightLimit: v500.V3WeightLimit,
+            weightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -719,14 +719,14 @@ export const limitedReserveTransferAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.limited_reserve_transfer_assets',
         sts.struct({
-            dest: v1010.VersionedLocation,
-            beneficiary: v1010.VersionedLocation,
-            assets: v1010.VersionedAssets,
+            dest: matrixV1010.VersionedLocation,
+            beneficiary: matrixV1010.VersionedLocation,
+            assets: matrixV1010.VersionedAssets,
             feeAssetItem: sts.number(),
-            weightLimit: v1010.V3WeightLimit,
+            weightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -811,14 +811,14 @@ export const limitedTeleportAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'PolkadotXcm.limited_teleport_assets',
         sts.struct({
-            dest: v500.VersionedMultiLocation,
-            beneficiary: v500.VersionedMultiLocation,
-            assets: v500.VersionedMultiAssets,
+            dest: matrixV500.VersionedMultiLocation,
+            beneficiary: matrixV500.VersionedMultiLocation,
+            assets: matrixV500.VersionedMultiAssets,
             feeAssetItem: sts.number(),
-            weightLimit: v500.V3WeightLimit,
+            weightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -841,14 +841,14 @@ export const limitedTeleportAssets =  {
      *   fees.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'PolkadotXcm.limited_teleport_assets',
         sts.struct({
-            dest: v1010.VersionedLocation,
-            beneficiary: v1010.VersionedLocation,
-            assets: v1010.VersionedAssets,
+            dest: matrixV1010.VersionedLocation,
+            beneficiary: matrixV1010.VersionedLocation,
+            assets: matrixV1010.VersionedAssets,
             feeAssetItem: sts.number(),
-            weightLimit: v1010.V3WeightLimit,
+            weightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }

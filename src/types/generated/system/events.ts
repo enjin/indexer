@@ -1,8 +1,13 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
+import * as enjinV101 from '../enjinV101'
+import * as v104 from '../v104'
+import * as v105 from '../v105'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const extrinsicSuccess =  {
@@ -33,31 +38,81 @@ export const extrinsicFailed =  {
     /**
      * An extrinsic failed.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'System.ExtrinsicFailed',
         sts.struct({
-            dispatchError: v500.DispatchError,
-            dispatchInfo: v500.DispatchInfo,
+            dispatchError: matrixV500.DispatchError,
+            dispatchInfo: matrixV500.DispatchInfo,
         })
     ),
     /**
      * An extrinsic failed.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'System.ExtrinsicFailed',
         sts.struct({
-            dispatchError: v602.DispatchError,
-            dispatchInfo: v602.DispatchInfo,
+            dispatchError: matrixV602.DispatchError,
+            dispatchInfo: matrixV602.DispatchInfo,
         })
     ),
     /**
      * An extrinsic failed.
      */
-    v604: new EventType(
+    matrixV604: new EventType(
         'System.ExtrinsicFailed',
         sts.struct({
-            dispatchError: v604.DispatchError,
-            dispatchInfo: v604.DispatchInfo,
+            dispatchError: matrixV604.DispatchError,
+            dispatchInfo: matrixV604.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    enjinV100: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: enjinV100.DispatchError,
+            dispatchInfo: enjinV100.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    enjinV101: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: enjinV101.DispatchError,
+            dispatchInfo: enjinV101.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    v100: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: v100.DispatchError,
+            dispatchInfo: v100.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    v104: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: v104.DispatchError,
+            dispatchInfo: v104.DispatchInfo,
+        })
+    ),
+    /**
+     * An extrinsic failed.
+     */
+    v105: new EventType(
+        'System.ExtrinsicFailed',
+        sts.struct({
+            dispatchError: v105.DispatchError,
+            dispatchInfo: v105.DispatchInfo,
         })
     ),
 }

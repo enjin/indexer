@@ -1,6 +1,6 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { CommonContext } from './mappings/types/contexts'
-import { getOrCreateAccount } from './mappings/util/entities'
+import { CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Collection, CollectionFlags, CollectionSocials, CollectionStats, MintPolicy, Token, TransferPolicy } from './model'
 import { isMainnet } from './common/tools'
 

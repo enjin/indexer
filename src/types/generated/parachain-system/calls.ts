@@ -1,6 +1,6 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const setValidationData =  {
@@ -53,10 +53,10 @@ export const authorizeUpgrade =  {
             checkVersion: sts.boolean(),
         })
     ),
-    v500: new CallType(
+    matrixV500: new CallType(
         'ParachainSystem.authorize_upgrade',
         sts.struct({
-            codeHash: v500.H256,
+            codeHash: matrixV500.H256,
         })
     ),
     /**
@@ -69,10 +69,10 @@ export const authorizeUpgrade =  {
      * 
      * This call requires Root origin.
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'ParachainSystem.authorize_upgrade',
         sts.struct({
-            codeHash: v602.H256,
+            codeHash: matrixV602.H256,
             checkVersion: sts.boolean(),
         })
     ),

@@ -1,8 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
-import * as v1004 from '../v1004'
+import * as matrixV1004 from '../matrixV1004'
 
 export const success =  {
     name: 'XcmpQueue.Success',
@@ -30,22 +30,22 @@ export const success =  {
     /**
      * Some XCM was executed ok.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'XcmpQueue.Success',
         sts.struct({
             messageHash: sts.option(() => sts.bytes()),
-            weight: v500.Weight,
+            weight: matrixV500.Weight,
         })
     ),
     /**
      * Some XCM was executed ok.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'XcmpQueue.Success',
         sts.struct({
             messageHash: sts.bytes(),
             messageId: sts.bytes(),
-            weight: v1004.Weight,
+            weight: matrixV1004.Weight,
         })
     ),
 }
@@ -78,24 +78,24 @@ export const fail =  {
     /**
      * Some XCM failed.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'XcmpQueue.Fail',
         sts.struct({
             messageHash: sts.option(() => sts.bytes()),
-            error: v500.V3Error,
-            weight: v500.Weight,
+            error: matrixV500.V3Error,
+            weight: matrixV500.Weight,
         })
     ),
     /**
      * Some XCM failed.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'XcmpQueue.Fail',
         sts.struct({
             messageHash: sts.bytes(),
             messageId: sts.bytes(),
-            error: v1004.V3Error,
-            weight: v1004.Weight,
+            error: matrixV1004.V3Error,
+            weight: matrixV1004.Weight,
         })
     ),
 }
@@ -123,7 +123,7 @@ export const badVersion =  {
     /**
      * Bad XCM version used.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'XcmpQueue.BadVersion',
         sts.struct({
             messageHash: sts.option(() => sts.bytes()),
@@ -132,7 +132,7 @@ export const badVersion =  {
     /**
      * Bad XCM version used.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'XcmpQueue.BadVersion',
         sts.struct({
             messageHash: sts.bytes(),
@@ -163,7 +163,7 @@ export const badFormat =  {
     /**
      * Bad XCM format used.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'XcmpQueue.BadFormat',
         sts.struct({
             messageHash: sts.option(() => sts.bytes()),
@@ -172,7 +172,7 @@ export const badFormat =  {
     /**
      * Bad XCM format used.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'XcmpQueue.BadFormat',
         sts.struct({
             messageHash: sts.bytes(),
@@ -203,7 +203,7 @@ export const xcmpMessageSent =  {
     /**
      * An HRMP message was sent to a sibling parachain.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'XcmpQueue.XcmpMessageSent',
         sts.struct({
             messageHash: sts.option(() => sts.bytes()),
@@ -212,7 +212,7 @@ export const xcmpMessageSent =  {
     /**
      * An HRMP message was sent to a sibling parachain.
      */
-    v1004: new EventType(
+    matrixV1004: new EventType(
         'XcmpQueue.XcmpMessageSent',
         sts.struct({
             messageHash: sts.bytes(),

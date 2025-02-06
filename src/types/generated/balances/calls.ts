@@ -1,5 +1,5 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
@@ -204,12 +204,32 @@ export const setBalance =  {
      * 
      * The dispatch origin for this call is `root`.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'Balances.set_balance',
         sts.struct({
-            who: v500.MultiAddress,
+            who: matrixV500.MultiAddress,
             newFree: sts.bigint(),
             newReserved: sts.bigint(),
+        })
+    ),
+}
+
+export const burn =  {
+    name: 'Balances.burn',
+    /**
+     * Burn the specified liquid free balance from the origin account.
+     * 
+     * If the origin's account ends up below the existential deposit as a result
+     * of the burn and `keep_alive` is false, the account will be reaped.
+     * 
+     * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
+     * this `burn` operation will reduce total issuance by the amount _burned_.
+     */
+    v1050: new CallType(
+        'Balances.burn',
+        sts.struct({
+            value: sts.bigint(),
+            keepAlive: sts.boolean(),
         })
     ),
 }

@@ -1,17 +1,17 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 
 export const key =  {
     /**
      *  The `AccountId` of the sudo key.
      */
-    v500: new StorageType('Sudo.Key', 'Optional', [], v500.AccountId32) as KeyV500,
+    matrixV500: new StorageType('Sudo.Key', 'Optional', [], matrixV500.AccountId32) as KeyMatrixV500,
 }
 
 /**
  *  The `AccountId` of the sudo key.
  */
-export interface KeyV500  {
+export interface KeyMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.AccountId32 | undefined)>
+    get(block: Block): Promise<(matrixV500.AccountId32 | undefined)>
 }

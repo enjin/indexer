@@ -1,4 +1,5 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
+import * as enjinV100 from '../enjinV100'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const validators =  {
@@ -57,6 +58,11 @@ export const queuedKeys =  {
      *  will be used to determine the validator's session keys.
      */
     matrixEnjinV603: new StorageType('Session.QueuedKeys', 'Default', [], sts.array(() => sts.tuple(() => [matrixEnjinV603.AccountId32, matrixEnjinV603.SessionKeys]))) as QueuedKeysMatrixEnjinV603,
+    /**
+     *  The queued keys for the next session. When the next session begins, these keys
+     *  will be used to determine the validator's session keys.
+     */
+    enjinV100: new StorageType('Session.QueuedKeys', 'Default', [], sts.array(() => sts.tuple(() => [enjinV100.AccountId32, enjinV100.SessionKeys]))) as QueuedKeysEnjinV100,
 }
 
 /**
@@ -67,6 +73,16 @@ export interface QueuedKeysMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): [matrixEnjinV603.AccountId32, matrixEnjinV603.SessionKeys][]
     get(block: Block): Promise<([matrixEnjinV603.AccountId32, matrixEnjinV603.SessionKeys][] | undefined)>
+}
+
+/**
+ *  The queued keys for the next session. When the next session begins, these keys
+ *  will be used to determine the validator's session keys.
+ */
+export interface QueuedKeysEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [enjinV100.AccountId32, enjinV100.SessionKeys][]
+    get(block: Block): Promise<([enjinV100.AccountId32, enjinV100.SessionKeys][] | undefined)>
 }
 
 export const disabledValidators =  {
@@ -98,6 +114,10 @@ export const nextKeys =  {
      *  The next session keys for a validator.
      */
     matrixEnjinV603: new StorageType('Session.NextKeys', 'Optional', [matrixEnjinV603.AccountId32], matrixEnjinV603.SessionKeys) as NextKeysMatrixEnjinV603,
+    /**
+     *  The next session keys for a validator.
+     */
+    enjinV100: new StorageType('Session.NextKeys', 'Optional', [enjinV100.AccountId32], enjinV100.SessionKeys) as NextKeysEnjinV100,
 }
 
 /**
@@ -115,6 +135,23 @@ export interface NextKeysMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.AccountId32): Promise<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.SessionKeys | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.SessionKeys | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.AccountId32): AsyncIterable<[k: matrixEnjinV603.AccountId32, v: (matrixEnjinV603.SessionKeys | undefined)][]>
+}
+
+/**
+ *  The next session keys for a validator.
+ */
+export interface NextKeysEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV100.AccountId32): Promise<(enjinV100.SessionKeys | undefined)>
+    getMany(block: Block, keys: enjinV100.AccountId32[]): Promise<(enjinV100.SessionKeys | undefined)[]>
+    getKeys(block: Block): Promise<enjinV100.AccountId32[]>
+    getKeys(block: Block, key: enjinV100.AccountId32): Promise<enjinV100.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV100.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV100.AccountId32): AsyncIterable<enjinV100.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV100.AccountId32, v: (enjinV100.SessionKeys | undefined)][]>
+    getPairs(block: Block, key: enjinV100.AccountId32): Promise<[k: enjinV100.AccountId32, v: (enjinV100.SessionKeys | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV100.AccountId32, v: (enjinV100.SessionKeys | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV100.AccountId32): AsyncIterable<[k: enjinV100.AccountId32, v: (enjinV100.SessionKeys | undefined)][]>
 }
 
 export const keyOwner =  {

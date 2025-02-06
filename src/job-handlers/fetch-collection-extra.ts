@@ -1,7 +1,7 @@
 import Queue from 'bull'
 import connection from '../connection'
 import { JobData } from '../jobs/fetch-collection-extra'
-import { fetchCollectionsExtra } from '../mappings/util/marketplace'
+import { fetchCollectionsExtra } from 'matrixchain-indexer/common/util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../model'
 import { computeTraits } from '../jobs/compute-traits'
 import { syncCollectionStats } from '../jobs/collection-stats'

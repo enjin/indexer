@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const transfer =  {
@@ -66,13 +66,13 @@ export const transfer =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer',
         sts.struct({
-            currencyId: v500.AssetId,
+            currencyId: matrixV500.AssetId,
             amount: sts.bigint(),
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -89,13 +89,13 @@ export const transfer =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer',
         sts.struct({
-            currencyId: v1010.AssetId,
+            currencyId: matrixV1010.AssetId,
             amount: sts.bigint(),
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -160,12 +160,12 @@ export const transferMultiasset =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer_multiasset',
         sts.struct({
-            asset: v500.VersionedMultiAsset,
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            asset: matrixV500.VersionedMultiAsset,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -182,12 +182,12 @@ export const transferMultiasset =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer_multiasset',
         sts.struct({
-            asset: v1010.VersionedAsset,
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            asset: matrixV1010.VersionedAsset,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -283,14 +283,14 @@ export const transferWithFee =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer_with_fee',
         sts.struct({
-            currencyId: v500.AssetId,
+            currencyId: matrixV500.AssetId,
             amount: sts.bigint(),
             fee: sts.bigint(),
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -316,14 +316,14 @@ export const transferWithFee =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer_with_fee',
         sts.struct({
-            currencyId: v1010.AssetId,
+            currencyId: matrixV1010.AssetId,
             amount: sts.bigint(),
             fee: sts.bigint(),
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -417,13 +417,13 @@ export const transferMultiassetWithFee =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer_multiasset_with_fee',
         sts.struct({
-            asset: v500.VersionedMultiAsset,
-            fee: v500.VersionedMultiAsset,
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            asset: matrixV500.VersionedMultiAsset,
+            fee: matrixV500.VersionedMultiAsset,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -449,13 +449,13 @@ export const transferMultiassetWithFee =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer_multiasset_with_fee',
         sts.struct({
-            asset: v1010.VersionedAsset,
-            fee: v1010.VersionedAsset,
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            asset: matrixV1010.VersionedAsset,
+            fee: matrixV1010.VersionedAsset,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -531,13 +531,13 @@ export const transferMulticurrencies =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer_multicurrencies',
         sts.struct({
-            currencies: sts.array(() => sts.tuple(() => [v500.AssetId, sts.bigint()])),
+            currencies: sts.array(() => sts.tuple(() => [matrixV500.AssetId, sts.bigint()])),
             feeItem: sts.number(),
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -557,13 +557,13 @@ export const transferMulticurrencies =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer_multicurrencies',
         sts.struct({
-            currencies: sts.array(() => sts.tuple(() => [v1010.AssetId, sts.bigint()])),
+            currencies: sts.array(() => sts.tuple(() => [matrixV1010.AssetId, sts.bigint()])),
             feeItem: sts.number(),
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }
@@ -639,13 +639,13 @@ export const transferMultiassets =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'XTokens.transfer_multiassets',
         sts.struct({
-            assets: v500.VersionedMultiAssets,
+            assets: matrixV500.VersionedMultiAssets,
             feeItem: sts.number(),
-            dest: v500.VersionedMultiLocation,
-            destWeightLimit: v500.V3WeightLimit,
+            dest: matrixV500.VersionedMultiLocation,
+            destWeightLimit: matrixV500.V3WeightLimit,
         })
     ),
     /**
@@ -665,13 +665,13 @@ export const transferMultiassets =  {
      * by the network, and if the receiving chain would handle
      * messages correctly.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'XTokens.transfer_multiassets',
         sts.struct({
-            assets: v1010.VersionedAssets,
+            assets: matrixV1010.VersionedAssets,
             feeItem: sts.number(),
-            dest: v1010.VersionedLocation,
-            destWeightLimit: v1010.V3WeightLimit,
+            dest: matrixV1010.VersionedLocation,
+            destWeightLimit: matrixV1010.V3WeightLimit,
         })
     ),
 }

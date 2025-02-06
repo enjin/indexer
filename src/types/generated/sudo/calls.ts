@@ -1,15 +1,41 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v600 from '../v600'
-import * as v601 from '../v601'
-import * as v602 from '../v602'
-import * as v1000 from '../v1000'
-import * as v1003 from '../v1003'
-import * as v1004 from '../v1004'
-import * as v1005 from '../v1005'
-import * as v1010 from '../v1010'
-import * as v1011 from '../v1011'
-import * as v1012 from '../v1012'
+import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
+import * as enjinV101 from '../enjinV101'
+import * as v101 from '../v101'
+import * as v102 from '../v102'
+import * as v103 from '../v103'
+import * as v104 from '../v104'
+import * as v105 from '../v105'
+import * as v106 from '../v106'
+import * as enjinV110 from '../enjinV110'
+import * as v110 from '../v110'
+import * as enjinV120 from '../enjinV120'
+import * as v120 from '../v120'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV600 from '../matrixV600'
+import * as matrixV601 from '../matrixV601'
+import * as matrixV602 from '../matrixV602'
+import * as matrixV1000 from '../matrixV1000'
+import * as matrixV1003 from '../matrixV1003'
+import * as matrixV1004 from '../matrixV1004'
+import * as matrixV1005 from '../matrixV1005'
+import * as matrixV1010 from '../matrixV1010'
+import * as matrixV1011 from '../matrixV1011'
+import * as matrixV1012 from '../matrixV1012'
+import * as enjinV1021 from '../enjinV1021'
+import * as v1021 from '../v1021'
+import * as enjinV1022 from '../enjinV1022'
+import * as v1022 from '../v1022'
+import * as enjinV1023 from '../enjinV1023'
+import * as v1023 from '../v1023'
+import * as enjinV1026 from '../enjinV1026'
+import * as v1026 from '../v1026'
+import * as v1030 from '../v1030'
+import * as v1031 from '../v1031'
+import * as enjinV1032 from '../enjinV1032'
+import * as v1032 from '../v1032'
+import * as v1050 from '../v1050'
 
 export const sudo =  {
     name: 'Sudo.sudo',
@@ -25,10 +51,10 @@ export const sudo =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v500.Call,
+            call: matrixV500.Call,
         })
     ),
     /**
@@ -43,10 +69,10 @@ export const sudo =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v600.Call,
+            call: matrixV600.Call,
         })
     ),
     /**
@@ -61,10 +87,10 @@ export const sudo =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v601.Call,
+            call: matrixV601.Call,
         })
     ),
     /**
@@ -75,10 +101,10 @@ export const sudo =  {
      * ## Complexity
      * - O(1).
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v602.Call,
+            call: matrixV602.Call,
         })
     ),
     /**
@@ -89,10 +115,10 @@ export const sudo =  {
      * ## Complexity
      * - O(1).
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1000.Call,
+            call: matrixV1000.Call,
         })
     ),
     /**
@@ -103,55 +129,400 @@ export const sudo =  {
      * ## Complexity
      * - O(1).
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1003.Call,
+            call: matrixV1003.Call,
         })
     ),
     /**
      * See [`Pallet::sudo`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1004.Call,
+            call: matrixV1004.Call,
         })
     ),
     /**
      * See [`Pallet::sudo`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1005.Call,
+            call: matrixV1005.Call,
         })
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1010.Call,
+            call: matrixV1010.Call,
         })
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1011.Call,
+            call: matrixV1011.Call,
         })
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'Sudo.sudo',
         sts.struct({
-            call: v1012.Call,
+            call: matrixV1012.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV100: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV100.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV101: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV101.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV110: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV110.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV120: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV120.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1021: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV1021.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1022: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1023: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV1023.Call,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo`].
+     */
+    enjinV1026: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV1026.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    enjinV1032: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: enjinV1032.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v100: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v100.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v101: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v101.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v102: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v102.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v103: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v103.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v104: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v104.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v105: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v105.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v106: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v106.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v110: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v110.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v120: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v120.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1021: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1021.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1022: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1023: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1023.Call,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo`].
+     */
+    v1026: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1026.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    v1030: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1030.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    v1031: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1031.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    v1032: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1032.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     */
+    v1050: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: v1050.Call,
         })
     ),
 }
@@ -170,11 +541,11 @@ export const sudoUncheckedWeight =  {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v500.Call,
-            weight: v500.Weight,
+            call: matrixV500.Call,
+            weight: matrixV500.Weight,
         })
     ),
     /**
@@ -189,11 +560,11 @@ export const sudoUncheckedWeight =  {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v600.Call,
-            weight: v600.Weight,
+            call: matrixV600.Call,
+            weight: matrixV600.Weight,
         })
     ),
     /**
@@ -208,11 +579,11 @@ export const sudoUncheckedWeight =  {
      * - The weight of this call is defined by the caller.
      * # </weight>
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v601.Call,
-            weight: v601.Weight,
+            call: matrixV601.Call,
+            weight: matrixV601.Weight,
         })
     ),
     /**
@@ -225,11 +596,11 @@ export const sudoUncheckedWeight =  {
      * ## Complexity
      * - O(1).
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v602.Call,
-            weight: v602.Weight,
+            call: matrixV602.Call,
+            weight: matrixV602.Weight,
         })
     ),
     /**
@@ -242,11 +613,11 @@ export const sudoUncheckedWeight =  {
      * ## Complexity
      * - O(1).
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1000.Call,
-            weight: v1000.Weight,
+            call: matrixV1000.Call,
+            weight: matrixV1000.Weight,
         })
     ),
     /**
@@ -259,31 +630,31 @@ export const sudoUncheckedWeight =  {
      * ## Complexity
      * - O(1).
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1003.Call,
-            weight: v1003.Weight,
+            call: matrixV1003.Call,
+            weight: matrixV1003.Weight,
         })
     ),
     /**
      * See [`Pallet::sudo_unchecked_weight`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1004.Call,
-            weight: v1004.Weight,
+            call: matrixV1004.Call,
+            weight: matrixV1004.Weight,
         })
     ),
     /**
      * See [`Pallet::sudo_unchecked_weight`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1005.Call,
-            weight: v1005.Weight,
+            call: matrixV1005.Call,
+            weight: matrixV1005.Weight,
         })
     ),
     /**
@@ -293,11 +664,11 @@ export const sudoUncheckedWeight =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1010.Call,
-            weight: v1010.Weight,
+            call: matrixV1010.Call,
+            weight: matrixV1010.Weight,
         })
     ),
     /**
@@ -307,11 +678,11 @@ export const sudoUncheckedWeight =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1011.Call,
-            weight: v1011.Weight,
+            call: matrixV1011.Call,
+            weight: matrixV1011.Weight,
         })
     ),
     /**
@@ -321,11 +692,432 @@ export const sudoUncheckedWeight =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'Sudo.sudo_unchecked_weight',
         sts.struct({
-            call: v1012.Call,
-            weight: v1012.Weight,
+            call: matrixV1012.Call,
+            weight: matrixV1012.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV100: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV100.Call,
+            weight: enjinV100.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV101: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV101.Call,
+            weight: enjinV101.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV110: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV110.Call,
+            weight: enjinV110.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV120: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV120.Call,
+            weight: enjinV120.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1021: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV1021.Call,
+            weight: enjinV1021.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1022: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV1022.Call,
+            weight: enjinV1022.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1023: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV1023.Call,
+            weight: enjinV1023.Weight,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo_unchecked_weight`].
+     */
+    enjinV1026: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV1026.Call,
+            weight: enjinV1026.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    enjinV1032: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: enjinV1032.Call,
+            weight: enjinV1032.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    v100: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v100.Call,
+            weight: v100.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    v101: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v101.Call,
+            weight: v101.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    v102: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v102.Call,
+            weight: v102.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - The weight of this call is defined by the caller.
+     * # </weight>
+     */
+    v103: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v103.Call,
+            weight: v103.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v104: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v104.Call,
+            weight: v104.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v105: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v105.Call,
+            weight: v105.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v106: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v106.Call,
+            weight: v106.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v110: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v110.Call,
+            weight: v110.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v120: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v120.Call,
+            weight: v120.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1021: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1021.Call,
+            weight: v1021.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1022: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1022.Call,
+            weight: v1022.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1023: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1023.Call,
+            weight: v1023.Weight,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo_unchecked_weight`].
+     */
+    v1026: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1026.Call,
+            weight: v1026.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1030: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1030.Call,
+            weight: v1030.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1031: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1031.Call,
+            weight: v1031.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1032: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1032.Call,
+            weight: v1032.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1050: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: v1050.Call,
+            weight: v1050.Weight,
         })
     ),
 }
@@ -344,10 +1136,10 @@ export const setKey =  {
      * - One DB change.
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'Sudo.set_key',
         sts.struct({
-            new: v500.MultiAddress,
+            new: matrixV500.MultiAddress,
         })
     ),
 }
@@ -367,11 +1159,11 @@ export const sudoAs =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v500.MultiAddress,
-            call: v500.Call,
+            who: matrixV500.MultiAddress,
+            call: matrixV500.Call,
         })
     ),
     /**
@@ -387,11 +1179,11 @@ export const sudoAs =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v600.MultiAddress,
-            call: v600.Call,
+            who: matrixV600.MultiAddress,
+            call: matrixV600.Call,
         })
     ),
     /**
@@ -407,11 +1199,11 @@ export const sudoAs =  {
      * - Weight of derivative `call` execution + 10,000.
      * # </weight>
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v601.MultiAddress,
-            call: v601.Call,
+            who: matrixV601.MultiAddress,
+            call: matrixV601.Call,
         })
     ),
     /**
@@ -423,11 +1215,11 @@ export const sudoAs =  {
      * ## Complexity
      * - O(1).
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v602.MultiAddress,
-            call: v602.Call,
+            who: matrixV602.MultiAddress,
+            call: matrixV602.Call,
         })
     ),
     /**
@@ -439,11 +1231,11 @@ export const sudoAs =  {
      * ## Complexity
      * - O(1).
      */
-    v1000: new CallType(
+    matrixV1000: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1000.MultiAddress,
-            call: v1000.Call,
+            who: matrixV1000.MultiAddress,
+            call: matrixV1000.Call,
         })
     ),
     /**
@@ -455,31 +1247,31 @@ export const sudoAs =  {
      * ## Complexity
      * - O(1).
      */
-    v1003: new CallType(
+    matrixV1003: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1003.MultiAddress,
-            call: v1003.Call,
+            who: matrixV1003.MultiAddress,
+            call: matrixV1003.Call,
         })
     ),
     /**
      * See [`Pallet::sudo_as`].
      */
-    v1004: new CallType(
+    matrixV1004: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1004.MultiAddress,
-            call: v1004.Call,
+            who: matrixV1004.MultiAddress,
+            call: matrixV1004.Call,
         })
     ),
     /**
      * See [`Pallet::sudo_as`].
      */
-    v1005: new CallType(
+    matrixV1005: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1005.MultiAddress,
-            call: v1005.Call,
+            who: matrixV1005.MultiAddress,
+            call: matrixV1005.Call,
         })
     ),
     /**
@@ -488,11 +1280,11 @@ export const sudoAs =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1010.MultiAddress,
-            call: v1010.Call,
+            who: matrixV1010.MultiAddress,
+            call: matrixV1010.Call,
         })
     ),
     /**
@@ -501,11 +1293,11 @@ export const sudoAs =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1011: new CallType(
+    matrixV1011: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1011.MultiAddress,
-            call: v1011.Call,
+            who: matrixV1011.MultiAddress,
+            call: matrixV1011.Call,
         })
     ),
     /**
@@ -514,11 +1306,416 @@ export const sudoAs =  {
      * 
      * The dispatch origin for this call must be _Signed_.
      */
-    v1012: new CallType(
+    matrixV1012: new CallType(
         'Sudo.sudo_as',
         sts.struct({
-            who: v1012.MultiAddress,
-            call: v1012.Call,
+            who: matrixV1012.MultiAddress,
+            call: matrixV1012.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV100: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV100.MultiAddress,
+            call: enjinV100.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV101: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV101.MultiAddress,
+            call: enjinV101.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV110: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV110.MultiAddress,
+            call: enjinV110.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV120: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV120.MultiAddress,
+            call: enjinV120.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1021: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV1021.MultiAddress,
+            call: enjinV1021.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1022: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV1022.MultiAddress,
+            call: enjinV1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    enjinV1023: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV1023.MultiAddress,
+            call: enjinV1023.Call,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo_as`].
+     */
+    enjinV1026: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV1026.MultiAddress,
+            call: enjinV1026.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    enjinV1032: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: enjinV1032.MultiAddress,
+            call: enjinV1032.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v100: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v100.MultiAddress,
+            call: v100.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v101: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v101.MultiAddress,
+            call: v101.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v102: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v102.MultiAddress,
+            call: v102.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * # <weight>
+     * - O(1).
+     * - Limited storage reads.
+     * - One DB write (event).
+     * - Weight of derivative `call` execution + 10,000.
+     * # </weight>
+     */
+    v103: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v103.MultiAddress,
+            call: v103.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v104: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v104.MultiAddress,
+            call: v104.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v105: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v105.MultiAddress,
+            call: v105.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v106: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v106.MultiAddress,
+            call: v106.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v110: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v110.MultiAddress,
+            call: v110.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v120: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v120.MultiAddress,
+            call: v120.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1021: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1021.MultiAddress,
+            call: v1021.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1022: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1022.MultiAddress,
+            call: v1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * ## Complexity
+     * - O(1).
+     */
+    v1023: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1023.MultiAddress,
+            call: v1023.Call,
+        })
+    ),
+    /**
+     * See [`Pallet::sudo_as`].
+     */
+    v1026: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1026.MultiAddress,
+            call: v1026.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1030: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1030.MultiAddress,
+            call: v1030.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1031: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1031.MultiAddress,
+            call: v1031.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1032: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1032.MultiAddress,
+            call: v1032.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     */
+    v1050: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: v1050.MultiAddress,
+            call: v1050.Call,
         })
     ),
 }
@@ -530,7 +1727,7 @@ export const removeKey =  {
      * 
      * **This cannot be un-done.**
      */
-    v1010: new CallType(
+    matrixV1010: new CallType(
         'Sudo.remove_key',
         sts.unit()
     ),

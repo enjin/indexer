@@ -1,6 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as v100 from '../v100'
+import * as v104 from '../v104'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
 export const endowed =  {
@@ -62,10 +64,10 @@ export const balanceSet =  {
     /**
      * A balance was set by root.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Balances.BalanceSet',
         sts.struct({
-            who: v500.AccountId32,
+            who: matrixV500.AccountId32,
             free: sts.bigint(),
             reserved: sts.bigint(),
         })
@@ -73,10 +75,31 @@ export const balanceSet =  {
     /**
      * A balance was set by root.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'Balances.BalanceSet',
         sts.struct({
-            who: v602.AccountId32,
+            who: matrixV602.AccountId32,
+            free: sts.bigint(),
+        })
+    ),
+    /**
+     * A balance was set by root.
+     */
+    v100: new EventType(
+        'Balances.BalanceSet',
+        sts.struct({
+            who: v100.AccountId32,
+            free: sts.bigint(),
+            reserved: sts.bigint(),
+        })
+    ),
+    /**
+     * A balance was set by root.
+     */
+    v104: new EventType(
+        'Balances.BalanceSet',
+        sts.struct({
+            who: v104.AccountId32,
             free: sts.bigint(),
         })
     ),

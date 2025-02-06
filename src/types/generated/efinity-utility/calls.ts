@@ -1,8 +1,8 @@
 import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v600 from '../v600'
-import * as v601 from '../v601'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV600 from '../matrixV600'
+import * as matrixV601 from '../matrixV601'
+import * as matrixV602 from '../matrixV602'
 
 export const batch =  {
     name: 'EfinityUtility.batch',
@@ -21,10 +21,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v500: new CallType(
+    matrixV500: new CallType(
         'EfinityUtility.batch',
         sts.struct({
-            calls: sts.array(() => v500.Call),
+            calls: sts.array(() => matrixV500.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -43,10 +43,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v600: new CallType(
+    matrixV600: new CallType(
         'EfinityUtility.batch',
         sts.struct({
-            calls: sts.array(() => v600.Call),
+            calls: sts.array(() => matrixV600.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -65,10 +65,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v601: new CallType(
+    matrixV601: new CallType(
         'EfinityUtility.batch',
         sts.struct({
-            calls: sts.array(() => v601.Call),
+            calls: sts.array(() => matrixV601.Call),
             continueOnFailure: sts.boolean(),
         })
     ),
@@ -87,10 +87,10 @@ export const batch =  {
      * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
-    v602: new CallType(
+    matrixV602: new CallType(
         'EfinityUtility.batch',
         sts.struct({
-            calls: sts.array(() => v602.Call),
+            calls: sts.array(() => matrixV602.Call),
             continueOnFailure: sts.boolean(),
         })
     ),

@@ -1,9 +1,9 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
-import * as v1010 from '../v1010'
+import * as matrixV604 from '../matrixV604'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const pendingValidationCode =  {
@@ -189,7 +189,7 @@ export const relevantMessagingState =  {
      * 
      *  This data is also absent from the genesis.
      */
-    v500: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], v500.MessagingStateSnapshot) as RelevantMessagingStateV500,
+    matrixV500: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], matrixV500.MessagingStateSnapshot) as RelevantMessagingStateMatrixV500,
     /**
      *  The snapshot of some state related to messaging relevant to the current parachain as per
      *  the relay parent.
@@ -199,7 +199,7 @@ export const relevantMessagingState =  {
      * 
      *  This data is also absent from the genesis.
      */
-    v604: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], v604.MessagingStateSnapshot) as RelevantMessagingStateV604,
+    matrixV604: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], matrixV604.MessagingStateSnapshot) as RelevantMessagingStateMatrixV604,
     /**
      *  The snapshot of some state related to messaging relevant to the current parachain as per
      *  the relay parent.
@@ -209,7 +209,7 @@ export const relevantMessagingState =  {
      * 
      *  This data is also absent from the genesis.
      */
-    v1010: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], v1010.MessagingStateSnapshot) as RelevantMessagingStateV1010,
+    matrixV1010: new StorageType('ParachainSystem.RelevantMessagingState', 'Optional', [], matrixV1010.MessagingStateSnapshot) as RelevantMessagingStateMatrixV1010,
 }
 
 /**
@@ -249,9 +249,9 @@ export interface RelevantMessagingStateMatrixEnjinV1012  {
  * 
  *  This data is also absent from the genesis.
  */
-export interface RelevantMessagingStateV500  {
+export interface RelevantMessagingStateMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.MessagingStateSnapshot | undefined)>
+    get(block: Block): Promise<(matrixV500.MessagingStateSnapshot | undefined)>
 }
 
 /**
@@ -263,9 +263,9 @@ export interface RelevantMessagingStateV500  {
  * 
  *  This data is also absent from the genesis.
  */
-export interface RelevantMessagingStateV604  {
+export interface RelevantMessagingStateMatrixV604  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v604.MessagingStateSnapshot | undefined)>
+    get(block: Block): Promise<(matrixV604.MessagingStateSnapshot | undefined)>
 }
 
 /**
@@ -277,9 +277,9 @@ export interface RelevantMessagingStateV604  {
  * 
  *  This data is also absent from the genesis.
  */
-export interface RelevantMessagingStateV1010  {
+export interface RelevantMessagingStateMatrixV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v1010.MessagingStateSnapshot | undefined)>
+    get(block: Block): Promise<(matrixV1010.MessagingStateSnapshot | undefined)>
 }
 
 export const hostConfiguration =  {
@@ -309,7 +309,7 @@ export const hostConfiguration =  {
      * 
      *  This data is also absent from the genesis.
      */
-    v500: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], v500.V2AbridgedHostConfiguration) as HostConfigurationV500,
+    matrixV500: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], matrixV500.V2AbridgedHostConfiguration) as HostConfigurationMatrixV500,
     /**
      *  The parachain host configuration that was obtained from the relay parent.
      * 
@@ -318,7 +318,7 @@ export const hostConfiguration =  {
      * 
      *  This data is also absent from the genesis.
      */
-    v1010: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], v1010.V6AbridgedHostConfiguration) as HostConfigurationV1010,
+    matrixV1010: new StorageType('ParachainSystem.HostConfiguration', 'Optional', [], matrixV1010.V6AbridgedHostConfiguration) as HostConfigurationMatrixV1010,
 }
 
 /**
@@ -355,9 +355,9 @@ export interface HostConfigurationMatrixEnjinV1012  {
  * 
  *  This data is also absent from the genesis.
  */
-export interface HostConfigurationV500  {
+export interface HostConfigurationMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.V2AbridgedHostConfiguration | undefined)>
+    get(block: Block): Promise<(matrixV500.V2AbridgedHostConfiguration | undefined)>
 }
 
 /**
@@ -368,9 +368,9 @@ export interface HostConfigurationV500  {
  * 
  *  This data is also absent from the genesis.
  */
-export interface HostConfigurationV1010  {
+export interface HostConfigurationMatrixV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v1010.V6AbridgedHostConfiguration | undefined)>
+    get(block: Block): Promise<(matrixV1010.V6AbridgedHostConfiguration | undefined)>
 }
 
 export const lastDmqMqcHead =  {
@@ -573,11 +573,11 @@ export const authorizedUpgrade =  {
     /**
      *  The next authorized upgrade, if there is one.
      */
-    v500: new StorageType('ParachainSystem.AuthorizedUpgrade', 'Optional', [], v500.H256) as AuthorizedUpgradeV500,
+    matrixV500: new StorageType('ParachainSystem.AuthorizedUpgrade', 'Optional', [], matrixV500.H256) as AuthorizedUpgradeMatrixV500,
     /**
      *  The next authorized upgrade, if there is one.
      */
-    v602: new StorageType('ParachainSystem.AuthorizedUpgrade', 'Optional', [], v602.CodeUpgradeAuthorization) as AuthorizedUpgradeV602,
+    matrixV602: new StorageType('ParachainSystem.AuthorizedUpgrade', 'Optional', [], matrixV602.CodeUpgradeAuthorization) as AuthorizedUpgradeMatrixV602,
 }
 
 /**
@@ -591,17 +591,17 @@ export interface AuthorizedUpgradeMatrixEnjinV603  {
 /**
  *  The next authorized upgrade, if there is one.
  */
-export interface AuthorizedUpgradeV500  {
+export interface AuthorizedUpgradeMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.H256 | undefined)>
+    get(block: Block): Promise<(matrixV500.H256 | undefined)>
 }
 
 /**
  *  The next authorized upgrade, if there is one.
  */
-export interface AuthorizedUpgradeV602  {
+export interface AuthorizedUpgradeMatrixV602  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v602.CodeUpgradeAuthorization | undefined)>
+    get(block: Block): Promise<(matrixV602.CodeUpgradeAuthorization | undefined)>
 }
 
 export const customValidationHeadData =  {

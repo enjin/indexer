@@ -1,8 +1,12 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
+import * as enjinV110 from '../enjinV110'
+import * as v110 from '../v110'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
-import * as v1000 from '../v1000'
-import * as v1010 from '../v1010'
+import * as matrixV1000 from '../matrixV1000'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1030 from '../v1030'
+import * as enjinV1032 from '../enjinV1032'
 
 export const identityOf =  {
     /**
@@ -23,14 +27,40 @@ export const identityOf =  {
      * 
      *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
      */
-    v1000: new StorageType('Identity.IdentityOf', 'Optional', [v1000.AccountId32], v1000.Registration) as IdentityOfV1000,
+    matrixV1000: new StorageType('Identity.IdentityOf', 'Optional', [matrixV1000.AccountId32], matrixV1000.Registration) as IdentityOfMatrixV1000,
     /**
      *  Information that is pertinent to identify the entity behind an account. First item is the
      *  registration, second is the account's primary username.
      * 
      *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
      */
-    v1010: new StorageType('Identity.IdentityOf', 'Optional', [v1010.AccountId32], sts.tuple(() => [v1010.Registration, sts.option(() => sts.bytes())])) as IdentityOfV1010,
+    matrixV1010: new StorageType('Identity.IdentityOf', 'Optional', [matrixV1010.AccountId32], sts.tuple(() => [matrixV1010.Registration, sts.option(() => sts.bytes())])) as IdentityOfMatrixV1010,
+    /**
+     *  Information that is pertinent to identify the entity behind an account.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    enjinV110: new StorageType('Identity.IdentityOf', 'Optional', [enjinV110.AccountId32], enjinV110.Registration) as IdentityOfEnjinV110,
+    /**
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    enjinV1032: new StorageType('Identity.IdentityOf', 'Optional', [enjinV1032.AccountId32], sts.tuple(() => [enjinV1032.Registration, sts.option(() => sts.bytes())])) as IdentityOfEnjinV1032,
+    /**
+     *  Information that is pertinent to identify the entity behind an account.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    v110: new StorageType('Identity.IdentityOf', 'Optional', [v110.AccountId32], v110.Registration) as IdentityOfV110,
+    /**
+     *  Information that is pertinent to identify the entity behind an account. First item is the
+     *  registration, second is the account's primary username.
+     * 
+     *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+     */
+    v1030: new StorageType('Identity.IdentityOf', 'Optional', [v1030.AccountId32], sts.tuple(() => [v1030.Registration, sts.option(() => sts.bytes())])) as IdentityOfV1030,
 }
 
 /**
@@ -77,18 +107,18 @@ export interface IdentityOfMatrixEnjinV1012  {
  * 
  *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
  */
-export interface IdentityOfV1000  {
+export interface IdentityOfMatrixV1000  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1000.AccountId32): Promise<(v1000.Registration | undefined)>
-    getMany(block: Block, keys: v1000.AccountId32[]): Promise<(v1000.Registration | undefined)[]>
-    getKeys(block: Block): Promise<v1000.AccountId32[]>
-    getKeys(block: Block, key: v1000.AccountId32): Promise<v1000.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1000.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1000.AccountId32): AsyncIterable<v1000.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
-    getPairs(block: Block, key: v1000.AccountId32): Promise<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v1000.AccountId32): AsyncIterable<[k: v1000.AccountId32, v: (v1000.Registration | undefined)][]>
+    get(block: Block, key: matrixV1000.AccountId32): Promise<(matrixV1000.Registration | undefined)>
+    getMany(block: Block, keys: matrixV1000.AccountId32[]): Promise<(matrixV1000.Registration | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1000.AccountId32[]>
+    getKeys(block: Block, key: matrixV1000.AccountId32): Promise<matrixV1000.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1000.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1000.AccountId32): AsyncIterable<matrixV1000.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixV1000.AccountId32, v: (matrixV1000.Registration | undefined)][]>
+    getPairs(block: Block, key: matrixV1000.AccountId32): Promise<[k: matrixV1000.AccountId32, v: (matrixV1000.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1000.AccountId32, v: (matrixV1000.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV1000.AccountId32): AsyncIterable<[k: matrixV1000.AccountId32, v: (matrixV1000.Registration | undefined)][]>
 }
 
 /**
@@ -97,18 +127,96 @@ export interface IdentityOfV1000  {
  * 
  *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
  */
-export interface IdentityOfV1010  {
+export interface IdentityOfMatrixV1010  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1010.AccountId32): Promise<([v1010.Registration, (Bytes | undefined)] | undefined)>
-    getMany(block: Block, keys: v1010.AccountId32[]): Promise<([v1010.Registration, (Bytes | undefined)] | undefined)[]>
-    getKeys(block: Block): Promise<v1010.AccountId32[]>
-    getKeys(block: Block, key: v1010.AccountId32): Promise<v1010.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1010.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1010.AccountId32): AsyncIterable<v1010.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v1010.AccountId32, v: ([v1010.Registration, (Bytes | undefined)] | undefined)][]>
-    getPairs(block: Block, key: v1010.AccountId32): Promise<[k: v1010.AccountId32, v: ([v1010.Registration, (Bytes | undefined)] | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.AccountId32, v: ([v1010.Registration, (Bytes | undefined)] | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v1010.AccountId32): AsyncIterable<[k: v1010.AccountId32, v: ([v1010.Registration, (Bytes | undefined)] | undefined)][]>
+    get(block: Block, key: matrixV1010.AccountId32): Promise<([matrixV1010.Registration, (Bytes | undefined)] | undefined)>
+    getMany(block: Block, keys: matrixV1010.AccountId32[]): Promise<([matrixV1010.Registration, (Bytes | undefined)] | undefined)[]>
+    getKeys(block: Block): Promise<matrixV1010.AccountId32[]>
+    getKeys(block: Block, key: matrixV1010.AccountId32): Promise<matrixV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV1010.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV1010.AccountId32): AsyncIterable<matrixV1010.AccountId32[]>
+    getPairs(block: Block): Promise<[k: matrixV1010.AccountId32, v: ([matrixV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairs(block: Block, key: matrixV1010.AccountId32): Promise<[k: matrixV1010.AccountId32, v: ([matrixV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV1010.AccountId32, v: ([matrixV1010.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV1010.AccountId32): AsyncIterable<[k: matrixV1010.AccountId32, v: ([matrixV1010.Registration, (Bytes | undefined)] | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfEnjinV110  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV110.AccountId32): Promise<(enjinV110.Registration | undefined)>
+    getMany(block: Block, keys: enjinV110.AccountId32[]): Promise<(enjinV110.Registration | undefined)[]>
+    getKeys(block: Block): Promise<enjinV110.AccountId32[]>
+    getKeys(block: Block, key: enjinV110.AccountId32): Promise<enjinV110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV110.AccountId32): AsyncIterable<enjinV110.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV110.AccountId32, v: (enjinV110.Registration | undefined)][]>
+    getPairs(block: Block, key: enjinV110.AccountId32): Promise<[k: enjinV110.AccountId32, v: (enjinV110.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV110.AccountId32, v: (enjinV110.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV110.AccountId32): AsyncIterable<[k: enjinV110.AccountId32, v: (enjinV110.Registration | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfEnjinV1032  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1032.AccountId32): Promise<([enjinV1032.Registration, (Bytes | undefined)] | undefined)>
+    getMany(block: Block, keys: enjinV1032.AccountId32[]): Promise<([enjinV1032.Registration, (Bytes | undefined)] | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1032.AccountId32[]>
+    getKeys(block: Block, key: enjinV1032.AccountId32): Promise<enjinV1032.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1032.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1032.AccountId32): AsyncIterable<enjinV1032.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1032.AccountId32, v: ([enjinV1032.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairs(block: Block, key: enjinV1032.AccountId32): Promise<[k: enjinV1032.AccountId32, v: ([enjinV1032.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV1032.AccountId32, v: ([enjinV1032.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV1032.AccountId32): AsyncIterable<[k: enjinV1032.AccountId32, v: ([enjinV1032.Registration, (Bytes | undefined)] | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfV110  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v110.AccountId32): Promise<(v110.Registration | undefined)>
+    getMany(block: Block, keys: v110.AccountId32[]): Promise<(v110.Registration | undefined)[]>
+    getKeys(block: Block): Promise<v110.AccountId32[]>
+    getKeys(block: Block, key: v110.AccountId32): Promise<v110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v110.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v110.AccountId32): AsyncIterable<v110.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v110.AccountId32, v: (v110.Registration | undefined)][]>
+    getPairs(block: Block, key: v110.AccountId32): Promise<[k: v110.AccountId32, v: (v110.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v110.AccountId32, v: (v110.Registration | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v110.AccountId32): AsyncIterable<[k: v110.AccountId32, v: (v110.Registration | undefined)][]>
+}
+
+/**
+ *  Information that is pertinent to identify the entity behind an account. First item is the
+ *  registration, second is the account's primary username.
+ * 
+ *  TWOX-NOTE: OK ― `AccountId` is a secure hash.
+ */
+export interface IdentityOfV1030  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v1030.AccountId32): Promise<([v1030.Registration, (Bytes | undefined)] | undefined)>
+    getMany(block: Block, keys: v1030.AccountId32[]): Promise<([v1030.Registration, (Bytes | undefined)] | undefined)[]>
+    getKeys(block: Block): Promise<v1030.AccountId32[]>
+    getKeys(block: Block, key: v1030.AccountId32): Promise<v1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1030.AccountId32): AsyncIterable<v1030.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1030.AccountId32, v: ([v1030.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairs(block: Block, key: v1030.AccountId32): Promise<[k: v1030.AccountId32, v: ([v1030.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1030.AccountId32, v: ([v1030.Registration, (Bytes | undefined)] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1030.AccountId32): AsyncIterable<[k: v1030.AccountId32, v: ([v1030.Registration, (Bytes | undefined)] | undefined)][]>
 }
 
 export const superOf =  {

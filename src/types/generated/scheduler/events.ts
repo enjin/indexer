@@ -1,8 +1,13 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as enjinV100 from '../enjinV100'
+import * as v100 from '../v100'
+import * as enjinV101 from '../enjinV101'
+import * as v104 from '../v104'
+import * as v105 from '../v105'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 
 export const scheduled =  {
     name: 'Scheduler.Scheduled',
@@ -48,34 +53,89 @@ export const dispatched =  {
     /**
      * Dispatched some task.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Scheduler.Dispatched',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(() => sts.unit(), () => v500.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
      * Dispatched some task.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'Scheduler.Dispatched',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(() => sts.unit(), () => v602.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
      * Dispatched some task.
      */
-    v604: new EventType(
+    matrixV604: new EventType(
         'Scheduler.Dispatched',
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(() => sts.unit(), () => v604.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    enjinV100: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    enjinV101: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    v100: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(() => sts.unit(), () => v100.DispatchError),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    v104: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(() => sts.unit(), () => v104.DispatchError),
+        })
+    ),
+    /**
+     * Dispatched some task.
+     */
+    v105: new EventType(
+        'Scheduler.Dispatched',
+        sts.struct({
+            task: sts.tuple(() => [sts.number(), sts.number()]),
+            id: sts.option(() => sts.bytes()),
+            result: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }

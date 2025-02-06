@@ -1,8 +1,8 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
-import * as v602 from '../v602'
+import * as matrixV500 from '../matrixV500'
+import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 
 export const newMultisig =  {
     name: 'Multisig.NewMultisig',
@@ -53,40 +53,40 @@ export const multisigExecuted =  {
     /**
      * A multisig operation has been executed.
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'Multisig.MultisigExecuted',
         sts.struct({
-            approving: v500.AccountId32,
-            timepoint: v500.Timepoint,
-            multisig: v500.AccountId32,
+            approving: matrixV500.AccountId32,
+            timepoint: matrixV500.Timepoint,
+            multisig: matrixV500.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(() => sts.unit(), () => v500.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
      * A multisig operation has been executed.
      */
-    v602: new EventType(
+    matrixV602: new EventType(
         'Multisig.MultisigExecuted',
         sts.struct({
-            approving: v602.AccountId32,
-            timepoint: v602.Timepoint,
-            multisig: v602.AccountId32,
+            approving: matrixV602.AccountId32,
+            timepoint: matrixV602.Timepoint,
+            multisig: matrixV602.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(() => sts.unit(), () => v602.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
      * A multisig operation has been executed.
      */
-    v604: new EventType(
+    matrixV604: new EventType(
         'Multisig.MultisigExecuted',
         sts.struct({
-            approving: v604.AccountId32,
-            timepoint: v604.Timepoint,
-            multisig: v604.AccountId32,
+            approving: matrixV604.AccountId32,
+            timepoint: matrixV604.Timepoint,
+            multisig: matrixV604.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(() => sts.unit(), () => v604.DispatchError),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }

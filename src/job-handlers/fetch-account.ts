@@ -2,8 +2,8 @@ import Queue from 'bull'
 import { decodeAddress } from '@polkadot/util-crypto'
 import connection from '../connection'
 import { JobData } from '../jobs/fetch-account'
-import { getOrCreateAccount } from '../mappings/util/entities'
-import { fetchAccountsDetail } from '../mappings/util/marketplace'
+import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { fetchAccountsDetail } from 'matrixchain-indexer/common/util/marketplace'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null

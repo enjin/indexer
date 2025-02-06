@@ -4,7 +4,7 @@ import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
 
 export function isMainnet() {
-    return config.chainName === 'enjin-matrixchain'
+    return config.chainName === 'enjin-matrix'
 }
 export function isValidAddress(address: any) {
     try {

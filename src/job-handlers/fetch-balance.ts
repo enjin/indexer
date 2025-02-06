@@ -2,8 +2,8 @@ import Queue from 'bull'
 import { decodeAddress } from '@polkadot/util-crypto'
 import connection from '../connection'
 import { JobData } from '../jobs/fetch-account'
-import { getOrCreateAccount } from '../mappings/util/entities'
-import { fetchBalances, SystemAccount } from '../mappings/util/balance'
+import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
+import { fetchBalances, SystemAccount } from 'matrixchain-indexer/common/util/balance'
 import { Account } from '../model'
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {

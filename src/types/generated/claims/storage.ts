@@ -1,7 +1,10 @@
 import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as enjinV100 from '../enjinV100'
+import * as v101 from '../v101'
+import * as v102 from '../v102'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v604 from '../v604'
+import * as matrixV604 from '../matrixV604'
 
 export const claims =  {
     /**
@@ -12,11 +15,24 @@ export const claims =  {
      *  This stores approved claims. Maps an ethereum address to the amount it is eligible to make a
      *  claim for.
      */
-    v500: new StorageType('Claims.Claims', 'Optional', [v500.Account], sts.bigint()) as ClaimsV500,
+    matrixV500: new StorageType('Claims.Claims', 'Optional', [matrixV500.Account], sts.bigint()) as ClaimsMatrixV500,
     /**
      *  This stores claims. Maps an ethereum address to the vec of claim data.
      */
-    v604: new StorageType('Claims.Claims', 'Optional', [v604.H160], sts.array(() => v604.ClaimData)) as ClaimsV604,
+    matrixV604: new StorageType('Claims.Claims', 'Optional', [matrixV604.H160], sts.array(() => matrixV604.ClaimData)) as ClaimsMatrixV604,
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    enjinV100: new StorageType('Claims.Claims', 'Optional', [enjinV100.Account], sts.array(() => enjinV100.ClaimData)) as ClaimsEnjinV100,
+    /**
+     *  This stores approved claims. Maps an ethereum address to the amount it is eligible to make a
+     *  claim for.
+     */
+    v101: new StorageType('Claims.Claims', 'Optional', [v101.Account], sts.bigint()) as ClaimsV101,
+    /**
+     *  This stores claims. Maps an ethereum address to the vec of claim data.
+     */
+    v102: new StorageType('Claims.Claims', 'Optional', [v102.Account], sts.array(() => v102.ClaimData)) as ClaimsV102,
 }
 
 /**
@@ -40,35 +56,87 @@ export interface ClaimsMatrixEnjinV603  {
  *  This stores approved claims. Maps an ethereum address to the amount it is eligible to make a
  *  claim for.
  */
-export interface ClaimsV500  {
+export interface ClaimsMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v500.Account): Promise<(bigint | undefined)>
-    getMany(block: Block, keys: v500.Account[]): Promise<(bigint | undefined)[]>
-    getKeys(block: Block): Promise<v500.Account[]>
-    getKeys(block: Block, key: v500.Account): Promise<v500.Account[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v500.Account[]>
-    getKeysPaged(pageSize: number, block: Block, key: v500.Account): AsyncIterable<v500.Account[]>
-    getPairs(block: Block): Promise<[k: v500.Account, v: (bigint | undefined)][]>
-    getPairs(block: Block, key: v500.Account): Promise<[k: v500.Account, v: (bigint | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v500.Account, v: (bigint | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v500.Account): AsyncIterable<[k: v500.Account, v: (bigint | undefined)][]>
+    get(block: Block, key: matrixV500.Account): Promise<(bigint | undefined)>
+    getMany(block: Block, keys: matrixV500.Account[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<matrixV500.Account[]>
+    getKeys(block: Block, key: matrixV500.Account): Promise<matrixV500.Account[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV500.Account[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV500.Account): AsyncIterable<matrixV500.Account[]>
+    getPairs(block: Block): Promise<[k: matrixV500.Account, v: (bigint | undefined)][]>
+    getPairs(block: Block, key: matrixV500.Account): Promise<[k: matrixV500.Account, v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV500.Account, v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV500.Account): AsyncIterable<[k: matrixV500.Account, v: (bigint | undefined)][]>
 }
 
 /**
  *  This stores claims. Maps an ethereum address to the vec of claim data.
  */
-export interface ClaimsV604  {
+export interface ClaimsMatrixV604  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v604.H160): Promise<(v604.ClaimData[] | undefined)>
-    getMany(block: Block, keys: v604.H160[]): Promise<(v604.ClaimData[] | undefined)[]>
-    getKeys(block: Block): Promise<v604.H160[]>
-    getKeys(block: Block, key: v604.H160): Promise<v604.H160[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v604.H160[]>
-    getKeysPaged(pageSize: number, block: Block, key: v604.H160): AsyncIterable<v604.H160[]>
-    getPairs(block: Block): Promise<[k: v604.H160, v: (v604.ClaimData[] | undefined)][]>
-    getPairs(block: Block, key: v604.H160): Promise<[k: v604.H160, v: (v604.ClaimData[] | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v604.H160, v: (v604.ClaimData[] | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: v604.H160): AsyncIterable<[k: v604.H160, v: (v604.ClaimData[] | undefined)][]>
+    get(block: Block, key: matrixV604.H160): Promise<(matrixV604.ClaimData[] | undefined)>
+    getMany(block: Block, keys: matrixV604.H160[]): Promise<(matrixV604.ClaimData[] | undefined)[]>
+    getKeys(block: Block): Promise<matrixV604.H160[]>
+    getKeys(block: Block, key: matrixV604.H160): Promise<matrixV604.H160[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<matrixV604.H160[]>
+    getKeysPaged(pageSize: number, block: Block, key: matrixV604.H160): AsyncIterable<matrixV604.H160[]>
+    getPairs(block: Block): Promise<[k: matrixV604.H160, v: (matrixV604.ClaimData[] | undefined)][]>
+    getPairs(block: Block, key: matrixV604.H160): Promise<[k: matrixV604.H160, v: (matrixV604.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixV604.H160, v: (matrixV604.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: matrixV604.H160): AsyncIterable<[k: matrixV604.H160, v: (matrixV604.ClaimData[] | undefined)][]>
+}
+
+/**
+ *  This stores claims. Maps an ethereum address to the vec of claim data.
+ */
+export interface ClaimsEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV100.Account): Promise<(enjinV100.ClaimData[] | undefined)>
+    getMany(block: Block, keys: enjinV100.Account[]): Promise<(enjinV100.ClaimData[] | undefined)[]>
+    getKeys(block: Block): Promise<enjinV100.Account[]>
+    getKeys(block: Block, key: enjinV100.Account): Promise<enjinV100.Account[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV100.Account[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV100.Account): AsyncIterable<enjinV100.Account[]>
+    getPairs(block: Block): Promise<[k: enjinV100.Account, v: (enjinV100.ClaimData[] | undefined)][]>
+    getPairs(block: Block, key: enjinV100.Account): Promise<[k: enjinV100.Account, v: (enjinV100.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV100.Account, v: (enjinV100.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV100.Account): AsyncIterable<[k: enjinV100.Account, v: (enjinV100.ClaimData[] | undefined)][]>
+}
+
+/**
+ *  This stores approved claims. Maps an ethereum address to the amount it is eligible to make a
+ *  claim for.
+ */
+export interface ClaimsV101  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v101.Account): Promise<(bigint | undefined)>
+    getMany(block: Block, keys: v101.Account[]): Promise<(bigint | undefined)[]>
+    getKeys(block: Block): Promise<v101.Account[]>
+    getKeys(block: Block, key: v101.Account): Promise<v101.Account[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v101.Account[]>
+    getKeysPaged(pageSize: number, block: Block, key: v101.Account): AsyncIterable<v101.Account[]>
+    getPairs(block: Block): Promise<[k: v101.Account, v: (bigint | undefined)][]>
+    getPairs(block: Block, key: v101.Account): Promise<[k: v101.Account, v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v101.Account, v: (bigint | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v101.Account): AsyncIterable<[k: v101.Account, v: (bigint | undefined)][]>
+}
+
+/**
+ *  This stores claims. Maps an ethereum address to the vec of claim data.
+ */
+export interface ClaimsV102  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: v102.Account): Promise<(v102.ClaimData[] | undefined)>
+    getMany(block: Block, keys: v102.Account[]): Promise<(v102.ClaimData[] | undefined)[]>
+    getKeys(block: Block): Promise<v102.Account[]>
+    getKeys(block: Block, key: v102.Account): Promise<v102.Account[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v102.Account[]>
+    getKeysPaged(pageSize: number, block: Block, key: v102.Account): AsyncIterable<v102.Account[]>
+    getPairs(block: Block): Promise<[k: v102.Account, v: (v102.ClaimData[] | undefined)][]>
+    getPairs(block: Block, key: v102.Account): Promise<[k: v102.Account, v: (v102.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v102.Account, v: (v102.ClaimData[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v102.Account): AsyncIterable<[k: v102.Account, v: (v102.ClaimData[] | undefined)][]>
 }
 
 export const transactionHashLookup =  {
@@ -76,6 +144,10 @@ export const transactionHashLookup =  {
      *  This stores transaction hash. Is used to check if transaction hash is already present
      */
     matrixEnjinV603: new StorageType('Claims.TransactionHashLookup', 'Optional', [matrixEnjinV603.H256], sts.unit()) as TransactionHashLookupMatrixEnjinV603,
+    /**
+     *  This stores transaction hash. Is used to check if transaction hash is already present
+     */
+    enjinV100: new StorageType('Claims.TransactionHashLookup', 'Optional', [sts.tuple(() => [enjinV100.H256, sts.option(() => sts.number())])], sts.unit()) as TransactionHashLookupEnjinV100,
 }
 
 /**
@@ -93,6 +165,23 @@ export interface TransactionHashLookupMatrixEnjinV603  {
     getPairs(block: Block, key: matrixEnjinV603.H256): Promise<[k: matrixEnjinV603.H256, v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: matrixEnjinV603.H256, v: (null | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: matrixEnjinV603.H256): AsyncIterable<[k: matrixEnjinV603.H256, v: (null | undefined)][]>
+}
+
+/**
+ *  This stores transaction hash. Is used to check if transaction hash is already present
+ */
+export interface TransactionHashLookupEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: [enjinV100.H256, (number | undefined)]): Promise<(null | undefined)>
+    getMany(block: Block, keys: [enjinV100.H256, (number | undefined)][]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<[enjinV100.H256, (number | undefined)][]>
+    getKeys(block: Block, key: [enjinV100.H256, (number | undefined)]): Promise<[enjinV100.H256, (number | undefined)][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[enjinV100.H256, (number | undefined)][]>
+    getKeysPaged(pageSize: number, block: Block, key: [enjinV100.H256, (number | undefined)]): AsyncIterable<[enjinV100.H256, (number | undefined)][]>
+    getPairs(block: Block): Promise<[k: [enjinV100.H256, (number | undefined)], v: (null | undefined)][]>
+    getPairs(block: Block, key: [enjinV100.H256, (number | undefined)]): Promise<[k: [enjinV100.H256, (number | undefined)], v: (null | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [enjinV100.H256, (number | undefined)], v: (null | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: [enjinV100.H256, (number | undefined)]): AsyncIterable<[k: [enjinV100.H256, (number | undefined)], v: (null | undefined)][]>
 }
 
 export const totalUnclaimedAmount =  {
@@ -136,12 +225,17 @@ export const latestBlockNumber =  {
      *  Latest block numbers for Ethereum/Efinity for which requests claim has been made by the
      *  relayer.
      */
-    v500: new StorageType('Claims.LatestBlockNumber', 'Optional', [], v500.TrackedBlockNumbers) as LatestBlockNumberV500,
+    matrixV500: new StorageType('Claims.LatestBlockNumber', 'Optional', [], matrixV500.TrackedBlockNumbers) as LatestBlockNumberMatrixV500,
     /**
      *  Latest block numbers for Ethereum for which requests claim has been made by the
      *  relayer.
      */
-    v604: new StorageType('Claims.LatestBlockNumber', 'Optional', [], sts.number()) as LatestBlockNumberV604,
+    matrixV604: new StorageType('Claims.LatestBlockNumber', 'Optional', [], sts.number()) as LatestBlockNumberMatrixV604,
+    /**
+     *  Latest block numbers for Ethereum/Efinity for which requests claim has been made by the
+     *  relayer.
+     */
+    enjinV100: new StorageType('Claims.LatestBlockNumber', 'Optional', [], enjinV100.TrackedBlockNumbers) as LatestBlockNumberEnjinV100,
 }
 
 /**
@@ -157,18 +251,27 @@ export interface LatestBlockNumberMatrixEnjinV603  {
  *  Latest block numbers for Ethereum/Efinity for which requests claim has been made by the
  *  relayer.
  */
-export interface LatestBlockNumberV500  {
+export interface LatestBlockNumberMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.TrackedBlockNumbers | undefined)>
+    get(block: Block): Promise<(matrixV500.TrackedBlockNumbers | undefined)>
 }
 
 /**
  *  Latest block numbers for Ethereum for which requests claim has been made by the
  *  relayer.
  */
-export interface LatestBlockNumberV604  {
+export interface LatestBlockNumberMatrixV604  {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<(number | undefined)>
+}
+
+/**
+ *  Latest block numbers for Ethereum/Efinity for which requests claim has been made by the
+ *  relayer.
+ */
+export interface LatestBlockNumberEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(enjinV100.TrackedBlockNumbers | undefined)>
 }
 
 export const exchangeRate =  {
@@ -179,11 +282,19 @@ export const exchangeRate =  {
     /**
      *  Amount in ENJ equivalent to 1 EFI.
      */
-    v500: new StorageType('Claims.ExchangeRate', 'Optional', [], v500.FixedU128) as ExchangeRateV500,
+    matrixV500: new StorageType('Claims.ExchangeRate', 'Optional', [], matrixV500.FixedU128) as ExchangeRateMatrixV500,
     /**
      *  Amount in ENJ equivalent to 1 EFI.
      */
-    v604: new StorageType('Claims.ExchangeRate', 'Optional', [], v604.Perbill) as ExchangeRateV604,
+    matrixV604: new StorageType('Claims.ExchangeRate', 'Optional', [], matrixV604.Perbill) as ExchangeRateMatrixV604,
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    v101: new StorageType('Claims.ExchangeRate', 'Optional', [], v101.FixedU128) as ExchangeRateV101,
+    /**
+     *  Amount in ENJ equivalent to 1 EFI.
+     */
+    v102: new StorageType('Claims.ExchangeRate', 'Optional', [], v102.Perbill) as ExchangeRateV102,
 }
 
 /**
@@ -197,17 +308,33 @@ export interface ExchangeRateMatrixEnjinV603  {
 /**
  *  Amount in ENJ equivalent to 1 EFI.
  */
-export interface ExchangeRateV500  {
+export interface ExchangeRateMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.FixedU128 | undefined)>
+    get(block: Block): Promise<(matrixV500.FixedU128 | undefined)>
 }
 
 /**
  *  Amount in ENJ equivalent to 1 EFI.
  */
-export interface ExchangeRateV604  {
+export interface ExchangeRateMatrixV604  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v604.Perbill | undefined)>
+    get(block: Block): Promise<(matrixV604.Perbill | undefined)>
+}
+
+/**
+ *  Amount in ENJ equivalent to 1 EFI.
+ */
+export interface ExchangeRateV101  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(v101.FixedU128 | undefined)>
+}
+
+/**
+ *  Amount in ENJ equivalent to 1 EFI.
+ */
+export interface ExchangeRateV102  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(v102.Perbill | undefined)>
 }
 
 export const accountNonce =  {
@@ -240,47 +367,73 @@ export const total =  {
     /**
      *  This is the total amount for which claims have been approved and are not yet claimed.
      */
-    v500: new StorageType('Claims.Total', 'Default', [], sts.bigint()) as TotalV500,
+    matrixV500: new StorageType('Claims.Total', 'Default', [], sts.bigint()) as TotalMatrixV500,
 }
 
 /**
  *  This is the total amount for which claims have been approved and are not yet claimed.
  */
-export interface TotalV500  {
+export interface TotalMatrixV500  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
     get(block: Block): Promise<(bigint | undefined)>
 }
 
 export const pendingApprovals =  {
-    v500: new StorageType('Claims.PendingApprovals', 'Optional', [sts.tuple(() => [v500.H256, sts.option(() => sts.number())])], v500.TransactionData) as PendingApprovalsV500,
+    matrixV500: new StorageType('Claims.PendingApprovals', 'Optional', [sts.tuple(() => [matrixV500.H256, sts.option(() => sts.number())])], matrixV500.TransactionData) as PendingApprovalsMatrixV500,
 }
 
-export interface PendingApprovalsV500  {
+export interface PendingApprovalsMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: [v500.H256, (number | undefined)]): Promise<(v500.TransactionData | undefined)>
-    getMany(block: Block, keys: [v500.H256, (number | undefined)][]): Promise<(v500.TransactionData | undefined)[]>
-    getKeys(block: Block): Promise<[v500.H256, (number | undefined)][]>
-    getKeys(block: Block, key: [v500.H256, (number | undefined)]): Promise<[v500.H256, (number | undefined)][]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[v500.H256, (number | undefined)][]>
-    getKeysPaged(pageSize: number, block: Block, key: [v500.H256, (number | undefined)]): AsyncIterable<[v500.H256, (number | undefined)][]>
-    getPairs(block: Block): Promise<[k: [v500.H256, (number | undefined)], v: (v500.TransactionData | undefined)][]>
-    getPairs(block: Block, key: [v500.H256, (number | undefined)]): Promise<[k: [v500.H256, (number | undefined)], v: (v500.TransactionData | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [v500.H256, (number | undefined)], v: (v500.TransactionData | undefined)][]>
-    getPairsPaged(pageSize: number, block: Block, key: [v500.H256, (number | undefined)]): AsyncIterable<[k: [v500.H256, (number | undefined)], v: (v500.TransactionData | undefined)][]>
+    get(block: Block, key: [matrixV500.H256, (number | undefined)]): Promise<(matrixV500.TransactionData | undefined)>
+    getMany(block: Block, keys: [matrixV500.H256, (number | undefined)][]): Promise<(matrixV500.TransactionData | undefined)[]>
+    getKeys(block: Block): Promise<[matrixV500.H256, (number | undefined)][]>
+    getKeys(block: Block, key: [matrixV500.H256, (number | undefined)]): Promise<[matrixV500.H256, (number | undefined)][]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<[matrixV500.H256, (number | undefined)][]>
+    getKeysPaged(pageSize: number, block: Block, key: [matrixV500.H256, (number | undefined)]): AsyncIterable<[matrixV500.H256, (number | undefined)][]>
+    getPairs(block: Block): Promise<[k: [matrixV500.H256, (number | undefined)], v: (matrixV500.TransactionData | undefined)][]>
+    getPairs(block: Block, key: [matrixV500.H256, (number | undefined)]): Promise<[k: [matrixV500.H256, (number | undefined)], v: (matrixV500.TransactionData | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: [matrixV500.H256, (number | undefined)], v: (matrixV500.TransactionData | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: [matrixV500.H256, (number | undefined)]): AsyncIterable<[k: [matrixV500.H256, (number | undefined)], v: (matrixV500.TransactionData | undefined)][]>
 }
 
 export const approvedBlockNumber =  {
     /**
      *  Latest block number on Ethereum for which requested claims have been approved.
      */
-    v500: new StorageType('Claims.ApprovedBlockNumber', 'Optional', [], v500.TrackedBlockNumbers) as ApprovedBlockNumberV500,
+    matrixV500: new StorageType('Claims.ApprovedBlockNumber', 'Optional', [], matrixV500.TrackedBlockNumbers) as ApprovedBlockNumberMatrixV500,
 }
 
 /**
  *  Latest block number on Ethereum for which requested claims have been approved.
  */
-export interface ApprovedBlockNumberV500  {
+export interface ApprovedBlockNumberMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v500.TrackedBlockNumbers | undefined)>
+    get(block: Block): Promise<(matrixV500.TrackedBlockNumbers | undefined)>
+}
+
+export const earlyBirdRewardsLookup =  {
+    /**
+     *  EarlyBirdRewardsLookup
+     *  This stores early bird rewards of user
+     */
+    enjinV100: new StorageType('Claims.EarlyBirdRewardsLookup', 'Optional', [enjinV100.AccountId32], enjinV100.EarlyBirdRewardsData) as EarlyBirdRewardsLookupEnjinV100,
+}
+
+/**
+ *  EarlyBirdRewardsLookup
+ *  This stores early bird rewards of user
+ */
+export interface EarlyBirdRewardsLookupEnjinV100  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV100.AccountId32): Promise<(enjinV100.EarlyBirdRewardsData | undefined)>
+    getMany(block: Block, keys: enjinV100.AccountId32[]): Promise<(enjinV100.EarlyBirdRewardsData | undefined)[]>
+    getKeys(block: Block): Promise<enjinV100.AccountId32[]>
+    getKeys(block: Block, key: enjinV100.AccountId32): Promise<enjinV100.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV100.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV100.AccountId32): AsyncIterable<enjinV100.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV100.AccountId32, v: (enjinV100.EarlyBirdRewardsData | undefined)][]>
+    getPairs(block: Block, key: enjinV100.AccountId32): Promise<[k: enjinV100.AccountId32, v: (enjinV100.EarlyBirdRewardsData | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV100.AccountId32, v: (enjinV100.EarlyBirdRewardsData | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: enjinV100.AccountId32): AsyncIterable<[k: enjinV100.AccountId32, v: (enjinV100.EarlyBirdRewardsData | undefined)][]>
 }

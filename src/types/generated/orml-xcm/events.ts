@@ -1,7 +1,7 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
-import * as v500 from '../v500'
+import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
-import * as v1010 from '../v1010'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
 export const sent =  {
@@ -29,21 +29,21 @@ export const sent =  {
     /**
      * XCM message sent. \[to, message\]
      */
-    v500: new EventType(
+    matrixV500: new EventType(
         'OrmlXcm.Sent',
         sts.struct({
-            to: v500.V3MultiLocation,
-            message: sts.array(() => v500.V3Instruction),
+            to: matrixV500.V3MultiLocation,
+            message: sts.array(() => matrixV500.V3Instruction),
         })
     ),
     /**
      * XCM message sent. \[to, message\]
      */
-    v1010: new EventType(
+    matrixV1010: new EventType(
         'OrmlXcm.Sent',
         sts.struct({
-            to: v1010.V4Location,
-            message: sts.array(() => v1010.V4Instruction),
+            to: matrixV1010.V4Location,
+            message: sts.array(() => matrixV1010.V4Instruction),
         })
     ),
 }
