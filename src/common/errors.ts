@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/node'
-import { CallItem } from 'matrixchain-indexer/common/types/contexts'
+import { CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
 
 export class UnsupportedEventError extends Error {
-    constructor(name: string) {
+    constructor(event: EventItem) {
         super(`There is no relevant version for ${name}`)
     }
 }
