@@ -11,14 +11,6 @@ import {
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 
-function getEventData(event: EventItem) {
-    if (fuelTanks.fuelTankDestroyed.matrixEnjinV603.is(event)) {
-        return fuelTanks.fuelTankDestroyed.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(fuelTanks.fuelTankDestroyed.name)
-}
-
 export async function fuelTankDestroyed(
     ctx: CommonContext,
     block: BlockHeader,

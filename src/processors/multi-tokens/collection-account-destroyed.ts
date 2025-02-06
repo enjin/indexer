@@ -3,17 +3,6 @@ import { events } from '../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionAccountDestroyed.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionAccountDestroyed({
-            collectionId: data.collectionId,
-            account: data.accountId,
-        }),
-    })
-}
 
 export async function collectionAccountDestroyed(
     ctx: CommonContext,

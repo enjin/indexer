@@ -25,7 +25,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof poolSlashed>) {
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsPoolSlashed({
             pool: data.poolId.toString(),
-            amount: data.amount,
+            balance: 0n, // data.balance,
         }),
     })
 }

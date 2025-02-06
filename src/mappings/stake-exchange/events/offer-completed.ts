@@ -23,7 +23,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof offerCompleted>) {
         name: StakeExchangeOfferCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCompleted({
-            offer: data.offerId.toString(),
+            offerId: data.offerId,
         }),
     })
 }

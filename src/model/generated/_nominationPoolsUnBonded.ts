@@ -2,15 +2,15 @@ import assert from "assert"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 
-export class NominationPoolsUnBonded {
-    public readonly isTypeOf = 'NominationPoolsUnBonded'
+export class NominationPoolsUnbonded {
+    public readonly isTypeOf = 'NominationPoolsUnbonded'
     private _account!: string
     private _unbondingPoints!: bigint
     private _balance!: bigint
     private _pool!: string
     private _era!: number
 
-    constructor(props?: Partial<Omit<NominationPoolsUnBonded, 'toJSON'>>, json?: any) {
+    constructor(props?: Partial<Omit<NominationPoolsUnbonded, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
             this._account = marshal.string.fromJSON(json.account)

@@ -26,8 +26,8 @@ function getEvent(item: EventItem, data: ReturnType<typeof earlyBirdBonusPaid>) 
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsEarlyBirdBonusPaid({
             pool: data.poolId.toString(),
-            member: data.member,
-            bonusAmount: data.bonusAmount,
+            paymentId: 0, // data.paymentId,
+            totalAccounts: 0, // data.totalAccounts,
         }),
     })
 }

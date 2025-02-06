@@ -19,22 +19,7 @@ import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { safeString } from '../../common/tools'
 import { computeTraits } from '../../jobs/compute-traits'
 import { processMetadata } from '../../jobs/process-metadata'
-
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensAttributeSet.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensAttributeSet({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            key: safeString(hexToString(data.key)),
-            value: safeString(hexToString(data.value)),
-        }),
-    })
-}
+import * as mappings from './../../mappings'
 
 export async function attributeSet(
     ctx: CommonContext,

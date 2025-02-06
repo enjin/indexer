@@ -202,18 +202,6 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     throw new UnsupportedCallError(call)
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionCreated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionCreated({
-            collectionId: data.collectionId,
-            owner: data.owner,
-        }),
-    })
-}
-
 async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectionId: bigint) {
     if (storage.multiTokens.collections.v1010.is(block)) {
         const data = await storage.multiTokens.collections.v1010.get(block, collectionId)

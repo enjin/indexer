@@ -6,19 +6,6 @@ import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionTransferred.name,
-        collectionId: data.collectionId.toString(),
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionTransferred({
-            collectionId: data.collectionId,
-            owner: data.newOwner,
-        }),
-    })
-}
-
 export async function collectionTransferred(
     ctx: CommonContext,
     block: BlockHeader,

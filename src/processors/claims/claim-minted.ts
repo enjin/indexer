@@ -4,14 +4,6 @@ import { AccountClaimType, ClaimRequest, ClaimDetails, Event as EventModel } fro
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getTotalUnclaimedAmount } from './common'
 
-function getEventData(event: EventItem) {
-    if (claims.claimMinted.matrixEnjinV603.is(event)) {
-        return claims.claimMinted.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(claims.claimMinted.name)
-}
-
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = getEventData(item)
 

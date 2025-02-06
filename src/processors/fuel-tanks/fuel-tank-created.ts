@@ -19,14 +19,6 @@ import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { rulesToMap } from './common'
 import { safeJsonString } from '../../common/tools'
 
-function getEventData(event: EventItem) {
-    if (events.fuelTanks.fuelTankCreated.matrixEnjinV603.is(event)) {
-        return events.fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.fuelTanks.fuelTankCreated.name)
-}
-
 function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
         if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call)) {

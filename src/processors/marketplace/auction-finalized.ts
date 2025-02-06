@@ -17,45 +17,6 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.auctionFinalized.matrixEnjinV603.is(event)) {
-        return events.marketplace.auctionFinalized.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.marketplace.auctionFinalized.name)
-}
-
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing
-): [EventModel, AccountTokenEvent] | undefined {
-    const event = new EventModel({
-        id: item.id,
-        name: MarketplaceAuctionFinalized.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceAuctionFinalized({
-            listing: listing.id,
-            winningBid: data.winningBid ? `${listing.id}-${data.winningBid.bidder}-${data.winningBid.price}` : null,
-            protocolFee: data.protocolFee,
-            royalty: data.royalty,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token: listing.makeAssetId,
-            from: listing.seller,
-            to: data.winningBid?.bidder ? new Account({ id: data.winningBid.bidder }) : null,
-            event,
-        }),
-    ]
-}
-
 export async function auctionFinalized(
     ctx: CommonContext,
     block: BlockHeader,

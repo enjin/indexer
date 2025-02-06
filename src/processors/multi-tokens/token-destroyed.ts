@@ -21,20 +21,6 @@ import * as mappings from './../../mappings'
 import { computeTraits } from '../../jobs/compute-traits'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensTokenDestroyed.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensTokenDestroyed({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            caller: data.caller,
-        }),
-    })
-}
 
 export async function tokenDestroyed(
     ctx: CommonContext,

@@ -2,10 +2,11 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, MultiTokensThawed } from '@enjin/indexer/model'
 
 type ThawedEvent = {
     collectionId: bigint
-    freezeType: string
+    freezeType: any
     tokenId?: bigint
     collectionAccount?: string
     tokenAccount?: string
@@ -13,40 +14,20 @@ type ThawedEvent = {
 
 export function thawed(event: EventItem): ThawedEvent {
     return match(event)
-        .when(multiTokens.thawed.matrixEnjinV603.is, (e) => {
-            const { collectionId, freezeType } = multiTokens.thawed.matrixEnjinV603.decode(e)
-
-            return match(freezeType)
-                .with({ __kind: 'Collection' }, () => ({
-                    collectionId,
-                    freezeType: freezeType.__kind,
-                    tokenId: undefined,
-                    collectionAccount: undefined,
-                    tokenAccount: undefined,
-                }))
-                .with({ __kind: 'CollectionAccount' }, () => ({
-                    collectionId,
-                    freezeType: freezeType.__kind,
-                    collectionAccount: freezeType.value,
-                    tokenId: undefined,
-                    tokenAccount: undefined,
-                }))
-                .with({ __kind: 'Token' }, () => ({
-                    collectionId,
-                    freezeType: freezeType.__kind,
-                    tokenId: freezeType.tokenId,
-                    collectionAccount: undefined,
-                    tokenAccount: undefined,
-                }))
-                .otherwise(() => ({
-                    collectionId,
-                    freezeType: freezeType.__kind,
-                    tokenId: freezeType.tokenId,
-                    tokenAccount: freezeType.accountId,
-                    collectionAccount: undefined,
-                }))
-        })
+        .returnType<ThawedEvent>()
+        .when(multiTokens.thawed.matrixEnjinV603.is, multiTokens.thawed.matrixEnjinV603.decode)
         .otherwise(() => {
-            throw new UnsupportedEventError(multiTokens.thawed)
+            throw new UnsupportedEventError(event)
         })
+}
+
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+    return new EventModel({
+        id: item.id,
+        name: MultiTokensThawed.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensThawed(),
+    })
 }

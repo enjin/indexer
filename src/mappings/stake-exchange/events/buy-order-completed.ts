@@ -5,13 +5,12 @@ import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeBuyOrderCompleted } from '../../../model'
 
 type BuyOrderCompletedEvent = {
-    offerId: bigint
-    buyer: string
-    seller: string
-    poolId: bigint
-    points: bigint
+    who: string
+    tokenId: bigint
     amount: bigint
-    commission: bigint
+    rate: number | bigint
+    offerCreator?: string
+    offerId?: bigint
 }
 
 function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
@@ -36,13 +35,12 @@ function getEvent(item: EventItem, data: ReturnType<typeof buyOrderCompleted>, o
         name: StakeExchangeBuyOrderCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeBuyOrderCompleted({
-            buyer: data.buyer,
-            seller: data.seller,
-            pool: data.poolId.toString(),
-            points: data.points,
-            amount: data.amount,
-            commission: data.commission,
-            offer: offerId.toString(),
+            offerId: data.offerId,
+            account: data.who,
+            tokenId: data.tokenId,
+            amount: 0n, // data.amount
+            rate: 0n, //data.rate,
+            points: 0n, // data.points
         }),
     })
 }

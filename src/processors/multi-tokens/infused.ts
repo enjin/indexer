@@ -5,36 +5,6 @@ import { events } from '../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { UnsupportedEventError } from '../../common/errors'
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    token?: Token
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
-    const event = new EventModel({
-        id: item.id,
-        name: MultiTokensInfused.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensInfused({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            amount: data.amount,
-            accountId: data.accountId,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token,
-            from: new Account({ id: data.accountId }),
-            event,
-        }),
-    ]
-}
-
 export async function infused(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.(ctx, item)
     if (skipSave) return undefined

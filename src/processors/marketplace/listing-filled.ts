@@ -33,58 +33,6 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnsupportedEventError(events.marketplace.listingFilled.name)
 }
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing
-): [EventModel, AccountTokenEvent] | undefined {
-    let event: EventModel
-
-    event = new EventModel({
-        id: item.id,
-        name: MarketplaceListingFilled.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceListingFilled({
-            listing: listing.id,
-            buyer: data.buyer,
-            amountFilled: data.amountFilled,
-            amountRemaining: data.amountRemaining,
-            price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
-            protocolFee: data.protocolFee,
-            royalty: data.royalty,
-        }),
-    })
-
-    if (listing.data.listingType === ListingType.Offer) {
-        event = new EventModel({
-            id: item.id,
-            name: MarketplaceOfferSettled.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
-            data: new MarketplaceOfferSettled({
-                listing: listing.id,
-                buyer: data.buyer,
-                amount: data.amountFilled,
-                price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
-            }),
-        })
-    }
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token: new Token({ id: event.tokenId! }),
-            from: listing.seller,
-            to: new Account({ id: data.buyer }),
-            event,
-        }),
-    ]
-}
-
 export async function listingFilled(
     ctx: CommonContext,
     block: BlockHeader,

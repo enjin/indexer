@@ -10,38 +10,6 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { processMetadata } from '../../jobs/process-metadata'
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    token?: Token
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
-    const event = new EventModel({
-        id: item.id,
-        name: MultiTokensMinted.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensMinted({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            issuer: data.issuer,
-            recipient: data.recipient,
-            amount: data.amount,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token,
-            from: new Account({ id: data.issuer }),
-            to: new Account({ id: data.recipient }),
-            event,
-        }),
-    ]
-}
 
 export async function minted(
     ctx: CommonContext,

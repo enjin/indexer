@@ -17,19 +17,6 @@ import { DefaultRoyalty } from '../../types/generated/v500'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionMutated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: null,
-        data: new MultiTokensCollectionMutated({
-            collectionId: data.collectionId,
-        }),
-    })
-}
-
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
     return new MarketPolicy({

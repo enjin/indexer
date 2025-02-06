@@ -8,37 +8,6 @@ import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    token?: Token
-): [EventModel, AccountTokenEvent] | undefined | EventModel {
-    const event = new EventModel({
-        id: item.id,
-        name: MultiTokensBurned.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensBurned({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            token: `${data.collectionId}-${data.tokenId}`,
-            account: data.accountId,
-            amount: data.amount,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token,
-            from: new Account({ id: data.accountId }),
-            event,
-        }),
-    ]
-}
-
 export async function burned(
     ctx: CommonContext,
     block: BlockHeader,

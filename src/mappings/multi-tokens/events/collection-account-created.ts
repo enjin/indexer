@@ -2,6 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, MultiTokensCollectionAccountCreated } from '@enjin/indexer/model'
 
 type CollectionAccountCreatedEvent = {
     collectionId: bigint
@@ -18,4 +19,16 @@ export function collectionAccountCreated(event: EventItem): CollectionAccountCre
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+    return new EventModel({
+        id: item.id,
+        name: MultiTokensCollectionAccountCreated.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new MultiTokensCollectionAccountCreated({
+            collectionId: data.collectionId,
+            account: data.accountId,
+        }),
+    })
 }

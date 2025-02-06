@@ -2,6 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed } from '@enjin/indexer/model'
 
 type CollectionDestroyedEvent = {
     collectionId: bigint
@@ -17,4 +18,16 @@ export function collectionDestroyed(event: EventItem): CollectionDestroyedEvent 
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+    return new EventModel({
+        id: item.id,
+        name: MultiTokensCollectionDestroyed.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        data: new MultiTokensCollectionDestroyed({
+            collectionId: data.collectionId,
+            caller: data.caller,
+        }),
+    })
 }

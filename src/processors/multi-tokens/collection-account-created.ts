@@ -4,18 +4,6 @@ import { Collection, CollectionAccount, Event as EventModel, Extrinsic, MultiTok
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionAccountCreated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionAccountCreated({
-            collectionId: data.collectionId,
-            account: data.accountId,
-        }),
-    })
-}
-
 export async function collectionAccountCreated(
     ctx: CommonContext,
     block: BlockHeader,

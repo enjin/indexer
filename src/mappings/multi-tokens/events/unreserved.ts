@@ -8,15 +8,15 @@ type UnreservedEvent = {
     tokenId: bigint
     accountId: string
     amount: bigint
-    reserveId: any
+    reserveId?: any
 }
 
-export function unreserved(eventItem: EventItem): UnreservedEvent {
-    return match(eventItem)
+export function unreserved(event: EventItem): UnreservedEvent {
+    return match(event)
         .returnType<UnreservedEvent>()
-        .when(multiTokens.unreserved.matrixEnjinV603.is, () => multiTokens.unreserved.matrixEnjinV603.decode(eventItem))
-        .when(multiTokens.unreserved.v1050.is, () => multiTokens.unreserved.v1050.decode(eventItem))
+        .when(multiTokens.unreserved.matrixEnjinV603.is, () => multiTokens.unreserved.matrixEnjinV603.decode(event))
+        .when(multiTokens.unreserved.v1050.is, () => multiTokens.unreserved.v1050.decode(event))
         .otherwise(() => {
-            throw new UnsupportedEventError(eventItem)
+            throw new UnsupportedEventError(event)
         })
 }

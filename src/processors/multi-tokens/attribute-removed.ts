@@ -4,21 +4,7 @@ import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttri
 import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import { processMetadata } from '../../jobs/process-metadata'
 import { computeTraits } from '../../jobs/compute-traits'
-
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensAttributeRemoved.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensAttributeRemoved({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            key: data.key,
-        }),
-    })
-}
+import * as mappings from './../../mappings'
 
 export async function attributeRemoved(
     ctx: CommonContext,

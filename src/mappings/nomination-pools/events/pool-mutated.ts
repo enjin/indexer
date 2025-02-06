@@ -6,15 +6,8 @@ import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '../.
 import { hexToString } from '@polkadot/util'
 
 type PoolMutatedEvent = {
-    poolId: bigint
-    mutation: {
-        newCommission?: {
-            __kind: string
-            value?: number
-        }
-        capacity?: bigint
-        name?: string
-    }
+    poolId: number
+    mutation: any
 }
 
 function poolMutated(event: EventItem) {

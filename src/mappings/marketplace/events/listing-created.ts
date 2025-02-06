@@ -2,6 +2,18 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingType,
+    MarketplaceListingCreated,
+    MarketplaceOfferCreated,
+    Token,
+    TokenAccount,
+} from '@enjin/indexer/model'
 
 type ListingCreatedEvent = {
     listingId: string
@@ -25,4 +37,56 @@ export function listingCreated(event: EventItem): ListingCreatedEvent {
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+async function getEvent(
+    ctx: CommonContext,
+    item: EventItem,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
+    let event: EventModel
+
+    event = new EventModel({
+        id: item.id,
+        name: MarketplaceListingCreated.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: data.listing.makeAssetId.collectionId.toString(),
+        tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
+        data: new MarketplaceListingCreated({
+            listing: data.listingId.substring(2),
+        }),
+    })
+
+    if (data.listing.data.__kind === ListingType.Offer) {
+        event = new EventModel({
+            id: item.id,
+            name: MarketplaceOfferCreated.name,
+            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+            collectionId: data.listing.takeAssetId.collectionId.toString(),
+            tokenId: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}`,
+            data: new MarketplaceOfferCreated({
+                listing: data.listingId.substring(2),
+            }),
+        })
+    }
+
+    let to = null
+    if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
+        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
+        if (tokenOwner) {
+            to = tokenOwner.account
+        }
+    }
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.id,
+            token: new Token({ id: event.tokenId! }),
+            from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
+            to,
+            event,
+        }),
+    ]
 }

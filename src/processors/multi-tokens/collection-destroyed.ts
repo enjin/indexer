@@ -13,18 +13,6 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensCollectionDestroyed.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new MultiTokensCollectionDestroyed({
-            collectionId: data.collectionId,
-            caller: data.caller,
-        }),
-    })
-}
-
 export async function collectionDestroyed(
     ctx: CommonContext,
     block: BlockHeader,

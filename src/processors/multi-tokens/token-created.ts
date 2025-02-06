@@ -605,22 +605,6 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
     throw new UnsupportedEventError(call.name)
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensTokenCreated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensTokenCreated({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            issuer: data.issuer,
-            initialSupply: data.initialSupply,
-        }),
-    })
-}
-
 async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
     if (storage.multiTokens.tokens.matrixEnjinV1012.is(block)) {
         const data = await storage.multiTokens.tokens.matrixEnjinV1012.get(block, collectionId, tokenId)

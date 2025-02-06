@@ -25,29 +25,6 @@ function getEventData(event: EventItem) {
     throw new UnsupportedEventError(events.marketplace.listingRemovedUnderMinimum.name)
 }
 
-function getEvent(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
-    const event = new EventModel({
-        id: item.id,
-        name: MarketplaceListingRemovedUnderMinimum.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.makeAssetId.collection.id,
-        tokenId: listing.makeAssetId.id,
-        data: new MarketplaceListingRemovedUnderMinimum({
-            listing: listing.id,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token: new Token({ id: event.tokenId! }),
-            from: listing.seller,
-            event,
-        }),
-    ]
-}
-
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
     block: BlockHeader,

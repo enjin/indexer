@@ -2,6 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, MultiTokensAttributeRemoved } from '@enjin/indexer/model'
 
 type AttributeRemovedEvent = {
     collectionId: bigint
@@ -16,4 +17,19 @@ export function attributeRemoved(event: EventItem): AttributeRemovedEvent {
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+    return new EventModel({
+        id: item.id,
+        name: MultiTokensAttributeRemoved.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: data.collectionId.toString(),
+        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        data: new MultiTokensAttributeRemoved({
+            collectionId: data.collectionId,
+            tokenId: data.tokenId,
+            key: data.key,
+        }),
+    })
 }

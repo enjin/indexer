@@ -2,6 +2,14 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    MarketplaceAuctionFinalized,
+} from '@enjin/indexer/model'
 
 type AuctionFinalizedEvent = {
     listingId: string
@@ -17,4 +25,35 @@ export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
+}
+
+function getEvent(
+    item: EventItem,
+    data: ReturnType<typeof getEventData>,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
+    const event = new EventModel({
+        id: item.id,
+        name: MarketplaceAuctionFinalized.name,
+        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        collectionId: listing.makeAssetId.collection.id,
+        tokenId: listing.makeAssetId.id,
+        data: new MarketplaceAuctionFinalized({
+            listing: listing.id,
+            winningBid: data.winningBid ? `${listing.id}-${data.winningBid.bidder}-${data.winningBid.price}` : null,
+            protocolFee: data.protocolFee,
+            royalty: data.royalty,
+        }),
+    })
+
+    return [
+        event,
+        new AccountTokenEvent({
+            id: item.id,
+            token: listing.makeAssetId,
+            from: listing.seller,
+            to: data.winningBid?.bidder ? new Account({ id: data.winningBid.bidder }) : null,
+            event,
+        }),
+    ]
 }

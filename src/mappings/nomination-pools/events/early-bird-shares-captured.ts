@@ -9,17 +9,6 @@ type EarlyBirdSharesCapturedEvent = {
     totalAccounts: number
 }
 
-function getPoolShares(block: BlockHeader, poolId: number) {
-    return match(block)
-        .returnType<ReturnType<typeof storage.nominationPools.earlyBirdShares.enjinV1022.getPairs>>()
-        .when(storage.nominationPools.earlyBirdShares.enjinV1022.is, () =>
-            storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
-        )
-        .otherwise(() => {
-            throw new UnsupportedEventError(event)
-        })
-}
-
 function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent {
     return match(event)
         .returnType<EarlyBirdSharesCapturedEvent>()

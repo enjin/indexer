@@ -7,14 +7,6 @@ import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/commo
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { getTotalUnclaimedAmount } from './common'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (claims.claimed.matrixEnjinV603.is(event)) {
-        return claims.claimed.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(claims.claimed.name)
-}
-
 function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
     if (claimsStorage.delayClaimsPeriod.matrixEnjinV603.is(block)) {
         return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)

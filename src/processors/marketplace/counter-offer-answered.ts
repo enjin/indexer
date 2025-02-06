@@ -33,52 +33,6 @@ function getEventData(event: EventItem) {
     throw new UnsupportedEventError(events.marketplace.counterOfferAnswered.name)
 }
 
-function getEvent(
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing,
-    account: Account
-): [EventModel, AccountTokenEvent] | undefined {
-    let response: CounterOfferResponse
-
-    switch (data.response.__kind) {
-        case 'Accept':
-            response = new CounterOfferResponseAccept({ kind: CounterOfferResponseType.Accept })
-            break
-        case 'Counter':
-            response = new CounterOfferResponseCounter({ kind: CounterOfferResponseType.Counter, value: data.response.value })
-            break
-        case 'Reject':
-            response = new CounterOfferResponseReject({ kind: CounterOfferResponseType.Reject })
-            break
-        default:
-            throw new Error('Unknown offer response type')
-    }
-
-    const event = new EventModel({
-        id: item.id,
-        name: MarketplaceCounterOfferAnswered.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: listing.takeAssetId.collection.id,
-        tokenId: listing.takeAssetId.id,
-        data: new MarketplaceCounterOfferAnswered({
-            listing: listing.id,
-            creator: account.id,
-            response,
-        }),
-    })
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token: new Token({ id: listing.takeAssetId.id }),
-            from: account,
-            event,
-        }),
-    ]
-}
-
 export async function counterOfferAnswered(
     ctx: CommonContext,
     block: BlockHeader,

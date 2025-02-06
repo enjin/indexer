@@ -24,9 +24,9 @@ function getEvent(item: EventItem, data: ReturnType<typeof liquidityWithdrawn>) 
         name: StakeExchangeLiquidityWithdrawn.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeLiquidityWithdrawn({
+            offerId: data.offerId,
             account: data.who,
-            pool: data.poolId.toString(),
-            amount: data.amount,
+            amount: 0n, // data.amount
         }),
     })
 }

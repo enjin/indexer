@@ -48,58 +48,6 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     throw new UnsupportedEventError(events.marketplace.listingCreated.name)
 }
 
-async function getEvent(
-    ctx: CommonContext,
-    item: EventItem,
-    data: ReturnType<typeof getEventData>,
-    listing: Listing
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    let event: EventModel
-
-    event = new EventModel({
-        id: item.id,
-        name: MarketplaceListingCreated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.listing.makeAssetId.collectionId.toString(),
-        tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
-        data: new MarketplaceListingCreated({
-            listing: data.listingId.substring(2),
-        }),
-    })
-
-    if (data.listing.data.__kind === ListingType.Offer) {
-        event = new EventModel({
-            id: item.id,
-            name: MarketplaceOfferCreated.name,
-            extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-            collectionId: data.listing.takeAssetId.collectionId.toString(),
-            tokenId: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}`,
-            data: new MarketplaceOfferCreated({
-                listing: data.listingId.substring(2),
-            }),
-        })
-    }
-
-    let to = null
-    if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
-        if (tokenOwner) {
-            to = tokenOwner.account
-        }
-    }
-
-    return [
-        event,
-        new AccountTokenEvent({
-            id: item.id,
-            token: new Token({ id: event.tokenId! }),
-            from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
-            to,
-            event,
-        }),
-    ]
-}
-
 export async function listingCreated(
     ctx: CommonContext,
     block: BlockHeader,

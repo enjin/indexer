@@ -26,10 +26,11 @@ function getEvent(item: EventItem, data: ReturnType<typeof withdrawn>) {
         name: NominationPoolsWithdrawn.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new NominationPoolsWithdrawn({
+            account: data.member,
+            balance: 0n, // data.balance,
+            points: 0n, // data.points,
+            numSlashingSpans: 0, // data.numSlashingSpans,
             pool: data.poolId.toString(),
-            member: data.member,
-            balance: data.balance,
-            points: data.points,
         }),
     })
 }

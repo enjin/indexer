@@ -6,22 +6,6 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensUnapproved.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
-        data: new MultiTokensUnapproved({
-            collectionId: data.collectionId,
-            tokenId: data.tokenId,
-            owner: data.owner,
-            operator: data.operator,
-        }),
-    })
-}
-
 export async function unapproved(
     ctx: CommonContext,
     block: BlockHeader,

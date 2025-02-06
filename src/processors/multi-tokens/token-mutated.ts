@@ -38,17 +38,6 @@ async function getBehavior(
     })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
-    return new EventModel({
-        id: item.id,
-        name: MultiTokensTokenMutated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        collectionId: data.collectionId.toString(),
-        tokenId: `${data.collectionId}-${data.tokenId}`,
-        data: new MultiTokensTokenMutated(),
-    })
-}
-
 export async function tokenMutated(
     ctx: CommonContext,
     block: BlockHeader,
