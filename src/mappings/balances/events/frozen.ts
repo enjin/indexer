@@ -8,7 +8,7 @@ type FrozenEvent = {
     amount: bigint
 }
 
-function getFrozenAccount(event: EventItem) {
+export function frozen(event: EventItem) {
     return match(event)
         .returnType<FrozenEvent>()
         .when(balances.frozen.matrixEnjinV603.is, () => balances.frozen.matrixEnjinV603.decode(event))

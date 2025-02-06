@@ -7,7 +7,7 @@ type SomeOfflineEvent = {
     offline: any
 }
 
-function getEventData(event: EventItem) {
+export function someOffline(event: EventItem) {
     return match(event)
         .returnType<SomeOfflineEvent>()
         .when(imOnline.someOffline.enjinV100.is, () => imOnline.someOffline.enjinV100.decode(event))

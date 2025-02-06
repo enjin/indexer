@@ -7,7 +7,7 @@ type ListingCancelledEvent = {
     listingId: string
 }
 
-function getEventData(event: EventItem) {
+export function listingCancelled(event: EventItem) {
     return match(event)
         .returnType<ListingCancelledEvent>()
         .when(marketplace.listingCancelled.matrixEnjinV603.is, marketplace.listingCancelled.matrixEnjinV603.decode)

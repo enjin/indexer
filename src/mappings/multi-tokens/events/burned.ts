@@ -10,7 +10,7 @@ type BurnedEvent = {
     amount: bigint
 }
 
-function burned(event: EventItem) {
+export function burned(event: EventItem) {
     return match(event)
         .returnType<BurnedEvent>()
         .when(multiTokens.burned.matrixEnjinV603.is, multiTokens.burned.matrixEnjinV603.decode)

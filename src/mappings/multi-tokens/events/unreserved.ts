@@ -11,7 +11,7 @@ type UnreservedEvent = {
     reserveId: any
 }
 
-function unreserved(eventItem: EventItem) {
+export function unreserved(eventItem: EventItem) {
     return match(eventItem)
         .returnType<UnreservedEvent>()
         .when(multiTokens.unreserved.matrixEnjinV603.is, () => multiTokens.unreserved.matrixEnjinV603.decode(eventItem))

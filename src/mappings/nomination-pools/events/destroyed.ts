@@ -8,7 +8,7 @@ type DestroyedEvent = {
     poolId: number
 }
 
-function getEventData(event: EventItem) {
+export function destroyed(event: EventItem) {
     return match(event)
         .returnType<DestroyedEvent>()
         .when(nominationPools.destroyed.enjinV100.is, () => nominationPools.destroyed.enjinV100.decode(event))
@@ -17,7 +17,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function getEvent(item: EventItem, data: ReturnType<typeof destroyed>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsDestroyed.name,

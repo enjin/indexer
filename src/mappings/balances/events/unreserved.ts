@@ -8,7 +8,7 @@ type UnreservedEvent = {
     amount: bigint
 }
 
-function getUnreservedAccount(event: EventItem) {
+export function unreserved(event: EventItem) {
     return match(event)
         .returnType<UnreservedEvent>()
         .when(balances.unreserved.matrixEnjinV603.is, () => balances.unreserved.matrixEnjinV603.decode(event))

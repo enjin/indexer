@@ -11,7 +11,7 @@ type WithdrawnEvent = {
     points: bigint
 }
 
-function getEventData(event: EventItem) {
+export function withdrawn(event: EventItem) {
     return match(event)
         .returnType<WithdrawnEvent>()
         .when(nominationPools.withdrawn.enjinV100.is, () => nominationPools.withdrawn.enjinV100.decode(event))
@@ -20,7 +20,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof withdrawn>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,

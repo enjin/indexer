@@ -8,7 +8,7 @@ type LockedEvent = {
     amount: bigint
 }
 
-function getLockedAccount(event: EventItem) {
+export function locked(event: EventItem) {
     return match(event)
         .returnType<LockedEvent>()
         .when(balances.locked.matrixEnjinV603.is, () => balances.locked.matrixEnjinV603.decode(event))

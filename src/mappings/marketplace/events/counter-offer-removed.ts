@@ -8,7 +8,7 @@ type CounterOfferRemovedEvent = {
     creator: string
 }
 
-function getEventData(event: EventItem) {
+export function counterOfferRemoved(event: EventItem) {
     return match(event)
         .returnType<CounterOfferRemovedEvent>()
         .when(marketplace.counterOfferRemoved.matrixEnjinV1012.is, marketplace.counterOfferRemoved.matrixEnjinV1012.decode)

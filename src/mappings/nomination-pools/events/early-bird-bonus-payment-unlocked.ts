@@ -8,7 +8,7 @@ type EarlyBirdBonusPaymentUnlockedEvent = {
     nextPaymentBlock: number
 }
 
-function getEventData(event: EventItem) {
+export function earlyBirdBonusPaymentUnlocked(event: EventItem) {
     return match(event)
         .returnType<EarlyBirdBonusPaymentUnlockedEvent>()
         .when(nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.is, () =>

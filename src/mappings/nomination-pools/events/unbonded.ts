@@ -12,7 +12,7 @@ type UnbondedEvent = {
     era: number
 }
 
-function getEventData(event: EventItem) {
+export function unbonded(event: EventItem) {
     return match(event)
         .returnType<UnbondedEvent>()
         .when(nominationPools.unbonded.enjinV100.is, () => nominationPools.unbonded.enjinV100.decode(event))
@@ -21,7 +21,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof unbonded>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,

@@ -8,7 +8,7 @@ type ReservedEvent = {
     amount: bigint
 }
 
-function getReservedAccount(event: EventItem) {
+export function reserved(event: EventItem) {
     return match(event)
         .returnType<ReservedEvent>()
         .when(balances.reserved.matrixEnjinV603.is, () => balances.reserved.matrixEnjinV603.decode(event))

@@ -10,7 +10,7 @@ type BondedEvent = {
     bonded: bigint
 }
 
-function getEventData(event: EventItem) {
+export function bonded(event: EventItem) {
     return match(event)
         .returnType<BondedEvent>()
         .when(nominationPools.bonded.enjinV101.is, () => nominationPools.bonded.enjinV101.decode(event))
@@ -22,7 +22,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof bonded>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsBonded.name,

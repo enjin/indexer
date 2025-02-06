@@ -7,7 +7,7 @@ type ExchangeRateSetEvent = {
     exchangeRate: number
 }
 
-function getEventData(event: EventItem) {
+export function exchangeRateSet(event: EventItem) {
     return match(event)
         .returnType<ExchangeRateSetEvent>()
         .when(claims.exchangeRateSet.matrixEnjinV603.is, () => claims.exchangeRateSet.matrixEnjinV603.decode(event))

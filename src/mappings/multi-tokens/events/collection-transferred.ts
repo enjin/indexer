@@ -8,7 +8,7 @@ type CollectionTransferredEvent = {
     newOwner: string
 }
 
-function collectionTransferred(event: EventItem) {
+export function collectionTransferred(event: EventItem) {
     return match(event)
         .returnType<CollectionTransferredEvent>()
         .when(multiTokens.collectionTransferred.matrixEnjinV1004.is, () =>

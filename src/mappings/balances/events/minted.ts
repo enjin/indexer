@@ -8,7 +8,7 @@ type MintedEvent = {
     amount: bigint
 }
 
-function getMintedAccount(event: EventItem) {
+export function minted(event: EventItem) {
     return match(event)
         .returnType<MintedEvent>()
         .when(balances.minted.matrixEnjinV603.is, () => balances.minted.matrixEnjinV603.decode(event))

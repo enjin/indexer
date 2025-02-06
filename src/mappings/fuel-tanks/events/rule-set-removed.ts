@@ -3,7 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 
-function getEventData(event: EventItem) {
+export function ruleSetRemoved(event: EventItem) {
     return match(event)
         .when(fuelTanks.ruleSetRemoved.matrixEnjinV603.is, () => fuelTanks.ruleSetRemoved.matrixEnjinV603.decode(event))
         .otherwise(() => {

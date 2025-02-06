@@ -8,7 +8,7 @@ type DepositEvent = {
     amount: bigint
 }
 
-function getDepositAccount(event: EventItem) {
+export function deposit(event: EventItem) {
     return match(event)
         .returnType<DepositEvent>()
         .when(balances.deposit.matrixEnjinV603.is, () => balances.deposit.matrixEnjinV603.decode(event))

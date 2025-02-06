@@ -9,7 +9,7 @@ type TransferEvent = {
     amount: bigint
 }
 
-function getEventData(event: EventItem) {
+export function eventData(event: EventItem) {
     return match(event)
         .returnType<TransferEvent>()
         .when(balances.transfer.matrixEnjinV603.is, () => balances.transfer.matrixEnjinV603.decode(event))

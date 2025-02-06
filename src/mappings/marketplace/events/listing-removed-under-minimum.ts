@@ -7,7 +7,7 @@ type ListingRemovedUnderMinimumEvent = {
     listingId: string
 }
 
-function getEventData(event: EventItem) {
+export function listingRemovedUnderMinimum(event: EventItem) {
     return match(event)
         .returnType<ListingRemovedUnderMinimumEvent>()
         .when(

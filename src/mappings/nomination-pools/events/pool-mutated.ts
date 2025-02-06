@@ -17,7 +17,7 @@ type PoolMutatedEvent = {
     }
 }
 
-function getEventData(event: EventItem) {
+function poolMutated(event: EventItem) {
     return match(event)
         .returnType<PoolMutatedEvent>()
         .when(nominationPools.poolMutated.enjinV1023.is, () => nominationPools.poolMutated.enjinV1023.decode(event))
@@ -32,7 +32,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof poolMutated>) {
     const mutation: any = {}
     if (data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
         mutation.newCommission = data.mutation.newCommission.value

@@ -9,7 +9,7 @@ type NominatedEvent = {
     validators: any
 }
 
-function getEventData(event: EventItem) {
+export function nominated(event: EventItem) {
     return match(event)
         .returnType<NominatedEvent>()
         .when(nominationPools.nominated.enjinV101.is, () => nominationPools.nominated.enjinV101.decode(event))
@@ -18,7 +18,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function getEvent(item: EventItem, data: ReturnType<typeof nominated>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsNominated.name,

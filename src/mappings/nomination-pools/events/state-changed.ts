@@ -8,7 +8,7 @@ type StateChangedEvent = {
     newState: any
 }
 
-function getEventData(event: EventItem) {
+function stateChanged(event: EventItem) {
     return match(event)
         .returnType<StateChangedEvent>()
         .when(nominationPools.stateChanged.enjinV100.is, () => nominationPools.stateChanged.enjinV100.decode(event))

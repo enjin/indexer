@@ -11,7 +11,7 @@ type RewardPaidEvent = {
     bonus: bigint
 }
 
-function getEventData(event: EventItem) {
+export function rewardPaid(event: EventItem) {
     return match(event)
         .returnType<RewardPaidEvent>()
         .when(nominationPools.rewardPaid.enjinV100.is, () => nominationPools.rewardPaid.enjinV100.decode(event))

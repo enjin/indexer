@@ -12,7 +12,7 @@ type ApprovedEvent = {
     expiration?: number | undefined
 }
 
-function approved(event: EventItem) {
+export function approved(event: EventItem): ApprovedEvent {
     return match(event)
         .returnType<ApprovedEvent>()
         .when(multiTokens.approved.matrixEnjinV603.is, multiTokens.approved.matrixEnjinV603.decode)

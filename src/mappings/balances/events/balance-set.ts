@@ -8,7 +8,7 @@ type BalanceSetEvent = {
     free: bigint
 }
 
-function getBalanceSetAccount(event: EventItem) {
+export function balanceSet(event: EventItem) {
     return match(event)
         .returnType<BalanceSetEvent>()
         .when(balances.balanceSet.matrixEnjinV603.is, () => balances.balanceSet.matrixEnjinV603.decode(event))

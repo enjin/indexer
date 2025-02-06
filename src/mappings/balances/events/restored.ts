@@ -8,7 +8,7 @@ type RestoredEvent = {
     amount: bigint
 }
 
-function getRestoredAccount(event: EventItem) {
+export function restored(event: EventItem) {
     return match(event)
         .returnType<RestoredEvent>()
         .when(balances.restored.matrixEnjinV603.is, () => balances.restored.matrixEnjinV603.decode(event))

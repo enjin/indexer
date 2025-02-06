@@ -9,7 +9,7 @@ type ReservedEvent = {
     amount: bigint
 }
 
-function reserved(event: EventItem) {
+export function reserved(event: EventItem) {
     return match(event)
         .returnType<ReservedEvent>()
         .when(multiTokens.reserved.matrixEnjinV603.is, () => multiTokens.reserved.matrixEnjinV603.decode(event))

@@ -10,7 +10,7 @@ type AuctionFinalizedEvent = {
     royalty: bigint
 }
 
-function getEventData(event: EventItem) {
+export function auctionFinalized(event: EventItem) {
     return match(event)
         .returnType<AuctionFinalizedEvent>()
         .when(marketplace.auctionFinalized.matrixEnjinV603.is, marketplace.auctionFinalized.matrixEnjinV603.decode)

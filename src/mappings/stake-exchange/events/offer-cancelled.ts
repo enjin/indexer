@@ -8,7 +8,7 @@ type OfferCancelledEvent = {
     offerId: bigint
 }
 
-function getEventData(event: EventItem) {
+function offerCancelled(event: EventItem) {
     return match(event)
         .returnType<OfferCancelledEvent>()
         .when(stakeExchange.offerCancelled.enjinV100.is, () => stakeExchange.offerCancelled.enjinV100.decode(event))
@@ -17,7 +17,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof offerCancelled>) {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCancelled.name,

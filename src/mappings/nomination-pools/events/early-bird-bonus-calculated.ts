@@ -7,7 +7,7 @@ type EarlyBirdBonusCalculatedEvent = {
     totalAmount: bigint
 }
 
-function getEventData(event: EventItem) {
+export function earlyBirdBonusCalculated(event: EventItem) {
     return match(event)
         .returnType<EarlyBirdBonusCalculatedEvent>()
         .when(nominationPools.earlyBirdBonusCalculated.enjinV1021.is, () =>

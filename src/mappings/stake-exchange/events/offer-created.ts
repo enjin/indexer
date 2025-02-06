@@ -13,7 +13,7 @@ type OfferCreatedEvent = {
     }
 }
 
-function getEventData(event: EventItem) {
+function offerCreated(event: EventItem) {
     return match(event)
         .returnType<OfferCreatedEvent>()
         .when(stakeExchange.offerCreated.enjinV1023.is, () => stakeExchange.offerCreated.enjinV1023.decode(event))
@@ -30,7 +30,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>, rewardRateAsFixedu128: bigint) {
+function getEvent(item: EventItem, data: ReturnType<typeof offerCreated>, rewardRateAsFixedu128: bigint) {
     const rate = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)
     return new EventModel({
         id: item.id,

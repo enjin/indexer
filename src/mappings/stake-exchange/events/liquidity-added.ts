@@ -9,7 +9,7 @@ type LiquidityAddedEvent = {
     offerId: bigint
 }
 
-function getEventData(event: EventItem) {
+function liquidityAdded(event: EventItem) {
     return match(event)
         .returnType<LiquidityAddedEvent>()
         .when(stakeExchange.liquidityAdded.enjinV100.is, () => stakeExchange.liquidityAdded.enjinV100.decode(event))
@@ -18,7 +18,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof liquidityAdded>) {
     return new EventModel({
         id: item.id,
         name: StakeExchangeLiquidityAdded.name,

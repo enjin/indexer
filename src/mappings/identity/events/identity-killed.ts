@@ -8,7 +8,7 @@ type IdentityKilledEvent = {
     deposit: bigint
 }
 
-function getEventData(event: EventItem) {
+export function identityKilled(event: EventItem) {
     return match(event)
         .returnType<IdentityKilledEvent>()
         .when(identity.identityKilled.matrixEnjinV1000.is, () => identity.identityKilled.matrixEnjinV1000.decode(event))

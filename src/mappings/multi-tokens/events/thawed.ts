@@ -11,7 +11,7 @@ type ThawedEvent = {
     tokenAccount?: string
 }
 
-function thawed(event: EventItem) {
+export function thawed(event: EventItem) {
     return match(event)
         .returnType<ThawedEvent>()
         .when(multiTokens.thawed.matrixEnjinV603.is, (e) => {

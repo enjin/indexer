@@ -12,7 +12,7 @@ type EraRewardsProcessedEvent = {
     reinvested: bigint
 }
 
-function getEventData(event: EventItem) {
+function eraRewardsProcessed(event: EventItem) {
     return match(event)
         .returnType<EraRewardsProcessedEvent>()
         .when(nominationPools.eraRewardsProcessed.enjinV101.is, () => nominationPools.eraRewardsProcessed.enjinV101.decode(event))
@@ -24,7 +24,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>, rate: bigint = 0n) {
+function getEvent(item: EventItem, data: ReturnType<typeof eraRewardsProcessed>, rate: bigint = 0n) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

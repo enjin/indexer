@@ -8,7 +8,7 @@ type CollectionMutatedEvent = {
     mutation: any
 }
 
-function collectionMutated(event: EventItem) {
+export function collectionMutated(event: EventItem) {
     return match(event)
         .returnType<CollectionMutatedEvent>()
         .when(multiTokens.collectionMutated.matrixEnjinV603.is, () => multiTokens.collectionMutated.matrixEnjinV603.decode(event))

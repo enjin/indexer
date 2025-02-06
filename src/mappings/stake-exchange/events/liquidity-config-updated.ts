@@ -8,7 +8,7 @@ type LiquidityConfigUpdatedEvent = {
     config: any
 }
 
-function getEventData(event: EventItem) {
+function liquidityConfigUpdated(event: EventItem) {
     return match(event)
         .returnType<LiquidityConfigUpdatedEvent>()
         .when(stakeExchange.liquidityConfigUpdated.enjinV100.is, () =>

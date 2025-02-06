@@ -9,7 +9,7 @@ type TokenDestroyedEvent = {
     caller: string
 }
 
-function tokenDestroyed(event: EventItem) {
+export function tokenDestroyed(event: EventItem) {
     return match(event)
         .returnType<TokenDestroyedEvent>()
         .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, () => multiTokens.tokenDestroyed.matrixEnjinV603.decode(event))

@@ -13,7 +13,7 @@ type BuyOrderCompletedEvent = {
     commission: bigint
 }
 
-function getEventData(event: EventItem) {
+function buyOrderCompleted(event: EventItem) {
     return match(event)
         .returnType<BuyOrderCompletedEvent>()
         .when(stakeExchange.buyOrderCompleted.enjinV1033.is, () => stakeExchange.buyOrderCompleted.enjinV1033.decode(event))
@@ -29,7 +29,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>, offerId: bigint) {
+function getEvent(item: EventItem, data: ReturnType<typeof buyOrderCompleted>, offerId: bigint) {
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,

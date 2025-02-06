@@ -3,7 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 
-function getEventData(event: EventItem) {
+export function accountAdded(event: EventItem) {
     return match(event)
         .when(fuelTanks.accountAdded.matrixEnjinV1000.is, () => fuelTanks.accountAdded.matrixEnjinV1000.decode(event))
         .when(fuelTanks.accountAdded.matrixEnjinV603.is, () => fuelTanks.accountAdded.matrixEnjinV603.decode(event))

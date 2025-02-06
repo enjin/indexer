@@ -9,7 +9,7 @@ type ClaimedCollectionsEvent = {
     collectionIds: any
 }
 
-function claimedCollections(event: EventItem) {
+export function claimedCollections(event: EventItem) {
     return match(event)
         .returnType<ClaimedCollectionsEvent>()
         .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)

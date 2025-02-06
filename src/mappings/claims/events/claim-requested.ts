@@ -11,7 +11,7 @@ type ClaimRequestedEvent = {
     amountClaimable: bigint
 }
 
-function getEventData(event: EventItem) {
+export function claimRequested(event: EventItem) {
     return match(event)
         .returnType<ClaimRequestedEvent>()
         .when(claims.claimRequested.matrixEnjinV603.is, () => claims.claimRequested.matrixEnjinV603.decode(event))

@@ -10,7 +10,7 @@ type EarlyBirdBonusPaidEvent = {
     totalAccounts: number
 }
 
-function getEventData(event: EventItem) {
+function earlyBirdBonusPaid(event: EventItem) {
     return match(event)
         .returnType<EarlyBirdBonusPaidEvent>()
         .when(nominationPools.earlyBirdBonusPaid.enjinV1023.is, () => nominationPools.earlyBirdBonusPaid.enjinV1023.decode(event))
@@ -19,7 +19,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof earlyBirdBonusPaid>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdBonusPaid.name,

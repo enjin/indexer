@@ -12,7 +12,7 @@ type ListingFilledEvent = {
     royalty: bigint
 }
 
-function getEventData(event: EventItem) {
+export function listingFilled(event: EventItem) {
     return match(event)
         .returnType<ListingFilledEvent>()
         .when(marketplace.listingFilled.matrixEnjinV1012.is, marketplace.listingFilled.matrixEnjinV1012.decode)

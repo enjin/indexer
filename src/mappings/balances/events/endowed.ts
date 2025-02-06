@@ -8,7 +8,7 @@ type EndowedEvent = {
     freeBalance: bigint
 }
 
-function getEndowedAccount(event: EventItem) {
+export function endowed(event: EventItem) {
     return match(event)
         .returnType<EndowedEvent>()
         .when(balances.endowed.matrixEnjinV603.is, () => balances.endowed.matrixEnjinV603.decode(event))

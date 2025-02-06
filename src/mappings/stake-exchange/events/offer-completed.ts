@@ -8,7 +8,7 @@ type OfferCompletedEvent = {
     offerId: bigint
 }
 
-function getEventData(event: EventItem) {
+function offerCompleted(event: EventItem) {
     return match(event)
         .returnType<OfferCompletedEvent>()
         .when(stakeExchange.offerCompleted.enjinV110.is, () => stakeExchange.offerCompleted.enjinV110.decode(event))
@@ -17,7 +17,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof offerCompleted>) {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCompleted.name,

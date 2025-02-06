@@ -10,7 +10,7 @@ type CreatedEvent = {
     capacity: bigint
 }
 
-function getEventData(event: EventItem) {
+export function created(event: EventItem) {
     return match(event)
         .returnType<CreatedEvent>()
         .when(nominationPools.created.enjinV100.is, () => nominationPools.created.enjinV100.decode(event))
@@ -21,7 +21,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+export function getEvent(item: EventItem, data: ReturnType<typeof created>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,

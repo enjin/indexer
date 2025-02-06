@@ -10,7 +10,7 @@ type UnapprovedEvent = {
     operator: string
 }
 
-function unapproved(event: EventItem) {
+export function unapproved(event: EventItem) {
     return match(event)
         .returnType<UnapprovedEvent>()
         .when(multiTokens.unapproved.matrixEnjinV603.is, () => multiTokens.unapproved.matrixEnjinV603.decode(event))

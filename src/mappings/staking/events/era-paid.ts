@@ -9,7 +9,7 @@ type EraPaidEvent = {
     remainder: bigint
 }
 
-function getEventData(event: EventItem) {
+export function eraPaid(event: EventItem) {
     return match(event)
         .returnType<EraPaidEvent>()
         .when(staking.eraPaid.enjinV100.is, () => staking.eraPaid.enjinV100.decode(event))

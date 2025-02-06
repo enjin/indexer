@@ -2,7 +2,7 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 
-function getEventData(event: EventItem) {
+export function fuelTankCreated(event: EventItem) {
     if (fuelTanks.fuelTankCreated.matrixEnjinV603.is(event)) {
         return fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event)
     }

@@ -11,7 +11,7 @@ type MintedEvent = {
     amount: bigint
 }
 
-function minted(event: EventItem) {
+export function minted(event: EventItem) {
     return match(event)
         .returnType<MintedEvent>()
         .when(multiTokens.minted.matrixEnjinV603.is, (e) => {

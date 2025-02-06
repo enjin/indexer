@@ -12,7 +12,7 @@ type TransferredEvent = {
     amount: bigint
 }
 
-function transferred(event: EventItem) {
+export function transferred(event: EventItem) {
     return match(event)
         .returnType<TransferredEvent>()
         .when(multiTokens.transferred.matrixEnjinV603.is, () => multiTokens.transferred.matrixEnjinV603.decode(event))

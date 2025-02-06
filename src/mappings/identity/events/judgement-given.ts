@@ -8,7 +8,7 @@ type JudgementGivenEvent = {
     registrarIndex: number
 }
 
-function getEventData(event: EventItem) {
+export function judgementGiven(event: EventItem) {
     return match(event)
         .returnType<JudgementGivenEvent>()
         .when(identity.judgementGiven.matrixEnjinV1000.is, () => identity.judgementGiven.matrixEnjinV1000.decode(event))

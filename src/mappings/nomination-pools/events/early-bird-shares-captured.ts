@@ -20,7 +20,7 @@ function getPoolShares(block: BlockHeader, poolId: number) {
         })
 }
 
-function getEventData(event: EventItem) {
+function earlyBirdSharesCaptured(event: EventItem) {
     return match(event)
         .returnType<EarlyBirdSharesCapturedEvent>()
         .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, () =>
@@ -31,7 +31,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof earlyBirdSharesCaptured>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdSharesCaptured.name,

@@ -8,7 +8,7 @@ type JudgementUnrequestedEvent = {
     registrarIndex: number
 }
 
-function getEventData(event: EventItem) {
+export function judgementUnrequested(event: EventItem) {
     return match(event)
         .returnType<JudgementUnrequestedEvent>()
         .when(identity.judgementUnrequested.matrixEnjinV1000.is, () =>

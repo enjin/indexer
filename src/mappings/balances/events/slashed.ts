@@ -8,7 +8,7 @@ type SlashedEvent = {
     amount: bigint
 }
 
-function getSlashedAccount(event: EventItem) {
+export function slashed(event: EventItem) {
     return match(event)
         .returnType<SlashedEvent>()
         .when(balances.slashed.matrixEnjinV603.is, () => balances.slashed.matrixEnjinV603.decode(event))

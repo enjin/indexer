@@ -10,7 +10,7 @@ type TokenCreatedEvent = {
     initialSupply: bigint
 }
 
-function tokenCreated(event: EventItem) {
+export function tokenCreated(event: EventItem) {
     return match(event)
         .returnType<TokenCreatedEvent>()
         .when(multiTokens.tokenCreated.matrixEnjinV603.is, (e) => {

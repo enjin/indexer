@@ -9,7 +9,7 @@ type SubIdentityAddedEvent = {
     deposit: bigint
 }
 
-function getEventData(event: EventItem) {
+export function subIdentityAdded(event: EventItem) {
     return match(event)
         .returnType<SubIdentityAddedEvent>()
         .when(identity.subIdentityAdded.matrixEnjinV1000.is, () => identity.subIdentityAdded.matrixEnjinV1000.decode(event))

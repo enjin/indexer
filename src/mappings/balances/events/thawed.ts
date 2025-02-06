@@ -8,7 +8,7 @@ type ThawedEvent = {
     amount: bigint
 }
 
-function getThawedAccount(event: EventItem) {
+export function thawed(event: EventItem) {
     return match(event)
         .returnType<ThawedEvent>()
         .when(balances.thawed.matrixEnjinV603.is, () => balances.thawed.matrixEnjinV603.decode(event))

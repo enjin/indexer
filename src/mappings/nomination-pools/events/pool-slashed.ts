@@ -9,7 +9,7 @@ type PoolSlashedEvent = {
     balance: bigint
 }
 
-function getEventData(event: EventItem) {
+function poolSlashed(event: EventItem) {
     return match(event)
         .returnType<PoolSlashedEvent>()
         .when(nominationPools.poolSlashed.enjinV100.is, () => nominationPools.poolSlashed.enjinV100.decode(event))
@@ -18,7 +18,7 @@ function getEventData(event: EventItem) {
         })
 }
 
-function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
+function getEvent(item: EventItem, data: ReturnType<typeof poolSlashed>) {
     return new EventModel({
         id: item.id,
         name: NominationPoolsPoolSlashed.name,

@@ -8,7 +8,7 @@ type BurnedEvent = {
     amount: bigint
 }
 
-function getBurnedAccount(event: EventItem) {
+export function burned(event: EventItem) {
     return match(event)
         .returnType<BurnedEvent>()
         .when(balances.burned.matrixEnjinV603.is, () => balances.burned.matrixEnjinV603.decode(event))

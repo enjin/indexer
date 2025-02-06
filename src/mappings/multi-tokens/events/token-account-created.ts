@@ -10,7 +10,7 @@ type TokenAccountCreatedEvent = {
     balance: bigint
 }
 
-function tokenAccountCreated(event: EventItem) {
+export function tokenAccountCreated(event: EventItem) {
     return match(event)
         .returnType<TokenAccountCreatedEvent>()
         .when(multiTokens.tokenAccountCreated.matrixEnjinV603.is, () =>

@@ -8,7 +8,7 @@ type SuspendedEvent = {
     amount: bigint
 }
 
-function getSuspendedAccount(event: EventItem) {
+export function suspended(event: EventItem) {
     return match(event)
         .returnType<SuspendedEvent>()
         .when(balances.suspended.matrixEnjinV603.is, () => balances.suspended.matrixEnjinV603.decode(event))

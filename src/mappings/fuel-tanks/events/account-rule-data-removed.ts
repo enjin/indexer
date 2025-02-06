@@ -3,11 +3,17 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 
-function getEventData(event: EventItem) {
+export function accountRuleDataRemoved(event: EventItem) {
     return match(event)
-        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.is, () => fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.decode(event))
-        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV1000.is, () => fuelTanks.accountRuleDataRemoved.matrixEnjinV1000.decode(event))
-        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV603.is, () => fuelTanks.accountRuleDataRemoved.matrixEnjinV603.decode(event))
+        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.is, () =>
+            fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.decode(event)
+        )
+        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV1000.is, () =>
+            fuelTanks.accountRuleDataRemoved.matrixEnjinV1000.decode(event)
+        )
+        .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV603.is, () =>
+            fuelTanks.accountRuleDataRemoved.matrixEnjinV603.decode(event)
+        )
         .when(fuelTanks.accountRuleDataRemoved.matrixV1012.is, () => fuelTanks.accountRuleDataRemoved.matrixV1012.decode(event))
         .when(fuelTanks.accountRuleDataRemoved.matrixV1010.is, () => fuelTanks.accountRuleDataRemoved.matrixV1010.decode(event))
         .when(fuelTanks.accountRuleDataRemoved.matrixV1000.is, () => fuelTanks.accountRuleDataRemoved.matrixV1000.decode(event))

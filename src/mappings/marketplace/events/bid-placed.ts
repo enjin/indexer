@@ -8,7 +8,7 @@ type BidPlacedEvent = {
     bid: any
 }
 
-function getEventData(event: EventItem) {
+export function bidPlaced(event: EventItem) {
     return match(event)
         .returnType<BidPlacedEvent>()
         .when(marketplace.bidPlaced.matrixEnjinV603.is, marketplace.bidPlaced.matrixEnjinV603.decode)

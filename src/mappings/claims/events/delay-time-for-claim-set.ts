@@ -7,7 +7,7 @@ type DelayTimeForClaimSetEvent = {
     delayTime: number
 }
 
-function getEventData(event: EventItem) {
+export function delayTimeForClaimSet(event: EventItem) {
     return match(event)
         .returnType<DelayTimeForClaimSetEvent>()
         .when(claims.delayTimeForClaimSet.matrixEnjinV603.is, () => claims.delayTimeForClaimSet.matrixEnjinV603.decode(event))

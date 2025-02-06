@@ -8,7 +8,7 @@ type ClaimTokensInitiatedEvent = {
     ethereumAddress: string
 }
 
-function claimTokensInitiated(event: EventItem) {
+export function claimTokensInitiated(event: EventItem) {
     return match(event)
         .returnType<ClaimTokensInitiatedEvent>()
         .when(multiTokens.claimTokensInitiated.matrixEnjinV1000.is, multiTokens.claimTokensInitiated.matrixEnjinV1000.decode)

@@ -9,7 +9,7 @@ type AttributeRemovedEvent = {
     key: string
 }
 
-function attributeRemoved(event: EventItem) {
+export function attributeRemoved(event: EventItem) {
     return match(event)
         .returnType<AttributeRemovedEvent>()
         .when(multiTokens.attributeRemoved.matrixEnjinV603.is, multiTokens.attributeRemoved.matrixEnjinV603.decode)

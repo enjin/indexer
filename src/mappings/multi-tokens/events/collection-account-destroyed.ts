@@ -8,7 +8,7 @@ type CollectionAccountDestroyedEvent = {
     accountId: string
 }
 
-function collectionAccountDestroyed(event: EventItem) {
+export function collectionAccountDestroyed(event: EventItem) {
     return match(event)
         .returnType<CollectionAccountDestroyedEvent>()
         .when(

@@ -8,7 +8,7 @@ type IdentityClearedEvent = {
     deposit: bigint
 }
 
-function getEventData(event: EventItem) {
+export function identityCleared(event: EventItem) {
     return match(event)
         .returnType<IdentityClearedEvent>()
         .when(identity.identityCleared.matrixEnjinV1000.is, () => identity.identityCleared.matrixEnjinV1000.decode(event))

@@ -8,7 +8,7 @@ type CollectionAccountCreatedEvent = {
     accountId: string
 }
 
-function collectionAccountCreated(event: EventItem) {
+export function collectionAccountCreated(event: EventItem) {
     return match(event)
         .returnType<CollectionAccountCreatedEvent>()
         .when(

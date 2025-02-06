@@ -8,7 +8,7 @@ type ListingCreatedEvent = {
     listing: any
 }
 
-function getEventData(event: EventItem) {
+export function listingCreated(event: EventItem) {
     return match(event)
         .returnType<ListingCreatedEvent>()
         .when(marketplace.listingCreated.matrixEnjinV1012.is, marketplace.listingCreated.matrixEnjinV1012.decode)

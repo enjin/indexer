@@ -7,7 +7,7 @@ type RegistrarAddedEvent = {
     registrarIndex: number
 }
 
-function getEventData(event: EventItem) {
+export function registrarAdded(event: EventItem) {
     return match(event)
         .returnType<RegistrarAddedEvent>()
         .when(identity.registrarAdded.matrixEnjinV1000.is, () => identity.registrarAdded.matrixEnjinV1000.decode(event))

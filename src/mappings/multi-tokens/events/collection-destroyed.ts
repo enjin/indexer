@@ -8,7 +8,7 @@ type CollectionDestroyedEvent = {
     caller: string
 }
 
-function collectionDestroyed(event: EventItem) {
+export function collectionDestroyed(event: EventItem) {
     return match(event)
         .returnType<CollectionDestroyedEvent>()
         .when(multiTokens.collectionDestroyed.matrixEnjinV603.is, () =>

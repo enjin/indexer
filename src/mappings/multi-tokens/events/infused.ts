@@ -10,7 +10,7 @@ type InfusedEvent = {
     amount: bigint
 }
 
-function infused(event: EventItem) {
+export function infused(event: EventItem) {
     return match(event)
         .returnType<InfusedEvent>()
         .when(multiTokens.infused.matrixEnjinV1012.is, () => multiTokens.infused.matrixEnjinV1012.decode(event))

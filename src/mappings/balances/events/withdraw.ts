@@ -8,7 +8,7 @@ type WithdrawEvent = {
     amount: bigint
 }
 
-function getEventData(event: EventItem) {
+export function eventData(event: EventItem) {
     return match(event)
         .returnType<WithdrawEvent>()
         .when(balances.withdraw.matrixEnjinV603.is, () => balances.withdraw.matrixEnjinV603.decode(event))

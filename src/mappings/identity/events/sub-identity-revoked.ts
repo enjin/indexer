@@ -9,7 +9,7 @@ type SubIdentityRevokedEvent = {
     deposit: bigint
 }
 
-function getEventData(event: EventItem) {
+export function subIdentityRevoked(event: EventItem) {
     return match(event)
         .returnType<SubIdentityRevokedEvent>()
         .when(identity.subIdentityRevoked.matrixEnjinV1000.is, () => identity.subIdentityRevoked.matrixEnjinV1000.decode(event))

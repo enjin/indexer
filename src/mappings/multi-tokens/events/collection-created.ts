@@ -8,7 +8,7 @@ type CollectionCreatedEvent = {
     owner: string
 }
 
-function collectionCreated(event: EventItem) {
+export function collectionCreated(event: EventItem) {
     return match(event)
         .returnType<CollectionCreatedEvent>()
         .when(multiTokens.collectionCreated.matrixEnjinV603.is, () => multiTokens.collectionCreated.matrixEnjinV603.decode(event))

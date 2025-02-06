@@ -7,7 +7,7 @@ type IdentitySetEvent = {
     who: string
 }
 
-function getEventData(event: EventItem) {
+export function identitySet(event: EventItem) {
     return match(event)
         .returnType<IdentitySetEvent>()
         .when(identity.identitySet.matrixEnjinV1000.is, () => identity.identitySet.matrixEnjinV1000.decode(event))
