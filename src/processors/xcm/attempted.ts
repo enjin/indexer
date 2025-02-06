@@ -1,13 +1,14 @@
 import { hexToU8a } from '@polkadot/util'
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import config from '../../config'
+import * as mappings from './../../mappings'
 
 export async function attempted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) return undefined
 
-    const callData = await getCallData(ctx, item.call)
+    const callData = await mappings.xcm.calls.teleportAssets(item.call)
     if (!callData || !('dest' in callData) || !('beneficiary' in callData) || !('assets' in callData)) {
         return undefined
     }

@@ -1,15 +1,21 @@
 import * as Sentry from '@sentry/node'
-import { CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CallItem, EventItem } from './types/contexts'
 
 export class UnsupportedEventError extends Error {
     constructor(event: EventItem) {
-        super(`There is no relevant version for ${name}`)
+        super(`Event ${event.name} at ${event.block.height} is not supported`)
     }
 }
 
 export class UnsupportedCallError extends Error {
     constructor(call: CallItem) {
-        super(`${call.name} at ${call.block.height} is not supported`)
+        super(`Call ${call.name} at ${call.block.height} is not supported`)
+    }
+}
+
+export class UnsupportedStorageError extends Error {
+    constructor(storage: string) {
+        super(`Storage ${storage} is not supported`)
     }
 }
 

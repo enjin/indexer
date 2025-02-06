@@ -19,7 +19,7 @@ import {
     TankFuelBudget,
     UserFuelBudget,
 } from '../../model'
-import { CallItem, CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { CallItem, CommonContext } from '../../common/types/contexts'
 import { fuelTanks } from '../../types/generated/calls'
 import { UnsupportedEventError } from '../../common/errors'
 

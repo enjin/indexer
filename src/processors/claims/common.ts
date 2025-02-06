@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext } from '../../common/types/contexts'
 import { UnsupportedEventError } from '../../common/errors'
 import { claims } from '../../types/generated/storage'
 import { ClaimDetails } from '../../model'

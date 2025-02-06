@@ -1,7 +1,7 @@
 import { CallNotDefinedError } from '../../common/errors'
 import { calls } from '../../types/generated'
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { rulesToMap } from './common'
 import * as mappings from './../../mappings'
 

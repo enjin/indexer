@@ -3,99 +3,100 @@ import chunk from 'lodash/chunk'
 import { Account, Balance, Event as EventModel } from '../../model'
 import { encodeId } from '../../common/tools'
 import { balances } from '../../types/generated/events'
-import { CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem } from '../../common/types/contexts'
+import * as mappings from './../../mappings'
 
 function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
     const ids: string[] = []
     switch (event.name) {
         case balances.burned.name: {
-            const account = getBurnedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.burned(event)
+            ids.push(account.who)
             break
         }
         case balances.frozen.name: {
-            const account = getFrozenAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.frozen(event)
+            ids.push(account.who)
             break
         }
         case balances.locked.name: {
-            const account = getLockedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.locked(event)
+            ids.push(account.who)
             break
         }
         case balances.minted.name: {
-            const account = getMintedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.minted(event)
+            ids.push(account.who)
             break
         }
         case balances.restored.name: {
-            const account = getRestoredAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.restored(event)
+            ids.push(account.who)
             break
         }
         case balances.suspended.name: {
-            const account = getSuspendedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.suspended(event)
+            ids.push(account.who)
             break
         }
         case balances.thawed.name: {
-            const account = getThawedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.thawed(event)
+            ids.push(account.who)
             break
         }
         case balances.unlocked.name: {
-            const account = getUnlockedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.unlocked(event)
+            ids.push(account.who)
             break
         }
         case balances.dustLost.name: {
-            const account = getDustLostAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.dustLost(event)
+            ids.push(account.account)
             break
         }
         case balances.balanceSet.name: {
-            const account = getBalanceSetAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.balanceSet(event)
+            ids.push(account.who)
             break
         }
         case balances.transfer.name: {
-            const accounts = getTransferAccounts(ctx, event)
-            ids.push(...accounts)
+            const accounts = mappings.balances.events.transfer(event)
+            ids.push(...[accounts.from, accounts.to])
             break
         }
         case balances.endowed.name: {
-            const account = getEndowedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.endowed(event)
+            ids.push(account.account)
             break
         }
         case balances.deposit.name: {
-            const account = getDepositAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.deposit(event)
+            ids.push(account.who)
             break
         }
         case balances.reserved.name: {
-            const account = getReservedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.reserved(event)
+            ids.push(account.who)
             break
         }
         case balances.unreserved.name: {
-            const account = getUnreservedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.unreserved(event)
+            ids.push(account.who)
             break
         }
         case balances.withdraw.name: {
-            const account = getWithdrawAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.withdraw(event)
+            ids.push(account.who)
             break
         }
         case balances.slashed.name: {
-            const account = getSlashedAccount(ctx, event)
-            ids.push(account)
+            const account = mappings.balances.events.slashed(event)
+            ids.push(account.who)
             break
         }
         case balances.reserveRepatriated.name: {
-            const accounts = getReserveRepatriatedAccounts(ctx, event)
-            ids.push(...accounts)
+            const accounts = mappings.balances.events.reserveRepatriated(event)
+            ids.push(...[accounts.from, accounts.to])
             break
         }
 
@@ -107,7 +108,7 @@ function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
 }
 
 async function getBalances(ctx: CommonContext, block: BlockHeader, accountIds: string[]) {
-    return getSystemAccountBalances(ctx, block, accountIds)
+    return mappings.system.storage.account(ctx, block, accountIds)
 }
 
 const accountsSet = new Set<string>()
@@ -160,7 +161,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo!.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: accountData.free - accountData.frozen,
+                            transferable: BigInt(accountData.free - accountData.frozen),
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.frozen,
@@ -177,7 +178,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         nonce: accountInfo!.nonce,
                         verified: false,
                         balance: new Balance({
-                            transferable: accountData.free - accountData.miscFrozen,
+                            transferable: BigInt(accountData.free - accountData.miscFrozen),
                             free: accountData.free,
                             reserved: accountData.reserved,
                             frozen: accountData.miscFrozen,

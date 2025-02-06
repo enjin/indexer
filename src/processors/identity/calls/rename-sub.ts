@@ -1,6 +1,6 @@
 import { hexToString } from '@polkadot/util'
 import { Event as EventModel, Identity } from '../../../model'
-import { BlockHeader, CallItem, CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CallItem, CommonContext } from '../../common/types/contexts'
 
 export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
     const callData = mappings.identity.calls.renameSub(item)

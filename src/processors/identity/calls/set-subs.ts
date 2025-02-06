@@ -1,6 +1,6 @@
 import { hexToString, hexToU8a } from '@polkadot/util'
 import { Event as EventModel, Identity, Registration } from '../../../model'
-import { BlockHeader, CallItem, CommonContext } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CallItem, CommonContext } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {

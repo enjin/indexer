@@ -1,6 +1,6 @@
 import { CallNotDefinedError } from '../../common/errors'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 
