@@ -21,27 +21,3 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         }),
     })
 }
-
-export async function collectionAccountDestroyed(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem,
-    skipSave: boolean
-): Promise<EventModel | undefined> {
-    const data = getEventData(item)
-    if (!data) return undefined
-
-    if (skipSave) return getEvent(item, data)
-
-    const address = data.accountId
-    const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-        where: { id: `${data.collectionId}-${address}` },
-    })
-    if (collectionAccount) {
-        await ctx.store.remove(collectionAccount)
-    } else {
-        throwError(`[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
-    }
-
-    return getEvent(item, data)
-}

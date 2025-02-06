@@ -23,28 +23,3 @@ function getEventData(event: EventItem) {
 
     throw new UnknownVersionError(fuelTanks.accountAdded.name)
 }
-
-export async function accountAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
-
-    if (!eventData) return undefined
-
-    const { tankId } = eventData
-    const [tank, account] = await Promise.all([
-        ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
-        getOrCreateAccount(ctx, eventData.userId),
-    ])
-
-    const fuelAccount = new FuelTankUserAccounts({
-        id: `${tankId}-${account.id}`,
-        tank,
-        account,
-        tankDeposit: eventData.tankDeposit,
-        userDeposit: eventData.userDeposit,
-    })
-    tank.accountCount += 1
-
-    await Promise.all([ctx.store.save(fuelAccount), ctx.store.save(tank)])
-
-    return undefined
-}

@@ -11,22 +11,3 @@ function getEventData(event: EventItem) {
 
     throw new UnknownVersionError(events.nominationPools.earlyBirdBonusCalculated.name)
 }
-
-export async function earlyBirdBonusCalculated(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    if (!item.extrinsic) return undefined
-
-    const eventData = getEventData(item)
-
-    await updateEarlyBirdInfo(ctx, block)
-
-    if (!eventData) return undefined
-
-    return new EventModel({
-        id: item.id,
-        name: NominationPoolsEarlyBirdBonusCalculated.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new NominationPoolsEarlyBirdBonusCalculated({
-            totalAmount: eventData.totalAmount,
-        }),
-    })
-}

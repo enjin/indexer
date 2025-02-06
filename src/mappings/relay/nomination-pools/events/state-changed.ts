@@ -18,18 +18,3 @@ function getEventData(event: EventItem) {
 
     throw new UnknownVersionError(events.nominationPools.stateChanged.name)
 }
-
-export async function stateChanged(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    if (!item.extrinsic) return undefined
-
-    const eventData = getEventData(item)
-
-    if (!eventData) return undefined
-
-    const pool = await ctx.store.findOneByOrFail(NominationPool, { id: eventData.poolId.toString() })
-    pool.state = PoolState[eventData.newState.__kind]
-
-    await ctx.store.save(pool)
-
-    return undefined
-}

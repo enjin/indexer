@@ -28,7 +28,7 @@ services:
   indexer_processor:
     container_name: indexer_processor
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: processor
     build:
@@ -44,7 +44,7 @@ services:
   indexer_graphql:
     container_name: indexer_graphql
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: graphql
     build:
@@ -61,7 +61,7 @@ services:
   indexer_worker:
     container_name: indexer_worker
     restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
+    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: worker
     build:

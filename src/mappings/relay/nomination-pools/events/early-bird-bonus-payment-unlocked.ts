@@ -11,23 +11,3 @@ function getEventData(event: EventItem) {
 
     throw new UnknownVersionError(events.nominationPools.earlyBirdBonusPaymentUnlocked.name)
 }
-
-export async function earlyBirdBonusPaymentUnlocked(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    if (!item.extrinsic) return undefined
-
-    const eventData = getEventData(item)
-
-    if (!eventData) return undefined
-
-    await updateEarlyBirdInfo(ctx, block)
-
-    return new EventModel({
-        id: item.id,
-        name: NominationPoolsEarlyBirdBonusPaymentUnlocked.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
-        data: new NominationPoolsEarlyBirdBonusPaymentUnlocked({
-            nextPaymentBlock: eventData.nextPaymentBlock,
-            paymentId: eventData.paymentId,
-        }),
-    })
-}

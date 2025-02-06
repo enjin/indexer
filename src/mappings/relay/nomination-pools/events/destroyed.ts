@@ -31,24 +31,3 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         }),
     })
 }
-
-export async function destroyed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
-    if (!eventData) return undefined
-
-    const earlyBirdShares = await ctx.store.findBy(EarlyBirdShares, { pool: { id: eventData.poolId.toString() } })
-    const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { pool: { id: eventData.poolId.toString() } })
-    const poolMembers = await ctx.store.findBy(PoolMember, { pool: { id: eventData.poolId.toString() } })
-    const eraRewards = await ctx.store.findBy(EraReward, { pool: { id: eventData.poolId.toString() } })
-    const poolValidators = await ctx.store.findBy(PoolValidator, { pool: { id: eventData.poolId.toString() } })
-    const nominationPool = await ctx.store.findOneBy(NominationPool, { id: eventData.poolId.toString() })
-
-    if (earlyBirdShares.length) await ctx.store.remove(earlyBirdShares)
-    if (poolMemberRewards.length) await ctx.store.remove(poolMemberRewards)
-    if (poolMembers.length) await ctx.store.remove(poolMembers)
-    if (eraRewards.length) await ctx.store.remove(eraRewards)
-    if (poolValidators.length) await ctx.store.remove(poolValidators)
-    if (nominationPool) await ctx.store.remove(nominationPool)
-
-    return getEvent(item, eventData)
-}

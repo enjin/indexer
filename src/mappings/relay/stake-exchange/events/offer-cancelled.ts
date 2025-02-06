@@ -28,25 +28,3 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         }),
     })
 }
-
-export async function offerCancelled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-
-    const eventData = getEventData(item)
-
-    if (!eventData) return undefined
-
-    const offer = await ctx.store.findOneByOrFail(StakeExchangeOffer, { id: eventData.offerId.toString() })
-    offer.state = StakeExchangeOfferState.Cancelled
-    await ctx.store.save(offer)
-
-    await Sns.getInstance().send({
-        id: item.id,
-        name: item.name,
-        body: {
-            offerId: offer.offerId,
-        },
-    })
-
-    return getEvent(item, eventData)
-}

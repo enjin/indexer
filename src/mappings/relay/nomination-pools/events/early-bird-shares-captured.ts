@@ -38,38 +38,3 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         }),
     })
 }
-
-export async function earlyBirdSharesCaptured(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    if (!item.extrinsic) return undefined
-
-    const eventData = getEventData(item)
-
-    if (!eventData) return undefined
-
-    const data = await getPoolShares(block, eventData.poolId)
-
-    const toSave = data.map((s) => {
-        return new EarlyBirdShares({
-            id: `${eventData.poolId}-${s[0][1]}`,
-            pool: new NominationPool({ id: eventData.poolId.toString() }),
-            account: new Account({ id: s[0][1] }),
-            shares: s[1],
-        })
-    })
-
-    await ctx.store.save(toSave)
-
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                pool: eventData.poolId.toString(),
-                totalAccounts: eventData.totalAccounts,
-                extrinsic: item.extrinsic.id,
-            },
-        })
-    }
-
-    return getEvent(item, eventData)
-}

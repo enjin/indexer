@@ -43,10 +43,10 @@ EXPOSE 4000
 EXPOSE 9090
 EXPOSE 8080
 
-FROM squid AS matrixchain-indexer
+FROM squid AS enjin-indexer
 
 LABEL org.opencontainers.image.source=https://github.com/enjin/indexer
-LABEL org.opencontainers.image.description="Enjin Matrixchain Indexer"
+LABEL org.opencontainers.image.description="Enjin Blockchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
 
 COPY --chmod=0755 start.sh .

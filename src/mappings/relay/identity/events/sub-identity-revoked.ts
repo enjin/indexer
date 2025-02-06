@@ -11,29 +11,3 @@ function getEventData(ctx: CommonContext, event: EventItem) {
 
     throw new UnknownVersionError(events.identity.subIdentityRevoked.name)
 }
-
-export async function subIdentityRevoked(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
-    const eventData = getEventData(ctx, item)
-
-    const account = await getOrCreateAccount(ctx, eventData.sub)
-    const identity = await ctx.store.findOneOrFail(Identity, {
-        where: { id: account.id },
-        relations: {
-            info: true,
-        },
-    })
-
-    if (!identity.isSub) {
-        identity.super = null
-        identity.name = identity.info.display || identity.info.legal
-        await ctx.store.save(identity)
-    } else {
-        await ctx.store.remove(identity)
-    }
-
-    return undefined
-}
