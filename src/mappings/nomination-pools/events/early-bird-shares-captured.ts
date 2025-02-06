@@ -1,31 +1,34 @@
 import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Collection,
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPoolsBonded,
-    PoolMember,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdSharesCaptured } from '../../../model'
+
+type EarlyBirdSharesCapturedEvent = {
+    poolId: number
+    totalAccounts: number
+}
 
 function getPoolShares(block: BlockHeader, poolId: number) {
-    if (storage.nominationPools.earlyBirdShares.enjinV1022.is(block)) {
-        return storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
-    }
-
-    throw new UnsupportedEventError('NominationPools.EarlyBirdShares')
+    return match(block)
+        .returnType<ReturnType<typeof storage.nominationPools.earlyBirdShares.enjinV1022.getPairs>>()
+        .when(storage.nominationPools.earlyBirdShares.enjinV1022.is, () =>
+            storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError('NominationPools.EarlyBirdShares')
+        })
 }
 
 function getEventData(event: EventItem) {
-    if (nominationPools.earlyBirdSharesCaptured.enjinV1022.is(event)) {
-        return nominationPools.earlyBirdSharesCaptured.enjinV1022.decode(event)
-    }
-
-    throw new UnsupportedEventError(nominationPools.earlyBirdSharesCaptured)
+    return match(event)
+        .returnType<EarlyBirdSharesCapturedEvent>()
+        .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, () =>
+            nominationPools.earlyBirdSharesCaptured.enjinV1022.decode(event)
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError(nominationPools.earlyBirdSharesCaptured)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

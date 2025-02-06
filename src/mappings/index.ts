@@ -8,20 +8,6 @@ import staking from './staking'
 import stakeExchange from './stake-exchange'
 import xcm from './xcm'
 import fuelTanks from './fuel-tanks'
-import identity from './identity'
 import imOnline from './im-online'
 
-export {
-    multiTokens,
-    marketplace,
-    balances,
-    nominationPools,
-    staking,
-    stakeExchange,
-    xcm,
-    fuelTanks,
-    identity,
-    imOnline,
-    claims,
-    identity,
-}
+export { multiTokens, marketplace, balances, nominationPools, staking, stakeExchange, xcm, fuelTanks, identity, imOnline, claims }

@@ -1,7 +1,7 @@
 import { UnsupportedEventError, throwError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
@@ -21,7 +21,7 @@ export async function collectionAccountDestroyed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

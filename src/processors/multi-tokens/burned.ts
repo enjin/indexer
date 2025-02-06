@@ -1,8 +1,9 @@
 import { UnsupportedEventError, throwError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token, TokenAccount } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
@@ -44,7 +45,7 @@ export async function burned(
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data || data.amount === 0n) return undefined
 
     const address = data.accountId

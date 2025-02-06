@@ -1,15 +1,20 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function reserved(event: EventItem) {
-    if (multiTokens.reserved.matrixEnjinV603.is(event)) {
-        return multiTokens.reserved.matrixEnjinV603.decode(event)
-    }
+type ReservedEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    amount: bigint
+}
 
-    if (multiTokens.reserved.v1050.is(event)) {
-        return multiTokens.reserved.v1050.decode(event)
-    }
-
-    throw new UnsupportedEventError(multiTokens.reserved)
+function reserved(event: EventItem) {
+    return match(event)
+        .returnType<ReservedEvent>()
+        .when(multiTokens.reserved.matrixEnjinV603.is, () => multiTokens.reserved.matrixEnjinV603.decode(event))
+        .when(multiTokens.reserved.v1050.is, () => multiTokens.reserved.v1050.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.reserved)
+        })
 }

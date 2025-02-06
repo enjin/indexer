@@ -1,11 +1,22 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function tokenAccountCreated(event: EventItem) {
-    if (multiTokens.tokenAccountCreated.matrixEnjinV603.is(event)) {
-        return multiTokens.tokenAccountCreated.matrixEnjinV603.decode(event)
-    }
+type TokenAccountCreatedEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    accountId: any
+    balance: bigint
+}
 
-    throw new UnsupportedEventError(multiTokens.tokenAccountCreated)
+function tokenAccountCreated(event: EventItem) {
+    return match(event)
+        .returnType<TokenAccountCreatedEvent>()
+        .when(multiTokens.tokenAccountCreated.matrixEnjinV603.is, () =>
+            multiTokens.tokenAccountCreated.matrixEnjinV603.decode(event)
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.tokenAccountCreated)
+        })
 }

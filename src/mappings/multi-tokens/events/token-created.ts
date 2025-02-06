@@ -1,20 +1,35 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function tokenCreated(event: EventItem) {
-    w if (multiTokens.tokenCreated.matrixEnjinV603.is(event)) {
-        const { collectionId, tokenId, issuer, initialSupply } = multiTokens.tokenCreated.matrixEnjinV603.decode(event)
-        if (issuer.__kind === 'Signed') {
-            return { collectionId, tokenId, issuer: issuer.value, initialSupply }
-        }
-        return {
-            collectionId,
-            tokenId,
-            issuer: '0x0000000000000000000000000000000000000000000000000000000000000000',
-            initialSupply,
-        }
-    }
+type TokenCreatedEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    issuer: string
+    initialSupply: bigint
+}
 
-    throw new UnsupportedEventError(multiTokens.tokenCreated)
+function tokenCreated(event: EventItem) {
+    return match(event)
+        .returnType<TokenCreatedEvent>()
+        .when(multiTokens.tokenCreated.matrixEnjinV603.is, (e) => {
+            const { collectionId, tokenId, issuer, initialSupply } = multiTokens.tokenCreated.matrixEnjinV603.decode(e)
+            return match(issuer)
+                .with({ __kind: 'Signed' }, () => ({
+                    collectionId,
+                    tokenId,
+                    issuer: issuer.value,
+                    initialSupply,
+                }))
+                .otherwise(() => ({
+                    collectionId,
+                    tokenId,
+                    issuer: '0x0000000000000000000000000000000000000000000000000000000000000000',
+                    initialSupply,
+                }))
+        })
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.tokenCreated)
+        })
 }

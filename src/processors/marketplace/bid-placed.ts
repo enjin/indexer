@@ -14,6 +14,7 @@ import {
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { getBestListing, getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 

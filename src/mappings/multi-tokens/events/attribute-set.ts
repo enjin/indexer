@@ -1,11 +1,20 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function attributeSet(event: EventItem) {
-    if (multiTokens.attributeSet.matrixEnjinV603.is(event)) {
-        return multiTokens.attributeSet.matrixEnjinV603.decode(event)
-    }
+type AttributeSetEvent = {
+    collectionId: bigint
+    tokenId?: bigint | undefined
+    key: string
+    value: string
+}
 
-    throw new UnsupportedEventError(multiTokens.attributeSet)
+function attributeSet(event: EventItem) {
+    return match(event)
+        .returnType<AttributeSetEvent>()
+        .when(multiTokens.attributeSet.matrixEnjinV603.is, multiTokens.attributeSet.matrixEnjinV603.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.attributeSet)
+        })
 }

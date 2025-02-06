@@ -1,11 +1,19 @@
 import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type EarlyBirdBonusCalculatedEvent = {
+    totalAmount: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (nominationPools.earlyBirdBonusCalculated.enjinV1021.is(event)) {
-        return nominationPools.earlyBirdBonusCalculated.enjinV1021.decode(event)
-    }
-
-    throw new UnsupportedEventError(nominationPools.earlyBirdBonusCalculated)
+    return match(event)
+        .returnType<EarlyBirdBonusCalculatedEvent>()
+        .when(nominationPools.earlyBirdBonusCalculated.enjinV1021.is, () =>
+            nominationPools.earlyBirdBonusCalculated.enjinV1021.decode(event)
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError(nominationPools.earlyBirdBonusCalculated)
+        })
 }

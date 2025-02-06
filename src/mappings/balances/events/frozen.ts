@@ -1,10 +1,18 @@
 import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type FrozenEvent = {
+    who: string
+    amount: bigint
+}
 
 function getFrozenAccount(event: EventItem) {
-    if (balances.frozen.matrixEnjinV603.is(event)) {
-        return balances.frozen.matrixEnjinV603.decode(event).who
-    }
-    throw new UnsupportedEventError(balances.frozen)
+    return match(event)
+        .returnType<FrozenEvent>()
+        .when(balances.frozen.matrixEnjinV603.is, () => balances.frozen.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(balances.frozen)
+        })
 }

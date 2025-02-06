@@ -10,7 +10,8 @@ import {
     Trait,
 } from '../../model'
 import { Sns } from '../../common/sns'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import * as mappings from './../../mappings'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
@@ -30,7 +31,7 @@ export async function collectionDestroyed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

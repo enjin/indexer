@@ -30,7 +30,7 @@ import {
 } from '../../types/generated/matrixEnjinV603'
 import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1010 } from '../../types/generated/v1010'
 import { DefaultMintParams_CreateToken as DefaultMintParamsCreateToken_Enjin_v1012 } from '../../types/generated/matrixEnjinV1012'
-import { CallItem, CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CallItem, CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 
 export function getCapType(cap: TokenCap) {
@@ -687,7 +687,7 @@ export async function tokenCreated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
+    const eventData = mappings.multiTokens.events.(item)
     if (!eventData) return undefined
 
     if (skipSave && item.call) {

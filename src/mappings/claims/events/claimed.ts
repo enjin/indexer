@@ -1,11 +1,19 @@
 import { claims } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type ClaimedEvent = {
+    who: string
+    ethereumAddress?: string | undefined
+    amount: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (claims.claimed.matrixEnjinV603.is(event)) {
-        return claims.claimed.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(claims.claimed)
+    return match(event)
+        .returnType<ClaimedEvent>()
+        .when(claims.claimed.matrixEnjinV603.is, () => claims.claimed.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(claims.claimed)
+        })
 }

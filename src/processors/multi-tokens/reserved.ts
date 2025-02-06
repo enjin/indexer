@@ -1,12 +1,12 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../model'
 import { events } from '../../types/generated'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { UnsupportedEventError, throwError } from '../../common/errors'
 
 export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
     if (skipSave) return undefined
 

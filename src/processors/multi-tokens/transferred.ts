@@ -9,10 +9,12 @@ import {
     Token,
     TokenAccount,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
+import * as mappings from './../../mappings'
 
 function getEvent(
     item: EventItem,
@@ -54,7 +56,7 @@ export async function transferred(
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     const token = await ctx.store.findOne<Token>(Token, {

@@ -1,31 +1,24 @@
 import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Collection,
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPoolsBonded,
-    PoolMember,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, NominationPoolsCreated } from '../../../model'
+
+type CreatedEvent = {
+    creator?: string
+    poolId: number
+    capacity: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (nominationPools.created.enjinV100.is(event)) {
-        return nominationPools.created.enjinV100.decode(event)
-    }
-
-    if (nominationPools.created.v101.is(event)) {
-        return nominationPools.created.v101.decode(event)
-    }
-
-    if (nominationPools.created.v100.is(event)) {
-        return nominationPools.created.v100.decode(event)
-    }
-
-    throw new UnsupportedEventError(nominationPools.created)
+    return match(event)
+        .returnType<CreatedEvent>()
+        .when(nominationPools.created.enjinV100.is, () => nominationPools.created.enjinV100.decode(event))
+        .when(nominationPools.created.v101.is, () => nominationPools.created.v101.decode(event))
+        .when(nominationPools.created.v100.is, () => nominationPools.created.v100.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(nominationPools.created)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

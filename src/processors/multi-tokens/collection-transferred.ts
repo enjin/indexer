@@ -1,9 +1,10 @@
 import { throwError, UnsupportedEventError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Collection, Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
@@ -24,7 +25,7 @@ export async function collectionTransferred(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

@@ -1,10 +1,18 @@
 import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type CounterOfferRemovedEvent = {
+    listingId: string
+    creator: string
+}
 
 function getEventData(event: EventItem) {
-    if (marketplace.counterOfferRemoved.matrixEnjinV1012.is(event)) {
-        return marketplace.counterOfferRemoved.matrixEnjinV1012.decode(event)
-    }
-    throw new UnsupportedEventError(marketplace.counterOfferRemoved)
+    return match(event)
+        .returnType<CounterOfferRemovedEvent>()
+        .when(marketplace.counterOfferRemoved.matrixEnjinV1012.is, marketplace.counterOfferRemoved.matrixEnjinV1012.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(marketplace.counterOfferRemoved)
+        })
 }

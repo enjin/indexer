@@ -1,11 +1,19 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function attributeRemoved(event: EventItem) {
-    if (multiTokens.attributeRemoved.matrixEnjinV603.is(event)) {
-        return multiTokens.attributeRemoved.matrixEnjinV603.decode(event)
-    }
+type AttributeRemovedEvent = {
+    collectionId: bigint
+    tokenId?: bigint | undefined
+    key: string
+}
 
-    throw new UnsupportedEventError(multiTokens.attributeRemoved)
+function attributeRemoved(event: EventItem) {
+    return match(event)
+        .returnType<AttributeRemovedEvent>()
+        .when(multiTokens.attributeRemoved.matrixEnjinV603.is, multiTokens.attributeRemoved.matrixEnjinV603.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.attributeRemoved)
+        })
 }

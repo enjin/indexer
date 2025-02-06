@@ -15,9 +15,10 @@ import {
     Token,
     TransferPolicy,
 } from '../../model'
-import { CommonContext, BlockHeader, CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, CallItem, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { DefaultRoyalty } from '../../types/generated/v500'
 import { AssetId } from '../../types/generated/matrixEnjinV603'
 
@@ -267,7 +268,7 @@ export async function collectionCreated(
 ): Promise<EventModel | undefined> {
     if (!item.call) return undefined
 
-    const eventData = getEventData(item)
+    const eventData = mappings.multiTokens.events.(item)
     if (!eventData) return undefined
 
     if (skipSave) {

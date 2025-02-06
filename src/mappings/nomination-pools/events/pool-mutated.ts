@@ -1,47 +1,35 @@
 import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Collection,
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPoolsBonded,
-    PoolMember,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '../../../model'
+import { hexToString } from '@polkadot/util'
+
+type PoolMutatedEvent = {
+    poolId: bigint
+    mutation: {
+        newCommission?: {
+            __kind: string
+            value?: number
+        }
+        capacity?: bigint
+        name?: string
+    }
+}
 
 function getEventData(event: EventItem) {
-    if (nominationPools.poolMutated.enjinV1023.is(event)) {
-        return nominationPools.poolMutated.enjinV1023.decode(event)
-    }
-
-    if (nominationPools.poolMutated.enjinV110.is(event)) {
-        return nominationPools.poolMutated.enjinV110.decode(event)
-    }
-
-    if (nominationPools.poolMutated.enjinV100.is(event)) {
-        return nominationPools.poolMutated.enjinV100.decode(event)
-    }
-
-    if (nominationPools.poolMutated.v1023.is(event)) {
-        return nominationPools.poolMutated.v1023.decode(event)
-    }
-
-    if (nominationPools.poolMutated.v110.is(event)) {
-        return nominationPools.poolMutated.v110.decode(event)
-    }
-
-    if (nominationPools.poolMutated.v104.is(event)) {
-        return nominationPools.poolMutated.v104.decode(event)
-    }
-
-    if (nominationPools.poolMutated.v102.is(event)) {
-        return nominationPools.poolMutated.v102.decode(event)
-    }
-
-    throw new UnsupportedEventError(nominationPools.poolMutated)
+    return match(event)
+        .returnType<PoolMutatedEvent>()
+        .when(nominationPools.poolMutated.enjinV1023.is, () => nominationPools.poolMutated.enjinV1023.decode(event))
+        .when(nominationPools.poolMutated.enjinV110.is, () => nominationPools.poolMutated.enjinV110.decode(event))
+        .when(nominationPools.poolMutated.enjinV100.is, () => nominationPools.poolMutated.enjinV100.decode(event))
+        .when(nominationPools.poolMutated.v1023.is, () => nominationPools.poolMutated.v1023.decode(event))
+        .when(nominationPools.poolMutated.v110.is, () => nominationPools.poolMutated.v110.decode(event))
+        .when(nominationPools.poolMutated.v104.is, () => nominationPools.poolMutated.v104.decode(event))
+        .when(nominationPools.poolMutated.v102.is, () => nominationPools.poolMutated.v102.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(nominationPools.poolMutated)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

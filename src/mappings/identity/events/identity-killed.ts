@@ -1,11 +1,18 @@
 import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type IdentityKilledEvent = {
+    who: string
+    deposit: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (identity.identityKilled.matrixEnjinV1000.is(event)) {
-        return identity.identityKilled.matrixEnjinV1000.decode(event)
-    }
-
-    throw new UnsupportedEventError(identity.identityKilled)
+    return match(event)
+        .returnType<IdentityKilledEvent>()
+        .when(identity.identityKilled.matrixEnjinV1000.is, () => identity.identityKilled.matrixEnjinV1000.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(identity.identityKilled)
+        })
 }

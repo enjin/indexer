@@ -11,10 +11,11 @@ import {
     RoyaltyCurrency,
     Token,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { DefaultRoyalty } from '../../types/generated/v500'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({
@@ -45,7 +46,7 @@ export async function collectionMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

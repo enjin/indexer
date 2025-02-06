@@ -2,11 +2,12 @@ import { UnsupportedEventError, throwError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token, TokenAccount } from '../../model'
 import { isNonFungible } from 'matrixchain-indexer/mappings/matrix/multi-tokens/helpers'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { processMetadata } from '../../jobs/process-metadata'
 
 function getEvent(
@@ -48,7 +49,7 @@ export async function minted(
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     const promises: Promise<any>[] = []

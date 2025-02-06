@@ -1,56 +1,33 @@
 import { stakeExchange } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    StakeExchangeBuyOrderCompleted,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, StakeExchangeOfferCreated } from '../../../model'
+
+type OfferCreatedEvent = {
+    offerId: bigint
+    offer: {
+        account: string
+        total: bigint
+        rate: number | bigint
+    }
+}
 
 function getEventData(event: EventItem) {
-    if (stakeExchange.offerCreated.enjinV1023.is(event)) {
-        return stakeExchange.offerCreated.enjinV1023.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.enjinV1021.is(event)) {
-        return stakeExchange.offerCreated.enjinV1021.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.enjinV120.is(event)) {
-        return stakeExchange.offerCreated.enjinV120.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.enjinV100.is(event)) {
-        return stakeExchange.offerCreated.enjinV100.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.v1023.is(event)) {
-        return stakeExchange.offerCreated.v1023.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.v1021.is(event)) {
-        return stakeExchange.offerCreated.v1021.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.v120.is(event)) {
-        return stakeExchange.offerCreated.v120.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.v101.is(event)) {
-        return stakeExchange.offerCreated.v101.decode(event)
-    }
-
-    if (stakeExchange.offerCreated.v100.is(event)) {
-        return stakeExchange.offerCreated.v100.decode(event)
-    }
-
-    throw new UnsupportedEventError(stakeExchange.offerCreated)
+    return match(event)
+        .returnType<OfferCreatedEvent>()
+        .when(stakeExchange.offerCreated.enjinV1023.is, () => stakeExchange.offerCreated.enjinV1023.decode(event))
+        .when(stakeExchange.offerCreated.enjinV1021.is, () => stakeExchange.offerCreated.enjinV1021.decode(event))
+        .when(stakeExchange.offerCreated.enjinV120.is, () => stakeExchange.offerCreated.enjinV120.decode(event))
+        .when(stakeExchange.offerCreated.enjinV100.is, () => stakeExchange.offerCreated.enjinV100.decode(event))
+        .when(stakeExchange.offerCreated.v1023.is, () => stakeExchange.offerCreated.v1023.decode(event))
+        .when(stakeExchange.offerCreated.v1021.is, () => stakeExchange.offerCreated.v1021.decode(event))
+        .when(stakeExchange.offerCreated.v120.is, () => stakeExchange.offerCreated.v120.decode(event))
+        .when(stakeExchange.offerCreated.v101.is, () => stakeExchange.offerCreated.v101.decode(event))
+        .when(stakeExchange.offerCreated.v100.is, () => stakeExchange.offerCreated.v100.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(stakeExchange.offerCreated)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>, rewardRateAsFixedu128: bigint) {

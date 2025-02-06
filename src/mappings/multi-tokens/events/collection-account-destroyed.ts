@@ -1,10 +1,21 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function collectionAccountDestroyed(event: EventItem) {
-    if (multiTokens.collectionAccountDestroyed.matrixEnjinV603.is(event)) {
-        return multiTokens.collectionAccountDestroyed.matrixEnjinV603.decode(event)
-    }
-    throw new UnsupportedEventError(multiTokens.collectionAccountDestroyed)
+type CollectionAccountDestroyedEvent = {
+    collectionId: bigint
+    accountId: string
+}
+
+function collectionAccountDestroyed(event: EventItem) {
+    return match(event)
+        .returnType<CollectionAccountDestroyedEvent>()
+        .when(
+            multiTokens.collectionAccountDestroyed.matrixEnjinV603.is,
+            multiTokens.collectionAccountDestroyed.matrixEnjinV603.decode
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.collectionAccountDestroyed)
+        })
 }

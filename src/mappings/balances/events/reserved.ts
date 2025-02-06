@@ -1,11 +1,18 @@
 import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type ReservedEvent = {
+    who: string
+    amount: bigint
+}
 
 function getReservedAccount(event: EventItem) {
-    if (balances.reserved.matrixEnjinV603.is(event)) {
-        return balances.reserved.matrixEnjinV603.decode(event).who
-    }
-
-    throw new UnsupportedEventError(balances.reserved)
+    return match(event)
+        .returnType<ReservedEvent>()
+        .when(balances.reserved.matrixEnjinV603.is, () => balances.reserved.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(balances.reserved)
+        })
 }

@@ -14,7 +14,7 @@ import {
     MultiTokensAttributeSet,
     Token,
 } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { safeString } from '../../common/tools'
 import { computeTraits } from '../../jobs/compute-traits'
@@ -42,7 +42,7 @@ export async function attributeSet(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

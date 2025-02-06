@@ -1,12 +1,19 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function tokenDestroyed(event: EventItem) {
-    if (multiTokens.tokenDestroyed.matrixEnjinV603.is(event)) {
-        const { collectionId, tokenId, caller } = multiTokens.tokenDestroyed.matrixEnjinV603.decode(event)
-        return { collectionId, tokenId, caller }
-    }
+type TokenDestroyedEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    caller: string
+}
 
-    throw new UnsupportedEventError(multiTokens.tokenDestroyed)
+function tokenDestroyed(event: EventItem) {
+    return match(event)
+        .returnType<TokenDestroyedEvent>()
+        .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, () => multiTokens.tokenDestroyed.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.tokenDestroyed)
+        })
 }

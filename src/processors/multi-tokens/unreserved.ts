@@ -1,11 +1,11 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount } from '../../model'
 import { events } from '../../types/generated'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { UnsupportedEventError, throwError } from '../../common/errors'
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return undefined

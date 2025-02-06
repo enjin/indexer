@@ -19,6 +19,7 @@ import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/commo
 import { getBestListing } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.listingFilled.matrixEnjinV1012.is(event)) {

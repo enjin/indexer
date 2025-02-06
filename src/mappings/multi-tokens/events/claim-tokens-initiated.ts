@@ -1,11 +1,18 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function claimTokensInitiated(event: EventItem) {
-    if (multiTokens.claimTokensInitiated.matrixEnjinV1000.is(event)) {
-        return multiTokens.claimTokensInitiated.matrixEnjinV1000.decode(event)
-    }
+type ClaimTokensInitiatedEvent = {
+    accountId: string
+    ethereumAddress: string
+}
 
-    throw new UnsupportedEventError(multiTokens.claimTokensInitiated)
+function claimTokensInitiated(event: EventItem) {
+    return match(event)
+        .returnType<ClaimTokensInitiatedEvent>()
+        .when(multiTokens.claimTokensInitiated.matrixEnjinV1000.is, multiTokens.claimTokensInitiated.matrixEnjinV1000.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.claimTokensInitiated)
+        })
 }

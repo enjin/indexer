@@ -10,8 +10,9 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { FreezeType_Token as FreezeTypeToken_v500 } from '../../types/generated/v500'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
@@ -32,7 +33,7 @@ export async function thawed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

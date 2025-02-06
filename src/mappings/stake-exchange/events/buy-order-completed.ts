@@ -1,69 +1,47 @@
-import { stakeExchange } from '../../../types/generated'
-import { EventItem } from '../../types/contexts'
-import { UnknownVersionError } from '../../../common/errors'
-import {
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    StakeExchangeBuyOrderCompleted,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '../../../model'
-import { getOrCreateAccount } from '../../util/entities'
-import { Sns } from '../../../common/sns'
-import { StakeExchangeCall_buy } from '../../../types/generated/enjinV1026'
+import { stakeExchange } from '../../../types/generated/events'
+import { EventItem } from '../../../common/types/contexts'
+import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, StakeExchangeBuyOrderCompleted } from '../../../model'
+type BuyOrderCompletedEvent = {
+    offerId: bigint
+    buyer: string
+    seller: string
+    poolId: bigint
+    points: bigint
+    amount: bigint
+    commission: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (stakeExchange.buyOrderCompleted.enjinV1033.is(event)) {
-        return stakeExchange.buyOrderCompleted.enjinV1033.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.enjinV1026.is(event)) {
-        return stakeExchange.buyOrderCompleted.enjinV1026.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.enjinV120.is(event)) {
-        return stakeExchange.buyOrderCompleted.enjinV120.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.enjinV100.is(event)) {
-        return stakeExchange.buyOrderCompleted.enjinV100.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.v1033.is(event)) {
-        return stakeExchange.buyOrderCompleted.v1033.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.v1026.is(event)) {
-        return stakeExchange.buyOrderCompleted.v1026.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.v120.is(event)) {
-        return stakeExchange.buyOrderCompleted.v120.decode(event)
-    }
-
-    if (stakeExchange.buyOrderCompleted.v100.is(event)) {
-        return stakeExchange.buyOrderCompleted.v100.decode(event)
-    }
-
-    throw new UnknownVersionError(stakeExchange.buyOrderCompleted)
+    return match(event)
+        .returnType<BuyOrderCompletedEvent>()
+        .when(stakeExchange.buyOrderCompleted.enjinV1033.is, () => stakeExchange.buyOrderCompleted.enjinV1033.decode(event))
+        .when(stakeExchange.buyOrderCompleted.enjinV1026.is, () => stakeExchange.buyOrderCompleted.enjinV1026.decode(event))
+        .when(stakeExchange.buyOrderCompleted.enjinV120.is, () => stakeExchange.buyOrderCompleted.enjinV120.decode(event))
+        .when(stakeExchange.buyOrderCompleted.enjinV100.is, () => stakeExchange.buyOrderCompleted.enjinV100.decode(event))
+        .when(stakeExchange.buyOrderCompleted.v1033.is, () => stakeExchange.buyOrderCompleted.v1033.decode(event))
+        .when(stakeExchange.buyOrderCompleted.v1026.is, () => stakeExchange.buyOrderCompleted.v1026.decode(event))
+        .when(stakeExchange.buyOrderCompleted.v120.is, () => stakeExchange.buyOrderCompleted.v120.decode(event))
+        .when(stakeExchange.buyOrderCompleted.v100.is, () => stakeExchange.buyOrderCompleted.v100.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(stakeExchange.buyOrderCompleted)
+        })
 }
+
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>, offerId: bigint) {
-    const rate = typeof data.rate === 'bigint' ? data.rate : BigInt(data.rate * 10 ** 9)
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeBuyOrderCompleted({
-            offerId,
+            buyer: data.buyer,
+            seller: data.seller,
+            pool: data.poolId.toString(),
+            points: data.points,
             amount: data.amount,
-            account: data.who,
-            rate,
-            tokenId: data.tokenId,
-            points: (data.amount * rate) / 10n ** 18n,
+            commission: data.commission,
+            offer: offerId.toString(),
         }),
     })
 }

@@ -1,10 +1,18 @@
 import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type BidPlacedEvent = {
+    listingId: string
+    bid: any
+}
 
 function getEventData(event: EventItem) {
-    if (marketplace.bidPlaced.matrixEnjinV603.is(event)) {
-        return marketplace.bidPlaced.matrixEnjinV603.decode(event)
-    }
-    throw new UnsupportedEventError(marketplace.bidPlaced)
+    return match(event)
+        .returnType<BidPlacedEvent>()
+        .when(marketplace.bidPlaced.matrixEnjinV603.is, marketplace.bidPlaced.matrixEnjinV603.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(marketplace.bidPlaced)
+        })
 }

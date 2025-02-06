@@ -1,24 +1,20 @@
 import { stakeExchange } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPool,
-    PoolMember,
-    PoolMemberRewards,
-    StakeExchangeBuyOrderCompleted,
-    StakeExchangeOffer,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, StakeExchangeOfferCancelled } from '../../../model'
+
+type OfferCancelledEvent = {
+    offerId: bigint
+}
 
 function getEventData(event: EventItem) {
-    if (stakeExchange.offerCancelled.enjinV100.is(event)) {
-        return stakeExchange.offerCancelled.enjinV100.decode(event)
-    }
-
-    throw new UnsupportedEventError(stakeExchange.offerCancelled)
+    return match(event)
+        .returnType<OfferCancelledEvent>()
+        .when(stakeExchange.offerCancelled.enjinV100.is, () => stakeExchange.offerCancelled.enjinV100.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(stakeExchange.offerCancelled)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
@@ -27,7 +23,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         name: StakeExchangeOfferCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeOfferCancelled({
-            offerId: data.offerId,
+            offer: data.offerId.toString(),
         }),
     })
 }

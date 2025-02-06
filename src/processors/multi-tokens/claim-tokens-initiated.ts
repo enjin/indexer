@@ -1,16 +1,17 @@
 import { UnsupportedEventError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Event as EventModel, Extrinsic, MultiTokensClaimTokensInitiated, MultiTokensClaims } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 
 export async function claimTokensInitiated(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
 
     const account = await getOrCreateAccount(ctx, data.accountId)

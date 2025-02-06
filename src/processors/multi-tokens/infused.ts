@@ -1,7 +1,8 @@
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../model'
 import { events } from '../../types/generated'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { UnsupportedEventError } from '../../common/errors'
 
 function getEvent(
@@ -35,7 +36,7 @@ function getEvent(
 }
 
 export async function infused(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (skipSave) return undefined
 
     const token = await ctx.store.findOneByOrFail(Token, {

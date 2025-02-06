@@ -1,23 +1,20 @@
 import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
-import {
-    Collection,
-    Era,
-    Event as EventModel,
-    Extrinsic,
-    NominationPoolsBonded,
-    PoolMember,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { match } from 'ts-pattern'
+import { Event as EventModel, Extrinsic, NominationPoolsDestroyed } from '../../../model'
+
+type DestroyedEvent = {
+    poolId: number
+}
 
 function getEventData(event: EventItem) {
-    if (nominationPools.destroyed.enjinV100.is(event)) {
-        return nominationPools.destroyed.enjinV100.decode(event)
-    }
-
-    throw new UnsupportedEventError(nominationPools.destroyed)
+    return match(event)
+        .returnType<DestroyedEvent>()
+        .when(nominationPools.destroyed.enjinV100.is, () => nominationPools.destroyed.enjinV100.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(nominationPools.destroyed)
+        })
 }
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {

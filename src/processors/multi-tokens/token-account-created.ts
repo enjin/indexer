@@ -9,7 +9,7 @@ import {
     Token,
     TokenAccount,
 } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
@@ -34,7 +34,7 @@ export async function tokenAccountCreated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
 
     if (skipSave) {
         const tokenAccount = await ctx.store.findOne(TokenAccount, {

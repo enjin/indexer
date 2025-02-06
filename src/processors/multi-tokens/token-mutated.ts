@@ -13,7 +13,7 @@ import {
     TokenBehaviorType,
 } from '../../model'
 import { isNonFungible } from 'matrixchain-indexer/mappings/matrix/multi-tokens/helpers'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { TokenMarketBehavior } from '../../types/generated/v500'
 import { syncCollectionStats } from '../../jobs/collection-stats'
@@ -55,7 +55,7 @@ export async function tokenMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(item)
+    const data = mappings.multiTokens.events.(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

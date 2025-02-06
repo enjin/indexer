@@ -14,6 +14,7 @@ import {
 import { CommonContext, EventItem, BlockHeader } from 'matrixchain-indexer/common/types/contexts'
 import { getBestListing } from 'matrixchain-indexer/common/util/entities'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
 function getEventData(ctx: CommonContext, event: EventItem) {

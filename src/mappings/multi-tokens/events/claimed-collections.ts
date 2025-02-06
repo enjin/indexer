@@ -1,39 +1,26 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function claimedCollections(event: EventItem) {
-    if (multiTokens.claimedCollections.matrixEnjinV1000.is(event)) {
-        return multiTokens.claimedCollections.matrixEnjinV1000.decode(event)
-    }
+type ClaimedCollectionsEvent = {
+    accountId: string
+    ethereumAddress: string
+    collectionIds: any
+}
 
-    if (multiTokens.claimedCollections.matrixEnjinV603.is(event)) {
-        return multiTokens.claimedCollections.matrixEnjinV603.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.matrixV1000.is(event)) {
-        return multiTokens.claimedCollections.matrixV1000.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.matrixV604.is(event)) {
-        return multiTokens.claimedCollections.matrixV604.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.enjinV1021.is(event)) {
-        return multiTokens.claimedCollections.enjinV1021.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.enjinV101.is(event)) {
-        return multiTokens.claimedCollections.enjinV101.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.v1021.is(event)) {
-        return multiTokens.claimedCollections.v1021.decode(event)
-    }
-
-    if (multiTokens.claimedCollections.v106.is(event)) {
-        return multiTokens.claimedCollections.v106.decode(event)
-    }
-
-    throw new UnsupportedEventError(multiTokens.claimedCollections)
+function claimedCollections(event: EventItem) {
+    return match(event)
+        .returnType<ClaimedCollectionsEvent>()
+        .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)
+        .when(multiTokens.claimedCollections.matrixEnjinV603.is, multiTokens.claimedCollections.matrixEnjinV603.decode)
+        .when(multiTokens.claimedCollections.matrixV1000.is, multiTokens.claimedCollections.matrixV1000.decode)
+        .when(multiTokens.claimedCollections.matrixV604.is, multiTokens.claimedCollections.matrixV604.decode)
+        .when(multiTokens.claimedCollections.enjinV1021.is, multiTokens.claimedCollections.enjinV1021.decode)
+        .when(multiTokens.claimedCollections.enjinV101.is, multiTokens.claimedCollections.enjinV101.decode)
+        .when(multiTokens.claimedCollections.v1021.is, multiTokens.claimedCollections.v1021.decode)
+        .when(multiTokens.claimedCollections.v106.is, multiTokens.claimedCollections.v106.decode)
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.claimedCollections)
+        })
 }

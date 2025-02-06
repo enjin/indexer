@@ -1,7 +1,7 @@
 import { UnsupportedEventError, throwError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Attribute, Collection, Event as EventModel, Extrinsic, MultiTokensAttributeRemoved, Token } from '../../model'
-import { CommonContext, EventItem, BlockHeader } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, EventItem, BlockHeader } from '../../common/types/contexts'
 import { processMetadata } from '../../jobs/process-metadata'
 import { computeTraits } from '../../jobs/compute-traits'
 
@@ -26,7 +26,7 @@ export async function attributeRemoved(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

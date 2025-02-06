@@ -10,8 +10,8 @@ import {
 } from '../../model'
 import { encodeId } from '../../common/tools'
 import { Sns } from '../../common/sns'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-import { mappings } from '../../mappings'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
+import * as mappings from './../../mappings'
 
 function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     return new EventModel({

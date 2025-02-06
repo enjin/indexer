@@ -1,15 +1,22 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function unreserved(eventItem: EventItem) {
-    if (multiTokens.unreserved.matrixEnjinV603.is(eventItem)) {
-        return multiTokens.unreserved.matrixEnjinV603.decode(eventItem)
-    }
+type UnreservedEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    accountId: string
+    amount: bigint
+    reserveId: any
+}
 
-    if (multiTokens.unreserved.v1050.is(eventItem)) {
-        return multiTokens.unreserved.v1050.decode(eventItem)
-    }
-
-    throw new UnsupportedEventError(multiTokens.unreserved)
+function unreserved(eventItem: EventItem) {
+    return match(eventItem)
+        .returnType<UnreservedEvent>()
+        .when(multiTokens.unreserved.matrixEnjinV603.is, () => multiTokens.unreserved.matrixEnjinV603.decode(eventItem))
+        .when(multiTokens.unreserved.v1050.is, () => multiTokens.unreserved.v1050.decode(eventItem))
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.unreserved)
+        })
 }

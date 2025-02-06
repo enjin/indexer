@@ -1,11 +1,22 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function transferred(event: EventItem) {
-    if (multiTokens.transferred.matrixEnjinV603.is(event)) {
-        return multiTokens.transferred.matrixEnjinV603.decode(event)
-    }
+type TransferredEvent = {
+    collectionId: bigint
+    tokenId: bigint
+    operator: string
+    from: string
+    to: string
+    amount: bigint
+}
 
-    throw new UnsupportedEventError(multiTokens.transferred)
+function transferred(event: EventItem) {
+    return match(event)
+        .returnType<TransferredEvent>()
+        .when(multiTokens.transferred.matrixEnjinV603.is, () => multiTokens.transferred.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.transferred)
+        })
 }

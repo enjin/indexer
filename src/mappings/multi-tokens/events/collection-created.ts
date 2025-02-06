@@ -1,11 +1,18 @@
 import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
 
-export function collectionCreated(event: EventItem) {
-    if (multiTokens.collectionCreated.matrixEnjinV603.is(event)) {
-        return multiTokens.collectionCreated.matrixEnjinV603.decode(event)
-    }
+type CollectionCreatedEvent = {
+    collectionId: bigint
+    owner: string
+}
 
-    throw new UnsupportedEventError(multiTokens.collectionCreated)
+function collectionCreated(event: EventItem) {
+    return match(event)
+        .returnType<CollectionCreatedEvent>()
+        .when(multiTokens.collectionCreated.matrixEnjinV603.is, () => multiTokens.collectionCreated.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(multiTokens.collectionCreated)
+        })
 }

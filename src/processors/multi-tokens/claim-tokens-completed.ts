@@ -1,15 +1,16 @@
 import { UnsupportedEventError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '../../model'
-import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
+import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
 
 export async function claimTokensCompleted(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.multiTokens.events.(ctx, item)
     if (!data) return undefined
 
     const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, { id: `${data.destination}-${data.ethereumAddress}` })

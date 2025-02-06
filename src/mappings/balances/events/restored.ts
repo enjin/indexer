@@ -1,10 +1,18 @@
 import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { match } from 'ts-pattern'
+
+type RestoredEvent = {
+    who: string
+    amount: bigint
+}
 
 function getRestoredAccount(event: EventItem) {
-    if (balances.restored.matrixEnjinV603.is(event)) {
-        return balances.restored.matrixEnjinV603.decode(event).who
-    }
-    throw new UnsupportedEventError(balances.restored)
+    return match(event)
+        .returnType<RestoredEvent>()
+        .when(balances.restored.matrixEnjinV603.is, () => balances.restored.matrixEnjinV603.decode(event))
+        .otherwise(() => {
+            throw new UnsupportedEventError(balances.restored)
+        })
 }
