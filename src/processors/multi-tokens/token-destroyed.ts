@@ -21,14 +21,13 @@ import * as mappings from './../../mappings'
 import { computeTraits } from '../../jobs/compute-traits'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-
 export async function tokenDestroyed(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.tokenDestroyed(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

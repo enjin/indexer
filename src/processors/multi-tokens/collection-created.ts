@@ -256,7 +256,7 @@ export async function collectionCreated(
 ): Promise<EventModel | undefined> {
     if (!item.call) return undefined
 
-    const eventData = mappings.multiTokens.events.(item)
+    const eventData = mappings.multiTokens.events.collectionCreated(item)
     if (!eventData) return undefined
 
     if (skipSave) {

@@ -10,14 +10,13 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { processMetadata } from '../../jobs/process-metadata'
 
-
 export async function minted(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.minted(item)
     if (!data) return undefined
 
     const promises: Promise<any>[] = []

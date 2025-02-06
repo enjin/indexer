@@ -6,7 +6,7 @@ import { ClaimDetails, Event as EventModel, Extrinsic, ClaimRequest, Claim, Clai
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { getTotalUnclaimedAmount } from './common'
-
+import * as mappings from './../../mappings'
 function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
     if (claimsStorage.delayClaimsPeriod.matrixEnjinV603.is(block)) {
         return claimsStorage.delayClaimsPeriod.matrixEnjinV603.get(block)
@@ -18,7 +18,7 @@ function getDelayPeriod(ctx: CommonContext, block: BlockHeader) {
 export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = getEventData(ctx, item)
+    const eventData = mappings.claims.events.claimed(item)
     if (!eventData) return undefined
 
     const account = await getOrCreateAccount(ctx, eventData.who)

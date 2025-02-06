@@ -22,7 +22,7 @@ export async function auctionFinalized(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.marketplace.events.auctionFinalized(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

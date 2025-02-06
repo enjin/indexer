@@ -23,7 +23,7 @@ export async function frozen(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.frozen(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

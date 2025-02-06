@@ -18,20 +18,12 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.listingCancelled.matrixEnjinV603.is(event)) {
-        return events.marketplace.listingCancelled.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.marketplace.listingCancelled.name)
-}
-
 export async function listingCancelled(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.marketplace.events.listingCancelled(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

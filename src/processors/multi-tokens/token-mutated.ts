@@ -17,6 +17,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { TokenMarketBehavior } from '../../types/generated/v500'
 import { syncCollectionStats } from '../../jobs/collection-stats'
+import * as mappings from './../../mappings'
 
 async function getBehavior(
     ctx: CommonContext,
@@ -44,7 +45,7 @@ export async function tokenMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.tokenMutated(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

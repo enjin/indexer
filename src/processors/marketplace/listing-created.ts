@@ -27,33 +27,12 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.listingCreated.matrixEnjinV1012.is(event)) {
-        return events.marketplace.listingCreated.matrixEnjinV1012.decode(event)
-    }
-    if (events.marketplace.listingCreated.matrixEnjinV603.is(event)) {
-        return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
-    }
-
-    if (events.marketplace.listingCreated.v1011.is(event)) {
-        return events.marketplace.listingCreated.v1011.decode(event)
-    }
-    if (events.marketplace.listingCreated.v1010.is(event)) {
-        return events.marketplace.listingCreated.v1010.decode(event)
-    }
-    if (events.marketplace.listingCreated.v500.is(event)) {
-        return events.marketplace.listingCreated.v500.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.marketplace.listingCreated.name)
-}
-
 export async function listingCreated(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.marketplace.events.listingCreated(item)
     if (!data) return undefined
     const listingId = data.listingId.substring(2)
     const [makeAssetId, takeAssetId, account] = await Promise.all([

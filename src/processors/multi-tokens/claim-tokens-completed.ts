@@ -10,7 +10,7 @@ export async function claimTokensCompleted(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.claimTokensCompleted(item)
     if (!data) return undefined
 
     const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, { id: `${data.destination}-${data.ethereumAddress}` })

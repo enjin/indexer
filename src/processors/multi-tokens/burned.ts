@@ -14,7 +14,7 @@ export async function burned(
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.burned(item)
     if (!data || data.amount === 0n) return undefined
 
     const address = data.accountId

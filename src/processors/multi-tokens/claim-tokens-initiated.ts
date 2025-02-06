@@ -11,7 +11,7 @@ export async function claimTokensInitiated(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.claimTokensInitiated(item)
     if (!data) return undefined
 
     const account = await getOrCreateAccount(ctx, data.accountId)

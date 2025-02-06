@@ -4,9 +4,9 @@ import { events } from '../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { UnsupportedEventError, throwError } from '../../common/errors'
-
+import * as mappings from './../../mappings'
 export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.reserved(item)
     if (!data) return undefined
     if (skipSave) return undefined
 

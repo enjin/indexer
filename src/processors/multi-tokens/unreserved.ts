@@ -3,9 +3,10 @@ import { TokenAccount } from '../../model'
 import { events } from '../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { UnsupportedEventError, throwError } from '../../common/errors'
+import * as mappings from './../../mappings'
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.unreserved(item)
     if (!data) return undefined
 
     if (skipSave) return undefined

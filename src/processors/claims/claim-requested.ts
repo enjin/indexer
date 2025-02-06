@@ -3,19 +3,11 @@ import { claims } from '../../types/generated/events'
 import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { Sns } from '../../common/sns'
-
-function getEventData(event: EventItem) {
-    if (claims.claimRequested.matrixEnjinV603.is(event)) {
-        return claims.claimRequested.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(claims.claimRequested.name)
-}
-
+import * as mappings from './../../mappings'
 export async function claimRequested(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = getEventData(item)
+    const eventData = mappings.claims.events.claimRequested(item)
 
     if (!eventData) return undefined
 

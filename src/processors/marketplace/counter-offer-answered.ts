@@ -22,17 +22,6 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 
-function getEventData(event: EventItem) {
-    if (events.marketplace.counterOfferAnswered.matrixEnjinV1012.is(event)) {
-        return events.marketplace.counterOfferAnswered.matrixEnjinV1012.decode(event)
-    }
-
-    if (events.marketplace.counterOfferAnswered.v1011.is(event)) {
-        return events.marketplace.counterOfferAnswered.v1011.decode(event)
-    }
-    throw new UnsupportedEventError(events.marketplace.counterOfferAnswered.name)
-}
-
 export async function counterOfferAnswered(
     ctx: CommonContext,
     block: BlockHeader,
@@ -40,7 +29,7 @@ export async function counterOfferAnswered(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     assert(item.extrinsic, 'Extrinsic is required')
 
-    const data = getEventData(item)
+    const data = mappings.marketplace.events.counterOfferAnswered(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

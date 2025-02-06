@@ -6,7 +6,7 @@ import { CommonContext, BlockHeader, EventItem } from '../../common/types/contex
 import { UnsupportedEventError } from '../../common/errors'
 
 export async function infused(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.infused(item)
     if (skipSave) return undefined
 
     const token = await ctx.store.findOneByOrFail(Token, {

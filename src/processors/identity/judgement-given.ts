@@ -3,15 +3,7 @@ import { events, calls } from '../../types/generated'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../model'
 import { CommonContext, BlockHeader, EventItem, CallItem } from 'matrixchain-indexer/common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
-
-function getEventData(event: EventItem) {
-    if (events.identity.judgementGiven.matrixEnjinV1000.is(event)) {
-        return events.identity.judgementGiven.matrixEnjinV1000.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.identity.judgementGiven.name)
-}
-
+import * as mappings from './../../mappings'
 function getCallData(call: CallItem) {
     if (calls.identity.provideJudgement.matrixEnjinV1000.is(call)) {
         return calls.identity.provideJudgement.matrixEnjinV1000.decode(call)
@@ -23,7 +15,7 @@ function getCallData(call: CallItem) {
 export async function judgementGiven(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(item)
+    const eventData = mappings.identity.events.judgementGiven(item)
     const callData = getCallData(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.target)

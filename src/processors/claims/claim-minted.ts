@@ -3,9 +3,9 @@ import { claims } from '../../types/generated/events'
 import { AccountClaimType, ClaimRequest, ClaimDetails, Event as EventModel } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getTotalUnclaimedAmount } from './common'
-
+import * as mappings from './../../mappings'
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
+    const eventData = mappings.claims.events.claimMinted(item)
 
     if (!eventData) return undefined
 

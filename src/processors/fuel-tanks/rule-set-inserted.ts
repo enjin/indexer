@@ -3,15 +3,7 @@ import { events, calls } from '../../types/generated'
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
 import { CommonContext, EventItem, BlockHeader, CallItem } from 'matrixchain-indexer/common/types/contexts'
 import { rulesToMap } from './common'
-
-function getEventData(event: EventItem) {
-    if (events.fuelTanks.ruleSetInserted.matrixEnjinV603.is(event)) {
-        return events.fuelTanks.ruleSetInserted.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.fuelTanks.ruleSetInserted.name)
-}
-
+import * as mappings from './../../mappings'
 function getCallData(call: CallItem) {
     if (calls.fuelTanks.insertRuleSet.matrixEnjinV1012.is(call)) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV1012.decode(call)
@@ -95,7 +87,7 @@ export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, it
         return undefined
     }
 
-    const eventData = getEventData(item)
+    const eventData = mappings.fuelTanks.events.ruleSetInserted(item)
 
     const callData = getCallData(item.call)
     if (!eventData || !callData) return undefined

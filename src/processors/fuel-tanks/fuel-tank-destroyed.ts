@@ -10,13 +10,13 @@ import {
     PermittedExtrinsics,
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-
+import * as mappings from './../../mappings'
 export async function fuelTankDestroyed(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
+    const eventData = mappings.fuelTanks.events.fuelTankDestroyed(item)
 
     if (!eventData) return undefined
 

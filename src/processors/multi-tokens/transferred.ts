@@ -22,7 +22,7 @@ export async function transferred(
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.transferred(item)
     if (!data) return undefined
 
     const token = await ctx.store.findOne<Token>(Token, {

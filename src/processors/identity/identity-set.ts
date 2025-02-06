@@ -5,15 +5,7 @@ import { Event as EventModel, Identity, JudgementType, Registration } from '../.
 import { CommonContext, BlockHeader, CallItem, EventItem } from 'matrixchain-indexer/common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { Data } from '../../types/generated/v1003'
-
-function getEventData(event: EventItem) {
-    if (events.identity.identitySet.matrixEnjinV1000.is(event)) {
-        return events.identity.identitySet.matrixEnjinV1000.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.identity.identitySet.name)
-}
-
+import * as mappings from './../../mappings'
 function getCallData(call: CallItem) {
     if (calls.identity.setIdentity.matrixEnjinV1000.is(call)) {
         return calls.identity.setIdentity.matrixEnjinV1000.decode(call)
@@ -33,7 +25,7 @@ const dataToValue = (raw: Data) => {
 export async function identitySet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(item)
+    const eventData = mappings.identity.events.identitySet(item)
     const callData = getCallData(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.who)

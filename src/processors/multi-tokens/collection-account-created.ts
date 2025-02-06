@@ -3,14 +3,14 @@ import { events } from '../../types/generated'
 import { Collection, CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountCreated } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
-
+import * as mappings from './../../mappings'
 export async function collectionAccountCreated(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.collectionAccountCreated(item)
     if (!data) return undefined
 
     if (skipSave) {

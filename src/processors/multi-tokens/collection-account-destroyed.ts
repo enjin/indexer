@@ -2,7 +2,7 @@ import { UnsupportedEventError, throwError } from '../../common/errors'
 import { events } from '../../types/generated'
 import { CollectionAccount, Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../common/types/contexts'
-
+import * as mappings from './../../mappings'
 
 export async function collectionAccountDestroyed(
     ctx: CommonContext,
@@ -10,7 +10,7 @@ export async function collectionAccountDestroyed(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.collectionAccountDestroyed(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

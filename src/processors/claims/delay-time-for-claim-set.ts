@@ -3,9 +3,9 @@ import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/commo
 import { ClaimDetails } from '../../model'
 import { claims } from '../../types/generated/events'
 import { getTotalUnclaimedAmount } from './common'
-
+import * as mappings from './../../mappings'
 export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    const eventData = getEventData(item)
+    const eventData = mappings.claims.events.delayTimeForClaimSet(item)
 
     const claimDetails = new ClaimDetails({
         id: '0',

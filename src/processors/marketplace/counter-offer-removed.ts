@@ -17,19 +17,12 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 
-function getEventData(event: EventItem) {
-    if (events.marketplace.counterOfferRemoved.matrixEnjinV1012.is(event)) {
-        return events.marketplace.counterOfferRemoved.matrixEnjinV1012.decode(event)
-    }
-    throw new UnsupportedEventError(events.marketplace.counterOfferRemoved.name)
-}
-
 export async function counterOfferRemoved(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(item)
+    const data = mappings.marketplace.events.counterOfferRemoved(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

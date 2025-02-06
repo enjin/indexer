@@ -27,7 +27,7 @@ export async function attributeSet(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.attributeSet(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

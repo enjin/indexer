@@ -11,9 +11,9 @@ import {
     WhitelistedCallers,
 } from '../../model'
 import { CommonContext, BlockHeader, EventItem } from 'matrixchain-indexer/common/types/contexts'
-
+import * as mappings from './../../mappings'
 export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = getEventData(item)
+    const eventData = mappings.fuelTanks.events.fuelTankMutated(item)
     if (!eventData) return undefined
 
     const { tankId } = eventData

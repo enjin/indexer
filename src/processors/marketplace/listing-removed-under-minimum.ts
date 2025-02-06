@@ -17,20 +17,12 @@ import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEventData(event: EventItem) {
-    if (events.marketplace.listingRemovedUnderMinimum.matrixEnjinV1014.is(event)) {
-        return events.marketplace.listingRemovedUnderMinimum.matrixEnjinV1014.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.marketplace.listingRemovedUnderMinimum.name)
-}
-
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(item)
+    const data = mappings.marketplace.events.listingRemovedUnderMinimum(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

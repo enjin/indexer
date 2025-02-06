@@ -33,7 +33,7 @@ export async function collectionMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.collectionMutated(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

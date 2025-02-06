@@ -18,7 +18,7 @@ import { CommonContext, BlockHeader, EventItem, CallItem } from 'matrixchain-ind
 import { getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { rulesToMap } from './common'
 import { safeJsonString } from '../../common/tools'
-
+import * as mappings from './../../mappings'
 function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
         if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call)) {
@@ -158,7 +158,7 @@ function getCallData(ctx: CommonContext, call: CallItem) {
 export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = getEventData(item)
+    const eventData = mappings.fuelTanks.events.fuelTankCreated(item)
 
     const callData = getCallData(ctx, item.call)
 

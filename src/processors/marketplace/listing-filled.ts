@@ -21,24 +21,12 @@ import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.listingFilled.matrixEnjinV1012.is(event)) {
-        return events.marketplace.listingFilled.matrixEnjinV1012.decode(event)
-    }
-
-    if (events.marketplace.listingFilled.matrixEnjinV603.is(event)) {
-        return events.marketplace.listingFilled.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(events.marketplace.listingFilled.name)
-}
-
 export async function listingFilled(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.marketplace.events.listingFilled(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

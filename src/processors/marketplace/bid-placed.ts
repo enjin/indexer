@@ -18,19 +18,12 @@ import * as mappings from './../../mappings'
 import { getBestListing, getOrCreateAccount } from 'matrixchain-indexer/common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (events.marketplace.bidPlaced.matrixEnjinV603.is(event)) {
-        return events.marketplace.bidPlaced.matrixEnjinV603.decode(event)
-    }
-    throw new UnsupportedEventError(events.marketplace.bidPlaced.name)
-}
-
 export async function bidPlaced(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = getEventData(ctx, item)
+    const data = mappings.marketplace.events.bidPlaced(item)
     if (!data) return undefined
 
     const listingId = data.listingId.substring(2)

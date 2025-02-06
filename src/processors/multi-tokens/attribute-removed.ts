@@ -12,7 +12,7 @@ export async function attributeRemoved(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(ctx, item)
+    const data = mappings.multiTokens.events.attributeRemoved(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)

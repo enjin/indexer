@@ -12,7 +12,7 @@ export async function collectionTransferred(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.(item)
+    const data = mappings.multiTokens.events.collectionTransferred(item)
     if (!data) return undefined
 
     if (skipSave) return getEvent(item, data)
