@@ -11,7 +11,7 @@ type IdentityClearedEvent = {
 export function identityCleared(event: EventItem): IdentityClearedEvent {
     return match(event)
         .returnType<IdentityClearedEvent>()
-        .when(identity.identityCleared.matrixEnjinV1000.is, () => identity.identityCleared.matrixEnjinV1000.decode(event))
+        .when(identity.identityCleared.matrixEnjinV1000.is, identity.identityCleared.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -12,7 +12,7 @@ type LiquidityWithdrawnEvent = {
 export function liquidityWithdrawn(event: EventItem): LiquidityWithdrawnEvent {
     return match(event)
         .returnType<LiquidityWithdrawnEvent>()
-        .when(stakeExchange.liquidityWithdrawn.enjinV100.is, () => stakeExchange.liquidityWithdrawn.enjinV100.decode(event))
+        .when(stakeExchange.liquidityWithdrawn.enjinV100.is, stakeExchange.liquidityWithdrawn.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

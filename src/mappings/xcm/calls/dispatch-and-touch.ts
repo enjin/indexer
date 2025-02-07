@@ -6,7 +6,7 @@
 // export async function teleportAssets(call: CallItem) {
 //     return match(call)
 //         .returnType<>()
-//         .when(calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is, () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call))
+//         .when(calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is, calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call))
 //         .otherwise(() => {
 //             throw new UnsupportedCallError(call)
 //         })

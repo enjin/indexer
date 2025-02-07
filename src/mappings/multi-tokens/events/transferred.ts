@@ -15,7 +15,7 @@ type TransferredEvent = {
 
 export function transferred(event: EventItem): TransferredEvent {
     return match(event)
-        .when(multiTokens.transferred.matrixEnjinV603.is, () => multiTokens.transferred.matrixEnjinV603.decode(event))
+        .when(multiTokens.transferred.matrixEnjinV603.is, multiTokens.transferred.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

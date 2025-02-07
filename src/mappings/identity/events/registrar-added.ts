@@ -10,7 +10,7 @@ type RegistrarAddedEvent = {
 export function registrarAdded(event: EventItem): RegistrarAddedEvent {
     return match(event)
         .returnType<RegistrarAddedEvent>()
-        .when(identity.registrarAdded.matrixEnjinV1000.is, () => identity.registrarAdded.matrixEnjinV1000.decode(event))
+        .when(identity.registrarAdded.matrixEnjinV1000.is, identity.registrarAdded.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

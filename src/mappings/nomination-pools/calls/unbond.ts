@@ -12,7 +12,7 @@ type UnbondCall = {
 export function unbond(call: CallItem): UnbondCall {
     return match(call)
         .returnType<UnbondCall>()
-        .when(calls.nominationPools.unbond.enjinV100.is, () => calls.nominationPools.unbond.enjinV100.decode(call))
+        .when(calls.nominationPools.unbond.enjinV100.is, calls.nominationPools.unbond.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

@@ -41,7 +41,7 @@ export async function tokenAccounts(
                 storage.multiTokens.tokenAccounts.v101.getPairs(block, collectionId, tokenId)
             )
             // In this spec it the account would come before the collection and token id
-            // .when(storage.multiTokens.tokenAccounts.v100.is, () => storage.multiTokens.tokenAccounts.v100.getPairs(block, '1', collectionId))
+            // .when(storage.multiTokens.tokenAccounts.v100.is, storage.multiTokens.tokenAccounts.v100.getPairs(block, '1', collectionId))
             .otherwise(() => {
                 throw new UnsupportedStorageError('collections')
             })

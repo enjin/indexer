@@ -10,7 +10,7 @@ type SetSubsCall = {
 export function setSubs(call: CallItem): SetSubsCall {
     return match(call)
         .returnType<SetSubsCall>()
-        .when(calls.identity.setSubs.matrixEnjinV1000.is, () => calls.identity.setSubs.matrixEnjinV1000.decode(call))
+        .when(calls.identity.setSubs.matrixEnjinV1000.is, calls.identity.setSubs.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

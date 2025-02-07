@@ -15,8 +15,8 @@ type Collection = {
 export async function collections(block: BlockHeader, collectionId: bigint): Promise<Collection | undefined> {
     return match(block)
         .returnType<Promise<Collection | undefined>>()
-        .when(multiTokens.collections.enjinV100.is, () => multiTokens.collections.enjinV100.get(block, collectionId))
-        .when(multiTokens.collections.v100.is, () => multiTokens.collections.v100.get(block, collectionId))
+        .when(multiTokens.collections.enjinV100.is, multiTokens.collections.enjinV100.get(block, collectionId))
+        .when(multiTokens.collections.v100.is, multiTokens.collections.v100.get(block, collectionId))
         .otherwise(() => {
             throw new UnsupportedStorageError('collections')
         })

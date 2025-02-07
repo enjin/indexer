@@ -10,7 +10,7 @@ type IdentitySetEvent = {
 export function identitySet(event: EventItem): IdentitySetEvent {
     return match(event)
         .returnType<IdentitySetEvent>()
-        .when(identity.identitySet.matrixEnjinV1000.is, () => identity.identitySet.matrixEnjinV1000.decode(event))
+        .when(identity.identitySet.matrixEnjinV1000.is, identity.identitySet.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

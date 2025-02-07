@@ -11,7 +11,7 @@ type AddLiquidityCall = {
 export function addLiquidity(call: CallItem): AddLiquidityCall {
     return match(call)
         .returnType<AddLiquidityCall>()
-        .when(calls.stakeExchange.addLiquidity.enjinV100.is, () => calls.stakeExchange.addLiquidity.enjinV100.decode(call))
+        .when(calls.stakeExchange.addLiquidity.enjinV100.is, calls.stakeExchange.addLiquidity.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

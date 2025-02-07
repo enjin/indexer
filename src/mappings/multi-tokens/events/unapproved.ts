@@ -14,7 +14,7 @@ type UnapprovedEvent = {
 export function unapproved(event: EventItem): UnapprovedEvent {
     return match(event)
         .returnType<UnapprovedEvent>()
-        .when(multiTokens.unapproved.matrixEnjinV603.is, () => multiTokens.unapproved.matrixEnjinV603.decode(event))
+        .when(multiTokens.unapproved.matrixEnjinV603.is, multiTokens.unapproved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

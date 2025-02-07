@@ -10,7 +10,7 @@ type SetIdentityCall = {
 export function setIdentity(call: CallItem): SetIdentityCall {
     return match(call)
         .returnType<SetIdentityCall>()
-        .when(calls.identity.setIdentity.matrixEnjinV1000.is, () => calls.identity.setIdentity.matrixEnjinV1000.decode(call))
+        .when(calls.identity.setIdentity.matrixEnjinV1000.is, calls.identity.setIdentity.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

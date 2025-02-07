@@ -14,7 +14,7 @@ type ValidatorPrefsSetEvent = {
 export function validatorPrefsSet(event: EventItem): ValidatorPrefsSetEvent {
     return match(event)
         .returnType<ValidatorPrefsSetEvent>()
-        .when(staking.validatorPrefsSet.enjinV100.is, () => staking.validatorPrefsSet.enjinV100.decode(event))
+        .when(staking.validatorPrefsSet.enjinV100.is, staking.validatorPrefsSet.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

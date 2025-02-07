@@ -11,7 +11,7 @@ type OfferCancelledEvent = {
 export function offerCancelled(event: EventItem): OfferCancelledEvent {
     return match(event)
         .returnType<OfferCancelledEvent>()
-        .when(stakeExchange.offerCancelled.enjinV100.is, () => stakeExchange.offerCancelled.enjinV100.decode(event))
+        .when(stakeExchange.offerCancelled.enjinV100.is, stakeExchange.offerCancelled.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

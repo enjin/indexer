@@ -11,7 +11,7 @@ type DestroyedEvent = {
 export function destroyed(event: EventItem): DestroyedEvent {
     return match(event)
         .returnType<DestroyedEvent>()
-        .when(nominationPools.destroyed.enjinV100.is, () => nominationPools.destroyed.enjinV100.decode(event))
+        .when(nominationPools.destroyed.enjinV100.is, nominationPools.destroyed.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

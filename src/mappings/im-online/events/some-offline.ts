@@ -10,7 +10,7 @@ type SomeOfflineEvent = {
 export function someOffline(event: EventItem): SomeOfflineEvent {
     return match(event)
         .returnType<SomeOfflineEvent>()
-        .when(imOnline.someOffline.enjinV100.is, () => imOnline.someOffline.enjinV100.decode(event))
+        .when(imOnline.someOffline.enjinV100.is, imOnline.someOffline.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

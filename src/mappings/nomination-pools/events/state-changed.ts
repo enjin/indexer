@@ -11,9 +11,9 @@ type StateChangedEvent = {
 export function stateChanged(event: EventItem): StateChangedEvent {
     return match(event)
         .returnType<StateChangedEvent>()
-        .when(nominationPools.stateChanged.enjinV100.is, () => nominationPools.stateChanged.enjinV100.decode(event))
-        .when(nominationPools.stateChanged.v103.is, () => nominationPools.stateChanged.v103.decode(event))
-        .when(nominationPools.stateChanged.v100.is, () => nominationPools.stateChanged.v100.decode(event))
+        .when(nominationPools.stateChanged.enjinV100.is, nominationPools.stateChanged.enjinV100.decode)
+        .when(nominationPools.stateChanged.v103.is, nominationPools.stateChanged.v103.decode)
+        .when(nominationPools.stateChanged.v100.is, nominationPools.stateChanged.v100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

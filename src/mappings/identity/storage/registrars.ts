@@ -12,7 +12,7 @@ type RegistrarInfo = {
 export function registrars(block: BlockHeader): Promise<(RegistrarInfo | undefined)[] | undefined> {
     return match(block)
         .returnType<Promise<(RegistrarInfo | undefined)[] | undefined>>()
-        .when(identity.registrars.matrixEnjinV1000.is, () => identity.registrars.matrixEnjinV1000.get(block))
+        .when(identity.registrars.matrixEnjinV1000.is, identity.registrars.matrixEnjinV1000.get)
         .otherwise(() => {
             throw new UnsupportedStorageError('Identity.Registrars')
         })

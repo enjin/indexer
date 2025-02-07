@@ -12,7 +12,7 @@ type FuelTankCreatedEvent = {
 export function fuelTankCreated(event: EventItem): FuelTankCreatedEvent {
     return match(event)
         .returnType<FuelTankCreatedEvent>()
-        .when(fuelTanks.fuelTankCreated.matrixEnjinV603.is, () => fuelTanks.fuelTankCreated.matrixEnjinV603.decode(event))
+        .when(fuelTanks.fuelTankCreated.matrixEnjinV603.is, fuelTanks.fuelTankCreated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

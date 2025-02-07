@@ -11,7 +11,7 @@ type AddSubCall = {
 export function addSub(call: CallItem) {
     return match(call)
         .returnType<AddSubCall>()
-        .when(calls.identity.addSub.matrixEnjinV1000.is, () => calls.identity.addSub.matrixEnjinV1000.decode(call))
+        .when(calls.identity.addSub.matrixEnjinV1000.is, calls.identity.addSub.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

@@ -28,9 +28,9 @@ export async function forceCreateCollection(call: CallItem) {
         .when(calls.multiTokens.forceCreateCollection.enjinV100.is, () =>
             calls.multiTokens.forceCreateCollection.enjinV100.decode(call)
         )
-        .when(calls.multiTokens.forceCreateCollection.v1050.is, () => calls.multiTokens.forceCreateCollection.v1050.decode(call))
-        .when(calls.multiTokens.forceCreateCollection.v1030.is, () => calls.multiTokens.forceCreateCollection.v1030.decode(call))
-        .when(calls.multiTokens.forceCreateCollection.v100.is, () => calls.multiTokens.forceCreateCollection.v100.decode(call))
+        .when(calls.multiTokens.forceCreateCollection.v1050.is, calls.multiTokens.forceCreateCollection.v1050.decode)
+        .when(calls.multiTokens.forceCreateCollection.v1030.is, calls.multiTokens.forceCreateCollection.v1030.decode)
+        .when(calls.multiTokens.forceCreateCollection.v100.is, calls.multiTokens.forceCreateCollection.v100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

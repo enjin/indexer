@@ -11,7 +11,7 @@ type OfferCompletedEvent = {
 export function offerCompleted(event: EventItem): OfferCompletedEvent {
     return match(event)
         .returnType<OfferCompletedEvent>()
-        .when(stakeExchange.offerCompleted.enjinV110.is, () => stakeExchange.offerCompleted.enjinV110.decode(event))
+        .when(stakeExchange.offerCompleted.enjinV110.is, stakeExchange.offerCompleted.enjinV110.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

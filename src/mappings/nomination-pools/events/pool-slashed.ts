@@ -12,7 +12,7 @@ type PoolSlashedEvent = {
 export function poolSlashed(event: EventItem): PoolSlashedEvent {
     return match(event)
         .returnType<PoolSlashedEvent>()
-        .when(nominationPools.poolSlashed.enjinV100.is, () => nominationPools.poolSlashed.enjinV100.decode(event))
+        .when(nominationPools.poolSlashed.enjinV100.is, nominationPools.poolSlashed.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

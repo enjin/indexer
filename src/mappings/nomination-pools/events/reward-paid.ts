@@ -14,7 +14,7 @@ type RewardPaidEvent = {
 export function rewardPaid(event: EventItem): RewardPaidEvent {
     return match(event)
         .returnType<RewardPaidEvent>()
-        .when(nominationPools.rewardPaid.enjinV100.is, () => nominationPools.rewardPaid.enjinV100.decode(event))
+        .when(nominationPools.rewardPaid.enjinV100.is, nominationPools.rewardPaid.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

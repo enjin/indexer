@@ -12,7 +12,7 @@ type CollectionCreatedEvent = {
 export function collectionCreated(event: EventItem): CollectionCreatedEvent {
     return match(event)
         .returnType<CollectionCreatedEvent>()
-        .when(multiTokens.collectionCreated.matrixEnjinV603.is, () => multiTokens.collectionCreated.matrixEnjinV603.decode(event))
+        .when(multiTokens.collectionCreated.matrixEnjinV603.is, multiTokens.collectionCreated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

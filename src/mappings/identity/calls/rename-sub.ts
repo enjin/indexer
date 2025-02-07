@@ -11,7 +11,7 @@ type RenameSubCall = {
 export function renameSub(call: CallItem): RenameSubCall {
     return match(call)
         .returnType<RenameSubCall>()
-        .when(calls.identity.renameSub.matrixEnjinV1000.is, () => calls.identity.renameSub.matrixEnjinV1000.decode(call))
+        .when(calls.identity.renameSub.matrixEnjinV1000.is, calls.identity.renameSub.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

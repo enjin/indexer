@@ -15,7 +15,7 @@ type UnbondedEvent = {
 export function unbonded(event: EventItem): UnbondedEvent {
     return match(event)
         .returnType<UnbondedEvent>()
-        .when(nominationPools.unbonded.enjinV100.is, () => nominationPools.unbonded.enjinV100.decode(event))
+        .when(nominationPools.unbonded.enjinV100.is, nominationPools.unbonded.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

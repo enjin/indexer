@@ -12,13 +12,13 @@ type BuyCall = {
 export function buy(call: CallItem) {
     return match(call)
         .returnType<BuyCall>()
-        .when(calls.stakeExchange.buy.enjinV100.is, () => calls.stakeExchange.buy.enjinV100.decode(call))
+        .when(calls.stakeExchange.buy.enjinV100.is, calls.stakeExchange.buy.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
 
     // if (call.name === 'Utility.batch_all') {
-    //     if (calls.utility.batchAll.enjinV1026.is(call)) {
+    //     if (calls.utility.batchAll.enjinV1026.is) {
     //         const data = calls.utility.batchAll.enjinV1026.decode(call)
     //
     //         const findCall = data.calls.find(

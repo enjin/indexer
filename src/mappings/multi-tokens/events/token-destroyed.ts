@@ -13,7 +13,7 @@ type TokenDestroyedEvent = {
 export function tokenDestroyed(event: EventItem): TokenDestroyedEvent {
     return match(event)
         .returnType<TokenDestroyedEvent>()
-        .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, () => multiTokens.tokenDestroyed.matrixEnjinV603.decode(event))
+        .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, multiTokens.tokenDestroyed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

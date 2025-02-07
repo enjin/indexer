@@ -12,7 +12,7 @@ type NominatedEvent = {
 export function nominated(event: EventItem): NominatedEvent {
     return match(event)
         .returnType<NominatedEvent>()
-        .when(nominationPools.nominated.enjinV101.is, () => nominationPools.nominated.enjinV101.decode(event))
+        .when(nominationPools.nominated.enjinV101.is, nominationPools.nominated.enjinV101.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

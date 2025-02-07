@@ -11,7 +11,7 @@ type JudgementRequestedEvent = {
 export function judgementRequested(event: EventItem): JudgementRequestedEvent {
     return match(event)
         .returnType<JudgementRequestedEvent>()
-        .when(identity.judgementRequested.matrixEnjinV1000.is, () => identity.judgementRequested.matrixEnjinV1000.decode(event))
+        .when(identity.judgementRequested.matrixEnjinV1000.is, identity.judgementRequested.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

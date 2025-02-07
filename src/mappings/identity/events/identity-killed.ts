@@ -11,7 +11,7 @@ type IdentityKilledEvent = {
 export function identityKilled(event: EventItem): IdentityKilledEvent {
     return match(event)
         .returnType<IdentityKilledEvent>()
-        .when(identity.identityKilled.matrixEnjinV1000.is, () => identity.identityKilled.matrixEnjinV1000.decode(event))
+        .when(identity.identityKilled.matrixEnjinV1000.is, identity.identityKilled.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

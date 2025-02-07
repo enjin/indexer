@@ -12,7 +12,7 @@ type SubIdentityRemovedEvent = {
 export function subIdentityRemoved(event: EventItem): SubIdentityRemovedEvent {
     return match(event)
         .returnType<SubIdentityRemovedEvent>()
-        .when(identity.subIdentityRemoved.matrixEnjinV1000.is, () => identity.subIdentityRemoved.matrixEnjinV1000.decode(event))
+        .when(identity.subIdentityRemoved.matrixEnjinV1000.is, identity.subIdentityRemoved.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

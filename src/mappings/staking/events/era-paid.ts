@@ -12,7 +12,7 @@ type EraPaidEvent = {
 export function eraPaid(event: EventItem): EraPaidEvent {
     return match(event)
         .returnType<EraPaidEvent>()
-        .when(staking.eraPaid.enjinV100.is, () => staking.eraPaid.enjinV100.decode(event))
+        .when(staking.eraPaid.enjinV100.is, staking.eraPaid.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -14,8 +14,8 @@ type UnreservedEvent = {
 export function unreserved(event: EventItem): UnreservedEvent {
     return match(event)
         .returnType<UnreservedEvent>()
-        .when(multiTokens.unreserved.matrixEnjinV603.is, () => multiTokens.unreserved.matrixEnjinV603.decode(event))
-        .when(multiTokens.unreserved.v1050.is, () => multiTokens.unreserved.v1050.decode(event))
+        .when(multiTokens.unreserved.matrixEnjinV603.is, multiTokens.unreserved.matrixEnjinV603.decode)
+        .when(multiTokens.unreserved.v1050.is, multiTokens.unreserved.v1050.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

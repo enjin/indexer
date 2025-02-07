@@ -15,10 +15,10 @@ type EraRewardsProcessedEvent = {
 export function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent {
     return match(event)
         .returnType<EraRewardsProcessedEvent>()
-        .when(nominationPools.eraRewardsProcessed.enjinV101.is, () => nominationPools.eraRewardsProcessed.enjinV101.decode(event))
-        .when(nominationPools.eraRewardsProcessed.enjinV100.is, () => nominationPools.eraRewardsProcessed.enjinV100.decode(event))
-        .when(nominationPools.eraRewardsProcessed.v104.is, () => nominationPools.eraRewardsProcessed.v104.decode(event))
-        .when(nominationPools.eraRewardsProcessed.v102.is, () => nominationPools.eraRewardsProcessed.v102.decode(event))
+        .when(nominationPools.eraRewardsProcessed.enjinV101.is, nominationPools.eraRewardsProcessed.enjinV101.decode)
+        .when(nominationPools.eraRewardsProcessed.enjinV100.is, nominationPools.eraRewardsProcessed.enjinV100.decode)
+        .when(nominationPools.eraRewardsProcessed.v104.is, nominationPools.eraRewardsProcessed.v104.decode)
+        .when(nominationPools.eraRewardsProcessed.v102.is, nominationPools.eraRewardsProcessed.v102.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
