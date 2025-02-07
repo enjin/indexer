@@ -26,7 +26,7 @@ export class RefreshBalanceResolver {
             return u8aToHex(decodeAddress(id))
         })
 
-        await fetchBalances(pks)
+        fetchBalances(pks)
 
         return true
     }

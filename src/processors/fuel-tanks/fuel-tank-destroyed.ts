@@ -17,8 +17,6 @@ export async function fuelTankDestroyed(
 ): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.fuelTankDestroyed(item)
 
-    if (!eventData) return undefined
-
     const { tankId } = eventData
 
     const [permittedExtrinsics, ruleSet, accountRuleSet, tank] = await Promise.all([

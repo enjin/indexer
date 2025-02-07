@@ -9,7 +9,7 @@ type ForceMintCall = {
     params: any
 }
 
-export async function forceMint(call: CallItem) {
+export function forceMint(call: CallItem): ForceMintCall {
     return match(call)
         .returnType<ForceMintCall>()
         .when(calls.multiTokens.forceMint.matrixEnjinV1012.is, calls.multiTokens.forceMint.matrixEnjinV1012.decode)

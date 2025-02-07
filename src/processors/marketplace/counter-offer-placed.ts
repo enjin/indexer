@@ -11,7 +11,6 @@ export async function counterOfferPlaced(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.counterOfferPlaced(item)
-    if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {

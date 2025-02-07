@@ -12,7 +12,6 @@ export async function thawed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.thawed(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.thawedEventModel(item, data)
 

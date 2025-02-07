@@ -42,51 +42,50 @@ export async function tokenMutated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    // const data = mappings.multiTokens.events.tokenMutated(item)
-    // if (skipSave) return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
-    //
-    // const token = await ctx.store.findOne<Token>(Token, {
-    //     where: { id: `${data.collectionId}-${data.tokenId}` },
-    //     relations: {
-    //         collection: true,
-    //     },
-    // })
-    //
-    // if (!token) {
-    //     throwError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
-    //     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
-    // }
-    //
-    // if (data.listingForbidden.__kind === 'SomeMutation') {
-    //     token.listingForbidden = data.listingForbidden.value
-    // }
-    //
-    // if (data.name && data.name.__kind === 'SomeMutation') {
-    //     token.nativeMetadata = new NativeTokenMetadata({
-    //         decimalCount: token.nativeMetadata?.decimalCount ?? 0,
-    //         symbol: hexToString(token.nativeMetadata?.symbol) ?? '',
-    //         name: hexToString(data.name.value),
-    //     })
-    // }
-    //
-    // if (data.anyoneCanInfuse && data.anyoneCanInfuse.__kind === 'SomeMutation') {
-    //     token.anyoneCanInfuse = data.anyoneCanInfuse.value
-    // }
-    //
-    // if (data.behavior.__kind === 'SomeMutation') {
-    //     if (!data.behavior.value) {
-    //         token.behavior = null
-    //     } else {
-    //         token.behavior = await getBehavior(ctx, data.behavior.value)
-    //     }
-    // }
-    //
-    // token.nonFungible = isNonFungible(token)
-    // token.updatedAt = new Date(block.timestamp ?? 0)
-    // await ctx.store.save(token)
-    //
-    // await syncCollectionStats(data.collectionId.toString())
-    //
-    // return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
-    return undefined
+    const data = mappings.multiTokens.events.tokenMutated(item)
+    if (skipSave) return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
+
+    const token = await ctx.store.findOne<Token>(Token, {
+        where: { id: `${data.collectionId}-${data.tokenId}` },
+        relations: {
+            collection: true,
+        },
+    })
+
+    if (!token) {
+        throwError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
+    }
+
+    if (data.listingForbidden.__kind === 'SomeMutation') {
+        token.listingForbidden = data.listingForbidden.value
+    }
+
+    if (data.name && data.name.__kind === 'SomeMutation') {
+        token.nativeMetadata = new NativeTokenMetadata({
+            decimalCount: token.nativeMetadata?.decimalCount ?? 0,
+            symbol: hexToString(token.nativeMetadata?.symbol) ?? '',
+            name: hexToString(data.name.value),
+        })
+    }
+
+    if (data.anyoneCanInfuse && data.anyoneCanInfuse.__kind === 'SomeMutation') {
+        token.anyoneCanInfuse = data.anyoneCanInfuse.value
+    }
+
+    if (data.behavior.__kind === 'SomeMutation') {
+        if (!data.behavior.value) {
+            token.behavior = null
+        } else {
+            token.behavior = await getBehavior(ctx, data.behavior.value)
+        }
+    }
+
+    token.nonFungible = isNonFungible(token)
+    token.updatedAt = new Date(block.timestamp ?? 0)
+    await ctx.store.save(token)
+
+    syncCollectionStats(data.collectionId.toString())
+
+    return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }

@@ -5,8 +5,6 @@ import * as mappings from './../../mappings'
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.claims.events.claimMinted(item)
 
-    if (!eventData) return undefined
-
     const claim = new ClaimRequest({
         id: `${eventData.who}-${block.height}-minted`,
         account: eventData.who,

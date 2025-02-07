@@ -9,15 +9,13 @@ export async function claimTokensCompleted(
     item: EventItem
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.claimTokensCompleted(item)
-    if (!data) return undefined
-
     const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, { id: `${data.destination}-${data.ethereumAddress}` })
 
     claim.completed = true
 
     await ctx.store.save(claim)
 
-    Sns.getInstance().send({
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {

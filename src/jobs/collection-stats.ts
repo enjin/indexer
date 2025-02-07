@@ -14,7 +14,7 @@ export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
     },
 })
 
-export const syncCollectionStats = async (collectionId: string) => {
+export const syncCollectionStats = (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
@@ -23,10 +23,9 @@ export const syncCollectionStats = async (collectionId: string) => {
         return
     }
 
-    collectionStatsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
-         
+    collectionStatsQueue.add({ collectionId }, { jobId: collectionId }).catch(async () => {
         console.log('Closing connection as Redis is not available')
-        collectionStatsQueue.close(true)
+        await collectionStatsQueue.close(true)
     })
 }
 
@@ -43,8 +42,8 @@ export async function syncAllCollections() {
         select: ['id'],
     })
 
-    collections.forEach((collection) => {
+    for (const collection of collections) {
         syncCollectionStats(collection.id)
         computeTraits(collection.id)
-    })
+    }
 }

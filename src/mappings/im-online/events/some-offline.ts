@@ -4,7 +4,17 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 
 type SomeOfflineEvent = {
-    offline: any
+    offline: [
+        string,
+        {
+            total: bigint
+            own: bigint
+            others: {
+                who: string
+                value: bigint
+            }[]
+        },
+    ][]
 }
 
 export function someOffline(event: EventItem): SomeOfflineEvent {

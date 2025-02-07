@@ -14,7 +14,10 @@ import {
 
 type BidPlacedEvent = {
     listingId: string
-    bid: any
+    bid: {
+        bidder: string
+        price: bigint
+    }
 }
 
 export function bidPlaced(event: EventItem): BidPlacedEvent {

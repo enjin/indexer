@@ -79,7 +79,7 @@ export class RefreshMetadataResolver {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
 
-        processMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
+        await processMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
 
         if (!isToken) {
             syncCollectionStats(collectionId)

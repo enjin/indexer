@@ -19,8 +19,6 @@ export async function auctionFinalized(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.auctionFinalized(item)
-    if (!data) return undefined
-
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
@@ -32,10 +30,6 @@ export async function auctionFinalized(
             },
         },
     })
-
-    if (!listing || !listing.makeAssetId) {
-        return undefined
-    }
 
     if (data.winningBid) {
         const sale = new ListingSale({
@@ -72,7 +66,7 @@ export async function auctionFinalized(
     }
     await ctx.store.save(listing.makeAssetId)
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    await syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

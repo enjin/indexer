@@ -6,8 +6,6 @@ import * as mappings from './../../mappings'
 export async function accountAdded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.accountAdded(item)
 
-    if (!eventData) return undefined
-
     const { tankId } = eventData
     const [tank, account] = await Promise.all([
         ctx.store.findOneByOrFail(FuelTank, { id: tankId }),

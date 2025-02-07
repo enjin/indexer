@@ -12,7 +12,6 @@ export async function attributeRemoved(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.attributeRemoved(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
 
@@ -39,7 +38,7 @@ export async function attributeRemoved(
 
             token.attributeCount -= 1
             await ctx.store.save(token)
-            processMetadata(token.id, 'token')
+            await processMetadata(token.id, 'token')
             computeTraits(data.collectionId.toString())
         } else if (attribute.collection) {
             const collection = await ctx.store.findOne<Collection>(Collection, {
@@ -53,7 +52,7 @@ export async function attributeRemoved(
 
             collection.attributeCount -= 1
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection')
+            await processMetadata(collection.id, 'collection')
         }
 
         await ctx.store.remove(attribute)

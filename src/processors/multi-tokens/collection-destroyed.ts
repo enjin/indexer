@@ -10,7 +10,6 @@ export async function collectionDestroyed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionDestroyed(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.collectionDestroyedEventModel(item, data)
 

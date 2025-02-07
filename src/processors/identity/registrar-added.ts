@@ -27,6 +27,4 @@ export async function registrarAdded(ctx: CommonContext, block: BlockHeader, ite
     })
 
     await ctx.store.save(registrar)
-
-    return undefined
 }

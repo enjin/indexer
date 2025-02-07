@@ -8,6 +8,8 @@ import { registrarAdded } from './registrar-added'
 import { subIdentityAdded } from './sub-identity-added'
 import { subIdentityRemoved } from './sub-identity-removed'
 import { subIdentityRevoked } from './sub-identity-revoked'
+import { setSubs } from './set-subs'
+import { renameSub } from './rename-sub'
 
 export const identity = {
     identityCleared,
@@ -20,6 +22,8 @@ export const identity = {
     subIdentityAdded,
     subIdentityRemoved,
     subIdentityRevoked,
+    setSubs,
+    renameSub,
 }
 
 export default identity

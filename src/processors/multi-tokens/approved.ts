@@ -7,7 +7,6 @@ import * as mappings from './../../mappings'
 
 export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.approved(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.approvedEventModel(item, data)
 

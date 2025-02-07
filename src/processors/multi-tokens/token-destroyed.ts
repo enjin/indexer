@@ -25,7 +25,6 @@ export async function tokenDestroyed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenDestroyed(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
 
@@ -142,7 +141,7 @@ export async function tokenDestroyed(
     ])
 
     await ctx.store.remove(token)
-    syncCollectionStats(data.collectionId.toString())
+    await syncCollectionStats(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
 
     if (item.extrinsic) {

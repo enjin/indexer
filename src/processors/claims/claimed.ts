@@ -6,9 +6,7 @@ import * as mappings from './../../mappings'
 
 export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
-
     const eventData = mappings.claims.events.claimed(item)
-    if (!eventData) return undefined
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 

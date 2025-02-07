@@ -14,11 +14,10 @@ export const fetchBalanceQueue = new Queue<JobData>('fetchBalanceQueue', {
     },
 })
 
-export const fetchBalances = async (ids: `0x${string}`[]) => {
-    fetchBalanceQueue.add({ ids }).catch(() => {
-         
+export const fetchBalances = (ids: `0x${string}`[]) => {
+    fetchBalanceQueue.add({ ids }).catch(async () => {
         console.log('Closing connection as Redis is not available')
-        fetchBalanceQueue.close(true)
+        await fetchBalanceQueue.close(true)
     })
 }
 

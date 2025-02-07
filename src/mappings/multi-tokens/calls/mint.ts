@@ -9,7 +9,7 @@ type MintCall = {
     params: any
 }
 
-export async function mint(call: CallItem) {
+export function mint(call: CallItem) {
     return match(call)
         .returnType<MintCall>()
         .when(calls.multiTokens.mint.matrixEnjinV1012.is, calls.multiTokens.mint.matrixEnjinV1012.decode)

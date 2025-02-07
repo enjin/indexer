@@ -12,7 +12,6 @@ export async function unapproved(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.unapproved(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.unapprovedEventModel(item, data)
 

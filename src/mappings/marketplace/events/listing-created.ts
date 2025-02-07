@@ -12,6 +12,7 @@ import {
     MarketplaceListingCreated,
     MarketplaceOfferCreated,
     Token,
+    TokenAccount,
 } from '@enjin/indexer/model'
 
 type ListingCreatedEvent = {
@@ -71,10 +72,10 @@ export async function listingCreatedEventModel(
 
     const to = null
     if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        // const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
-        // if (tokenOwner) {
-        //     to = tokenOwner.account
-        // }
+        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
+        if (tokenOwner) {
+            to = tokenOwner.account
+        }
     }
 
     return [

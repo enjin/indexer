@@ -16,7 +16,6 @@ export async function minted(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.minted(item)
-    if (!data) return undefined
 
     const promises: Promise<any>[] = []
 
@@ -63,9 +62,9 @@ export async function minted(
 
     await Promise.all(promises)
 
-    processMetadata(token.id, 'token')
+    await processMetadata(token.id, 'token')
     computeTraits(data.collectionId.toString())
-    syncCollectionStats(data.collectionId.toString())
+    await syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

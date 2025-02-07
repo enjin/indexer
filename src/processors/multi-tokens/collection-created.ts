@@ -33,96 +33,94 @@ export async function collectionCreated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    // if (!item.call) return undefined
-    // const eventData = mappings.multiTokens.events.collectionCreated(item)
-    //
-    // if (skipSave) {
-    //     const collection = await ctx.store.findOne(Collection, { where: { id: eventData.collectionId.toString() } })
-    //
-    //     if (collection) {
-    //         collection.createdAt = new Date(block.timestamp ?? 0)
-    //         await ctx.store.save(collection)
-    //     }
-    //
-    //     return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
-    // }
-    //
-    // let callData = await mappings.multiTokens.calls.createCollection(item.call)
-    // callData = await getCollectionId(ctx, block, eventData.collectionId)
-    //
-    // const account = await getOrCreateAccount(ctx, eventData.owner)
-    // const collection = new Collection({
-    //     id: eventData.collectionId.toString(),
-    //     collectionId: eventData.collectionId,
-    //     owner: account,
-    //     mintPolicy: new MintPolicy({
-    //         maxTokenCount: callData.maxTokenCount,
-    //         maxTokenSupply: callData.maxTokenSupply,
-    //         forceSingleMint: callData.forceSingleMint,
-    //     }),
-    //     marketPolicy: callData.market,
-    //     transferPolicy: new TransferPolicy({
-    //         isFrozen: false,
-    //     }),
-    //     stats: new CollectionStats({
-    //         lastSale: null,
-    //         floorPrice: null,
-    //         highestSale: null,
-    //         tokenCount: 0,
-    //         salesCount: 0,
-    //         supply: 0n,
-    //         marketCap: 0n,
-    //         volume: 0n,
-    //     }),
-    //     flags: new CollectionFlags({
-    //         featured: false,
-    //         hiddenForLegalReasons: false,
-    //     }),
-    //     verifiedAt: null,
-    //     socials: new CollectionSocials({
-    //         discord: null,
-    //         twitter: null,
-    //         instagram: null,
-    //         medium: null,
-    //         tiktok: null,
-    //         website: null,
-    //     }),
-    //     hidden: false,
-    //     burnPolicy: null,
-    //     attributePolicy: null,
-    //     attributeCount: 0,
-    //     totalDeposit: 0n, // TODO
-    //     createdAt: new Date(block.timestamp ?? 0),
-    // })
-    //
-    // await ctx.store.save(collection)
-    //
-    // const royaltyPromises = callData.explicitRoyaltyCurrencies
-    //     .map((currency: any) => {
-    //         const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
-    //         return new RoyaltyCurrency({
-    //             id: `${collection.id}-${tokenId}`,
-    //             collection,
-    //             token: new Token({ id: tokenId }),
-    //         })
-    //     })
-    //     .map((rc: any) => ctx.store.save(rc))
-    //
-    // await Promise.all(royaltyPromises)
-    //
-    // if (item.extrinsic) {
-    //     await Sns.getInstance().send({
-    //         id: item.id,
-    //         name: item.name,
-    //         body: {
-    //             collectionId: eventData.collectionId,
-    //             owner: eventData.owner,
-    //             extrinsic: item.extrinsic.id,
-    //         },
-    //     })
-    // }
-    //
-    // return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
+    if (!item.call) return undefined
+    const eventData = mappings.multiTokens.events.collectionCreated(item)
 
-    return undefined
+    if (skipSave) {
+        const collection = await ctx.store.findOne(Collection, { where: { id: eventData.collectionId.toString() } })
+
+        if (collection) {
+            collection.createdAt = new Date(block.timestamp ?? 0)
+            await ctx.store.save(collection)
+        }
+
+        return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
+    }
+
+    let callData = mappings.multiTokens.calls.createCollection(item.call)
+    callData = await getCollectionId(ctx, block, eventData.collectionId)
+
+    const account = await getOrCreateAccount(ctx, eventData.owner)
+    const collection = new Collection({
+        id: eventData.collectionId.toString(),
+        collectionId: eventData.collectionId,
+        owner: account,
+        mintPolicy: new MintPolicy({
+            maxTokenCount: callData.maxTokenCount,
+            maxTokenSupply: callData.maxTokenSupply,
+            forceSingleMint: callData.forceSingleMint,
+        }),
+        marketPolicy: callData.market,
+        transferPolicy: new TransferPolicy({
+            isFrozen: false,
+        }),
+        stats: new CollectionStats({
+            lastSale: null,
+            floorPrice: null,
+            highestSale: null,
+            tokenCount: 0,
+            salesCount: 0,
+            supply: 0n,
+            marketCap: 0n,
+            volume: 0n,
+        }),
+        flags: new CollectionFlags({
+            featured: false,
+            hiddenForLegalReasons: false,
+        }),
+        verifiedAt: null,
+        socials: new CollectionSocials({
+            discord: null,
+            twitter: null,
+            instagram: null,
+            medium: null,
+            tiktok: null,
+            website: null,
+        }),
+        hidden: false,
+        burnPolicy: null,
+        attributePolicy: null,
+        attributeCount: 0,
+        totalDeposit: 0n, // TODO
+        createdAt: new Date(block.timestamp ?? 0),
+    })
+
+    await ctx.store.save(collection)
+
+    const royaltyPromises = callData.explicitRoyaltyCurrencies
+        .map((currency: any) => {
+            const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
+            return new RoyaltyCurrency({
+                id: `${collection.id}-${tokenId}`,
+                collection,
+                token: new Token({ id: tokenId }),
+            })
+        })
+        .map((rc: any) => ctx.store.save(rc))
+
+    await Promise.all(royaltyPromises)
+
+    if (item.extrinsic) {
+        await Sns.getInstance().send({
+            id: item.id,
+            name: item.name,
+            body: {
+                collectionId: eventData.collectionId,
+                owner: eventData.owner,
+                extrinsic: item.extrinsic.id,
+            },
+        })
+    }
+
+    return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
 }

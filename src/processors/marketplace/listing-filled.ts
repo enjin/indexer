@@ -21,7 +21,6 @@ export async function listingFilled(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.listingFilled(item)
-    if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
@@ -37,8 +36,6 @@ export async function listingFilled(
             },
         },
     })
-
-    if (!listing || !listing.makeAssetId) return undefined
 
     if (listing.state.listingType === ListingType.FixedPrice) {
         listing.state = new FixedPriceState({
@@ -80,7 +77,7 @@ export async function listingFilled(
 
     if (listing.data.listingType === ListingType.Offer) {
         await ctx.store.save(listing.takeAssetId)
-        syncCollectionStats(listing.takeAssetId.collection.id)
+        await syncCollectionStats(listing.takeAssetId.collection.id)
     } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -90,7 +87,7 @@ export async function listingFilled(
             }
         }
         await ctx.store.save(listing.makeAssetId)
-        syncCollectionStats(listing.makeAssetId.collection.id)
+        await syncCollectionStats(listing.makeAssetId.collection.id)
     }
 
     if (item.extrinsic) {

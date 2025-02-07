@@ -11,10 +11,9 @@ export const fetchCollectionExtraQueue = new Queue<JobData>('fetchCollectionExtr
     },
 })
 
-export const fetchCollectionExtra = async (ids: string[]) => {
-    fetchCollectionExtraQueue.add({ ids }).catch(() => {
-         
+export const fetchCollectionExtra = (ids: string[]) => {
+    fetchCollectionExtraQueue.add({ ids }).catch(async () => {
         console.log('Closing connection as Redis is not available')
-        fetchCollectionExtraQueue.close(true)
+        await fetchCollectionExtraQueue.close(true)
     })
 }

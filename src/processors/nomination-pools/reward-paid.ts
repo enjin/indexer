@@ -8,8 +8,6 @@ export async function rewardPaid(ctx: CommonContext, block: BlockHeader, item: E
 
     const eventData = mappings.nominationPools.events.rewardPaid(item)
 
-    if (!eventData) return undefined
-
     return new EventModel({
         id: item.id,
         name: NominationPoolsRewardPaid.name,

@@ -4,7 +4,47 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type SetIdentityCall = {
-    info: any
+    info: {
+        additional: [
+            {
+                __kind: string
+                value?: string
+            },
+            {
+                __kind: string
+                value?: string
+            },
+        ][]
+        display: {
+            __kind: string
+            value?: string
+        }
+        legal: {
+            __kind: string
+            value?: string
+        }
+        web: {
+            __kind: string
+            value?: string
+        }
+        riot: {
+            __kind: string
+            value?: string
+        }
+        email: {
+            __kind: string
+            value?: string
+        }
+        pgpFingerprint?: string
+        image: {
+            __kind: string
+            value?: string
+        }
+        twitter: {
+            __kind: string
+            value?: string
+        }
+    }
 }
 
 export function setIdentity(call: CallItem): SetIdentityCall {

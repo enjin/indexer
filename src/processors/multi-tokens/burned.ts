@@ -14,7 +14,7 @@ export async function burned(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
     const data = mappings.multiTokens.events.burned(item)
-    if (!data || data.amount === 0n) return undefined
+    if (data.amount === 0n) return undefined
 
     const address = data.accountId
 
@@ -48,7 +48,7 @@ export async function burned(
         }
         await ctx.store.save(token)
         computeTraits(data.collectionId.toString())
-        syncCollectionStats(data.collectionId.toString())
+        await syncCollectionStats(data.collectionId.toString())
     } else {
         throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
     }

@@ -4,7 +4,20 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type CreateFuelTankCall = {
-    descriptor: any
+    descriptor: {
+        name: string
+        userAccountManagement?: {
+            tankReservesAccountCreationDeposit: boolean
+        }
+        ruleSets: [number, any][]
+        coveragePolicy?: {
+            __kind: 'Fees' | 'FeesAndDeposit' | 'FeesAndDepositAndTankReserves'
+        }
+        accountRules: {
+            __kind: 'WhitelistedCallers' | 'RequireToken'
+            value: any
+        }[]
+    }
 }
 
 export function createFuelTank(call: CallItem) {

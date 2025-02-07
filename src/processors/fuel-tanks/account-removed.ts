@@ -5,8 +5,6 @@ import * as mappings from './../../mappings'
 export async function accountRemoved(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.accountRemoved(item)
 
-    if (!eventData) return undefined
-
     const tankAccountId = `${eventData.tankId}-${eventData.userId}`
 
     await ctx.store.remove(FuelTankUserAccounts, tankAccountId)

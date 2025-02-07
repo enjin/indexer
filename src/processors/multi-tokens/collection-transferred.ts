@@ -12,8 +12,6 @@ export async function collectionTransferred(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionTransferred(item)
-    if (!data) return undefined
-
     if (skipSave) return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
 
     const collection = await ctx.store.findOne<Collection>(Collection, {

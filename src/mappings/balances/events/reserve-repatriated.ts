@@ -7,7 +7,9 @@ type ReserveRepatriatedEvent = {
     from: string
     to: string
     amount: bigint
-    destinationStatus: any
+    destinationStatus: {
+        __kind: 'Reserved' | 'Free'
+    }
 }
 
 export function reserveRepatriated(event: EventItem): ReserveRepatriatedEvent {

@@ -13,7 +13,6 @@ export async function transferred(
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.transferred(item)
-    if (!data) return undefined
 
     const token = await ctx.store.findOne<Token>(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -60,7 +59,7 @@ export async function transferred(
         throwError(`[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
-    syncCollectionStats(data.collectionId.toString())
+    await syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

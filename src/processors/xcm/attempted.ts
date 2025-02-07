@@ -8,8 +8,8 @@ import * as mappings from './../../mappings'
 export async function attempted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) return undefined
 
-    const callData = await mappings.xcm.calls.teleportAssets(item.call)
-    if (!callData || !('dest' in callData) || !('beneficiary' in callData) || !('assets' in callData)) {
+    const callData = mappings.xcm.calls.teleportAssets(item.call)
+    if (!('dest' in callData) || !('beneficiary' in callData) || !('assets' in callData)) {
         return undefined
     }
     let destination: string | null = null

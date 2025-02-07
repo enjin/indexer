@@ -11,7 +11,7 @@ export const rarityQueue = new Queue<JobData>('rarityQueue', {
     },
 })
 
-export const computeRarityRank = async (collectionId: string) => {
+export const computeRarityRank = (collectionId: string) => {
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
@@ -20,9 +20,8 @@ export const computeRarityRank = async (collectionId: string) => {
         return
     }
 
-    rarityQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
-         
+    rarityQueue.add({ collectionId }, { jobId: collectionId }).catch(async () => {
         console.log('Closing connection as Redis is not available')
-        rarityQueue.close(true)
+        await rarityQueue.close(true)
     })
 }

@@ -25,7 +25,6 @@ export async function attributeSet(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.attributeSet(item)
-    if (!data) return undefined
 
     if (skipSave) return mappings.multiTokens.events.attributeSetEventModel(item, data)
 
@@ -101,13 +100,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             await ctx.store.save(token)
-            processMetadata(token.id, 'token')
+            await processMetadata(token.id, 'token')
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection', false, true)
+            await processMetadata(collection.id, 'collection', false, true)
         }
         await ctx.store.save(attribute)
     } else {
@@ -130,14 +129,14 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            processMetadata(token.id, 'token')
+            await processMetadata(token.id, 'token')
         } else if (collection) {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            processMetadata(collection.id, 'collection', false, true)
+            await processMetadata(collection.id, 'collection', false, true)
         } else {
             throwError(`[AttributeSet] call was made on a non existing collection or token`, 'warning')
         }

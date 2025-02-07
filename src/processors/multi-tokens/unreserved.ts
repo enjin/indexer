@@ -6,7 +6,6 @@ import * as mappings from './../../mappings'
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.unreserved(item)
-    if (!data) return undefined
 
     if (skipSave) return undefined
 

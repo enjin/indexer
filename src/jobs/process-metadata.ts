@@ -29,5 +29,5 @@ export const processMetadata = async (resourceId: string, type: JobData['type'],
         }
     }
 
-    metadataQueue.add({ resourceId, type, force, allTokens }, { jobId: `${type}-${resourceId}` })
+    await metadataQueue.add({ resourceId, type, force, allTokens }, { jobId: `${type}-${resourceId}` })
 }

@@ -10,8 +10,6 @@ export async function collectionAccountDestroyed(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionAccountDestroyed(item)
-    if (!data) return undefined
-
     if (skipSave) return mappings.multiTokens.events.collectionAccountDestroyedEventModel(item, data)
 
     const address = data.accountId

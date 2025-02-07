@@ -20,7 +20,7 @@ export async function tokenAccountCreated(
         if (tokenAccount) {
             tokenAccount.createdAt = new Date(block.timestamp ?? 0)
             tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
-            ctx.store.save(tokenAccount)
+            await ctx.store.save(tokenAccount)
         }
 
         return mappings.multiTokens.events.tokenAccountCreatedEventModel(item, data)

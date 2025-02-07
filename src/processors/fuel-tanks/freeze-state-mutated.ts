@@ -9,8 +9,6 @@ export async function freezeStateMutated(
 ): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.freezeStateMutated(item)
 
-    if (!eventData) return undefined
-
     if (eventData.ruleSetId !== undefined) {
         const fuelTankRuleSet = await ctx.store.findOneByOrFail(FuelTankRuleSet, {
             id: `${eventData.tankId}-${eventData.ruleSetId}`,

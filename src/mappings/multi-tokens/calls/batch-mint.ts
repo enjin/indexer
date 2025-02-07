@@ -8,7 +8,7 @@ type BatchMintCall = {
     recipients: any
 }
 
-export async function batchMint(call: CallItem) {
+export function batchMint(call: CallItem): BatchMintCall {
     return match(call)
         .returnType<BatchMintCall>()
         .when(calls.multiTokens.batchMint.matrixEnjinV1012.is, calls.multiTokens.batchMint.matrixEnjinV1012.decode)

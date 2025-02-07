@@ -139,60 +139,59 @@ export async function tokenCreated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    // const eventData = mappings.multiTokens.events.tokenCreated(item)
-    //
-    // if (skipSave && item.call) {
-    //     const token = await ctx.store.findOne(Token, {
-    //         where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
-    //     })
-    //
-    //     if (token) {
-    //         token.createdAt = new Date(block.timestamp ?? 0)
-    //         await ctx.store.save(token)
-    //     }
-    //
-    //     return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
-    // }
-    //
-    // if (item.call) {
-    //     const collection = await ctx.store.findOne(Collection, {
-    //         where: { id: eventData.collectionId.toString() },
-    //     })
-    //
-    //     if (collection === null) {
-    //         throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
-    //         return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
-    //     }
-    //
-    //     let callData = await mappings.multiTokens.calls.mint(item.call)
-    //     callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
-    //
-    //     const token = new Token({
-    //         id: `${eventData.collectionId}-${eventData.tokenId}`,
-    //         tokenId: eventData.tokenId,
-    //         supply: 0n, // Supply is updated on Mint/Burn events
-    //         cap: callData.cap,
-    //         behavior: callData.behavior,
-    //         isFrozen: isTokenFrozen(callData.freezeState),
-    //         freezeState: callData.freezeState,
-    //         minimumBalance: callData.minimumBalance,
-    //         unitPrice: callData.unitPrice,
-    //         mintDeposit: 0n, // TODO: Fixed for now
-    //         attributeCount: 0,
-    //         collection,
-    //         metadata: null,
-    //         nonFungible: false,
-    //         listingForbidden: callData.listingForbidden,
-    //         accountDepositCount: callData.accountDepositCount ?? 0,
-    //         anyoneCanInfuse: callData.anyoneCanInfuse ?? false,
-    //         nativeMetadata: callData.nativeMetadata,
-    //         infusion: callData.infusion ?? 0n,
-    //         createdAt: new Date(block.timestamp ?? 0),
-    //     })
-    //
-    //     await ctx.store.save(token)
-    // }
-    //
-    // return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
-    return undefined
+    const eventData = mappings.multiTokens.events.tokenCreated(item)
+
+    if (skipSave && item.call) {
+        const token = await ctx.store.findOne(Token, {
+            where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
+        })
+
+        if (token) {
+            token.createdAt = new Date(block.timestamp ?? 0)
+            await ctx.store.save(token)
+        }
+
+        return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
+    }
+
+    if (item.call) {
+        const collection = await ctx.store.findOne(Collection, {
+            where: { id: eventData.collectionId.toString() },
+        })
+
+        if (collection === null) {
+            throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
+            return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
+        }
+
+        let callData = await mappings.multiTokens.calls.mint(item.call)
+        callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
+
+        const token = new Token({
+            id: `${eventData.collectionId}-${eventData.tokenId}`,
+            tokenId: eventData.tokenId,
+            supply: 0n, // Supply is updated on Mint/Burn events
+            cap: callData.cap,
+            behavior: callData.behavior,
+            isFrozen: isTokenFrozen(callData.freezeState),
+            freezeState: callData.freezeState,
+            minimumBalance: callData.minimumBalance,
+            unitPrice: callData.unitPrice,
+            mintDeposit: 0n, // TODO: Fixed for now
+            attributeCount: 0,
+            collection,
+            metadata: null,
+            nonFungible: false,
+            listingForbidden: callData.listingForbidden,
+            accountDepositCount: callData.accountDepositCount ?? 0,
+            anyoneCanInfuse: callData.anyoneCanInfuse ?? false,
+            nativeMetadata: callData.nativeMetadata,
+            infusion: callData.infusion ?? 0n,
+            createdAt: new Date(block.timestamp ?? 0),
+        })
+
+        await ctx.store.save(token)
+    }
+
+    return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
 }

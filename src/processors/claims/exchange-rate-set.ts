@@ -13,7 +13,5 @@ export async function exchangeRateSet(ctx: CommonContext, block: BlockHeader, it
 
     await ctx.store.save(claimDetails)
 
-    if (!eventData) return undefined
-
     return undefined
 }

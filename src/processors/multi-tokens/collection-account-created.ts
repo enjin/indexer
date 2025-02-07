@@ -10,7 +10,6 @@ export async function collectionAccountCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionAccountCreated(item)
-    if (!data) return undefined
 
     if (skipSave) {
         return mappings.multiTokens.events.collectionAccountCreatedEventModel(item, data)

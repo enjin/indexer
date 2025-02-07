@@ -35,7 +35,6 @@ export async function buyOrderCompleted(
 
     if (offerId === null) {
         const callData = mappings.stakeExchange.calls.buy(item.extrinsic.call)
-        if (!callData) throw new Error('Call data is undefined')
         offerId = callData.offerId
     }
 

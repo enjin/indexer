@@ -5,17 +5,21 @@ import { match } from 'ts-pattern'
 
 type ProvideJudgementCall = {
     regIndex: number
-    target: any
-    judgement: any
-    identity: any
+    target: {
+        __kind: string
+        value?: string
+    }
+    judgement: {
+        __kind: string
+        value?: bigint
+    }
+    identity: string
 }
 
 export function provideJudgement(call: CallItem): ProvideJudgementCall {
     return match(call)
         .returnType<ProvideJudgementCall>()
-        .when(calls.identity.provideJudgement.matrixEnjinV1000.is, () =>
-            calls.identity.provideJudgement.matrixEnjinV1000.decode(call)
-        )
+        .when(calls.identity.provideJudgement.matrixEnjinV1000.is, calls.identity.provideJudgement.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

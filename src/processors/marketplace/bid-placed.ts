@@ -11,8 +11,6 @@ export async function bidPlaced(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.bidPlaced(item)
-    if (!data) return undefined
-
     const listingId = data.listingId.substring(2)
     const [listing, account, lastBid] = await Promise.all([
         ctx.store.findOne<Listing>(Listing, {
@@ -34,8 +32,6 @@ export async function bidPlaced(
             order: { createdAt: 'DESC' },
         }),
     ])
-
-    if (!listing || !listing.makeAssetId) return undefined
 
     const bid = new Bid({
         id: `${listingId}-${data.bid.bidder}-${data.bid.price}`,
@@ -60,11 +56,11 @@ export async function bidPlaced(
         const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
         if (bestListing?.id !== listing.id) {
             listing.makeAssetId.bestListing = bestListing
-            ctx.store.save(listing.makeAssetId)
+            await ctx.store.save(listing.makeAssetId)
         }
     }
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    await syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

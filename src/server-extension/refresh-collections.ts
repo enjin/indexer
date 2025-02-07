@@ -17,7 +17,7 @@ export class RefreshCollectionsResolver {
             throw new Error('Too many collections to fetch')
         }
 
-        await fetchCollectionExtra(ids)
+        fetchCollectionExtra(ids)
 
         return true
     }

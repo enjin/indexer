@@ -14,7 +14,19 @@ import {
 
 type CounterOfferPlacedEvent = {
     listingId: string
-    counterOffer: any
+    counterOffer:
+        | {
+              sellerPrice: bigint
+              buyerPrice?: bigint
+              deposit: {
+                  amount: bigint
+                  depositor: string
+              }
+          }
+        | {
+              accountId: string
+              price: bigint
+          }
 }
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {

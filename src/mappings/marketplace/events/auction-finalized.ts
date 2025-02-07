@@ -13,7 +13,10 @@ import {
 
 type AuctionFinalizedEvent = {
     listingId: string
-    winningBid?: any
+    winningBid?: {
+        bidder: string
+        price: bigint
+    }
     protocolFee: bigint
     royalty: bigint
 }

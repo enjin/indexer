@@ -24,6 +24,4 @@ export async function judgementUnrequested(
     }
 
     await ctx.store.save(registeration)
-
-    return undefined
 }

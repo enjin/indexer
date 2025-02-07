@@ -4,7 +4,13 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type SetSubsCall = {
-    subs: any[]
+    subs: [
+        string,
+        {
+            __kind: string
+            value?: string
+        },
+    ][]
 }
 
 export function setSubs(call: CallItem): SetSubsCall {

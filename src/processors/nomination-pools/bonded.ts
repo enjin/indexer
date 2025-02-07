@@ -99,18 +99,16 @@ export async function bonded(ctx: CommonContext, block: BlockHeader, item: Event
 
     await ctx.store.save(pool)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                pool: eventData.poolId.toString(),
-                account: eventData.member,
-                bonded: eventData.bonded.toString(),
-                extrinsic: item.extrinsic.id,
-            },
-        })
-    }
+    await Sns.getInstance().send({
+        id: item.id,
+        name: item.name,
+        body: {
+            pool: eventData.poolId.toString(),
+            account: eventData.member,
+            bonded: eventData.bonded.toString(),
+            extrinsic: item.extrinsic.id,
+        },
+    })
 
     return mappings.nominationPools.events.bondedEventModel(item, eventData)
 }

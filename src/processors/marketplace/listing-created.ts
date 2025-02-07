@@ -26,7 +26,7 @@ export async function listingCreated(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.listingCreated(item)
-    if (!data) return undefined
+
     const listingId = data.listingId.substring(2)
     const [makeAssetId, takeAssetId, account] = await Promise.all([
         ctx.store.findOne<Token>(Token, {
@@ -120,7 +120,7 @@ export async function listingCreated(
 
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
-    syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
+    await syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

@@ -9,7 +9,7 @@ import { chainState } from './chain-state'
 import { processors } from './processors'
 import * as mappings from './mappings'
 import { getOrCreateAccount } from './common/util/entities'
-import { events } from './types/generated'
+import { events, calls } from './types/generated'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './common/types/contexts'
 import { updateClaimDetails } from './processors/claims/common'
 import { syncAllCollections } from './jobs/collection-stats'
@@ -183,10 +183,10 @@ async function handleEvents(
 
 async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallItem) {
     switch (item.name) {
-        // case identityCall.setSubs.name:
-        //     return processors.identity.setSubs(ctx, block, item)
-        // case identityCall.renameSub.name:
-        //     return processors.identity.renameSub(ctx, block, item)
+        case calls.identity.setSubs.name:
+            return processors.identity.setSubs(ctx, block, item)
+        case calls.identity.renameSub.name:
+            return processors.identity.renameSub(ctx, block, item)
         default: {
             return undefined
         }

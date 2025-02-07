@@ -11,7 +11,6 @@ export async function listingRemovedUnderMinimum(
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = mappings.marketplace.events.listingRemovedUnderMinimum(item)
-    if (!data) return undefined
 
     const listingId = data.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
@@ -52,7 +51,7 @@ export async function listingRemovedUnderMinimum(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    await syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

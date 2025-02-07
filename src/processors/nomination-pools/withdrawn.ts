@@ -51,7 +51,7 @@ export async function withdrawn(ctx: CommonContext, block: BlockHeader, item: Ev
         await ctx.store.save(pool)
     }
 
-    Sns.getInstance().send({
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {

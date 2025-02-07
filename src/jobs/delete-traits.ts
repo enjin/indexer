@@ -11,10 +11,9 @@ export const deleteTraitsQueue = new Queue<JobData>('deleteTraits', {
     },
 })
 
-export const deleteTokenTraits = async (id: string) => {
-    deleteTraitsQueue.add({ id }).catch(() => {
-         
+export const deleteTokenTraits = (id: string) => {
+    deleteTraitsQueue.add({ id }).catch(async () => {
         console.log('Closing connection as Redis is not available')
-        deleteTraitsQueue.close(true)
+        await deleteTraitsQueue.close(true)
     })
 }

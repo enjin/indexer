@@ -4,8 +4,14 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type RenameSubCall = {
-    sub: any
-    data: any
+    sub: {
+        __kind: string
+        value?: string
+    }
+    data: {
+        __kind: string
+        value?: string
+    }
 }
 
 export function renameSub(call: CallItem): RenameSubCall {
