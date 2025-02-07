@@ -1,4 +1,4 @@
-import { ProcessorConfig } from './types/custom/processorConfig'
+import { ProcessorConfig } from './types/custom/processor-config'
 
 const config: ProcessorConfig = {
     chainName: process.env.CHAIN_NAME || 'enjin-matrix',

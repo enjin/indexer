@@ -1,5 +1,84 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export const TrackInfo: sts.Type<TrackInfo> = sts.struct(() => {
+    return  {
+        name: sts.string(),
+        maxDeciding: sts.number(),
+        decisionDeposit: sts.bigint(),
+        preparePeriod: sts.number(),
+        decisionPeriod: sts.number(),
+        confirmPeriod: sts.number(),
+        minEnactmentPeriod: sts.number(),
+        minApproval: Curve,
+        minSupport: Curve,
+    }
+})
+
+export const Curve: sts.Type<Curve> = sts.closedEnum(() => {
+    return  {
+        LinearDecreasing: sts.enumStruct({
+            length: Perbill,
+            floor: Perbill,
+            ceil: Perbill,
+        }),
+        Reciprocal: sts.enumStruct({
+            factor: FixedI64,
+            xOffset: FixedI64,
+            yOffset: FixedI64,
+        }),
+        SteppedDecreasing: sts.enumStruct({
+            begin: Perbill,
+            end: Perbill,
+            step: Perbill,
+            period: Perbill,
+        }),
+    }
+})
+
+export const FixedI64 = sts.bigint()
+
+export type Curve = Curve_LinearDecreasing | Curve_Reciprocal | Curve_SteppedDecreasing
+
+export interface Curve_LinearDecreasing {
+    __kind: 'LinearDecreasing'
+    length: Perbill
+    floor: Perbill
+    ceil: Perbill
+}
+
+export interface Curve_Reciprocal {
+    __kind: 'Reciprocal'
+    factor: FixedI64
+    xOffset: FixedI64
+    yOffset: FixedI64
+}
+
+export interface Curve_SteppedDecreasing {
+    __kind: 'SteppedDecreasing'
+    begin: Perbill
+    end: Perbill
+    step: Perbill
+    period: Perbill
+}
+
+export type FixedI64 = bigint
+
+export interface TrackInfo {
+    name: string
+    maxDeciding: number
+    decisionDeposit: bigint
+    preparePeriod: number
+    decisionPeriod: number
+    confirmPeriod: number
+    minEnactmentPeriod: number
+    minApproval: Curve
+    minSupport: Curve
+}
+
+export const PalletId = sts.bytes()
+
+export const Permill = sts.number()
+
 export type Type_940 = Type_940_Approved | Type_940_Cancelled | Type_940_Killed | Type_940_Ongoing | Type_940_Rejected | Type_940_TimedOut
 
 export interface Type_940_Approved {

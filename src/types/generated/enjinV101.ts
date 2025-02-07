@@ -1,5 +1,7 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export const PalletId = sts.bytes()
+
 export type Type_951 = Type_951_Approved | Type_951_Cancelled | Type_951_Killed | Type_951_Ongoing | Type_951_Rejected | Type_951_TimedOut
 
 export interface Type_951_Approved {

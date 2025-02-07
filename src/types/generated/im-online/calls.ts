@@ -1,10 +1,10 @@
-import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 
-export const heartbeat =  {
+export const heartbeat = {
     name: 'ImOnline.heartbeat',
     /**
      * ## Complexity:
@@ -14,7 +14,7 @@ export const heartbeat =  {
      *   - `O(E)`: decoding/encoding of length `E`
      */
     enjinV100: new CallType(
-        'ImOnline.heartbeat',
+        'im-online.heartbeat',
         sts.struct({
             heartbeat: enjinV100.Heartbeat,
             signature: sts.bytes(),
@@ -24,7 +24,7 @@ export const heartbeat =  {
      * See [`Pallet::heartbeat`].
      */
     enjinV1026: new CallType(
-        'ImOnline.heartbeat',
+        'im-online.heartbeat',
         sts.struct({
             heartbeat: enjinV1026.Heartbeat,
             signature: sts.bytes(),
@@ -42,7 +42,7 @@ export const heartbeat =  {
      * # </weight>
      */
     v100: new CallType(
-        'ImOnline.heartbeat',
+        'im-online.heartbeat',
         sts.struct({
             heartbeat: v100.Heartbeat,
             signature: sts.bytes(),
@@ -52,7 +52,7 @@ export const heartbeat =  {
      * See [`Pallet::heartbeat`].
      */
     v1026: new CallType(
-        'ImOnline.heartbeat',
+        'im-online.heartbeat',
         sts.struct({
             heartbeat: v1026.Heartbeat,
             signature: sts.bytes(),

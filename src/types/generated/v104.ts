@@ -1,5 +1,7 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export const Perbill = sts.number()
+
 export type V4ExecutorParam = V4ExecutorParam_MaxMemoryPages | V4ExecutorParam_PrecheckingMaxMemory | V4ExecutorParam_PvfExecTimeout | V4ExecutorParam_PvfPrepTimeout | V4ExecutorParam_StackLogicalMax | V4ExecutorParam_StackNativeMax | V4ExecutorParam_WasmExtBulkMemory
 
 export interface V4ExecutorParam_MaxMemoryPages {
@@ -256,8 +258,6 @@ export const CommissionChangeRate: sts.Type<CommissionChangeRate> = sts.struct((
         minDelay: sts.number(),
     }
 })
-
-export const Perbill = sts.number()
 
 export const PoolState: sts.Type<PoolState> = sts.closedEnum(() => {
     return  {

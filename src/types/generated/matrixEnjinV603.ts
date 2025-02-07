@@ -1,5 +1,141 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export const PoolAccountIds: sts.Type<PoolAccountIds> = sts.struct(() => {
+    return  {
+        collator: AccountId32,
+        community: AccountId32,
+        fuelTanks: AccountId32,
+        priceDiscovery: AccountId32,
+    }
+})
+
+export interface PoolAccountIds {
+    collator: AccountId32
+    community: AccountId32
+    fuelTanks: AccountId32
+    priceDiscovery: AccountId32
+}
+
+export const NativeAssetInfo: sts.Type<NativeAssetInfo> = sts.struct(() => {
+    return  {
+        id: AssetId,
+        unitsPerSecond: sts.bigint(),
+    }
+})
+
+export interface NativeAssetInfo {
+    id: AssetId
+    unitsPerSecond: bigint
+}
+
+export const PalletId = sts.bytes()
+
+export const Permill = sts.number()
+
+export const RuntimeVersion: sts.Type<RuntimeVersion> = sts.struct(() => {
+    return  {
+        specName: sts.string(),
+        implName: sts.string(),
+        authoringVersion: sts.number(),
+        specVersion: sts.number(),
+        implVersion: sts.number(),
+        apis: sts.array(() => sts.tuple(() => [sts.bytes(), sts.number()])),
+        transactionVersion: sts.number(),
+        stateVersion: sts.number(),
+    }
+})
+
+export interface RuntimeVersion {
+    specName: string
+    implName: string
+    authoringVersion: number
+    specVersion: number
+    implVersion: number
+    apis: [Bytes, number][]
+    transactionVersion: number
+    stateVersion: number
+}
+
+export const RuntimeDbWeight: sts.Type<RuntimeDbWeight> = sts.struct(() => {
+    return  {
+        read: sts.bigint(),
+        write: sts.bigint(),
+    }
+})
+
+export interface RuntimeDbWeight {
+    read: bigint
+    write: bigint
+}
+
+export const BlockLength: sts.Type<BlockLength> = sts.struct(() => {
+    return  {
+        max: Type_261,
+    }
+})
+
+export const Type_261: sts.Type<Type_261> = sts.struct(() => {
+    return  {
+        normal: sts.number(),
+        operational: sts.number(),
+        mandatory: sts.number(),
+    }
+})
+
+export interface Type_261 {
+    normal: number
+    operational: number
+    mandatory: number
+}
+
+export interface BlockLength {
+    max: Type_261
+}
+
+export const BlockWeights: sts.Type<BlockWeights> = sts.struct(() => {
+    return  {
+        baseBlock: Weight,
+        maxBlock: Weight,
+        perClass: Type_257,
+    }
+})
+
+export const Type_257: sts.Type<Type_257> = sts.struct(() => {
+    return  {
+        normal: WeightsPerClass,
+        operational: WeightsPerClass,
+        mandatory: WeightsPerClass,
+    }
+})
+
+export const WeightsPerClass: sts.Type<WeightsPerClass> = sts.struct(() => {
+    return  {
+        baseExtrinsic: Weight,
+        maxExtrinsic: sts.option(() => Weight),
+        maxTotal: sts.option(() => Weight),
+        reserved: sts.option(() => Weight),
+    }
+})
+
+export interface WeightsPerClass {
+    baseExtrinsic: Weight
+    maxExtrinsic?: (Weight | undefined)
+    maxTotal?: (Weight | undefined)
+    reserved?: (Weight | undefined)
+}
+
+export interface Type_257 {
+    normal: WeightsPerClass
+    operational: WeightsPerClass
+    mandatory: WeightsPerClass
+}
+
+export interface BlockWeights {
+    baseBlock: Weight
+    maxBlock: Weight
+    perClass: Type_257
+}
+
 export type Perbill = number
 
 export interface ClaimData {

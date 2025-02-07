@@ -3,8 +3,8 @@ import { hexStripPrefix } from '@polkadot/util'
 import * as Sentry from '@sentry/node'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
-import { createEnjToken } from './createEnjToken'
-import { chainState } from './chainState'
+import { createDefaultData } from './create-default-data'
+import { chainState } from './chain-state'
 import { processors } from './processors'
 import * as mappings from './mappings'
 import { getOrCreateAccount } from './common/util/entities'
@@ -233,7 +233,7 @@ processor.run(
                 // const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 0) {
-                    await createEnjToken(ctx as unknown as CommonContext, block.header)
+                    await createDefaultData(ctx as unknown as CommonContext, block.header)
                     await chainState(ctx as unknown as CommonContext, block.header)
 
                     if (Number(config.prefix) === 1110) {

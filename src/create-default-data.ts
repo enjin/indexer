@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext } from './mappings/types/contexts'
+import { BlockHeader, CommonContext } from './common/types/contexts'
 import {
     CapType,
     Collection,
@@ -12,28 +12,15 @@ import {
     TokenCapSupply,
     TransferPolicy,
 } from './model'
-import { multiTokens } from './types/generated/storage'
-import { getOrCreateAccount } from './mappings/util/entities'
-import { UnknownVersionError } from './common/errors'
-
-async function getDegenCollectionData(block: BlockHeader) {
-    if (multiTokens.collections.enjinV100.is(block)) {
-        return multiTokens.collections.enjinV100.get(block, 2n)
-    }
-
-    if (multiTokens.collections.v100.is(block)) {
-        return multiTokens.collections.v100.get(block, 2n)
-    }
-
-    throw new UnknownVersionError('collections')
-}
+import { getOrCreateAccount } from './common/util/entities'
+import * as mappings from './mappings'
 
 export async function createDefaultData(ctx: CommonContext, block: BlockHeader) {
-    const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
-
     const enj = await ctx.store.findOneBy(Token, { id: '0-0' })
 
     if (!enj) {
+        const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
+
         const enjCollection = new Collection({
             id: '0',
             collectionId: 0n,
@@ -125,7 +112,7 @@ export async function createDefaultData(ctx: CommonContext, block: BlockHeader) 
             totalDeposit: 0n,
             createdAt: new Date(block.timestamp ?? 0),
         })
-        const degenCollectionData = await getDegenCollectionData(block)
+        const degenCollectionData = await mappings.multiTokens.storage.collections(block)
         if (!degenCollectionData) {
             throw new Error('Degen collection data not found')
         }
