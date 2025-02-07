@@ -11,7 +11,7 @@ type ReservedEvent = {
 export function reserved(event: EventItem): ReservedEvent {
     return match(event)
         .returnType<ReservedEvent>()
-        .when(balances.reserved.matrixEnjinV603.is, () => balances.reserved.matrixEnjinV603.decode(event))
+        .when(balances.reserved.matrixEnjinV603.is, balances.reserved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

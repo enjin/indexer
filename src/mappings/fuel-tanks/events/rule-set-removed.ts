@@ -11,7 +11,7 @@ type RuleSetRemovedEvent = {
 export function ruleSetRemoved(event: EventItem): RuleSetRemovedEvent {
     return match(event)
         .returnType<RuleSetRemovedEvent>()
-        .when(fuelTanks.ruleSetRemoved.matrixEnjinV603.is, () => fuelTanks.ruleSetRemoved.matrixEnjinV603.decode(event))
+        .when(fuelTanks.ruleSetRemoved.matrixEnjinV603.is, fuelTanks.ruleSetRemoved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

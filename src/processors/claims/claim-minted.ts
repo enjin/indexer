@@ -24,7 +24,7 @@ export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: 
 
     const claimDetails = new ClaimDetails({
         id: '0',
-        totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(ctx, block),
+        totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
     })
 
     await Promise.all([ctx.store.insert(claim), ctx.store.save(claimDetails)])

@@ -11,7 +11,7 @@ type WithdrawEvent = {
 export function withdraw(event: EventItem): WithdrawEvent {
     return match(event)
         .returnType<WithdrawEvent>()
-        .when(balances.withdraw.matrixEnjinV603.is, () => balances.withdraw.matrixEnjinV603.decode(event))
+        .when(balances.withdraw.matrixEnjinV603.is, balances.withdraw.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

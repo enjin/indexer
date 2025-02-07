@@ -11,7 +11,7 @@ type ThawedEvent = {
 export function thawed(event: EventItem): ThawedEvent {
     return match(event)
         .returnType<ThawedEvent>()
-        .when(balances.thawed.matrixEnjinV603.is, () => balances.thawed.matrixEnjinV603.decode(event))
+        .when(balances.thawed.matrixEnjinV603.is, balances.thawed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -11,7 +11,7 @@ type LockedEvent = {
 export function locked(event: EventItem): LockedEvent {
     return match(event)
         .returnType<LockedEvent>()
-        .when(balances.locked.matrixEnjinV603.is, () => balances.locked.matrixEnjinV603.decode(event))
+        .when(balances.locked.matrixEnjinV603.is, balances.locked.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

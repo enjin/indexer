@@ -11,7 +11,7 @@ type BurnedEvent = {
 export function burned(event: EventItem): BurnedEvent {
     return match(event)
         .returnType<BurnedEvent>()
-        .when(balances.burned.matrixEnjinV603.is, () => balances.burned.matrixEnjinV603.decode(event))
+        .when(balances.burned.matrixEnjinV603.is, balances.burned.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -11,7 +11,7 @@ type ClaimMintedEvent = {
 export function claimMinted(event: EventItem): ClaimMintedEvent {
     return match(event)
         .returnType<ClaimMintedEvent>()
-        .when(claims.claimMinted.matrixEnjinV603.is, () => claims.claimMinted.matrixEnjinV603.decode(event))
+        .when(claims.claimMinted.matrixEnjinV603.is, claims.claimMinted.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

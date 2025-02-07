@@ -11,7 +11,7 @@ type SlashedEvent = {
 export function slashed(event: EventItem): SlashedEvent {
     return match(event)
         .returnType<SlashedEvent>()
-        .when(balances.slashed.matrixEnjinV603.is, () => balances.slashed.matrixEnjinV603.decode(event))
+        .when(balances.slashed.matrixEnjinV603.is, balances.slashed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

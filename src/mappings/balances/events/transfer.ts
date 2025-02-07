@@ -12,7 +12,7 @@ type TransferEvent = {
 export function transfer(event: EventItem): TransferEvent {
     return match(event)
         .returnType<TransferEvent>()
-        .when(balances.transfer.matrixEnjinV603.is, () => balances.transfer.matrixEnjinV603.decode(event))
+        .when(balances.transfer.matrixEnjinV603.is, balances.transfer.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

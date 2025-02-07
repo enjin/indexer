@@ -11,7 +11,7 @@ type RuleSetInsertedEvent = {
 export function ruleSetInserted(event: EventItem): RuleSetInsertedEvent {
     return match(event)
         .returnType<RuleSetInsertedEvent>()
-        .when(fuelTanks.ruleSetInserted.matrixEnjinV603.is, () => fuelTanks.ruleSetInserted.matrixEnjinV603.decode(event))
+        .when(fuelTanks.ruleSetInserted.matrixEnjinV603.is, fuelTanks.ruleSetInserted.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

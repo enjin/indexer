@@ -11,7 +11,7 @@ type DepositEvent = {
 export function deposit(event: EventItem): DepositEvent {
     return match(event)
         .returnType<DepositEvent>()
-        .when(balances.deposit.matrixEnjinV603.is, () => balances.deposit.matrixEnjinV603.decode(event))
+        .when(balances.deposit.matrixEnjinV603.is, balances.deposit.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

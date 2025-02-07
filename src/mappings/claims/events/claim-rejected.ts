@@ -11,7 +11,7 @@ type ClaimRejectedEvent = {
 export function claimRejected(event: EventItem): ClaimRejectedEvent {
     return match(event)
         .returnType<ClaimRejectedEvent>()
-        .when(claims.claimRejected.matrixEnjinV603.is, () => claims.claimRejected.matrixEnjinV603.decode(event))
+        .when(claims.claimRejected.matrixEnjinV603.is, claims.claimRejected.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

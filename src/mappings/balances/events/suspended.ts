@@ -11,7 +11,7 @@ type SuspendedEvent = {
 export function suspended(event: EventItem): SuspendedEvent {
     return match(event)
         .returnType<SuspendedEvent>()
-        .when(balances.suspended.matrixEnjinV603.is, () => balances.suspended.matrixEnjinV603.decode(event))
+        .when(balances.suspended.matrixEnjinV603.is, balances.suspended.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

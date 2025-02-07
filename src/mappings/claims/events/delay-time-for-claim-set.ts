@@ -10,7 +10,7 @@ type DelayTimeForClaimSetEvent = {
 export function delayTimeForClaimSet(event: EventItem): DelayTimeForClaimSetEvent {
     return match(event)
         .returnType<DelayTimeForClaimSetEvent>()
-        .when(claims.delayTimeForClaimSet.matrixEnjinV603.is, () => claims.delayTimeForClaimSet.matrixEnjinV603.decode(event))
+        .when(claims.delayTimeForClaimSet.matrixEnjinV603.is, claims.delayTimeForClaimSet.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

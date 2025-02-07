@@ -11,7 +11,7 @@ type DustLostEvent = {
 export function dustLost(event: EventItem): DustLostEvent {
     return match(event)
         .returnType<DustLostEvent>()
-        .when(balances.dustLost.matrixEnjinV603.is, () => balances.dustLost.matrixEnjinV603.decode(event))
+        .when(balances.dustLost.matrixEnjinV603.is, balances.dustLost.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -15,14 +15,14 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     const claimAccount = eventData.ethereumAddress?.toLowerCase()
 
     const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
-    const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(ctx, block))
+    const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(block))
 
     if (!period) {
         throw new Error('Delay period is not set')
     }
 
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
-        mappings.claims.storage.totalUnclaimedAmount(ctx, block),
+        mappings.claims.storage.totalUnclaimedAmount(block),
         ctx.store.find(ClaimRequest, {
             where: {
                 account: claimAccount,

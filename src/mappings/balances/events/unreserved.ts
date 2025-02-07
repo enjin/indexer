@@ -11,7 +11,7 @@ type UnreservedEvent = {
 export function unreserved(event: EventItem): UnreservedEvent {
     return match(event)
         .returnType<UnreservedEvent>()
-        .when(balances.unreserved.matrixEnjinV603.is, () => balances.unreserved.matrixEnjinV603.decode(event))
+        .when(balances.unreserved.matrixEnjinV603.is, balances.unreserved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -11,7 +11,7 @@ type MintedEvent = {
 export function minted(event: EventItem): MintedEvent {
     return match(event)
         .returnType<MintedEvent>()
-        .when(balances.minted.matrixEnjinV603.is, () => balances.minted.matrixEnjinV603.decode(event))
+        .when(balances.minted.matrixEnjinV603.is, balances.minted.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

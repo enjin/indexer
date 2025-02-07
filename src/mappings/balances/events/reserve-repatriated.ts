@@ -13,7 +13,7 @@ type ReserveRepatriatedEvent = {
 export function reserveRepatriated(event: EventItem): ReserveRepatriatedEvent {
     return match(event)
         .returnType<ReserveRepatriatedEvent>()
-        .when(balances.reserveRepatriated.matrixEnjinV603.is, () => balances.reserveRepatriated.matrixEnjinV603.decode(event))
+        .when(balances.reserveRepatriated.matrixEnjinV603.is, balances.reserveRepatriated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

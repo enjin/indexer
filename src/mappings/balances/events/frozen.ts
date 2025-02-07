@@ -11,7 +11,7 @@ type FrozenEvent = {
 export function frozen(event: EventItem): FrozenEvent {
     return match(event)
         .returnType<FrozenEvent>()
-        .when(balances.frozen.matrixEnjinV603.is, () => balances.frozen.matrixEnjinV603.decode(event))
+        .when(balances.frozen.matrixEnjinV603.is, balances.frozen.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

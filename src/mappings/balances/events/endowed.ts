@@ -11,7 +11,7 @@ type EndowedEvent = {
 export function endowed(event: EventItem): EndowedEvent {
     return match(event)
         .returnType<EndowedEvent>()
-        .when(balances.endowed.matrixEnjinV603.is, () => balances.endowed.matrixEnjinV603.decode(event))
+        .when(balances.endowed.matrixEnjinV603.is, balances.endowed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

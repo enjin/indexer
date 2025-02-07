@@ -12,7 +12,7 @@ type FreezeStateMutatedEvent = {
 export function freezeStateMutated(event: EventItem): FreezeStateMutatedEvent {
     return match(event)
         .returnType<FreezeStateMutatedEvent>()
-        .when(fuelTanks.freezeStateMutated.matrixEnjinV603.is, () => fuelTanks.freezeStateMutated.matrixEnjinV603.decode(event))
+        .when(fuelTanks.freezeStateMutated.matrixEnjinV603.is, fuelTanks.freezeStateMutated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

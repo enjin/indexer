@@ -10,7 +10,7 @@ type ExchangeRateSetEvent = {
 export function exchangeRateSet(event: EventItem): ExchangeRateSetEvent {
     return match(event)
         .returnType<ExchangeRateSetEvent>()
-        .when(claims.exchangeRateSet.matrixEnjinV603.is, () => claims.exchangeRateSet.matrixEnjinV603.decode(event))
+        .when(claims.exchangeRateSet.matrixEnjinV603.is, claims.exchangeRateSet.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

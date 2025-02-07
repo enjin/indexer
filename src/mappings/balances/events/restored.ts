@@ -11,7 +11,7 @@ type RestoredEvent = {
 export function restored(event: EventItem): RestoredEvent {
     return match(event)
         .returnType<RestoredEvent>()
-        .when(balances.restored.matrixEnjinV603.is, () => balances.restored.matrixEnjinV603.decode(event))
+        .when(balances.restored.matrixEnjinV603.is, balances.restored.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
