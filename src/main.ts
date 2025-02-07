@@ -1,3 +1,4 @@
+import '@polkadot/api-augment/substrate'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
 import * as Sentry from '@sentry/node'
@@ -287,7 +288,7 @@ processor.run(
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                         const tankData = mappings.fuelTanks.calls.dispatch(call)
-                        const tank = await ctx.store.findOneByOrFail(FuelTank, { id: (tankData.tankId as any).value })
+                        const tank = await ctx.store.findOneByOrFail(FuelTank, { id: tankData.tankId.value })
 
                         fuelTank = new FuelTankData({
                             id: tank.id,

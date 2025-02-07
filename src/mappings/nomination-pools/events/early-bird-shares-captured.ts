@@ -9,7 +9,7 @@ type EarlyBirdSharesCapturedEvent = {
     totalAccounts: number
 }
 
-function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent {
+export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent {
     return match(event)
         .returnType<EarlyBirdSharesCapturedEvent>()
         .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, () =>

@@ -9,7 +9,7 @@ type PoolSlashedEvent = {
     balance: bigint
 }
 
-function poolSlashed(event: EventItem): PoolSlashedEvent {
+export function poolSlashed(event: EventItem): PoolSlashedEvent {
     return match(event)
         .returnType<PoolSlashedEvent>()
         .when(nominationPools.poolSlashed.enjinV100.is, () => nominationPools.poolSlashed.enjinV100.decode(event))

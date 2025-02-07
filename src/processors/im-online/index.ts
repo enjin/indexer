@@ -1,5 +1,7 @@
-import * as events from './events'
+import { someOffline } from './some-offline'
 
-export default {
-    events,
+export const imOnline = {
+    someOffline,
 }
+
+export default imOnline

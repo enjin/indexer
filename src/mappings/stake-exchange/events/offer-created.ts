@@ -13,7 +13,7 @@ type OfferCreatedEvent = {
     }
 }
 
-function offerCreated(event: EventItem): OfferCreatedEvent {
+export function offerCreated(event: EventItem): OfferCreatedEvent {
     return match(event)
         .returnType<OfferCreatedEvent>()
         .when(stakeExchange.offerCreated.enjinV1023.is, () => stakeExchange.offerCreated.enjinV1023.decode(event))

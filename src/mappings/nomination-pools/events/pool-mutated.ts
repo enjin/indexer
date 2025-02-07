@@ -10,7 +10,7 @@ type PoolMutatedEvent = {
     mutation: any
 }
 
-function poolMutated(event: EventItem) {
+export function poolMutated(event: EventItem) {
     return match(event)
         .returnType<PoolMutatedEvent>()
         .when(nominationPools.poolMutated.enjinV1023.is, () => nominationPools.poolMutated.enjinV1023.decode(event))

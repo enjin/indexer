@@ -12,7 +12,7 @@ type EraRewardsProcessedEvent = {
     reinvested: bigint
 }
 
-function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent {
+export function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent {
     return match(event)
         .returnType<EraRewardsProcessedEvent>()
         .when(nominationPools.eraRewardsProcessed.enjinV101.is, () => nominationPools.eraRewardsProcessed.enjinV101.decode(event))

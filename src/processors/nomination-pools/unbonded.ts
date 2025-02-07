@@ -1,0 +1,51 @@
+import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { Event as EventModel, PoolMember, UnbondingEras } from '../../model'
+import { getOrCreateAccount } from '../../common/util/entities'
+import { updatePool } from './pool'
+import { Sns } from '../../common/sns'
+import * as mappings from './../../mappings'
+
+export async function unbonded(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+    if (!item.extrinsic) return undefined
+    if (!item.extrinsic.call) return undefined
+
+    const eventData = mappings.nominationPools.events.unbonded(item)
+    const callData = mappings.nominationPools.calls.unbond(item.extrinsic.call)
+
+    if (!eventData || !callData) return undefined
+
+    const pool = await updatePool(ctx, block, eventData.poolId.toString())
+    const account = await getOrCreateAccount(ctx, eventData.member)
+    const poolMember = await ctx.store.findOne(PoolMember, {
+        relations: { tokenAccount: true },
+        where: { id: `${pool.id}-${account.id}` },
+    })
+    // TODO: prefer findOrfail but using findOne because of a weird case in canary,
+    // when pool deposit is unbonded, the member becomes stash account but on bonded it's pool creator
+
+    if (!poolMember) return undefined
+
+    poolMember.bonded -= eventData.balance
+    if (poolMember.tokenAccount?.totalBalance === 0n) {
+        poolMember.bonded = 0n
+    }
+
+    poolMember.unbondingEras = (poolMember.unbondingEras || []).concat([
+        new UnbondingEras({ era: eventData.era, balance: eventData.balance }),
+    ])
+
+    await Promise.all([ctx.store.save(pool), ctx.store.save(poolMember)])
+    await Sns.getInstance().send({
+        id: item.id,
+        name: item.name,
+        body: {
+            pool: pool.id,
+            account: account.id,
+            balance: eventData.balance,
+            unbondingPoints: eventData.points,
+            extrinsic: item.extrinsic.id,
+        },
+    })
+
+    return mappings.nominationPools.events.unbondedEventModel(item, eventData)
+}

@@ -9,7 +9,7 @@ type LiquidityWithdrawnEvent = {
     offerId: bigint
 }
 
-function liquidityWithdrawn(event: EventItem): LiquidityWithdrawnEvent {
+export function liquidityWithdrawn(event: EventItem): LiquidityWithdrawnEvent {
     return match(event)
         .returnType<LiquidityWithdrawnEvent>()
         .when(stakeExchange.liquidityWithdrawn.enjinV100.is, () => stakeExchange.liquidityWithdrawn.enjinV100.decode(event))

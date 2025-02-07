@@ -1,8 +1,8 @@
-import { bnToU8a, stringToU8a, u8aConcat, BN, hexToU8a, u8aToHex } from '@polkadot/util'
+import { BN, bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 import Big from 'big.js'
-import { storage, constants } from '../../types/generated'
-import { CommonContext, BlockHeader } from '../types/contexts'
-import { EarlyBirdDetails, NominationPool, PoolBalance, EraReward } from '../../model'
+import { constants, storage } from '../../types/generated'
+import { BlockHeader, CommonContext } from '../types/contexts'
+import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
 import { UnknownVersionError } from '../../common/errors'
 
@@ -181,7 +181,6 @@ export async function updateEarlyBirdInfo(ctx: CommonContext, block: BlockHeader
 
         await ctx.store.save(earlyBird)
     } catch (error) {
-        // eslint-disable-next-line no-console
         console.warn(error)
     }
 }

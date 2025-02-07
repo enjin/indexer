@@ -1,4 +1,4 @@
-import { save, saveAccounts, addAccountsToSet } from './save'
+import { addAccountsToSet, save, saveAccounts } from './save'
 
 export const balances = {
     save,

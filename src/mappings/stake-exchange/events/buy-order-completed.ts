@@ -13,7 +13,7 @@ type BuyOrderCompletedEvent = {
     offerId?: bigint
 }
 
-function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
+export function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
     return match(event)
         .returnType<BuyOrderCompletedEvent>()
         .when(stakeExchange.buyOrderCompleted.enjinV1033.is, () => stakeExchange.buyOrderCompleted.enjinV1033.decode(event))

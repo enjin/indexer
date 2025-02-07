@@ -1,0 +1,41 @@
+import { UnsupportedCallError } from '@enjin/indexer/common/errors'
+import { CallItem } from '@enjin/indexer/common/types/contexts'
+import { calls } from '../../../types/generated'
+import { match } from 'ts-pattern'
+
+type BuyCall = {
+    offerId: bigint
+    amount: bigint
+    tokenId: bigint
+}
+
+export function buy(call: CallItem) {
+    return match(call)
+        .returnType<BuyCall>()
+        .when(calls.stakeExchange.buy.enjinV100.is, () => calls.stakeExchange.buy.enjinV100.decode(call))
+        .otherwise(() => {
+            throw new UnsupportedCallError(call)
+        })
+
+    // if (call.name === 'Utility.batch_all') {
+    //     if (calls.utility.batchAll.enjinV1026.is(call)) {
+    //         const data = calls.utility.batchAll.enjinV1026.decode(call)
+    //
+    //         const findCall = data.calls.find(
+    //             (c) => c.__kind === 'StakeExchange' && c.value.__kind === 'buy' && c.value.amount === eventData.amount
+    //         )
+    //
+    //         if (findCall) {
+    //             return findCall.value as StakeExchangeCall_buy
+    //         }
+    //
+    //         throw new Error('findCall not found')
+    //     }
+    // }
+    //
+    // if (calls.stakeExchange.buy.enjinV100.is(call)) {
+    //     return calls.stakeExchange.buy.enjinV100.decode(call)
+    // }
+    //
+    // throw new UnsupportedCallError(call)
+}
