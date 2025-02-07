@@ -20,7 +20,7 @@ export function create(call: CallItem): CreatePoolCall {
         .when(calls.nominationPools.create.v1023.is, calls.nominationPools.create.v1023.decode)
         .when(calls.nominationPools.create.v110.is, calls.nominationPools.create.v110.decode)
         .when(calls.nominationPools.create.v102.is, calls.nominationPools.create.v102.decode)
-        .when(calls.nominationPools.create.v101.is, calls.nominationPools.create.v101.decode(call))
+        .when(calls.nominationPools.create.v101.is, calls.nominationPools.create.v101.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

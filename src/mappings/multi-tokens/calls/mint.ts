@@ -20,9 +20,9 @@ export async function mint(call: CallItem) {
         .when(calls.multiTokens.mint.enjinV1032.is, calls.multiTokens.mint.enjinV1032.decode)
         .when(calls.multiTokens.mint.enjinV100.is, calls.multiTokens.mint.enjinV100.decode)
         .when(calls.multiTokens.mint.v1050.is, calls.multiTokens.mint.v1050.decode)
-        .when(calls.multiTokens.mint.v1030.is, calls.multiTokens.mint.v1030.decode(call))
-        .when(calls.multiTokens.mint.v102.is, calls.multiTokens.mint.v102.decode(call))
-        .when(calls.multiTokens.mint.v100.is, calls.multiTokens.mint.v100.decode(call))
+        .when(calls.multiTokens.mint.v1030.is, calls.multiTokens.mint.v1030.decode)
+        .when(calls.multiTokens.mint.v102.is, calls.multiTokens.mint.v102.decode)
+        .when(calls.multiTokens.mint.v100.is, calls.multiTokens.mint.v100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
