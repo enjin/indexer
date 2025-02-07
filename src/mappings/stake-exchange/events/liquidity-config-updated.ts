@@ -5,7 +5,12 @@ import { match } from 'ts-pattern'
 
 type LiquidityConfigUpdatedEvent = {
     who: string
-    config: any
+    config: {
+        tokenFilter: {
+            __kind: string
+            value?: bigint | bigint[]
+        }
+    }
 }
 
 export function liquidityConfigUpdated(event: EventItem): LiquidityConfigUpdatedEvent {

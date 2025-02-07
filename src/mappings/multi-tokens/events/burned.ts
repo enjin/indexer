@@ -22,7 +22,7 @@ export function burned(event: EventItem): BurnedEvent {
 
 export function burnedEventModel(
     item: EventItem,
-    data: any,
+    data: BurnedEvent,
     token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({

@@ -17,7 +17,7 @@ export function offerCancelled(event: EventItem): OfferCancelledEvent {
         })
 }
 
-export function offerCancelledEventModel(item: EventItem, data: any): EventModel | undefined {
+export function offerCancelledEventModel(item: EventItem, data: OfferCancelledEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCancelled.name,

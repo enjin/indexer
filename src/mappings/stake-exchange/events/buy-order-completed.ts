@@ -29,7 +29,7 @@ export function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
         })
 }
 
-export function buyOrderCompletedEventModel(item: EventItem, data: any, offerId: bigint): EventModel | undefined {
+export function buyOrderCompletedEventModel(item: EventItem, data: BuyOrderCompletedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,

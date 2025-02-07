@@ -23,7 +23,7 @@ export function transferred(event: EventItem): TransferredEvent {
 
 export function transferredEventModel(
     item: EventItem,
-    data: any,
+    data: TransferredEvent,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

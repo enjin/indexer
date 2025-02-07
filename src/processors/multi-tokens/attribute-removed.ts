@@ -40,7 +40,7 @@ export async function attributeRemoved(
             await ctx.store.save(token)
             await processMetadata(token.id, 'token')
             computeTraits(data.collectionId.toString())
-        } else if (attribute.collection) {
+        } else {
             const collection = await ctx.store.findOne<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
             })
@@ -56,8 +56,6 @@ export async function attributeRemoved(
         }
 
         await ctx.store.remove(attribute)
-    } else {
-        throwError(`[AttributeRemoved] call was made on a non existing collection or token`, 'warning')
     }
     return mappings.multiTokens.events.attributeRemovedEventModel(item, data)
 }

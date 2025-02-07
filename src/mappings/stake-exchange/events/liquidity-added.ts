@@ -18,7 +18,7 @@ export function liquidityAdded(event: EventItem): LiquidityAddedEvent {
         })
 }
 
-export function liquidityAddedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function liquidityAddedEventModel(item: EventItem, data: LiquidityAddedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeLiquidityAdded.name,

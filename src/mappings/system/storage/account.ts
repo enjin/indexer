@@ -8,7 +8,12 @@ type AccountInfo = {
     consumers: number
     providers: number
     sufficients: number
-    data: any
+    data: {
+        free: bigint
+        reserved: bigint
+        frozen?: bigint
+        flags?: bigint
+    }
 }
 
 export async function account(block: BlockHeader, accounts: string[]): Promise<(AccountInfo | undefined)[]> {

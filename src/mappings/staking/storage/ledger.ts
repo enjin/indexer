@@ -7,8 +7,12 @@ type StakingLedger = {
     stash: string
     total: bigint
     active: bigint
-    unlocking: any[]
-    claimedRewards?: any[]
+    unlocking: {
+        value: bigint
+        era: number
+    }[]
+    claimedRewards?: number[]
+    legacyClaimedRewards?: number[]
 }
 
 export async function ledger(block: BlockHeader, account: string): Promise<StakingLedger | undefined> {

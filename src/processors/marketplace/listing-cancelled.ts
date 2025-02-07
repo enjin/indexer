@@ -51,7 +51,7 @@ export async function listingCancelled(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    await syncCollectionStats(listing.makeAssetId.collection.id)
+    syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

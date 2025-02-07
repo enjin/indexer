@@ -4,12 +4,62 @@ import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
 type MintCall = {
-    recipient: any
-    collectionId: any
-    params: any
+    recipient: {
+        __kind: string
+        value?: string
+    }
+    collectionId: bigint
+    params:
+        | {
+              tokenId: bigint
+              initialSupply: bigint
+              accountDepositCount?: number
+              cap?: {
+                  __kind: string
+                  value?: bigint
+              }
+              behavior?: {
+                  __kind: string
+                  value?:
+                      | {
+                            beneficiaries: {
+                                beneficiary: string
+                                percentage: number
+                            }[]
+                        }
+                      | {
+                            beneficiary: string
+                            percentage: number
+                        }
+              }
+              listingForbidden: boolean
+              freezeState?: {
+                  __kind: string
+              }
+              attributes?: {
+                  key: string
+                  value: string
+              }[]
+              infusion?: bigint
+              anyoneCanInfuse?: boolean
+              metadata?: {
+                  name: string
+                  symbol: string
+                  decimalCount: number
+              }
+              privilegedParams?: {
+                  requiresDeposit: boolean
+                  depositor?: string
+              }
+          }
+        | {
+              tokenId: bigint
+              amount: bigint
+              depositor?: string
+          }
 }
 
-export function mint(call: CallItem) {
+export function mint(call: CallItem): MintCall {
     return match(call)
         .returnType<MintCall>()
         .when(calls.multiTokens.mint.matrixEnjinV1012.is, calls.multiTokens.mint.matrixEnjinV1012.decode)

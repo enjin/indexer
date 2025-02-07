@@ -3,10 +3,109 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
+type CreateTokenParams = {
+    tokenId: bigint
+    initialSupply: bigint
+    sufficiency: {
+        __kind: string
+        value?:
+            | {
+                  unitPrice?: bigint
+              }
+            | {
+                  minimumBalance: bigint
+              }
+    }
+    cap?: {
+        __kind: string
+        value?: bigint
+    }
+    behavior?: {
+        __kind: string
+        value?: {
+            beneficiary: string
+            percentage: number
+        }
+    }
+    listingForbidden: boolean
+    freezeState?: {
+        __kind: string
+    }
+    attributes: {
+        key: string
+        value: string
+    }[]
+    // foreignParams?: any
+}
+
+type MintParams = {
+    tokenId: bigint
+    amount: bigint
+    depositor?: string
+}
+
+type CreateOrMintParams = {
+    tokenId: bigint
+    amount?: bigint
+    accountDepositCount?: number
+    cap?: {
+        __kind: string
+        value?: bigint
+    }
+    behavior?: {
+        __kind: string
+        value?:
+            | {
+                  beneficiaries: {
+                      beneficiary: string
+                      percentage: number
+                  }[]
+              }
+            | {
+                  beneficiary: string
+                  percentage: number
+              }
+    }
+    listingForbidden: boolean
+    freezeState?: {
+        __kind: string
+    }
+    attributes?: {
+        key: string
+        value: string
+    }[]
+    infusion?: bigint
+    anyoneCanInfuse?: boolean
+    // metadata?: {
+    //     name: string
+    //     symbol: string
+    //     decimalCount: number
+    // }
+    // privilegedParams?: {
+    //     requiresDeposit: boolean
+    //     depositor?: string
+    // }
+}
+
 type ForceMintCall = {
-    recipient: any
-    collectionId: any
-    params: any
+    // caller?: {
+    //     __kind: string
+    //     value?: string
+    // }
+    // recipient: {
+    //     __kind: string
+    //     value?: string
+    // }
+    collectionId: bigint
+    params: (CreateOrMintParams | MintParams | CreateTokenParams)
+    // depositor?: {
+    //     __kind: string
+    //     value?: string
+    // }
+    // depositBacker?: {
+    //     __kind: string
+    //     value?: string
+    // }
 }
 
 export function forceMint(call: CallItem): ForceMintCall {

@@ -5,7 +5,10 @@ import { match } from 'ts-pattern'
 
 type UnbondCall = {
     poolId: number
-    memberAccount: any
+    memberAccount: {
+        __kind: string
+        value?: string
+    }
     unbondingPoints: bigint
 }
 

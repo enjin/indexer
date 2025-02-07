@@ -7,7 +7,9 @@ type AccountRuleDataRemovedEvent = {
     tankId: string
     userId: string
     ruleSetId: number
-    ruleKind: any
+    ruleKind: {
+        __kind: string
+    }
 }
 
 export function accountRuleDataRemoved(event: EventItem): AccountRuleDataRemovedEvent {

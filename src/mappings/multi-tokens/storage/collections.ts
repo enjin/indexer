@@ -5,7 +5,32 @@ import { match } from 'ts-pattern'
 
 type Collection = {
     owner: string
-    policy: any
+    policy: {
+        mint: {
+            maxTokenCount?: bigint | undefined
+            maxTokenSupply?: bigint | undefined
+            forceCollapsingSupply?: boolean
+        }
+        transfer: {
+            isFrozen: boolean
+        }
+        market: {
+            royalty?:
+                | (
+                      | {
+                            beneficiaries: {
+                                beneficiary: string
+                                percentage: number
+                            }[]
+                        }
+                      | {
+                            beneficiary: string
+                            percentage: number
+                        }
+                  )
+                | undefined
+        }
+    }
     tokenCount: bigint
     attributeCount: number
     totalDeposit: bigint
@@ -15,7 +40,16 @@ type Collection = {
 export async function collections(block: BlockHeader, collectionId: bigint): Promise<Collection | undefined> {
     return match(block)
         .returnType<Promise<Collection | undefined>>()
+        .when(multiTokens.collections.matrixEnjinV1012.is, () =>
+            multiTokens.collections.matrixEnjinV1012.get(block, collectionId)
+        )
+        .when(multiTokens.collections.matrixEnjinV603.is, () => multiTokens.collections.matrixEnjinV603.get(block, collectionId))
+        .when(multiTokens.collections.matrixV1010.is, () => multiTokens.collections.matrixV1010.get(block, collectionId))
+        .when(multiTokens.collections.matrixV500.is, () => multiTokens.collections.matrixV500.get(block, collectionId))
+        .when(multiTokens.collections.enjinV1032.is, () => multiTokens.collections.enjinV1032.get(block, collectionId))
         .when(multiTokens.collections.enjinV100.is, () => multiTokens.collections.enjinV100.get(block, collectionId))
+        .when(multiTokens.collections.v1050.is, () => multiTokens.collections.v1050.get(block, collectionId))
+        .when(multiTokens.collections.v1030.is, () => multiTokens.collections.v1030.get(block, collectionId))
         .when(multiTokens.collections.v100.is, () => multiTokens.collections.v100.get(block, collectionId))
         .otherwise(() => {
             throw new UnsupportedStorageError('collections')

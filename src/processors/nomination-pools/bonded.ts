@@ -25,9 +25,9 @@ export async function bonded(ctx: CommonContext, block: BlockHeader, item: Event
     ])
 
     const [alreadyExist, tAExist, tokenExist, [activeEra]] = await Promise.all([
-        ctx.store.findOneBy(PoolMember, { id: `${pool.id}-${account.id}` }),
-        ctx.store.findOne(TokenAccount, { where: { id: `${account.id}-1-${pool.id}` } }),
-        ctx.store.findOne(Token, { where: { id: `1-${pool.id}` } }),
+        ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` }),
+        ctx.store.findOne<TokenAccount>(TokenAccount, { where: { id: `${account.id}-1-${pool.id}` } }),
+        ctx.store.findOne<Token>(Token, { where: { id: `1-${pool.id}` } }),
         getActiveEra(ctx),
     ])
 
@@ -90,7 +90,7 @@ export async function bonded(ctx: CommonContext, block: BlockHeader, item: Event
         await ctx.store.insert(memeber)
         pool.totalMembers += 1
     } else {
-        const member = await ctx.store.findOneByOrFail(PoolMember, { id: `${pool.id}-${account.id}` })
+        const member = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: `${pool.id}-${account.id}` })
         member.bonded += eventData.bonded
         member.tokenAccount = new TokenAccount({ id: `${account.id}-1-${pool.id}` })
 

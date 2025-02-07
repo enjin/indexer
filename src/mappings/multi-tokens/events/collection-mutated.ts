@@ -6,7 +6,21 @@ import { Event as EventModel, Extrinsic, MultiTokensCollectionMutated } from '@e
 
 type CollectionMutatedEvent = {
     collectionId: bigint
-    mutation: any
+    mutation: {
+        owner?: string
+        royalty: {
+            __kind: string
+            value?:
+                | {
+                      beneficiary: string
+                      percentage: number
+                  }
+                | {
+                      beneficiaries: { beneficiary: string; percentage: number }[]
+                  }
+        }
+        explicitRoyaltyCurrencies?: { collectionId: bigint; tokenId: bigint }[]
+    }
 }
 
 export function collectionMutated(event: EventItem): CollectionMutatedEvent {
@@ -19,7 +33,7 @@ export function collectionMutated(event: EventItem): CollectionMutatedEvent {
         })
 }
 
-export function collectionMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function collectionMutatedEventModel(item: EventItem, data: CollectionMutatedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionMutated.name,

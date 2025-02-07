@@ -41,7 +41,7 @@ export function listingFilled(event: EventItem): ListingFilledEvent {
 
 export function listingFilledEventModel(
     item: EventItem,
-    data: any,
+    data: ListingFilledEvent,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel

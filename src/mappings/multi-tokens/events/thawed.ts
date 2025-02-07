@@ -5,11 +5,11 @@ import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensThawed } from '@enjin/indexer/model'
 
 type ThawedEvent = {
-    collectionId: bigint
-    freezeType: any
-    tokenId?: bigint
-    collectionAccount?: string
-    tokenAccount?: string
+    collectionId?: bigint
+    freezeType: {
+        __kind: string
+        value?: string | { tokenId: bigint; freezeState: { __kind: string } | undefined } | { tokenId: bigint; accountId: string }
+    }
 }
 
 export function thawed(event: EventItem): ThawedEvent {
@@ -21,7 +21,7 @@ export function thawed(event: EventItem): ThawedEvent {
         })
 }
 
-export function thawedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function thawedEventModel(item: EventItem, data: ThawedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensThawed.name,

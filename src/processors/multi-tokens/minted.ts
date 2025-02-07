@@ -17,7 +17,7 @@ export async function minted(
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
     const data = mappings.multiTokens.events.minted(item)
 
-    const promises: Promise<any>[] = []
+    const promises: Promise<void>[] = []
 
     const token = await ctx.store.findOne(Token, {
         where: { id: `${data.collectionId}-${data.tokenId}` },
@@ -64,7 +64,7 @@ export async function minted(
 
     await processMetadata(token.id, 'token')
     computeTraits(data.collectionId.toString())
-    await syncCollectionStats(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

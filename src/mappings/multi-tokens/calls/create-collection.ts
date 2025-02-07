@@ -4,21 +4,46 @@ import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
 type CreateCollectionCall = {
-    descriptor: any
+    descriptor: {
+        policy: {
+            mint: {
+                maxTokenCount?: bigint
+                maxTokenSupply?: bigint
+                forceCollapsingSupply?: boolean
+                forceSingleMint?: boolean
+            }
+            market: {
+                royalty?:
+                    | {
+                          beneficiaries?: {
+                              beneficiary: string
+                              percentage: number
+                          }[]
+                      }
+                    | {
+                          beneficiary: string
+                          percentage: number
+                      }
+            }
+        }
+        depositor?: string
+        explicitRoyaltyCurrencies: {
+            collectionId: bigint
+            tokenId: bigint
+        }[]
+        attributes: {
+            key: string
+            value: string
+        }[]
+    }
 }
 
-export function createCollection(call: CallItem) {
+export function createCollection(call: CallItem): CreateCollectionCall {
     return match(call)
         .returnType<CreateCollectionCall>()
-        .when(calls.multiTokens.createCollection.matrixEnjinV1012.is, () =>
-            calls.multiTokens.createCollection.matrixEnjinV1012.decode(call)
-        )
-        .when(calls.multiTokens.createCollection.matrixEnjinV603.is, () =>
-            calls.multiTokens.createCollection.matrixEnjinV603.decode(call)
-        )
-        .when(calls.multiTokens.createCollection.matrixV1010.is, () =>
-            calls.multiTokens.createCollection.matrixV1010.decode(call)
-        )
+        .when(calls.multiTokens.createCollection.matrixEnjinV1012.is, calls.multiTokens.createCollection.matrixEnjinV1012.decode)
+        .when(calls.multiTokens.createCollection.matrixEnjinV603.is, calls.multiTokens.createCollection.matrixEnjinV603.decode)
+        .when(calls.multiTokens.createCollection.matrixV1010.is, calls.multiTokens.createCollection.matrixV1010.decode)
         .when(calls.multiTokens.createCollection.matrixV500.is, calls.multiTokens.createCollection.matrixV500.decode)
         .when(calls.multiTokens.createCollection.enjinV1032.is, calls.multiTokens.createCollection.enjinV1032.decode)
         .when(calls.multiTokens.createCollection.enjinV100.is, calls.multiTokens.createCollection.enjinV100.decode)

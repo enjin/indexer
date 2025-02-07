@@ -26,7 +26,7 @@ export class RefreshAccountResolver {
             return u8aToHex(decodeAddress(id))
         })
 
-        await fetchAccountsDetail(pks)
+        fetchAccountsDetail(pks)
 
         return true
     }

@@ -41,7 +41,7 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
         return undefined
     }
 
-    const account = await getOrCreateAccount(ctx, hexToU8a((item.extrinsic?.signature?.address as any)?.value))
+    const account = await getOrCreateAccount(ctx, hexToU8a(item.extrinsic.signature.address))
     const beneficiaryAccount = await getOrCreateAccount(ctx, beneficiary)
 
     return new EventModel({

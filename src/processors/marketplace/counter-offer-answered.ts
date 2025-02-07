@@ -15,7 +15,7 @@ export async function counterOfferAnswered(
     const data = mappings.marketplace.events.counterOfferAnswered(item)
 
     const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail(Listing, {
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -33,7 +33,7 @@ export async function counterOfferAnswered(
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
-    const counterOffer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
+    const counterOffer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, { id: `${listing.id}-${account.id}` })
 
     if (data.response.__kind === 'Counter') {
         if (signer.id !== account.id) {

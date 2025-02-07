@@ -7,11 +7,13 @@ import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '@enjin/
 type TokenMutatedEvent = {
     collectionId: bigint
     tokenId: bigint
-    behavior?: any
+    behavior?: {
+        __kind: string
+        value?: string
+    }
     name?: Uint8Array
     anyoneCanInfuse?: boolean
     listingForbidden?: boolean
-    metadata?: any
 }
 
 export function tokenMutated(event: EventItem): TokenMutatedEvent {
@@ -31,7 +33,7 @@ export function tokenMutated(event: EventItem): TokenMutatedEvent {
         })
 }
 
-export function tokenMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function tokenMutatedEventModel(item: EventItem, data: TokenMutatedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenMutated.name,

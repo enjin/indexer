@@ -60,7 +60,7 @@ export async function bidPlaced(
         }
     }
 
-    await syncCollectionStats(listing.makeAssetId.collection.id)
+    syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

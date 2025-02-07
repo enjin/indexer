@@ -7,7 +7,10 @@ import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokens
 type MintedEvent = {
     collectionId: bigint
     tokenId: bigint
-    issuer: any
+    issuer: {
+        __kind: string
+        value?: string
+    }
     recipient: string
     amount: bigint
 }
@@ -23,7 +26,7 @@ export function minted(event: EventItem): MintedEvent {
 
 export function mintedEventModel(
     item: EventItem,
-    data: any,
+    data: MintedEvent,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

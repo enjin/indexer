@@ -59,7 +59,7 @@ export async function transferred(
         throwError(`[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
-    await syncCollectionStats(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

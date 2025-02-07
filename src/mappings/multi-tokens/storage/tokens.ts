@@ -5,20 +5,44 @@ import { match } from 'ts-pattern'
 
 type Token = {
     supply: bigint
-    cap?: any
-    freezeState?: any
+    cap?: {
+        __kind: string
+        value?: bigint
+    }
+    freezeState?: {
+        __kind: string
+    }
     requiresDeposit?: boolean
-    creationDeposit?: any
+    creationDeposit?: {
+        depositor?: string
+        amount: bigint
+    }
     ownerDeposit?: bigint
     totalTokenAccountDeposit?: bigint
     attributeCount: number
     accountCount?: number
-    marketBehavior?: any
+    marketBehavior?: {
+        __kind: string
+        value?:
+            | {
+                  beneficiary: string
+                  percentage: number
+              }
+            | {
+                  beneficiaries: { beneficiary: string; percentage: number }[]
+              }
+    }
     listingForbidden: boolean
-    metadata: any
+    metadata:
+        | {
+              decimalCount: number
+              name: string
+              symbol: string
+          }
+        | { __kind: string }
     infusion?: bigint
     anyoneCanInfuse?: boolean
-    groups?: any
+    groups?: bigint[]
 }
 
 export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: bigint): Promise<Token | undefined> {

@@ -7,7 +7,10 @@ import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '@enjin/
 type TokenCreatedEvent = {
     collectionId: bigint
     tokenId: bigint
-    issuer: any
+    issuer: {
+        __kind: string
+        value?: string
+    }
     initialSupply: bigint
 }
 
@@ -20,7 +23,7 @@ export function tokenCreated(event: EventItem): TokenCreatedEvent {
         })
 }
 
-export function tokenCreatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function tokenCreatedEventModel(item: EventItem, data: TokenCreatedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenCreated.name,

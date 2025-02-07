@@ -6,11 +6,10 @@ import { Event as EventModel, Extrinsic, MultiTokensFrozen } from '@enjin/indexe
 
 type FrozenEvent = {
     collectionId: bigint
-    freezeType: any
-    freezeState?: boolean
-    tokenId?: bigint
-    collectionAccount?: string
-    tokenAccount?: string
+    freezeType: {
+        __kind: string
+        value?: string | { tokenId: bigint; freezeState: { __kind: string } | undefined } | { tokenId: bigint; accountId: string }
+    }
 }
 
 export function frozen(event: EventItem): FrozenEvent {
@@ -22,7 +21,7 @@ export function frozen(event: EventItem): FrozenEvent {
         })
 }
 
-export function frozenEventModel(item: EventItem, data: any): EventModel | undefined {
+export function frozenEventModel(item: EventItem, data: FrozenEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensFrozen.name,

@@ -22,7 +22,7 @@ export function approved(event: EventItem): ApprovedEvent {
         })
 }
 
-export function approvedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function approvedEventModel(item: EventItem, data: ApprovedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensApproved.name,

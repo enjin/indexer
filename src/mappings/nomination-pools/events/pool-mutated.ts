@@ -7,7 +7,20 @@ import { hexToString } from '@polkadot/util'
 
 type PoolMutatedEvent = {
     poolId: number
-    mutation: any
+    mutation: {
+        duration?: number
+        newCommission: {
+            __kind: string
+            value?: number
+        }
+        maxCommission?: number
+        changeRate?: {
+            maxDelta: number
+            minDelay: number
+        }
+        capacity?: bigint
+        name?: string
+    }
 }
 
 export function poolMutated(event: EventItem) {
@@ -25,7 +38,7 @@ export function poolMutated(event: EventItem) {
         })
 }
 
-export function poolMutatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function poolMutatedEventModel(item: EventItem, data: PoolMutatedEvent): EventModel | undefined {
     const mutation: any = {}
     if (data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
         mutation.newCommission = data.mutation.newCommission.value
@@ -38,7 +51,7 @@ export function poolMutatedEventModel(item: EventItem, data: any): EventModel | 
     }
 
     if ('name' in data.mutation) {
-        mutation.name = data.mutation.name ? hexToString(data.mutation.name as string) : ''
+        mutation.name = data.mutation.name ? hexToString(data.mutation.name) : ''
     }
 
     return new EventModel({

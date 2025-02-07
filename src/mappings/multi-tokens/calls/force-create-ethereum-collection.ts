@@ -4,11 +4,32 @@ import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
 type ForceCreateEthereumCollectionCall = {
-    descriptor: any
+    owner: string
+    claimer?: string
+    ethereumCollectionId: bigint
+    descriptor: {
+        policy: {
+            mint: { maxTokenCount?: bigint | undefined; maxTokenSupply?: bigint | undefined; forceCollapsingSupply?: boolean }
+            market: {
+                royalty?:
+                    | {
+                          beneficiary: string
+                          percentage: number
+                      }
+                    | {
+                          beneficiaries: { beneficiary: string; percentage: number }[]
+                      }
+                    | undefined
+            }
+        }
+        depositor?: string | undefined
+        explicitRoyaltyCurrencies: { collectionId: bigint; tokenId: bigint }[]
+        attributes: { key: string; value: string }[]
+    }
 }
 
 export function forceCreateEthereumCollection(call: CallItem): ForceCreateEthereumCollectionCall {
-    return match
+    return match(call)
         .returnType<ForceCreateEthereumCollectionCall>()
         .when(
             calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.is,

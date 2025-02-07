@@ -4,10 +4,22 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type DispatchAndTouchCall = {
-    tankId: any
+    tankId: {
+        __kind: string
+        value?: string
+    }
     ruleSetId: number
-    call: any
-    settings?: any
+    call: {
+        __kind: string
+    }
+    settings?: {
+        useNoneOrigin: boolean
+        paysRemainingFee: boolean
+        signature?: {
+            signature: string
+            expiryBlock: number
+        }
+    }
 }
 
 export function dispatchAndTouch(call: CallItem) {

@@ -18,6 +18,7 @@ export default tseslint.config(
             'src/types/generated/',
             'src/model/',
             'eslint.config.mjs',
+            'src/server-extension/',
         ],
     },
     {

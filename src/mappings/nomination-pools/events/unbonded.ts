@@ -21,7 +21,7 @@ export function unbonded(event: EventItem): UnbondedEvent {
         })
 }
 
-export function unbondedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function unbondedEventModel(item: EventItem, data: UnbondedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,

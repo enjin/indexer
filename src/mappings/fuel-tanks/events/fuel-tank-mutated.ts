@@ -5,7 +5,24 @@ import { match } from 'ts-pattern'
 
 type FuelTankMutatedEvent = {
     tankId: string
-    mutation: any
+    mutation: {
+        userAccountManagement: {
+            __kind: string
+            value?: { tankReservesAccountCreationDeposit: boolean; tankReservesExistentialDeposit?: boolean }
+        }
+        coveragePolicy?: {
+            __kind: string
+        }
+        accountRules?: {
+            __kind: string
+            value?:
+                | {
+                      collectionId: bigint
+                      tokenId: bigint
+                  }
+                | string[]
+        }[]
+    }
 }
 
 export function fuelTankMutated(event: EventItem): FuelTankMutatedEvent {

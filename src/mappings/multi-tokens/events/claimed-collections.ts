@@ -6,11 +6,12 @@ import { match } from 'ts-pattern'
 type ClaimedCollectionsEvent = {
     accountId: string
     ethereumAddress: string
-    collectionIds: any
+    collectionIds: bigint[] | { ethereum: bigint; native: bigint }[]
 }
 
 export function claimedCollections(event: EventItem): ClaimedCollectionsEvent {
     return match(event)
+        .returnType<ClaimedCollectionsEvent>()
         .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)
         .when(multiTokens.claimedCollections.matrixEnjinV603.is, multiTokens.claimedCollections.matrixEnjinV603.decode)
         .when(multiTokens.claimedCollections.matrixV1000.is, multiTokens.claimedCollections.matrixV1000.decode)

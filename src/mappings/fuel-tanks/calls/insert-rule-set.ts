@@ -4,7 +4,10 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
 
 type InsertRuleSetCall = {
-    tankId: any
+    tankId: {
+        __kind: string
+        value?: string
+    }
     ruleSetId: number
     rules?: any
     ruleSet?: any

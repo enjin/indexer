@@ -5,7 +5,9 @@ import { match } from 'ts-pattern'
 
 type StateChangedEvent = {
     poolId: number
-    newState: any
+    newState: {
+        __kind: string
+    }
 }
 
 export function stateChanged(event: EventItem): StateChangedEvent {

@@ -30,7 +30,11 @@ export function offerCreated(event: EventItem): OfferCreatedEvent {
         })
 }
 
-export function offerCreatedEventModel(item: EventItem, data: any, rewardRateAsFixedu128: bigint): EventModel | undefined {
+export function offerCreatedEventModel(
+    item: EventItem,
+    data: OfferCreatedEvent,
+    rewardRateAsFixedu128: bigint
+): EventModel | undefined {
     const rate = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)
     return new EventModel({
         id: item.id,

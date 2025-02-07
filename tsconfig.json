@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2020",
+    "lib": ["ESNext"],
+    "module": "esnext",
+    "target": "esnext",
+    "types": ["bun-types"],
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
@@ -14,6 +16,7 @@
     "baseUrl": ".",
     "inlineSources": true,
     "sourceRoot": "/",
+    "moduleResolution": "Bundler",
     "paths": {
       "@enjin/indexer/*": ["src/*"],
       "@polkadot/api/augment": ["src/common/interfaces/augment-api.ts"],

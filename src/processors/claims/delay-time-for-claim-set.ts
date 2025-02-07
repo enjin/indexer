@@ -2,7 +2,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { ClaimDetails } from '../../model'
 import * as mappings from './../../mappings'
 
-export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<undefined> {
     const eventData = mappings.claims.events.delayTimeForClaimSet(item)
 
     const claimDetails = new ClaimDetails({

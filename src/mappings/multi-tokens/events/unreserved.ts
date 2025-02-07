@@ -8,7 +8,7 @@ type UnreservedEvent = {
     tokenId: bigint
     accountId: string
     amount: bigint
-    reserveId?: any
+    reserveId?: string | { __kind: string }
 }
 
 export function unreserved(event: EventItem): UnreservedEvent {

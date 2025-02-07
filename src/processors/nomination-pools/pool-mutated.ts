@@ -9,9 +9,9 @@ export async function poolMutated(ctx: CommonContext, block: BlockHeader, item: 
 
     const eventData = mappings.nominationPools.events.poolMutated(item)
 
-    const mutation: Record<string, any> = {}
+    const mutation: Record<string, number | string | Record<string, number>> = {}
 
-    const pool = await ctx.store.findOneByOrFail(NominationPool, { id: eventData.poolId.toString() })
+    const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: eventData.poolId.toString() })
 
     if (eventData.mutation.duration !== undefined) {
         pool.bonusCycle.pendingDuration = eventData.mutation.duration
@@ -41,7 +41,7 @@ export async function poolMutated(ctx: CommonContext, block: BlockHeader, item: 
     }
 
     if ('capacity' in eventData.mutation && eventData.mutation.capacity) {
-        pool.capacity = eventData.mutation.capacity as bigint
+        pool.capacity = eventData.mutation.capacity
         mutation.capacity = pool.capacity.toString()
     }
 

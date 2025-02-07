@@ -8,7 +8,7 @@ export async function accountAdded(ctx: CommonContext, block: BlockHeader, item:
 
     const { tankId } = eventData
     const [tank, account] = await Promise.all([
-        ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
+        ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: tankId }),
         getOrCreateAccount(ctx, eventData.userId),
     ])
 

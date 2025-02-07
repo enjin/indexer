@@ -10,7 +10,7 @@ export async function liquidityAdded(ctx: CommonContext, block: BlockHeader, ite
     const eventData = mappings.stakeExchange.events.liquidityAdded(item)
     const callData = mappings.stakeExchange.calls.addLiquidity(item.extrinsic.call)
 
-    const offer = await ctx.store.findOneByOrFail(StakeExchangeOffer, { id: eventData.offerId.toString() })
+    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: eventData.offerId.toString() })
     offer.total += callData.amount
 
     await Sns.getInstance().send({

@@ -44,7 +44,7 @@ export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {
 
 export function counterOfferPlacedEventModel(
     item: EventItem,
-    data: any,
+    data: CounterOfferPlacedEvent,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

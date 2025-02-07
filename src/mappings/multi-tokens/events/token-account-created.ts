@@ -7,22 +7,20 @@ import { Event as EventModel, Extrinsic, MultiTokensTokenAccountCreated } from '
 type TokenAccountCreatedEvent = {
     collectionId: bigint
     tokenId: bigint
-    accountId: any
+    accountId: string
     balance: bigint
 }
 
 export function tokenAccountCreated(event: EventItem): TokenAccountCreatedEvent {
     return match(event)
         .returnType<TokenAccountCreatedEvent>()
-        .when(multiTokens.tokenAccountCreated.matrixEnjinV603.is, () =>
-            multiTokens.tokenAccountCreated.matrixEnjinV603.decode(event)
-        )
+        .when(multiTokens.tokenAccountCreated.matrixEnjinV603.is, multiTokens.tokenAccountCreated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function tokenAccountCreatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function tokenAccountCreatedEventModel(item: EventItem, data: TokenAccountCreatedEvent) {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenAccountCreated.name,

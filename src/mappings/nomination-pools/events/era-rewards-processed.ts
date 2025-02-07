@@ -7,7 +7,10 @@ import { Event as EventModel, Extrinsic, NominationPoolsEraRewardsProcessed } fr
 type EraRewardsProcessedEvent = {
     poolId: number
     era: number
-    commission?: any
+    commission?: {
+        beneficiary: string
+        amount: bigint
+    }
     bonus: bigint
     reinvested: bigint
 }
@@ -24,7 +27,11 @@ export function eraRewardsProcessed(event: EventItem): EraRewardsProcessedEvent 
         })
 }
 
-export function eraRewardsProcessedEventModel(item: EventItem, data: any, rate: bigint = 0n): EventModel | undefined {
+export function eraRewardsProcessedEventModel(
+    item: EventItem,
+    data: EraRewardsProcessedEvent,
+    rate: bigint = 0n
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

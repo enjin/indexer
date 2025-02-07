@@ -77,7 +77,7 @@ export async function listingFilled(
 
     if (listing.data.listingType === ListingType.Offer) {
         await ctx.store.save(listing.takeAssetId)
-        await syncCollectionStats(listing.takeAssetId.collection.id)
+        syncCollectionStats(listing.takeAssetId.collection.id)
     } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -87,7 +87,7 @@ export async function listingFilled(
             }
         }
         await ctx.store.save(listing.makeAssetId)
-        await syncCollectionStats(listing.makeAssetId.collection.id)
+        syncCollectionStats(listing.makeAssetId.collection.id)
     }
 
     if (item.extrinsic) {

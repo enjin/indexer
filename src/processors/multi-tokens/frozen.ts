@@ -100,7 +100,7 @@ export async function frozen(
         })
     }
 
-    await syncCollectionStats(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.frozenEventModel(item, data)
 }

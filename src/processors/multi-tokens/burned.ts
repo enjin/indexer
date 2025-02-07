@@ -48,7 +48,7 @@ export async function burned(
         }
         await ctx.store.save(token)
         computeTraits(data.collectionId.toString())
-        await syncCollectionStats(data.collectionId.toString())
+        syncCollectionStats(data.collectionId.toString())
     } else {
         throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
     }

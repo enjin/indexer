@@ -4,8 +4,58 @@ import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
 type BatchMintCall = {
-    collectionId: any
-    recipients: any
+    collectionId: bigint
+    recipients: {
+        accountId: string
+        params:
+            | {
+                  tokenId: bigint
+                  initialSupply: bigint
+                  accountDepositCount?: number
+                  cap?: {
+                      __kind: string
+                      value?: bigint
+                  }
+                  behavior?: {
+                      __kind: string
+                      value?:
+                          | {
+                                beneficiaries: {
+                                    beneficiary: string
+                                    percentage: number
+                                }[]
+                            }
+                          | {
+                                beneficiary: string
+                                percentage: number
+                            }
+                  }
+                  listingForbidden: boolean
+                  freezeState?: {
+                      __kind: string
+                  }
+                  attributes?: {
+                      key: string
+                      value: string
+                  }[]
+                  infusion?: bigint
+                  anyoneCanInfuse?: boolean
+                  metadata?: {
+                      name: string
+                      symbol: string
+                      decimalCount: number
+                  }
+                  privilegedParams?: {
+                      requiresDeposit: boolean
+                      depositor?: string
+                  }
+              }
+            | {
+                  tokenId: bigint
+                  amount: bigint
+                  depositor?: string
+              }
+    }[]
 }
 
 export function batchMint(call: CallItem): BatchMintCall {

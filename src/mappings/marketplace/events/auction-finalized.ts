@@ -32,7 +32,7 @@ export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
 
 export function auctionFinalizedEventModel(
     item: EventItem,
-    data: any,
+    data: AuctionFinalizedEvent,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({

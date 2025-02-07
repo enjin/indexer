@@ -141,7 +141,7 @@ export async function tokenDestroyed(
     ])
 
     await ctx.store.remove(token)
-    await syncCollectionStats(data.collectionId.toString())
+    syncCollectionStats(data.collectionId.toString())
     computeTraits(data.collectionId.toString())
 
     if (item.extrinsic) {

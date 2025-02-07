@@ -19,11 +19,9 @@ export async function withdrawn(ctx: CommonContext, block: BlockHeader, item: Ev
     if (!item.extrinsic.call) return undefined
 
     const eventData = mappings.nominationPools.events.withdrawn(item)
-    const callData = mappings.nominationPools.calls.withdrawDeposit(item.extrinsic.call)
-
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
     const account = await getOrCreateAccount(ctx, eventData.member)
-    const poolMember = await ctx.store.findOneOrFail(PoolMember, {
+    const poolMember = await ctx.store.findOneOrFail<PoolMember>(PoolMember, {
         where: { id: `${eventData.poolId}-${account.id}` },
         relations: { tokenAccount: true },
     })
@@ -44,7 +42,7 @@ export async function withdrawn(ctx: CommonContext, block: BlockHeader, item: Ev
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
-        const poolMemberRewards = await ctx.store.findBy(PoolMemberRewards, { member: { id: poolMember.id } })
+        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, { member: { id: poolMember.id } })
         await ctx.store.remove(poolMemberRewards)
         await ctx.store.remove(poolMember)
         pool.totalMembers -= 1

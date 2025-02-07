@@ -101,7 +101,7 @@ export async function attributeSet(
             }
             await ctx.store.save(token)
             await processMetadata(token.id, 'token')
-        } else if (collection) {
+        } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
@@ -130,15 +130,13 @@ export async function attributeSet(
             token.attributeCount += 1
             await ctx.store.save(token)
             await processMetadata(token.id, 'token')
-        } else if (collection) {
+        } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
             await processMetadata(collection.id, 'collection', false, true)
-        } else {
-            throwError(`[AttributeSet] call was made on a non existing collection or token`, 'warning')
         }
     }
     if (token) {

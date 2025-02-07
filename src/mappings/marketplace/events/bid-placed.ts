@@ -31,7 +31,7 @@ export function bidPlaced(event: EventItem): BidPlacedEvent {
 
 export function bidPlacedEventModel(
     item: EventItem,
-    data: any,
+    data: BidPlacedEvent,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

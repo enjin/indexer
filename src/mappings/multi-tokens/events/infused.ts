@@ -7,7 +7,7 @@ import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokens
 type InfusedEvent = {
     collectionId: bigint
     tokenId: bigint
-    accountId: any
+    accountId: string
     amount: bigint
 }
 
@@ -22,7 +22,7 @@ export function infused(event: EventItem): InfusedEvent {
 
 export function infusedEventModel(
     item: EventItem,
-    data: any,
+    data: InfusedEvent,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

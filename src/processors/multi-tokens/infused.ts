@@ -7,7 +7,7 @@ export async function infused(ctx: CommonContext, block: BlockHeader, item: Even
     const data = mappings.multiTokens.events.infused(item)
     if (skipSave) return undefined
 
-    const token = await ctx.store.findOneByOrFail(Token, {
+    const token = await ctx.store.findOneByOrFail<Token>(Token, {
         id: `${data.collectionId}-${data.tokenId}`,
     })
     token.infusion += data.amount

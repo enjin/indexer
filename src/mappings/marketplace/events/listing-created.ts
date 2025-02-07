@@ -17,7 +17,57 @@ import {
 
 type ListingCreatedEvent = {
     listingId: string
-    listing: any
+    listing: {
+        creator?: string
+        makeAssetId: { collectionId: bigint; tokenId: bigint }
+        takeAssetId: { collectionId: bigint; tokenId: bigint }
+        amount: bigint
+        price: bigint
+        minReceived?: bigint
+        feeSide: { __kind: string }
+        creationBlock: number
+        startBlock?: number
+        whitelistedAccountCount?: number
+        deposit:
+            | {
+                  depositor: string
+                  amount: bigint
+              }
+            | bigint
+        salt: string
+        data: {
+            __kind: string
+            value?:
+                | {
+                      endBlock: number
+                  }
+                | {
+                      expiration?: number
+                  }
+        }
+        state: {
+            __kind: string
+            value?:
+                | {
+                      amountFilled: bigint
+                  }
+                | {
+                      highBid?: {
+                          bidder: string
+                          price: bigint
+                      }
+                  }
+                | {
+                      counterOfferCount: number
+                  }
+                | {
+                      counter?: {
+                          accountId: string
+                          price: bigint
+                      }
+                  }
+        }
+    }
 }
 
 export function listingCreated(event: EventItem): ListingCreatedEvent {
@@ -41,7 +91,7 @@ export function listingCreated(event: EventItem): ListingCreatedEvent {
 
 export async function listingCreatedEventModel(
     item: EventItem,
-    data: any,
+    data: ListingCreatedEvent,
     listing: Listing
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     let event: EventModel
@@ -72,7 +122,9 @@ export async function listingCreatedEventModel(
 
     const to = null
     if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        const tokenOwner = await ctx.store.findOne(TokenAccount, { where: { token: { id: listing.takeAssetId.id } } })
+        const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+            where: { token: { id: listing.takeAssetId.id } },
+        })
         if (tokenOwner) {
             to = tokenOwner.account
         }

@@ -4,14 +4,29 @@ import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
 
 type BondedPools = {
-    state: any
-    commission: any
+    state: {
+        __kind: string
+    }
+    commission: {
+        current?: number | [number, string]
+        max?: number
+        changeRate?: {
+            maxDelta: number
+            minDelay: number
+        }
+        throttleFrom?: number
+    }
     tokenId: bigint
     capacity: bigint
-    bonusCycle?: any
+    bonusCycle?: {
+        previousStart?: number
+        start: number
+        end: number
+        pendingDuration?: number
+    }
     creationBlock?: number
     bonusesPaid?: number[]
-    name?: any
+    name?: string
 }
 
 export function bondedPools(block: BlockHeader, poolId: number): Promise<BondedPools | undefined> {

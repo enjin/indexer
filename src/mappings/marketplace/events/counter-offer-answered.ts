@@ -20,7 +20,10 @@ import {
 type CounterOfferAnsweredEvent = {
     listingId: string
     creator?: string
-    response?: any
+    response?: {
+        __kind: string
+        value?: bigint
+    }
 }
 
 export function counterOfferAnswered(event: EventItem): CounterOfferAnsweredEvent {
@@ -38,7 +41,7 @@ export function counterOfferAnswered(event: EventItem): CounterOfferAnsweredEven
 
 export function counterOfferAnsweredEventModel(
     item: EventItem,
-    data: any,
+    data: CounterOfferAnsweredEvent,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

@@ -2,7 +2,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { ClaimDetails } from '../../model'
 import * as mappings from './../../mappings'
 
-export async function exchangeRateSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function exchangeRateSet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<undefined> {
     const eventData = mappings.claims.events.exchangeRateSet(item)
 
     const claimDetails = new ClaimDetails({
@@ -12,6 +12,4 @@ export async function exchangeRateSet(ctx: CommonContext, block: BlockHeader, it
     })
 
     await ctx.store.save(claimDetails)
-
-    return undefined
 }

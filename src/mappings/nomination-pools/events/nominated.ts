@@ -6,7 +6,7 @@ import { Event as EventModel, Extrinsic, NominationPoolsNominated } from '../../
 
 type NominatedEvent = {
     poolId: number
-    validators: any
+    validators: string[]
 }
 
 export function nominated(event: EventItem): NominatedEvent {
@@ -18,7 +18,7 @@ export function nominated(event: EventItem): NominatedEvent {
         })
 }
 
-export function nominatedEventModel(item: EventItem, data: any): EventModel | undefined {
+export function nominatedEventModel(item: EventItem, data: NominatedEvent): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsNominated.name,

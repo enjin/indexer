@@ -1,21 +1,21 @@
 import {
-    Collection,
-    CollectionFlags,
-    CollectionSocials,
-    CollectionStats,
     Event as EventModel,
     MarketPolicy,
-    MintPolicy,
     Royalty,
-    RoyaltyCurrency,
-    Token,
+    Collection,
+    MintPolicy,
     TransferPolicy,
+    Token,
+    RoyaltyCurrency,
+    CollectionSocials,
+    CollectionFlags,
+    CollectionStats,
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { Sns } from '../../common/sns'
-import * as mappings from './../../mappings'
 import { DefaultRoyalty } from '../../types/generated/matrixV500'
+import * as mappings from '../../mappings'
+import { Sns } from '@enjin/indexer/common/sns'
 
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -37,7 +37,7 @@ export async function collectionCreated(
     const eventData = mappings.multiTokens.events.collectionCreated(item)
 
     if (skipSave) {
-        const collection = await ctx.store.findOne(Collection, { where: { id: eventData.collectionId.toString() } })
+        const collection = await ctx.store.findOne<Collection>(Collection, { where: { id: eventData.collectionId.toString() } })
 
         if (collection) {
             collection.createdAt = new Date(block.timestamp ?? 0)
