@@ -7,7 +7,6 @@ import * as mappings from './../../mappings'
 
 export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.reserved(item)
-    if (!data) return undefined
     if (skipSave) return undefined
 
     const tokenAccount = await ctx.store.findOne(TokenAccount, {
@@ -35,7 +34,7 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
         throwError(`[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`, 'fatal')
     }
 
-    syncCollectionStats(data.collectionId.toString())
+    await syncCollectionStats(data.collectionId.toString())
 
     return undefined
 }

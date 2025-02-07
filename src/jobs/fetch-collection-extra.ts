@@ -13,7 +13,7 @@ export const fetchCollectionExtraQueue = new Queue<JobData>('fetchCollectionExtr
 
 export const fetchCollectionExtra = async (ids: string[]) => {
     fetchCollectionExtraQueue.add({ ids }).catch(() => {
-        // eslint-disable-next-line no-console
+         
         console.log('Closing connection as Redis is not available')
         fetchCollectionExtraQueue.close(true)
     })

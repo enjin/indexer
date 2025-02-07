@@ -2,7 +2,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api'
 import config from '../config'
 import './interfaces/augment-api'
 import './interfaces/augment-types'
-import * as definitions from './interfaces/lookup'
+// import * as definitions from './interfaces/lookup'
 
 class Rpc {
     private static _instance: Rpc | null = null
@@ -15,13 +15,13 @@ class Rpc {
 
     public static async getInstance(): Promise<Rpc> {
         if (!this._instance) {
-            const types = Object.values(definitions).reduce((res): object => ({ ...res }), {})
+            // const types = Object.values(definitions).reduce((res): object => ({ ...res }), {})
 
             const api = await ApiPromise.create({
                 provider: new WsProvider(config.dataSource.chain, 2000),
-                types: {
-                    ...types,
-                },
+                // types: {
+                //     ...types,
+                // },
             })
             this._instance = new Rpc(api)
         }

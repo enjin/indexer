@@ -10,7 +10,6 @@ export async function claimedCollections(
     item: EventItem
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.claimedCollections(item)
-    if (!data) return undefined
 
     const account = await getOrCreateAccount(ctx, data.accountId)
 
@@ -33,7 +32,7 @@ export async function claimedCollections(
     await Promise.all(savePromises)
 
     if (item.extrinsic) {
-        Sns.getInstance().send({
+        await Sns.getInstance().send({
             id: item.id,
             name: item.name,
             body: {

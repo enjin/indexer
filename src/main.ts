@@ -101,10 +101,9 @@ async function handleEvents(
         case events.balances.unlocked.name:
         case events.balances.unreserved.name:
         case events.balances.withdraw.name:
-            return processors.balances.save(ctx, block, item)
+            return processors.balances.save(item)
         case events.balances.transfer.name:
-            await processors.balances.save(ctx, block, item)
-            return processors.balances.save(ctx, block, item)
+            return processors.balances.save(item)
         case events.claims.claimRequested.name:
             return processors.claims.claimRequested(ctx, block, item)
         case events.claims.claimRejected.name:
@@ -248,7 +247,7 @@ processor.run(
                 if (block.header.height === config.lastBlockHeight) {
                     await syncAllBalances(ctx, block.header)
                     metadataQueue.resume().catch(() => {})
-                    syncAllCollections()
+                    await syncAllCollections()
                 }
 
                 ctx.log.info(
@@ -258,7 +257,7 @@ processor.run(
                 for (const extrinsic of block.extrinsics) {
                     const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
                     let publicKey = ''
-                    let extrinsicSignature: any = {}
+                    let extrinsicSignature = {}
                     let fuelTank = null
 
                     if (!call) {
@@ -312,7 +311,7 @@ processor.run(
 
                             const transfer = mappings.balances.events.withdraw(eventItem)
 
-                            if (transfer && transfer.who === tank.id) {
+                            if (transfer.who === tank.id) {
                                 fuelTank.feePaid = transfer.amount
                             }
                         }
@@ -374,7 +373,7 @@ processor.run(
                         await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
                     }
 
-                    ctx.store.insert(extrinsicM)
+                    await ctx.store.insert(extrinsicM)
                 }
 
                 for (const call of block.calls) {
@@ -387,11 +386,11 @@ processor.run(
                         if (Array.isArray(event)) {
                             // eventsCollection.push(event[0])
                             // accountTokenEvents.push(event[1])
-                            ctx.store.insert(event[0])
-                            ctx.store.insert(event[1])
+                            await ctx.store.insert(event[0])
+                            await ctx.store.insert(event[1])
                         } else {
                             // eventsCollection.push(event)
-                            ctx.store.insert(event)
+                            await ctx.store.insert(event)
                         }
                     }
                 }
@@ -411,7 +410,7 @@ processor.run(
                 await chainState(ctx as unknown as CommonContext, lastBlock)
             }
         } catch (error) {
-            metadataQueue.resume()
+            await metadataQueue.resume()
             Sentry.captureException(error)
             throw error
         }

@@ -19,6 +19,8 @@ import { TokenCap } from '../../types/generated/matrixEnjinV603'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
+import { TokenMarketBehavior } from '@enjin/indexer/types/generated/v100'
+import { FreezeState as FreezeStatev500 } from '@enjin/indexer/types/generated/matrixV500'
 
 export function getCapType(cap: TokenCap) {
     if (cap.__kind === CapType.Supply) {
@@ -34,7 +36,7 @@ export function getCapType(cap: TokenCap) {
     })
 }
 
-export function getFreezeState(state: FreezeState_v500): FreezeState | null {
+export function getFreezeState(state: FreezeStatev500): FreezeState | null {
     switch (state.__kind) {
         case 'Permanent':
             return FreezeState.Permanent
@@ -138,7 +140,6 @@ export async function tokenCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const eventData = mappings.multiTokens.events.tokenCreated(item)
-    if (!eventData) return undefined
 
     if (skipSave && item.call) {
         const token = await ctx.store.findOne(Token, {
@@ -147,7 +148,7 @@ export async function tokenCreated(
 
         if (token) {
             token.createdAt = new Date(block.timestamp ?? 0)
-            ctx.store.save(token)
+            await ctx.store.save(token)
         }
 
         return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
@@ -164,10 +165,7 @@ export async function tokenCreated(
         }
 
         let callData = await mappings.multiTokens.calls.mint(item.call)
-
-        if (callData === undefined) {
-            callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
-        }
+        callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,

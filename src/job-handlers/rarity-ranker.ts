@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 import Queue from 'bull'
 import * as mathjs from 'mathjs'
 import { informationContentScoring } from '../open-rarity/handlers/information-content-scoring'
@@ -39,13 +39,13 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             const totalSupply = collection.stats.supply
 
             if (!totalSupply || totalSupply <= 0) {
-                return done()
+                done(); return;
             }
 
             const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
 
             if (!entropy || collection.traits.length === 0) {
-                return done()
+                done(); return;
             }
 
             const tokenRarities = tokens.map((token) => {
@@ -64,7 +64,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             const tokenRanks = tokenRarities.map((tokenRarity, index) => {
                 return new TokenRarity({
-                    id: `${tokenRarity.token.id}`,
+                    id: tokenRarity.token.id,
                     collection,
                     token: tokenRarity.token,
                     score: tokenRarity.score.toNumber(),
@@ -80,11 +80,11 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             console.timeEnd('rarity-ranker')
 
-            return done()
+            done(); return;
         } catch (error) {
             console.log('Error in rarity ranker', job.data.collectionId, (error as any).message)
             console.error(error)
-            return done(error as Error)
+            done(error as Error); return;
         }
     })
 }

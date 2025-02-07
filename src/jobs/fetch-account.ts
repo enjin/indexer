@@ -13,7 +13,7 @@ export const fetchAccountQueue = new Queue<JobData>('fetchAccountQueue', {
 
 export const fetchAccountsDetail = async (ids: `0x${string}`[]) => {
     fetchAccountQueue.add({ ids }).catch(() => {
-        // eslint-disable-next-line no-console
+         
         console.log('Closing connection as Redis is not available')
         fetchAccountQueue.close(true)
     })

@@ -22,10 +22,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
     if (!item.call) throw new CallNotDefinedError()
 
     const eventData = mappings.fuelTanks.events.fuelTankCreated(item)
-
     const callData = mappings.fuelTanks.calls.createFuelTank(item.call)
-
-    if (!eventData || !callData) return undefined
 
     const [tankAccount, owner] = await Promise.all([
         getOrCreateAccount(ctx, eventData.tankId),
@@ -87,7 +84,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
     if (callData.descriptor.ruleSets.length > 0) {
         callData.descriptor.ruleSets.forEach(async (ruleSet) => {
             const index = ruleSet[0]
-            let rules = ruleSet[1] as any
+            let rules = ruleSet[1]
 
             if (!Array.isArray(rules)) {
                 rules = rules.rules

@@ -71,7 +71,7 @@ export async function fetchAccountsDetail(ids: string[]) {
 
         if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
         if (!data.data) {
-            // eslint-disable-next-line no-console
+             
             console.error('No data returned', data)
             throw new Error('No data returned')
         }
@@ -87,7 +87,7 @@ export async function fetchAccountsDetail(ids: string[]) {
             }
         })
     } catch (error) {
-        // eslint-disable-next-line no-console
+         
         console.error('Error: Fetching account details', ids, error)
         return ids.map(() => null)
     }

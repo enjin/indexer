@@ -1,11 +1,19 @@
 import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { calls } from '../../../types/generated'
+import { match } from 'ts-pattern'
 
-export function unbond(call: CallItem) {
-    if (calls.nominationPools.unbond.enjinV100.is(call)) {
-        return calls.nominationPools.unbond.enjinV100.decode(call)
-    }
+type UnbondCall = {
+    poolId: number
+    memberAccount: any
+    unbondingPoints: bigint
+}
 
-    throw new UnsupportedCallError(call)
+export function unbond(call: CallItem): UnbondCall {
+    return match(call)
+        .returnType<UnbondCall>()
+        .when(calls.nominationPools.unbond.enjinV100.is, () => calls.nominationPools.unbond.enjinV100.decode(call))
+        .otherwise(() => {
+            throw new UnsupportedCallError(call)
+        })
 }

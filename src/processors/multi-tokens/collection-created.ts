@@ -1,4 +1,3 @@
-import { storage } from '../../types/generated'
 import {
     Collection,
     CollectionFlags,
@@ -16,8 +15,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { DefaultRoyalty } from '../../types/generated/v500'
-import { AssetId } from '../../types/generated/matrixEnjinV603'
+import { DefaultRoyalty } from '../../types/generated/matrixV500'
 
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -29,52 +27,6 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     })
 }
 
-async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectionId: bigint) {
-    if (storage.multiTokens.collections.v1010.is(block)) {
-        const data = await storage.multiTokens.collections.v1010.get(block, collectionId)
-        const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
-
-        const assets = currencies?.map(([assetId, _]) => assetId)
-
-        if (data) {
-            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
-            return {
-                maxTokenCount: data.policy.mint.maxTokenCount,
-                maxTokenSupply: data.policy.mint.maxTokenSupply,
-                forceSingleMint: data.policy.mint.forceCollapsingSupply,
-                market,
-                explicitRoyaltyCurrencies: assets ?? [], // Check
-            }
-        }
-    }
-
-    if (storage.multiTokens.collections.matrixEnjinV603.is(block)) {
-        const data = await storage.multiTokens.collections.matrixEnjinV603.get(block, collectionId)
-        const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
-
-        const assets = currencies?.map(([assetId, _]) => assetId)
-
-        if (data) {
-            const market = data.policy.market.royalty ? await getMarket(ctx, data.policy.market.royalty) : null
-            return {
-                maxTokenCount: data.policy.mint.maxTokenCount,
-                maxTokenSupply: data.policy.mint.maxTokenSupply,
-                forceSingleMint: data.policy.mint.forceSingleMint,
-                market,
-                explicitRoyaltyCurrencies: assets ?? [], // Check
-            }
-        }
-    }
-
-    return {
-        maxTokenCount: 0n,
-        maxTokenSupply: 0n,
-        forceSingleMint: false,
-        market: null,
-        explicitRoyaltyCurrencies: [],
-    }
-}
-
 export async function collectionCreated(
     ctx: CommonContext,
     block: BlockHeader,
@@ -82,26 +34,21 @@ export async function collectionCreated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     if (!item.call) return undefined
-
     const eventData = mappings.multiTokens.events.collectionCreated(item)
-    if (!eventData) return undefined
 
     if (skipSave) {
         const collection = await ctx.store.findOne(Collection, { where: { id: eventData.collectionId.toString() } })
 
         if (collection) {
             collection.createdAt = new Date(block.timestamp ?? 0)
-            ctx.store.save(collection)
+            await ctx.store.save(collection)
         }
 
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    let callData = await mappings.multiTokens.calls.createCollection(ctx, item.call)
-
-    if (callData === undefined) {
-        callData = await getCollectionId(ctx, block, eventData.collectionId)
-    }
+    let callData = await mappings.multiTokens.calls.createCollection(item.call)
+    callData = await getCollectionId(ctx, block, eventData.collectionId)
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({

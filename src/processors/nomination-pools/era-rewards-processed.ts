@@ -3,38 +3,13 @@ import * as Sentry from '@sentry/node'
 import { groupBy } from 'lodash'
 import { BonusCycle, CommissionPayment, Era, EraReward, Event as EventModel, PoolMember, PoolMemberRewards } from '../../model'
 import { updatePool } from './pool'
-import { storage } from '../../types/generated'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import config from '../../config'
 import * as mappings from './../../mappings'
 
 async function getMembersBalance(block: BlockHeader, poolId: number) {
-    if (storage.multiTokens.tokenAccounts.enjinV1032.is(block)) {
-        return storage.multiTokens.tokenAccounts.enjinV1032.getPairs(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokenAccounts.enjinV100.is(block)) {
-        return storage.multiTokens.tokenAccounts.enjinV100.getPairs(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokenAccounts.v1050.is(block)) {
-        return storage.multiTokens.tokenAccounts.v1050.getPairs(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokenAccounts.v1030.is(block)) {
-        return storage.multiTokens.tokenAccounts.v1030.getPairs(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokenAccounts.v101.is(block)) {
-        return storage.multiTokens.tokenAccounts.v101.getPairs(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokenAccounts.v100.is(block)) {
-        return storage.multiTokens.tokenAccounts.v100.getPairs(block, '1', BigInt(poolId))
-    }
-
-    throw new UnknownVersionError('MultiTokens.TokenAccounts')
+    return await mappings.multiTokens.storage.tokenAccounts(block, 1n, BigInt(poolId))
 }
 
 export async function eraRewardsProcessed(
@@ -46,8 +21,6 @@ export async function eraRewardsProcessed(
 
     const eventData = mappings.nominationPools.events.eraRewardsProcessed(item)
 
-    if (!eventData) return undefined
-
     const [existReward, memberBalances, era] = await Promise.all([
         ctx.store.findOneBy(EraReward, { id: `${eventData.poolId}-${eventData.era}` }),
         getMembersBalance(block, eventData.poolId),
@@ -56,7 +29,7 @@ export async function eraRewardsProcessed(
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
 
     if ('bonusCycleEnded' in eventData && eventData.bonusCycleEnded) {
-        const poolInfo = await getPoolInfo(block, eventData.poolId)
+        const poolInfo = await mappings.nominationPools.storage.bondedPools(block, eventData.poolId)
         if (!poolInfo) throw new Error('Pool info not found')
         if ('bonusCycle' in poolInfo) {
             pool.bonusCycle = new BonusCycle({

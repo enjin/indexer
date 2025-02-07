@@ -11,7 +11,7 @@ type TeleportAssetsCall = {
     weightLimit: any
 }
 
-export async function teleportAssets(call: CallItem) {
+export function teleportAssets(call: CallItem) {
     return match(call)
         .returnType<TeleportAssetsCall>()
         .when(calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is, () =>

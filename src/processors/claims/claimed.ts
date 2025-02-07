@@ -80,7 +80,7 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     return new EventModel({
         id: item.id,
         name: ClaimsClaimed.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimed({
             account: account.id,
             ethAccount: claimAccount,

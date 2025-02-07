@@ -1,28 +1,25 @@
 import { system } from '../../../types/generated/storage'
-import { CommonContext } from '../../../common/types/contexts'
 import { UnsupportedStorageError } from '../../../common/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
+import { match } from 'ts-pattern'
 
-export async function account(ctx: CommonContext, block: BlockHeader, accounts: string[]) {
-    if (system.account.matrixEnjinV603.is(block)) {
-        return system.account.matrixEnjinV603.getMany(block, accounts)
-    }
+type AccountInfo = {
+    nonce: number
+    consumers: number
+    providers: number
+    sufficients: number
+    data: any
+}
 
-    if (system.account.matrixV602.is(block)) {
-        return system.account.matrixV602.getMany(block, accounts)
-    }
-
-    if (system.account.matrixV500.is(block)) {
-        return system.account.matrixV500.getMany(block, accounts)
-    }
-
-    if (system.account.v104.is(block)) {
-        return system.account.v104.getMany(block, accounts)
-    }
-
-    if (system.account.v100.is(block)) {
-        return system.account.v100.getMany(block, accounts)
-    }
-
-    throw new UnsupportedStorageError('system.account')
+export async function account(block: BlockHeader, accounts: string[]): Promise<(AccountInfo | undefined)[]> {
+    return match(block)
+        .returnType<Promise<(AccountInfo | undefined)[]>>()
+        .when(system.account.matrixEnjinV603.is, () => system.account.matrixEnjinV603.getMany(block, accounts))
+        .when(system.account.matrixV602.is, () => system.account.matrixV602.getMany(block, accounts))
+        .when(system.account.matrixV500.is, () => system.account.matrixV500.getMany(block, accounts))
+        .when(system.account.v104.is, () => system.account.v104.getMany(block, accounts))
+        .when(system.account.v100.is, () => system.account.v100.getMany(block, accounts))
+        .otherwise(() => {
+            throw new UnsupportedStorageError('system.account')
+        })
 }

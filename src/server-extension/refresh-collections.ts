@@ -1,7 +1,7 @@
 import { Arg, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { fetchCollectionExtra } from '../../jobs/fetch-collection-extra'
+import { fetchCollectionExtra } from '../jobs/fetch-collection-extra'
 
 @Resolver()
 export class RefreshCollectionsResolver {

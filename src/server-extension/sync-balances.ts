@@ -3,8 +3,8 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { u8aToHex } from '@polkadot/util'
 import { decodeAddress } from '@polkadot/util-crypto'
-import { Account } from '../../model'
-import { fetchBalances } from '../../jobs/fetch-balance'
+import { Account } from '../model'
+import { fetchBalances } from '../jobs/fetch-balance'
 
 async function* accountsInBatch(em: EntityManager) {
     let skip = 0

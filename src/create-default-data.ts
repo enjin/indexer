@@ -112,10 +112,12 @@ export async function createDefaultData(ctx: CommonContext, block: BlockHeader) 
             totalDeposit: 0n,
             createdAt: new Date(block.timestamp ?? 0),
         })
-        const degenCollectionData = await mappings.multiTokens.storage.collections(block)
+
+        const degenCollectionData = await mappings.multiTokens.storage.collections(block, 2n)
         if (!degenCollectionData) {
             throw new Error('Degen collection data not found')
         }
+
         const degenCollection = new Collection({
             id: '2',
             collectionId: 2n,

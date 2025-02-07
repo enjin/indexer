@@ -46,7 +46,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
     return new EventModel({
         id: item.id,
         name: ClaimsClaimRequested.name,
-        extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
+        extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
             who: eventData.who,
             accountType: AccountClaimType.EVM,

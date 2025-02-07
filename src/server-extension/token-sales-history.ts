@@ -1,7 +1,7 @@
 import { Arg, Field, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Listing, ListingSale } from '../../model'
+import { Listing, ListingSale } from '../model'
 
 @ObjectType()
 export class TokenSale {

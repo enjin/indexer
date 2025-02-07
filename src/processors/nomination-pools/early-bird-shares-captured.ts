@@ -5,12 +5,9 @@ import * as mappings from './../../mappings'
 
 export async function earlyBirdSharesCaptured(ctx: CommonContext, block: BlockHeader, item: EventItem) {
     if (!item.extrinsic) return undefined
-
     const eventData = mappings.nominationPools.events.earlyBirdSharesCaptured(item)
 
-    if (!eventData) return undefined
-
-    const data = await getPoolShares(block, eventData.poolId)
+    const data = await mappings.nominationPools.storage.earlyBirdShares(block, eventData.poolId)
 
     const toSave = data.map((s) => {
         return new EarlyBirdShares({
@@ -23,17 +20,15 @@ export async function earlyBirdSharesCaptured(ctx: CommonContext, block: BlockHe
 
     await ctx.store.save(toSave)
 
-    if (item.extrinsic) {
-        await Sns.getInstance().send({
-            id: item.id,
-            name: item.name,
-            body: {
-                pool: eventData.poolId.toString(),
-                totalAccounts: eventData.totalAccounts,
-                extrinsic: item.extrinsic.id,
-            },
-        })
-    }
+    await Sns.getInstance().send({
+        id: item.id,
+        name: item.name,
+        body: {
+            pool: eventData.poolId.toString(),
+            totalAccounts: eventData.totalAccounts,
+            extrinsic: item.extrinsic.id,
+        },
+    })
 
     return mappings.nominationPools.events.earlyBirdSharesCapturedEventModel(item, eventData)
 }

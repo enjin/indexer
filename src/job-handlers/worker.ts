@@ -20,7 +20,7 @@ async function main() {
         })
     }
 
-    // eslint-disable-next-line no-console
+     
     console.info('handling jobs...')
 
     traitsQueue.process(2, `${__dirname}/compute-traits.js`)
@@ -78,7 +78,7 @@ async function main() {
     // other configurations of your server
 
     app.listen(9090, () => {
-        // eslint-disable-next-line no-console
+         
         console.log('Running on 9090...')
     })
 }

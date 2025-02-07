@@ -13,7 +13,7 @@ export const deleteTraitsQueue = new Queue<JobData>('deleteTraits', {
 
 export const deleteTokenTraits = async (id: string) => {
     deleteTraitsQueue.add({ id }).catch(() => {
-        // eslint-disable-next-line no-console
+         
         console.log('Closing connection as Redis is not available')
         deleteTraitsQueue.close(true)
     })

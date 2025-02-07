@@ -8,7 +8,7 @@ type RenameSubCall = {
     data: any
 }
 
-export function renameSub(call: CallItem) {
+export function renameSub(call: CallItem): RenameSubCall {
     return match(call)
         .returnType<RenameSubCall>()
         .when(calls.identity.renameSub.matrixEnjinV1000.is, () => calls.identity.renameSub.matrixEnjinV1000.decode(call))

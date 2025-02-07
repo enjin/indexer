@@ -3,10 +3,10 @@ import 'reflect-metadata'
 import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
 import { BigInteger } from '@subsquid/graphql-server'
-import { Collection, Token } from '../../model'
-import { computeTraits } from '../../jobs/compute-traits'
-import { syncCollectionStats } from '../../jobs/collection-stats'
-import { processMetadata } from '../../jobs/process-metadata'
+import { Collection, Token } from '../model'
+import { computeTraits } from '../jobs/compute-traits'
+import { syncCollectionStats } from '../jobs/collection-stats'
+import { processMetadata } from '../jobs/process-metadata'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',

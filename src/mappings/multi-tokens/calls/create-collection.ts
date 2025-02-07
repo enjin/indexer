@@ -7,7 +7,7 @@ type CreateCollectionCall = {
     descriptor: any
 }
 
-export async function createCollection(call: CallItem) {
+export function createCollection(call: CallItem) {
     return match(call)
         .returnType<CreateCollectionCall>()
         .when(calls.multiTokens.createCollection.matrixEnjinV1012.is, () =>

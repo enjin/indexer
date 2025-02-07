@@ -1,7 +1,6 @@
 import { bonded } from './bonded'
 import { created } from './created'
 import { destroyed } from './destroyed'
-import { bonded } from './bonded'
 import { eraRewardsProcessed } from './era-rewards-processed'
 import { nominated } from './nominated'
 import { poolMutated } from './pool-mutated'
@@ -10,10 +9,10 @@ import { rewardPaid } from './reward-paid'
 import { stateChanged } from './state-changed'
 import { unbonded } from './unbonded'
 import { withdrawn } from './withdrawn'
-import { earlyBirdBonusPaymentUnlocked } from './earlyBirdBonusPaymentUnlocked'
-import { earlyBirdBonusCalculated } from './earlyBirdBonusCalculated'
-import { earlyBirdSharesCaptured } from './earlyBirdSharesCaptured'
-import { earlyBirdBonusPaid } from './earlyBirdBonusPaid'
+import { earlyBirdBonusPaymentUnlocked } from './early-bird-bonus-payment-unlocked'
+import { earlyBirdBonusCalculated } from './early-bird-bonus-calculated'
+import { earlyBirdSharesCaptured } from './early-bird-shares-captured'
+import { earlyBirdBonusPaid } from './early-bird-bonus-paid'
 
 export const nominationPools = {
     bonded,

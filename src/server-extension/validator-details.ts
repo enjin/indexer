@@ -1,8 +1,8 @@
 import { Query, Resolver, ObjectType, Field, Arg, ID } from 'type-graphql'
 import 'reflect-metadata'
 import { EntityManager } from 'typeorm'
-import { isValidAddress } from '../../common/tools'
-import { Identity, Registration, Validator } from '../../model'
+import { isValidAddress } from '../common/tools'
+import { Identity, Registration, Validator } from '../model'
 
 @ObjectType()
 class ValidatorDetailsResolverResult {
@@ -38,7 +38,7 @@ export class ValidatorDetailsResolver {
 
     @Query(() => [ValidatorDetailsResolverResult])
     async validatorDetails(
-        @Arg('id', () => [String]!, {
+        @Arg('id', () => [String], {
             defaultValue: [],
         })
         ids: string[]

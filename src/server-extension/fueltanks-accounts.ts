@@ -1,7 +1,7 @@
 import { Arg, Field, ObjectType, Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
 import { hexToU8a } from '@polkadot/util'
-import Rpc from '../../common/rpc'
+import Rpc from '../common/rpc'
 
 const customTypes = {
     UserFuelBudget: {

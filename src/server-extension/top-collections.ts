@@ -2,7 +2,7 @@ import { Arg, Field, ID, Int, ObjectType, Query, registerEnumType, Resolver } fr
 import { Json } from '@subsquid/graphql-server'
 import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
-import { Collection, Listing, ListingSale, ListingStatus, Token } from '../../model'
+import { Collection, Listing, ListingSale, ListingStatus, Token } from '../model'
 
 enum Timeframe {
     HOUR = 'HOUR',
@@ -102,7 +102,7 @@ export class CollectionRow {
 }
 
 @Resolver()
-export class TopCollectionResolver {
+export class TopCollectionsResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => [CollectionRow])

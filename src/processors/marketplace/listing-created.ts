@@ -112,7 +112,7 @@ export async function listingCreated(
     })
 
     if (data.listing.data.__kind !== 'Offer') {
-        if ((makeAssetId.bestListing && makeAssetId.bestListing?.highestPrice >= listing.price) || !makeAssetId.bestListing) {
+        if ((makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) || !makeAssetId.bestListing) {
             makeAssetId.bestListing = listing
         }
         makeAssetId.recentListing = listing

@@ -75,7 +75,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             }
 
             if (!resource) {
-                return done(new Error('Resource not found'), null)
+                done(new Error('Resource not found'), null); return;
             }
 
             let uriAttribute = null
@@ -172,8 +172,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
             await em.save(resource)
 
-            if (jobData.type === 'collection' && jobData.allTokens === true) {
-                // eslint-disable-next-line no-console
+            if (jobData.type === 'collection' && jobData.allTokens) {
+                 
                 console.log('Processing all tokens in collection', jobData.resourceId)
 
                 const batch = tokensInBatch(em, jobData.resourceId)

@@ -21,7 +21,7 @@ export const computeRarityRank = async (collectionId: string) => {
     }
 
     rarityQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
-        // eslint-disable-next-line no-console
+         
         console.log('Closing connection as Redis is not available')
         rarityQueue.close(true)
     })

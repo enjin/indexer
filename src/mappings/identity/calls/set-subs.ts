@@ -7,7 +7,7 @@ type SetSubsCall = {
     subs: any[]
 }
 
-export function setSubs(call: CallItem) {
+export function setSubs(call: CallItem): SetSubsCall {
     return match(call)
         .returnType<SetSubsCall>()
         .when(calls.identity.setSubs.matrixEnjinV1000.is, () => calls.identity.setSubs.matrixEnjinV1000.decode(call))

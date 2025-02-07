@@ -1,2 +1,2 @@
-export * from './renameSub'
-export * from './setSubs'
+export * from './rename-sub'
+export * from './set-subs'

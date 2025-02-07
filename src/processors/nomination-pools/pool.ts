@@ -1,10 +1,10 @@
 import { BN, bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 import Big from 'big.js'
-import { constants, storage } from '../../types/generated'
-import { BlockHeader, CommonContext } from '../types/contexts'
+import { constants } from '../../types/generated'
+import { BlockHeader, CommonContext } from '../../common/types/contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
-import { UnknownVersionError } from '../../common/errors'
+import * as mappings from './../../mappings'
 
 const EMPTY_H256 = new Uint8Array(15)
 const MOD_PREFIX = stringToU8a('modl')
@@ -19,68 +19,15 @@ export function createAccount(block: BlockHeader, poolId: string, index: number)
 
 async function fetchPoolBalance(block: BlockHeader, poolId: string) {
     const accounts = [createAccount(block, poolId, 1), createAccount(block, poolId, 2), createAccount(block, poolId, 3)]
-
-    if (storage.system.account.enjinV100.is(block)) {
-        return storage.system.account.enjinV100.getMany(block, accounts)
-    }
-
-    if (storage.system.account.v104.is(block)) {
-        return storage.system.account.v104.getMany(block, accounts)
-    }
-
-    if (storage.system.account.v100.is(block)) {
-        return storage.system.account.v100.getMany(block, accounts)
-    }
-
-    throw new UnknownVersionError('System.Account')
+    return await mappings.system.storage.account(block, accounts)
 }
 
 async function getPoolPointsStorage(block: BlockHeader, poolId: string) {
-    if (storage.multiTokens.tokens.enjinV1032.is(block)) {
-        return storage.multiTokens.tokens.enjinV1032.get(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokens.enjinV100.is(block)) {
-        return storage.multiTokens.tokens.enjinV100.get(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokens.v1050.is(block)) {
-        return storage.multiTokens.tokens.v1050.get(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokens.v1030.is(block)) {
-        return storage.multiTokens.tokens.v1030.get(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokens.v102.is(block)) {
-        return storage.multiTokens.tokens.v102.get(block, 1n, BigInt(poolId))
-    }
-
-    if (storage.multiTokens.tokens.v100.is(block)) {
-        return storage.multiTokens.tokens.v100.get(block, 1n, BigInt(poolId))
-    }
-
-    throw new UnknownVersionError('MultiTokens.Tokens')
+    return await mappings.multiTokens.storage.tokens(block, 1n, BigInt(poolId))
 }
 
 async function getActiveStake(block: BlockHeader, poolId: string) {
-    if (storage.staking.ledger.enjinV1032.is(block)) {
-        return storage.staking.ledger.enjinV1032.get(block, createAccount(block, poolId, 1))
-    }
-
-    if (storage.staking.ledger.enjinV100.is(block)) {
-        return storage.staking.ledger.enjinV100.get(block, createAccount(block, poolId, 1))
-    }
-
-    if (storage.staking.ledger.v1030.is(block)) {
-        return storage.staking.ledger.v1030.get(block, createAccount(block, poolId, 1))
-    }
-
-    if (storage.staking.ledger.v100.is(block)) {
-        return storage.staking.ledger.v100.get(block, createAccount(block, poolId, 1))
-    }
-
-    throw new UnknownVersionError('Staking.Ledger')
+    return await mappings.staking.storage.ledger(block, createAccount(block, poolId, 1))
 }
 
 export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId: string) {
@@ -128,55 +75,17 @@ export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId:
     return pool
 }
 
-function getEarlyBirdBonusDistributionBlockConstant(block: BlockHeader) {
-    if (constants.nominationPools.earlyBirdBonusDistributionBlock.enjinV101.is(block)) {
-        return constants.nominationPools.earlyBirdBonusDistributionBlock.enjinV101.get(block)
-    }
-
-    return 0
-}
-
-async function getEarlyBirdBonusInfo(block: BlockHeader) {
-    if (storage.nominationPools.earlyBirdBonusInfo.enjinV1023.is(block)) {
-        return storage.nominationPools.earlyBirdBonusInfo.enjinV1023.get(block)
-    }
-
-    if (storage.nominationPools.earlyBirdBonusInfo.enjinV1021.is(block)) {
-        return storage.nominationPools.earlyBirdBonusInfo.enjinV1021.get(block)
-    }
-
-    if (storage.nominationPools.earlyBirdBonusInfo.v1023.is(block)) {
-        return storage.nominationPools.earlyBirdBonusInfo.v1023.get(block)
-    }
-
-    if (storage.nominationPools.earlyBirdBonusInfo.v1021.is(block)) {
-        return storage.nominationPools.earlyBirdBonusInfo.v1021.get(block)
-    }
-
-    return {
-        bonusCalculated: false,
-        currentPaymentId: null,
-        nextPaymentBlock: null,
-        totalPaid: null,
-    }
-}
-
 export async function updateEarlyBirdInfo(ctx: CommonContext, block: BlockHeader) {
     try {
-        const earlyBirdBonusDistributionBlock = getEarlyBirdBonusDistributionBlockConstant(block)
-        const bonusInfo = await getEarlyBirdBonusInfo(block)
-
-        if (!bonusInfo) {
-            return
-        }
-
+        const earlyBirdBonusDistributionBlock = mappings.nominationPools.constants.earlyBirdBonusDistributionBlock(block)
+        const bonusInfo = await mappings.nominationPools.storage.earlyBirdBonusInfo(block)
         const earlyBird = new EarlyBirdDetails({
             id: '0',
             earlyBirdBonusDistributionBlock,
-            bonusCalculated: bonusInfo.bonusCalculated,
-            currentPaymentId: bonusInfo.currentPaymentId,
-            nextPaymentBlock: bonusInfo.nextPaymentBlock,
-            totalPaid: 'totalPaid' in bonusInfo ? bonusInfo.totalPaid : 0n,
+            bonusCalculated: bonusInfo?.bonusCalculated,
+            currentPaymentId: bonusInfo?.currentPaymentId,
+            nextPaymentBlock: bonusInfo?.nextPaymentBlock,
+            totalPaid: bonusInfo ? ('totalPaid' in bonusInfo ? bonusInfo.totalPaid : 0n) : 0n,
         })
 
         await ctx.store.save(earlyBird)

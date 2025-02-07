@@ -14,6 +14,7 @@ import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'
 import { isNonFungible } from '@enjin/indexer/processors/multi-tokens/utils/helpers'
+import { TokenMarketBehavior } from '@enjin/indexer/types/generated/v100'
 
 async function getBehavior(
     ctx: CommonContext,
@@ -42,8 +43,6 @@ export async function tokenMutated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.tokenMutated(item)
-    if (!data) return undefined
-
     if (skipSave) return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 
     const token = await ctx.store.findOne<Token>(Token, {
@@ -86,7 +85,7 @@ export async function tokenMutated(
     token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
-    syncCollectionStats(data.collectionId.toString())
+    await syncCollectionStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }

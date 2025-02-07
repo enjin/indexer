@@ -1,6 +1,6 @@
 import { Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
-import { syncAllCollections } from '../../jobs/collection-stats'
+import { syncAllCollections } from '../jobs/collection-stats'
 
 const mins10 = 1000 * 60 * 30
 let rateLimit: number | null = null

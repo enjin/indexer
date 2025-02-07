@@ -1,6 +1,6 @@
 import { Query, Resolver, ObjectType, Field, registerEnumType } from 'type-graphql'
 import 'reflect-metadata'
-import Rpc from '../../common/rpc'
+import Rpc from '../common/rpc'
 
 @ObjectType()
 class SessionProgressResolverResult {

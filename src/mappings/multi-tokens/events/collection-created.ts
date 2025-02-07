@@ -18,7 +18,7 @@ export function collectionCreated(event: EventItem): CollectionCreatedEvent {
         })
 }
 
-export function getEvent(item: EventItem, data: any) {
+export function collectionCreatedEventModel(item: EventItem, data: CollectionCreatedEvent) {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionCreated.name,

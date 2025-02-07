@@ -4,6 +4,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
+import { DefaultRoyalty } from '@enjin/indexer/types/generated/v100'
 
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -22,8 +23,6 @@ export async function collectionMutated(
     skipSave: boolean
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.collectionMutated(item)
-    if (!data) return undefined
-
     if (skipSave) return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
 
     const collection = await ctx.store.findOne<Collection>(Collection, {
@@ -83,7 +82,7 @@ export async function collectionMutated(
         })
 
         if (data.mutation.explicitRoyaltyCurrencies.length === 0) {
-            ctx.store.remove(royaltyCurrencies)
+            await ctx.store.remove(royaltyCurrencies)
         } else {
             for (const currency of data.mutation.explicitRoyaltyCurrencies) {
                 const rc = royaltyCurrencies.find(
@@ -114,7 +113,7 @@ export async function collectionMutated(
                     await ctx.store.insert(royaltyCurrency)
                 }
             }
-            ctx.store.remove(royaltyCurrencies)
+            await ctx.store.remove(royaltyCurrencies)
         }
     }
 

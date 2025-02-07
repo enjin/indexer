@@ -6,7 +6,7 @@ import { balances } from '../../types/generated/events'
 import { CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
-function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
+function processBalancesEventItem(event: EventItem) {
     const ids: string[] = []
     switch (event.name) {
         case balances.burned.name: {
@@ -107,8 +107,8 @@ function processBalancesEventItem(ctx: CommonContext, event: EventItem) {
     return ids
 }
 
-async function getBalances(ctx: CommonContext, block: BlockHeader, accountIds: string[]) {
-    return mappings.system.storage.account(ctx, block, accountIds)
+async function getBalances(block: BlockHeader, accountIds: string[]) {
+    return await mappings.system.storage.account(block, accountIds)
 }
 
 const accountsSet = new Set<string>()
@@ -118,13 +118,13 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
     if (accountIds.length === 0) return
 
     for (const chunked of chunk(accountIds, 100)) {
-        const accountInfos = await getBalances(ctx, block, chunked)
+        const accountInfos = await getBalances(block, chunked)
 
-        if (accountInfos === undefined || accountInfos.length === 0) {
+        if (accountInfos.length === 0) {
             continue
         }
 
-        const accounts: any[] = []
+        const accounts = []
 
         for (let i = 0; i < chunked.length; i += 1) {
             const id = chunked[i]
@@ -158,7 +158,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                     new Account({
                         id,
                         address: encodeId(id),
-                        nonce: accountInfo!.nonce,
+                        nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
                             transferable: BigInt(accountData.free - accountData.frozen),
@@ -175,7 +175,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                     new Account({
                         id,
                         address: encodeId(id),
-                        nonce: accountInfo!.nonce,
+                        nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
                             transferable: BigInt(accountData.free - accountData.miscFrozen),
@@ -196,8 +196,8 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
     accountsSet.clear()
 }
 
-export async function save(ctx: CommonContext, block: BlockHeader, event: EventItem): Promise<EventModel | undefined> {
-    processBalancesEventItem(ctx, event).forEach((id) => accountsSet.add(id))
+export function save(event: EventItem): EventModel | undefined {
+    processBalancesEventItem(event).forEach((id) => accountsSet.add(id))
 
     return undefined
 }

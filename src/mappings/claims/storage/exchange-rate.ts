@@ -1,27 +1,17 @@
-import { BlockHeader, CommonContext } from '@enjin/indexer/common/types/contexts'
+import { BlockHeader } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedStorageError } from '../../../common/errors'
 import { claims } from '../../../types/generated/storage'
+import { match } from 'ts-pattern'
 
-export async function exchangeRate(ctx: CommonContext, block: BlockHeader) {
-    if (claims.exchangeRate.matrixEnjinV603.is(block)) {
-        return claims.exchangeRate.matrixEnjinV603.get(block)
-    }
-
-    if (claims.exchangeRate.matrixV604.is(block)) {
-        return claims.exchangeRate.matrixV604.get(block)
-    }
-
-    if (claims.exchangeRate.matrixV500.is(block)) {
-        return claims.exchangeRate.matrixV500.get(block)
-    }
-
-    if (claims.exchangeRate.v102.is(block)) {
-        return claims.exchangeRate.v102.get(block)
-    }
-
-    if (claims.exchangeRate.v101.is(block)) {
-        return claims.exchangeRate.v101.get(block)
-    }
-
-    throw new UnsupportedStorageError('Claims.ExchangeRate')
+export async function exchangeRate(block: BlockHeader): Promise<number | bigint | undefined> {
+    return match(block)
+        .returnType<Promise<number | bigint | undefined>>()
+        .when(claims.exchangeRate.matrixV500.is, () => claims.exchangeRate.matrixV500.get(block))
+        .when(claims.exchangeRate.matrixV604.is, () => claims.exchangeRate.matrixV604.get(block))
+        .when(claims.exchangeRate.matrixEnjinV603.is, () => claims.exchangeRate.matrixEnjinV603.get(block))
+        .when(claims.exchangeRate.v101.is, () => claims.exchangeRate.v101.get(block))
+        .when(claims.exchangeRate.v102.is, () => claims.exchangeRate.v102.get(block))
+        .otherwise(() => {
+            throw new UnsupportedStorageError('Claims.ExchangeRate')
+        })
 }

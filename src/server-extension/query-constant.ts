@@ -1,7 +1,7 @@
 import { Arg, Query, Resolver } from 'type-graphql'
 import GraphQLJSON from 'graphql-type-json'
 import 'reflect-metadata'
-import Rpc from '../../common/rpc'
+import Rpc from '../common/rpc'
 
 @Resolver()
 export class QueryConstantResolver {

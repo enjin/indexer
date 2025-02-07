@@ -53,7 +53,7 @@ export async function offerCreated(ctx: CommonContext, block: BlockHeader, item:
         await ctx.store.save(entity)
     }
 
-    Sns.getInstance().send({
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
