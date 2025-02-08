@@ -9,23 +9,24 @@ import {
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
+import { TokenFilter } from '@enjin/indexer/mappings/stake-exchange/events'
 
-export function getFilterFromType(tokenFilter: ReturnType<typeof getEventData>['config']['tokenFilter']) {
+export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null
 
     switch (tokenFilter.__kind) {
-        case StakeExchangeTokenFilterType.All:
+        case 'All':
             entity = new StakeExchangeTokenFilter({
                 type: StakeExchangeTokenFilterType.All,
             })
             break
-        case StakeExchangeTokenFilterType.Whitelist:
+        case 'Whitelist':
             entity = new StakeExchangeTokenFilter({
                 type: StakeExchangeTokenFilterType.Whitelist,
                 value: tokenFilter.value.map((v) => v.toString()),
             })
             break
-        case StakeExchangeTokenFilterType.BlockList:
+        case 'BlockList':
             entity = new StakeExchangeTokenFilter({
                 type: StakeExchangeTokenFilterType.BlockList,
                 value: tokenFilter.value.map((v) => v.toString()),

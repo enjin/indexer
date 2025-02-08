@@ -24,7 +24,7 @@ export async function bidPlaced(
             },
         }),
         getOrCreateAccount(ctx, data.bid.bidder),
-        ctx.store.findOne(Bid, {
+        ctx.store.findOne<Bid>(Bid, {
             where: { listing: { id: listingId } },
             relations: {
                 bidder: true,

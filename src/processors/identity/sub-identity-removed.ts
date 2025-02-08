@@ -11,7 +11,7 @@ export async function subIdentityRemoved(
     const eventData = mappings.identity.events.subIdentityRemoved(item)
 
     const account = await getOrCreateAccount(ctx, eventData.sub)
-    const identity = await ctx.store.findOneOrFail(Identity, {
+    const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
         where: { id: account.id },
         relations: {
             info: true,

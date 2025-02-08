@@ -9,7 +9,7 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
     const data = mappings.multiTokens.events.reserved(item)
     if (skipSave) return undefined
 
-    const tokenAccount = await ctx.store.findOne(TokenAccount, {
+    const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
         where: { id: `${data.accountId}-${data.collectionId}-${data.tokenId}` },
         relations: { account: true },
     })

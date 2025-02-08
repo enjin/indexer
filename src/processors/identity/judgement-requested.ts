@@ -12,7 +12,7 @@ export async function judgementRequested(
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const registeration = await ctx.store.findOneByOrFail(Registration, { id: account.id })
+    const registeration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: account.id })
 
     registeration.currentJudgement = JudgementType.FeePaid
     const existing = registeration.judgements?.find((i) => i.index === eventData.registrarIndex)

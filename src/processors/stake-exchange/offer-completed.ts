@@ -7,12 +7,11 @@ export async function offerCompleted(ctx: CommonContext, block: BlockHeader, ite
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.stakeExchange.events.offerCompleted(item)
-
-    const offer = await ctx.store.findOneOrFail(StakeExchangeOffer, {
+    const offer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         where: { id: eventData.offerId.toString() },
     })
-    offer.state = StakeExchangeOfferState.Completed
 
+    offer.state = StakeExchangeOfferState.Completed
     await ctx.store.save(offer)
 
     await Sns.getInstance().send({

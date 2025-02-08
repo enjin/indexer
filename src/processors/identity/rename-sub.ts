@@ -10,7 +10,7 @@ export async function renameSub(ctx: CommonContext, block: BlockHeader, item: Ca
 
     if (!id) return undefined
 
-    const sub = await ctx.store.findOneByOrFail(Identity, {
+    const sub = await ctx.store.findOneByOrFail<Identity>(Identity, {
         id,
     })
     sub.name = callData.data.__kind !== 'None' ? hexToString(callData.data.value) : null

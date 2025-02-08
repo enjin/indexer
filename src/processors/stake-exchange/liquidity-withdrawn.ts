@@ -14,7 +14,7 @@ export async function liquidityWithdrawn(
     const eventData = mappings.stakeExchange.events.liquidityWithdrawn(item)
     const callData = mappings.stakeExchange.calls.withdrawLiquidity(item.extrinsic.call)
 
-    const offer = await ctx.store.findOneByOrFail(StakeExchangeOffer, { id: eventData.offerId.toString() })
+    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: eventData.offerId.toString() })
     offer.total -= callData.amount
 
     await ctx.store.save(offer)

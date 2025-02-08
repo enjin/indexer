@@ -13,8 +13,8 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
         return undefined
     }
     let destination: string | null = null
-    let beneficiary: Uint8Array | null = null
-    let amount: bigint | null = null
+    const beneficiary: Uint8Array | null = null
+    const amount: bigint | null = null
 
     const destInterior = callData.dest.value.interior
     const beneficiaryInterior = callData.beneficiary.value.interior
@@ -24,22 +24,23 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
         destination = config.chainName.startsWith('canary') ? 'canary-relay' : 'enjin-relay'
     }
 
-    if (beneficiaryInterior.__kind === 'X1' && beneficiaryInterior.value.__kind === 'AccountId32') {
-        beneficiary = beneficiaryInterior.value.id
-    }
-
-    if (
-        assetInterior &&
-        assetInterior.fun.__kind === 'Fungible' &&
-        assetInterior.id.__kind === 'Concrete' &&
-        assetInterior.id.value.interior.__kind === 'Here'
-    ) {
-        amount = assetInterior.fun.value
-    }
-
-    if (destination === null || beneficiary === null || amount === null) {
-        return undefined
-    }
+    // TODO: FIX THIS
+    // if (beneficiaryInterior.value.__kind === 'X1' && '__kind' in beneficiaryInterior.value && beneficiaryInterior.value.__kind === 'AccountId32') {
+    //     beneficiary = beneficiaryInterior.value
+    // }
+    //
+    // if (
+    //     assetInterior &&
+    //     assetInterior.fun.__kind === 'Fungible' &&
+    //     assetInterior.id.__kind === 'Concrete' &&
+    //     assetInterior.id.value.interior.__kind === 'Here'
+    // ) {
+    //     amount = assetInterior.fun.value
+    // }
+    //
+    // if (destination === null || beneficiary === null || amount === null) {
+    //     return undefined
+    // }
 
     const account = await getOrCreateAccount(ctx, hexToU8a(item.extrinsic.signature.address))
     const beneficiaryAccount = await getOrCreateAccount(ctx, beneficiary)

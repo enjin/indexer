@@ -7,8 +7,8 @@ export async function offerCancelled(ctx: CommonContext, block: BlockHeader, ite
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.stakeExchange.events.offerCancelled(item)
+    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: eventData.offerId.toString() })
 
-    const offer = await ctx.store.findOneByOrFail(StakeExchangeOffer, { id: eventData.offerId.toString() })
     offer.state = StakeExchangeOfferState.Cancelled
     await ctx.store.save(offer)
 

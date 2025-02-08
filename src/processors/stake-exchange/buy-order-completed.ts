@@ -45,7 +45,7 @@ export async function buyOrderCompleted(
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const offer = await ctx.store.findOneOrFail(StakeExchangeOffer, {
+    const offer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         where: { id: offerId.toString() },
         relations: {
             account: true,
@@ -55,7 +55,7 @@ export async function buyOrderCompleted(
 
     await ctx.store.save(offer)
 
-    const pool = await ctx.store.findOneBy(NominationPool, { id: eventData.tokenId.toString() })
+    const pool = await ctx.store.findOneBy<NominationPool>(NominationPool, { id: eventData.tokenId.toString() })
 
     const existingMember = await ctx.store.findOne(PoolMember, {
         where: { id: `${eventData.tokenId}-${account.id}` },
@@ -83,19 +83,21 @@ export async function buyOrderCompleted(
         existingMember.unbondingEras === null &&
         (!existingMember.tokenAccount || existingMember.tokenAccount.balance <= 0n)
     ) {
-        const rewards = await ctx.store.findBy(PoolMemberRewards, { member: { id: existingMember.id } })
-        const memeber = await ctx.store.findOneByOrFail(PoolMember, { id: existingMember.id })
+        const rewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, { member: { id: existingMember.id } })
+        const memeber = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: existingMember.id })
         await ctx.store.remove(rewards)
         await ctx.store.remove(memeber)
         pool.totalMembers -= 1
     }
 
-    let newMember = await ctx.store.findOneBy(PoolMember, { id: `${eventData.tokenId}-${offer.account.id}` })
+    let newMember = await ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${eventData.tokenId}-${offer.account.id}` })
 
     const bonded = eventData.amount
 
     if (!newMember) {
-        const tokenAccount = await ctx.store.findOneBy(TokenAccount, { id: `${offer.account.id}-1-${eventData.tokenId}` })
+        const tokenAccount = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
+            id: `${offer.account.id}-1-${eventData.tokenId}`,
+        })
 
         if (tokenAccount) {
             newMember = new PoolMember({

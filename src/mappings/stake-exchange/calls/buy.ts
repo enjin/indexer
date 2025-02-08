@@ -9,7 +9,7 @@ type BuyCall = {
     tokenId: bigint
 }
 
-export function buy(call: CallItem) {
+export function buy(call: CallItem): BuyCall {
     return match(call)
         .returnType<BuyCall>()
         .when(calls.stakeExchange.buy.enjinV100.is, calls.stakeExchange.buy.enjinV100.decode)

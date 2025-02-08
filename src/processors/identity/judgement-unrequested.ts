@@ -12,7 +12,7 @@ export async function judgementUnrequested(
 
     const account = await getOrCreateAccount(ctx, eventData.who)
 
-    const registeration = await ctx.store.findOneByOrFail(Registration, { id: account.id })
+    const registeration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: account.id })
 
     const judgements = registeration.judgements?.filter((i) => i.index !== eventData.registrarIndex)
 

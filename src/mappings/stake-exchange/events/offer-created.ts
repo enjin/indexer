@@ -4,12 +4,32 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCreated } from '../../../model'
 
-type OfferCreatedEvent = {
+type TokenFilter_All = {
+    __kind: 'All'
+}
+
+type TokenFilter_Whitelist = {
+    __kind: 'Whitelist'
+    value: bigint[]
+}
+
+type TokenFilter_BlockList = {
+    __kind: 'BlockList'
+    value: bigint[]
+}
+
+export type TokenFilter = TokenFilter_All | TokenFilter_Whitelist | TokenFilter_BlockList
+
+export type OfferCreatedEvent = {
     offerId: bigint
     offer: {
         account: string
         total: bigint
-        rate: number | bigint
+        rate: bigint | number
+        minAverageRewardRate?: bigint | number // Same as minAverageCommission
+        minAverageCommission?: number // It was replaced on v120 by minAverageRewardRate
+        deposit?: bigint // It was added on v120
+        tokenFilter?: TokenFilter
     }
 }
 

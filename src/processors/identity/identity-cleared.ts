@@ -5,7 +5,7 @@ import * as mappings from './../../mappings'
 export async function identityCleared(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.identity.events.identityCleared(item)
 
-    const identity = await ctx.store.findOneOrFail(Identity, {
+    const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
         relations: { super: { info: true }, sub: true },
         where: { id: eventData.who },
     })

@@ -1,12 +1,42 @@
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Event as EventModel, StakeExchangeOffer, StakeExchangeOfferState } from '../../model'
+import {
+    Event as EventModel,
+    StakeExchangeOffer,
+    StakeExchangeOfferState,
+    StakeExchangeTokenFilter,
+    StakeExchangeTokenFilterType,
+} from '../../model'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { Offer } from '../../types/generated/enjinV1023'
 import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
+import { OfferCreatedEvent } from '@enjin/indexer/mappings/stake-exchange/events'
 
-function hasTokenFilter(offer: ReturnType<typeof getEventData>['offer']): offer is Offer {
-    return 'tokenFilter' in offer
+function getFilterFromType(tokenFilter: OfferCreatedEvent['offer']['tokenFilter']) {
+    let entity: StakeExchangeTokenFilter | null = null
+
+    switch (tokenFilter?.__kind) {
+        case 'All':
+            entity = new StakeExchangeTokenFilter({
+                type: StakeExchangeTokenFilterType.All,
+            })
+            break
+        case 'Whitelist':
+            entity = new StakeExchangeTokenFilter({
+                type: StakeExchangeTokenFilterType.Whitelist,
+                value: tokenFilter.value.map((v) => v.toString()),
+            })
+            break
+        case 'BlockList':
+            entity = new StakeExchangeTokenFilter({
+                type: StakeExchangeTokenFilterType.BlockList,
+                value: tokenFilter.value.map((v) => v.toString()),
+            })
+            break
+        default:
+            throw new Error('Unknown token filter type')
+    }
+
+    return entity
 }
 
 export async function offerCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
@@ -14,18 +44,14 @@ export async function offerCreated(ctx: CommonContext, block: BlockHeader, item:
 
     const eventData = mappings.stakeExchange.events.offerCreated(item)
 
-    let rewardRateAsPerbill: number
-    let rewardRateAsFixedu128: bigint
+    let rewardRate: bigint
 
-    if ('minAverageCommission' in eventData.offer) {
-        rewardRateAsPerbill = eventData.offer.minAverageCommission
-        rewardRateAsFixedu128 = BigInt(rewardRateAsPerbill) * BigInt(10 ** 9)
+    if (eventData.offer.minAverageCommission !== undefined) {
+        rewardRate = BigInt(eventData.offer.minAverageCommission) * BigInt(10 ** 9)
     } else if (typeof eventData.offer.minAverageRewardRate === 'number') {
-        rewardRateAsPerbill = eventData.offer.minAverageRewardRate
-        rewardRateAsFixedu128 = BigInt(rewardRateAsPerbill) * BigInt(10 ** 9)
+        rewardRate = BigInt(eventData.offer.minAverageRewardRate) * BigInt(10 ** 9)
     } else {
-        rewardRateAsFixedu128 = eventData.offer.minAverageRewardRate
-        rewardRateAsPerbill = Number(eventData.offer.minAverageRewardRate / BigInt(10 ** 9))
+        rewardRate = eventData.offer.minAverageRewardRate ?? 0n
     }
 
     const account = await getOrCreateAccount(ctx, eventData.offer.account)
@@ -38,14 +64,14 @@ export async function offerCreated(ctx: CommonContext, block: BlockHeader, item:
         account,
         total: eventData.offer.total,
         rate,
-        minAverageRewardRate: rewardRateAsFixedu128,
+        minAverageRewardRate: rewardRate,
         createdBlock: block.height,
         createdAt: new Date(block.timestamp ?? 0),
     })
 
     await ctx.store.save(offer)
 
-    if (hasTokenFilter(eventData.offer)) {
+    if ('tokenFilter' in eventData.offer) {
         const entity = getFilterFromType(eventData.offer.tokenFilter)
         entity.id = offer.id
         entity.offer = offer
@@ -61,9 +87,9 @@ export async function offerCreated(ctx: CommonContext, block: BlockHeader, item:
             total: eventData.offer.total.toString(),
             rate: rate.toString(),
             minAverageCommission: 0,
-            minAverageRewardRate: rewardRateAsFixedu128.toString(),
+            minAverageRewardRate: rewardRate.toString(),
         },
     })
 
-    return mappings.stakeExchange.events.offerCreatedEventModel(item, eventData, rewardRateAsFixedu128)
+    return mappings.stakeExchange.events.offerCreatedEventModel(item, eventData, rewardRate)
 }

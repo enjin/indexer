@@ -2,14 +2,12 @@ import { stakeExchange } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { TokenFilter } from '@enjin/indexer/mappings/stake-exchange/events/offer-created'
 
-type LiquidityConfigUpdatedEvent = {
+export type LiquidityConfigUpdatedEvent = {
     who: string
     config: {
-        tokenFilter: {
-            __kind: string
-            value?: bigint | bigint[]
-        }
+        tokenFilter: TokenFilter
     }
 }
 
