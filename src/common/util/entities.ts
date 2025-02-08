@@ -2,8 +2,27 @@ import { isU8a, u8aToHex } from '@polkadot/util'
 import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../tools'
+import { ExtrinsicSignature } from '@subsquid/substrate-runtime'
 
-function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?: string }): string | undefined {
+interface AddressWithKind {
+    __kind: 'Id' | 'AccountId'
+    value: string
+}
+
+export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined): string | undefined {
+    if (!signature?.address) {
+        return undefined
+    }
+
+    const address = signature.address as AddressWithKind
+    return typeof address === 'object' && '__kind' in address ? address.value : (address as string)
+}
+
+function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?: string } | undefined) {
+    if (!account) {
+        return
+    }
+
     if (isU8a(account)) {
         return u8aToHex(account)
     }
@@ -21,7 +40,7 @@ function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?
 
 export async function getOrCreateAccount(
     ctx: CommonContext,
-    publicKey: Uint8Array | string | { __kind: string; value?: string }
+    publicKey: Uint8Array | string | { __kind: string; value?: string } | undefined
 ): Promise<Account | undefined> {
     const pk = unwrapAccountId(publicKey)
     if (!pk) {

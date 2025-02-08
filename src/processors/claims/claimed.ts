@@ -9,10 +9,10 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     const eventData = mappings.claims.events.claimed(item)
 
     const account = await getOrCreateAccount(ctx, eventData.who)
+    if (!account) return undefined
 
     const claimAccount = eventData.ethereumAddress?.toLowerCase()
-
-    const claimDetails = await ctx.store.findOneByOrFail(ClaimDetails, { id: '0' })
+    const claimDetails = await ctx.store.findOneByOrFail<ClaimDetails>(ClaimDetails, { id: '0' })
     const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(block))
 
     if (!period) {
@@ -21,14 +21,14 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
 
     const [totalUnclaimedAmount, claimRequests, claim] = await Promise.all([
         mappings.claims.storage.totalUnclaimedAmount(block),
-        ctx.store.find(ClaimRequest, {
+        ctx.store.find<ClaimRequest>(ClaimRequest, {
             where: {
                 account: claimAccount,
                 isClaimed: false,
                 createdBlock: LessThan(block.height - period),
             },
         }),
-        ctx.store.findOneBy(Claim, { account: { id: account.id } }),
+        ctx.store.findOneBy<Claim>(Claim, { account: { id: account.id } }),
     ])
 
     claimDetails.totalUnclaimedAmount = totalUnclaimedAmount
@@ -72,7 +72,12 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     await Promise.all([
         ctx.store.save(updatedClaim),
         ctx.store.save(claimDetails),
-        ctx.store.save(claimRequests.map((request: any) => new ClaimRequest({ ...request, isClaimed: true }))),
+        ctx.store.save(
+            claimRequests.map((request) => {
+                request.isClaimed = true
+                return request
+            })
+        ),
     ])
 
     return new EventModel({

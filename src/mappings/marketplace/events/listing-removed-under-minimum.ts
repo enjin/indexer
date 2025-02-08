@@ -46,7 +46,7 @@ export function listingRemovedUnderMinimumEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: event.tokenId! }),
+            token: new Token({ id: listing.makeAssetId.id }),
             from: listing.seller,
             event,
         }),

@@ -120,7 +120,7 @@ export async function listingCreatedEventModel(
         })
     }
 
-    const to = null
+    let to = null
     if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
         const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
             where: { token: { id: listing.takeAssetId.id } },
@@ -134,7 +134,7 @@ export async function listingCreatedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: event.tokenId! }),
+            token: new Token({ id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` }),
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             to,
             event,

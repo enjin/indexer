@@ -75,7 +75,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             }
 
             if (!resource) {
-                done(new Error('Resource not found'), null); return;
+                done(new Error('Resource not found'), null)
+                return
             }
 
             let uriAttribute = null
@@ -173,15 +174,14 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             await em.save(resource)
 
             if (jobData.type === 'collection' && jobData.allTokens) {
-                 
                 console.log('Processing all tokens in collection', jobData.resourceId)
 
                 const batch = tokensInBatch(em, jobData.resourceId)
 
                 for await (const tokens of batch) {
-                    tokens.forEach((token) => {
-                        processMetadata(token.id, 'token', jobData.force)
-                    })
+                    for (const token of tokens) {
+                        await processMetadata(token.id, 'token', jobData.force)
+                    }
                 }
             }
             done(null, { id: jobData.resourceId })

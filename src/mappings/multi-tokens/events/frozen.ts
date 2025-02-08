@@ -8,7 +8,7 @@ type FrozenEvent = {
     collectionId: bigint
     freezeType: {
         __kind: string
-        value?: string | { tokenId: bigint; freezeState: { __kind: string } | undefined } | { tokenId: bigint; accountId: string }
+        value?: string | { tokenId: bigint; freezeState?: { __kind: string } } | { tokenId: bigint; accountId: string }
     }
 }
 
@@ -21,13 +21,18 @@ export function frozen(event: EventItem): FrozenEvent {
         })
 }
 
-export function frozenEventModel(item: EventItem, data: FrozenEvent): EventModel | undefined {
+export function frozenEventModel(item: EventItem, data: FrozenEvent): EventModel {
+    let tokenId: null | string = null
+    if (data.freezeType.value && typeof data.freezeType.value !== 'string') {
+        tokenId = 'tokenId' in data.freezeType.value ? `${data.collectionId}-${data.freezeType.value.tokenId}` : null
+    }
+
     return new EventModel({
         id: item.id,
         name: MultiTokensFrozen.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         collectionId: data.collectionId.toString(),
-        tokenId: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+        tokenId: tokenId,
         data: new MultiTokensFrozen(),
     })
 }

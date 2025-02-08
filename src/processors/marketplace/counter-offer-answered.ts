@@ -3,7 +3,7 @@ import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingT
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/entities'
 
 export async function counterOfferAnswered(
     ctx: CommonContext,
@@ -29,7 +29,7 @@ export async function counterOfferAnswered(
     assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
 
     const account = await getOrCreateAccount(ctx, data.creator)
-    const signer = await getOrCreateAccount(ctx, (item.extrinsic.signature!.address! as any).value)
+    const signer = await getOrCreateAccount(ctx, unwrapSignatureSigner(item.extrinsic.signature))
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
 

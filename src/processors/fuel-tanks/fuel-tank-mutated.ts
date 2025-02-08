@@ -13,12 +13,11 @@ import * as mappings from './../../mappings'
 
 export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.fuelTankMutated(item)
-
     const { tankId } = eventData
 
-    const tank = await ctx.store.findOneByOrFail(FuelTank, { id: tankId })
+    const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: tankId })
 
-    if (eventData.mutation.userAccountManagement && eventData.mutation.userAccountManagement.__kind === 'SomeMutation') {
+    if (eventData.mutation.userAccountManagement.__kind === 'SomeMutation') {
         if (eventData.mutation.userAccountManagement.value) {
             tank.userAccountManagement = new FuelTankUserAccountManagement({
                 tankReservesAccountCreationDeposit:
@@ -42,10 +41,12 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
     }
 
     if (eventData.mutation.accountRules !== undefined) {
-        const accountRules = await ctx.store.find(FuelTankAccountRules, { where: { tank: { id: tank.id } } })
+        const accountRules = await ctx.store.find<FuelTankAccountRules>(FuelTankAccountRules, {
+            where: { tank: { id: tank.id } },
+        })
         await ctx.store.remove(accountRules)
 
-        eventData.mutation.accountRules.forEach(async (rule) => {
+        for (const rule of eventData.mutation.accountRules) {
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
@@ -67,8 +68,10 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
             })
 
             await ctx.store.save(accountRuleModel)
-        })
+        }
     }
 
     await ctx.store.save(tank)
+
+    return undefined
 }

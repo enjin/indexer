@@ -27,9 +27,7 @@ export function listingCancelled(event: EventItem): ListingCancelledEvent {
 }
 
 export function listingCancelledEventModel(item: EventItem, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
-    let event: EventModel
-
-    event = new EventModel({
+    let event: EventModel = new EventModel({
         id: item.id,
         name: MarketplaceListingCancelled.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
@@ -57,7 +55,7 @@ export function listingCancelledEventModel(item: EventItem, listing: Listing): [
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: event.tokenId! }),
+            token: new Token({ id: event.tokenId }),
             from: listing.seller,
             event,
         }),

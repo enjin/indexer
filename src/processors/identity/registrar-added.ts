@@ -16,7 +16,10 @@ export async function registrarAdded(ctx: CommonContext, block: BlockHeader, ite
         throw new Error(`Registrar with index ${eventData.registrarIndex} not found`)
     }
 
-    const account = await getOrCreateAccount(ctx, registrars[eventData.registrarIndex]!.account)
+    const account = await getOrCreateAccount(ctx, registrars[eventData.registrarIndex]?.account)
+    if (!account) {
+        return
+    }
 
     const registrar = new IdentityRegistrar({
         id: account.id,
@@ -27,4 +30,6 @@ export async function registrarAdded(ctx: CommonContext, block: BlockHeader, ite
     })
 
     await ctx.store.save(registrar)
+
+    return
 }

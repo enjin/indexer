@@ -17,6 +17,7 @@ import { metadataQueue } from './jobs/process-metadata'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
 import { nodeProfilingIntegration } from '@sentry/profiling-node'
+import { Json } from '@subsquid/substrate-processor'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -193,7 +194,7 @@ async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallIte
     }
 }
 
-function getParticipants(args: any, _events: EventItem[], signer: string): string[] {
+function getParticipants(args: Json, _events: EventItem[], signer: string): string[] {
     const accounts = new Set<string>([signer])
     if (args) {
         const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
@@ -268,9 +269,7 @@ processor.run(
                         continue
                     }
 
-                    const signature = signatureUnknown as any
-
-                    if (!signature) {
+                    if (!signatureUnknown) {
                         publicKey = call.args.dest ?? call.args.destination
                         extrinsicSignature = {
                             address: call.args.dest ?? call.args.destination,
@@ -278,16 +277,16 @@ processor.run(
                         }
                     } else {
                         publicKey = (
-                            signature.address.__kind === 'Id' || signature.address.__kind === 'AccountId'
-                                ? signature.address.value
-                                : signature.address
+                            signatureUnknown.address.__kind === 'Id' || signatureUnknown.address.__kind === 'AccountId'
+                                ? signatureUnknown.address.value
+                                : signatureUnknown.address
                         ) as string
-                        extrinsicSignature = signature
+                        extrinsicSignature = signatureUnknown
                     }
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                         const tankData = mappings.fuelTanks.calls.dispatch(call)
-                        const tank = await ctx.store.findOneByOrFail(FuelTank, { id: tankData.tankId.value })
+                        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: tankData.tankId.value })
 
                         fuelTank = new FuelTankData({
                             id: tank.id,
@@ -317,7 +316,7 @@ processor.run(
                         }
                     }
 
-                    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, publicKey)
+                    const signer = await getOrCreateAccount(ctx, publicKey)
                     const callName = call.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
@@ -332,12 +331,12 @@ processor.run(
                         args: call.args,
                         signature: extrinsicSignature,
                         signer,
-                        nonce: signer.nonce,
+                        nonce: signer?.nonce ?? 0,
                         tip,
                         error: error as string,
                         fee: new Fee({
                             amount: txFee,
-                            who: signer.id,
+                            who: signer?.id,
                         }),
                         fuelTank,
                         createdAt: new Date(block.header.timestamp ?? 0),

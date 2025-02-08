@@ -11,9 +11,13 @@ export async function claimedCollections(
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.claimedCollections(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
+    if (!account) {
+        return
+    }
 
     const promises = data.collectionIds.map((id) => {
-        return ctx.store.findOneBy(Collection, { id: id.toString() })
+        const collectionId = typeof id == 'bigint' ? id : id.native
+        return ctx.store.findOneBy<Collection>(Collection, { id: collectionId.toString() })
     })
 
     const collections = await Promise.all(promises)
@@ -49,7 +53,9 @@ export async function claimedCollections(
         data: new MultiTokensClaimedCollections({
             account: data.accountId,
             ethAccount: data.ethereumAddress,
-            collectionIds: data.collectionIds.map((id) => id),
+            collectionIds: data.collectionIds.map((id) => {
+                return typeof id == 'bigint' ? id : id.native
+            }),
         }),
     })
 }

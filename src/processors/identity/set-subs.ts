@@ -1,7 +1,7 @@
-import { hexToString, hexToU8a } from '@polkadot/util'
+import { hexToString } from '@polkadot/util'
 import { Event as EventModel, Identity, Registration } from '../../model'
 import { BlockHeader, CallItem, CommonContext } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/entities'
 import * as mappings from '../../mappings'
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
@@ -10,13 +10,11 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
         throw new Error('No signature')
     }
 
-    const pk =
-        (item.extrinsic.signature.address as any).__kind === 'Id' ||
-        (item.extrinsic.signature.address as any).__kind === 'AccountId'
-            ? (item.extrinsic.signature.address as any).value
-            : item.extrinsic.signature.address
-
-    const signer = await getOrCreateAccount(ctx as unknown as CommonContext, hexToU8a(pk))
+    const pk = unwrapSignatureSigner(item.extrinsic.signature)
+    const signer = await getOrCreateAccount(ctx, pk)
+    if (!signer) {
+        return
+    }
 
     const subIdentities = await ctx.store.find(Identity, {
         where: { super: { id: signer.id } },
@@ -38,7 +36,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
         callData.subs.map(async (sub) => {
             const [account, existing] = await Promise.all([
                 getOrCreateAccount(ctx, sub[0]),
-                ctx.store.findOneBy(Identity, { id: sub[0] }),
+                ctx.store.findOneBy<Identity>(Identity, { id: sub[0] }),
             ])
 
             if (existing) {
@@ -48,7 +46,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
             }
 
             return new Identity({
-                id: account.id,
+                id: account?.id,
                 account,
                 name: sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null,
                 super: new Identity({ id: signer.id }),

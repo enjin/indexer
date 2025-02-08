@@ -1,7 +1,5 @@
 import {
     Event as EventModel,
-    MarketPolicy,
-    Royalty,
     Collection,
     MintPolicy,
     TransferPolicy,
@@ -13,19 +11,18 @@ import {
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { DefaultRoyalty } from '../../types/generated/matrixV500'
 import * as mappings from '../../mappings'
 import { Sns } from '@enjin/indexer/common/sns'
 
-async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
-    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
-    return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: royalty.percentage,
-        }),
-    })
-}
+// async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
+//     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
+//     return new MarketPolicy({
+//         royalty: new Royalty({
+//             beneficiary: account.id,
+//             percentage: royalty.percentage,
+//         }),
+//     })
+// }
 
 export async function collectionCreated(
     ctx: CommonContext,
@@ -47,8 +44,7 @@ export async function collectionCreated(
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    let callData = mappings.multiTokens.calls.createCollection(item.call)
-    callData = await getCollectionId(ctx, block, eventData.collectionId)
+    const callData = mappings.multiTokens.calls.createCollection(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
@@ -56,11 +52,12 @@ export async function collectionCreated(
         collectionId: eventData.collectionId,
         owner: account,
         mintPolicy: new MintPolicy({
-            maxTokenCount: callData.maxTokenCount,
-            maxTokenSupply: callData.maxTokenSupply,
-            forceSingleMint: callData.forceSingleMint,
+            maxTokenCount: callData.descriptor.policy.mint.maxTokenCount,
+            maxTokenSupply: callData.descriptor.policy.mint.maxTokenSupply,
+            // TODO: Check forceCollapsingSupply too
+            forceSingleMint: callData.descriptor.policy.mint.forceSingleMint,
         }),
-        marketPolicy: callData.market,
+        marketPolicy: callData.descriptor.policy.market,
         transferPolicy: new TransferPolicy({
             isFrozen: false,
         }),
@@ -97,8 +94,8 @@ export async function collectionCreated(
 
     await ctx.store.save(collection)
 
-    const royaltyPromises = callData.explicitRoyaltyCurrencies
-        .map((currency: any) => {
+    const royaltyPromises = callData.descriptor.explicitRoyaltyCurrencies
+        .map((currency: { collectionId: bigint; tokenId: bigint }) => {
             const tokenId = `${currency.collectionId.toString()}-${currency.tokenId.toString()}`
             return new RoyaltyCurrency({
                 id: `${collection.id}-${tokenId}`,
@@ -106,7 +103,7 @@ export async function collectionCreated(
                 token: new Token({ id: tokenId }),
             })
         })
-        .map((rc: any) => ctx.store.save(rc))
+        .map((rc: RoyaltyCurrency) => ctx.store.save(rc))
 
     await Promise.all(royaltyPromises)
 

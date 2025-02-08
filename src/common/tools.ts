@@ -11,7 +11,7 @@ export function isValidAddress(address: any) {
     try {
         encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))
         return true
-    } catch (_e) {
+    } catch {
         return false
     }
 }
@@ -47,6 +47,7 @@ export function isAddressSS58(address: Uint8Array) {
 
 const regex = /\/\/u0000/ // null string unicode
 
+// eslint-disable-next-line no-control-regex
 const regex2 = /\u0000/ // null byte unicode
 
 export function safeString(s: string) {

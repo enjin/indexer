@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { throwError, UnsupportedEventError } from '../../common/errors'
+import { throwError, UnsupportedStorageError } from '../../common/errors'
 import { storage } from '../../types/generated'
 import {
     CapType,
@@ -125,12 +125,12 @@ async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: 
                 cap,
                 behavior,
                 freezeState,
-                listingForbidden: data.listingForbidden ?? false,
+                listingForbidden: data.listingForbidden,
             }
         }
     }
 
-    throw new UnsupportedEventError('storage.multi-tokens.token')
+    throw new UnsupportedStorageError('storage.multi-tokens.token')
 }
 
 export async function tokenCreated(
@@ -159,20 +159,19 @@ export async function tokenCreated(
             where: { id: eventData.collectionId.toString() },
         })
 
-        if (collection === null) {
+        if (!collection) {
             throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
             return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
         }
 
-        let callData = mappings.multiTokens.calls.mint(item.call)
-        callData = await getTokenId(ctx, block, eventData.collectionId, eventData.tokenId)
+        const callData = mappings.multiTokens.calls.mint(item.call)
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
             supply: 0n, // Supply is updated on Mint/Burn events
-            cap: callData.cap,
-            behavior: callData.behavior,
+            cap: callData.params.cap,
+            behavior: callData.params.behavavior,
             isFrozen: isTokenFrozen(callData.freezeState),
             freezeState: callData.freezeState,
             minimumBalance: callData.minimumBalance,
