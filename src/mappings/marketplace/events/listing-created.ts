@@ -8,7 +8,6 @@ import {
     Event as EventModel,
     Extrinsic,
     Listing,
-    ListingType,
     MarketplaceListingCreated,
     MarketplaceOfferCreated,
     Token,
@@ -19,14 +18,16 @@ type ListingCreatedEvent = {
     listingId: string
     listing: {
         creator?: string
+        seller?: string
         makeAssetId: { collectionId: bigint; tokenId: bigint }
         takeAssetId: { collectionId: bigint; tokenId: bigint }
         amount: bigint
         price: bigint
-        minReceived?: bigint
+        minReceived?: bigint // Same as listing.minTakeValue
+        minTakeValue?: bigint // Same as listing.minReceived
         feeSide: { __kind: string }
         creationBlock: number
-        startBlock?: number
+        startBlock?: number // Same as listing.data.value.startBlock
         whitelistedAccountCount?: number
         deposit:
             | {
@@ -39,6 +40,7 @@ type ListingCreatedEvent = {
             __kind: string
             value?:
                 | {
+                      startBlock?: number // Same as listing.startBlock
                       endBlock: number
                   }
                 | {
@@ -107,7 +109,7 @@ export async function listingCreatedEventModel(
         }),
     })
 
-    if (data.listing.data.__kind === ListingType.Offer) {
+    if (data.listing.data.__kind === 'Offer') {
         event = new EventModel({
             id: item.id,
             name: MarketplaceOfferCreated.name,

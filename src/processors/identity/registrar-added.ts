@@ -17,9 +17,6 @@ export async function registrarAdded(ctx: CommonContext, block: BlockHeader, ite
     }
 
     const account = await getOrCreateAccount(ctx, registrars[eventData.registrarIndex]?.account)
-    if (!account) {
-        return
-    }
 
     const registrar = new IdentityRegistrar({
         id: account.id,

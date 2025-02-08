@@ -6,10 +6,9 @@ import * as mappings from './../../mappings'
 
 export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
-    const eventData = mappings.claims.events.claimed(item)
 
+    const eventData = mappings.claims.events.claimed(item)
     const account = await getOrCreateAccount(ctx, eventData.who)
-    if (!account) return undefined
 
     const claimAccount = eventData.ethereumAddress?.toLowerCase()
     const claimDetails = await ctx.store.findOneByOrFail<ClaimDetails>(ClaimDetails, { id: '0' })

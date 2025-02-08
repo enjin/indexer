@@ -12,9 +12,6 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
 
     const pk = unwrapSignatureSigner(item.extrinsic.signature)
     const signer = await getOrCreateAccount(ctx, pk)
-    if (!signer) {
-        return
-    }
 
     const subIdentities = await ctx.store.find(Identity, {
         where: { super: { id: signer.id } },
@@ -46,7 +43,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
             }
 
             return new Identity({
-                id: account?.id,
+                id: account.id,
                 account,
                 name: sub[1].__kind !== 'None' ? hexToString(sub[1].value) : null,
                 super: new Identity({ id: signer.id }),

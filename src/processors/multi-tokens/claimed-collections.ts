@@ -11,9 +11,6 @@ export async function claimedCollections(
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.claimedCollections(item)
     const account = await getOrCreateAccount(ctx, data.accountId)
-    if (!account) {
-        return
-    }
 
     const promises = data.collectionIds.map((id) => {
         const collectionId = typeof id == 'bigint' ? id : id.native

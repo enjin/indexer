@@ -19,6 +19,18 @@ export class UnsupportedStorageError extends Error {
     }
 }
 
+export class AccountNotParsableError extends Error {
+    constructor(account: string) {
+        super(`Account ${account} is not parsable`)
+    }
+}
+
+export class AccountNotFoundError extends Error {
+    constructor(account: string) {
+        super(`Account ${account} not found`)
+    }
+}
+
 export class CallNotDefinedError extends Error {
     constructor() {
         super('Call is not defined')

@@ -48,34 +48,52 @@ export async function listingCreated(
     let listingState
 
     switch (data.listing.data.__kind) {
-        case ListingType.FixedPrice:
+        case 'FixedPrice':
             listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
             break
-        case ListingType.Auction:
+        case 'Auction': {
+            let endBlock = 0
+            let startBlock = 0
+
+            if (data.listing.startBlock != undefined) {
+                startBlock = data.listing.startBlock
+            }
+            if (data.listing.data.value != undefined) {
+                endBlock = 'endBlock' in data.listing.data.value ? data.listing.data.value.endBlock : 0
+                startBlock = ('startBlock' in data.listing.data.value ? data.listing.data.value.startBlock : 0) ?? 0
+            }
+
             listingData = new AuctionData({
                 listingType: ListingType.Auction,
-                startHeight: data.listing.data.value.startBlock,
-                endHeight: data.listing.data.value.endBlock,
+                startHeight: startBlock,
+                endHeight: endBlock,
             })
             break
-        case ListingType.Offer:
+        }
+        case 'Offer': {
+            let expiration: number | undefined = undefined
+            if (data.listing.data.value != undefined && 'expiration' in data.listing.data.value) {
+                expiration = data.listing.data.value.expiration
+            }
+
             listingData = new OfferData({
                 listingType: ListingType.Offer,
-                expiration: data.listing.data.value.expiration,
+                expiration: expiration,
             })
             break
+        }
         default:
             throw new Error('Unknown listing type')
     }
 
     switch (data.listing.state.__kind) {
-        case ListingType.FixedPrice:
+        case 'FixedPrice':
             listingState = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
             break
-        case ListingType.Auction:
+        case 'Auction':
             listingState = new AuctionState({ listingType: ListingType.Auction })
             break
-        case ListingType.Offer:
+        case 'Offer':
             listingState = new OfferState({ listingType: ListingType.Offer, counterOfferCount: 0 })
             break
         default:
@@ -90,7 +108,7 @@ export async function listingCreated(
         amount: data.listing.amount,
         price: data.listing.price,
         highestPrice: data.listing.price,
-        minTakeValue: 'minTakeValue' in data.listing ? data.listing.minTakeValue : data.listing.minReceived,
+        minTakeValue: data.listing.minTakeValue ?? data.listing.minReceived,
         feeSide,
         height: data.listing.creationBlock,
         deposit: typeof data.listing.deposit === 'bigint' ? data.listing.deposit : data.listing.deposit.amount,

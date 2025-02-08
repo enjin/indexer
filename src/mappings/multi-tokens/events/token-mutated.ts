@@ -4,16 +4,42 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '@enjin/indexer/model'
 
-type TokenMutatedEvent = {
+export type TokenMutatedEvent = {
     collectionId: bigint
     tokenId: bigint
-    behavior?: {
-        __kind: string
-        value?: string
+    mutation: {
+        behavior: {
+            __kind: string // SomeMutation or NoMutation
+            value?: {
+                __kind: string // IsCurrency or HasRoyalty
+                value?:
+                    | {
+                          beneficiaries: {
+                              beneficiary: string
+                              percentage: number
+                          }[]
+                      }
+                    | {
+                          beneficiary: string
+                          percentage: number
+                      }
+            }
+        }
+        name?: {
+            // Does not exist in v603 and below
+            __kind: string // SomeMutation or NoMutation
+            value?: string
+        }
+        anyoneCanInfuse?: {
+            // Does not exist in v603 and below
+            __kind: string // SomeMutation or NoMutation
+            value?: boolean
+        }
+        listingForbidden: {
+            __kind: string // SomeMutation or NoMutation
+            value?: boolean
+        }
     }
-    name?: Uint8Array
-    anyoneCanInfuse?: boolean
-    listingForbidden?: boolean
 }
 
 export function tokenMutated(event: EventItem): TokenMutatedEvent {

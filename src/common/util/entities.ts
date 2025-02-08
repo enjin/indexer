@@ -3,11 +3,27 @@ import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../tools'
 import { ExtrinsicSignature } from '@subsquid/substrate-runtime'
+import { AccountNotParsableError } from '@enjin/indexer/common/errors'
 
 interface AddressWithKind {
     __kind: 'Id' | 'AccountId'
     value: string
 }
+
+// if (!signatureUnknown) {
+//     publicKey = call.args.dest ?? call.args.destination
+//     extrinsicSignature = {
+//         address: call.args.dest ?? call.args.destination,
+//         signature: call.args.ethereumSignature,
+//     }
+// } else {
+//     publicKey = (
+//         signatureUnknown.address.__kind === 'Id' || signatureUnknown.address.__kind === 'AccountId'
+//             ? signatureUnknown.address.value
+//             : signatureUnknown.address
+//     ) as string
+//     extrinsicSignature = signatureUnknown
+// }
 
 export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined): string | undefined {
     if (!signature?.address) {
@@ -18,9 +34,9 @@ export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined)
     return typeof address === 'object' && '__kind' in address ? address.value : (address as string)
 }
 
-function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?: string } | undefined) {
+function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?: string } | undefined): string {
     if (!account) {
-        return
+        throw new AccountNotParsableError('undefined')
     }
 
     if (isU8a(account)) {
@@ -35,42 +51,33 @@ function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?
         return account.value
     }
 
-    return
+    throw new AccountNotParsableError(account.__kind)
 }
 
 export async function getOrCreateAccount(
     ctx: CommonContext,
-    publicKey: Uint8Array | string | { __kind: string; value?: string } | undefined
-): Promise<Account | undefined> {
-    const pk = unwrapAccountId(publicKey)
-    if (!pk) {
-        return
+    id: Uint8Array | string | { __kind: string; value?: string } | undefined
+): Promise<Account> {
+    const publicKey = unwrapAccountId(id)
+    let account = await ctx.store.findOneBy<Account>(Account, { id: publicKey })
+
+    if (!account) {
+        account = new Account({
+            id: publicKey,
+            address: encodeId(publicKey),
+            balance: new Balance({
+                transferable: 0n,
+                free: 0n,
+                reserved: 0n,
+                frozen: 0n,
+                miscFrozen: 0n,
+                feeFrozen: 0n,
+            }),
+            verified: false,
+            nonce: 0,
+        })
+        await ctx.store.save(account)
     }
-
-    let account = await ctx.store.findOneBy(Account, {
-        id: pk,
-    })
-
-    if (account) {
-        return account
-    }
-
-    account = new Account({
-        id: pk,
-        address: encodeId(pk),
-        balance: new Balance({
-            transferable: 0n,
-            free: 0n,
-            reserved: 0n,
-            frozen: 0n,
-            miscFrozen: 0n,
-            feeFrozen: 0n,
-        }),
-        verified: false,
-        nonce: 0,
-    })
-
-    await ctx.store.save(account)
 
     return account
 }

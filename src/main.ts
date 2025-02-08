@@ -8,7 +8,7 @@ import { createDefaultData } from './create-default-data'
 import { chainState } from './chain-state'
 import { processors } from './processors'
 import * as mappings from './mappings'
-import { getOrCreateAccount } from './common/util/entities'
+import { getOrCreateAccount, unwrapSignatureSigner } from './common/util/entities'
 import { events, calls } from './types/generated'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './common/types/contexts'
 import { updateClaimDetails } from './processors/claims/common'
@@ -257,31 +257,13 @@ processor.run(
 
                 for (const extrinsic of block.extrinsics) {
                     const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
-                    let publicKey = ''
-                    let extrinsicSignature = {}
-                    let fuelTank = null
 
+                    let fuelTank = null
                     if (!call) {
                         continue
                     }
-
                     if (['ParachainSystem.set_validation_data', 'Timestamp.set'].includes(call.name)) {
                         continue
-                    }
-
-                    if (!signatureUnknown) {
-                        publicKey = call.args.dest ?? call.args.destination
-                        extrinsicSignature = {
-                            address: call.args.dest ?? call.args.destination,
-                            signature: call.args.ethereumSignature,
-                        }
-                    } else {
-                        publicKey = (
-                            signatureUnknown.address.__kind === 'Id' || signatureUnknown.address.__kind === 'AccountId'
-                                ? signatureUnknown.address.value
-                                : signatureUnknown.address
-                        ) as string
-                        extrinsicSignature = signatureUnknown
                     }
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
@@ -316,7 +298,8 @@ processor.run(
                         }
                     }
 
-                    const signer = await getOrCreateAccount(ctx, publicKey)
+                    const signatureSigner = unwrapSignatureSigner(signatureUnknown)
+                    const signer = await getOrCreateAccount(ctx, signatureSigner)
                     const callName = call.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
@@ -329,18 +312,18 @@ processor.run(
                         pallet: callName[0],
                         method: callName[1],
                         args: call.args,
-                        signature: extrinsicSignature,
+                        // signature: extrinsicSignature,
                         signer,
-                        nonce: signer?.nonce ?? 0,
+                        nonce: signer.nonce,
                         tip,
                         error: error as string,
                         fee: new Fee({
                             amount: txFee,
-                            who: signer?.id,
+                            who: signer.id,
                         }),
                         fuelTank,
                         createdAt: new Date(block.header.timestamp ?? 0),
-                        participants: getParticipants(call.args, extrinsic.events, publicKey),
+                        participants: getParticipants(call.args, extrinsic.events, signer.id),
                     })
 
                     // Hotfix for adding listing seller to participant
@@ -368,7 +351,7 @@ processor.run(
                     // signers.add(publicKey)
                     // extrinsics.push(extrinsicM)
                     if (block.header.height > config.lastBlockHeight) {
-                        processors.balances.addAccountsToSet([publicKey])
+                        processors.balances.addAccountsToSet([signer.id])
                         await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
                     }
 

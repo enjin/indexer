@@ -1,4 +1,3 @@
-import { hexToString } from '@polkadot/util'
 import { throwError } from '../../common/errors'
 import {
     Event as EventModel,
@@ -57,28 +56,25 @@ export async function tokenMutated(
         return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
     }
 
-    if (data.listingForbidden.__kind === 'SomeMutation') {
-        token.listingForbidden = data.listingForbidden.value
+    // TODO: Move all the parsing logics to the mapping classes
+    if (data.mutation.listingForbidden.value !== undefined) {
+        token.listingForbidden = data.mutation.listingForbidden.value
     }
 
-    if (data.name && data.name.__kind === 'SomeMutation') {
+    if (data.mutation.name !== undefined && data.mutation.name.value !== undefined) {
         token.nativeMetadata = new NativeTokenMetadata({
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,
-            symbol: hexToString(token.nativeMetadata?.symbol) ?? '',
-            name: hexToString(data.name.value),
+            symbol: token.nativeMetadata?.symbol ?? '',
+            name: data.mutation.name.value,
         })
     }
 
-    if (data.anyoneCanInfuse && data.anyoneCanInfuse.__kind === 'SomeMutation') {
-        token.anyoneCanInfuse = data.anyoneCanInfuse.value
+    if (data.mutation.anyoneCanInfuse !== undefined && data.mutation.anyoneCanInfuse.value !== undefined) {
+        token.anyoneCanInfuse = data.mutation.anyoneCanInfuse.value
     }
 
-    if (data.behavior.__kind === 'SomeMutation') {
-        if (!data.behavior.value) {
-            token.behavior = null
-        } else {
-            token.behavior = await getBehavior(ctx, data.behavior.value)
-        }
+    if (data.mutation.behavior.__kind === 'SomeMutation') {
+        token.behavior = data.mutation.behavior.value === undefined ? null : await getBehavior(ctx, data.mutation.behavior.value)
     }
 
     token.nonFungible = isNonFungible(token)
