@@ -53,7 +53,7 @@ type CollectionExtra = {
 
 export async function fetchAccountsDetail(ids: string[]) {
     try {
-        const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: any }>(
+        const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
                 query: addressesQuery,
@@ -70,11 +70,11 @@ export async function fetchAccountsDetail(ids: string[]) {
         )
 
         if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        if (!data.data) {
-             
-            console.error('No data returned', data)
-            throw new Error('No data returned')
-        }
+        // if (data.data.result === undefined) {
+        //
+        //     console.error('No data returned', data)
+        //     throw new Error('No data returned')
+        // }
 
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
@@ -87,7 +87,6 @@ export async function fetchAccountsDetail(ids: string[]) {
             }
         })
     } catch (error) {
-         
         console.error('Error: Fetching account details', ids, error)
         return ids.map(() => null)
     }
@@ -95,7 +94,7 @@ export async function fetchAccountsDetail(ids: string[]) {
 
 export async function fetchCollectionsExtra(ids: string[]) {
     try {
-        const { data } = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: any }>(
+        const { data } = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
             `${config.marketplaceUrl}/graphql/internal`,
             {
                 query: collectionsQuery,
@@ -112,9 +111,9 @@ export async function fetchCollectionsExtra(ids: string[]) {
         )
 
         if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        if (!data.data) {
-            throw new Error('No data returned')
-        }
+        // if (!data.data) {
+        //     throw new Error('No data returned')
+        // }
 
         return data.data.result
     } catch (error) {

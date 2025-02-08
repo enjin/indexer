@@ -1,77 +1,8 @@
-import { hexToString } from '@polkadot/util'
-import { throwError, UnsupportedStorageError } from '../../common/errors'
-import { storage } from '../../types/generated'
-import {
-    CapType,
-    Collection,
-    Event as EventModel,
-    FreezeState,
-    NativeTokenMetadata,
-    Royalty,
-    Token,
-    TokenBehaviorHasRoyalty,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
-    TokenCapSingleMint,
-    TokenCapSupply,
-} from '../../model'
-import { TokenCap } from '../../types/generated/matrixEnjinV603'
+import { throwError } from '../../common/errors'
+import { Collection, Event as EventModel, FreezeState, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
-import { TokenMarketBehavior } from '@enjin/indexer/types/generated/v100'
-import { FreezeState as FreezeStatev500 } from '@enjin/indexer/types/generated/matrixV500'
-
-// export function getCapType(cap: TokenCap) {
-//     if (cap.__kind === CapType.Supply) {
-//         return new TokenCapSupply({
-//             type: CapType.Supply,
-//             supply: cap.value,
-//         })
-//     }
-//
-//     return new TokenCapSingleMint({
-//         type: CapType.SingleMint,
-//         supply: cap.__kind === 'CollapsingSupply' ? cap.value : 0n,
-//     })
-// }
-//
-// export function getFreezeState(state: FreezeStatev500): FreezeState | null {
-//     switch (state.__kind) {
-//         case 'Permanent':
-//             return FreezeState.Permanent
-//         case 'Temporary':
-//             return FreezeState.Temporary
-//         case 'Never':
-//             return FreezeState.Never
-//         default:
-//             return null
-//     }
-// }
-//
-// export function isTokenFrozen(freezeState: FreezeState | null | undefined): boolean {
-//     return freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary
-// }
-//
-// async function getBehavior(
-//     ctx: CommonContext,
-//     behavior: TokenMarketBehavior
-// ): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-//     if (behavior.__kind === TokenBehaviorType.IsCurrency) {
-//         return new TokenBehaviorIsCurrency({
-//             type: TokenBehaviorType.IsCurrency,
-//         })
-//     }
-//
-//     const account = await getOrCreateAccount(ctx, behavior.value.beneficiary)
-//     return new TokenBehaviorHasRoyalty({
-//         type: TokenBehaviorType.HasRoyalty,
-//         royalty: new Royalty({
-//             beneficiary: account.id,
-//             percentage: behavior.value.percentage,
-//         }),
-//     })
-// }
+import { DefaultMintParams_CreateToken } from '../../mappings/multi-tokens/types'
 
 export async function tokenCreated(
     ctx: CommonContext,
@@ -105,27 +36,30 @@ export async function tokenCreated(
         }
 
         const callData = mappings.multiTokens.calls.mint(item.call)
+        const params = callData.params as DefaultMintParams_CreateToken
+        const minBalance = params.sufficiency?.__kind === 'Sufficient' ? (params.sufficiency.value ?? 1n) : 1n
+        const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.value ?? 1n) : 1n
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
             tokenId: eventData.tokenId,
             supply: 0n, // Supply is updated on Mint/Burn events
-            cap: callData.params.cap,
-            behavior: callData.params.behavavior,
-            isFrozen: isTokenFrozen(callData.freezeState),
-            freezeState: callData.freezeState,
-            minimumBalance: callData.minimumBalance,
-            unitPrice: callData.unitPrice,
+            cap: null, //params.cap,
+            behavior: null, //params.behavior,
+            isFrozen: false, // isTokenFrozen(params.freezeState),
+            freezeState: params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
+            minimumBalance: minBalance,
+            unitPrice: unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection,
             metadata: null,
             nonFungible: false,
-            listingForbidden: callData.listingForbidden,
-            accountDepositCount: callData.accountDepositCount ?? 0,
-            anyoneCanInfuse: callData.anyoneCanInfuse ?? false,
-            nativeMetadata: callData.nativeMetadata,
-            infusion: callData.infusion ?? 0n,
+            listingForbidden: params.listingForbidden,
+            accountDepositCount: params.accountDepositCount ?? 0,
+            anyoneCanInfuse: params.anyoneCanInfuse ?? false,
+            nativeMetadata: params.metadata !== undefined ? new NativeTokenMetadata(params.metadata) : null,
+            infusion: params.infusion ?? 0n,
             createdAt: new Date(block.timestamp ?? 0),
         })
 

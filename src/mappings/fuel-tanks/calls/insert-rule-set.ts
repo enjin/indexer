@@ -2,6 +2,7 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
+import { RuleSetDescriptor } from '../types'
 
 type InsertRuleSetCall = {
     tankId: {
@@ -9,8 +10,8 @@ type InsertRuleSetCall = {
         value?: string
     }
     ruleSetId: number
-    rules?: any
-    ruleSet?: any
+    rules?: RuleSetDescriptor // Same as ruleSet changed at enjin v1032
+    ruleSet?: RuleSetDescriptor // Same as rules changed at enjin v1032
 }
 
 export function insertRuleSet(call: CallItem) {

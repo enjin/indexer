@@ -2,9 +2,26 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
+import { AccountRuleDescriptor, RuleSetDescriptor } from '@enjin/indexer/mappings/fuel-tanks/types'
 
 type ForceCreateFuelTankCall = {
-    descriptor: any
+    owner: {
+        __kind: string
+        value?: string
+    }
+    descriptor: {
+        name: string
+        userAccountManagement?: {
+            tankReservesAccountCreationDeposit: boolean
+            tankReservesExistentialDeposit?: boolean // This was removed on enjin v1032 and upwards
+        }
+        ruleSets: [number, RuleSetDescriptor][]
+        coveragePolicy?: {
+            // This field was added on enjin v1032 and upwards
+            __kind: 'Fees' | 'FeesAndDeposit' | 'FeesAndDepositAndTankReserves' // FeesAndDepositAndTankReserves was added on v1050 and upwards
+        }
+        accountRules: AccountRuleDescriptor[]
+    }
 }
 
 export function forceCreateFuelTank(call: CallItem) {

@@ -2,6 +2,7 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { DefaultMintParams_CreateToken, DefaultMintParams_Mint } from '../types'
 
 type MintCall = {
     recipient: {
@@ -9,54 +10,7 @@ type MintCall = {
         value?: string
     }
     collectionId: bigint
-    params:
-        | {
-              tokenId: bigint
-              initialSupply: bigint
-              accountDepositCount?: number
-              cap?: {
-                  __kind: string
-                  value?: bigint
-              }
-              behavior?: {
-                  __kind: string
-                  value?:
-                      | {
-                            beneficiaries: {
-                                beneficiary: string
-                                percentage: number
-                            }[]
-                        }
-                      | {
-                            beneficiary: string
-                            percentage: number
-                        }
-              }
-              listingForbidden: boolean
-              freezeState?: {
-                  __kind: string
-              }
-              attributes?: {
-                  key: string
-                  value: string
-              }[]
-              infusion?: bigint
-              anyoneCanInfuse?: boolean
-              metadata?: {
-                  name: string
-                  symbol: string
-                  decimalCount: number
-              }
-              privilegedParams?: {
-                  requiresDeposit: boolean
-                  depositor?: string
-              }
-          }
-        | {
-              tokenId: bigint
-              amount: bigint
-              depositor?: string
-          }
+    params: DefaultMintParams_CreateToken | DefaultMintParams_Mint
 }
 
 export function mint(call: CallItem): MintCall {
