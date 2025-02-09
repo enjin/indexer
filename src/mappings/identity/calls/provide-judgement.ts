@@ -2,23 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
+import { ProvideJudgement } from '@enjin/indexer/mappings/identity/calls/types'
 
-type ProvideJudgementCall = {
-    regIndex: number
-    target: {
-        __kind: string
-        value?: string
-    }
-    judgement: {
-        __kind: string
-        value?: bigint
-    }
-    identity: string
-}
-
-export function provideJudgement(call: CallItem): ProvideJudgementCall {
+export function provideJudgement(call: CallItem): ProvideJudgement {
     return match(call)
-        .returnType<ProvideJudgementCall>()
+        .returnType<ProvideJudgement>()
         .when(calls.identity.provideJudgement.matrixEnjinV1000.is, calls.identity.provideJudgement.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)

@@ -2,54 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
+import { SetIdentity } from '@enjin/indexer/mappings/identity/calls/types'
 
-type SetIdentityCall = {
-    info: {
-        additional: [
-            {
-                __kind: string
-                value?: string
-            },
-            {
-                __kind: string
-                value?: string
-            },
-        ][]
-        display: {
-            __kind: string
-            value?: string
-        }
-        legal: {
-            __kind: string
-            value?: string
-        }
-        web: {
-            __kind: string
-            value?: string
-        }
-        riot: {
-            __kind: string
-            value?: string
-        }
-        email: {
-            __kind: string
-            value?: string
-        }
-        pgpFingerprint?: string
-        image: {
-            __kind: string
-            value?: string
-        }
-        twitter: {
-            __kind: string
-            value?: string
-        }
-    }
-}
-
-export function setIdentity(call: CallItem): SetIdentityCall {
+export function setIdentity(call: CallItem): SetIdentity {
     return match(call)
-        .returnType<SetIdentityCall>()
+        .returnType<SetIdentity>()
         .when(calls.identity.setIdentity.matrixEnjinV1000.is, calls.identity.setIdentity.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)

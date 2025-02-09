@@ -3,21 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCancelled } from '../../../model'
+import { OfferCancelled } from '@enjin/indexer/mappings/stake-exchange/events/types'
 
-type OfferCancelledEvent = {
-    offerId: bigint
-}
-
-export function offerCancelled(event: EventItem): OfferCancelledEvent {
+export function offerCancelled(event: EventItem): OfferCancelled {
     return match(event)
-        .returnType<OfferCancelledEvent>()
+        .returnType<OfferCancelled>()
         .when(stakeExchange.offerCancelled.enjinV100.is, stakeExchange.offerCancelled.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function offerCancelledEventModel(item: EventItem, data: OfferCancelledEvent): EventModel | undefined {
+export function offerCancelledEventModel(item: EventItem, data: OfferCancelled): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCancelled.name,

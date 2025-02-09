@@ -2,16 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { Buy } from '@enjin/indexer/mappings/stake-exchange/calls/types'
 
-type BuyCall = {
-    offerId: bigint
-    amount: bigint
-    tokenId: bigint
-}
-
-export function buy(call: CallItem): BuyCall {
+export function buy(call: CallItem): Buy {
     return match(call)
-        .returnType<BuyCall>()
+        .returnType<Buy>()
         .when(calls.stakeExchange.buy.enjinV100.is, calls.stakeExchange.buy.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)

@@ -3,19 +3,11 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeBuyOrderCompleted } from '../../../model'
+import { BuyOrderCompleted } from '@enjin/indexer/mappings/stake-exchange/events/types'
 
-type BuyOrderCompletedEvent = {
-    who: string
-    tokenId: bigint
-    amount: bigint
-    rate: number | bigint
-    offerCreator?: string
-    offerId?: bigint
-}
-
-export function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
+export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
     return match(event)
-        .returnType<BuyOrderCompletedEvent>()
+        .returnType<BuyOrderCompleted>()
         .when(stakeExchange.buyOrderCompleted.enjinV1033.is, stakeExchange.buyOrderCompleted.enjinV1033.decode)
         .when(stakeExchange.buyOrderCompleted.enjinV1026.is, stakeExchange.buyOrderCompleted.enjinV1026.decode)
         .when(stakeExchange.buyOrderCompleted.enjinV120.is, stakeExchange.buyOrderCompleted.enjinV120.decode)
@@ -29,7 +21,7 @@ export function buyOrderCompleted(event: EventItem): BuyOrderCompletedEvent {
         })
 }
 
-export function buyOrderCompletedEventModel(item: EventItem, data: BuyOrderCompletedEvent): EventModel | undefined {
+export function buyOrderCompletedEventModel(item: EventItem, data: BuyOrderCompleted): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,

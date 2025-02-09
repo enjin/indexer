@@ -11,15 +11,11 @@ import {
     MarketplaceCounterOfferRemoved,
     Token,
 } from '@enjin/indexer/model'
+import { CounterOfferRemoved } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type CounterOfferRemovedEvent = {
-    listingId: string
-    creator: string
-}
-
-export function counterOfferRemoved(event: EventItem): CounterOfferRemovedEvent {
+export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)
-        .returnType<CounterOfferRemovedEvent>()
+        .returnType<CounterOfferRemoved>()
         .when(marketplace.counterOfferRemoved.matrixEnjinV1012.is, marketplace.counterOfferRemoved.matrixEnjinV1012.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
@@ -28,7 +24,7 @@ export function counterOfferRemoved(event: EventItem): CounterOfferRemovedEvent 
 
 export function counterOfferRemovedEventModel(
     item: EventItem,
-    data: CounterOfferRemovedEvent,
+    data: CounterOfferRemoved,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

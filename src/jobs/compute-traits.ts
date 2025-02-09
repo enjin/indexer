@@ -20,7 +20,7 @@ export const computeTraits = (collectionId: string) => {
         return
     }
 
-    traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(() => {
+    traitsQueue.add({ collectionId }, { jobId: collectionId }).catch(async () => {
         console.log('Closing connection as Redis is not available')
         await traitsQueue.close(true)
     })

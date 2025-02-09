@@ -3,21 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCompleted } from '../../../model'
+import { OfferCompleted } from '@enjin/indexer/mappings/stake-exchange/events/types'
 
-type OfferCompletedEvent = {
-    offerId: bigint
-}
-
-export function offerCompleted(event: EventItem): OfferCompletedEvent {
+export function offerCompleted(event: EventItem): OfferCompleted {
     return match(event)
-        .returnType<OfferCompletedEvent>()
+        .returnType<OfferCompleted>()
         .when(stakeExchange.offerCompleted.enjinV110.is, stakeExchange.offerCompleted.enjinV110.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function offerCompletedEventModel(item: EventItem, data: OfferCompletedEvent): EventModel | undefined {
+export function offerCompletedEventModel(item: EventItem, data: OfferCompleted): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeOfferCompleted.name,

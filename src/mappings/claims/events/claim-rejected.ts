@@ -2,15 +2,11 @@ import { claims } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { ClaimRejected } from '@enjin/indexer/mappings/claims/events/types'
 
-type ClaimRejectedEvent = {
-    account: string
-    transactionHash: string
-}
-
-export function claimRejected(event: EventItem): ClaimRejectedEvent {
+export function claimRejected(event: EventItem): ClaimRejected {
     return match(event)
-        .returnType<ClaimRejectedEvent>()
+        .returnType<ClaimRejected>()
         .when(claims.claimRejected.matrixEnjinV603.is, claims.claimRejected.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

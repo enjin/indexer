@@ -2,19 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
-import * as matrixEnjinV1012 from '@enjin/indexer/types/generated/matrixEnjinV1012'
+import { TeleportAssets } from '@enjin/indexer/mappings/xcm/calls/types'
 
-type TeleportAssetsCall = {
-    dest: matrixEnjinV1012.VersionedLocation
-    beneficiary: matrixEnjinV1012.VersionedLocation
-    assets: matrixEnjinV1012.VersionedAssets
-    feeAssetItem: number
-    weightLimit: matrixEnjinV1012.V3WeightLimit
-}
-
-export function teleportAssets(call: CallItem): TeleportAssetsCall {
+export function teleportAssets(call: CallItem): TeleportAssets {
     return match(call)
-        .returnType<TeleportAssetsCall>()
+        .returnType<TeleportAssets>()
         .when(
             calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is,
             calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode

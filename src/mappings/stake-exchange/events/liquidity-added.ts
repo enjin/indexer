@@ -3,22 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeLiquidityAdded } from '../../../model'
+import { LiquidityAdded } from '@enjin/indexer/mappings/stake-exchange/events/types'
 
-type LiquidityAddedEvent = {
-    who: string
-    offerId: bigint
-}
-
-export function liquidityAdded(event: EventItem): LiquidityAddedEvent {
+export function liquidityAdded(event: EventItem): LiquidityAdded {
     return match(event)
-        .returnType<LiquidityAddedEvent>()
+        .returnType<LiquidityAdded>()
         .when(stakeExchange.liquidityAdded.enjinV100.is, stakeExchange.liquidityAdded.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function liquidityAddedEventModel(item: EventItem, data: LiquidityAddedEvent): EventModel | undefined {
+export function liquidityAddedEventModel(item: EventItem, data: LiquidityAdded): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeLiquidityAdded.name,

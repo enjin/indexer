@@ -3,39 +3,11 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCreated } from '../../../model'
+import { OfferCreated } from '@enjin/indexer/mappings/stake-exchange/events/types'
 
-type TokenFilter_All = {
-    __kind: 'All'
-}
-
-type TokenFilter_Whitelist = {
-    __kind: 'Whitelist'
-    value: bigint[]
-}
-
-type TokenFilter_BlockList = {
-    __kind: 'BlockList'
-    value: bigint[]
-}
-
-export type TokenFilter = TokenFilter_All | TokenFilter_Whitelist | TokenFilter_BlockList
-
-export type OfferCreatedEvent = {
-    offerId: bigint
-    offer: {
-        account: string
-        total: bigint
-        rate: bigint | number
-        minAverageRewardRate?: bigint | number // Same as minAverageCommission
-        minAverageCommission?: number // It was replaced on v120 by minAverageRewardRate
-        deposit?: bigint // It was added on v120
-        tokenFilter?: TokenFilter
-    }
-}
-
-export function offerCreated(event: EventItem): OfferCreatedEvent {
+export function offerCreated(event: EventItem): OfferCreated {
     return match(event)
-        .returnType<OfferCreatedEvent>()
+        .returnType<OfferCreated>()
         .when(stakeExchange.offerCreated.enjinV1023.is, stakeExchange.offerCreated.enjinV1023.decode)
         .when(stakeExchange.offerCreated.enjinV1021.is, stakeExchange.offerCreated.enjinV1021.decode)
         .when(stakeExchange.offerCreated.enjinV120.is, stakeExchange.offerCreated.enjinV120.decode)
@@ -52,7 +24,7 @@ export function offerCreated(event: EventItem): OfferCreatedEvent {
 
 export function offerCreatedEventModel(
     item: EventItem,
-    data: OfferCreatedEvent,
+    data: OfferCreated,
     rewardRateAsFixedu128: bigint
 ): EventModel | undefined {
     const rate = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)

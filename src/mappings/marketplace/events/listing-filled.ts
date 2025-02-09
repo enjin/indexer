@@ -13,19 +13,11 @@ import {
     MarketplaceOfferSettled,
     Token,
 } from '@enjin/indexer/model'
+import { ListingFilled } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type ListingFilledEvent = {
-    listingId: string
-    buyer: string
-    amountFilled: bigint
-    amountRemaining: bigint
-    protocolFee: bigint
-    royalty: bigint
-}
-
-export function listingFilled(event: EventItem): ListingFilledEvent {
+export function listingFilled(event: EventItem): ListingFilled {
     return match(event)
-        .returnType<ListingFilledEvent>()
+        .returnType<ListingFilled>()
         .when(marketplace.listingFilled.matrixEnjinV1012.is, marketplace.listingFilled.matrixEnjinV1012.decode)
         .when(marketplace.listingFilled.matrixEnjinV603.is, marketplace.listingFilled.matrixEnjinV603.decode)
         .when(marketplace.listingFilled.matrixV1011.is, marketplace.listingFilled.matrixV1011.decode)
@@ -41,7 +33,7 @@ export function listingFilled(event: EventItem): ListingFilledEvent {
 
 export function listingFilledEventModel(
     item: EventItem,
-    data: ListingFilledEvent,
+    data: ListingFilled,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel

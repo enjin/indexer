@@ -2,24 +2,11 @@ import { imOnline } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { SomeOffline } from '@enjin/indexer/mappings/im-online/events/types'
 
-type SomeOfflineEvent = {
-    offline: [
-        string,
-        {
-            total: bigint
-            own: bigint
-            others: {
-                who: string
-                value: bigint
-            }[]
-        },
-    ][]
-}
-
-export function someOffline(event: EventItem): SomeOfflineEvent {
+export function someOffline(event: EventItem): SomeOffline {
     return match(event)
-        .returnType<SomeOfflineEvent>()
+        .returnType<SomeOffline>()
         .when(imOnline.someOffline.enjinV100.is, imOnline.someOffline.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

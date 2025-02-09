@@ -16,19 +16,11 @@ import {
     MarketplaceCounterOfferAnswered,
     Token,
 } from '@enjin/indexer/model'
+import { CounterOfferAnswered } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type CounterOfferAnsweredEvent = {
-    listingId: string
-    creator?: string
-    response?: {
-        __kind: string
-        value?: bigint
-    }
-}
-
-export function counterOfferAnswered(event: EventItem): CounterOfferAnsweredEvent {
+export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)
-        .returnType<CounterOfferAnsweredEvent>()
+        .returnType<CounterOfferAnswered>()
         .when(marketplace.counterOfferAnswered.matrixEnjinV1012.is, marketplace.counterOfferAnswered.matrixEnjinV1012.decode)
         .when(marketplace.counterOfferAnswered.matrixV1011.is, marketplace.counterOfferAnswered.matrixV1011.decode)
         .when(marketplace.counterOfferAnswered.matrixV1010.is, marketplace.counterOfferAnswered.matrixV1010.decode)
@@ -41,13 +33,13 @@ export function counterOfferAnswered(event: EventItem): CounterOfferAnsweredEven
 
 export function counterOfferAnsweredEventModel(
     item: EventItem,
-    data: CounterOfferAnsweredEvent,
+    data: CounterOfferAnswered,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {
     let response: CounterOfferResponse
 
-    switch (data.response.__kind) {
+    switch (data.response?.__kind) {
         case 'Accept':
             response = new CounterOfferResponseAccept({ kind: CounterOfferResponseType.Accept })
             break

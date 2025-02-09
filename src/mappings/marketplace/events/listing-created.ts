@@ -13,68 +13,11 @@ import {
     Token,
     TokenAccount,
 } from '@enjin/indexer/model'
+import { ListingCreated } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type ListingCreatedEvent = {
-    listingId: string
-    listing: {
-        creator?: string
-        seller?: string
-        makeAssetId: { collectionId: bigint; tokenId: bigint }
-        takeAssetId: { collectionId: bigint; tokenId: bigint }
-        amount: bigint
-        price: bigint
-        minReceived?: bigint // Same as listing.minTakeValue
-        minTakeValue?: bigint // Same as listing.minReceived
-        feeSide: { __kind: string }
-        creationBlock: number
-        startBlock?: number // Same as listing.data.value.startBlock
-        whitelistedAccountCount?: number
-        deposit:
-            | {
-                  depositor: string
-                  amount: bigint
-              }
-            | bigint
-        salt: string
-        data: {
-            __kind: string
-            value?:
-                | {
-                      startBlock?: number // Same as listing.startBlock
-                      endBlock: number
-                  }
-                | {
-                      expiration?: number
-                  }
-        }
-        state: {
-            __kind: string
-            value?:
-                | {
-                      amountFilled: bigint
-                  }
-                | {
-                      highBid?: {
-                          bidder: string
-                          price: bigint
-                      }
-                  }
-                | {
-                      counterOfferCount: number
-                  }
-                | {
-                      counter?: {
-                          accountId: string
-                          price: bigint
-                      }
-                  }
-        }
-    }
-}
-
-export function listingCreated(event: EventItem): ListingCreatedEvent {
+export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
-        .returnType<ListingCreatedEvent>()
+        .returnType<ListingCreated>()
         .when(marketplace.listingCreated.matrixEnjinV1012.is, marketplace.listingCreated.matrixEnjinV1012.decode)
         .when(marketplace.listingCreated.matrixEnjinV603.is, marketplace.listingCreated.matrixEnjinV603.decode)
         .when(marketplace.listingCreated.matrixV1011.is, marketplace.listingCreated.matrixV1011.decode)
@@ -93,7 +36,7 @@ export function listingCreated(event: EventItem): ListingCreatedEvent {
 
 export async function listingCreatedEventModel(
     item: EventItem,
-    data: ListingCreatedEvent,
+    data: ListingCreated,
     listing: Listing
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     let event: EventModel

@@ -11,27 +11,11 @@ import {
     MarketplaceCounterOfferPlaced,
     Token,
 } from '@enjin/indexer/model'
+import { CounterOfferPlaced } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type CounterOfferPlacedEvent = {
-    listingId: string
-    counterOffer:
-        | {
-              sellerPrice: bigint
-              buyerPrice?: bigint
-              deposit: {
-                  amount: bigint
-                  depositor: string
-              }
-          }
-        | {
-              accountId: string
-              price: bigint
-          }
-}
-
-export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {
+export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
     return match(event)
-        .returnType<CounterOfferPlacedEvent>()
+        .returnType<CounterOfferPlaced>()
         .when(marketplace.counterOfferPlaced.matrixEnjinV1012.is, marketplace.counterOfferPlaced.matrixEnjinV1012.decode)
         .when(marketplace.counterOfferPlaced.matrixV1011.is, marketplace.counterOfferPlaced.matrixV1011.decode)
         .when(marketplace.counterOfferPlaced.matrixV1010.is, marketplace.counterOfferPlaced.matrixV1010.decode)
@@ -44,7 +28,7 @@ export function counterOfferPlaced(event: EventItem): CounterOfferPlacedEvent {
 
 export function counterOfferPlacedEventModel(
     item: EventItem,
-    data: CounterOfferPlacedEvent,
+    data: CounterOfferPlaced,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

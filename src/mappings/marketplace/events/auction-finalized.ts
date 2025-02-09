@@ -10,20 +10,11 @@ import {
     Listing,
     MarketplaceAuctionFinalized,
 } from '@enjin/indexer/model'
+import { AuctionFinalized } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type AuctionFinalizedEvent = {
-    listingId: string
-    winningBid?: {
-        bidder: string
-        price: bigint
-    }
-    protocolFee: bigint
-    royalty: bigint
-}
-
-export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
+export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)
-        .returnType<AuctionFinalizedEvent>()
+        .returnType<AuctionFinalized>()
         .when(marketplace.auctionFinalized.matrixEnjinV603.is, marketplace.auctionFinalized.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
@@ -32,7 +23,7 @@ export function auctionFinalized(event: EventItem): AuctionFinalizedEvent {
 
 export function auctionFinalizedEventModel(
     item: EventItem,
-    data: AuctionFinalizedEvent,
+    data: AuctionFinalized,
     listing: Listing
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({

@@ -3,12 +3,11 @@ import { claims } from '../../../types/generated/storage'
 import { match } from 'ts-pattern'
 import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 
-export async function delayClaimsPeriod(block: BlockHeader): Promise<number> {
-    const value = await match(block)
-        .when(claims.delayClaimsPeriod.matrixEnjinV603.is, async () => await claims.delayClaimsPeriod.matrixEnjinV603.get(block))
+export async function delayClaimsPeriod(block: BlockHeader): Promise<number | undefined> {
+    return match(block)
+        .returnType<Promise<number | undefined>>()
+        .when(claims.delayClaimsPeriod.matrixEnjinV603.is, claims.delayClaimsPeriod.matrixEnjinV603.get)
         .otherwise(() => {
-            throw new UnsupportedStorageError('Claims.DelayClaimsPeriod')
+            throw new UnsupportedStorageError(delayClaimsPeriod.name)
         })
-
-    return value ?? 7200
 }

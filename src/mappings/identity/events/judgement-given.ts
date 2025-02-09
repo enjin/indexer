@@ -2,15 +2,11 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { JudgementGiven } from '@enjin/indexer/mappings/identity/events/types'
 
-type JudgementGivenEvent = {
-    target: string
-    registrarIndex: number
-}
-
-export function judgementGiven(event: EventItem): JudgementGivenEvent {
+export function judgementGiven(event: EventItem): JudgementGiven {
     return match(event)
-        .returnType<JudgementGivenEvent>()
+        .returnType<JudgementGiven>()
         .when(identity.judgementGiven.matrixEnjinV1000.is, identity.judgementGiven.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

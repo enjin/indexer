@@ -12,14 +12,11 @@ import {
     MarketplaceOfferCancelled,
     Token,
 } from '@enjin/indexer/model'
+import { ListingCancelled } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type ListingCancelledEvent = {
-    listingId: string
-}
-
-export function listingCancelled(event: EventItem): ListingCancelledEvent {
+export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
-        .returnType<ListingCancelledEvent>()
+        .returnType<ListingCancelled>()
         .when(marketplace.listingCancelled.matrixEnjinV603.is, marketplace.listingCancelled.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

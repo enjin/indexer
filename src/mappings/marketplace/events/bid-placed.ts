@@ -11,18 +11,11 @@ import {
     MarketplaceBidPlaced,
     Token,
 } from '@enjin/indexer/model'
+import { BidPlaced } from '@enjin/indexer/mappings/marketplace/events/types'
 
-type BidPlacedEvent = {
-    listingId: string
-    bid: {
-        bidder: string
-        price: bigint
-    }
-}
-
-export function bidPlaced(event: EventItem): BidPlacedEvent {
+export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)
-        .returnType<BidPlacedEvent>()
+        .returnType<BidPlaced>()
         .when(marketplace.bidPlaced.matrixEnjinV603.is, marketplace.bidPlaced.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
@@ -31,7 +24,7 @@ export function bidPlaced(event: EventItem): BidPlacedEvent {
 
 export function bidPlacedEventModel(
     item: EventItem,
-    data: BidPlacedEvent,
+    data: BidPlaced,
     listing: Listing,
     account: Account
 ): [EventModel, AccountTokenEvent] | undefined {

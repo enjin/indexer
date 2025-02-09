@@ -7,28 +7,26 @@ type Collection = {
     owner: string
     policy: {
         mint: {
-            maxTokenCount?: bigint | undefined
-            maxTokenSupply?: bigint | undefined
+            maxTokenCount?: bigint
+            maxTokenSupply?: bigint
             forceCollapsingSupply?: boolean
+            forceSingleMint?: boolean
         }
         transfer: {
             isFrozen: boolean
         }
         market: {
             royalty?:
-                | (
-                      | {
-                            beneficiaries: {
-                                beneficiary: string
-                                percentage: number
-                            }[]
-                        }
-                      | {
-                            beneficiary: string
-                            percentage: number
-                        }
-                  )
-                | undefined
+                | {
+                      beneficiaries: {
+                          beneficiary: string
+                          percentage: number
+                      }[]
+                  }
+                | {
+                      beneficiary: string
+                      percentage: number
+                  }
         }
     }
     tokenCount: bigint
