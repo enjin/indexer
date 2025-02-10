@@ -2,35 +2,11 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { ForceCreateEthereumCollection } from './types'
 
-type ForceCreateEthereumCollectionCall = {
-    owner: string
-    claimer?: string
-    ethereumCollectionId: bigint
-    descriptor: {
-        policy: {
-            mint: { maxTokenCount?: bigint | undefined; maxTokenSupply?: bigint | undefined; forceCollapsingSupply?: boolean }
-            market: {
-                royalty?:
-                    | {
-                          beneficiary: string
-                          percentage: number
-                      }
-                    | {
-                          beneficiaries: { beneficiary: string; percentage: number }[]
-                      }
-                    | undefined
-            }
-        }
-        depositor?: string | undefined
-        explicitRoyaltyCurrencies: { collectionId: bigint; tokenId: bigint }[]
-        attributes: { key: string; value: string }[]
-    }
-}
-
-export function forceCreateEthereumCollection(call: CallItem): ForceCreateEthereumCollectionCall {
+export function forceCreateEthereumCollection(call: CallItem): ForceCreateEthereumCollection {
     return match(call)
-        .returnType<ForceCreateEthereumCollectionCall>()
+        .returnType<ForceCreateEthereumCollection>()
         .when(
             calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.is,
             calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.decode

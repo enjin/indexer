@@ -2,20 +2,11 @@ import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
-import { DefaultMintParams_CreateToken, DefaultMintParams_Mint } from '../types'
+import { Mint } from './types'
 
-type MintCall = {
-    recipient: {
-        __kind: string
-        value?: string
-    }
-    collectionId: bigint
-    params: DefaultMintParams_CreateToken | DefaultMintParams_Mint
-}
-
-export function mint(call: CallItem): MintCall {
+export function mint(call: CallItem): Mint {
     return match(call)
-        .returnType<MintCall>()
+        .returnType<Mint>()
         .when(calls.multiTokens.mint.matrixEnjinV1012.is, calls.multiTokens.mint.matrixEnjinV1012.decode)
         .when(calls.multiTokens.mint.matrixEnjinV603.is, calls.multiTokens.mint.matrixEnjinV603.decode)
         .when(calls.multiTokens.mint.matrixV1010.is, calls.multiTokens.mint.matrixV1010.decode)

@@ -1,4 +1,5 @@
 import { BoundedString, V3MultiLocation } from '@enjin/indexer/types/generated/v100'
+import { V4Location } from '@enjin/indexer/types/generated/v1030'
 
 export type Bytes = string // HexBytes
 export type H160 = Bytes // HexBytes
@@ -565,7 +566,7 @@ export type ForeignTokenMetadata = {
     symbol: Bytes
     location?: V3MultiLocation
     unitsPerSecond?: bigint
-    premintedSupply: bigint
+    premintedSupply?: bigint
 }
 
 export type DefaultTokenMetadata_Foreign = {
@@ -577,7 +578,19 @@ export type DefaultTokenMetadata_Native = {
     __kind: 'Native'
 }
 
-export type DefaultTokenMetadata = DefaultTokenMetadata_Foreign | DefaultTokenMetadata_Native
+export type DefaultForeignTokenMetadata = {
+    location?: V4Location
+    unitsPerSecond?: bigint
+}
+
+export type DefaultTokenMetadata_Current = {
+    decimalCount: number
+    name: BoundedString
+    symbol: Bytes
+    foreign?: DefaultForeignTokenMetadata
+}
+
+export type DefaultTokenMetadata = DefaultTokenMetadata_Foreign | DefaultTokenMetadata_Native | DefaultTokenMetadata_Current
 
 export type ShouldMutate_Metadata_NoMutation = {
     __kind: 'NoMutation'
@@ -630,18 +643,18 @@ export type TokenAccountReserve = {
     balance: bigint
 }
 
-type DefaultMintPolicy = {
+export type DefaultMintPolicy = {
     maxTokenCount?: bigint
     maxTokenSupply?: bigint
     forceSingleMint?: boolean // Removed on v1030
     forceCollapsingSupply?: boolean // Added on v1030
 }
 
-type DefaultTransferPolicy = {
+export type DefaultTransferPolicy = {
     isFrozen: boolean
 }
 
-type DefaultMarketPolicy = {
+export type DefaultMarketPolicy = {
     royalty?: DefaultRoyaltyInfo | DefaultRoyalty // Changed from DefaultRoyaltyInfo to DefaultRoyalty on v1050
 }
 
@@ -650,3 +663,130 @@ export type DefaultCollectionPolicy = {
     transfer: DefaultTransferPolicy
     market: DefaultMarketPolicy
 }
+
+export type Sufficiency = Sufficiency_Insufficient | Sufficiency_Sufficient
+
+export interface Sufficiency_Insufficient {
+    __kind: 'Insufficient'
+    unitPrice: bigint
+}
+
+export interface Sufficiency_Sufficient {
+    __kind: 'Sufficient'
+}
+
+type TokenCap_CollapsingSupply = {
+    __kind: 'CollapsingSupply' // Added on v102
+    value: bigint
+}
+
+type TokenCap_SingleMint = {
+    __kind: 'SingleMint' // Removed on v1030
+}
+
+type TokenCap_Supply = {
+    __kind: 'Supply'
+    value: bigint
+}
+
+export type TokenCap = TokenCap_SingleMint | TokenCap_Supply | TokenCap_CollapsingSupply
+
+export type AmbiguousDeposit = {
+    depositor?: AccountId32
+    amount: bigint
+}
+
+export type Attribute = {
+    key: Bytes
+    value: Bytes
+}
+
+export type DefaultCollectionPolicyDescriptor = {
+    mint: DefaultMintPolicy
+    market: DefaultMarketPolicy
+}
+
+export type DefaultCollectionDescriptor = {
+    policy: DefaultCollectionPolicyDescriptor
+    depositor?: AccountId32 // Added on v1030
+    explicitRoyaltyCurrencies: AssetId[]
+    attributes: Attribute[]
+}
+
+export type RangeInclusive = {
+    start: bigint
+    end: bigint
+}
+
+type SufficiencyParam_Sufficient = {
+    __kind: 'Sufficient'
+    minimumBalance: bigint
+}
+
+type SufficiencyParam_Insufficient = {
+    __kind: 'Insufficient'
+    unitPrice?: bigint
+}
+
+export type SufficiencyParam = SufficiencyParam_Insufficient | SufficiencyParam_Sufficient
+
+type PrivilegedCreateTokenParams = {
+    requiresDeposit: boolean
+    foreignParams?: DefaultForeignTokenMetadata
+    depositor?: AccountId32
+}
+
+export interface DefaultMintParams_CreateToken {
+    __kind: 'CreateToken'
+    tokenId: bigint
+    initialSupply: bigint
+    sufficiency?: SufficiencyParam // Removed on v1030
+    accountDepositCount?: number // Added on v1030
+    cap?: TokenCap
+    behavior?: TokenMarketBehavior
+    listingForbidden: boolean
+    freezeState?: FreezeState
+    attributes: Attribute[]
+    foreignParams?: ForeignTokenMetadata // Removed on v1030
+    infusion?: bigint // Added on v1030
+    anyoneCanInfuse?: boolean // Added on v1030
+    metadata?: DefaultTokenMetadata_Current // Added on v1030
+    privilegedParams?: PrivilegedCreateTokenParams // Added on v1030
+}
+
+export interface DefaultMintParams_Mint {
+    __kind: 'Mint'
+    tokenId: bigint
+    amount: bigint
+    unitPrice?: bigint // Removed on v1030
+    depositor?: AccountId32 // Added on v1030
+}
+
+export type DefaultMintParams = DefaultMintParams_CreateToken | DefaultMintParams_Mint
+
+type CreateOrMintParams = {
+    tokenId: bigint
+    amount: bigint
+    sufficiency?: SufficiencyParam // Removed on v1030
+    accountDepositCount?: number // Added on v1030
+    cap?: TokenCap
+    behavior?: TokenMarketBehavior
+    listingForbidden: boolean
+    freezeState?: FreezeState
+    attributes: Attribute[]
+    infusion?: bigint // Added on v1030
+    anyoneCanInfuse?: boolean // Added on v1030
+    metadata?: DefaultTokenMetadata_Current // Added on v1030
+    foreignParams?: ForeignTokenMetadata // Removed on v1030
+}
+
+type FlexibleMintParams_CreateOrMint = {
+    __kind: 'CreateOrMint'
+    value: CreateOrMintParams
+}
+
+export type FlexibleMintParams =
+    | DefaultMintParams_CreateToken // Removed on v1030
+    | DefaultMintParams_Mint
+    | FlexibleMintParams_CreateOrMint // Added on v1023, removed on v1030
+    | CreateOrMintParams // Added on v1030
