@@ -2,20 +2,8 @@ import { BlockHeader } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
-import { Bytes } from '@enjin/indexer/types/generated/support'
-import { AccountId32, Approval, Deposit, TokenAccountReserve } from '@enjin/indexer/types/generated/v1050'
-
-type TokenAccount = {
-    balance: bigint
-    reservedBalance: bigint
-    lockedBalance: bigint
-    holds?: TokenAccountReserve[]
-    locks: [Bytes, bigint][]
-    approvals: [AccountId32, Approval][]
-    isFrozen: boolean
-    deposit?: Deposit | undefined
-    storageVersion?: number
-}
+import { TokenAccount } from './types/token-accounts'
+import { AccountId32 } from '../../common/types'
 
 export async function tokenAccounts(
     block: BlockHeader,
@@ -40,7 +28,7 @@ export async function tokenAccounts(
             .when(storage.multiTokens.tokenAccounts.v101.is, () =>
                 storage.multiTokens.tokenAccounts.v101.getPairs(block, collectionId, tokenId)
             )
-            // In this spec it the account would come before the collection and token id
+            // TODO: In this spec it the account would come before the collection and token id
             // .when(storage.multiTokens.tokenAccounts.v100.is, storage.multiTokens.tokenAccounts.v100.getPairs(block, '1', collectionId))
             .otherwise(() => {
                 throw new UnsupportedStorageError('collections')

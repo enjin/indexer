@@ -619,3 +619,13 @@ export type TokenMutation = {
     anyoneCanInfuse?: ShouldMutate_AnyoneCanInfuse // Added on v1030
     name?: ShouldMutate_Name // Added on v1030
 }
+
+export type Approval = {
+    amount: bigint
+    expiration?: number
+}
+
+export type TokenAccountReserve = {
+    reason: RuntimeHoldReason
+    balance: bigint
+}
