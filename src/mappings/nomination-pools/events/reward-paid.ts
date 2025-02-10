@@ -2,18 +2,11 @@ import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { RewardPaid } from './types'
 
-type RewardPaidEvent = {
-    poolId: number
-    era: number
-    validatorStash: string
-    reward: bigint
-    bonus: bigint
-}
-
-export function rewardPaid(event: EventItem): RewardPaidEvent {
+export function rewardPaid(event: EventItem): RewardPaid {
     return match(event)
-        .returnType<RewardPaidEvent>()
+        .returnType<RewardPaid>()
         .when(nominationPools.rewardPaid.enjinV100.is, nominationPools.rewardPaid.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Slashed } from '@enjin/indexer/mappings/balances/events/types'
 
-type SlashedEvent = {
-    who: string
-    amount: bigint
-}
-
-export function slashed(event: EventItem): SlashedEvent {
+export function slashed(event: EventItem): Slashed {
     return match(event)
-        .returnType<SlashedEvent>()
+        .returnType<Slashed>()
         .when(balances.slashed.matrixEnjinV603.is, balances.slashed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

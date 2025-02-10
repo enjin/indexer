@@ -2,19 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { ReserveRepatriated } from '@enjin/indexer/mappings/balances/events/types'
 
-type ReserveRepatriatedEvent = {
-    from: string
-    to: string
-    amount: bigint
-    destinationStatus: {
-        __kind: 'Reserved' | 'Free'
-    }
-}
-
-export function reserveRepatriated(event: EventItem): ReserveRepatriatedEvent {
+export function reserveRepatriated(event: EventItem): ReserveRepatriated {
     return match(event)
-        .returnType<ReserveRepatriatedEvent>()
+        .returnType<ReserveRepatriated>()
         .when(balances.reserveRepatriated.matrixEnjinV603.is, balances.reserveRepatriated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

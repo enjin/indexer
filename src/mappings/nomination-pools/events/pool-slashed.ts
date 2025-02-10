@@ -3,22 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolSlashed } from '../../../model'
+import { PoolSlashed } from './types'
 
-type PoolSlashedEvent = {
-    poolId: number
-    balance: bigint
-}
-
-export function poolSlashed(event: EventItem): PoolSlashedEvent {
+export function poolSlashed(event: EventItem): PoolSlashed {
     return match(event)
-        .returnType<PoolSlashedEvent>()
+        .returnType<PoolSlashed>()
         .when(nominationPools.poolSlashed.enjinV100.is, nominationPools.poolSlashed.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function poolSlashedEventModel(item: EventItem, data: PoolSlashedEvent): EventModel | undefined {
+export function poolSlashedEventModel(item: EventItem, data: PoolSlashed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsPoolSlashed.name,

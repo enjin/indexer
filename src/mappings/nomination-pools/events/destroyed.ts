@@ -3,21 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsDestroyed } from '../../../model'
+import { Destroyed } from './types'
 
-type DestroyedEvent = {
-    poolId: number
-}
-
-export function destroyed(event: EventItem): DestroyedEvent {
+export function destroyed(event: EventItem): Destroyed {
     return match(event)
-        .returnType<DestroyedEvent>()
+        .returnType<Destroyed>()
         .when(nominationPools.destroyed.enjinV100.is, nominationPools.destroyed.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function destroyedEventModel(item: EventItem, data: DestroyedEvent): EventModel | undefined {
+export function destroyedEventModel(item: EventItem, data: Destroyed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsDestroyed.name,

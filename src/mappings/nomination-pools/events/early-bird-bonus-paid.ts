@@ -3,23 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdBonusPaid } from '../../../model'
+import { EarlyBirdBonusPaid } from './types'
 
-type EarlyBirdBonusPaidEvent = {
-    poolId: number
-    paymentId: number
-    totalAccounts: number
-}
-
-export function earlyBirdBonusPaid(event: EventItem): EarlyBirdBonusPaidEvent {
+export function earlyBirdBonusPaid(event: EventItem): EarlyBirdBonusPaid {
     return match(event)
-        .returnType<EarlyBirdBonusPaidEvent>()
+        .returnType<EarlyBirdBonusPaid>()
         .when(nominationPools.earlyBirdBonusPaid.enjinV1023.is, nominationPools.earlyBirdBonusPaid.enjinV1023.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function earlyBirdBonusPaidEventModel(item: EventItem, data: EarlyBirdBonusPaidEvent): EventModel | undefined {
+export function earlyBirdBonusPaidEventModel(item: EventItem, data: EarlyBirdBonusPaid): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdBonusPaid.name,

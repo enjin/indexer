@@ -2,18 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { CreatePool } from './types'
 
-type CreatePoolCall = {
-    tokenId: bigint
-    deposit: bigint
-    capacity: bigint
-    duration: number
-    name?: string
-}
-
-export function create(call: CallItem): CreatePoolCall {
+export function create(call: CallItem): CreatePool {
     return match(call)
-        .returnType<CreatePoolCall>()
+        .returnType<CreatePool>()
         .when(calls.nominationPools.create.enjinV1023.is, calls.nominationPools.create.enjinV1023.decode)
         .when(calls.nominationPools.create.enjinV110.is, calls.nominationPools.create.enjinV110.decode)
         .when(calls.nominationPools.create.enjinV100.is, calls.nominationPools.create.enjinV100.decode)

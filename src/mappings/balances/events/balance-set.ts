@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { BalanceSet } from '@enjin/indexer/mappings/balances/events/types'
 
-type BalanceSetEvent = {
-    who: string
-    free: bigint
-}
-
-export function balanceSet(event: EventItem): BalanceSetEvent {
+export function balanceSet(event: EventItem): BalanceSet {
     return match(event)
-        .returnType<BalanceSetEvent>()
+        .returnType<BalanceSet>()
         .when(balances.balanceSet.matrixEnjinV603.is, balances.balanceSet.matrixEnjinV603.decode)
         .when(balances.balanceSet.matrixV602.is, balances.balanceSet.matrixV602.decode)
         .when(balances.balanceSet.matrixV500.is, balances.balanceSet.matrixV500.decode)

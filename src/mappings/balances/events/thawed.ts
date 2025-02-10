@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Thawed } from '@enjin/indexer/mappings/balances/events/types'
 
-type ThawedEvent = {
-    who: string
-    amount: bigint
-}
-
-export function thawed(event: EventItem): ThawedEvent {
+export function thawed(event: EventItem): Thawed {
     return match(event)
-        .returnType<ThawedEvent>()
+        .returnType<Thawed>()
         .when(balances.thawed.matrixEnjinV603.is, balances.thawed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

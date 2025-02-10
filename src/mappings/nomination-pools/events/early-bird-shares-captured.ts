@@ -3,24 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdSharesCaptured } from '../../../model'
+import { EarlyBirdSharesCaptured } from './types'
 
-type EarlyBirdSharesCapturedEvent = {
-    poolId: number
-    totalAccounts: number
-}
-
-export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCapturedEvent {
+export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCaptured {
     return match(event)
-        .returnType<EarlyBirdSharesCapturedEvent>()
-        .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, () =>
-            nominationPools.earlyBirdSharesCaptured.enjinV1022.decode(event)
-        )
+        .returnType<EarlyBirdSharesCaptured>()
+        .when(nominationPools.earlyBirdSharesCaptured.enjinV1022.is, nominationPools.earlyBirdSharesCaptured.enjinV1022.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function earlyBirdSharesCapturedEventModel(item: EventItem, data: EarlyBirdSharesCapturedEvent): EventModel | undefined {
+export function earlyBirdSharesCapturedEventModel(item: EventItem, data: EarlyBirdSharesCaptured): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdSharesCaptured.name,

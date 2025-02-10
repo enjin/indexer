@@ -2,12 +2,7 @@ import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
-
-type PoolBonusInfo = {
-    amount: bigint
-    shareCaptureBlock?: number
-    lastPaymentId?: number
-}
+import { PoolBonusInfo } from '@enjin/indexer/mappings/nomination-pools/storage/types'
 
 export async function poolBonusInfo(block: BlockHeader, poolId: number): Promise<PoolBonusInfo | undefined> {
     return match(block)
@@ -25,6 +20,6 @@ export async function poolBonusInfo(block: BlockHeader, poolId: number): Promise
             storage.nominationPools.poolBonusInfos.v1021.get(block, poolId)
         )
         .otherwise(() => {
-            throw new UnsupportedStorageError('NominationPools.BondedPools')
+            throw new UnsupportedStorageError(poolBonusInfo.name)
         })
 }

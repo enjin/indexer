@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { DustLost } from '@enjin/indexer/mappings/balances/events/types'
 
-type DustLostEvent = {
-    account: string
-    amount: bigint
-}
-
-export function dustLost(event: EventItem): DustLostEvent {
+export function dustLost(event: EventItem): DustLost {
     return match(event)
-        .returnType<DustLostEvent>()
+        .returnType<DustLost>()
         .when(balances.dustLost.matrixEnjinV603.is, balances.dustLost.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

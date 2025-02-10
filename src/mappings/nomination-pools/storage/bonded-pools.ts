@@ -2,32 +2,7 @@ import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
-
-type BondedPools = {
-    state: {
-        __kind: string
-    }
-    commission: {
-        current?: number | [number, string]
-        max?: number
-        changeRate?: {
-            maxDelta: number
-            minDelay: number
-        }
-        throttleFrom?: number
-    }
-    tokenId: bigint
-    capacity: bigint
-    bonusCycle?: {
-        previousStart?: number
-        start: number
-        end: number
-        pendingDuration?: number
-    }
-    creationBlock?: number
-    bonusesPaid?: number[]
-    name?: string
-}
+import { BondedPools } from '@enjin/indexer/mappings/nomination-pools/storage/types'
 
 export function bondedPools(block: BlockHeader, poolId: number): Promise<BondedPools | undefined> {
     return match(block)
@@ -53,6 +28,6 @@ export function bondedPools(block: BlockHeader, poolId: number): Promise<BondedP
         .when(storage.nominationPools.bondedPools.v101.is, () => storage.nominationPools.bondedPools.v101.get(block, poolId))
         .when(storage.nominationPools.bondedPools.v100.is, () => storage.nominationPools.bondedPools.v100.get(block, poolId))
         .otherwise(() => {
-            throw new UnsupportedStorageError('NominationPools.BondedPools')
+            throw new UnsupportedStorageError(bondedPools.name)
         })
 }

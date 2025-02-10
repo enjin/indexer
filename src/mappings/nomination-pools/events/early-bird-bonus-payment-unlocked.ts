@@ -2,17 +2,14 @@ import { nominationPools } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { EarlyBirdBonusPaymentUnlocked } from './types'
 
-type EarlyBirdBonusPaymentUnlockedEvent = {
-    paymentId: number
-    nextPaymentBlock: number
-}
-
-export function earlyBirdBonusPaymentUnlocked(event: EventItem): EarlyBirdBonusPaymentUnlockedEvent {
+export function earlyBirdBonusPaymentUnlocked(event: EventItem): EarlyBirdBonusPaymentUnlocked {
     return match(event)
-        .returnType<EarlyBirdBonusPaymentUnlockedEvent>()
-        .when(nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.is, () =>
-            nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.decode(event)
+        .returnType<EarlyBirdBonusPaymentUnlocked>()
+        .when(
+            nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.is,
+            nominationPools.earlyBirdBonusPaymentUnlocked.enjinV1022.decode
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)

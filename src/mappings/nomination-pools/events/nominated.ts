@@ -3,22 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsNominated } from '../../../model'
+import { Nominated } from './types'
 
-type NominatedEvent = {
-    poolId: number
-    validators: string[]
-}
-
-export function nominated(event: EventItem): NominatedEvent {
+export function nominated(event: EventItem): Nominated {
     return match(event)
-        .returnType<NominatedEvent>()
+        .returnType<Nominated>()
         .when(nominationPools.nominated.enjinV101.is, nominationPools.nominated.enjinV101.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function nominatedEventModel(item: EventItem, data: NominatedEvent): EventModel | undefined {
+export function nominatedEventModel(item: EventItem, data: Nominated): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsNominated.name,

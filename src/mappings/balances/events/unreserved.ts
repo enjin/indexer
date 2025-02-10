@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Unreserved } from '@enjin/indexer/mappings/balances/events/types'
 
-type UnreservedEvent = {
-    who: string
-    amount: bigint
-}
-
-export function unreserved(event: EventItem): UnreservedEvent {
+export function unreserved(event: EventItem): Unreserved {
     return match(event)
-        .returnType<UnreservedEvent>()
+        .returnType<Unreserved>()
         .when(balances.unreserved.matrixEnjinV603.is, balances.unreserved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

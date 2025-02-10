@@ -3,24 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsWithdrawn } from '../../../model'
+import { Withdrawn } from './types'
 
-type WithdrawnEvent = {
-    member: string
-    poolId: number
-    balance: bigint
-    points: bigint
-}
-
-export function withdrawn(event: EventItem): WithdrawnEvent {
+export function withdrawn(event: EventItem): Withdrawn {
     return match(event)
-        .returnType<WithdrawnEvent>()
+        .returnType<Withdrawn>()
         .when(nominationPools.withdrawn.enjinV100.is, nominationPools.withdrawn.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function withdrawnEventModel(item: EventItem, data: WithdrawnEvent): EventModel | undefined {
+export function withdrawnEventModel(item: EventItem, data: Withdrawn): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsWithdrawn.name,

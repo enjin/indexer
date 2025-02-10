@@ -3,16 +3,11 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsBonded } from '../../../model'
+import { Bonded } from './types'
 
-type BondedEvent = {
-    member: string
-    poolId: number
-    bonded: bigint
-}
-
-export function bonded(event: EventItem): BondedEvent {
+export function bonded(event: EventItem): Bonded {
     return match(event)
-        .returnType<BondedEvent>()
+        .returnType<Bonded>()
         .when(nominationPools.bonded.enjinV101.is, nominationPools.bonded.enjinV101.decode)
         .when(nominationPools.bonded.enjinV100.is, nominationPools.bonded.enjinV100.decode)
         .when(nominationPools.bonded.v104.is, nominationPools.bonded.v104.decode)
@@ -22,7 +17,7 @@ export function bonded(event: EventItem): BondedEvent {
         })
 }
 
-export function bondedEventModel(item: EventItem, data: BondedEvent): EventModel | undefined {
+export function bondedEventModel(item: EventItem, data: Bonded): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsBonded.name,

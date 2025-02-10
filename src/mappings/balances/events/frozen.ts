@@ -2,15 +2,11 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { Frozen } from '@enjin/indexer/mappings/balances/events/types'
 
-type FrozenEvent = {
-    who: string
-    amount: bigint
-}
-
-export function frozen(event: EventItem): FrozenEvent {
+export function frozen(event: EventItem): Frozen {
     return match(event)
-        .returnType<FrozenEvent>()
+        .returnType<Frozen>()
         .when(balances.frozen.matrixEnjinV603.is, balances.frozen.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

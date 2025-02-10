@@ -4,28 +4,11 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '../../../model'
 import { hexToString } from '@polkadot/util'
+import { PoolMutated } from './types'
 
-type PoolMutatedEvent = {
-    poolId: number
-    mutation: {
-        duration?: number
-        newCommission: {
-            __kind: string
-            value?: number
-        }
-        maxCommission?: number
-        changeRate?: {
-            maxDelta: number
-            minDelay: number
-        }
-        capacity?: bigint
-        name?: string
-    }
-}
-
-export function poolMutated(event: EventItem) {
+export function poolMutated(event: EventItem): PoolMutated {
     return match(event)
-        .returnType<PoolMutatedEvent>()
+        .returnType<PoolMutated>()
         .when(nominationPools.poolMutated.enjinV1023.is, nominationPools.poolMutated.enjinV1023.decode)
         .when(nominationPools.poolMutated.enjinV110.is, nominationPools.poolMutated.enjinV110.decode)
         .when(nominationPools.poolMutated.enjinV100.is, nominationPools.poolMutated.enjinV100.decode)
@@ -38,7 +21,7 @@ export function poolMutated(event: EventItem) {
         })
 }
 
-export function poolMutatedEventModel(item: EventItem, data: PoolMutatedEvent): EventModel | undefined {
+export function poolMutatedEventModel(item: EventItem, data: PoolMutated): EventModel | undefined {
     const mutation: Record<string, string | number | undefined> = {}
     if (data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
         mutation.newCommission = data.mutation.newCommission.value

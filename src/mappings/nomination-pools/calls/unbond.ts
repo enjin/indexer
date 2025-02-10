@@ -2,19 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { Unbond } from './types'
 
-type UnbondCall = {
-    poolId: number
-    memberAccount: {
-        __kind: string
-        value?: string
-    }
-    unbondingPoints: bigint
-}
-
-export function unbond(call: CallItem): UnbondCall {
+export function unbond(call: CallItem): Unbond {
     return match(call)
-        .returnType<UnbondCall>()
+        .returnType<Unbond>()
         .when(calls.nominationPools.unbond.enjinV100.is, calls.nominationPools.unbond.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)

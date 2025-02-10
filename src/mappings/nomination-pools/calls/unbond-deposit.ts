@@ -2,14 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
+import { UnbondDeposit } from './types'
 
-type UnbondDepositCall = {
-    poolId: number
-}
-
-export function unbondDeposit(call: CallItem): UnbondDepositCall {
+export function unbondDeposit(call: CallItem): UnbondDeposit {
     return match(call)
-        .returnType<UnbondDepositCall>()
+        .returnType<UnbondDeposit>()
         .when(calls.nominationPools.unbondDeposit.enjinV100.is, calls.nominationPools.unbondDeposit.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedCallError(call)

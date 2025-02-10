@@ -6,8 +6,10 @@ export type H256 = Bytes // HexBytes
 export type AccountId32 = Bytes // HexBytes
 export type Percent = number // percent
 export type Perbill = number // per billion
+export type Perquintill = bigint // per quintillion
 export type BitFlags = bigint
 export type ExtraFlags = bigint
+export type BoundedVec = Bytes
 
 export type Account_EVM = {
     __kind: 'EVM'
@@ -324,4 +326,91 @@ export type Listing = {
     salt: Bytes
     data: ListingData
     state: ListingState
+}
+
+type BalanceStatus_Reserved = {
+    __kind: 'Reserved'
+}
+
+type BalanceStatus_Free = {
+    __kind: 'Free'
+}
+
+export type BalanceStatus = BalanceStatus_Reserved | BalanceStatus_Free
+
+type PoolState_Blocked = {
+    __kind: 'Blocked' // Removed on v103
+}
+
+type PoolState_Destroying = {
+    __kind: 'Destroying'
+}
+
+type PoolState_Open = {
+    __kind: 'Open'
+}
+
+export type PoolState = PoolState_Destroying | PoolState_Open | PoolState_Blocked
+
+type ShouldMutate_Perbill_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+type ShouldMutate_Perbill_SomeMutation = {
+    __kind: 'SomeMutation'
+    value?: Perbill
+}
+
+type ShouldMutate_Perbill = ShouldMutate_Perbill_NoMutation | ShouldMutate_Perbill_SomeMutation
+
+type CommissionChangeRate = {
+    maxDelta: Perbill
+    minDelay: number
+}
+
+export interface PoolRolesMutation {
+    newAdmin: ShouldMutate_AccountId32
+    newNominator: ShouldMutate_AccountId32
+}
+
+export type ShouldMutate_AccountId32 = ShouldMutate_AccountId32_NoMutation | ShouldMutate_AccountId32_SomeMutation
+
+export interface ShouldMutate_AccountId32_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface ShouldMutate_AccountId32_SomeMutation {
+    __kind: 'SomeMutation'
+    value?: AccountId32
+}
+
+export type PoolMutation = {
+    duration?: number
+    newCommission?: ShouldMutate_Perbill
+    maxCommission?: Perbill
+    changeRate?: CommissionChangeRate
+    roles?: PoolRolesMutation // Removed on v110
+    capacity?: bigint // Added on v104
+    name?: BoundedVec // Added on v1023
+}
+
+export type BonusCycle = {
+    previousStart?: number
+    start: number
+    end: number
+    pendingDuration?: number
+}
+
+export type PoolRoles = {
+    depositor?: AccountId32 // Removed on v101
+    root?: AccountId32 // Removed on v102
+    admin?: AccountId32 // Added on v102
+    nominator?: AccountId32
+}
+
+export type Commission = {
+    current?: [Perbill, AccountId32] | Perbill // Changed from tuple to Perbill on v101
+    max?: Perbill
+    changeRate?: CommissionChangeRate
+    throttleFrom?: number
 }

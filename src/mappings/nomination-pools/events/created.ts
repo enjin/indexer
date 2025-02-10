@@ -3,16 +3,11 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsCreated } from '../../../model'
+import { Created } from './types'
 
-type CreatedEvent = {
-    creator?: string
-    poolId: number
-    capacity: bigint
-}
-
-export function created(event: EventItem): CreatedEvent {
+export function created(event: EventItem): Created {
     return match(event)
-        .returnType<CreatedEvent>()
+        .returnType<Created>()
         .when(nominationPools.created.enjinV100.is, nominationPools.created.enjinV100.decode)
         .when(nominationPools.created.v101.is, nominationPools.created.v101.decode)
         .when(nominationPools.created.v100.is, nominationPools.created.v100.decode)
@@ -21,7 +16,7 @@ export function created(event: EventItem): CreatedEvent {
         })
 }
 
-export function createdEventModel(item: EventItem, data: CreatedEvent): EventModel | undefined {
+export function createdEventModel(item: EventItem, data: Created): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsCreated.name,

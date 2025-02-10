@@ -3,25 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsUnbonded } from '../../../model'
+import { Unbonded } from './types'
 
-type UnbondedEvent = {
-    member: string
-    poolId: number
-    balance: bigint
-    points: bigint
-    era: number
-}
-
-export function unbonded(event: EventItem): UnbondedEvent {
+export function unbonded(event: EventItem): Unbonded {
     return match(event)
-        .returnType<UnbondedEvent>()
+        .returnType<Unbonded>()
         .when(nominationPools.unbonded.enjinV100.is, nominationPools.unbonded.enjinV100.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function unbondedEventModel(item: EventItem, data: UnbondedEvent): EventModel | undefined {
+export function unbondedEventModel(item: EventItem, data: Unbonded): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsUnbonded.name,
