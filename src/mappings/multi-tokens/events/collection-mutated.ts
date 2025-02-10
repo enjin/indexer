@@ -3,25 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionMutated } from '@enjin/indexer/model'
-
-type CollectionMutatedEvent = {
-    collectionId: bigint
-    mutation: {
-        owner?: string
-        royalty: {
-            __kind: string
-            value?:
-                | {
-                      beneficiary: string
-                      percentage: number
-                  }
-                | {
-                      beneficiaries: { beneficiary: string; percentage: number }[]
-                  }
-        }
-        explicitRoyaltyCurrencies?: { collectionId: bigint; tokenId: bigint }[]
-    }
-}
+import { CollectionMutated } from './types/collection-mutated'
 
 export function collectionMutated(event: EventItem): CollectionMutated {
     return match(event)

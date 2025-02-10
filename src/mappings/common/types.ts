@@ -1,3 +1,5 @@
+import { BoundedString, V3MultiLocation } from '@enjin/indexer/types/generated/v100'
+
 export type Bytes = string // HexBytes
 export type H160 = Bytes // HexBytes
 export type H256 = Bytes // HexBytes
@@ -497,3 +499,123 @@ type FreezeType_TokenAccount = {
 }
 
 export type FreezeType = FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
+
+export type DefaultRoyaltyInfo = {
+    beneficiary: AccountId32
+    percentage: number
+}
+
+export type DefaultRoyalty = {
+    beneficiaries: DefaultRoyaltyInfo[]
+}
+
+export interface ShouldMutate_Royalty_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export interface ShouldMutate_Royalty_SomeMutation {
+    __kind: 'SomeMutation'
+    value?: DefaultRoyaltyInfo | DefaultRoyalty
+}
+
+type ShouldMutate_Royalty = ShouldMutate_Royalty_NoMutation | ShouldMutate_Royalty_SomeMutation
+
+export type DefaultCollectionMutation = {
+    owner?: AccountId32
+    royalty: ShouldMutate_Royalty
+    explicitRoyaltyCurrencies?: AssetId[]
+}
+
+export type ShouldMutate_Behavior_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+export type TokenMarketBehavior_IsCurrency = {
+    __kind: 'IsCurrency'
+}
+
+export type TokenMarketBehavior_HasRoyalty = {
+    __kind: 'HasRoyalty'
+    value: DefaultRoyaltyInfo | DefaultRoyalty
+}
+
+export type TokenMarketBehavior = TokenMarketBehavior_IsCurrency | TokenMarketBehavior_HasRoyalty
+
+export type ShouldMutate_Behavior_SomeMutation = {
+    __kind: 'SomeMutation'
+    value?: TokenMarketBehavior
+}
+
+export type ShouldMutate_Behavior = ShouldMutate_Behavior_NoMutation | ShouldMutate_Behavior_SomeMutation
+
+export type ShouldMutate_ListingForbidden_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+export type ShouldMutate_ListingForbidden_SomeMutation = {
+    __kind: 'SomeMutation'
+    value: boolean
+}
+
+export type ShouldMutate_ListingForbidden = ShouldMutate_ListingForbidden_NoMutation | ShouldMutate_ListingForbidden_SomeMutation
+
+export type ForeignTokenMetadata = {
+    decimalCount: number
+    name: BoundedString
+    symbol: Bytes
+    location?: V3MultiLocation
+    unitsPerSecond?: bigint
+    premintedSupply: bigint
+}
+
+export type DefaultTokenMetadata_Foreign = {
+    __kind: 'Foreign'
+    value: ForeignTokenMetadata
+}
+
+export type DefaultTokenMetadata_Native = {
+    __kind: 'Native'
+}
+
+export type DefaultTokenMetadata = DefaultTokenMetadata_Foreign | DefaultTokenMetadata_Native
+
+export type ShouldMutate_Metadata_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+export type ShouldMutate_Metadata_SomeMutation = {
+    __kind: 'SomeMutation'
+    value: DefaultTokenMetadata
+}
+
+export type ShouldMutate_Metadata = ShouldMutate_Metadata_NoMutation | ShouldMutate_Metadata_SomeMutation
+
+export type ShouldMutate_Name_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+export type ShouldMutate_Name_SomeMutation = {
+    __kind: 'SomeMutation'
+    value: BoundedString
+}
+
+export type ShouldMutate_Name = ShouldMutate_Name_NoMutation | ShouldMutate_Name_SomeMutation
+
+export type ShouldMutate_AnyoneCanInfuse_NoMutation = {
+    __kind: 'NoMutation'
+}
+
+export type ShouldMutate_AnyoneCanInfuse_SomeMutation = {
+    __kind: 'SomeMutation'
+    value: boolean
+}
+
+export type ShouldMutate_AnyoneCanInfuse = ShouldMutate_AnyoneCanInfuse_NoMutation | ShouldMutate_AnyoneCanInfuse_SomeMutation
+
+export type TokenMutation = {
+    behavior: ShouldMutate_Behavior
+    listingForbidden: ShouldMutate_ListingForbidden
+    metadata?: ShouldMutate_Metadata // Removed on v1030
+    anyoneCanInfuse?: ShouldMutate_AnyoneCanInfuse // Added on v1030
+    name?: ShouldMutate_Name // Added on v1030
+}

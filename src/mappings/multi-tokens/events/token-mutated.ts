@@ -3,44 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '@enjin/indexer/model'
-
-export type TokenMutatedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    mutation: {
-        behavior: {
-            __kind: string // SomeMutation or NoMutation
-            value?: {
-                __kind: string // IsCurrency or HasRoyalty
-                value?:
-                    | {
-                          beneficiaries: {
-                              beneficiary: string
-                              percentage: number
-                          }[]
-                      }
-                    | {
-                          beneficiary: string
-                          percentage: number
-                      }
-            }
-        }
-        name?: {
-            // Does not exist in v603 and below
-            __kind: string // SomeMutation or NoMutation
-            value?: string
-        }
-        anyoneCanInfuse?: {
-            // Does not exist in v603 and below
-            __kind: string // SomeMutation or NoMutation
-            value?: boolean
-        }
-        listingForbidden: {
-            __kind: string // SomeMutation or NoMutation
-            value?: boolean
-        }
-    }
-}
+import { TokenMutated } from './types'
 
 export function tokenMutated(event: EventItem): TokenMutated {
     return match(event)
