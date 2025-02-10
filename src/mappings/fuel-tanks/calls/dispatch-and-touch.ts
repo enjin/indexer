@@ -2,29 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
+import { DispatchAndTouch } from './types'
 
-type DispatchAndTouchCall = {
-    tankId: {
-        __kind: string
-        value?: string
-    }
-    ruleSetId: number
-    call: {
-        __kind: string
-    }
-    settings?: {
-        useNoneOrigin: boolean
-        paysRemainingFee: boolean
-        signature?: {
-            signature: string
-            expiryBlock: number
-        }
-    }
-}
-
-export function dispatchAndTouch(call: CallItem) {
+export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
     return match(call)
-        .returnType<DispatchAndTouchCall>()
+        .returnType<DispatchAndTouch>()
         .when(calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.is, calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.decode)
         .when(calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.is, calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.decode)
         .when(calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.is, calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.decode)

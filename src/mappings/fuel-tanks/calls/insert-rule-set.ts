@@ -2,21 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
-import { RuleSetDescriptor } from '../types'
+import { InsertRuleSet } from './types'
 
-type InsertRuleSetCall = {
-    tankId: {
-        __kind: string
-        value?: string
-    }
-    ruleSetId: number
-    rules?: RuleSetDescriptor // Same as ruleSet changed at enjin v1032
-    ruleSet?: RuleSetDescriptor // Same as rules changed at enjin v1032
-}
-
-export function insertRuleSet(call: CallItem) {
+export function insertRuleSet(call: CallItem): InsertRuleSet {
     return match(call)
-        .returnType<InsertRuleSetCall>()
+        .returnType<InsertRuleSet>()
         .when(calls.fuelTanks.insertRuleSet.matrixEnjinV1012.is, calls.fuelTanks.insertRuleSet.matrixEnjinV1012.decode)
         .when(calls.fuelTanks.insertRuleSet.matrixEnjinV1005.is, calls.fuelTanks.insertRuleSet.matrixEnjinV1005.decode)
         .when(calls.fuelTanks.insertRuleSet.matrixEnjinV1004.is, calls.fuelTanks.insertRuleSet.matrixEnjinV1004.decode)

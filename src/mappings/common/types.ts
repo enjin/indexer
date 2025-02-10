@@ -11,6 +11,10 @@ export type Perquintill = bigint // per quintillion
 export type BitFlags = bigint
 export type ExtraFlags = bigint
 export type BoundedVec = Bytes
+export type Call = {
+    __kind: string
+    // value: Bytes - We don't need this
+}
 
 export type Account_EVM = {
     __kind: 'EVM'
@@ -841,4 +845,102 @@ export type DefaultTankMutation = {
     providesDeposit?: boolean // Removed on v1030
     coveragePolicy?: CoveragePolicy // Added on v1030
     accountRules?: AccountRuleDescriptor[]
+}
+
+export type ExpirableSignature = {
+    signature: Bytes
+    expiryBlock: number
+}
+
+export type DispatchSettings = {
+    useNoneOrigin: boolean
+    paysRemainingFee: boolean
+    signature?: ExpirableSignature // Added on v1030
+}
+
+export type DispatchRuleDescriptor =
+    | DispatchRuleDescriptor_MaxFuelBurnPerTransaction
+    | DispatchRuleDescriptor_PermittedCalls
+    | DispatchRuleDescriptor_PermittedExtrinsics
+    | DispatchRuleDescriptor_RequireToken
+    | DispatchRuleDescriptor_TankFuelBudget
+    | DispatchRuleDescriptor_UserFuelBudget
+    | DispatchRuleDescriptor_WhitelistedCallers
+    | DispatchRuleDescriptor_WhitelistedCollections
+    | DispatchRuleDescriptor_WhitelistedPallets // Added on v1021
+    | DispatchRuleDescriptor_MinimumInfusion // Added on v1032
+    | DispatchRuleDescriptor_RequireSignature // Added on v1032
+
+type DispatchRuleDescriptor_WhitelistedPallets = {
+    __kind: 'WhitelistedPallets' // Added on v1021
+    value: Call[]
+}
+
+type DispatchRuleDescriptor_MinimumInfusion = {
+    __kind: 'MinimumInfusion' // Added on v1032
+    value: bigint
+}
+
+type DispatchRuleDescriptor_RequireSignature = {
+    __kind: 'RequireSignature' // Added on v1032
+    value: Bytes
+}
+
+type DispatchRuleDescriptor_MaxFuelBurnPerTransaction = {
+    __kind: 'MaxFuelBurnPerTransaction'
+    value: bigint
+}
+
+type DispatchRuleDescriptor_PermittedCalls = {
+    __kind: 'PermittedCalls'
+    value: Bytes[]
+}
+
+type DispatchRuleDescriptor_PermittedExtrinsics = {
+    __kind: 'PermittedExtrinsics'
+    value: Call[]
+}
+
+type DispatchRuleDescriptor_RequireToken = {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export type BudgetRuleDescriptor = {
+    amount: bigint
+    resetPeriod: number
+}
+
+type DispatchRuleDescriptor_TankFuelBudget = {
+    __kind: 'TankFuelBudget'
+    value: BudgetRuleDescriptor
+}
+
+type DispatchRuleDescriptor_UserFuelBudget = {
+    __kind: 'UserFuelBudget'
+    value: BudgetRuleDescriptor
+}
+
+type DispatchRuleDescriptor_WhitelistedCallers = {
+    __kind: 'WhitelistedCallers'
+    value: AccountId32[]
+}
+
+type DispatchRuleDescriptor_WhitelistedCollections = {
+    __kind: 'WhitelistedCollections'
+    value: bigint[]
+}
+
+export type RuleSetDescriptor = {
+    rules: DispatchRuleDescriptor[]
+    requireAccount: boolean
+}
+
+export type FuelTankDescriptor = {
+    name: Bytes
+    userAccountManagement?: UserAccountManagement
+    ruleSets: [number, DispatchRuleDescriptor[]][] | [number, RuleSetDescriptor][] // Changed from DispatchRuleDescriptor to RuleSetDescriptor on v1030
+    providesDeposit?: boolean // Removed on v1030
+    coveragePolicy?: CoveragePolicy // Added on v1030
+    accountRules: AccountRuleDescriptor[]
 }

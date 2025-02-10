@@ -2,27 +2,11 @@ import { UnsupportedCallError } from '@enjin/indexer/common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '@enjin/indexer/common/types/contexts'
 import { match } from 'ts-pattern'
-import { AccountRuleDescriptor, RuleSetDescriptor } from '../types'
+import { CreateFuelTank } from './types'
 
-type CreateFuelTankCall = {
-    descriptor: {
-        name: string
-        userAccountManagement?: {
-            tankReservesAccountCreationDeposit: boolean
-            tankReservesExistentialDeposit?: boolean // This was removed on enjin v1032 and upwards
-        }
-        ruleSets: [number, RuleSetDescriptor][]
-        coveragePolicy?: {
-            // This field was added on enjin v1032 and upwards
-            __kind: 'Fees' | 'FeesAndDeposit' | 'FeesAndDepositAndTankReserves' // FeesAndDepositAndTankReserves was added on v1050 and upwards
-        }
-        accountRules: AccountRuleDescriptor[]
-    }
-}
-
-export function createFuelTank(call: CallItem) {
+export function createFuelTank(call: CallItem): CreateFuelTank {
     return match(call)
-        .returnType<CreateFuelTankCall>()
+        .returnType<CreateFuelTank>()
         .when(calls.fuelTanks.createFuelTank.matrixEnjinV1012.is, calls.fuelTanks.createFuelTank.matrixEnjinV1012.decode)
         .when(calls.fuelTanks.createFuelTank.matrixEnjinV1005.is, calls.fuelTanks.createFuelTank.matrixEnjinV1005.decode)
         .when(calls.fuelTanks.createFuelTank.matrixEnjinV1004.is, calls.fuelTanks.createFuelTank.matrixEnjinV1004.decode)
