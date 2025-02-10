@@ -515,7 +515,7 @@ export interface ShouldMutate_Royalty_NoMutation {
 
 export interface ShouldMutate_Royalty_SomeMutation {
     __kind: 'SomeMutation'
-    value?: DefaultRoyaltyInfo | DefaultRoyalty
+    value?: DefaultRoyaltyInfo | DefaultRoyalty // Changed from DefaultRoyaltyInfo to DefaultRoyalty on v1050
 }
 
 type ShouldMutate_Royalty = ShouldMutate_Royalty_NoMutation | ShouldMutate_Royalty_SomeMutation
@@ -536,7 +536,7 @@ export type TokenMarketBehavior_IsCurrency = {
 
 export type TokenMarketBehavior_HasRoyalty = {
     __kind: 'HasRoyalty'
-    value: DefaultRoyaltyInfo | DefaultRoyalty
+    value: DefaultRoyaltyInfo | DefaultRoyalty // Changed from DefaultRoyaltyInfo to DefaultRoyalty on v1050
 }
 
 export type TokenMarketBehavior = TokenMarketBehavior_IsCurrency | TokenMarketBehavior_HasRoyalty
@@ -628,4 +628,25 @@ export type Approval = {
 export type TokenAccountReserve = {
     reason: RuntimeHoldReason
     balance: bigint
+}
+
+type DefaultMintPolicy = {
+    maxTokenCount?: bigint
+    maxTokenSupply?: bigint
+    forceSingleMint?: boolean // Removed on v1030
+    forceCollapsingSupply?: boolean // Added on v1030
+}
+
+type DefaultTransferPolicy = {
+    isFrozen: boolean
+}
+
+type DefaultMarketPolicy = {
+    royalty?: DefaultRoyaltyInfo | DefaultRoyalty // Changed from DefaultRoyaltyInfo to DefaultRoyalty on v1050
+}
+
+export type DefaultCollectionPolicy = {
+    mint: DefaultMintPolicy
+    transfer: DefaultTransferPolicy
+    market: DefaultMarketPolicy
 }

@@ -2,38 +2,7 @@ import { BlockHeader } from '@enjin/indexer/common/types/contexts'
 import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
 import { multiTokens } from '../../../types/generated/storage'
 import { match } from 'ts-pattern'
-
-type Collection = {
-    owner: string
-    policy: {
-        mint: {
-            maxTokenCount?: bigint
-            maxTokenSupply?: bigint
-            forceCollapsingSupply?: boolean
-            forceSingleMint?: boolean
-        }
-        transfer: {
-            isFrozen: boolean
-        }
-        market: {
-            royalty?:
-                | {
-                      beneficiaries: {
-                          beneficiary: string
-                          percentage: number
-                      }[]
-                  }
-                | {
-                      beneficiary: string
-                      percentage: number
-                  }
-        }
-    }
-    tokenCount: bigint
-    attributeCount: number
-    totalDeposit: bigint
-    explicitRoyaltyCurrencies: [assetId: { collectionId: bigint; tokenId: bigint }, null][]
-}
+import { Collection } from './types/collections'
 
 export async function collections(block: BlockHeader, collectionId: bigint): Promise<Collection | undefined> {
     return match(block)
@@ -50,7 +19,7 @@ export async function collections(block: BlockHeader, collectionId: bigint): Pro
         .when(multiTokens.collections.v1030.is, () => multiTokens.collections.v1030.get(block, collectionId))
         .when(multiTokens.collections.v100.is, () => multiTokens.collections.v100.get(block, collectionId))
         .otherwise(() => {
-            throw new UnsupportedStorageError('collections')
+            throw new UnsupportedStorageError(collections.name)
         })
 }
 
