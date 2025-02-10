@@ -2,18 +2,11 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { AccountAdded } from './types'
 
-type AccountAddedEvent = {
-    tankId: string
-    userId: string
-    tankDeposit: bigint
-    userDeposit: bigint
-    totalReceived?: bigint
-}
-
-export function accountAdded(event: EventItem): AccountAddedEvent {
+export function accountAdded(event: EventItem): AccountAdded {
     return match(event)
-        .returnType<AccountAddedEvent>()
+        .returnType<AccountAdded>()
         .when(fuelTanks.accountAdded.matrixEnjinV1000.is, fuelTanks.accountAdded.matrixEnjinV1000.decode)
         .when(fuelTanks.accountAdded.matrixEnjinV603.is, fuelTanks.accountAdded.matrixEnjinV603.decode)
         .when(fuelTanks.accountAdded.matrixV1000.is, fuelTanks.accountAdded.matrixV1000.decode)

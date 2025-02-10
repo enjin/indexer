@@ -790,3 +790,55 @@ export type FlexibleMintParams =
     | DefaultMintParams_Mint
     | FlexibleMintParams_CreateOrMint // Added on v1023, removed on v1030
     | CreateOrMintParams // Added on v1030
+
+export interface UserAccountManagement {
+    tankReservesExistentialDeposit?: boolean // Removed on v1030
+    tankReservesAccountCreationDeposit: boolean
+}
+
+export interface RequireTokenRule {
+    collectionId: bigint
+    tokenId: bigint
+}
+
+export type AccountRuleDescriptor = AccountRuleDescriptor_RequireToken | AccountRuleDescriptor_WhitelistedCallers
+
+export interface AccountRuleDescriptor_RequireToken {
+    __kind: 'RequireToken'
+    value: RequireTokenRule
+}
+
+export interface AccountRuleDescriptor_WhitelistedCallers {
+    __kind: 'WhitelistedCallers'
+    value: AccountId32[]
+}
+
+export type ShouldMutate_UserAccountManagement =
+    | ShouldMutate_UserAccountManagement_NoMutation
+    | ShouldMutate_UserAccountManagement_SomeMutation
+
+export interface ShouldMutate_UserAccountManagement_NoMutation {
+    __kind: 'NoMutation'
+}
+
+export type CoveragePolicy = CoveragePolicy_Fees | CoveragePolicy_FeesAndDeposit
+
+export interface CoveragePolicy_Fees {
+    __kind: 'Fees'
+}
+
+export interface CoveragePolicy_FeesAndDeposit {
+    __kind: 'FeesAndDeposit'
+}
+
+export interface ShouldMutate_UserAccountManagement_SomeMutation {
+    __kind: 'SomeMutation'
+    value?: UserAccountManagement
+}
+
+export type DefaultTankMutation = {
+    userAccountManagement: ShouldMutate_UserAccountManagement
+    providesDeposit?: boolean // Removed on v1030
+    coveragePolicy?: CoveragePolicy // Added on v1030
+    accountRules?: AccountRuleDescriptor[]
+}

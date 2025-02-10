@@ -2,15 +2,11 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { RuleSetInserted } from './types'
 
-type RuleSetInsertedEvent = {
-    tankId: string
-    ruleSetId: number
-}
-
-export function ruleSetInserted(event: EventItem): RuleSetInsertedEvent {
+export function ruleSetInserted(event: EventItem): RuleSetInserted {
     return match(event)
-        .returnType<RuleSetInsertedEvent>()
+        .returnType<RuleSetInserted>()
         .when(fuelTanks.ruleSetInserted.matrixEnjinV603.is, fuelTanks.ruleSetInserted.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

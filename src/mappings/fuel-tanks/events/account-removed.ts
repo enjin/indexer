@@ -2,15 +2,11 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { AccountRemoved } from './types'
 
-type AccountRemovedEvent = {
-    tankId: string
-    userId: string
-}
-
-export function accountRemoved(event: EventItem): AccountRemovedEvent {
+export function accountRemoved(event: EventItem): AccountRemoved {
     return match(event)
-        .returnType<AccountRemovedEvent>()
+        .returnType<AccountRemoved>()
         .when(fuelTanks.accountRemoved.matrixEnjinV603.is, fuelTanks.accountRemoved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

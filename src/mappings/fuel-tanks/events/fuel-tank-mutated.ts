@@ -2,32 +2,11 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { FuelTankMutated } from './types'
 
-type FuelTankMutatedEvent = {
-    tankId: string
-    mutation: {
-        userAccountManagement: {
-            __kind: string
-            value?: { tankReservesAccountCreationDeposit: boolean; tankReservesExistentialDeposit?: boolean }
-        }
-        coveragePolicy?: {
-            __kind: string
-        }
-        accountRules?: {
-            __kind: string
-            value?:
-                | {
-                      collectionId: bigint
-                      tokenId: bigint
-                  }
-                | string[]
-        }[]
-    }
-}
-
-export function fuelTankMutated(event: EventItem): FuelTankMutatedEvent {
+export function fuelTankMutated(event: EventItem): FuelTankMutated {
     return match(event)
-        .returnType<FuelTankMutatedEvent>()
+        .returnType<FuelTankMutated>()
         .when(fuelTanks.fuelTankMutated.matrixEnjinV1012.is, fuelTanks.fuelTankMutated.matrixEnjinV1012.decode)
         .when(fuelTanks.fuelTankMutated.matrixEnjinV603.is, fuelTanks.fuelTankMutated.matrixEnjinV603.decode)
         .when(fuelTanks.fuelTankMutated.matrixV1010.is, fuelTanks.fuelTankMutated.matrixV1010.decode)

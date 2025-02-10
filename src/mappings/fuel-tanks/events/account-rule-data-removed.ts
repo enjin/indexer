@@ -2,19 +2,11 @@ import { fuelTanks } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
+import { AccountRuleDataRemoved } from './types'
 
-type AccountRuleDataRemovedEvent = {
-    tankId: string
-    userId: string
-    ruleSetId: number
-    ruleKind: {
-        __kind: string
-    }
-}
-
-export function accountRuleDataRemoved(event: EventItem): AccountRuleDataRemovedEvent {
+export function accountRuleDataRemoved(event: EventItem): AccountRuleDataRemoved {
     return match(event)
-        .returnType<AccountRuleDataRemovedEvent>()
+        .returnType<AccountRuleDataRemoved>()
         .when(fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.is, () =>
             fuelTanks.accountRuleDataRemoved.matrixEnjinV1012.decode(event)
         )
