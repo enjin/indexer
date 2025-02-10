@@ -3,12 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensAttributeRemoved } from '@enjin/indexer/model'
-
-type AttributeRemovedEvent = {
-    collectionId: bigint
-    tokenId?: bigint | undefined
-    key: string
-}
+import { AttributeRemoved } from './types'
 
 export function attributeRemoved(event: EventItem): AttributeRemoved {
     return match(event)

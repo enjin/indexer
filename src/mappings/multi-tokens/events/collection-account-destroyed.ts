@@ -3,11 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionAccountDestroyed } from '@enjin/indexer/model'
-
-type CollectionAccountDestroyedEvent = {
-    collectionId: bigint
-    accountId: string
-}
+import { CollectionAccountDestroyed } from './types'
 
 export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyed {
     return match(event)
@@ -21,7 +17,7 @@ export function collectionAccountDestroyed(event: EventItem): CollectionAccountD
         })
 }
 
-export function collectionAccountDestroyedEventModel(item: EventItem, data: CollectionAccountDestroyedEvent) {
+export function collectionAccountDestroyedEventModel(item: EventItem, data: CollectionAccountDestroyed) {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionAccountDestroyed.name,

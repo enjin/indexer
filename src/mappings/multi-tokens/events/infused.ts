@@ -3,13 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '@enjin/indexer/model'
-
-type InfusedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    accountId: string
-    amount: bigint
-}
+import { Infused } from './types/infused'
 
 export function infused(event: EventItem): Infused {
     return match(event)
@@ -22,7 +16,7 @@ export function infused(event: EventItem): Infused {
 
 export function infusedEventModel(
     item: EventItem,
-    data: InfusedEvent,
+    data: Infused,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

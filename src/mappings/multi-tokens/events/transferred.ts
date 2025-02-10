@@ -3,15 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token } from '@enjin/indexer/model'
-
-type TransferredEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    operator: string
-    from: string
-    to: string
-    amount: bigint
-}
+import { Transferred } from './types'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
@@ -23,7 +15,7 @@ export function transferred(event: EventItem): Transferred {
 
 export function transferredEventModel(
     item: EventItem,
-    data: TransferredEvent,
+    data: Transferred,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

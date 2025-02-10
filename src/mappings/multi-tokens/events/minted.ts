@@ -3,17 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token } from '@enjin/indexer/model'
-
-type MintedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    issuer: {
-        __kind: string
-        value?: string
-    }
-    recipient: string
-    amount: bigint
-}
+import { Minted } from './types/minted'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -26,7 +16,7 @@ export function minted(event: EventItem): Minted {
 
 export function mintedEventModel(
     item: EventItem,
-    data: MintedEvent,
+    data: Minted,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({

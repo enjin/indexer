@@ -2,12 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-
-type ClaimedCollectionsEvent = {
-    accountId: string
-    ethereumAddress: string
-    collectionIds: bigint[] | { ethereum: bigint; native: bigint }[]
-}
+import { ClaimedCollections } from './types/claimed-collections'
 
 export function claimedCollections(event: EventItem): ClaimedCollections {
     return match(event)

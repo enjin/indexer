@@ -3,11 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionDestroyed } from '@enjin/indexer/model'
-
-type CollectionDestroyedEvent = {
-    collectionId: bigint
-    caller: string
-}
+import { CollectionDestroyed } from './types'
 
 export function collectionDestroyed(event: EventItem): CollectionDestroyed {
     return match(event)

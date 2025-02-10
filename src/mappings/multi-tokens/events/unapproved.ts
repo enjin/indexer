@@ -3,13 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensUnapproved } from '@enjin/indexer/model'
-
-type UnapprovedEvent = {
-    collectionId: bigint
-    tokenId?: bigint | undefined
-    owner: string
-    operator: string
-}
+import { Unapproved } from './types/unapproved'
 
 export function unapproved(event: EventItem): Unapproved {
     return match(event)

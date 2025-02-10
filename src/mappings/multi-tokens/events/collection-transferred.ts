@@ -3,11 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensCollectionTransferred } from '@enjin/indexer/model'
-
-type CollectionTransferredEvent = {
-    collectionId: bigint
-    newOwner: string
-}
+import { CollectionTransferred } from './types'
 
 export function collectionTransferred(event: EventItem): CollectionTransferred {
     return match(event)

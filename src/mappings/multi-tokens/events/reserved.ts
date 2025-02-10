@@ -2,12 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-
-type ReservedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    amount: bigint
-}
+import { Reserved } from './types'
 
 export function reserved(event: EventItem): Reserved {
     return match(event)

@@ -3,25 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensThawed } from '@enjin/indexer/model'
+import { Freeze } from './types/freeze'
 
-type ThawedEvent = {
-    collectionId?: bigint
-    freezeType: {
-        __kind: string
-        value?: string | { tokenId: bigint; freezeState: { __kind: string } | undefined } | { tokenId: bigint; accountId: string }
-    }
-}
-
-export function thawed(event: EventItem): Thawed {
+export function thawed(event: EventItem): Freeze {
     return match(event)
-        .returnType<Thawed>()
+        .returnType<Freeze>()
         .when(multiTokens.thawed.matrixEnjinV603.is, multiTokens.thawed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function thawedEventModel(item: EventItem, data: Thawed): EventModel | undefined {
+export function thawedEventModel(item: EventItem, data: Freeze): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensThawed.name,

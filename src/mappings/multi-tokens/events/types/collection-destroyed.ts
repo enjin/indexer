@@ -1,8 +1,6 @@
 import { AccountId32 } from '@enjin/indexer/mappings/common/types'
 
-export type Infused = {
+export type CollectionDestroyed = {
     collectionId: bigint
-    tokenId: bigint
-    accountId: AccountId32
-    amount: bigint
+    caller: AccountId32
 }

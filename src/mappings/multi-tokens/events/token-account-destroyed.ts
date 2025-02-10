@@ -3,25 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenAccountDestroyed } from '@enjin/indexer/model'
-
-type TokenAccountDestroyedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    accountId: string
-}
+import { TokenAccountDestroyed } from './types'
 
 export function tokenAccountDestroyed(event: EventItem): TokenAccountDestroyed {
     return match(event)
         .returnType<TokenAccountDestroyed>()
-        .when(multiTokens.tokenAccountDestroyed.matrixEnjinV603.is, () =>
-            multiTokens.tokenAccountDestroyed.matrixEnjinV603.decode(event)
-        )
+        .when(multiTokens.tokenAccountDestroyed.matrixEnjinV603.is, multiTokens.tokenAccountDestroyed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function tokenAccountDestroyedEventModel(item: EventItem, data: TokenAccountDestroyedEvent) {
+export function tokenAccountDestroyedEventModel(item: EventItem, data: TokenAccountDestroyed) {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenAccountDestroyed.name,

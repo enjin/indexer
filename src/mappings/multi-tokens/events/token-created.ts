@@ -3,16 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '@enjin/indexer/model'
-
-type TokenCreatedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    issuer: {
-        __kind: string
-        value?: string
-    }
-    initialSupply: bigint
-}
+import { TokenCreated } from './types/token-created'
 
 export function tokenCreated(event: EventItem): TokenCreated {
     return match(event)

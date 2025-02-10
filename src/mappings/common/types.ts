@@ -1,5 +1,3 @@
-import { sts } from '@enjin/indexer/types/generated/support'
-
 export type Bytes = string // HexBytes
 export type H160 = Bytes // HexBytes
 export type H256 = Bytes // HexBytes
@@ -414,3 +412,88 @@ export type Commission = {
     changeRate?: CommissionChangeRate
     throttleFrom?: number
 }
+
+type HoldReason_FuelTanks = {
+    __kind: 'FuelTanks'
+}
+
+type HoldReason_Marketplace = {
+    __kind: 'Marketplace'
+}
+
+type HoldReason_MultiTokens = {
+    __kind: 'MultiTokens'
+}
+
+type HoldReason_Preimage = {
+    __kind: 'Preimage'
+}
+
+type HoldReason_SafeMode = {
+    __kind: 'SafeMode' // EnterOrExtend
+}
+
+type HoldReason_StakeExchange = {
+    __kind: 'StakeExchange'
+}
+
+export type RuntimeHoldReason =
+    | HoldReason_FuelTanks
+    | HoldReason_Marketplace
+    | HoldReason_MultiTokens
+    | HoldReason_Preimage
+    | HoldReason_SafeMode
+    | HoldReason_StakeExchange
+
+type Root = {
+    __kind: 'Root'
+}
+
+type Signed = {
+    __kind: 'Signed'
+    value: string
+}
+
+export type RootOrSigned = Root | Signed
+
+export type CollectionIdPair = {
+    ethereum: bigint
+    native: bigint
+}
+
+type FreezeType_Collection = {
+    __kind: 'Collection'
+}
+
+type FreezeType_CollectionAccount = {
+    __kind: 'CollectionAccount'
+    value: AccountId32
+}
+
+export type FreezeState = FreezeState_Never | FreezeState_Permanent | FreezeState_Temporary
+
+export interface FreezeState_Never {
+    __kind: 'Never'
+}
+
+export interface FreezeState_Permanent {
+    __kind: 'Permanent'
+}
+
+export interface FreezeState_Temporary {
+    __kind: 'Temporary'
+}
+
+type FreezeType_Token = {
+    __kind: 'Token'
+    tokenId: bigint
+    freezeState?: FreezeState
+}
+
+type FreezeType_TokenAccount = {
+    __kind: 'TokenAccount'
+    tokenId: bigint
+    accountId: AccountId32
+}
+
+export type FreezeType = FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount

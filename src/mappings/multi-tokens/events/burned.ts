@@ -3,13 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token } from '@enjin/indexer/model'
-
-type BurnedEvent = {
-    collectionId: bigint
-    tokenId: bigint
-    accountId: string
-    amount: bigint
-}
+import { Burned } from './types'
 
 export function burned(event: EventItem): Burned {
     return match(event)
@@ -22,7 +16,7 @@ export function burned(event: EventItem): Burned {
 
 export function burnedEventModel(
     item: EventItem,
-    data: BurnedEvent,
+    data: Burned,
     token?: Token
 ): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({

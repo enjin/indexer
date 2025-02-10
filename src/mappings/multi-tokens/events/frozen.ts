@@ -3,25 +3,18 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensFrozen } from '@enjin/indexer/model'
+import { Freeze } from './types/freeze'
 
-type FrozenEvent = {
-    collectionId: bigint
-    freezeType: {
-        __kind: string
-        value?: string | { tokenId: bigint; freezeState?: { __kind: string } } | { tokenId: bigint; accountId: string }
-    }
-}
-
-export function frozen(event: EventItem): Frozen {
+export function frozen(event: EventItem): Freeze {
     return match(event)
-        .returnType<Frozen>()
+        .returnType<Freeze>()
         .when(multiTokens.frozen.matrixEnjinV603.is, multiTokens.frozen.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function frozenEventModel(item: EventItem, data: Frozen): EventModel {
+export function frozenEventModel(item: EventItem, data: Freeze): EventModel {
     let tokenId: null | string = null
     if (data.freezeType.value && typeof data.freezeType.value !== 'string') {
         tokenId = 'tokenId' in data.freezeType.value ? `${data.collectionId}-${data.freezeType.value.tokenId}` : null

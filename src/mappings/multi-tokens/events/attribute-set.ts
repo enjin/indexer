@@ -5,13 +5,7 @@ import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensAttributeSet } from '@enjin/indexer/model'
 import { safeString } from '@enjin/indexer/common/tools'
 import { hexToString } from '@polkadot/util'
-
-type AttributeSetEvent = {
-    collectionId: bigint
-    tokenId?: bigint | undefined
-    key: string
-    value: string
-}
+import { AttributeSet } from './types'
 
 export function attributeSet(event: EventItem): AttributeSet {
     return match(event)
