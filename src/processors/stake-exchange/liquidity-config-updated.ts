@@ -9,7 +9,7 @@ import {
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
-import { TokenFilter } from '@enjin/indexer/mappings/stake-exchange/events'
+import { TokenFilter } from '@enjin/indexer/mappings/common/types'
 
 export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null
@@ -46,22 +46,21 @@ export async function liquidityConfigUpdated(
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
-    const eventData = mappings.stakeExchange.events.liquidityConfigUpdated(item)
+    const event = mappings.stakeExchange.events.liquidityConfigUpdated(item)
+    const account = await getOrCreateAccount(ctx, event.who)
 
-    const account = await getOrCreateAccount(ctx, eventData.who)
+    const tokenFilter = getFilterFromType(event.config.tokenFilter)
+    tokenFilter.id = account.id
+    tokenFilter.account = account
 
-    const entity = getFilterFromType(eventData.config.tokenFilter)
-    entity.id = account.id
-    entity.account = account
-
-    await ctx.store.save(entity)
+    await ctx.store.save(tokenFilter)
 
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
             account: account.id,
-            tokenFilter: entity.id,
+            tokenFilter: tokenFilter.id,
         },
     })
 
@@ -71,7 +70,7 @@ export async function liquidityConfigUpdated(
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeLiquidityConfigUpdated({
             account: account.id,
-            tokenFilter: entity.id,
+            tokenFilter: tokenFilter.id,
         }),
     })
 }

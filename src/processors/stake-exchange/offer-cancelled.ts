@@ -4,21 +4,22 @@ import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
 
 export async function offerCancelled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
+    const event = mappings.stakeExchange.events.offerCancelled(item)
+    const stakeExchangeOffer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
+        id: event.offerId.toString(),
+    })
 
-    const eventData = mappings.stakeExchange.events.offerCancelled(item)
-    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: eventData.offerId.toString() })
+    stakeExchangeOffer.state = StakeExchangeOfferState.Cancelled
 
-    offer.state = StakeExchangeOfferState.Cancelled
-    await ctx.store.save(offer)
+    await ctx.store.save(stakeExchangeOffer)
 
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
-            offerId: offer.offerId,
+            offerId: stakeExchangeOffer.offerId,
         },
     })
 
-    return mappings.stakeExchange.events.offerCancelledEventModel(item, eventData)
+    return mappings.stakeExchange.events.offerCancelledEventModel(item, event)
 }

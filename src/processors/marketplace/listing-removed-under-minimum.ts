@@ -10,9 +10,8 @@ export async function listingRemovedUnderMinimum(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.listingRemovedUnderMinimum(item)
-
-    const listingId = data.listingId.substring(2)
+    const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)
+    const listingId = event.listingId.substring(2)
     const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {

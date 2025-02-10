@@ -26,12 +26,10 @@ export async function buyOrderCompleted(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-    if (!item.extrinsic.call) return undefined
+    if (!item.extrinsic || !item.extrinsic.call) return undefined
 
-    const eventData = mappings.stakeExchange.events.buyOrderCompleted(item)
-
-    let offerId = 'offerId' in eventData ? (eventData.offerId as bigint) : null
+    const event = mappings.stakeExchange.events.buyOrderCompleted(item)
+    let offerId = 'offerId' in event ? (event.offerId as bigint) : null
 
     if (offerId === null) {
         const callData = mappings.stakeExchange.calls.buy(item.extrinsic.call)
@@ -39,11 +37,9 @@ export async function buyOrderCompleted(
     }
 
     // change in rate from bigint to number (perBill) in v120
-    const rate = typeof eventData.rate === 'bigint' ? eventData.rate : BigInt(eventData.rate * 10 ** 9)
-
-    const points = (eventData.amount * rate) / 10n ** 18n
-
-    const account = await getOrCreateAccount(ctx, eventData.who)
+    const rate = typeof event.rate === 'bigint' ? event.rate : BigInt(event.rate * 10 ** 9)
+    const points = (event.amount * rate) / 10n ** 18n
+    const account = await getOrCreateAccount(ctx, event.who)
 
     const offer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         where: { id: offerId.toString() },
@@ -51,14 +47,14 @@ export async function buyOrderCompleted(
             account: true,
         },
     })
-    offer.total -= eventData.amount
+    offer.total -= event.amount
 
     await ctx.store.save(offer)
 
-    const pool = await ctx.store.findOneBy<NominationPool>(NominationPool, { id: eventData.tokenId.toString() })
+    const pool = await ctx.store.findOneBy<NominationPool>(NominationPool, { id: event.tokenId.toString() })
 
-    const existingMember = await ctx.store.findOne(PoolMember, {
-        where: { id: `${eventData.tokenId}-${account.id}` },
+    const existingMember = await ctx.store.findOne<PoolMember>(PoolMember, {
+        where: { id: `${event.tokenId}-${account.id}` },
         relations: {
             account: true,
             tokenAccount: true,
@@ -66,15 +62,15 @@ export async function buyOrderCompleted(
     })
 
     if (!pool && !existingMember) {
-        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, eventData, offerId)
+        return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event)
     }
 
     if (!pool) {
-        throw new Error(`Pool not found for token ${eventData.tokenId}`)
+        throw new Error(`Pool not found for token ${event.tokenId}`)
     }
 
     if (existingMember && existingMember.tokenAccount) {
-        existingMember.bonded -= eventData.amount
+        existingMember.bonded -= event.amount
         await ctx.store.save(existingMember)
     }
 
@@ -83,25 +79,27 @@ export async function buyOrderCompleted(
         existingMember.unbondingEras === null &&
         (!existingMember.tokenAccount || existingMember.tokenAccount.balance <= 0n)
     ) {
-        const rewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, { member: { id: existingMember.id } })
-        const memeber = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: existingMember.id })
-        await ctx.store.remove(rewards)
-        await ctx.store.remove(memeber)
+        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
+            member: { id: existingMember.id },
+        })
+        const poolMember = await ctx.store.findOneByOrFail<PoolMember>(PoolMember, { id: existingMember.id })
+        await ctx.store.remove(poolMemberRewards)
+        await ctx.store.remove(poolMember)
         pool.totalMembers -= 1
     }
 
-    let newMember = await ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${eventData.tokenId}-${offer.account.id}` })
+    let newMember = await ctx.store.findOneBy<PoolMember>(PoolMember, { id: `${event.tokenId}-${offer.account.id}` })
 
-    const bonded = eventData.amount
+    const bonded = event.amount
 
     if (!newMember) {
         const tokenAccount = await ctx.store.findOneBy<TokenAccount>(TokenAccount, {
-            id: `${offer.account.id}-1-${eventData.tokenId}`,
+            id: `${offer.account.id}-1-${event.tokenId}`,
         })
 
         if (tokenAccount) {
             newMember = new PoolMember({
-                id: `${eventData.tokenId}-${offer.account.id}`,
+                id: `${event.tokenId}-${offer.account.id}`,
                 pool,
                 account: offer.account,
                 bonded,
@@ -123,14 +121,14 @@ export async function buyOrderCompleted(
         name: item.name,
         body: {
             offerId: offer.offerId,
-            amount: eventData.amount,
+            amount: event.amount,
             account: account.id,
             rate,
-            tokenId: eventData.tokenId,
+            tokenId: event.tokenId,
             extrinsic: item.extrinsic.id,
             points,
         },
     })
 
-    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, eventData, offerId)
+    return mappings.stakeExchange.events.buyOrderCompletedEventModel(item, event)
 }

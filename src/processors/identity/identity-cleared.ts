@@ -3,11 +3,11 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import * as mappings from './../../mappings'
 
 export async function identityCleared(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = mappings.identity.events.identityCleared(item)
+    const event = mappings.identity.events.identityCleared(item)
 
     const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
         relations: { super: { info: true }, sub: true },
-        where: { id: eventData.who },
+        where: { id: event.who },
     })
 
     await Promise.all(
@@ -27,11 +27,11 @@ export async function identityCleared(ctx: CommonContext, block: BlockHeader, it
         await ctx.store.remove(identity)
     }
 
-    const registeration = new Registration({
-        id: eventData.who,
+    const registration = new Registration({
+        id: event.who,
     })
 
-    await ctx.store.remove(registeration)
+    await ctx.store.remove(registration)
 
     return undefined
 }

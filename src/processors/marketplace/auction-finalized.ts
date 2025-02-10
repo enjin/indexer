@@ -18,9 +18,9 @@ export async function auctionFinalized(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.auctionFinalized(item)
-    const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOne<Listing>(Listing, {
+    const event = mappings.marketplace.events.auctionFinalized(item)
+    const listingId = event.listingId.substring(2)
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -31,12 +31,12 @@ export async function auctionFinalized(
         },
     })
 
-    if (data.winningBid) {
+    if (event.winningBid) {
         const sale = new ListingSale({
             id: `${listingId}-${item.id}`,
             amount: listing.amount,
-            price: data.winningBid.price,
-            buyer: new Account({ id: data.winningBid.bidder }),
+            price: event.winningBid.price,
+            buyer: new Account({ id: event.winningBid.bidder }),
             listing,
             createdAt: new Date(block.timestamp ?? 0),
         })
@@ -83,21 +83,21 @@ export async function auctionFinalized(
                     price: listing.price.toString(),
                     data: listing.data.toJSON(),
                 },
-                winningBid: data.winningBid
+                winningBid: event.winningBid
                     ? {
                           bidder: {
-                              id: data.winningBid.bidder,
+                              id: event.winningBid.bidder,
                           },
-                          price: data.winningBid.price.toString(),
+                          price: event.winningBid.price.toString(),
                       }
                     : null,
-                protocolFee: data.protocolFee,
-                royalty: data.royalty,
+                protocolFee: event.protocolFee,
+                royalty: event.royalty,
                 token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
-    return mappings.marketplace.events.auctionFinalizedEventModel(item, data, listing)
+    return mappings.marketplace.events.auctionFinalizedEventModel(item, event, listing)
 }

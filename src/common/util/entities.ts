@@ -34,7 +34,7 @@ export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined)
     return typeof address === 'object' && '__kind' in address ? address.value : (address as string)
 }
 
-function unwrapAccountId(account: Uint8Array | string | { __kind: string; value?: string } | undefined): string {
+export function unwrapAccount(account: Uint8Array | string | { __kind: string; value?: string } | undefined): string {
     if (!account) {
         throw new AccountNotParsableError('undefined')
     }
@@ -58,7 +58,7 @@ export async function getOrCreateAccount(
     ctx: CommonContext,
     id: Uint8Array | string | { __kind: string; value?: string } | undefined
 ): Promise<Account> {
-    const publicKey = unwrapAccountId(id)
+    const publicKey = unwrapAccount(id)
     let account = await ctx.store.findOneBy<Account>(Account, { id: publicKey })
 
     if (!account) {

@@ -2,19 +2,22 @@ import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventMod
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
+import { getOrCreateAccount } from '@enjin/indexer/common/util/entities'
 
 export async function claimRequested(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
-    const eventData = mappings.claims.events.claimRequested(item)
+
+    const event = mappings.claims.events.claimRequested(item)
+    const who = await getOrCreateAccount(ctx, event.who)
 
     const claim = new ClaimRequest({
-        id: `${eventData.who}-${eventData.transactionHash}`,
-        account: eventData.who,
+        id: `${who.id}-${event.transactionHash}`,
+        account: who.id,
         acountType: AccountClaimType.EVM,
-        amountClaimable: eventData.amountClaimable,
-        amountBurned: eventData.amountBurned,
-        hash: eventData.transactionHash.toString(),
-        isEfiToken: eventData.isEfiToken,
+        amountClaimable: event.amountClaimable,
+        amountBurned: event.amountBurned,
+        hash: event.transactionHash.toString(),
+        isEfiToken: event.isEfiToken,
         extrinsicIndex: item.extrinsic.index,
         isClaimed: false,
         isRejected: false,
@@ -28,12 +31,12 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         id: item.id,
         name: item.name,
         body: {
-            who: eventData.who,
+            who: event.who,
             accountType: AccountClaimType.EVM,
-            amountClaimable: eventData.amountClaimable,
-            amountBurned: eventData.amountBurned,
-            hash: eventData.transactionHash.toString(),
-            isEfiToken: eventData.isEfiToken,
+            amountClaimable: event.amountClaimable,
+            amountBurned: event.amountBurned,
+            hash: event.transactionHash.toString(),
+            isEfiToken: event.isEfiToken,
             extrinsic: item.extrinsic.id,
         },
     })
@@ -43,12 +46,12 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         name: ClaimsClaimRequested.name,
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
-            who: eventData.who,
+            who: who.id,
             accountType: AccountClaimType.EVM,
-            amountClaimable: eventData.amountClaimable,
-            amountBurned: eventData.amountBurned,
-            hash: eventData.transactionHash.toString(),
-            isEfiToken: eventData.isEfiToken,
+            amountClaimable: event.amountClaimable,
+            amountBurned: event.amountBurned,
+            hash: event.transactionHash.toString(),
+            isEfiToken: event.isEfiToken,
         }),
     })
 }

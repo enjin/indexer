@@ -20,10 +20,9 @@ export async function listingFilled(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.listingFilled(item)
-
-    const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOne<Listing>(Listing, {
+    const event = mappings.marketplace.events.listingFilled(item)
+    const listingId = event.listingId.substring(2)
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -40,11 +39,11 @@ export async function listingFilled(
     if (listing.state.listingType === ListingType.FixedPrice) {
         listing.state = new FixedPriceState({
             listingType: ListingType.FixedPrice,
-            amountFilled: listing.amount - data.amountRemaining,
+            amountFilled: listing.amount - event.amountRemaining,
         })
     }
 
-    if (data.amountRemaining === 0n) {
+    if (event.amountRemaining === 0n) {
         const listingStatus = new ListingStatus({
             id: `${listingId}-${block.height}`,
             type: ListingStatusType.Finalized,
@@ -60,9 +59,9 @@ export async function listingFilled(
 
     const sale = new ListingSale({
         id: `${listingId}-${item.id}`,
-        amount: data.amountFilled,
-        buyer: new Account({ id: data.buyer }),
-        price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
+        amount: event.amountFilled,
+        buyer: new Account({ id: event.buyer }),
+        price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
         listing,
         createdAt: new Date(block.timestamp ?? 0),
     })
@@ -79,7 +78,7 @@ export async function listingFilled(
         await ctx.store.save(listing.takeAssetId)
         syncCollectionStats(listing.takeAssetId.collection.id)
     } else {
-        if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
+        if (listing.makeAssetId.bestListing?.id === listing.id && event.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
             listing.makeAssetId.bestListing = null
             if (bestListing) {
@@ -108,16 +107,16 @@ export async function listingFilled(
                     state: listing.state.toJSON(),
                 },
                 token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
-                buyer: { id: data.buyer },
-                amountFilled: data.amountFilled,
-                price: 'price' in data ? (data.price as bigint) : listing.highestPrice,
-                amountRemaining: data.amountRemaining,
-                protocolFee: data.protocolFee,
-                royalty: data.royalty,
+                buyer: { id: event.buyer },
+                amountFilled: event.amountFilled,
+                price: 'price' in event ? (event.price as bigint) : listing.highestPrice,
+                amountRemaining: event.amountRemaining,
+                protocolFee: event.protocolFee,
+                royalty: event.royalty,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
-    return mappings.marketplace.events.listingFilledEventModel(item, data, listing)
+    return mappings.marketplace.events.listingFilledEventModel(item, event, listing)
 }

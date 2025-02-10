@@ -8,20 +8,21 @@ export async function judgementUnrequested(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = mappings.identity.events.judgementUnrequested(item)
+    const event = mappings.identity.events.judgementUnrequested(item)
+    const who = await getOrCreateAccount(ctx, event.who)
 
-    const account = await getOrCreateAccount(ctx, eventData.who)
+    const registration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: who.id })
 
-    const registeration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: account.id })
-
-    const judgements = registeration.judgements?.filter((i) => i.index !== eventData.registrarIndex)
+    const judgements = registration.judgements?.filter((i) => i.index !== event.registrarIndex)
 
     if (judgements?.length) {
-        registeration.judgements = judgements
-        registeration.currentJudgement = judgements[judgements.length - 1].value
+        registration.judgements = judgements
+        registration.currentJudgement = judgements[judgements.length - 1].value
     } else {
-        registeration.currentJudgement = JudgementType.Unknown
+        registration.currentJudgement = JudgementType.Unknown
     }
 
-    await ctx.store.save(registeration)
+    await ctx.store.save(registration)
+
+    return undefined
 }

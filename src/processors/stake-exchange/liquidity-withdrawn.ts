@@ -8,14 +8,13 @@ export async function liquidityWithdrawn(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-    if (!item.extrinsic.call) return undefined
+    if (!item.extrinsic || !item.extrinsic.call) return undefined
 
-    const eventData = mappings.stakeExchange.events.liquidityWithdrawn(item)
-    const callData = mappings.stakeExchange.calls.withdrawLiquidity(item.extrinsic.call)
+    const event = mappings.stakeExchange.events.liquidityWithdrawn(item)
+    const call = mappings.stakeExchange.calls.withdrawLiquidity(item.extrinsic.call)
 
-    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: eventData.offerId.toString() })
-    offer.total -= callData.amount
+    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: event.offerId.toString() })
+    offer.total -= call.amount
 
     await ctx.store.save(offer)
 
@@ -24,10 +23,10 @@ export async function liquidityWithdrawn(
         name: item.name,
         body: {
             offerId: offer.offerId,
-            amount: callData.amount,
-            account: eventData.who,
+            amount: call.amount,
+            account: event.who,
         },
     })
 
-    return mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, eventData)
+    return mappings.stakeExchange.events.liquidityWithdrawnEventModel(item, event)
 }

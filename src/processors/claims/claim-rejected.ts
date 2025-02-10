@@ -3,17 +3,17 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import * as mappings from './../../mappings'
 
 export async function claimRejected(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = mappings.claims.events.claimRejected(item)
-    const claimREeq = await ctx.store.findOneByOrFail<ClaimRequest>(ClaimRequest, { hash: eventData.transactionHash.toString() })
+    const event = mappings.claims.events.claimRejected(item)
+    const claimRequest = await ctx.store.findOneByOrFail<ClaimRequest>(ClaimRequest, { hash: event.transactionHash.toString() })
 
     const claimDetails = new ClaimDetails({
         id: '0',
         totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
     })
 
-    claimREeq.isRejected = true
+    claimRequest.isRejected = true
 
-    await Promise.all([ctx.store.save(claimREeq), ctx.store.save(claimDetails)])
+    await Promise.all([ctx.store.save(claimRequest), ctx.store.save(claimDetails)])
 
     return undefined
 }

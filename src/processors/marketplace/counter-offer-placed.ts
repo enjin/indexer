@@ -10,9 +10,8 @@ export async function counterOfferPlaced(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.counterOfferPlaced(item)
-
-    const listingId = data.listingId.substring(2)
+    const event = mappings.marketplace.events.counterOfferPlaced(item)
+    const listingId = event.listingId.substring(2)
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
@@ -24,10 +23,11 @@ export async function counterOfferPlaced(
         },
     })
 
-    const accountId = 'deposit' in data.counterOffer ? data.counterOffer.deposit.depositor : data.counterOffer.accountId
-    const buyerPrice = 'price' in data.counterOffer ? data.counterOffer.price : data.counterOffer.buyerPrice
-    const depositAmount = 'deposit' in data.counterOffer ? data.counterOffer.deposit.amount : 1n
-    const sellerPrice = 'sellerPrice' in data.counterOffer ? data.counterOffer.sellerPrice : 1n
+    const accountId =
+        event.counterOffer.deposit != undefined ? event.counterOffer.deposit.depositor : event.counterOffer.accountId
+    const buyerPrice = event.counterOffer.price != undefined ? event.counterOffer.price : event.counterOffer.buyerPrice
+    const depositAmount = event.counterOffer.deposit != undefined ? event.counterOffer.deposit.amount : 1n
+    const sellerPrice = event.counterOffer.sellerPrice != undefined ? event.counterOffer.sellerPrice : 1n
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
     const account = await getOrCreateAccount(ctx, accountId)
@@ -79,5 +79,5 @@ export async function counterOfferPlaced(
 
     await Promise.all([ctx.store.save(offer), ctx.store.save(listing)])
 
-    return mappings.marketplace.events.counterOfferPlacedEventModel(item, data, listing, account)
+    return mappings.marketplace.events.counterOfferPlacedEventModel(item, event, listing, account)
 }

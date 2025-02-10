@@ -4,23 +4,22 @@ import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
 
 export async function offerCompleted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    if (!item.extrinsic) return undefined
-
-    const eventData = mappings.stakeExchange.events.offerCompleted(item)
-    const offer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
-        where: { id: eventData.offerId.toString() },
+    const event = mappings.stakeExchange.events.offerCompleted(item)
+    const stakeExchangeOffer = await ctx.store.findOneOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
+        where: { id: event.offerId.toString() },
     })
 
-    offer.state = StakeExchangeOfferState.Completed
-    await ctx.store.save(offer)
+    stakeExchangeOffer.state = StakeExchangeOfferState.Completed
+
+    await ctx.store.save(stakeExchangeOffer)
 
     await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
-            offerId: offer.offerId,
+            offerId: stakeExchangeOffer.offerId,
         },
     })
 
-    return mappings.stakeExchange.events.offerCompletedEventModel(item, eventData)
+    return mappings.stakeExchange.events.offerCompletedEventModel(item, event)
 }

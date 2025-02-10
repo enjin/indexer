@@ -10,10 +10,9 @@ export async function listingCancelled(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.listingCancelled(item)
-
-    const listingId = data.listingId.substring(2)
-    const listing = await ctx.store.findOne<Listing>(Listing, {
+    const event = mappings.marketplace.events.listingCancelled(item)
+    const listingId = event.listingId.substring(2)
+    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -26,8 +25,6 @@ export async function listingCancelled(
             },
         },
     })
-
-    if (!listing) return undefined
 
     listing.isActive = false
     listing.updatedAt = new Date(block.timestamp ?? 0)

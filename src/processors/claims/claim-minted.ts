@@ -3,13 +3,12 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import * as mappings from './../../mappings'
 
 export async function claimMinted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = mappings.claims.events.claimMinted(item)
-
+    const event = mappings.claims.events.claimMinted(item)
     const claim = new ClaimRequest({
-        id: `${eventData.who}-${block.height}-minted`,
-        account: eventData.who,
+        id: `${event.who}-${block.height}-minted`,
+        account: event.who,
         acountType: AccountClaimType.EVM,
-        amountClaimable: eventData.amount,
+        amountClaimable: event.amount,
         amountBurned: 0n,
         hash: null,
         isEfiToken: false,

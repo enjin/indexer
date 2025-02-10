@@ -153,7 +153,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
 
             const accountData = accountInfo.data
 
-            if ('frozen' in accountData) {
+            if ('frozen' in accountData && accountData.frozen !== undefined) {
                 accounts.push(
                     new Account({
                         id,
@@ -170,7 +170,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                         }),
                     })
                 )
-            } else if ('miscFrozen' in accountData) {
+            } else if ('miscFrozen' in accountData && accountData.miscFrozen !== undefined) {
                 accounts.push(
                     new Account({
                         id,

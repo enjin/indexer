@@ -4,7 +4,7 @@ import { Event as EventModel, Identity, JudgementType, Registration } from '../.
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
-import { Data } from '@enjin/indexer/types/generated/v1032'
+import { Data } from '@enjin/indexer/mappings/common/types'
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {
@@ -17,13 +17,14 @@ const dataToValue = (raw: Data) => {
 export async function identitySet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = mappings.identity.events.identitySet(item)
-    const callData = mappings.identity.calls.setIdentity(item.call)
+    const event = mappings.identity.events.identitySet(item)
+    const call = mappings.identity.calls.setIdentity(item.call)
 
-    const account = await getOrCreateAccount(ctx, eventData.who)
+    const account = await getOrCreateAccount(ctx, event.who)
+
     let additional: { key: string | null; value: string | null }[] = []
-    if (callData.info.additional.length) {
-        additional = callData.info.additional.map((i) => {
+    if (call.info.additional.length) {
+        additional = call.info.additional.map((i) => {
             return {
                 key: dataToValue(i[0]),
                 value: dataToValue(i[1]),
@@ -31,18 +32,18 @@ export async function identitySet(ctx: CommonContext, block: BlockHeader, item: 
         })
     }
 
-    const registeration = new Registration({
+    const registration = new Registration({
         id: account.id,
         account,
         additional,
-        display: dataToValue(callData.info.display),
-        legal: dataToValue(callData.info.legal),
-        web: dataToValue(callData.info.web),
-        riot: dataToValue(callData.info.riot),
-        email: dataToValue(callData.info.email),
-        twitter: dataToValue(callData.info.twitter),
-        image: dataToValue(callData.info.image),
-        pgpFingerprint: callData.info.pgpFingerprint,
+        display: dataToValue(call.info.display),
+        legal: dataToValue(call.info.legal),
+        web: dataToValue(call.info.web),
+        riot: dataToValue(call.info.riot),
+        email: dataToValue(call.info.email),
+        twitter: dataToValue(call.info.twitter),
+        image: dataToValue(call.info.image),
+        pgpFingerprint: call.info.pgpFingerprint,
         currentJudgement: JudgementType.Unknown,
         judgements: [],
         deposit: 0n,
@@ -53,11 +54,13 @@ export async function identitySet(ctx: CommonContext, block: BlockHeader, item: 
         id: account.id,
         account,
         isSub: false,
-        name: dataToValue(callData.info.display) || dataToValue(callData.info.legal),
-        info: registeration,
+        name: dataToValue(call.info.display) || dataToValue(call.info.legal),
+        info: registration,
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    await ctx.store.save(registeration)
+    await ctx.store.save(registration)
     await ctx.store.save(identity)
+
+    return undefined
 }

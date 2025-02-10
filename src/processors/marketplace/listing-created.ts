@@ -25,29 +25,26 @@ export async function listingCreated(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.listingCreated(item)
-
-    const listingId = data.listingId.substring(2)
-    const [makeAssetId, takeAssetId, account] = await Promise.all([
-        ctx.store.findOne<Token>(Token, {
-            where: { id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` },
+    const event = mappings.marketplace.events.listingCreated(item)
+    const listingId = event.listingId.substring(2)
+    const [makeAssetId, takeAssetId, creatorOrSeller] = await Promise.all([
+        ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
             relations: {
                 bestListing: true,
             },
         }),
-        ctx.store.findOne<Token>(Token, {
-            where: { id: `${data.listing.takeAssetId.collectionId}-${data.listing.takeAssetId.tokenId}` },
+        ctx.store.findOneOrFail<Token>(Token, {
+            where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
         }),
-        getOrCreateAccount(ctx, 'creator' in data.listing ? data.listing.creator : data.listing.seller),
+        getOrCreateAccount(ctx, 'creator' in event.listing ? event.listing.creator : event.listing.seller),
     ])
 
-    if (!makeAssetId || !takeAssetId) return undefined
-
-    const feeSide = data.listing.feeSide.__kind as FeeSide
+    const feeSide = event.listing.feeSide.__kind as FeeSide
     let listingData
     let listingState
 
-    switch (data.listing.data.__kind) {
+    switch (event.listing.data.__kind) {
         case 'FixedPrice':
             listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
             break
@@ -55,13 +52,11 @@ export async function listingCreated(
             let endBlock = 0
             let startBlock = 0
 
-            if (data.listing.startBlock != undefined) {
-                startBlock = data.listing.startBlock
+            if (event.listing.startBlock != undefined) {
+                startBlock = event.listing.startBlock
             }
-            if (data.listing.data.value != undefined) {
-                endBlock = 'endBlock' in data.listing.data.value ? data.listing.data.value.endBlock : 0
-                startBlock = ('startBlock' in data.listing.data.value ? data.listing.data.value.startBlock : 0) ?? 0
-            }
+            endBlock = 'endBlock' in event.listing.data.value ? event.listing.data.value.endBlock : 0
+            startBlock = ('startBlock' in event.listing.data.value ? event.listing.data.value.startBlock : 0) ?? 0
 
             listingData = new AuctionData({
                 listingType: ListingType.Auction,
@@ -72,8 +67,8 @@ export async function listingCreated(
         }
         case 'Offer': {
             let expiration: number | undefined = undefined
-            if (data.listing.data.value != undefined && 'expiration' in data.listing.data.value) {
-                expiration = data.listing.data.value.expiration
+            if (event.listing.data.expiration != undefined) {
+                expiration = event.listing.data.expiration
             }
 
             listingData = new OfferData({
@@ -86,7 +81,7 @@ export async function listingCreated(
             throw new Error('Unknown listing type')
     }
 
-    switch (data.listing.state.__kind) {
+    switch (event.listing.state.__kind) {
         case 'FixedPrice':
             listingState = new FixedPriceState({ listingType: ListingType.FixedPrice, amountFilled: 0n })
             break
@@ -102,17 +97,17 @@ export async function listingCreated(
 
     const listing = new Listing({
         id: listingId,
-        seller: account,
+        seller: creatorOrSeller,
         makeAssetId,
         takeAssetId,
-        amount: data.listing.amount,
-        price: data.listing.price,
-        highestPrice: data.listing.price,
-        minTakeValue: data.listing.minTakeValue ?? data.listing.minReceived,
+        amount: event.listing.amount,
+        price: event.listing.price,
+        highestPrice: event.listing.price,
+        minTakeValue: event.listing.minTakeValue ?? event.listing.minReceived,
         feeSide,
-        height: data.listing.creationBlock,
-        deposit: typeof data.listing.deposit === 'bigint' ? data.listing.deposit : data.listing.deposit.amount,
-        salt: data.listing.salt,
+        height: event.listing.creationBlock,
+        deposit: typeof event.listing.deposit === 'bigint' ? event.listing.deposit : event.listing.deposit.amount,
+        salt: event.listing.salt,
         data: listingData,
         state: listingState,
         isActive: true,
@@ -129,7 +124,7 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    if (data.listing.data.__kind !== 'Offer') {
+    if (event.listing.data.__kind !== 'Offer') {
         if ((makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) || !makeAssetId.bestListing) {
             makeAssetId.bestListing = listing
         }
@@ -138,7 +133,7 @@ export async function listingCreated(
 
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
-    syncCollectionStats(data.listing.makeAssetId.collectionId.toString())
+    syncCollectionStats(event.listing.makeAssetId.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -165,5 +160,5 @@ export async function listingCreated(
         })
     }
 
-    return await mappings.marketplace.events.listingCreatedEventModel(item, data, listing)
+    return await mappings.marketplace.events.listingCreatedEventModel(item, event, listing)
 }

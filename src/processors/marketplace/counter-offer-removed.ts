@@ -10,9 +10,8 @@ export async function counterOfferRemoved(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.counterOfferRemoved(item)
-
-    const listingId = data.listingId.substring(2)
+    const event = mappings.marketplace.events.counterOfferRemoved(item)
+    const listingId = event.listingId.substring(2)
     const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
         where: { id: listingId },
         relations: {
@@ -24,7 +23,7 @@ export async function counterOfferRemoved(
         },
     })
 
-    const account = await getOrCreateAccount(ctx, data.creator)
+    const creator = await getOrCreateAccount(ctx, event.creator)
     assert(listing.state.isTypeOf === 'OfferState', 'Listing is not an offer')
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
@@ -33,7 +32,7 @@ export async function counterOfferRemoved(
         counterOfferCount: listing.state.counterOfferCount - 1,
     })
 
-    const offer = await ctx.store.findOneByOrFail(CounterOffer, { id: `${listing.id}-${account.id}` })
+    const offer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -53,7 +52,7 @@ export async function counterOfferRemoved(
                     type: listing.type.toString(),
                     takeAssetId: listing.takeAssetId.id,
                 },
-                account: { id: account.id },
+                account: { id: creator.id },
                 extrinsic: item.extrinsic.id,
                 token: listing.takeAssetId.id,
             },
@@ -62,5 +61,5 @@ export async function counterOfferRemoved(
 
     await Promise.all([ctx.store.remove(offer), ctx.store.save(listing)])
 
-    return mappings.marketplace.events.counterOfferRemovedEventModel(item, data, listing, account)
+    return mappings.marketplace.events.counterOfferRemovedEventModel(item, event, listing, creator)
 }

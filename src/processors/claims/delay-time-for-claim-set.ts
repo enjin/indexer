@@ -3,11 +3,11 @@ import { ClaimDetails } from '../../model'
 import * as mappings from './../../mappings'
 
 export async function delayTimeForClaimSet(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<undefined> {
-    const eventData = mappings.claims.events.delayTimeForClaimSet(item)
+    const event = mappings.claims.events.delayTimeForClaimSet(item)
 
     const claimDetails = new ClaimDetails({
         id: '0',
-        delayClaimsPeriod: eventData.delayTime,
+        delayClaimsPeriod: event.delayTime,
         totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
     })
 

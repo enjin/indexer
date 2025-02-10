@@ -8,27 +8,26 @@ export async function judgementRequested(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = mappings.identity.events.judgementRequested(item)
+    const event = mappings.identity.events.judgementRequested(item)
+    const who = await getOrCreateAccount(ctx, event.who)
 
-    const account = await getOrCreateAccount(ctx, eventData.who)
+    const registration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: who.id })
 
-    const registeration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: account.id })
-
-    registeration.currentJudgement = JudgementType.FeePaid
-    const existing = registeration.judgements?.find((i) => i.index === eventData.registrarIndex)
+    registration.currentJudgement = JudgementType.FeePaid
+    const existing = registration.judgements?.find((i) => i.index === event.registrarIndex)
     if (existing) {
         existing.value = JudgementType.FeePaid
     } else {
-        registeration.judgements?.push(
+        registration.judgements?.push(
             new Judgement({
-                index: eventData.registrarIndex,
+                index: event.registrarIndex,
                 value: JudgementType.FeePaid,
                 createdAt: new Date(block.timestamp ?? 0),
             })
         )
     }
 
-    await ctx.store.save(registeration)
+    await ctx.store.save(registration)
 
     return undefined
 }

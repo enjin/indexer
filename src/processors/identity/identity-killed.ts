@@ -3,7 +3,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import * as mappings from './../../mappings'
 
 export async function identityKilled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
-    const eventData = mappings.identity.events.identityKilled(item)
+    const event = mappings.identity.events.identityKilled(item)
 
     const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
         relations: {
@@ -12,7 +12,7 @@ export async function identityKilled(ctx: CommonContext, block: BlockHeader, ite
                 info: true,
             },
         },
-        where: { id: eventData.who },
+        where: { id: event.who },
     })
     const registration = await ctx.store.findOneByOrFail<Registration>(Registration, { id: identity.id })
 

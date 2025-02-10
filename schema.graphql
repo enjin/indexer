@@ -114,7 +114,7 @@ type ValidatorPrefsSet {
 
 type StakeExchangeOfferCreated {
   offerId: BigInt!
-  account: Account!
+  who: Account!
   total: BigInt!
   rate: BigInt!
   minAverageCommission: Int! @deprecated
@@ -127,24 +127,24 @@ type StakeExchangeOfferCancelled {
 
 type StakeExchangeLiquidityWithdrawn {
   offerId: BigInt!
-  account: Account!
+  who: Account!
   amount: BigInt!
 }
 
 type StakeExchangeLiquidityAdded {
   offerId: BigInt!
-  account: Account!
+  who: Account!
   amount: BigInt!
 }
 
 type StakeExchangeLiquidityConfigUpdated {
-  account: Account!
+  who: Account!
   tokenFilter: StakeExchangeTokenFilter!
 }
 
 type StakeExchangeBuyOrderCompleted {
   offerId: BigInt!
-  account: Account!
+  who: Account!
   tokenId: BigInt!
   amount: BigInt!
   rate: BigInt!
@@ -170,12 +170,12 @@ type NominationPoolsPoolMutated {
 
 type NominationPoolsBonded {
   pool: String!
-  account: Account!
+  who: Account!
   bonded: BigInt!
 }
 
 type NominationPoolsUnbonded {
-  account: Account!
+  who: Account!
   unbondingPoints: BigInt!
   balance: BigInt!
   pool: String!
@@ -183,7 +183,7 @@ type NominationPoolsUnbonded {
 }
 
 type NominationPoolsWithdrawn {
-  account: Account!
+  who: Account!
   balance: BigInt!
   points: BigInt!
   numSlashingSpans: Int
@@ -244,7 +244,7 @@ enum StakeExchangeTokenFilterType {
 type StakeExchangeTokenFilter @entity {
   value: [String]
   type: StakeExchangeTokenFilterType!
-  account: Account @unique
+  who: Account @unique
   offer: StakeExchangeOffer @unique
 }
 
@@ -288,7 +288,7 @@ type UnbondingEras {
 type PoolMember @entity {
   id: ID!
   pool: NominationPool!
-  account: Account!
+  who: Account!
   bonded: BigInt!
   tokenAccount: TokenAccount
   rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
@@ -306,7 +306,7 @@ type PoolMemberRewards @entity {
 
 type Validator @entity {
   id: ID!
-  account: Account!
+  who: Account!
   commission: Int
   blocked: Boolean
 
@@ -373,7 +373,7 @@ type EarlyBirdShares @entity {
   id: ID!
 
   pool: NominationPool!
-  account: Account!
+  who: Account!
   shares: BigInt!
 }
 
@@ -420,7 +420,7 @@ type StakeExchangeOffer @entity {
   offerId: BigInt!
 
   state: StakeExchangeOfferState!
-  account: Account!
+  who: Account!
   total: BigInt!
   rate: BigInt!
   minAverageRewardRate: BigInt!
@@ -450,7 +450,7 @@ type BalancesTransfer {
 type TeleportBalanceWithdrawn {
   beneficiary: Account!
   amount: BigInt!
-  account: Account!
+  who: Account!
   destination: String!
 }
 
@@ -569,18 +569,18 @@ type MultiTokensBurned {
   collectionId: BigInt!
   tokenId: BigInt!
   token: Token
-  account: Account!
+  who: Account!
   amount: BigInt!
 }
 
 type MultiTokensCollectionAccountCreated {
   collectionId: BigInt!
-  account: Account!
+  who: Account!
 }
 
 type MultiTokensCollectionAccountDestroyed {
   collectionId: BigInt!
-  account: Account!
+  who: Account!
 }
 
 type MultiTokensCollectionCreated {
@@ -622,7 +622,7 @@ type MultiTokensThawed {
 type MultiTokensTokenAccountCreated {
   collectionId: BigInt!
   tokenId: BigInt!
-  account: Account!
+  who: Account!
   balance: BigInt!
 }
 
@@ -683,7 +683,7 @@ type ClaimsClaimRequested {
 }
 
 type ClaimsClaimed {
-  account: Account!
+  who: Account!
   ethAccount: String
   efiSum: BigInt!
   enjSum: BigInt!
@@ -702,18 +702,18 @@ type FuelTankDestroyed {
 }
 
 type MultiTokensClaimedCollections {
-  account: Account!
+  who: Account!
   ethAccount: String!
   collectionIds: [BigInt!]
 }
 
 type MultiTokensClaimTokensInitiated {
-  account: Account!
+  who: Account!
   ethAccount: String!
 }
 
 type MultiTokensClaimTokensCompleted {
-  account: Account!
+  who: Account!
   ethAccount: String!
 }
 
@@ -747,7 +747,7 @@ type Judgement {
 type Registration @entity {
   id: ID!
   deposit: BigInt!
-  account: Account!
+  who: Account!
   judgements: [Judgement!]
   currentJudgement: JudgementType!
 
@@ -768,7 +768,7 @@ type Registration @entity {
 
 type Identity @entity {
   id: ID!
-  account: Account! @unique
+  who: Account! @unique
   isSub: Boolean!
   name: String
   info: Registration!
@@ -784,7 +784,7 @@ type Identity @entity {
 type IdentityRegistrar @entity {
   id: ID!
   index: Int!
-  account: Account! @unique
+  who: Account! @unique
   fee: BigInt!
 
   # Extras
@@ -802,11 +802,11 @@ type Account @entity {
   # Relations
   extrinsics: [Extrinsic] @derivedFrom(field: "signer")
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
-  collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
-  tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "who")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "who")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
-  identity: Identity @derivedFrom(field: "account")
-  registrar: IdentityRegistrar @derivedFrom(field: "account")
+  identity: Identity @derivedFrom(field: "who")
+  registrar: IdentityRegistrar @derivedFrom(field: "who")
 
   # Extras
   lastUpdateBlock: Int
@@ -916,7 +916,7 @@ type Collection @entity {
 }
 
 type CollectionApproval {
-  account: String!
+  who: String!
   expiration: Int
 }
 
@@ -929,7 +929,7 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
-  account: Account! @index
+  who: Account! @index
   collection: Collection! @index
 
   # Extras
@@ -1038,7 +1038,7 @@ type TokenRarity @entity {
 }
 
 type TokenApproval {
-  account: String!
+  who: String!
   amount: BigInt!
   expiration: Int
 }
@@ -1067,7 +1067,7 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
-  account: Account! @index
+  who: Account! @index
   collection: Collection! @index
   token: Token! @index
 
@@ -1218,7 +1218,7 @@ type CounterOffer @entity {
   sellerPrice: BigInt
   buyerPrice: BigInt
   amount: BigInt!
-  account: Account!
+  who: Account!
   listing: Listing!
   createdAt: DateTime!
 
@@ -1269,7 +1269,7 @@ enum AccountClaimType {
 type ClaimRequest @entity {
   id: ID!
 
-  account: String!
+  who: String!
   acountType: AccountClaimType!
   hash: String @unique
   amountClaimable: BigInt!
@@ -1289,7 +1289,7 @@ type ClaimRequest @entity {
 type Claim @entity {
   id: ID!
 
-  account: Account!
+  who: Account!
   amount: BigInt!
 
   efiSum: BigInt!
@@ -1308,7 +1308,7 @@ type ClaimDetails @entity {
 type MultiTokensClaims @entity {
   id: ID!
 
-  account: Account!
+  who: Account!
   ethAccount: String!
   completed: Boolean!
 
@@ -1356,7 +1356,7 @@ type FuelTankUserAccountManagement {
 type FuelTankUserAccounts @entity {
   id: ID!
   tank: FuelTank!
-  account: Account!
+  who: Account!
 
   tankDeposit: BigInt!
   userDeposit: BigInt!

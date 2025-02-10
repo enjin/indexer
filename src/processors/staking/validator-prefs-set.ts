@@ -4,23 +4,23 @@ import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from '../../mappings'
 
 export async function validatorPrefsSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    const eventData = mappings.staking.events.validatorPrefsSet(item)
+    const event = mappings.staking.events.validatorPrefsSet(item)
+    const stash = await getOrCreateAccount(ctx, event.stash)
 
-    const account = await getOrCreateAccount(ctx, eventData.stash)
-    const validator = await ctx.store.findOneBy(Validator, { account: { id: account.id } })
+    const validator = await ctx.store.findOneBy<Validator>(Validator, { account: { id: stash.id } })
 
     if (!validator) {
         const newValidator = new Validator({
-            id: account.id,
-            account,
-            commission: eventData.prefs.commission,
-            blocked: eventData.prefs.blocked,
+            id: stash.id,
+            account: stash,
+            commission: event.prefs.commission,
+            blocked: event.prefs.blocked,
         })
 
         await ctx.store.insert(newValidator)
     } else {
-        validator.commission = eventData.prefs.commission
-        validator.blocked = eventData.prefs.blocked
+        validator.commission = event.prefs.commission
+        validator.blocked = event.prefs.blocked
 
         await ctx.store.save(validator)
     }
@@ -30,7 +30,7 @@ export async function validatorPrefsSet(ctx: CommonContext, block: BlockHeader, 
         name: ValidatorPrefsSet.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ValidatorPrefsSet({
-            validator: account.id,
+            validator: stash.id,
         }),
     })
 }

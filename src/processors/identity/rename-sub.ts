@@ -4,16 +4,16 @@ import { BlockHeader, CallItem, CommonContext } from '../../common/types/context
 import * as mappings from '../../mappings'
 
 export async function renameSub(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
-    const callData = mappings.identity.calls.renameSub(item)
+    const call = mappings.identity.calls.renameSub(item)
 
-    const id = callData.sub.__kind !== 'Index' ? callData.sub.value : null
+    const id = call.sub.__kind !== 'Index' ? call.sub.value : null
 
     if (!id) return undefined
 
     const sub = await ctx.store.findOneByOrFail<Identity>(Identity, {
         id,
     })
-    sub.name = callData.data.__kind !== 'None' ? hexToString(callData.data.value) : null
+    sub.name = call.data.__kind !== 'None' ? hexToString(call.data.value) : null
 
     await ctx.store.save(sub)
 

@@ -8,11 +8,11 @@ export async function subIdentityRemoved(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    const eventData = mappings.identity.events.subIdentityRemoved(item)
+    const event = mappings.identity.events.subIdentityRemoved(item)
 
-    const account = await getOrCreateAccount(ctx, eventData.sub)
+    const sub = await getOrCreateAccount(ctx, event.sub)
     const identity = await ctx.store.findOneOrFail<Identity>(Identity, {
-        where: { id: account.id },
+        where: { id: sub.id },
         relations: {
             info: true,
         },

@@ -10,10 +10,10 @@ export async function bidPlaced(
     block: BlockHeader,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
-    const data = mappings.marketplace.events.bidPlaced(item)
-    const listingId = data.listingId.substring(2)
-    const [listing, account, lastBid] = await Promise.all([
-        ctx.store.findOne<Listing>(Listing, {
+    const event = mappings.marketplace.events.bidPlaced(item)
+    const listingId = event.listingId.substring(2)
+    const [listing, bidder, lastBid] = await Promise.all([
+        ctx.store.findOneOrFail<Listing>(Listing, {
             where: { id: listingId },
             relations: {
                 seller: true,
@@ -23,7 +23,7 @@ export async function bidPlaced(
                 },
             },
         }),
-        getOrCreateAccount(ctx, data.bid.bidder),
+        getOrCreateAccount(ctx, event.bid.bidder),
         ctx.store.findOne<Bid>(Bid, {
             where: { listing: { id: listingId } },
             relations: {
@@ -34,16 +34,16 @@ export async function bidPlaced(
     ])
 
     const bid = new Bid({
-        id: `${listingId}-${data.bid.bidder}-${data.bid.price}`,
-        bidder: account,
-        price: data.bid.price,
+        id: `${listingId}-${event.bid.bidder}-${event.bid.price}`,
+        bidder: bidder,
+        price: event.bid.price,
         listing,
         height: block.height,
         extrinsicHash: item.extrinsic?.hash,
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    listing.highestPrice = data.bid.price
+    listing.highestPrice = event.bid.price
     listing.state = new AuctionState({
         listingType: ListingType.Auction,
         highBid: bid.id,
@@ -99,5 +99,5 @@ export async function bidPlaced(
         })
     }
 
-    return mappings.marketplace.events.bidPlacedEventModel(item, data, listing, account)
+    return mappings.marketplace.events.bidPlacedEventModel(item, event, listing, bidder)
 }

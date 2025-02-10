@@ -5,15 +5,15 @@ import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/ent
 import * as mappings from '../../mappings'
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
-    const callData = mappings.identity.calls.setSubs(item)
     if (!item.extrinsic?.signature) {
         throw new Error('No signature')
     }
 
+    const call = mappings.identity.calls.setSubs(item)
     const pk = unwrapSignatureSigner(item.extrinsic.signature)
     const signer = await getOrCreateAccount(ctx, pk)
 
-    const subIdentities = await ctx.store.find(Identity, {
+    const subIdentities = await ctx.store.find<Identity>(Identity, {
         where: { super: { id: signer.id } },
         relations: {
             info: true,
@@ -30,7 +30,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
     )
 
     const identities = await Promise.all(
-        callData.subs.map(async (sub) => {
+        call.subs.map(async (sub) => {
             const [account, existing] = await Promise.all([
                 getOrCreateAccount(ctx, sub[0]),
                 ctx.store.findOneBy<Identity>(Identity, { id: sub[0] }),
@@ -55,4 +55,6 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
     )
 
     await ctx.store.save(identities)
+
+    return undefined
 }
