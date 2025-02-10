@@ -10,16 +10,16 @@ type TokenDestroyedEvent = {
     caller: string
 }
 
-export function tokenDestroyed(event: EventItem): TokenDestroyedEvent {
+export function tokenDestroyed(event: EventItem): TokenDestroyed {
     return match(event)
-        .returnType<TokenDestroyedEvent>()
+        .returnType<TokenDestroyed>()
         .when(multiTokens.tokenDestroyed.matrixEnjinV603.is, multiTokens.tokenDestroyed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function tokenDestroyedEventModel(item: EventItem, data: TokenDestroyedEvent): EventModel | undefined {
+export function tokenDestroyedEventModel(item: EventItem, data: TokenDestroyed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenDestroyed.name,

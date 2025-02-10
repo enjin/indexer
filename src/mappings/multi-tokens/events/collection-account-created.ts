@@ -9,9 +9,9 @@ type CollectionAccountCreatedEvent = {
     accountId: string
 }
 
-export function collectionAccountCreated(event: EventItem): CollectionAccountCreatedEvent {
+export function collectionAccountCreated(event: EventItem): CollectionAccountCreated {
     return match(event)
-        .returnType<CollectionAccountCreatedEvent>()
+        .returnType<CollectionAccountCreated>()
         .when(
             multiTokens.collectionAccountCreated.matrixEnjinV603.is,
             multiTokens.collectionAccountCreated.matrixEnjinV603.decode

@@ -13,16 +13,16 @@ type AttributeSetEvent = {
     value: string
 }
 
-export function attributeSet(event: EventItem): AttributeSetEvent {
+export function attributeSet(event: EventItem): AttributeSet {
     return match(event)
-        .returnType<AttributeSetEvent>()
+        .returnType<AttributeSet>()
         .when(multiTokens.attributeSet.matrixEnjinV603.is, multiTokens.attributeSet.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function attributeSetEventModel(item: EventItem, data: AttributeSetEvent): EventModel | undefined {
+export function attributeSetEventModel(item: EventItem, data: AttributeSet): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensAttributeSet.name,

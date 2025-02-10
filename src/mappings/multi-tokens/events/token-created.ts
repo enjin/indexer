@@ -14,16 +14,16 @@ type TokenCreatedEvent = {
     initialSupply: bigint
 }
 
-export function tokenCreated(event: EventItem): TokenCreatedEvent {
+export function tokenCreated(event: EventItem): TokenCreated {
     return match(event)
-        .returnType<TokenCreatedEvent>()
+        .returnType<TokenCreated>()
         .when(multiTokens.tokenCreated.matrixEnjinV603.is, multiTokens.tokenCreated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function tokenCreatedEventModel(item: EventItem, data: TokenCreatedEvent): EventModel | undefined {
+export function tokenCreatedEventModel(item: EventItem, data: TokenCreated): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenCreated.name,

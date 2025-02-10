@@ -9,9 +9,9 @@ type CollectionCreatedEvent = {
     owner: string
 }
 
-export function collectionCreated(event: EventItem): CollectionCreatedEvent {
+export function collectionCreated(event: EventItem): CollectionCreated {
     return match(event)
-        .returnType<CollectionCreatedEvent>()
+        .returnType<CollectionCreated>()
         .when(multiTokens.collectionCreated.matrixEnjinV603.is, multiTokens.collectionCreated.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

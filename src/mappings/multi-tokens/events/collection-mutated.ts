@@ -23,9 +23,9 @@ type CollectionMutatedEvent = {
     }
 }
 
-export function collectionMutated(event: EventItem): CollectionMutatedEvent {
+export function collectionMutated(event: EventItem): CollectionMutated {
     return match(event)
-        .returnType<CollectionMutatedEvent>()
+        .returnType<CollectionMutated>()
         .when(multiTokens.collectionMutated.matrixEnjinV603.is, multiTokens.collectionMutated.matrixEnjinV603.decode)
         .when(multiTokens.collectionMutated.v1050.is, multiTokens.collectionMutated.v1050.decode)
         .otherwise(() => {
@@ -33,7 +33,7 @@ export function collectionMutated(event: EventItem): CollectionMutatedEvent {
         })
 }
 
-export function collectionMutatedEventModel(item: EventItem, data: CollectionMutatedEvent): EventModel | undefined {
+export function collectionMutatedEventModel(item: EventItem, data: CollectionMutated): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionMutated.name,

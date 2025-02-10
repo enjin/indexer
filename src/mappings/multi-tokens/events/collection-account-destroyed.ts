@@ -9,9 +9,9 @@ type CollectionAccountDestroyedEvent = {
     accountId: string
 }
 
-export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyedEvent {
+export function collectionAccountDestroyed(event: EventItem): CollectionAccountDestroyed {
     return match(event)
-        .returnType<CollectionAccountDestroyedEvent>()
+        .returnType<CollectionAccountDestroyed>()
         .when(
             multiTokens.collectionAccountDestroyed.matrixEnjinV603.is,
             multiTokens.collectionAccountDestroyed.matrixEnjinV603.decode

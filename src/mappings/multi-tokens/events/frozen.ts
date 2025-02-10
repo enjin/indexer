@@ -12,16 +12,16 @@ type FrozenEvent = {
     }
 }
 
-export function frozen(event: EventItem): FrozenEvent {
+export function frozen(event: EventItem): Frozen {
     return match(event)
-        .returnType<FrozenEvent>()
+        .returnType<Frozen>()
         .when(multiTokens.frozen.matrixEnjinV603.is, multiTokens.frozen.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function frozenEventModel(item: EventItem, data: FrozenEvent): EventModel {
+export function frozenEventModel(item: EventItem, data: Frozen): EventModel {
     let tokenId: null | string = null
     if (data.freezeType.value && typeof data.freezeType.value !== 'string') {
         tokenId = 'tokenId' in data.freezeType.value ? `${data.collectionId}-${data.freezeType.value.tokenId}` : null

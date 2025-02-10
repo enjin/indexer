@@ -11,9 +11,9 @@ type BurnedEvent = {
     amount: bigint
 }
 
-export function burned(event: EventItem): BurnedEvent {
+export function burned(event: EventItem): Burned {
     return match(event)
-        .returnType<BurnedEvent>()
+        .returnType<Burned>()
         .when(multiTokens.burned.matrixEnjinV603.is, multiTokens.burned.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

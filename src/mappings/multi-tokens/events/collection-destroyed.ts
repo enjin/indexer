@@ -9,9 +9,9 @@ type CollectionDestroyedEvent = {
     caller: string
 }
 
-export function collectionDestroyed(event: EventItem): CollectionDestroyedEvent {
+export function collectionDestroyed(event: EventItem): CollectionDestroyed {
     return match(event)
-        .returnType<CollectionDestroyedEvent>()
+        .returnType<CollectionDestroyed>()
         .when(multiTokens.collectionDestroyed.matrixEnjinV603.is, () =>
             multiTokens.collectionDestroyed.matrixEnjinV603.decode(event)
         )
@@ -20,7 +20,7 @@ export function collectionDestroyed(event: EventItem): CollectionDestroyedEvent 
         })
 }
 
-export function collectionDestroyedEventModel(item: EventItem, data: CollectionDestroyedEvent): EventModel | undefined {
+export function collectionDestroyedEventModel(item: EventItem, data: CollectionDestroyed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionDestroyed.name,

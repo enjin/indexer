@@ -42,9 +42,9 @@ export type TokenMutatedEvent = {
     }
 }
 
-export function tokenMutated(event: EventItem): TokenMutatedEvent {
+export function tokenMutated(event: EventItem): TokenMutated {
     return match(event)
-        .returnType<TokenMutatedEvent>()
+        .returnType<TokenMutated>()
         .when(multiTokens.tokenMutated.matrixEnjinV1012.is, multiTokens.tokenMutated.matrixEnjinV1012.decode)
         .when(multiTokens.tokenMutated.matrixEnjinV603.is, multiTokens.tokenMutated.matrixEnjinV603.decode)
         .when(multiTokens.tokenMutated.matrixV1010.is, multiTokens.tokenMutated.matrixV1010.decode)
@@ -59,7 +59,7 @@ export function tokenMutated(event: EventItem): TokenMutatedEvent {
         })
 }
 
-export function tokenMutatedEventModel(item: EventItem, data: TokenMutatedEvent): EventModel | undefined {
+export function tokenMutatedEventModel(item: EventItem, data: TokenMutated): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensTokenMutated.name,

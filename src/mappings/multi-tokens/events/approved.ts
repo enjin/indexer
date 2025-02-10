@@ -4,25 +4,16 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensApproved } from '@enjin/indexer/model'
 
-type ApprovedEvent = {
-    collectionId: bigint
-    tokenId?: bigint | undefined
-    owner: string
-    operator: string
-    amount?: bigint | undefined
-    expiration?: number | undefined
-}
-
-export function approved(event: EventItem): ApprovedEvent {
+export function approved(event: EventItem): Approved {
     return match(event)
-        .returnType<ApprovedEvent>()
+        .returnType<Approved>()
         .when(multiTokens.approved.matrixEnjinV603.is, multiTokens.approved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function approvedEventModel(item: EventItem, data: ApprovedEvent): EventModel | undefined {
+export function approvedEventModel(item: EventItem, data: Approved): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensApproved.name,

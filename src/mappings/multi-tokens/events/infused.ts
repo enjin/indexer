@@ -11,9 +11,9 @@ type InfusedEvent = {
     amount: bigint
 }
 
-export function infused(event: EventItem): InfusedEvent {
+export function infused(event: EventItem): Infused {
     return match(event)
-        .returnType<InfusedEvent>()
+        .returnType<Infused>()
         .when(multiTokens.infused.matrixEnjinV1012.is, multiTokens.infused.matrixEnjinV1012.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

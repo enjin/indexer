@@ -9,9 +9,9 @@ type ClaimedCollectionsEvent = {
     collectionIds: bigint[] | { ethereum: bigint; native: bigint }[]
 }
 
-export function claimedCollections(event: EventItem): ClaimedCollectionsEvent {
+export function claimedCollections(event: EventItem): ClaimedCollections {
     return match(event)
-        .returnType<ClaimedCollectionsEvent>()
+        .returnType<ClaimedCollections>()
         .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)
         .when(multiTokens.claimedCollections.matrixEnjinV603.is, multiTokens.claimedCollections.matrixEnjinV603.decode)
         .when(multiTokens.claimedCollections.matrixV1000.is, multiTokens.claimedCollections.matrixV1000.decode)

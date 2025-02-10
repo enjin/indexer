@@ -8,9 +8,9 @@ type ClaimTokensInitiatedEvent = {
     ethereumAddress: string
 }
 
-export function claimTokensInitiated(event: EventItem): ClaimTokensInitiatedEvent {
+export function claimTokensInitiated(event: EventItem): ClaimTokensInitiated {
     return match(event)
-        .returnType<ClaimTokensInitiatedEvent>()
+        .returnType<ClaimTokensInitiated>()
         .when(multiTokens.claimTokensInitiated.matrixEnjinV1000.is, multiTokens.claimTokensInitiated.matrixEnjinV1000.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)

@@ -10,16 +10,16 @@ type AttributeRemovedEvent = {
     key: string
 }
 
-export function attributeRemoved(event: EventItem): AttributeRemovedEvent {
+export function attributeRemoved(event: EventItem): AttributeRemoved {
     return match(event)
-        .returnType<AttributeRemovedEvent>()
+        .returnType<AttributeRemoved>()
         .when(multiTokens.attributeRemoved.matrixEnjinV603.is, multiTokens.attributeRemoved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function attributeRemovedEventModel(item: EventItem, data: AttributeRemovedEvent): EventModel | undefined {
+export function attributeRemovedEventModel(item: EventItem, data: AttributeRemoved): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensAttributeRemoved.name,

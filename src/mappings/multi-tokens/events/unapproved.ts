@@ -11,16 +11,16 @@ type UnapprovedEvent = {
     operator: string
 }
 
-export function unapproved(event: EventItem): UnapprovedEvent {
+export function unapproved(event: EventItem): Unapproved {
     return match(event)
-        .returnType<UnapprovedEvent>()
+        .returnType<Unapproved>()
         .when(multiTokens.unapproved.matrixEnjinV603.is, multiTokens.unapproved.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function unapprovedEventModel(item: EventItem, data: UnapprovedEvent): EventModel | undefined {
+export function unapprovedEventModel(item: EventItem, data: Unapproved): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensUnapproved.name,

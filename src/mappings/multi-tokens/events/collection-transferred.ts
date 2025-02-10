@@ -9,9 +9,9 @@ type CollectionTransferredEvent = {
     newOwner: string
 }
 
-export function collectionTransferred(event: EventItem): CollectionTransferredEvent {
+export function collectionTransferred(event: EventItem): CollectionTransferred {
     return match(event)
-        .returnType<CollectionTransferredEvent>()
+        .returnType<CollectionTransferred>()
         .when(multiTokens.collectionTransferred.matrixEnjinV1004.is, () =>
             multiTokens.collectionTransferred.matrixEnjinV1004.decode(event)
         )
@@ -20,7 +20,7 @@ export function collectionTransferred(event: EventItem): CollectionTransferredEv
         })
 }
 
-export function collectionTransferredEventModel(item: EventItem, data: CollectionTransferredEvent): EventModel | undefined {
+export function collectionTransferredEventModel(item: EventItem, data: CollectionTransferred): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensCollectionTransferred.name,

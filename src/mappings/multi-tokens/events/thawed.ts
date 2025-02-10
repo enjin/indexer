@@ -12,16 +12,16 @@ type ThawedEvent = {
     }
 }
 
-export function thawed(event: EventItem): ThawedEvent {
+export function thawed(event: EventItem): Thawed {
     return match(event)
-        .returnType<ThawedEvent>()
+        .returnType<Thawed>()
         .when(multiTokens.thawed.matrixEnjinV603.is, multiTokens.thawed.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function thawedEventModel(item: EventItem, data: ThawedEvent): EventModel | undefined {
+export function thawedEventModel(item: EventItem, data: Thawed): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: MultiTokensThawed.name,

@@ -15,9 +15,9 @@ type MintedEvent = {
     amount: bigint
 }
 
-export function minted(event: EventItem): MintedEvent {
+export function minted(event: EventItem): Minted {
     return match(event)
-        .returnType<MintedEvent>()
+        .returnType<Minted>()
         .when(multiTokens.minted.matrixEnjinV603.is, multiTokens.minted.matrixEnjinV603.decode)
         .otherwise(() => {
             throw new UnsupportedEventError(event)
