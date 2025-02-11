@@ -8,7 +8,10 @@ import { Destroyed } from './types'
 export function destroyed(event: EventItem): Destroyed {
     return match(event)
         .returnType<Destroyed>()
-        .when(nominationPools.destroyed.enjinV100.is, nominationPools.destroyed.enjinV100.decode)
+        .when(
+            () => nominationPools.destroyed.enjinV100.is(event),
+            () => nominationPools.destroyed.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

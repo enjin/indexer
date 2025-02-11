@@ -16,22 +16,15 @@ import { syncAllCollections } from './jobs/collection-stats'
 import { metadataQueue } from './jobs/process-metadata'
 import { processor } from './processor'
 import { syncAllBalances } from './jobs/fetch-balance'
-import { nodeProfilingIntegration } from '@sentry/profiling-node'
 import { Json } from '@subsquid/substrate-processor'
 
 Sentry.init({
     dsn: config.sentryDsn,
-    integrations: [nodeProfilingIntegration()],
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
 })
 
-async function handleEvents(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem,
-    skipSave = false
-): Promise<Event | [Event, AccountTokenEvent] | undefined> {
+async function handleEvents(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave = false): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
         case events.multiTokens.approved.name:
             return processors.multiTokens.approved(ctx, item, skipSave)
@@ -223,9 +216,7 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            ctx.log.info(
-                `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
-            )
+            ctx.log.info(`Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
 
             for (const block of ctx.blocks) {
                 // const extrinsics: Extrinsic[] = []
@@ -234,11 +225,11 @@ processor.run(
                 // const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 0) {
-                    await createDefaultData(ctx as unknown as CommonContext, block.header)
-                    await chainState(ctx as unknown as CommonContext, block.header)
+                    await createDefaultData(ctx, block.header)
+                    await chainState(ctx, block.header)
 
                     if (Number(config.prefix) === 1110) {
-                        await updateClaimDetails(ctx as unknown as CommonContext, block.header)
+                        await updateClaimDetails(ctx, block.header)
                     }
 
                     await metadataQueue.pause().catch(() => {})
@@ -251,9 +242,7 @@ processor.run(
                     await syncAllCollections()
                 }
 
-                ctx.log.info(
-                    `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
-                )
+                ctx.log.info(`Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`)
 
                 for (const extrinsic of block.extrinsics) {
                     const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
@@ -275,14 +264,8 @@ processor.run(
                             name: tank.name,
                             feePaid: 0n,
                             ruleSetId: tankData.ruleSetId,
-                            paysRemainingFee:
-                                'settings' in tankData && tankData.settings !== undefined
-                                    ? tankData.settings.paysRemainingFee
-                                    : null,
-                            useNoneOrigin:
-                                'settings' in tankData && tankData.settings !== undefined
-                                    ? tankData.settings.useNoneOrigin
-                                    : null,
+                            paysRemainingFee: 'settings' in tankData && tankData.settings !== undefined ? tankData.settings.paysRemainingFee : null,
+                            useNoneOrigin: 'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
                         })
 
                         for (const eventItem of block.events) {
@@ -330,12 +313,8 @@ processor.run(
                     if (
                         call.name === 'Marketplace.fill_listing' ||
                         call.name === 'Marketplace.finalize_auction' ||
-                        (fuelTank &&
-                            call.args.call?.__kind === 'Marketplace' &&
-                            call.args.call?.value?.__kind === 'fill_listing') ||
-                        (fuelTank &&
-                            call.args.call?.__kind === 'Marketplace' &&
-                            call.args.call?.value?.__kind === 'finalize_auction')
+                        (fuelTank && call.args.call?.__kind === 'Marketplace' && call.args.call?.value?.__kind === 'fill_listing') ||
+                        (fuelTank && call.args.call?.__kind === 'Marketplace' && call.args.call?.value?.__kind === 'finalize_auction')
                     ) {
                         const listingId = call.args.call?.value?.listingId ?? call.args.listingId
 

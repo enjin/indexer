@@ -2,43 +2,62 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketplaceListingCreated,
-    MarketplaceOfferCreated,
-    Token,
-    TokenAccount,
-} from '../../../model'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceListingCreated, MarketplaceOfferCreated, Token, TokenAccount } from '../../../model'
 import { ListingCreated } from './types'
 
 export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
         .returnType<ListingCreated>()
-        .when(marketplace.listingCreated.matrixEnjinV1012.is, marketplace.listingCreated.matrixEnjinV1012.decode)
-        .when(marketplace.listingCreated.matrixEnjinV603.is, marketplace.listingCreated.matrixEnjinV603.decode)
-        .when(marketplace.listingCreated.matrixV1011.is, marketplace.listingCreated.matrixV1011.decode)
-        .when(marketplace.listingCreated.matrixV1010.is, marketplace.listingCreated.matrixV1010.decode)
-        .when(marketplace.listingCreated.matrixV500.is, marketplace.listingCreated.matrixV500.decode)
-        .when(marketplace.listingCreated.enjinV1032.is, marketplace.listingCreated.enjinV1032.decode)
-        .when(marketplace.listingCreated.enjinV110.is, marketplace.listingCreated.enjinV110.decode)
-        .when(marketplace.listingCreated.v1050.is, marketplace.listingCreated.v1050.decode)
-        .when(marketplace.listingCreated.v1031.is, marketplace.listingCreated.v1031.decode)
-        .when(marketplace.listingCreated.v1030.is, marketplace.listingCreated.v1030.decode)
-        .when(marketplace.listingCreated.v110.is, marketplace.listingCreated.v110.decode)
+        .when(
+            () => marketplace.listingCreated.matrixEnjinV1012.is(event),
+            () => marketplace.listingCreated.matrixEnjinV1012.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.matrixEnjinV603.is(event),
+            () => marketplace.listingCreated.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.matrixV1011.is(event),
+            () => marketplace.listingCreated.matrixV1011.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.matrixV1010.is(event),
+            () => marketplace.listingCreated.matrixV1010.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.matrixV500.is(event),
+            () => marketplace.listingCreated.matrixV500.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.enjinV1032.is(event),
+            () => marketplace.listingCreated.enjinV1032.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.enjinV110.is(event),
+            () => marketplace.listingCreated.enjinV110.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.v1050.is(event),
+            () => marketplace.listingCreated.v1050.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.v1031.is(event),
+            () => marketplace.listingCreated.v1031.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.v1030.is(event),
+            () => marketplace.listingCreated.v1030.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.v110.is(event),
+            () => marketplace.listingCreated.v110.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export async function listingCreatedEventModel(
-    item: EventItem,
-    data: ListingCreated,
-    listing: Listing
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+export async function listingCreatedEventModel(item: EventItem, data: ListingCreated, listing: Listing): Promise<[EventModel, AccountTokenEvent] | undefined> {
     let event: EventModel
 
     event = new EventModel({

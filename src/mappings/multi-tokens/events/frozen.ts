@@ -8,7 +8,10 @@ import { Freeze } from './types/freeze'
 export function frozen(event: EventItem): Freeze {
     return match(event)
         .returnType<Freeze>()
-        .when(multiTokens.frozen.matrixEnjinV603.is, multiTokens.frozen.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.frozen.matrixEnjinV603.is(event),
+            () => multiTokens.frozen.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -7,7 +7,10 @@ import { SomeOffline } from '../../../mappings/im-online/events/types'
 export function someOffline(event: EventItem): SomeOffline {
     return match(event)
         .returnType<SomeOffline>()
-        .when(imOnline.someOffline.enjinV100.is, imOnline.someOffline.enjinV100.decode)
+        .when(
+            () => imOnline.someOffline.enjinV100.is(event),
+            () => imOnline.someOffline.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

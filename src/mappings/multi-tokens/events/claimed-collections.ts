@@ -7,14 +7,38 @@ import { ClaimedCollections } from './types/claimed-collections'
 export function claimedCollections(event: EventItem): ClaimedCollections {
     return match(event)
         .returnType<ClaimedCollections>()
-        .when(multiTokens.claimedCollections.matrixEnjinV1000.is, multiTokens.claimedCollections.matrixEnjinV1000.decode)
-        .when(multiTokens.claimedCollections.matrixEnjinV603.is, multiTokens.claimedCollections.matrixEnjinV603.decode)
-        .when(multiTokens.claimedCollections.matrixV1000.is, multiTokens.claimedCollections.matrixV1000.decode)
-        .when(multiTokens.claimedCollections.matrixV604.is, multiTokens.claimedCollections.matrixV604.decode)
-        .when(multiTokens.claimedCollections.enjinV1021.is, multiTokens.claimedCollections.enjinV1021.decode)
-        .when(multiTokens.claimedCollections.enjinV101.is, multiTokens.claimedCollections.enjinV101.decode)
-        .when(multiTokens.claimedCollections.v1021.is, multiTokens.claimedCollections.v1021.decode)
-        .when(multiTokens.claimedCollections.v106.is, multiTokens.claimedCollections.v106.decode)
+        .when(
+            () => multiTokens.claimedCollections.matrixEnjinV1000.is(event),
+            () => multiTokens.claimedCollections.matrixEnjinV1000.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.matrixEnjinV603.is(event),
+            () => multiTokens.claimedCollections.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.matrixV1000.is(event),
+            () => multiTokens.claimedCollections.matrixV1000.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.matrixV604.is(event),
+            () => multiTokens.claimedCollections.matrixV604.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.enjinV1021.is(event),
+            () => multiTokens.claimedCollections.enjinV1021.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.enjinV101.is(event),
+            () => multiTokens.claimedCollections.enjinV101.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.v1021.is(event),
+            () => multiTokens.claimedCollections.v1021.decode(event)
+        )
+        .when(
+            () => multiTokens.claimedCollections.v106.is(event),
+            () => multiTokens.claimedCollections.v106.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -7,7 +7,10 @@ import { SetIdentity } from '../../../mappings/identity/calls/types'
 export function setIdentity(call: CallItem): SetIdentity {
     return match(call)
         .returnType<SetIdentity>()
-        .when(calls.identity.setIdentity.matrixEnjinV1000.is, calls.identity.setIdentity.matrixEnjinV1000.decode)
+        .when(
+            () => calls.identity.setIdentity.matrixEnjinV1000.is(call),
+            () => calls.identity.setIdentity.matrixEnjinV1000.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

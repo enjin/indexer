@@ -8,20 +8,28 @@ import { EraRewardsProcessed } from './types'
 export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
     return match(event)
         .returnType<EraRewardsProcessed>()
-        .when(nominationPools.eraRewardsProcessed.enjinV101.is, nominationPools.eraRewardsProcessed.enjinV101.decode)
-        .when(nominationPools.eraRewardsProcessed.enjinV100.is, nominationPools.eraRewardsProcessed.enjinV100.decode)
-        .when(nominationPools.eraRewardsProcessed.v104.is, nominationPools.eraRewardsProcessed.v104.decode)
-        .when(nominationPools.eraRewardsProcessed.v102.is, nominationPools.eraRewardsProcessed.v102.decode)
+        .when(
+            () => nominationPools.eraRewardsProcessed.enjinV101.is(event),
+            () => nominationPools.eraRewardsProcessed.enjinV101.decode(event)
+        )
+        .when(
+            () => nominationPools.eraRewardsProcessed.enjinV100.is(event),
+            () => nominationPools.eraRewardsProcessed.enjinV100.decode(event)
+        )
+        .when(
+            () => nominationPools.eraRewardsProcessed.v104.is(event),
+            () => nominationPools.eraRewardsProcessed.v104.decode(event)
+        )
+        .when(
+            () => nominationPools.eraRewardsProcessed.v102.is(event),
+            () => nominationPools.eraRewardsProcessed.v102.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function eraRewardsProcessedEventModel(
-    item: EventItem,
-    data: EraRewardsProcessed,
-    rate: bigint = 0n
-): EventModel | undefined {
+export function eraRewardsProcessedEventModel(item: EventItem, data: EraRewardsProcessed, rate: bigint = 0n): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

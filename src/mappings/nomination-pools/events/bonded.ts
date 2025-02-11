@@ -8,10 +8,22 @@ import { Bonded } from './types'
 export function bonded(event: EventItem): Bonded {
     return match(event)
         .returnType<Bonded>()
-        .when(nominationPools.bonded.enjinV101.is, nominationPools.bonded.enjinV101.decode)
-        .when(nominationPools.bonded.enjinV100.is, nominationPools.bonded.enjinV100.decode)
-        .when(nominationPools.bonded.v104.is, nominationPools.bonded.v104.decode)
-        .when(nominationPools.bonded.v100.is, nominationPools.bonded.v100.decode)
+        .when(
+            () => nominationPools.bonded.enjinV101.is(event),
+            () => nominationPools.bonded.enjinV101.decode(event)
+        )
+        .when(
+            () => nominationPools.bonded.enjinV100.is(event),
+            () => nominationPools.bonded.enjinV100.decode(event)
+        )
+        .when(
+            () => nominationPools.bonded.v104.is(event),
+            () => nominationPools.bonded.v104.decode(event)
+        )
+        .when(
+            () => nominationPools.bonded.v100.is(event),
+            () => nominationPools.bonded.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

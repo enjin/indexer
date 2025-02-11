@@ -7,7 +7,10 @@ import { Deposit } from './types'
 export function deposit(event: EventItem): Deposit {
     return match(event)
         .returnType<Deposit>()
-        .when(balances.deposit.matrixEnjinV603.is, balances.deposit.matrixEnjinV603.decode)
+        .when(
+            () => balances.deposit.matrixEnjinV603.is(event),
+            () => balances.deposit.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

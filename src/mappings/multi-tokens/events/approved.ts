@@ -8,7 +8,10 @@ import { Approved } from './types'
 export function approved(event: EventItem): Approved {
     return match(event)
         .returnType<Approved>()
-        .when(multiTokens.approved.matrixEnjinV603.is, multiTokens.approved.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.approved.matrixEnjinV603.is(event),
+            () => multiTokens.approved.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

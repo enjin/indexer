@@ -9,7 +9,10 @@ import { unwrapAccount } from '../../../common/util/entities'
 export function tokenCreated(event: EventItem): TokenCreated {
     return match(event)
         .returnType<TokenCreated>()
-        .when(multiTokens.tokenCreated.matrixEnjinV603.is, multiTokens.tokenCreated.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.tokenCreated.matrixEnjinV603.is(event),
+            () => multiTokens.tokenCreated.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

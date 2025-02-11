@@ -7,7 +7,10 @@ import { AddLiquidity } from '../../../mappings/stake-exchange/calls/types'
 export function addLiquidity(call: CallItem): AddLiquidity {
     return match(call)
         .returnType<AddLiquidity>()
-        .when(calls.stakeExchange.addLiquidity.enjinV100.is, calls.stakeExchange.addLiquidity.enjinV100.decode)
+        .when(
+            () => calls.stakeExchange.addLiquidity.enjinV100.is(call),
+            () => calls.stakeExchange.addLiquidity.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

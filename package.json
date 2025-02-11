@@ -16,6 +16,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm run worker && pnpm run processor && pnpm run graphql && pnpm run metrics",
+    "dev": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "processor": "node -r dotenv/config lib/main.js",
     "graphql": "squid-graphql-server --subscriptions",
     "metrics": "node -r dotenv/config lib/prom-metrics/index.js",
@@ -49,7 +50,6 @@
     "@polkadot/util": "^13.3.1",
     "@polkadot/util-crypto": "^13.2.2",
     "@sentry/node": "^8.54.0",
-    "@sentry/profiling-node": "^8.54.0",
     "@subsquid/cli": "^3.0.3",
     "@subsquid/graphql-server": "^4.9.0",
     "@subsquid/hasura-configuration": "^1.0.2",

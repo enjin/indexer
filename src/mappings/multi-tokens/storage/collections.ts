@@ -7,17 +7,42 @@ import { Collection } from './types/collections'
 export async function collections(block: BlockHeader, collectionId: bigint): Promise<Collection | undefined> {
     return match(block)
         .returnType<Promise<Collection | undefined>>()
-        .when(multiTokens.collections.matrixEnjinV1012.is, () =>
-            multiTokens.collections.matrixEnjinV1012.get(block, collectionId)
+        .when(
+            () => multiTokens.collections.matrixEnjinV1012.is(block),
+            () => multiTokens.collections.matrixEnjinV1012.get(block, collectionId)
         )
-        .when(multiTokens.collections.matrixEnjinV603.is, () => multiTokens.collections.matrixEnjinV603.get(block, collectionId))
-        .when(multiTokens.collections.matrixV1010.is, () => multiTokens.collections.matrixV1010.get(block, collectionId))
-        .when(multiTokens.collections.matrixV500.is, () => multiTokens.collections.matrixV500.get(block, collectionId))
-        .when(multiTokens.collections.enjinV1032.is, () => multiTokens.collections.enjinV1032.get(block, collectionId))
-        .when(multiTokens.collections.enjinV100.is, () => multiTokens.collections.enjinV100.get(block, collectionId))
-        .when(multiTokens.collections.v1050.is, () => multiTokens.collections.v1050.get(block, collectionId))
-        .when(multiTokens.collections.v1030.is, () => multiTokens.collections.v1030.get(block, collectionId))
-        .when(multiTokens.collections.v100.is, () => multiTokens.collections.v100.get(block, collectionId))
+        .when(
+            () => multiTokens.collections.matrixEnjinV603.is(block),
+            () => multiTokens.collections.matrixEnjinV603.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.matrixV1010.is(block),
+            () => multiTokens.collections.matrixV1010.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.matrixV500.is(block),
+            () => multiTokens.collections.matrixV500.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.enjinV1032.is(block),
+            () => multiTokens.collections.enjinV1032.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.enjinV100.is(block),
+            () => multiTokens.collections.enjinV100.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.v1050.is(block),
+            () => multiTokens.collections.v1050.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.v1030.is(block),
+            () => multiTokens.collections.v1030.get(block, collectionId)
+        )
+        .when(
+            () => multiTokens.collections.v100.is(block),
+            () => multiTokens.collections.v100.get(block, collectionId)
+        )
         .otherwise(() => {
             throw new UnsupportedStorageError(collections.name)
         })

@@ -9,17 +9,16 @@ import { unwrapAccount } from '../../../common/util/entities'
 export function minted(event: EventItem): Minted {
     return match(event)
         .returnType<Minted>()
-        .when(multiTokens.minted.matrixEnjinV603.is, multiTokens.minted.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.minted.matrixEnjinV603.is(event),
+            () => multiTokens.minted.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function mintedEventModel(
-    item: EventItem,
-    data: Minted,
-    token?: Token
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
+export function mintedEventModel(item: EventItem, data: Minted, token?: Token): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensMinted.name,

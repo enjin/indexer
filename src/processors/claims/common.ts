@@ -4,6 +4,7 @@ import * as mappings from './../../mappings'
 
 export async function updateClaimDetails(ctx: CommonContext, block: BlockHeader) {
     const exchangeRate = await mappings.claims.storage.exchangeRate(block)
+    if (exchangeRate === undefined) return
 
     const claimDetails = new ClaimDetails({
         id: '0',

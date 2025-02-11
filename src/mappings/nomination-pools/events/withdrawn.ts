@@ -8,7 +8,10 @@ import { Withdrawn } from './types'
 export function withdrawn(event: EventItem): Withdrawn {
     return match(event)
         .returnType<Withdrawn>()
-        .when(nominationPools.withdrawn.enjinV100.is, nominationPools.withdrawn.enjinV100.decode)
+        .when(
+            () => nominationPools.withdrawn.enjinV100.is(event),
+            () => nominationPools.withdrawn.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

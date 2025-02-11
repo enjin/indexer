@@ -8,14 +8,38 @@ import { BuyOrderCompleted } from './types'
 export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
     return match(event)
         .returnType<BuyOrderCompleted>()
-        .when(stakeExchange.buyOrderCompleted.enjinV1033.is, stakeExchange.buyOrderCompleted.enjinV1033.decode)
-        .when(stakeExchange.buyOrderCompleted.enjinV1026.is, stakeExchange.buyOrderCompleted.enjinV1026.decode)
-        .when(stakeExchange.buyOrderCompleted.enjinV120.is, stakeExchange.buyOrderCompleted.enjinV120.decode)
-        .when(stakeExchange.buyOrderCompleted.enjinV100.is, stakeExchange.buyOrderCompleted.enjinV100.decode)
-        .when(stakeExchange.buyOrderCompleted.v1033.is, stakeExchange.buyOrderCompleted.v1033.decode)
-        .when(stakeExchange.buyOrderCompleted.v1026.is, stakeExchange.buyOrderCompleted.v1026.decode)
-        .when(stakeExchange.buyOrderCompleted.v120.is, stakeExchange.buyOrderCompleted.v120.decode)
-        .when(stakeExchange.buyOrderCompleted.v100.is, stakeExchange.buyOrderCompleted.v100.decode)
+        .when(
+            () => stakeExchange.buyOrderCompleted.enjinV1033.is(event),
+            () => stakeExchange.buyOrderCompleted.enjinV1033.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.enjinV1026.is(event),
+            () => stakeExchange.buyOrderCompleted.enjinV1026.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.enjinV120.is(event),
+            () => stakeExchange.buyOrderCompleted.enjinV120.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.enjinV100.is(event),
+            () => stakeExchange.buyOrderCompleted.enjinV100.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.v1033.is(event),
+            () => stakeExchange.buyOrderCompleted.v1033.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.v1026.is(event),
+            () => stakeExchange.buyOrderCompleted.v1026.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.v120.is(event),
+            () => stakeExchange.buyOrderCompleted.v120.decode(event)
+        )
+        .when(
+            () => stakeExchange.buyOrderCompleted.v100.is(event),
+            () => stakeExchange.buyOrderCompleted.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -43,7 +43,7 @@ type Extrinsic @entity {
   pallet: String!
   method: String!
   args: JSON
-  signature: JSON!
+#  signature: JSON!
   signer: Account! @index
   nonce: Int!
   tip: BigInt
@@ -903,7 +903,7 @@ enum AccountClaimType {
 type ClaimRequest @entity {
   id: ID!
 
-  account: String!
+  who: String!
   acountType: AccountClaimType!
   hash: String @unique
   amountClaimable: BigInt!

@@ -2,36 +2,38 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketplaceCounterOfferPlaced,
-    Token,
-} from '../../../model'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceCounterOfferPlaced, Token } from '../../../model'
 import { CounterOfferPlaced } from './types'
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
     return match(event)
         .returnType<CounterOfferPlaced>()
-        .when(marketplace.counterOfferPlaced.matrixEnjinV1012.is, marketplace.counterOfferPlaced.matrixEnjinV1012.decode)
-        .when(marketplace.counterOfferPlaced.matrixV1011.is, marketplace.counterOfferPlaced.matrixV1011.decode)
-        .when(marketplace.counterOfferPlaced.matrixV1010.is, marketplace.counterOfferPlaced.matrixV1010.decode)
-        .when(marketplace.counterOfferPlaced.v1031.is, marketplace.counterOfferPlaced.v1031.decode)
-        .when(marketplace.counterOfferPlaced.v1030.is, marketplace.counterOfferPlaced.v1030.decode)
+        .when(
+            () => marketplace.counterOfferPlaced.matrixEnjinV1012.is(event),
+            () => marketplace.counterOfferPlaced.matrixEnjinV1012.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferPlaced.matrixV1011.is(event),
+            () => marketplace.counterOfferPlaced.matrixV1011.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferPlaced.matrixV1010.is(event),
+            () => marketplace.counterOfferPlaced.matrixV1010.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferPlaced.v1031.is(event),
+            () => marketplace.counterOfferPlaced.v1031.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferPlaced.v1030.is(event),
+            () => marketplace.counterOfferPlaced.v1030.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function counterOfferPlacedEventModel(
-    item: EventItem,
-    data: CounterOfferPlaced,
-    listing: Listing,
-    account: Account
-): [EventModel, AccountTokenEvent] | undefined {
+export function counterOfferPlacedEventModel(item: EventItem, data: CounterOfferPlaced, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferPlaced.name,

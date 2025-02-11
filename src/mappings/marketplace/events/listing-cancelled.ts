@@ -2,22 +2,16 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import {
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    ListingType,
-    MarketplaceListingCancelled,
-    MarketplaceOfferCancelled,
-    Token,
-} from '../../../model'
+import { AccountTokenEvent, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceListingCancelled, MarketplaceOfferCancelled, Token } from '../../../model'
 import { ListingCancelled } from './types'
 
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
         .returnType<ListingCancelled>()
-        .when(marketplace.listingCancelled.matrixEnjinV603.is, marketplace.listingCancelled.matrixEnjinV603.decode)
+        .when(
+            () => marketplace.listingCancelled.matrixEnjinV603.is(event),
+            () => marketplace.listingCancelled.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

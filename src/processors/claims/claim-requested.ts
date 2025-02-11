@@ -2,17 +2,17 @@ import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventMod
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { unwrapAccount } from '../../common/util/entities'
 
 export async function claimRequested(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const event = mappings.claims.events.claimRequested(item)
-    const who = await getOrCreateAccount(ctx, event.who)
+    const who = unwrapAccount(event.who)
 
     const claim = new ClaimRequest({
-        id: `${who.id}-${event.transactionHash}`,
-        account: who.id,
+        id: `${who}-${event.transactionHash}`,
+        who: who,
         acountType: AccountClaimType.EVM,
         amountClaimable: event.amountClaimable,
         amountBurned: event.amountBurned,
@@ -31,7 +31,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         id: item.id,
         name: item.name,
         body: {
-            who: event.who,
+            who: who,
             accountType: AccountClaimType.EVM,
             amountClaimable: event.amountClaimable,
             amountBurned: event.amountBurned,
@@ -46,7 +46,7 @@ export async function claimRequested(ctx: CommonContext, block: BlockHeader, ite
         name: ClaimsClaimRequested.name,
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimRequested({
-            who: who.id,
+            who,
             accountType: AccountClaimType.EVM,
             amountClaimable: event.amountClaimable,
             amountBurned: event.amountBurned,

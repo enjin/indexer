@@ -67,10 +67,7 @@ export class ValidatorDetailsResolver {
             ])
             .addSelect('100', 'uptime30d')
             .addSelect((subQuery) => {
-                return subQuery
-                    .select('COUNT(*)::int')
-                    .from('pool_validator', 'pool_validator')
-                    .where('pool_validator.validator_id = validator.id')
+                return subQuery.select('COUNT(*)::int').from('pool_validator', 'pool_validator').where('pool_validator.validator_id = validator.id')
             }, 'nominatorsCount')
             .addSelect((subquery) => {
                 return subquery

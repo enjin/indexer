@@ -7,7 +7,10 @@ import { Slashed } from './types'
 export function slashed(event: EventItem): Slashed {
     return match(event)
         .returnType<Slashed>()
-        .when(balances.slashed.matrixEnjinV603.is, balances.slashed.matrixEnjinV603.decode)
+        .when(
+            () => balances.slashed.matrixEnjinV603.is(event),
+            () => balances.slashed.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -7,7 +7,10 @@ import { Claimed } from './types/claimed'
 export function claimed(event: EventItem): Claimed {
     return match(event)
         .returnType<Claimed>()
-        .when(claims.claimed.matrixEnjinV603.is, claims.claimed.matrixEnjinV603.decode)
+        .when(
+            () => claims.claimed.matrixEnjinV603.is(event),
+            () => claims.claimed.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -7,17 +7,16 @@ import { Transferred } from './types'
 
 export function transferred(event: EventItem): Transferred {
     return match(event)
-        .when(multiTokens.transferred.matrixEnjinV603.is, multiTokens.transferred.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.transferred.matrixEnjinV603.is(event),
+            () => multiTokens.transferred.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function transferredEventModel(
-    item: EventItem,
-    data: Transferred,
-    token?: Token
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
+export function transferredEventModel(item: EventItem, data: Transferred, token?: Token): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensTransferred.name,

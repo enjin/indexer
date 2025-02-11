@@ -9,7 +9,7 @@ export class UnsupportedEventError extends Error {
 
 export class UnsupportedCallError extends Error {
     constructor(call: CallItem) {
-        super(`Call ${call.name} at ${call.block.height} is not supported`)
+        super(`Call ${call.name} (spec: ${call.block.specName}-${call.block.specVersion}) at block #${call.block.height} is not supported`)
     }
 }
 

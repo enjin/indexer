@@ -6,7 +6,10 @@ import { UnsupportedStorageError } from '../../../common/errors'
 export async function totalUnclaimedAmount(block: BlockHeader): Promise<bigint | undefined> {
     return match(block)
         .returnType<Promise<bigint | undefined>>()
-        .when(claims.totalUnclaimedAmount.matrixEnjinV603.is, claims.totalUnclaimedAmount.matrixEnjinV603.get)
+        .when(
+            () => claims.totalUnclaimedAmount.matrixEnjinV603.is(block),
+            () => claims.totalUnclaimedAmount.matrixEnjinV603.get(block)
+        )
         .otherwise(() => {
             throw new UnsupportedStorageError(totalUnclaimedAmount.name)
         })

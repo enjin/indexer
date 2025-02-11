@@ -7,7 +7,10 @@ import { AddSub } from '../../../mappings/identity/calls/types'
 export function addSub(call: CallItem): AddSub {
     return match(call)
         .returnType<AddSub>()
-        .when(calls.identity.addSub.matrixEnjinV1000.is, calls.identity.addSub.matrixEnjinV1000.decode)
+        .when(
+            () => calls.identity.addSub.matrixEnjinV1000.is(call),
+            () => calls.identity.addSub.matrixEnjinV1000.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

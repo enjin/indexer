@@ -8,9 +8,18 @@ import { Created } from './types'
 export function created(event: EventItem): Created {
     return match(event)
         .returnType<Created>()
-        .when(nominationPools.created.enjinV100.is, nominationPools.created.enjinV100.decode)
-        .when(nominationPools.created.v101.is, nominationPools.created.v101.decode)
-        .when(nominationPools.created.v100.is, nominationPools.created.v100.decode)
+        .when(
+            () => nominationPools.created.enjinV100.is(event),
+            () => nominationPools.created.enjinV100.decode(event)
+        )
+        .when(
+            () => nominationPools.created.v101.is(event),
+            () => nominationPools.created.v101.decode(event)
+        )
+        .when(
+            () => nominationPools.created.v100.is(event),
+            () => nominationPools.created.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

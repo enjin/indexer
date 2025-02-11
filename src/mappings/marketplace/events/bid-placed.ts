@@ -8,18 +8,16 @@ import { BidPlaced } from './types'
 export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)
         .returnType<BidPlaced>()
-        .when(marketplace.bidPlaced.matrixEnjinV603.is, marketplace.bidPlaced.matrixEnjinV603.decode)
+        .when(
+            () => marketplace.bidPlaced.matrixEnjinV603.is(event),
+            () => marketplace.bidPlaced.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function bidPlacedEventModel(
-    item: EventItem,
-    data: BidPlaced,
-    listing: Listing,
-    account: Account
-): [EventModel, AccountTokenEvent] | undefined {
+export function bidPlacedEventModel(item: EventItem, data: BidPlaced, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceBidPlaced.name,

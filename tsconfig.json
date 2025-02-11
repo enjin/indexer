@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+  },
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2020",
@@ -17,6 +20,6 @@
   },
   "include": ["src"],
   "exclude": [
-    "node_modules",
+    "node_modules"
   ]
 }

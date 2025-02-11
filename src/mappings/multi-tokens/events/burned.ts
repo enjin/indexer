@@ -8,17 +8,16 @@ import { Burned } from './types'
 export function burned(event: EventItem): Burned {
     return match(event)
         .returnType<Burned>()
-        .when(multiTokens.burned.matrixEnjinV603.is, multiTokens.burned.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.burned.matrixEnjinV603.is(event),
+            () => multiTokens.burned.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function burnedEventModel(
-    item: EventItem,
-    data: Burned,
-    token?: Token
-): [EventModel, AccountTokenEvent] | undefined | EventModel {
+export function burnedEventModel(item: EventItem, data: Burned, token?: Token): [EventModel, AccountTokenEvent] | undefined | EventModel {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensBurned.name,

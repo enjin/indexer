@@ -7,7 +7,10 @@ import { WithdrawLiquidity } from '../../../mappings/stake-exchange/calls/types'
 export function withdrawLiquidity(call: CallItem): WithdrawLiquidity {
     return match(call)
         .returnType<WithdrawLiquidity>()
-        .when(calls.stakeExchange.withdrawLiquidity.enjinV100.is, calls.stakeExchange.withdrawLiquidity.enjinV100.decode)
+        .when(
+            () => calls.stakeExchange.withdrawLiquidity.enjinV100.is(call),
+            () => calls.stakeExchange.withdrawLiquidity.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

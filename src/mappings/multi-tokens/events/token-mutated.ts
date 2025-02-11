@@ -8,15 +8,42 @@ import { TokenMutated } from './types'
 export function tokenMutated(event: EventItem): TokenMutated {
     return match(event)
         .returnType<TokenMutated>()
-        .when(multiTokens.tokenMutated.matrixEnjinV1012.is, multiTokens.tokenMutated.matrixEnjinV1012.decode)
-        .when(multiTokens.tokenMutated.matrixEnjinV603.is, multiTokens.tokenMutated.matrixEnjinV603.decode)
-        .when(multiTokens.tokenMutated.matrixV1010.is, multiTokens.tokenMutated.matrixV1010.decode)
-        .when(multiTokens.tokenMutated.matrixV500.is, multiTokens.tokenMutated.matrixV500.decode)
-        .when(multiTokens.tokenMutated.enjinV1032.is, multiTokens.tokenMutated.enjinV1032.decode)
-        .when(multiTokens.tokenMutated.enjinV100.is, multiTokens.tokenMutated.enjinV100.decode)
-        .when(multiTokens.tokenMutated.v1050.is, multiTokens.tokenMutated.v1050.decode)
-        .when(multiTokens.tokenMutated.v1030.is, multiTokens.tokenMutated.v1030.decode)
-        .when(multiTokens.tokenMutated.v100.is, multiTokens.tokenMutated.v100.decode)
+        .when(
+            () => multiTokens.tokenMutated.matrixEnjinV1012.is(event),
+            () => multiTokens.tokenMutated.matrixEnjinV1012.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.matrixEnjinV603.is(event),
+            () => multiTokens.tokenMutated.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.matrixV1010.is(event),
+            () => multiTokens.tokenMutated.matrixV1010.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.matrixV500.is(event),
+            () => multiTokens.tokenMutated.matrixV500.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.enjinV1032.is(event),
+            () => multiTokens.tokenMutated.enjinV1032.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.enjinV100.is(event),
+            () => multiTokens.tokenMutated.enjinV100.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.v1050.is(event),
+            () => multiTokens.tokenMutated.v1050.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.v1030.is(event),
+            () => multiTokens.tokenMutated.v1030.decode(event)
+        )
+        .when(
+            () => multiTokens.tokenMutated.v100.is(event),
+            () => multiTokens.tokenMutated.v100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

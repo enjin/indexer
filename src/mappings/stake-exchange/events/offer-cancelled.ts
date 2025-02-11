@@ -8,7 +8,10 @@ import { OfferCancelled } from './types'
 export function offerCancelled(event: EventItem): OfferCancelled {
     return match(event)
         .returnType<OfferCancelled>()
-        .when(stakeExchange.offerCancelled.enjinV100.is, stakeExchange.offerCancelled.enjinV100.decode)
+        .when(
+            () => stakeExchange.offerCancelled.enjinV100.is(event),
+            () => stakeExchange.offerCancelled.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

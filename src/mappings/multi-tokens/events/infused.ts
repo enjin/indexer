@@ -8,17 +8,16 @@ import { Infused } from './types/infused'
 export function infused(event: EventItem): Infused {
     return match(event)
         .returnType<Infused>()
-        .when(multiTokens.infused.matrixEnjinV1012.is, multiTokens.infused.matrixEnjinV1012.decode)
+        .when(
+            () => multiTokens.infused.matrixEnjinV1012.is(event),
+            () => multiTokens.infused.matrixEnjinV1012.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function infusedEventModel(
-    item: EventItem,
-    data: Infused,
-    token?: Token
-): [EventModel, AccountTokenEvent] | EventModel | undefined {
+export function infusedEventModel(item: EventItem, data: Infused, token?: Token): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensInfused.name,

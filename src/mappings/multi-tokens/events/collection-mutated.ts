@@ -8,8 +8,14 @@ import { CollectionMutated } from './types/collection-mutated'
 export function collectionMutated(event: EventItem): CollectionMutated {
     return match(event)
         .returnType<CollectionMutated>()
-        .when(multiTokens.collectionMutated.matrixEnjinV603.is, multiTokens.collectionMutated.matrixEnjinV603.decode)
-        .when(multiTokens.collectionMutated.v1050.is, multiTokens.collectionMutated.v1050.decode)
+        .when(
+            () => multiTokens.collectionMutated.matrixEnjinV603.is(event),
+            () => multiTokens.collectionMutated.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.collectionMutated.v1050.is(event),
+            () => multiTokens.collectionMutated.v1050.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

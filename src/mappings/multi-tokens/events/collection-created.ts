@@ -8,7 +8,10 @@ import { CollectionCreated } from './types'
 export function collectionCreated(event: EventItem): CollectionCreated {
     return match(event)
         .returnType<CollectionCreated>()
-        .when(multiTokens.collectionCreated.matrixEnjinV603.is, multiTokens.collectionCreated.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.collectionCreated.matrixEnjinV603.is(event),
+            () => multiTokens.collectionCreated.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

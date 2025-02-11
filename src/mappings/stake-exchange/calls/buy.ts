@@ -7,7 +7,10 @@ import { Buy } from '../../../mappings/stake-exchange/calls/types'
 export function buy(call: CallItem): Buy {
     return match(call)
         .returnType<Buy>()
-        .when(calls.stakeExchange.buy.enjinV100.is, calls.stakeExchange.buy.enjinV100.decode)
+        .when(
+            () => calls.stakeExchange.buy.enjinV100.is(call),
+            () => calls.stakeExchange.buy.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

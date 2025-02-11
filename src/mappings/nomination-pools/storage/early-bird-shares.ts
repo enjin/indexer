@@ -7,8 +7,9 @@ import { EarlyBirdShares } from '../../../mappings/nomination-pools/storage/type
 export function earlyBirdShares(block: BlockHeader, poolId: number): Promise<EarlyBirdShares> {
     return match(block)
         .returnType<Promise<EarlyBirdShares>>()
-        .when(storage.nominationPools.earlyBirdShares.enjinV1022.is, () =>
-            storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
+        .when(
+            () => storage.nominationPools.earlyBirdShares.enjinV1022.is(block),
+            () => storage.nominationPools.earlyBirdShares.enjinV1022.getPairs(block, poolId)
         )
         .otherwise(() => {
             throw new UnsupportedStorageError(earlyBirdShares.name)

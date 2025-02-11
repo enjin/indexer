@@ -7,7 +7,10 @@ import { UnbondDeposit } from './types'
 export function unbondDeposit(call: CallItem): UnbondDeposit {
     return match(call)
         .returnType<UnbondDeposit>()
-        .when(calls.nominationPools.unbondDeposit.enjinV100.is, calls.nominationPools.unbondDeposit.enjinV100.decode)
+        .when(
+            () => calls.nominationPools.unbondDeposit.enjinV100.is(call),
+            () => calls.nominationPools.unbondDeposit.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

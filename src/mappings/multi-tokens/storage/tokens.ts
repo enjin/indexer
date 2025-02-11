@@ -7,16 +7,30 @@ import { Token } from './types/tokens'
 export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: bigint): Promise<Token | undefined> {
     return match(block)
         .returnType<Promise<Token | undefined>>()
-        .when(storage.multiTokens.tokens.enjinV1032.is, () =>
-            storage.multiTokens.tokens.enjinV1032.get(block, collectionId, tokenId)
+        .when(
+            () => storage.multiTokens.tokens.enjinV1032.is(block),
+            () => storage.multiTokens.tokens.enjinV1032.get(block, collectionId, tokenId)
         )
-        .when(storage.multiTokens.tokens.enjinV100.is, () =>
-            storage.multiTokens.tokens.enjinV100.get(block, collectionId, tokenId)
+        .when(
+            () => storage.multiTokens.tokens.enjinV100.is(block),
+            () => storage.multiTokens.tokens.enjinV100.get(block, collectionId, tokenId)
         )
-        .when(storage.multiTokens.tokens.v1050.is, () => storage.multiTokens.tokens.v1050.get(block, collectionId, tokenId))
-        .when(storage.multiTokens.tokens.v1030.is, () => storage.multiTokens.tokens.v1030.get(block, collectionId, tokenId))
-        .when(storage.multiTokens.tokens.v102.is, () => storage.multiTokens.tokens.v102.get(block, collectionId, tokenId))
-        .when(storage.multiTokens.tokens.v100.is, () => storage.multiTokens.tokens.v100.get(block, collectionId, tokenId))
+        .when(
+            () => storage.multiTokens.tokens.v1050.is(block),
+            () => storage.multiTokens.tokens.v1050.get(block, collectionId, tokenId)
+        )
+        .when(
+            () => storage.multiTokens.tokens.v1030.is(block),
+            () => storage.multiTokens.tokens.v1030.get(block, collectionId, tokenId)
+        )
+        .when(
+            () => storage.multiTokens.tokens.v102.is(block),
+            () => storage.multiTokens.tokens.v102.get(block, collectionId, tokenId)
+        )
+        .when(
+            () => storage.multiTokens.tokens.v100.is(block),
+            () => storage.multiTokens.tokens.v100.get(block, collectionId, tokenId)
+        )
         .otherwise(() => {
             throw new UnsupportedStorageError(tokens.name)
         })

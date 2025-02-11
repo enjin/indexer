@@ -8,9 +8,9 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
     if (!item.extrinsic) return undefined
 
     const event = mappings.claims.events.claimed(item)
-    const who = await getOrCreateAccount(ctx, event.who)
-
+    const account = await getOrCreateAccount(ctx, event.who)
     const claimAccount = event.ethereumAddress?.toLowerCase()
+
     const claimDetails = await ctx.store.findOneByOrFail<ClaimDetails>(ClaimDetails, { id: '0' })
     const period = claimDetails.delayClaimsPeriod || (await mappings.claims.storage.delayClaimsPeriod(block))
 
@@ -22,12 +22,12 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         mappings.claims.storage.totalUnclaimedAmount(block),
         ctx.store.find<ClaimRequest>(ClaimRequest, {
             where: {
-                account: claimAccount,
+                who: claimAccount,
                 isClaimed: false,
                 createdBlock: LessThan(block.height - period),
             },
         }),
-        ctx.store.findOneBy<Claim>(Claim, { account: { id: who.id } }),
+        ctx.store.findOneBy<Claim>(Claim, { account: { id: account.id } }),
     ])
 
     claimDetails.totalUnclaimedAmount = totalUnclaimedAmount ?? 0n
@@ -36,24 +36,18 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         throw new Error(`No claim requests found for ${claimAccount}`)
     }
 
-    const efiSum = claimRequests
-        .filter((request) => request.isEfiToken)
-        .reduce((sum, request) => sum + request.amountClaimable, 0n)
+    const efiSum = claimRequests.filter((request) => request.isEfiToken).reduce((sum, request) => sum + request.amountClaimable, 0n)
 
-    const enjSum = claimRequests
-        .filter((request) => !request.isEfiToken)
-        .reduce((sum, request) => sum + request.amountClaimable, 0n)
+    const enjSum = claimRequests.filter((request) => !request.isEfiToken).reduce((sum, request) => sum + request.amountClaimable, 0n)
 
-    const efiBurned = claimRequests
-        .filter((request) => request.isEfiToken)
-        .reduce((sum, request) => sum + request.amountBurned, 0n)
+    const efiBurned = claimRequests.filter((request) => request.isEfiToken).reduce((sum, request) => sum + request.amountBurned, 0n)
 
     let updatedClaim: Claim
 
     if (!claim) {
         updatedClaim = new Claim({
-            id: who.id,
-            account: who,
+            id: account.id,
+            account,
             enjSum: 0n,
             efiSum: 0n,
             amount: 0n,
@@ -84,7 +78,7 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         name: ClaimsClaimed.name,
         extrinsic: item.extrinsic.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new ClaimsClaimed({
-            account: who.id,
+            account: account.id,
             ethAccount: claimAccount,
             amount: event.amount,
             efiSum,

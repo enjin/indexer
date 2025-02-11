@@ -7,7 +7,10 @@ import { JudgementGiven } from './types'
 export function judgementGiven(event: EventItem): JudgementGiven {
     return match(event)
         .returnType<JudgementGiven>()
-        .when(identity.judgementGiven.matrixEnjinV1000.is, identity.judgementGiven.matrixEnjinV1000.decode)
+        .when(
+            () => identity.judgementGiven.matrixEnjinV1000.is(event),
+            () => identity.judgementGiven.matrixEnjinV1000.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

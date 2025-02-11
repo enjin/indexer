@@ -7,7 +7,10 @@ import { Suspended } from './types'
 export function suspended(event: EventItem): Suspended {
     return match(event)
         .returnType<Suspended>()
-        .when(balances.suspended.matrixEnjinV603.is, balances.suspended.matrixEnjinV603.decode)
+        .when(
+            () => balances.suspended.matrixEnjinV603.is(event),
+            () => balances.suspended.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

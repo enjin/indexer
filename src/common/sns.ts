@@ -41,6 +41,10 @@ export class Sns {
     }
 
     public async send(message: { id: string; name: string; body: Record<string, unknown> }): Promise<void> {
+        if (!Sns.client) {
+            return
+        }
+
         const messageBlockHeight = parseInt(message.id.split('-')[0], 10)
         if (messageBlockHeight < config.lastBlockHeight) {
             return

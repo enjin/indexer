@@ -79,9 +79,7 @@ export class FuelTanksAccountsResolver {
         let userFuelBudget: undefined | UserFuelBudgetType
 
         if (resJson && resJson.ruleDataSets && resJson.ruleDataSets[0] && resJson.ruleDataSets[0].UserFuelBudget) {
-            userFuelBudget = res.registry
-                .createType('UserFuelBudget', hexToU8a(resJson.ruleDataSets[0].UserFuelBudget))
-                .toJSON() as any
+            userFuelBudget = res.registry.createType('UserFuelBudget', hexToU8a(resJson.ruleDataSets[0].UserFuelBudget)).toJSON() as any
         }
 
         return {

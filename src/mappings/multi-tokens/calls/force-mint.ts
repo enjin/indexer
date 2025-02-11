@@ -7,19 +7,58 @@ import { ForceMint } from './types'
 export function forceMint(call: CallItem): ForceMint {
     return match(call)
         .returnType<ForceMint>()
-        .when(calls.multiTokens.forceMint.matrixEnjinV1012.is, calls.multiTokens.forceMint.matrixEnjinV1012.decode)
-        .when(calls.multiTokens.forceMint.matrixEnjinV1003.is, calls.multiTokens.forceMint.matrixEnjinV1003.decode)
-        .when(calls.multiTokens.forceMint.matrixEnjinV603.is, calls.multiTokens.forceMint.matrixEnjinV603.decode)
-        .when(calls.multiTokens.forceMint.matrixV1010.is, calls.multiTokens.forceMint.matrixV1010.decode)
-        .when(calls.multiTokens.forceMint.matrixV1003.is, calls.multiTokens.forceMint.matrixV1003.decode)
-        .when(calls.multiTokens.forceMint.matrixV604.is, calls.multiTokens.forceMint.matrixV604.decode)
-        .when(calls.multiTokens.forceMint.enjinV1032.is, calls.multiTokens.forceMint.enjinV1032.decode)
-        .when(calls.multiTokens.forceMint.enjinV1023.is, calls.multiTokens.forceMint.enjinV1023.decode)
-        .when(calls.multiTokens.forceMint.enjinV101.is, calls.multiTokens.forceMint.enjinV101.decode)
-        .when(calls.multiTokens.forceMint.v1050.is, calls.multiTokens.forceMint.v1050.decode)
-        .when(calls.multiTokens.forceMint.v1030.is, calls.multiTokens.forceMint.v1030.decode)
-        .when(calls.multiTokens.forceMint.v1023.is, calls.multiTokens.forceMint.v1023.decode)
-        .when(calls.multiTokens.forceMint.v105.is, calls.multiTokens.forceMint.v105.decode)
+        .when(
+            () => calls.multiTokens.forceMint.matrixEnjinV1012.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV1012.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixEnjinV1003.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV1003.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixEnjinV603.is(call),
+            () => calls.multiTokens.forceMint.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixV1010.is(call),
+            () => calls.multiTokens.forceMint.matrixV1010.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixV1003.is(call),
+            () => calls.multiTokens.forceMint.matrixV1003.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.matrixV604.is(call),
+            () => calls.multiTokens.forceMint.matrixV604.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV1032.is(call),
+            () => calls.multiTokens.forceMint.enjinV1032.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV1023.is(call),
+            () => calls.multiTokens.forceMint.enjinV1023.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.enjinV101.is(call),
+            () => calls.multiTokens.forceMint.enjinV101.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.v1050.is(call),
+            () => calls.multiTokens.forceMint.v1050.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.v1030.is(call),
+            () => calls.multiTokens.forceMint.v1030.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.v1023.is(call),
+            () => calls.multiTokens.forceMint.v1023.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceMint.v105.is(call),
+            () => calls.multiTokens.forceMint.v105.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

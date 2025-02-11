@@ -8,7 +8,10 @@ import { OfferCompleted } from './types'
 export function offerCompleted(event: EventItem): OfferCompleted {
     return match(event)
         .returnType<OfferCompleted>()
-        .when(stakeExchange.offerCompleted.enjinV110.is, stakeExchange.offerCompleted.enjinV110.decode)
+        .when(
+            () => stakeExchange.offerCompleted.enjinV110.is(event),
+            () => stakeExchange.offerCompleted.enjinV110.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

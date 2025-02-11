@@ -8,8 +8,9 @@ import { CollectionDestroyed } from './types'
 export function collectionDestroyed(event: EventItem): CollectionDestroyed {
     return match(event)
         .returnType<CollectionDestroyed>()
-        .when(multiTokens.collectionDestroyed.matrixEnjinV603.is, () =>
-            multiTokens.collectionDestroyed.matrixEnjinV603.decode(event)
+        .when(
+            () => multiTokens.collectionDestroyed.matrixEnjinV603.is(event),
+            () => multiTokens.collectionDestroyed.matrixEnjinV603.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)

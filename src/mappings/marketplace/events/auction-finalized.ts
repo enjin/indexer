@@ -8,17 +8,16 @@ import { AuctionFinalized } from './types'
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)
         .returnType<AuctionFinalized>()
-        .when(marketplace.auctionFinalized.matrixEnjinV603.is, marketplace.auctionFinalized.matrixEnjinV603.decode)
+        .when(
+            () => marketplace.auctionFinalized.matrixEnjinV603.is(event),
+            () => marketplace.auctionFinalized.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function auctionFinalizedEventModel(
-    item: EventItem,
-    data: AuctionFinalized,
-    listing: Listing
-): [EventModel, AccountTokenEvent] | undefined {
+export function auctionFinalizedEventModel(item: EventItem, data: AuctionFinalized, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceAuctionFinalized.name,

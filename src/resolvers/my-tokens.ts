@@ -171,13 +171,7 @@ export class MyTokensResolver {
             .createQueryBuilder('token')
             .innerJoinAndMapOne('token.collection', Collection, 'collection', 'token.collection = collection.id')
             .leftJoinAndMapOne('token.bestListing', Listing, 'listing', 'listing.makeAssetId = token.id')
-            .innerJoinAndMapOne(
-                'token.owner',
-                TokenAccount,
-                'token_account',
-                'token_account.token = token.id AND token_account.account = :accountId',
-                { accountId }
-            )
+            .innerJoinAndMapOne('token.owner', TokenAccount, 'token_account', 'token_account.token = token.id AND token_account.account = :accountId', { accountId })
             .orderBy(orderBy, order, 'NULLS LAST')
             .skip(offset)
             .limit(limit)

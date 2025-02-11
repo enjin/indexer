@@ -7,7 +7,10 @@ import { AccountRemoved } from './types'
 export function accountRemoved(event: EventItem): AccountRemoved {
     return match(event)
         .returnType<AccountRemoved>()
-        .when(fuelTanks.accountRemoved.matrixEnjinV603.is, fuelTanks.accountRemoved.matrixEnjinV603.decode)
+        .when(
+            () => fuelTanks.accountRemoved.matrixEnjinV603.is(event),
+            () => fuelTanks.accountRemoved.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

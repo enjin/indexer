@@ -8,7 +8,10 @@ import { Nominated } from './types'
 export function nominated(event: EventItem): Nominated {
     return match(event)
         .returnType<Nominated>()
-        .when(nominationPools.nominated.enjinV101.is, nominationPools.nominated.enjinV101.decode)
+        .when(
+            () => nominationPools.nominated.enjinV101.is(event),
+            () => nominationPools.nominated.enjinV101.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

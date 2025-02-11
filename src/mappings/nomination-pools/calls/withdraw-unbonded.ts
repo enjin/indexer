@@ -7,7 +7,10 @@ import { WithdrawUnbonded } from './types'
 export function withdrawUnbonded(call: CallItem): WithdrawUnbonded {
     return match(call)
         .returnType<WithdrawUnbonded>()
-        .when(calls.nominationPools.withdrawUnbonded.enjinV100.is, calls.nominationPools.withdrawUnbonded.enjinV100.decode)
+        .when(
+            () => calls.nominationPools.withdrawUnbonded.enjinV100.is(call),
+            () => calls.nominationPools.withdrawUnbonded.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

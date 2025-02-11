@@ -126,9 +126,7 @@ export class TopCollectionsResolver {
                     'COALESCE(0.20 * (avg_sale_change::numeric / NULLIF(MAX(avg_sale_change) OVER(), 0)::numeric),0) +' +
                     'COALESCE(0.10 * (users::numeric / NULLIF(MAX(users) OVER(), 0)::numeric), 0)) AS trending_score'
             )
-            .addSelect(
-                `(0.80 * COALESCE(volume::numeric / max_volume::numeric, 0) + 0.20 * COALESCE(sales::numeric / max_sales::numeric)) AS top_score`
-            )
+            .addSelect(`(0.80 * COALESCE(volume::numeric / max_volume::numeric, 0) + 0.20 * COALESCE(sales::numeric / max_sales::numeric)) AS top_score`)
             .addFrom((mqb) => {
                 mqb.addSelect('collectionId AS id')
                     .addSelect(
@@ -180,9 +178,7 @@ export class TopCollectionsResolver {
                                 .addSelect(
                                     `COUNT(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.id ELSE NULL END)::int AS sales_last_duration`
                                 )
-                                .addSelect(
-                                    `AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS last_avg_sale`
-                                )
+                                .addSelect(`AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS last_avg_sale`)
                                 .addSelect(
                                     `AVG(CASE WHEN sale.created_at >= NOW() - INTERVAL '${timeFrameMap[timeFrame].p}' AND sale.created_at <= NOW() - INTERVAL '${timeFrameMap[timeFrame].c}' THEN sale.price ELSE 0 END) AS previous_avg_sale`
                                 )

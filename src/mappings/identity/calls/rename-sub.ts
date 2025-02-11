@@ -7,7 +7,10 @@ import { RenameSub } from '../../../mappings/identity/calls/types'
 export function renameSub(call: CallItem): RenameSub {
     return match(call)
         .returnType<RenameSub>()
-        .when(calls.identity.renameSub.matrixEnjinV1000.is, calls.identity.renameSub.matrixEnjinV1000.decode)
+        .when(
+            () => calls.identity.renameSub.matrixEnjinV1000.is(call),
+            () => calls.identity.renameSub.matrixEnjinV1000.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

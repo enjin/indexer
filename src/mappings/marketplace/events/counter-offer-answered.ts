@@ -21,22 +21,29 @@ import { CounterOfferAnswered } from './types'
 export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)
         .returnType<CounterOfferAnswered>()
-        .when(marketplace.counterOfferAnswered.matrixEnjinV1012.is, marketplace.counterOfferAnswered.matrixEnjinV1012.decode)
-        .when(marketplace.counterOfferAnswered.matrixV1011.is, marketplace.counterOfferAnswered.matrixV1011.decode)
-        .when(marketplace.counterOfferAnswered.matrixV1010.is, marketplace.counterOfferAnswered.matrixV1010.decode)
-        .when(marketplace.counterOfferAnswered.v1031.is, marketplace.counterOfferAnswered.v1031.decode)
-        .when(marketplace.counterOfferAnswered.v1030.is, marketplace.counterOfferAnswered.v1030.decode)
+        .when(() => marketplace.counterOfferAnswered.matrixEnjinV1012.is(event), marketplace.counterOfferAnswered.matrixEnjinV1012.decode)
+        .when(
+            () => marketplace.counterOfferAnswered.matrixV1011.is(event),
+            () => marketplace.counterOfferAnswered.matrixV1011.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferAnswered.matrixV1010.is(event),
+            () => marketplace.counterOfferAnswered.matrixV1010.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferAnswered.v1031.is(event),
+            () => marketplace.counterOfferAnswered.v1031.decode(event)
+        )
+        .when(
+            () => marketplace.counterOfferAnswered.v1030.is(event),
+            () => marketplace.counterOfferAnswered.v1030.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function counterOfferAnsweredEventModel(
-    item: EventItem,
-    data: CounterOfferAnswered,
-    listing: Listing,
-    account: Account
-): [EventModel, AccountTokenEvent] | undefined {
+export function counterOfferAnsweredEventModel(item: EventItem, data: CounterOfferAnswered, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
     let response: CounterOfferResponse
 
     switch (data.response?.__kind) {

@@ -7,7 +7,10 @@ import { Unbond } from './types'
 export function unbond(call: CallItem): Unbond {
     return match(call)
         .returnType<Unbond>()
-        .when(calls.nominationPools.unbond.enjinV100.is, calls.nominationPools.unbond.enjinV100.decode)
+        .when(
+            () => calls.nominationPools.unbond.enjinV100.is(call),
+            () => calls.nominationPools.unbond.enjinV100.decode(call)
+        )
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })

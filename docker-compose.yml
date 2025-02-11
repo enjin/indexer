@@ -23,7 +23,7 @@ services:
     volumes:
       - redis_db:/data
     ports:
-      - "6389:6379"
+      - "6379:6379"
 
   indexer_processor:
     container_name: indexer_processor

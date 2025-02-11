@@ -1,5 +1,5 @@
-module.exports = class Data1739292689770 {
-    name = 'Data1739292689770'
+module.exports = class Data1739308947849 {
+    name = 'Data1739308947849'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "validator" text, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -81,11 +81,11 @@ module.exports = class Data1739292689770 {
         await db.query(`CREATE UNIQUE INDEX "IDX_285ae4964e3c92a786cd73fedd" ON "identity_registrar" ("account_id") `)
         await db.query(`CREATE TABLE "account" ("id" character varying NOT NULL, "address" text NOT NULL, "nonce" integer NOT NULL, "balance" jsonb NOT NULL, "last_update_block" integer, "username" text, "verified_at" TIMESTAMP WITH TIME ZONE, "verified" boolean NOT NULL, "image" text, CONSTRAINT "PK_54115ee388cdb6d86bb4bf5b2ea" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_83603c168bc00b20544539fbea" ON "account" ("address") `)
-        await db.query(`CREATE TABLE "extrinsic" ("id" character varying NOT NULL, "hash" text NOT NULL, "block_number" integer NOT NULL, "block_hash" text NOT NULL, "success" boolean NOT NULL, "pallet" text NOT NULL, "method" text NOT NULL, "args" jsonb, "signature" jsonb NOT NULL, "nonce" integer NOT NULL, "tip" numeric, "fee" jsonb, "error" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "participants" text array NOT NULL, "fuel_tank" jsonb, "signer_id" character varying, CONSTRAINT "PK_80d7db0e4b1e83e30336bc76755" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "extrinsic" ("id" character varying NOT NULL, "hash" text NOT NULL, "block_number" integer NOT NULL, "block_hash" text NOT NULL, "success" boolean NOT NULL, "pallet" text NOT NULL, "method" text NOT NULL, "args" jsonb, "nonce" integer NOT NULL, "tip" numeric, "fee" jsonb, "error" text, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "participants" text array NOT NULL, "fuel_tank" jsonb, "signer_id" character varying, CONSTRAINT "PK_80d7db0e4b1e83e30336bc76755" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_1f45de0713a55049009e8e8127" ON "extrinsic" ("hash") `)
         await db.query(`CREATE INDEX "IDX_142f352835c698a35eacbeb2f5" ON "extrinsic" ("block_number") `)
         await db.query(`CREATE INDEX "IDX_886be421c92f221ac8234c6624" ON "extrinsic" ("signer_id") `)
-        await db.query(`CREATE TABLE "claim_request" ("id" character varying NOT NULL, "account" text NOT NULL, "acount_type" character varying(9) NOT NULL, "hash" text, "amount_claimable" numeric NOT NULL, "amount_burned" numeric NOT NULL, "is_efi_token" boolean NOT NULL, "extrinsic_index" integer, "is_claimed" boolean NOT NULL, "is_rejected" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "created_block" integer NOT NULL, CONSTRAINT "PK_2bc42faa6b816885c7ab31b2ccf" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "claim_request" ("id" character varying NOT NULL, "who" text NOT NULL, "acount_type" character varying(9) NOT NULL, "hash" text, "amount_claimable" numeric NOT NULL, "amount_burned" numeric NOT NULL, "is_efi_token" boolean NOT NULL, "extrinsic_index" integer, "is_claimed" boolean NOT NULL, "is_rejected" boolean NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "created_block" integer NOT NULL, CONSTRAINT "PK_2bc42faa6b816885c7ab31b2ccf" PRIMARY KEY ("id"))`)
         await db.query(`CREATE UNIQUE INDEX "IDX_0cc84b92a53558f6d4dcbf4874" ON "claim_request" ("hash") `)
         await db.query(`CREATE TABLE "claim" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "efi_sum" numeric NOT NULL, "enj_sum" numeric NOT NULL, "count" integer NOT NULL, "account_id" character varying, CONSTRAINT "PK_466b305cc2e591047fa1ce58f81" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_f1b34350a4500236d1f9e788cd" ON "claim" ("account_id") `)

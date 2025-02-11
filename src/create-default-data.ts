@@ -1,51 +1,39 @@
 import { BlockHeader, CommonContext } from './common/types/contexts'
-import {
-    CapType,
-    Collection,
-    CollectionFlags,
-    CollectionSocials,
-    CollectionStats,
-    Era,
-    Metadata,
-    MintPolicy,
-    Token,
-    TokenCapSupply,
-    TransferPolicy,
-} from './model'
+import { Collection, CollectionFlags, CollectionSocials, CollectionStats, Metadata, MintPolicy, Token, TransferPolicy } from './model'
 import { getOrCreateAccount } from './common/util/entities'
-import * as mappings from './mappings'
+import { isMainnet } from './common/tools'
 
 export async function createDefaultData(ctx: CommonContext, block: BlockHeader) {
-    const enj = await ctx.store.findOneBy(Token, { id: '0-0' })
+    const enjinCoin = await ctx.store.findOneBy<Token>(Token, { id: '0-0' })
 
-    if (!enj) {
-        const account = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
+    if (enjinCoin === undefined) {
+        const supply = isMainnet() ? 1_550_001_200_000_000_000_000_000n : 3_000_002_000_000_000_000_000_000n
+        const root = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
 
-        const enjCollection = new Collection({
+        const enjinCoinCollection = new Collection({
             id: '0',
             collectionId: 0n,
-            owner: account,
+            owner: root,
             mintPolicy: new MintPolicy({
-                maxTokenCount: null,
-                maxTokenSupply: null,
                 forceSingleMint: false,
+            }),
+            transferPolicy: new TransferPolicy({
+                isFrozen: false,
+            }),
+            stats: new CollectionStats({
+                lastSale: null,
+                floorPrice: null,
+                highestSale: null,
+                tokenCount: 1,
+                salesCount: 0,
+                supply,
+                marketCap: 0n,
+                volume: 0n,
             }),
             metadata: new Metadata({
                 name: 'Enjin Token (ENJ)',
             }),
-            transferPolicy: new TransferPolicy({
-                isFrozen: false,
-            }),
-            stats: new CollectionStats({
-                lastSale: null,
-                floorPrice: null,
-                highestSale: null,
-                tokenCount: 1,
-                salesCount: 0,
-                supply: 0n,
-                marketCap: 0n,
-                volume: 0n,
-            }),
+
             flags: new CollectionFlags({
                 featured: false,
                 hiddenForLegalReasons: false,
@@ -67,115 +55,114 @@ export async function createDefaultData(ctx: CommonContext, block: BlockHeader) 
             createdAt: new Date(block.timestamp ?? 0),
         })
 
-        const sEnjCollection = new Collection({
-            id: '1',
-            collectionId: 1n,
-            owner: account,
-            mintPolicy: new MintPolicy({
-                maxTokenCount: null,
-                maxTokenSupply: null,
-                forceSingleMint: false,
-            }),
-            metadata: new Metadata({
-                name: 'Staked Enjin Token (sENJ)',
-            }),
-            transferPolicy: new TransferPolicy({
-                isFrozen: false,
-            }),
-            stats: new CollectionStats({
-                lastSale: null,
-                floorPrice: null,
-                highestSale: null,
-                tokenCount: 0,
-                salesCount: 0,
-                supply: 0n,
-                marketCap: 0n,
-                volume: 0n,
-            }),
-            flags: new CollectionFlags({
-                featured: false,
-                hiddenForLegalReasons: false,
-            }),
-            verifiedAt: null,
-            socials: new CollectionSocials({
-                discord: null,
-                twitter: null,
-                instagram: null,
-                medium: null,
-                tiktok: null,
-                website: null,
-            }),
-            hidden: false,
-            burnPolicy: null,
-            attributePolicy: null,
-            attributeCount: 0,
-            totalDeposit: 0n,
-            createdAt: new Date(block.timestamp ?? 0),
-        })
+        await ctx.store.insert(enjinCoinCollection)
 
-        const degenCollectionData = await mappings.multiTokens.storage.collections(block, 2n)
-        if (!degenCollectionData) {
-            throw new Error('Degen collection data not found')
-        }
+        // const sEnjCollection = new Collection({
+        //     id: '1',
+        //     collectionId: 1n,
+        //     owner: root,
+        //     mintPolicy: new MintPolicy({
+        //         maxTokenCount: null,
+        //         maxTokenSupply: null,
+        //         forceSingleMint: false,
+        //     }),
+        //     metadata: new Metadata({
+        //         name: 'Staked Enjin Token (sENJ)',
+        //     }),
+        //     transferPolicy: new TransferPolicy({
+        //         isFrozen: false,
+        //     }),
+        //     stats: new CollectionStats({
+        //         lastSale: null,
+        //         floorPrice: null,
+        //         highestSale: null,
+        //         tokenCount: 0,
+        //         salesCount: 0,
+        //         supply: 0n,
+        //         marketCap: 0n,
+        //         volume: 0n,
+        //     }),
+        //     flags: new CollectionFlags({
+        //         featured: false,
+        //         hiddenForLegalReasons: false,
+        //     }),
+        //     verifiedAt: null,
+        //     socials: new CollectionSocials({
+        //         discord: null,
+        //         twitter: null,
+        //         instagram: null,
+        //         medium: null,
+        //         tiktok: null,
+        //         website: null,
+        //     }),
+        //     hidden: false,
+        //     burnPolicy: null,
+        //     attributePolicy: null,
+        //     attributeCount: 0,
+        //     totalDeposit: 0n,
+        //     createdAt: new Date(block.timestamp ?? 0),
+        // })
+        //
+        // const degenCollectionData = await mappings.multiTokens.storage.collections(block, 2n)
+        // if (!degenCollectionData) {
+        //     throw new Error('Degen collection data not found')
+        // }
+        //
+        // const degenCollection = new Collection({
+        //     id: '2',
+        //     collectionId: 2n,
+        //     owner: await getOrCreateAccount(ctx, degenCollectionData.owner),
+        //     mintPolicy: new MintPolicy({
+        //         maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
+        //         maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
+        //         forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
+        //     }),
+        //     metadata: new Metadata({
+        //         name: 'Degen',
+        //     }),
+        //     transferPolicy: new TransferPolicy({
+        //         isFrozen: false,
+        //     }),
+        //     stats: new CollectionStats({
+        //         lastSale: null,
+        //         floorPrice: null,
+        //         highestSale: null,
+        //         tokenCount: 1,
+        //         salesCount: 0,
+        //         supply: degenCollectionData.tokenCount,
+        //         marketCap: 0n,
+        //         volume: 0n,
+        //     }),
+        //     flags: new CollectionFlags({
+        //         featured: false,
+        //         hiddenForLegalReasons: false,
+        //     }),
+        //     verifiedAt: null,
+        //     socials: new CollectionSocials({
+        //         discord: null,
+        //         twitter: null,
+        //         instagram: null,
+        //         medium: null,
+        //         tiktok: null,
+        //         website: null,
+        //     }),
+        //     hidden: false,
+        //     burnPolicy: null,
+        //     attributePolicy: null,
+        //     attributeCount: 0,
+        //     totalDeposit: 0n,
+        //     createdAt: new Date(block.timestamp ?? 0),
+        // })
+        //
+        // await ctx.store.insert([enjCollection, sEnjCollection, degenCollection])
 
-        const degenCollection = new Collection({
-            id: '2',
-            collectionId: 2n,
-            owner: await getOrCreateAccount(ctx, degenCollectionData.owner),
-            mintPolicy: new MintPolicy({
-                maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
-                maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
-                forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
-            }),
-            metadata: new Metadata({
-                name: 'Degen',
-            }),
-            transferPolicy: new TransferPolicy({
-                isFrozen: false,
-            }),
-            stats: new CollectionStats({
-                lastSale: null,
-                floorPrice: null,
-                highestSale: null,
-                tokenCount: 1,
-                salesCount: 0,
-                supply: degenCollectionData.tokenCount,
-                marketCap: 0n,
-                volume: 0n,
-            }),
-            flags: new CollectionFlags({
-                featured: false,
-                hiddenForLegalReasons: false,
-            }),
-            verifiedAt: null,
-            socials: new CollectionSocials({
-                discord: null,
-                twitter: null,
-                instagram: null,
-                medium: null,
-                tiktok: null,
-                website: null,
-            }),
-            hidden: false,
-            burnPolicy: null,
-            attributePolicy: null,
-            attributeCount: 0,
-            totalDeposit: 0n,
-            createdAt: new Date(block.timestamp ?? 0),
-        })
-
-        await ctx.store.insert([enjCollection, sEnjCollection, degenCollection])
-
-        const token = new Token({
+        const enjinCoinToken = new Token({
             id: `0-0`,
             tokenId: 0n,
-            supply: 2_000_000_000n,
+            supply,
             isFrozen: false,
             minimumBalance: 1n,
-            cap: new TokenCapSupply({
-                type: CapType.Supply,
-                supply: 2_000_000_000n,
-            }),
+            cap: null,
             accountDepositCount: 0,
             anyoneCanInfuse: false,
             listingForbidden: true,
@@ -183,23 +170,23 @@ export async function createDefaultData(ctx: CommonContext, block: BlockHeader) 
             infusion: 0n,
             mintDeposit: 1n,
             attributeCount: 0,
-            collection: enjCollection,
+            collection: enjinCoinCollection,
             nonFungible: false,
             createdAt: new Date(block.timestamp ?? 0),
         })
 
-        await ctx.store.insert(token)
+        await ctx.store.insert(enjinCoinToken)
 
-        const era = new Era({
-            id: `0`,
-            index: 0,
-            startAt: new Date(block.timestamp ?? 0),
-            endAt: new Date(block.timestamp ?? 0),
-            startBlock: block.height,
-            endBlock: block.height,
-        })
-
-        await ctx.store.insert(era)
+        // const era = new Era({
+        //     id: `0`,
+        //     index: 0,
+        //     startAt: new Date(block.timestamp ?? 0),
+        //     endAt: new Date(block.timestamp ?? 0),
+        //     startBlock: block.height,
+        //     endBlock: block.height,
+        // })
+        //
+        // await ctx.store.insert(era)
 
         ctx.log.info('Default data created')
     }

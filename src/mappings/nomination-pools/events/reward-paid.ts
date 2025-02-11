@@ -7,7 +7,10 @@ import { RewardPaid } from './types'
 export function rewardPaid(event: EventItem): RewardPaid {
     return match(event)
         .returnType<RewardPaid>()
-        .when(nominationPools.rewardPaid.enjinV100.is, nominationPools.rewardPaid.enjinV100.decode)
+        .when(
+            () => nominationPools.rewardPaid.enjinV100.is(event),
+            () => nominationPools.rewardPaid.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

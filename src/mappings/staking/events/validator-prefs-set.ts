@@ -7,7 +7,10 @@ import { ValidatorPrefsSet } from './types'
 export function validatorPrefsSet(event: EventItem): ValidatorPrefsSet {
     return match(event)
         .returnType<ValidatorPrefsSet>()
-        .when(staking.validatorPrefsSet.enjinV100.is, staking.validatorPrefsSet.enjinV100.decode)
+        .when(
+            () => staking.validatorPrefsSet.enjinV100.is(event),
+            () => staking.validatorPrefsSet.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -8,7 +8,10 @@ import { AttributeRemoved } from './types'
 export function attributeRemoved(event: EventItem): AttributeRemoved {
     return match(event)
         .returnType<AttributeRemoved>()
-        .when(multiTokens.attributeRemoved.matrixEnjinV603.is, multiTokens.attributeRemoved.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.attributeRemoved.matrixEnjinV603.is(event),
+            () => multiTokens.attributeRemoved.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

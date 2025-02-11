@@ -8,8 +8,9 @@ import { CollectionTransferred } from './types'
 export function collectionTransferred(event: EventItem): CollectionTransferred {
     return match(event)
         .returnType<CollectionTransferred>()
-        .when(multiTokens.collectionTransferred.matrixEnjinV1004.is, () =>
-            multiTokens.collectionTransferred.matrixEnjinV1004.decode(event)
+        .when(
+            () => multiTokens.collectionTransferred.matrixEnjinV1004.is(event),
+            () => multiTokens.collectionTransferred.matrixEnjinV1004.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)

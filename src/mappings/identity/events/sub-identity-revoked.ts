@@ -7,7 +7,10 @@ import { SubIdentityRevoked } from './types'
 export function subIdentityRevoked(event: EventItem): SubIdentityRevoked {
     return match(event)
         .returnType<SubIdentityRevoked>()
-        .when(identity.subIdentityRevoked.matrixEnjinV1000.is, identity.subIdentityRevoked.matrixEnjinV1000.decode)
+        .when(
+            () => identity.subIdentityRevoked.matrixEnjinV1000.is(event),
+            () => identity.subIdentityRevoked.matrixEnjinV1000.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

@@ -11,13 +11,7 @@ async function* accountsInBatch(em: EntityManager) {
     const limit = 100
 
     while (true) {
-        const items = await em
-            .getRepository(Account)
-            .createQueryBuilder('account')
-            .select('account.id')
-            .skip(skip)
-            .take(limit)
-            .getMany()
+        const items = await em.getRepository(Account).createQueryBuilder('account').select('account.id').skip(skip).take(limit).getMany()
 
         yield items
         if (items.length === 0 || items.length < limit) {

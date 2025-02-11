@@ -8,7 +8,10 @@ import { Unbonded } from './types'
 export function unbonded(event: EventItem): Unbonded {
     return match(event)
         .returnType<Unbonded>()
-        .when(nominationPools.unbonded.enjinV100.is, nominationPools.unbonded.enjinV100.decode)
+        .when(
+            () => nominationPools.unbonded.enjinV100.is(event),
+            () => nominationPools.unbonded.enjinV100.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

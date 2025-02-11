@@ -8,7 +8,10 @@ import { Unapproved } from './types/unapproved'
 export function unapproved(event: EventItem): Unapproved {
     return match(event)
         .returnType<Unapproved>()
-        .when(multiTokens.unapproved.matrixEnjinV603.is, multiTokens.unapproved.matrixEnjinV603.decode)
+        .when(
+            () => multiTokens.unapproved.matrixEnjinV603.is(event),
+            () => multiTokens.unapproved.matrixEnjinV603.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
