@@ -11,6 +11,7 @@ export function createFuelTank(call: CallItem): CreateFuelTank {
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1012.is(call),
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1012.decode(call)
         )
+
         .when(
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1005.is(call),
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1005.decode(call)

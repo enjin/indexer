@@ -7,5 +7,6 @@
   "singleQuote": true,
   "arrowParens": "always",
   "printWidth": 190,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "objectWrap": "collapse"
 }
