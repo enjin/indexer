@@ -1,4 +1,4 @@
-import { DefaultMintParams, AccountId32 } from '@enjin/indexer/mappings/common/types'
+import { DefaultMintParams, AccountId32 } from '../../../common/types'
 
 export type BatchMint = {
     collectionId: bigint

@@ -2,7 +2,7 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { IdentityCleared } from '@enjin/indexer/mappings/identity/events/types'
+import { IdentityCleared } from './types'
 
 export function identityCleared(event: EventItem): IdentityCleared {
     return match(event)

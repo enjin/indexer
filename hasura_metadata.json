@@ -1,0 +1,2035 @@
+{
+  "resource_version": 1,
+  "metadata": {
+    "version": 3,
+    "sources": [
+      {
+        "name": "default",
+        "kind": "postgres",
+        "tables": [
+          {
+            "table": {
+              "name": "chain_info",
+              "schema": "public"
+            },
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "token_account",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "pool_members",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "tokenAccount_id",
+                    "table": {
+                      "name": "pool_member",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "attribute",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "bid",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "bidder_id"
+                }
+              },
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "listing_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "listing_status",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "listing_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "listing_sale",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "lastSale_id",
+                    "table": {
+                      "name": "token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "buyer_id"
+                }
+              },
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "listing_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "counter_offer",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "listing_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "lastAction_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "listing",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "bids",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "listing_id",
+                    "table": {
+                      "name": "bid",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listing_statuss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "listing_id",
+                    "table": {
+                      "name": "listing_status",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listing_sales",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "listing_id",
+                    "table": {
+                      "name": "listing_sale",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "counter_offers",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "listing_id",
+                    "table": {
+                      "name": "counter_offer",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "bestListing_id",
+                    "table": {
+                      "name": "token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "recentListing_id",
+                    "table": {
+                      "name": "token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "seller_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "makeAssetId_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "takeAssetId_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "trait",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "trait_tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "trait_id",
+                    "table": {
+                      "name": "trait_token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "trait_token",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "trait",
+                "using": {
+                  "foreign_key_constraint_on": "trait_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "token_rarity",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "token",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "token_accounts",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "token_account",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "attributes",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "attribute",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listings",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "makeAssetId_id",
+                    "table": {
+                      "name": "listing",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listings",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "takeAssetId_id",
+                    "table": {
+                      "name": "listing",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "trait_tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "trait_token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "royalty_currencys",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "royalty_currency",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "account_token_events",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "account_token_event",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "token_rarity",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "token_id",
+                    "table": {
+                      "name": "token_rarity",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              },
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "bestListing_id"
+                }
+              },
+              {
+                "name": "listing",
+                "using": {
+                  "foreign_key_constraint_on": "recentListing_id"
+                }
+              },
+              {
+                "name": "listing_sale",
+                "using": {
+                  "foreign_key_constraint_on": "lastSale_id"
+                }
+              },
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "degenToken_id",
+                    "table": {
+                      "name": "nomination_pool",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "royalty_currency",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "collection_account",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "collection",
+                "using": {
+                  "foreign_key_constraint_on": "collection_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "collection",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "token_accounts",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "token_account",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "attributes",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "attribute",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "traits",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "trait",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "token_raritys",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "token_rarity",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "tokens",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "token",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "royalty_currencys",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "royalty_currency",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "collection_accounts",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "collection_id",
+                    "table": {
+                      "name": "collection_account",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "owner_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "event",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "account_token_events",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "event_id",
+                    "table": {
+                      "name": "account_token_event",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "extrinsic",
+                "using": {
+                  "foreign_key_constraint_on": "extrinsic_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "account_token_event",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "from_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "to_id"
+                }
+              },
+              {
+                "name": "event",
+                "using": {
+                  "foreign_key_constraint_on": "event_id"
+                }
+              },
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "token_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "registration",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "identitys",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "info_id",
+                    "table": {
+                      "name": "identity",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "identity",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "identitys",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "super_id",
+                    "table": {
+                      "name": "identity",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "registration",
+                "using": {
+                  "foreign_key_constraint_on": "info_id"
+                }
+              },
+              {
+                "name": "identity",
+                "using": {
+                  "foreign_key_constraint_on": "super_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "identity_registrar",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "account",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "token_accounts",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "token_account",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "bids",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "bidder_id",
+                    "table": {
+                      "name": "bid",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listing_sales",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "buyer_id",
+                    "table": {
+                      "name": "listing_sale",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "counter_offers",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "counter_offer",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "counter_offers",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "lastAction_id",
+                    "table": {
+                      "name": "counter_offer",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "listings",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "seller_id",
+                    "table": {
+                      "name": "listing",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "collection_accounts",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "collection_account",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "collections",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "owner_id",
+                    "table": {
+                      "name": "collection",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "account_token_events",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "from_id",
+                    "table": {
+                      "name": "account_token_event",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "account_token_events",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "to_id",
+                    "table": {
+                      "name": "account_token_event",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "registrations",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "registration",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "extrinsics",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "signer_id",
+                    "table": {
+                      "name": "extrinsic",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "claims",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "claim",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "multi_tokens_claimss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "multi_tokens_claims",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "fuel_tank_user_accountss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "fuel_tank_user_accounts",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "fuel_tanks",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "tankAccount_id",
+                    "table": {
+                      "name": "fuel_tank",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "fuel_tanks",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "owner_id",
+                    "table": {
+                      "name": "fuel_tank",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "stake_exchange_offers",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "stake_exchange_offer",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "validators",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "validator",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "pool_members",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "pool_member",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "early_bird_sharess",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "early_bird_shares",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "identity",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "identity",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "identity_registrar",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "identity_registrar",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "stake_exchange_token_filter",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "account_id",
+                    "table": {
+                      "name": "stake_exchange_token_filter",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "extrinsic",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "events",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "extrinsic_id",
+                    "table": {
+                      "name": "event",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "signer_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "claim_request",
+              "schema": "public"
+            },
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "claim",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "claim_details",
+              "schema": "public"
+            },
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "multi_tokens_claims",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "fuel_tank_user_accounts",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "fuel_tank",
+                "using": {
+                  "foreign_key_constraint_on": "tank_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "fuel_tank_account_rules",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "fuel_tank",
+                "using": {
+                  "foreign_key_constraint_on": "tank_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "fuel_tank",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "fuel_tank_user_accountss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "tank_id",
+                    "table": {
+                      "name": "fuel_tank_user_accounts",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "fuel_tank_account_ruless",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "tank_id",
+                    "table": {
+                      "name": "fuel_tank_account_rules",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "fuel_tank_rule_sets",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "tank_id",
+                    "table": {
+                      "name": "fuel_tank_rule_set",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "tankAccount_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "owner_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "fuel_tank_rule_set",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "permitted_extrinsicss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "ruleSet_id",
+                    "table": {
+                      "name": "permitted_extrinsics",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "fuel_tank",
+                "using": {
+                  "foreign_key_constraint_on": "tank_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "permitted_extrinsics",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "fuel_tank_rule_set",
+                "using": {
+                  "foreign_key_constraint_on": "ruleSet_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "stake_exchange_offer",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "stake_exchange_token_filter",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "offer_id",
+                    "table": {
+                      "name": "stake_exchange_token_filter",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "stake_exchange_token_filter",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "stake_exchange_offer",
+                "using": {
+                  "foreign_key_constraint_on": "offer_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "era",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "era_rewards",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "era_id",
+                    "table": {
+                      "name": "era_reward",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "pool_members",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "joinedEra_id",
+                    "table": {
+                      "name": "pool_member",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "pool_member_rewards",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": "pool_id"
+                }
+              },
+              {
+                "name": "pool_member",
+                "using": {
+                  "foreign_key_constraint_on": "member_id"
+                }
+              },
+              {
+                "name": "era_reward",
+                "using": {
+                  "foreign_key_constraint_on": "reward_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "era_reward",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "pool_member_rewardss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "reward_id",
+                    "table": {
+                      "name": "pool_member_rewards",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": "pool_id"
+                }
+              },
+              {
+                "name": "era",
+                "using": {
+                  "foreign_key_constraint_on": "era_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "validator",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "pool_validators",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "validator_id",
+                    "table": {
+                      "name": "pool_validator",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "pool_validator",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": "pool_id"
+                }
+              },
+              {
+                "name": "validator",
+                "using": {
+                  "foreign_key_constraint_on": "validator_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "nomination_pool",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "pool_member_rewardss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "pool_id",
+                    "table": {
+                      "name": "pool_member_rewards",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "era_rewards",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "pool_id",
+                    "table": {
+                      "name": "era_reward",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "pool_validators",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "pool_id",
+                    "table": {
+                      "name": "pool_validator",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "pool_members",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "pool_id",
+                    "table": {
+                      "name": "pool_member",
+                      "schema": "public"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "early_bird_sharess",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "pool_id",
+                    "table": {
+                      "name": "early_bird_shares",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "token",
+                "using": {
+                  "foreign_key_constraint_on": "degenToken_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "pool_member",
+              "schema": "public"
+            },
+            "array_relationships": [
+              {
+                "name": "pool_member_rewardss",
+                "using": {
+                  "foreign_key_constraint_on": {
+                    "column": "member_id",
+                    "table": {
+                      "name": "pool_member_rewards",
+                      "schema": "public"
+                    }
+                  }
+                }
+              }
+            ],
+            "object_relationships": [
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": "pool_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              },
+              {
+                "name": "token_account",
+                "using": {
+                  "foreign_key_constraint_on": "tokenAccount_id"
+                }
+              },
+              {
+                "name": "era",
+                "using": {
+                  "foreign_key_constraint_on": "joinedEra_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "early_bird_shares",
+              "schema": "public"
+            },
+            "object_relationships": [
+              {
+                "name": "nomination_pool",
+                "using": {
+                  "foreign_key_constraint_on": "pool_id"
+                }
+              },
+              {
+                "name": "account",
+                "using": {
+                  "foreign_key_constraint_on": "account_id"
+                }
+              }
+            ],
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          },
+          {
+            "table": {
+              "name": "early_bird_details",
+              "schema": "public"
+            },
+            "select_permissions": [
+              {
+                "role": "public",
+                "permission": {
+                  "columns": "*",
+                  "filter": {},
+                  "allow_aggregations": true
+                }
+              }
+            ]
+          }
+        ],
+        "configuration": {
+          "connection_info": {
+            "database_url": {
+              "from_env": "HASURA_GRAPHQL_DATABASE_URL"
+            },
+            "isolation_level": "read-committed",
+            "pool_settings": {
+              "connection_lifetime": 600,
+              "idle_timeout": 180,
+              "max_connections": 50,
+              "retries": 1
+            },
+            "use_prepared_statements": true
+          }
+        }
+      }
+    ]
+  }
+}

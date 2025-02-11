@@ -4,7 +4,7 @@ import { Event as EventModel, Identity, JudgementType, Registration } from '../.
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
-import { Data } from '@enjin/indexer/mappings/common/types'
+import { Data } from '../../mappings/common/types'
 
 const dataToValue = (raw: Data) => {
     if (raw.__kind !== 'None') {

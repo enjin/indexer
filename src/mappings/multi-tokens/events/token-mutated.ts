@@ -2,7 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '@enjin/indexer/model'
+import { Event as EventModel, Extrinsic, MultiTokensTokenMutated } from '../../../model'
 import { TokenMutated } from './types'
 
 export function tokenMutated(event: EventItem): TokenMutated {

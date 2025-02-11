@@ -1,4 +1,4 @@
-import { AccountId32, Deposit, Bytes, Approval, TokenAccountReserve } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, Deposit, Bytes, Approval, TokenAccountReserve } from '../../../common/types'
 
 export type TokenAccount = {
     balance: bigint

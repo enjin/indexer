@@ -1,0 +1,26 @@
+
+manifestVersion: subsquid.io/v0.1
+name: squid-hasura-example
+version: 1
+description: 'A squid using a dedicated Hasura instance for its GraphQL API'
+build:
+deploy:
+  env:
+    HASURA_GRAPHQL_ADMIN_SECRET: "${{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}"
+    HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
+    HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: "true"
+  addons:
+    postgres:
+    hasura:
+    rpc:
+      - eth.http
+  init:
+    env:
+      HASURA_GRAPHQL_ENDPOINT: 'http://hasura:8080'
+    cmd:
+      - sqd
+      - initialize-squid:apply
+  processor:
+    cmd:
+      - sqd
+      - process:prod

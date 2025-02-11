@@ -1,4 +1,4 @@
-import { AccountId32, H160, CollectionIdPair } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, H160, CollectionIdPair } from '../../../common/types'
 
 export type ClaimedCollections = {
     accountId: AccountId32

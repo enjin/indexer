@@ -1,4 +1,4 @@
-import { DefaultCollectionDescriptor } from '@enjin/indexer/mappings/common/types'
+import { DefaultCollectionDescriptor } from '../../../common/types'
 
 export type ForceCreateCollection = {
     owner: string

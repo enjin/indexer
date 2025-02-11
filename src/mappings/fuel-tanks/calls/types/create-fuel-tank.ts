@@ -1,4 +1,4 @@
-import { FuelTankDescriptor } from '@enjin/indexer/mappings/common/types'
+import { FuelTankDescriptor } from '../../../common/types'
 
 export type CreateFuelTank = {
     descriptor: FuelTankDescriptor

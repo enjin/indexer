@@ -1,4 +1,4 @@
-import { Bytes } from '@enjin/indexer/mappings/common/types'
+import { Bytes } from '../../../common/types'
 
 export type AttributeSet = {
     collectionId: bigint

@@ -1,4 +1,4 @@
-import { RootOrSigned } from '@enjin/indexer/mappings/common/types'
+import { RootOrSigned } from '../../../common/types'
 
 export type TokenCreated = {
     collectionId: bigint

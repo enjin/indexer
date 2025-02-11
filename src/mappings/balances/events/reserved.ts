@@ -2,7 +2,7 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Reserved } from '@enjin/indexer/mappings/balances/events/types'
+import { Reserved } from './types'
 
 export function reserved(event: EventItem): Reserved {
     return match(event)

@@ -2,15 +2,8 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketplaceAuctionFinalized,
-} from '@enjin/indexer/model'
-import { AuctionFinalized } from '@enjin/indexer/mappings/marketplace/events/types'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceAuctionFinalized } from '../../../model'
+import { AuctionFinalized } from './types'
 
 export function auctionFinalized(event: EventItem): AuctionFinalized {
     return match(event)

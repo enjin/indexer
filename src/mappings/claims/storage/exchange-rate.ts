@@ -1,8 +1,8 @@
-import { BlockHeader } from '@enjin/indexer/common/types/contexts'
+import { BlockHeader } from '../../../common/types/contexts'
 import { UnsupportedStorageError } from '../../../common/errors'
 import { claims } from '../../../types/generated/storage'
 import { match } from 'ts-pattern'
-import { ExchangeRate } from '@enjin/indexer/mappings/claims/storage/types'
+import { ExchangeRate } from './types'
 
 export async function exchangeRate(block: BlockHeader): Promise<ExchangeRate | undefined> {
     return match(block)

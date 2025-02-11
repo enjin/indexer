@@ -1,4 +1,4 @@
-import { MultiAddress, FuelTankDescriptor } from '@enjin/indexer/mappings/common/types'
+import { MultiAddress, FuelTankDescriptor } from '../../../common/types'
 
 export type ForceCreateFuelTank = {
     owner: MultiAddress

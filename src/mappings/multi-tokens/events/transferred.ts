@@ -2,7 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token } from '@enjin/indexer/model'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token } from '../../../model'
 import { Transferred } from './types'
 
 export function transferred(event: EventItem): Transferred {

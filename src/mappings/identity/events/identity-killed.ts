@@ -2,7 +2,7 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { IdentityKilled } from '@enjin/indexer/mappings/identity/events/types'
+import { IdentityKilled } from './types'
 
 export function identityKilled(event: EventItem): IdentityKilled {
     return match(event)

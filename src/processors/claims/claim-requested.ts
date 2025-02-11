@@ -2,7 +2,7 @@ import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventMod
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { getOrCreateAccount } from '@enjin/indexer/common/util/entities'
+import { getOrCreateAccount } from '../../common/util/entities'
 
 export async function claimRequested(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

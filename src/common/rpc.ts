@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import config from '../config'
-import './interfaces/augment-api'
-import './interfaces/augment-types'
+// import './interfaces/augment-api'
+// import './interfaces/augment-types'
 // import * as definitions from './interfaces/lookup'
 
 class Rpc {

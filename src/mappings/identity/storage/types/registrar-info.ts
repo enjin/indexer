@@ -1,4 +1,4 @@
-import { AccountId32, BitFlags } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, BitFlags } from '../../../common/types'
 
 export type RegistrarInfo = {
     account: AccountId32

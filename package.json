@@ -25,7 +25,10 @@
     "build:ci": "rm -rf lib && tsc && pnpm run sentry:sourcemaps",
     "db:migrate": "npx squid-typeorm-migration apply",
     "db:generate": "npx squid-typeorm-migration generate",
+    "schema:all": "pnpm run schema:generate && pnpm run build && pnpm run hasura:regenerate",
     "schema:generate": "npx squid-typeorm-codegen",
+    "hasura:generate": "npx squid-hasura-configuration apply",
+    "hasura:regenerate": "npx squid-hasura-configuration regenerate",
     "augment:generate": "pnpm run generate:defs && pnpm run generate:meta",
     "metadata:generate": "pnpm run metadata:fetch && pnpm run metadata:typegen",
     "metadata:fetch": "pnpm run metadata:matrix && pnpm run metadata:relay",
@@ -34,8 +37,7 @@
     "metadata:typegen": "rm -rf typegen/chain-specs.jsonl && cat typegen/enjin-matrix.jsonl typegen/canary-matrix.jsonl typegen/enjin-relay.jsonl typegen/canary-relay.jsonl > typegen/chain-specs.jsonl && npx squid-substrate-typegen typegen/typegen.json",
     "generate:defs": "npx tsx node_modules/.bin/polkadot-types-from-defs --package matrixchain-indexer/common/interfaces --input ./src/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io",
     "generate:meta": "npx tsx node_modules/.bin/polkadot-types-from-chain --package matrixchain-indexer/common/interfaces --endpoint wss://rpc.matrix.blockchain.enjin.io --output ./src/common/interfaces",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib",
-    "prepare": "husky"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
   "dependencies": {
     "@aws-sdk/client-sns": "^3.741.0",
@@ -50,6 +52,7 @@
     "@sentry/profiling-node": "^8.54.0",
     "@subsquid/cli": "^3.0.3",
     "@subsquid/graphql-server": "^4.9.0",
+    "@subsquid/hasura-configuration": "^1.0.2",
     "@subsquid/ss58": "^2.0.2",
     "@subsquid/substrate-processor": "^8.5.2",
     "@subsquid/substrate-runtime": "^2.0.1",

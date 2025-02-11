@@ -10,8 +10,8 @@ import {
     Listing,
     MarketplaceCounterOfferPlaced,
     Token,
-} from '@enjin/indexer/model'
-import { CounterOfferPlaced } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { CounterOfferPlaced } from './types'
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
     return match(event)
@@ -40,10 +40,10 @@ export function counterOfferPlacedEventModel(
         tokenId: listing.takeAssetId.id,
         data: new MarketplaceCounterOfferPlaced({
             listing: listing.id,
-            accountId: 'deposit' in data.counterOffer ? data.counterOffer.deposit.depositor : data.counterOffer.accountId,
-            buyerPrice: 'price' in data.counterOffer ? data.counterOffer.price : data.counterOffer.buyerPrice,
-            depositAmount: 'deposit' in data.counterOffer ? data.counterOffer.deposit.amount : 1n,
-            sellerPrice: 'sellerPrice' in data.counterOffer ? data.counterOffer.sellerPrice : 1n,
+            accountId: data.counterOffer.deposit != undefined ? data.counterOffer.deposit.depositor : data.counterOffer.accountId,
+            buyerPrice: data.counterOffer.price != undefined ? data.counterOffer.price : data.counterOffer.buyerPrice,
+            depositAmount: data.counterOffer.deposit != undefined ? data.counterOffer.deposit.amount : 1n,
+            sellerPrice: data.counterOffer.sellerPrice != undefined ? data.counterOffer.sellerPrice : 1n,
         }),
     })
 

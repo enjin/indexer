@@ -1,4 +1,4 @@
-import { AccountId32, BalanceStatus } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, BalanceStatus } from '../../../common/types'
 
 export type ReserveRepatriated = {
     from: AccountId32

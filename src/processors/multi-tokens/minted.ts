@@ -7,7 +7,7 @@ import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { processMetadata } from '../../jobs/process-metadata'
-import { isNonFungible } from '@enjin/indexer/processors/multi-tokens/utils/helpers'
+import { isNonFungible } from './utils/helpers'
 
 export async function minted(
     ctx: CommonContext,

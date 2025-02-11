@@ -1,4 +1,4 @@
-import { VersionedAssets, VersionedLocation } from '@enjin/indexer/mappings/common/xcm'
+import { VersionedAssets, VersionedLocation } from '../../../common/xcm'
 
 export type LimitedTeleportAssets = {
     dest: VersionedLocation

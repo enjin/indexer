@@ -23,7 +23,11 @@ export function poolMutated(event: EventItem): PoolMutated {
 
 export function poolMutatedEventModel(item: EventItem, data: PoolMutated): EventModel | undefined {
     const mutation: Record<string, string | number | undefined> = {}
-    if (data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
+    if (
+        data.mutation.newCommission !== undefined &&
+        data.mutation.newCommission.__kind === 'SomeMutation' &&
+        data.mutation.newCommission.value !== undefined
+    ) {
         mutation.newCommission = data.mutation.newCommission.value
     } else {
         mutation.newCommission = undefined

@@ -3,7 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCompleted } from '../../../model'
-import { OfferCompleted } from '@enjin/indexer/mappings/stake-exchange/events/types'
+import { OfferCompleted } from './types'
 
 export function offerCompleted(event: EventItem): OfferCompleted {
     return match(event)

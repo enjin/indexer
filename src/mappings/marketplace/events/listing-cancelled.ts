@@ -11,8 +11,8 @@ import {
     MarketplaceListingCancelled,
     MarketplaceOfferCancelled,
     Token,
-} from '@enjin/indexer/model'
-import { ListingCancelled } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { ListingCancelled } from './types'
 
 export function listingCancelled(event: EventItem): ListingCancelled {
     return match(event)
@@ -52,7 +52,7 @@ export function listingCancelledEventModel(item: EventItem, listing: Listing): [
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: event.tokenId }),
+            token: new Token({ id: listing.makeAssetId.id }),
             from: listing.seller,
             event,
         }),

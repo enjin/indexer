@@ -8,7 +8,7 @@ import { createDefaultData } from './create-default-data'
 import { chainState } from './chain-state'
 import { processors } from './processors'
 import * as mappings from './mappings'
-import { getOrCreateAccount, unwrapSignatureSigner } from './common/util/entities'
+import { getOrCreateAccount, unwrapAccount, unwrapSignatureSigner } from './common/util/entities'
 import { events, calls } from './types/generated'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './common/types/contexts'
 import { updateClaimDetails } from './processors/claims/common'
@@ -268,7 +268,7 @@ processor.run(
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                         const tankData = mappings.fuelTanks.calls.dispatch(call)
-                        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: tankData.tankId.value })
+                        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: unwrapAccount(tankData.tankId) })
 
                         fuelTank = new FuelTankData({
                             id: tank.id,

@@ -4,7 +4,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { syncCollectionStats } from '../../jobs/collection-stats'
-// import { isTokenFrozen } from '@enjin/indexer/processors/multi-tokens/token-created'
+import { match } from 'ts-pattern'
 
 export async function frozen(
     ctx: CommonContext,
@@ -12,48 +12,51 @@ export async function frozen(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const data = mappings.multiTokens.events.frozen(item)
-    if (skipSave) return mappings.multiTokens.events.frozenEventModel(item, data)
+    const event = mappings.multiTokens.events.frozen(item)
+    if (skipSave) return mappings.multiTokens.events.frozenEventModel(item, event)
 
-    if (data.tokenAccount) {
-        const address = data.tokenAccount
+    if (event.freezeType.__kind === 'TokenAccount') {
+        const address = event.freezeType.accountId
         const tokenAccount = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { id: `${address}-${data.collectionId}-${data.tokenId}` },
+            where: { id: `${address}-${event.collectionId}-${event.freezeType.tokenId}` },
         })
 
         if (!tokenAccount) {
-            throwError(`[Frozen] We have not found collection ${address}-${data.collectionId}-${data.tokenId}`, 'fatal')
-            return mappings.multiTokens.events.frozenEventModel(item, data)
+            throwError(
+                `[Frozen] We have not found collection ${address}-${event.collectionId}-${event.freezeType.tokenId}`,
+                'fatal'
+            )
+            return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
         tokenAccount.isFrozen = true
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
-    } else if (data.collectionAccount) {
-        const address = data.collectionAccount
+    } else if (event.freezeType.__kind === 'CollectionAccount') {
+        const address = event.freezeType.value
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {
-            where: { id: `${data.collectionId}-${address}` },
+            where: { id: `${event.collectionId}-${address}` },
         })
 
         if (!collectionAccount) {
-            throwError(`[Frozen] We have not found collection ${data.collectionId}-${address}`, 'fatal')
-            return mappings.multiTokens.events.frozenEventModel(item, data)
+            throwError(`[Frozen] We have not found collection ${event.collectionId}-${address}`, 'fatal')
+            return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
         collectionAccount.isFrozen = true
         collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(collectionAccount)
-    } else if (data.tokenId !== undefined) {
+    } else if (event.freezeType.__kind === 'Token') {
         const token = await ctx.store.findOne<Token>(Token, {
-            where: { id: `${data.collectionId}-${data.tokenId}` },
+            where: { id: `${event.collectionId}-${event.freezeType.tokenId}` },
         })
 
         if (!token) {
-            throwError(`[Frozen] We have not found collection ${data.collectionId}-${data.tokenId}`, 'fatal')
-            return mappings.multiTokens.events.frozenEventModel(item, data)
+            throwError(`[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`, 'fatal')
+            return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
-        switch (data.freezeState?.__kind) {
+        switch (event.freezeType.freezeState?.__kind) {
             case 'Permanent':
                 token.freezeState = FreezeState.Permanent
                 break
@@ -68,17 +71,18 @@ export async function frozen(
                 break
         }
 
-        token.isFrozen = isTokenFrozen(token.freezeState)
+        // TODO: Fix this
+        // token.isFrozen = isTokenFrozen(token.freezeState)
 
         await ctx.store.save(token)
     } else {
         const collection = await ctx.store.findOne<Collection>(Collection, {
-            where: { id: data.collectionId.toString() },
+            where: { id: event.collectionId.toString() },
         })
 
         if (!collection) {
-            throwError(`[Frozen] We have not found collection ${data.collectionId.toString()}`, 'fatal')
-            return mappings.multiTokens.events.frozenEventModel(item, data)
+            throwError(`[Frozen] We have not found collection ${event.collectionId.toString()}`, 'fatal')
+            return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
         collection.transferPolicy = new TransferPolicy({ isFrozen: true })
@@ -86,21 +90,28 @@ export async function frozen(
     }
 
     if (item.extrinsic) {
+        const { address, tokenId } = match(event.freezeType)
+            .returnType<{ address: string | null; tokenId: bigint | null }>()
+            .with({ __kind: 'CollectionAccount' }, (t) => ({ address: t.value, tokenId: null }))
+            .with({ __kind: 'TokenAccount' }, (t) => ({ address: t.accountId, tokenId: t.tokenId }))
+            .with({ __kind: 'Token' }, (t) => ({ address: null, tokenId: t.tokenId }))
+            .otherwise(() => ({ address: null, tokenId: null }))
+
         await Sns.getInstance().send({
             id: item.id,
             name: item.name,
             body: {
-                kind: data.freezeType,
-                address: data.collectionAccount ?? data.tokenAccount,
-                collectionId: data.collectionId.toString(),
-                tokenId: data.tokenId ?? null,
-                token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
+                kind: event.freezeType,
+                address: address,
+                collectionId: event.collectionId.toString(),
+                tokenId: tokenId,
+                token: tokenId ? `${event.collectionId}-${tokenId}` : null,
                 extrinsic: item.extrinsic.id,
             },
         })
     }
 
-    syncCollectionStats(data.collectionId.toString())
+    syncCollectionStats(event.collectionId.toString())
 
-    return mappings.multiTokens.events.frozenEventModel(item, data)
+    return mappings.multiTokens.events.frozenEventModel(item, event)
 }

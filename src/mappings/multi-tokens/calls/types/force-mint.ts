@@ -1,4 +1,4 @@
-import { FlexibleMintParams, MultiAddress } from '@enjin/indexer/mappings/common/types'
+import { FlexibleMintParams, MultiAddress } from '../../../common/types'
 
 export type ForceMint = {
     caller?: MultiAddress // Changed from MultiAddress to MultiAddress? on v1023

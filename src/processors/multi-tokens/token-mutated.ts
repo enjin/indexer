@@ -12,8 +12,8 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'
-import { isNonFungible } from '@enjin/indexer/processors/multi-tokens/utils/helpers'
-import { TokenMarketBehavior } from '@enjin/indexer/types/generated/v100'
+import { isNonFungible } from './utils/helpers'
+import { TokenMarketBehavior } from '../../types/generated/v100'
 
 async function getBehavior(
     ctx: CommonContext,
@@ -56,12 +56,11 @@ export async function tokenMutated(
         return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
     }
 
-    // TODO: Move all the parsing logics to the mapping classes
-    if (data.mutation.listingForbidden.value !== undefined) {
+    if (data.mutation.listingForbidden.__kind === 'SomeMutation') {
         token.listingForbidden = data.mutation.listingForbidden.value
     }
 
-    if (data.mutation.name !== undefined && data.mutation.name.value !== undefined) {
+    if (data.mutation.name !== undefined && data.mutation.name.__kind === 'SomeMutation') {
         token.nativeMetadata = new NativeTokenMetadata({
             decimalCount: token.nativeMetadata?.decimalCount ?? 0,
             symbol: token.nativeMetadata?.symbol ?? '',
@@ -69,12 +68,13 @@ export async function tokenMutated(
         })
     }
 
-    if (data.mutation.anyoneCanInfuse !== undefined && data.mutation.anyoneCanInfuse.value !== undefined) {
+    if (data.mutation.anyoneCanInfuse !== undefined && data.mutation.anyoneCanInfuse.__kind === 'SomeMutation') {
         token.anyoneCanInfuse = data.mutation.anyoneCanInfuse.value
     }
 
     if (data.mutation.behavior.__kind === 'SomeMutation') {
-        token.behavior = data.mutation.behavior.value === undefined ? null : await getBehavior(ctx, data.mutation.behavior.value)
+        // TODO: Fix this
+        // token.behavior = data.mutation.behavior.value === undefined ? null : await getBehavior(ctx, data.mutation.behavior.value)
     }
 
     token.nonFungible = isNonFungible(token)

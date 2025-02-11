@@ -1,4 +1,4 @@
-import { AccountId32, Perbill } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, Perbill } from '../../../common/types'
 
 export type BuyOrderCompleted = {
     who: AccountId32

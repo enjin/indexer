@@ -1,4 +1,4 @@
-import { AccountId32 } from '@enjin/indexer/mappings/common/types'
+import { AccountId32 } from '../../../common/types'
 
 export type TokenDestroyed = {
     collectionId: bigint

@@ -4,6 +4,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { syncCollectionStats } from '../../jobs/collection-stats'
 import { throwError } from '../../common/errors'
 import * as mappings from './../../mappings'
+import { match, P } from 'ts-pattern'
 
 export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.reserved(item)
@@ -14,17 +15,24 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
         relations: { account: true },
     })
 
+    const reserveId = match(data.reserveId)
+        .with(P.string, (v) => hexToString(v))
+        .with({ __kind: P.string }, (v) => v.__kind)
+        .otherwise(() => {
+            throw new Error('Unknown reserve id')
+        })
+
     if (tokenAccount) {
         tokenAccount.balance -= data.amount
         tokenAccount.reservedBalance += data.amount
-        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === hexToString(data.reserveId))
+        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === reserveId)
 
         if (pallet) {
             pallet.amount += data.amount
         } else if (tokenAccount.namedReserves) {
-            tokenAccount.namedReserves.push(new TokenNamedReserve({ pallet: hexToString(data.reserveId), amount: data.amount }))
+            tokenAccount.namedReserves.push(new TokenNamedReserve({ pallet: reserveId, amount: data.amount }))
         } else {
-            tokenAccount.namedReserves = [new TokenNamedReserve({ pallet: hexToString(data.reserveId), amount: data.amount })]
+            tokenAccount.namedReserves = [new TokenNamedReserve({ pallet: reserveId, amount: data.amount })]
         }
 
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)

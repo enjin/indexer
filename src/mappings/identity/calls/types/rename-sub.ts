@@ -1,4 +1,4 @@
-import { MultiAddress, Data } from '@enjin/indexer/mappings/common/types'
+import { MultiAddress, Data } from '../../../common/types'
 
 export type RenameSub = {
     sub: MultiAddress

@@ -9,7 +9,7 @@ import {
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from '../../mappings'
-import { TokenFilter } from '@enjin/indexer/mappings/common/types'
+import { TokenFilter } from '../../mappings/common/types'
 
 export function getFilterFromType(tokenFilter: TokenFilter) {
     let entity: StakeExchangeTokenFilter | null = null

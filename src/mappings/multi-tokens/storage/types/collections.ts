@@ -1,4 +1,4 @@
-import { AccountId32, Deposit, AssetId, DefaultCollectionPolicy } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, Deposit, AssetId, DefaultCollectionPolicy } from '../../../common/types'
 
 export type Collection = {
     owner: AccountId32

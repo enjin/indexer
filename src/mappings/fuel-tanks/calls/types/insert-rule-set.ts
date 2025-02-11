@@ -1,4 +1,4 @@
-import { DispatchRuleDescriptor, MultiAddress, RuleSetDescriptor } from '@enjin/indexer/mappings/common/types'
+import { DispatchRuleDescriptor, MultiAddress, RuleSetDescriptor } from '../../../common/types'
 
 export type InsertRuleSet = {
     tankId: MultiAddress

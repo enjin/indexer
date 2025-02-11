@@ -1,4 +1,4 @@
-import { DefaultCollectionDescriptor, AccountId32, H160, RangeInclusive } from '@enjin/indexer/mappings/common/types'
+import { DefaultCollectionDescriptor, AccountId32, H160, RangeInclusive } from '../../../common/types'
 
 export type ForceCreateEthereumCollection = {
     owner: AccountId32

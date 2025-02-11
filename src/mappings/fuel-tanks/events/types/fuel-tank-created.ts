@@ -1,4 +1,4 @@
-import { AccountId32, Bytes } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, Bytes } from '../../../common/types'
 
 export type FuelTankCreated = {
     tankId: AccountId32

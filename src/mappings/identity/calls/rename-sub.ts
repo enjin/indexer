@@ -1,8 +1,8 @@
-import { UnsupportedCallError } from '@enjin/indexer/common/errors'
+import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
-import { CallItem } from '@enjin/indexer/common/types/contexts'
+import { CallItem } from '../../../common/types/contexts'
 import { match } from 'ts-pattern'
-import { RenameSub } from '@enjin/indexer/mappings/identity/calls/types'
+import { RenameSub } from '../../../mappings/identity/calls/types'
 
 export function renameSub(call: CallItem): RenameSub {
     return match(call)

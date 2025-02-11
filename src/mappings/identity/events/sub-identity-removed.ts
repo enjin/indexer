@@ -2,7 +2,7 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { SubIdentityRemoved } from '@enjin/indexer/mappings/identity/events/types'
+import { SubIdentityRemoved } from './types'
 
 export function subIdentityRemoved(event: EventItem): SubIdentityRemoved {
     return match(event)

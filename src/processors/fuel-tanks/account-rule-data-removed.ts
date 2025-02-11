@@ -24,7 +24,8 @@ export async function accountRuleDataRemoved(
             permittedExtrinsics.map((x) => x.id)
         )
     } else {
-        ruleSet[uc(kind)] = undefined
+        // TODO: Fix this
+        // ruleSet[uc(kind)] = undefined
     }
 
     await ctx.store.save(ruleSet)

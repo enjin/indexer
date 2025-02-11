@@ -11,7 +11,7 @@ export async function earlyBirdBonusPaid(ctx: CommonContext, block: BlockHeader,
 
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
 
-    const bonus = await getBonusInfo(block, eventData.poolId)
+    const bonus = await mappings.nominationPools.storage.poolBonusInfo(block, eventData.poolId)
     await updateEarlyBirdInfo(ctx, block)
 
     if (bonus) {

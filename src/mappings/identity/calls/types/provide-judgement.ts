@@ -1,4 +1,4 @@
-import { MultiAddress, H256, Judgement } from '@enjin/indexer/mappings/common/types'
+import { MultiAddress, H256, Judgement } from '../../../common/types'
 
 export type ProvideJudgement = {
     regIndex: number

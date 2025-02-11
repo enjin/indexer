@@ -1,4 +1,4 @@
-import { FreezeType } from '@enjin/indexer/mappings/common/types'
+import { FreezeType } from '../../../common/types'
 
 export type Freeze = {
     collectionId: bigint

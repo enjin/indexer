@@ -2,7 +2,7 @@ import { staking } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { EraPaid } from '@enjin/indexer/mappings/staking/events/types'
+import { EraPaid } from './types'
 
 export function eraPaid(event: EventItem): EraPaid {
     return match(event)

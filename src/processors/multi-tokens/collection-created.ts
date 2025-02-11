@@ -12,7 +12,7 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from '../../mappings'
-import { Sns } from '@enjin/indexer/common/sns'
+import { Sns } from '../../common/sns'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 //     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -57,7 +57,8 @@ export async function collectionCreated(
             // TODO: Check forceCollapsingSupply too
             forceSingleMint: callData.descriptor.policy.mint.forceSingleMint,
         }),
-        marketPolicy: callData.descriptor.policy.market,
+        // TODO: Fix this
+        // marketPolicy: callData.descriptor.policy.market,
         transferPolicy: new TransferPolicy({
             isFrozen: false,
         }),

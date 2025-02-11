@@ -1,4 +1,4 @@
-import { PoolState } from '@enjin/indexer/mappings/common/types'
+import { PoolState } from '../../../common/types'
 
 export type StateChanged = {
     poolId: number

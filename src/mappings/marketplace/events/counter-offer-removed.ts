@@ -10,8 +10,8 @@ import {
     Listing,
     MarketplaceCounterOfferRemoved,
     Token,
-} from '@enjin/indexer/model'
-import { CounterOfferRemoved } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { CounterOfferRemoved } from './types'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
     return match(event)

@@ -1,4 +1,4 @@
-import { MultiAddress, DispatchSettings, Call } from '@enjin/indexer/mappings/common/types'
+import { MultiAddress, DispatchSettings, Call } from '../../../common/types'
 
 export type Dispatch = {
     tankId: MultiAddress

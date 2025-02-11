@@ -28,23 +28,41 @@ services:
   indexer_processor:
     container_name: indexer_processor
     restart: unless-stopped
-    image: ghcr.io/enjin/indexer:${VERSION:-latest}
+#    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: processor
     build:
       context: .
       args:
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    volumes:
-      - .env:/squid/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
       - indexer_worker
 
+  indexer_hasura:
+    container_name: indexer_hasura
+    restart: unless-stopped
+    image: hasura/graphql-engine:latest
+    env_file:
+      - .env
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}"
+      HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: true
+      HASURA_GRAPHQL_ENABLE_CONSOLE: true
+      HASURA_GRAPHQL_DEV_MODE: true
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
+    ports:
+      - "8080:8080"
+    depends_on:
+      - indexer_db
+#      - indexer_processor
+
   indexer_graphql:
     container_name: indexer_graphql
     restart: unless-stopped
-    image: ghcr.io/enjin/indexer:${VERSION:-latest}
+#    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: graphql
     build:
@@ -52,24 +70,24 @@ services:
     ports:
       - "4000:4000"
       - "8080:8080"
-    volumes:
-      - .env:/squid/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
-      - indexer_processor
+#      - indexer_processor
 
   indexer_worker:
     container_name: indexer_worker
     restart: unless-stopped
-    image: ghcr.io/enjin/indexer:${VERSION:-latest}
+#    image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: worker
     build:
       context: .
     ports:
       - "9090:9090"
-    volumes:
-      - .env:/squid/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
       - indexer_redis

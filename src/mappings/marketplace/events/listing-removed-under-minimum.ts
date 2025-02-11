@@ -9,8 +9,8 @@ import {
     Listing,
     MarketplaceListingRemovedUnderMinimum,
     Token,
-} from '@enjin/indexer/model'
-import { ListingRemovedUnderMinimum } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { ListingRemovedUnderMinimum } from './types'
 
 export function listingRemovedUnderMinimum(event: EventItem): ListingRemovedUnderMinimum {
     return match(event)

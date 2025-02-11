@@ -2,7 +2,7 @@ import { throwError } from '../../common/errors'
 import { Collection, Event as EventModel, FreezeState, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
-import { DefaultMintParams_CreateToken } from '../../mappings/multi-tokens/types'
+import { DefaultMintParams_CreateToken } from '../../mappings/common/types'
 
 export async function tokenCreated(
     ctx: CommonContext,
@@ -37,8 +37,8 @@ export async function tokenCreated(
 
         const callData = mappings.multiTokens.calls.mint(item.call)
         const params = callData.params as DefaultMintParams_CreateToken
-        const minBalance = params.sufficiency?.__kind === 'Sufficient' ? (params.sufficiency.value ?? 1n) : 1n
-        const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.value ?? 1n) : 1n
+        const minBalance = params.sufficiency?.__kind === 'Sufficient' ? params.sufficiency.minimumBalance : 1n
+        const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.unitPrice ?? 1n) : 1n
 
         const token = new Token({
             id: `${eventData.collectionId}-${eventData.tokenId}`,
@@ -47,7 +47,8 @@ export async function tokenCreated(
             cap: null, //params.cap,
             behavior: null, //params.behavior,
             isFrozen: false, // isTokenFrozen(params.freezeState),
-            freezeState: params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
+            // TODO: Fix this
+            freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
             minimumBalance: minBalance,
             unitPrice: unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now

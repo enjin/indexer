@@ -1,4 +1,4 @@
-import { Data, Bytes } from '@enjin/indexer/mappings/common/types'
+import { Data, Bytes } from '../../../common/types'
 
 export type SetIdentity = {
     info: {

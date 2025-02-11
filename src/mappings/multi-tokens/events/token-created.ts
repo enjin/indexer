@@ -2,8 +2,9 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '@enjin/indexer/model'
+import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '../../../model'
 import { TokenCreated } from './types/token-created'
+import { unwrapAccount } from '../../../common/util/entities'
 
 export function tokenCreated(event: EventItem): TokenCreated {
     return match(event)
@@ -24,7 +25,7 @@ export function tokenCreatedEventModel(item: EventItem, data: TokenCreated): Eve
         data: new MultiTokensTokenCreated({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            issuer: data.issuer,
+            issuer: unwrapAccount(data.issuer),
             initialSupply: data.initialSupply,
         }),
     })

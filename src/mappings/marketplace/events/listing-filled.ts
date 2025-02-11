@@ -12,8 +12,8 @@ import {
     MarketplaceListingFilled,
     MarketplaceOfferSettled,
     Token,
-} from '@enjin/indexer/model'
-import { ListingFilled } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { ListingFilled } from './types'
 
 export function listingFilled(event: EventItem): ListingFilled {
     return match(event)

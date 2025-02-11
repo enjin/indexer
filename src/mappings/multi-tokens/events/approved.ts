@@ -2,7 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Event as EventModel, Extrinsic, MultiTokensApproved } from '@enjin/indexer/model'
+import { Event as EventModel, Extrinsic, MultiTokensApproved } from '../../../model'
 import { Approved } from './types'
 
 export function approved(event: EventItem): Approved {

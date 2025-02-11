@@ -2,7 +2,7 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Withdraw } from '@enjin/indexer/mappings/balances/events/types'
+import { Withdraw } from './types'
 
 export function withdraw(event: EventItem): Withdraw {
     return match(event)

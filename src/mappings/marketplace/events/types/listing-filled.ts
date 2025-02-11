@@ -1,4 +1,4 @@
-import { H256, AccountId32 } from '@enjin/indexer/mappings/common/types'
+import { H256, AccountId32 } from '../../../common/types'
 
 export type ListingFilled = {
     listingId: H256

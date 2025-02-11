@@ -2,7 +2,7 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Unlocked } from '@enjin/indexer/mappings/balances/events/types'
+import { Unlocked } from './types'
 
 export function unlocked(event: EventItem): Unlocked {
     return match(event)

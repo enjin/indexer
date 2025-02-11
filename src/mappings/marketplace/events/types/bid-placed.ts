@@ -1,4 +1,4 @@
-import { Bid, H256 } from '@enjin/indexer/mappings/common/types'
+import { Bid, H256 } from '../../../common/types'
 
 export type BidPlaced = {
     listingId: H256

@@ -1,8 +1,8 @@
-import { BlockHeader } from '@enjin/indexer/common/types/contexts'
-import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
+import { BlockHeader } from '../../../common/types/contexts'
+import { UnsupportedStorageError } from '../../../common/errors'
 import { identity } from '../../../types/generated/storage'
 import { match } from 'ts-pattern'
-import { RegistrarInfo } from '@enjin/indexer/mappings/identity/storage/types'
+import { RegistrarInfo } from '../../../mappings/identity/storage/types'
 
 export function registrars(block: BlockHeader): Promise<(RegistrarInfo | undefined)[] | undefined> {
     return match(block)

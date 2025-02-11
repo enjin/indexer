@@ -1,5 +1,5 @@
-import { BlockHeader } from '@enjin/indexer/common/types/contexts'
-import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
+import { BlockHeader } from '../../../common/types/contexts'
+import { UnsupportedStorageError } from '../../../common/errors'
 import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
 import { TokenAccount } from './types/token-accounts'

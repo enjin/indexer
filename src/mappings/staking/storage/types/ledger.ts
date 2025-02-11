@@ -1,4 +1,4 @@
-import { AccountId32, UnlockChunk } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, UnlockChunk } from '../../../common/types'
 
 export type StakingLedger = {
     stash: AccountId32

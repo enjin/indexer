@@ -2,7 +2,7 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { JudgementRequested } from '@enjin/indexer/mappings/identity/events/types'
+import { JudgementRequested } from './types'
 
 export function judgementRequested(event: EventItem): JudgementRequested {
     return match(event)

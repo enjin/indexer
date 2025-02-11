@@ -1,4 +1,4 @@
-import { BoundedVec, PoolState, Commission, PoolRoles, BonusCycle } from '@enjin/indexer/mappings/common/types'
+import { BoundedVec, PoolState, Commission, PoolRoles, BonusCycle } from '../../../common/types'
 
 export type BondedPools = {
     points?: bigint // Removed on v104

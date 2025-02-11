@@ -2,7 +2,7 @@ import { system } from '../../../types/generated/storage'
 import { UnsupportedStorageError } from '../../../common/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
-import { AccountInfo } from '@enjin/indexer/mappings/system/storage/types'
+import { AccountInfo } from '../../../mappings/system/storage/types'
 
 export async function account(block: BlockHeader, accounts: string[]): Promise<(AccountInfo | undefined)[]> {
     return match(block)

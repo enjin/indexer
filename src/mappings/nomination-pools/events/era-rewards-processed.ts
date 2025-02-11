@@ -3,17 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEraRewardsProcessed } from '../../../model'
-
-type EraRewardsProcessedEvent = {
-    poolId: number
-    era: number
-    commission?: {
-        beneficiary: string
-        amount: bigint
-    }
-    bonus: bigint
-    reinvested: bigint
-}
+import { EraRewardsProcessed } from './types'
 
 export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
     return match(event)
@@ -29,7 +19,7 @@ export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
 
 export function eraRewardsProcessedEventModel(
     item: EventItem,
-    data: EraRewardsProcessedEvent,
+    data: EraRewardsProcessed,
     rate: bigint = 0n
 ): EventModel | undefined {
     return new EventModel({

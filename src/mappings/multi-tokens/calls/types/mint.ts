@@ -1,4 +1,4 @@
-import { MultiAddress, DefaultMintParams } from '@enjin/indexer/mappings/common/types'
+import { MultiAddress, DefaultMintParams } from '../../../common/types'
 
 export type Mint = {
     recipient: MultiAddress

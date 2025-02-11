@@ -3,13 +3,14 @@ import { BonusCycle, Commission, Event as EventModel, NominationPool, PoolBalanc
 import { storage } from '../../types/generated'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
+import { UnsupportedStorageError } from '../../common/errors'
 
 function getCurrentEra(ctx: CommonContext, block: BlockHeader) {
     if (storage.staking.currentEra.enjinV100.is(block)) {
         return storage.staking.currentEra.enjinV100.get(block)
     }
 
-    throw new UnknownVersionError('Staking.CurrentEra')
+    throw new UnsupportedStorageError('Staking.CurrentEra')
 }
 
 export async function created(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {

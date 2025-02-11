@@ -2,7 +2,7 @@ import { claims } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { ClaimMinted } from '@enjin/indexer/mappings/claims/events/types'
+import { ClaimMinted } from './types'
 
 export function claimMinted(event: EventItem): ClaimMinted {
     return match(event)

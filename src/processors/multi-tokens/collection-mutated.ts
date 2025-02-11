@@ -4,7 +4,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { DefaultRoyalty } from '@enjin/indexer/types/generated/v100'
+import { DefaultRoyalty } from '../../types/generated/v100'
 
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -42,37 +42,38 @@ export async function collectionMutated(
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
         } else {
-            const currentRoyalty = collection.marketPolicy?.royalty.percentage || 0
-            collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
-            if (collection.marketPolicy.royalty.percentage > currentRoyalty) {
-                // royalty has increased
-                // we need to update all active listings
-                const listings = await ctx.store.find(Listing, {
-                    where: { makeAssetId: { collection: { id: collection.id } }, isActive: true },
-                    relations: {
-                        seller: true,
-                    },
-                })
-
-                const mutatedListings = listings.map((listing) => {
-                    listing.hasRoyaltyIncreased = true
-                    return listing
-                })
-
-                await Sns.getInstance().send({
-                    id: item.id,
-                    name: 'Marketplace.RoyaltyIncreased',
-                    body: {
-                        collectionId: data.collectionId,
-                        previousRoyalty: currentRoyalty,
-                        newRoyalty: collection.marketPolicy.royalty.percentage,
-                        sellers: listings.map((listing) => listing.seller.address),
-                        listings: listings.map((listing) => listing.id),
-                    },
-                })
-
-                await ctx.store.save(mutatedListings)
-            }
+            // TODO: Fix this
+            // const currentRoyalty = collection.marketPolicy?.royalty.percentage || 0
+            // collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
+            // if (collection.marketPolicy.royalty.percentage > currentRoyalty) {
+            //     // royalty has increased
+            //     // we need to update all active listings
+            //     const listings = await ctx.store.find(Listing, {
+            //         where: { makeAssetId: { collection: { id: collection.id } }, isActive: true },
+            //         relations: {
+            //             seller: true,
+            //         },
+            //     })
+            //
+            //     const mutatedListings = listings.map((listing) => {
+            //         listing.hasRoyaltyIncreased = true
+            //         return listing
+            //     })
+            //
+            //     await Sns.getInstance().send({
+            //         id: item.id,
+            //         name: 'Marketplace.RoyaltyIncreased',
+            //         body: {
+            //             collectionId: data.collectionId,
+            //             previousRoyalty: currentRoyalty,
+            //             newRoyalty: collection.marketPolicy.royalty.percentage,
+            //             sellers: listings.map((listing) => listing.seller.address),
+            //             listings: listings.map((listing) => listing.id),
+            //         },
+            //     })
+            //
+            //     await ctx.store.save(mutatedListings)
+            // }
         }
     }
 

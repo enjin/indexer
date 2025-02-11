@@ -5,7 +5,7 @@ import {
     Sufficiency,
     TokenCap,
     TokenMarketBehavior,
-} from '@enjin/indexer/mappings/common/types'
+} from '../../../common/types'
 
 export type Token = {
     supply: bigint

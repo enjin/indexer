@@ -2,7 +2,7 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Slashed } from '@enjin/indexer/mappings/balances/events/types'
+import { Slashed } from './types'
 
 export function slashed(event: EventItem): Slashed {
     return match(event)

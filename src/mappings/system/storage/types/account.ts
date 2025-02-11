@@ -1,4 +1,4 @@
-import { AccountData } from '@enjin/indexer/mappings/common/types'
+import { AccountData } from '../../../common/types'
 
 export type AccountInfo = {
     nonce: number

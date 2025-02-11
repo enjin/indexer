@@ -1,5 +1,5 @@
-import { CallItem } from '@enjin/indexer/common/types/contexts'
-import { UnsupportedCallError } from '@enjin/indexer/common/errors'
+import { CallItem } from '../../../common/types/contexts'
+import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
 import { ForceMint } from './types'

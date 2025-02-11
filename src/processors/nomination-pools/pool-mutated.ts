@@ -18,7 +18,11 @@ export async function poolMutated(ctx: CommonContext, block: BlockHeader, item: 
         mutation.duration = eventData.mutation.duration
     }
 
-    if (eventData.mutation.newCommission.__kind === 'SomeMutation' && eventData.mutation.newCommission.value !== undefined) {
+    if (
+        eventData.mutation.newCommission !== undefined &&
+        eventData.mutation.newCommission.__kind === 'SomeMutation' &&
+        eventData.mutation.newCommission.value !== undefined
+    ) {
         pool.commission.current = eventData.mutation.newCommission.value
         mutation.newCommission = eventData.mutation.newCommission.value
     }

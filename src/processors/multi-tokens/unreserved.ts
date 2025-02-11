@@ -3,6 +3,7 @@ import { TokenAccount } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { throwError } from '../../common/errors'
 import * as mappings from './../../mappings'
+import { match, P } from 'ts-pattern'
 
 export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.unreserved(item)
@@ -20,9 +21,16 @@ export async function unreserved(ctx: CommonContext, block: BlockHeader, item: E
             'fatal'
         )
     } else {
+        const reserveId = match(data.reserveId)
+            .with(P.string, (v) => hexToString(v))
+            .with({ __kind: P.string }, (v) => v.__kind)
+            .otherwise(() => {
+                throw new Error('Unknown reserve id')
+            })
+
         tokenAccount.balance += data.amount
         tokenAccount.reservedBalance -= data.amount
-        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === hexToString(data.reserveId))
+        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === reserveId)
 
         if (pallet) {
             pallet.amount -= data.amount

@@ -12,8 +12,8 @@ import {
     MarketplaceOfferCreated,
     Token,
     TokenAccount,
-} from '@enjin/indexer/model'
-import { ListingCreated } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { ListingCreated } from './types'
 
 export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
@@ -65,15 +65,16 @@ export async function listingCreatedEventModel(
         })
     }
 
-    let to = null
-    if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
-        const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
-            where: { token: { id: listing.takeAssetId.id } },
-        })
-        if (tokenOwner) {
-            to = tokenOwner.account
-        }
-    }
+    // TODO: Fix this
+    const to = null
+    // if (data.listing.data.__kind === 'Offer' && listing.takeAssetId.nonFungible) {
+    //     const tokenOwner = await ctx.store.findOne<TokenAccount>(TokenAccount, {
+    //         where: { token: { id: listing.takeAssetId.id } },
+    //     })
+    //     if (tokenOwner) {
+    //         to = tokenOwner.account
+    //     }
+    // }
 
     return [
         event,

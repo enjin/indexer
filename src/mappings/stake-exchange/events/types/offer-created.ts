@@ -1,4 +1,4 @@
-import { Offer } from '@enjin/indexer/mappings/common/types'
+import { Offer } from '../../../common/types'
 
 export type OfferCreated = {
     offerId: bigint

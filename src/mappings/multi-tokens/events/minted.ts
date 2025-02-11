@@ -2,8 +2,9 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token } from '@enjin/indexer/model'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensMinted, Token } from '../../../model'
 import { Minted } from './types/minted'
+import { unwrapAccount } from '../../../common/util/entities'
 
 export function minted(event: EventItem): Minted {
     return match(event)
@@ -29,7 +30,7 @@ export function mintedEventModel(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             token: `${data.collectionId}-${data.tokenId}`,
-            issuer: data.issuer,
+            issuer: unwrapAccount(data.issuer),
             recipient: data.recipient,
             amount: data.amount,
         }),
@@ -40,7 +41,7 @@ export function mintedEventModel(
         new AccountTokenEvent({
             id: item.id,
             token,
-            from: new Account({ id: data.issuer }),
+            from: new Account({ id: unwrapAccount(data.issuer) }),
             to: new Account({ id: data.recipient }),
             event,
         }),

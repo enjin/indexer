@@ -31,7 +31,7 @@ export async function eraRewardsProcessed(
     if ('bonusCycleEnded' in eventData && eventData.bonusCycleEnded) {
         const poolInfo = await mappings.nominationPools.storage.bondedPools(block, eventData.poolId)
         if (!poolInfo) throw new Error('Pool info not found')
-        if ('bonusCycle' in poolInfo) {
+        if (poolInfo.bonusCycle !== undefined) {
             pool.bonusCycle = new BonusCycle({
                 start: poolInfo.bonusCycle.start,
                 end: poolInfo.bonusCycle.end,

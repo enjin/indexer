@@ -2,7 +2,7 @@ import { stakeExchange } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { LiquidityConfigUpdated } from '@enjin/indexer/mappings/stake-exchange/events/types'
+import { LiquidityConfigUpdated } from './types'
 
 export function liquidityConfigUpdated(event: EventItem): LiquidityConfigUpdated {
     return match(event)

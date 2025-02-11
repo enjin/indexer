@@ -1,4 +1,4 @@
-import { TokenMutation } from '@enjin/indexer/mappings/common/types'
+import { TokenMutation } from '../../../common/types'
 
 export type TokenMutated = {
     collectionId: bigint

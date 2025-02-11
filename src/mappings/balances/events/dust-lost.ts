@@ -2,7 +2,7 @@ import { balances } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { DustLost } from '@enjin/indexer/mappings/balances/events/types'
+import { DustLost } from './types'
 
 export function dustLost(event: EventItem): DustLost {
     return match(event)

@@ -1,4 +1,4 @@
-import { Bytes } from '@enjin/indexer/mappings/common/types'
+import { Bytes } from './types'
 
 export type V2Junction =
     | V2Junction_AccountId32

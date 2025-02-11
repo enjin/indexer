@@ -1,4 +1,4 @@
-import { AccountId32, Bytes, RuntimeHoldReason } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, Bytes, RuntimeHoldReason } from '../../../common/types'
 
 export type Unreserved = {
     collectionId: bigint

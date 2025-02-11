@@ -2,7 +2,7 @@ import { staking } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { ValidatorPrefsSet } from '@enjin/indexer/mappings/staking/events/types'
+import { ValidatorPrefsSet } from './types'
 
 export function validatorPrefsSet(event: EventItem): ValidatorPrefsSet {
     return match(event)

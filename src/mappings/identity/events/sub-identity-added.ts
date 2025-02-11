@@ -2,7 +2,7 @@ import { identity } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { SubIdentityAdded } from '@enjin/indexer/mappings/identity/events/types'
+import { SubIdentityAdded } from './types'
 
 export function subIdentityAdded(event: EventItem): SubIdentityAdded {
     return match(event)

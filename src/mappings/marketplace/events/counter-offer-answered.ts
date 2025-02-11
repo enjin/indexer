@@ -15,8 +15,8 @@ import {
     Listing,
     MarketplaceCounterOfferAnswered,
     Token,
-} from '@enjin/indexer/model'
-import { CounterOfferAnswered } from '@enjin/indexer/mappings/marketplace/events/types'
+} from '../../../model'
+import { CounterOfferAnswered } from './types'
 
 export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)

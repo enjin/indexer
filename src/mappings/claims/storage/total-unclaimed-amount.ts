@@ -1,7 +1,7 @@
-import { BlockHeader } from '@enjin/indexer/common/types/contexts'
+import { BlockHeader } from '../../../common/types/contexts'
 import { claims } from '../../../types/generated/storage'
 import { match } from 'ts-pattern'
-import { UnsupportedStorageError } from '@enjin/indexer/common/errors'
+import { UnsupportedStorageError } from '../../../common/errors'
 
 export async function totalUnclaimedAmount(block: BlockHeader): Promise<bigint | undefined> {
     return match(block)

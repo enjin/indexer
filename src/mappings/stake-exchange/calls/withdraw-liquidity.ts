@@ -1,8 +1,8 @@
-import { UnsupportedCallError } from '@enjin/indexer/common/errors'
+import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
-import { CallItem } from '@enjin/indexer/common/types/contexts'
+import { CallItem } from '../../../common/types/contexts'
 import { match } from 'ts-pattern'
-import { WithdrawLiquidity } from '@enjin/indexer/mappings/stake-exchange/calls/types'
+import { WithdrawLiquidity } from '../../../mappings/stake-exchange/calls/types'
 
 export function withdrawLiquidity(call: CallItem): WithdrawLiquidity {
     return match(call)

@@ -1,4 +1,4 @@
-import { DefaultCollectionMutation } from '@enjin/indexer/mappings/common/types'
+import { DefaultCollectionMutation } from '../../../common/types'
 
 export type CollectionMutated = {
     collectionId: bigint

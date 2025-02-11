@@ -1,5 +1,5 @@
-import { BoundedString, V3MultiLocation } from '@enjin/indexer/types/generated/v100'
-import { V4Location } from '@enjin/indexer/types/generated/v1030'
+import { BoundedString, V3MultiLocation } from '../../types/generated/v100'
+import { V4Location } from '../../types/generated/v1030'
 
 export type Bytes = string // HexBytes
 export type H160 = Bytes // HexBytes
@@ -943,4 +943,9 @@ export type FuelTankDescriptor = {
     providesDeposit?: boolean // Removed on v1030
     coveragePolicy?: CoveragePolicy // Added on v1030
     accountRules: AccountRuleDescriptor[]
+}
+
+export type CommissionPayment = {
+    beneficiary: AccountId32
+    amount: bigint
 }

@@ -3,7 +3,7 @@ import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeLiquidityWithdrawn } from '../../../model'
-import { LiquidityWithdrawn } from '@enjin/indexer/mappings/stake-exchange/events/types'
+import { LiquidityWithdrawn } from './types'
 
 export function liquidityWithdrawn(event: EventItem): LiquidityWithdrawn {
     return match(event)

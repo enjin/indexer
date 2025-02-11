@@ -1,4 +1,4 @@
-import { AccountId32, H160 } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, H160 } from '../../../common/types'
 
 export type ClaimTokensInitiated = {
     accountId: AccountId32

@@ -78,369 +78,6 @@ type AccountTokenEvent @entity {
   token: Token
 }
 
-union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
-  | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
-  | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
-  | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
-  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
-  | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
-  | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
-  | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
-  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
-  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
-  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
-  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
-  | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
-  | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
-  | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
-  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated
-  | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn
-  | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
-
-
-type StakingEraPaid {
-  eraIndex: Int!
-  validatorPayout: BigInt!
-  remainder: BigInt!
-}
-
-type ImOnlineSomeOffline {
-  validators: [String]!
-}
-
-type ValidatorPrefsSet {
-  validator: String!
-}
-
-type StakeExchangeOfferCreated {
-  offerId: BigInt!
-  who: Account!
-  total: BigInt!
-  rate: BigInt!
-  minAverageCommission: Int! @deprecated
-  minAverageRewardRate: BigInt!
-}
-
-type StakeExchangeOfferCancelled {
-  offerId: BigInt!
-}
-
-type StakeExchangeLiquidityWithdrawn {
-  offerId: BigInt!
-  who: Account!
-  amount: BigInt!
-}
-
-type StakeExchangeLiquidityAdded {
-  offerId: BigInt!
-  who: Account!
-  amount: BigInt!
-}
-
-type StakeExchangeLiquidityConfigUpdated {
-  who: Account!
-  tokenFilter: StakeExchangeTokenFilter!
-}
-
-type StakeExchangeBuyOrderCompleted {
-  offerId: BigInt!
-  who: Account!
-  tokenId: BigInt!
-  amount: BigInt!
-  rate: BigInt!
-  points: BigInt!
-}
-
-type StakeExchangeOfferCompleted {
-  offerId: BigInt!
-}
-
-type NominationPoolsCreated {
-  pool: String!
-}
-
-type NominationPoolsDestroyed {
-  pool: String!
-}
-
-type NominationPoolsPoolMutated {
-  pool: String!
-  mutation: JSON!
-}
-
-type NominationPoolsBonded {
-  pool: String!
-  who: Account!
-  bonded: BigInt!
-}
-
-type NominationPoolsUnbonded {
-  who: Account!
-  unbondingPoints: BigInt!
-  balance: BigInt!
-  pool: String!
-  era: Int!
-}
-
-type NominationPoolsWithdrawn {
-  who: Account!
-  balance: BigInt!
-  points: BigInt!
-  numSlashingSpans: Int
-  pool: String!
-}
-
-type NominationPoolsEraRewardsProcessed {
-  pool: String!
-  era: Int!
-  eraReward: EraReward!
-  rate: BigInt!
-}
-
-type NominationPoolsRewardPaid {
-  pool: String!
-  era: Int!
-  validatorStash: Account!
-  reward: BigInt!
-  bonus: BigInt!
-}
-
-type NominationPoolsPoolSlashed {
-  pool: String!
-  balance: BigInt!
-}
-
-type NominationPoolsNominated {
-  pool: String!
-  validators: [String]!
-}
-
-type NominationPoolsEarlyBirdBonusPaymentUnlocked {
-  paymentId: Int!
-  nextPaymentBlock: Int!
-}
-
-type NominationPoolsEarlyBirdBonusCalculated {
-  totalAmount: BigInt!
-}
-
-type NominationPoolsEarlyBirdSharesCaptured {
-  pool: String!
-  totalAccounts: Int!
-}
-
-type NominationPoolsEarlyBirdBonusPaid {
-  pool: String!
-  paymentId: Int!
-  totalAccounts: Int!
-}
-
-enum StakeExchangeTokenFilterType {
-  Whitelist
-  BlockList
-  All
-}
-
-type StakeExchangeTokenFilter @entity {
-  value: [String]
-  type: StakeExchangeTokenFilterType!
-  who: Account @unique
-  offer: StakeExchangeOffer @unique
-}
-
-
-enum PoolState {
-  Open,
-  Blocked,
-  Destroying
-}
-
-type CommissionChangeRate {
-  maxDelta: Float
-  minDelay: Int
-}
-
-type Commission {
-  current: Float
-  max: Float
-  changeRate: CommissionChangeRate
-  throttleFrom: Int
-}
-
-type BonusCycle {
-  previousStart: Int
-  start: Int!
-  end: Int!
-  pendingDuration: Int
-}
-
-type PoolSlash {
-  amount: BigInt!
-  appliedAt: DateTime!
-  appliedBlock: Int!
-}
-
-type UnbondingEras {
-  era: Int!
-  balance: BigInt!
-}
-
-type PoolMember @entity {
-  id: ID!
-  pool: NominationPool!
-  who: Account!
-  bonded: BigInt!
-  tokenAccount: TokenAccount
-  rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
-  unbondingEras: [UnbondingEras!]
-  joinedEra: Era
-}
-
-type PoolMemberRewards @entity {
-  id: ID!
-  pool: NominationPool!
-  member: PoolMember!
-  reward: EraReward!
-  points: BigInt!
-}
-
-type Validator @entity {
-  id: ID!
-  who: Account!
-  commission: Int
-  blocked: Boolean
-
-  # Relationships
-  pools: [PoolValidator]! @derivedFrom(field: "validator")
-}
-
-type PoolValidator @entity {
-  id: ID!
-  pool: NominationPool!
-  validator: Validator!
-}
-
-type PoolBalance {
-  stash: BigInt!
-  reward: BigInt!
-  bonus: BigInt!
-  active: BigInt!
-}
-
-type EarlyBirdBonus {
-  amount: BigInt!
-  shareCaptureBlock: Int
-  lastPaymentId: Int
-  totalPaid: BigInt
-}
-
-type NominationPool @entity {
-  id: ID!
-
-  # Storage defaults
-  name: String!
-  points: BigInt! # sEnj
-  state: PoolState!
-  commission: Commission!
-  capacity: BigInt!
-  deposit: BigInt!
-  bonusCycle: BonusCycle!
-  tokenId: BigInt!
-
-  balance: PoolBalance!
-  rate: BigInt!
-  apy: Float!
-  historicalApy: Float!
-  saturation: BigInt!
-  availableStakeAmount: BigInt!
-  availableStakePoints: BigInt!
-  earlyBirdBonus: EarlyBirdBonus
-
-  # Relationships
-  members: [PoolMember]! @derivedFrom(field: "pool")
-  eraRewards: [EraReward]! @derivedFrom(field: "pool")
-  slashes: [PoolSlash]!
-  validators: [PoolValidator]! @derivedFrom(field: "pool")
-  degenToken: Token! @unique
-
-  # Extras
-  totalMembers: Int!
-  createdAt: DateTime!
-  createdBlock: Int!
-}
-
-type EarlyBirdShares @entity {
-  id: ID!
-
-  pool: NominationPool!
-  who: Account!
-  shares: BigInt!
-}
-
-type Era @entity {
-  id: ID!
-
-  index: Int!
-  startAt: DateTime!
-  startBlock: Int!
-  endAt: DateTime
-  endBlock: Int
-}
-
-type CommissionPayment {
-  beneficiary: Account!
-  amount: BigInt!
-}
-
-type EraReward @entity {
-  id: ID!
-
-  pool: NominationPool!
-  era: Era!
-  rate: BigInt!
-  changeInRate: BigInt!
-  active: BigInt!
-  commission: CommissionPayment
-  bonus: BigInt!
-  reinvested: BigInt!
-  apy: Float!
-  averageApy: Float!
-
-  memberRewards: [PoolMemberRewards!]! @derivedFrom(field: "reward")
-}
-
-enum StakeExchangeOfferState {
-  Active
-  Cancelled
-  Completed
-}
-
-type StakeExchangeOffer @entity {
-  id: ID!
-  offerId: BigInt!
-
-  state: StakeExchangeOfferState!
-  who: Account!
-  total: BigInt!
-  rate: BigInt!
-  minAverageRewardRate: BigInt!
-
-  tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "offer")
-
-  createdAt: DateTime!
-  createdBlock: Int!
-}
-
-type EarlyBirdDetails @entity {
-  id: ID!
-
-  bonusCalculated: Boolean!
-  currentPaymentId: Int
-  nextPaymentBlock: Int
-  earlyBirdBonusDistributionBlock: Int!
-  totalPaid: BigInt
-}
-
 type BalancesTransfer {
   from: Account!
   to: Account!
@@ -450,7 +87,7 @@ type BalancesTransfer {
 type TeleportBalanceWithdrawn {
   beneficiary: Account!
   amount: BigInt!
-  who: Account!
+  account: Account!
   destination: String!
 }
 
@@ -484,7 +121,7 @@ type MarketplaceListingFilled {
   amountFilled: BigInt!
   amountRemaining: BigInt!
   protocolFee: BigInt!
-  price: BigInt! 
+  price: BigInt!
   royalty: BigInt!
 }
 
@@ -503,7 +140,7 @@ enum CounterOfferResponseType {
 }
 
 type CounterOfferResponseAccept {
-   kind: CounterOfferResponseType!
+  kind: CounterOfferResponseType!
 }
 
 type CounterOfferResponseCounter{
@@ -569,18 +206,18 @@ type MultiTokensBurned {
   collectionId: BigInt!
   tokenId: BigInt!
   token: Token
-  who: Account!
+  account: Account!
   amount: BigInt!
 }
 
 type MultiTokensCollectionAccountCreated {
   collectionId: BigInt!
-  who: Account!
+  account: Account!
 }
 
 type MultiTokensCollectionAccountDestroyed {
   collectionId: BigInt!
-  who: Account!
+  account: Account!
 }
 
 type MultiTokensCollectionCreated {
@@ -622,7 +259,7 @@ type MultiTokensThawed {
 type MultiTokensTokenAccountCreated {
   collectionId: BigInt!
   tokenId: BigInt!
-  who: Account!
+  account: Account!
   balance: BigInt!
 }
 
@@ -683,7 +320,7 @@ type ClaimsClaimRequested {
 }
 
 type ClaimsClaimed {
-  who: Account!
+  account: Account!
   ethAccount: String
   efiSum: BigInt!
   enjSum: BigInt!
@@ -702,18 +339,18 @@ type FuelTankDestroyed {
 }
 
 type MultiTokensClaimedCollections {
-  who: Account!
+  account: Account!
   ethAccount: String!
   collectionIds: [BigInt!]
 }
 
 type MultiTokensClaimTokensInitiated {
-  who: Account!
+  account: Account!
   ethAccount: String!
 }
 
 type MultiTokensClaimTokensCompleted {
-  who: Account!
+  account: Account!
   ethAccount: String!
 }
 
@@ -747,7 +384,7 @@ type Judgement {
 type Registration @entity {
   id: ID!
   deposit: BigInt!
-  who: Account!
+  account: Account!
   judgements: [Judgement!]
   currentJudgement: JudgementType!
 
@@ -768,7 +405,7 @@ type Registration @entity {
 
 type Identity @entity {
   id: ID!
-  who: Account! @unique
+  account: Account! @unique
   isSub: Boolean!
   name: String
   info: Registration!
@@ -784,7 +421,7 @@ type Identity @entity {
 type IdentityRegistrar @entity {
   id: ID!
   index: Int!
-  who: Account! @unique
+  account: Account! @unique
   fee: BigInt!
 
   # Extras
@@ -802,11 +439,11 @@ type Account @entity {
   # Relations
   extrinsics: [Extrinsic] @derivedFrom(field: "signer")
   collectionsOwned: [Collection] @derivedFrom(field: "owner")
-  collectionAccounts: [CollectionAccount] @derivedFrom(field: "who")
-  tokenAccounts: [TokenAccount] @derivedFrom(field: "who")
+  collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
+  tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
-  identity: Identity @derivedFrom(field: "who")
-  registrar: IdentityRegistrar @derivedFrom(field: "who")
+  identity: Identity @derivedFrom(field: "account")
+  registrar: IdentityRegistrar @derivedFrom(field: "account")
 
   # Extras
   lastUpdateBlock: Int
@@ -871,12 +508,12 @@ type CollectionFlags {
 }
 
 type CollectionSocials {
-    twitter: String
-    discord: String
-    instagram: String
-    website: String
-    medium: String
-    tiktok: String
+  twitter: String
+  discord: String
+  instagram: String
+  website: String
+  medium: String
+  tiktok: String
 }
 
 type Collection @entity {
@@ -916,7 +553,7 @@ type Collection @entity {
 }
 
 type CollectionApproval {
-  who: String!
+  account: String!
   expiration: Int
 }
 
@@ -929,7 +566,7 @@ type CollectionAccount @entity {
   accountCount: Int!
 
   # Relations
-  who: Account! @index
+  account: Account! @index
   collection: Collection! @index
 
   # Extras
@@ -1018,10 +655,10 @@ type Token @entity {
   traits: [TraitToken] @derivedFrom(field: "token")
   rarity: TokenRarity @derivedFrom(field: "token")
 
-  bestListing: Listing 
+  bestListing: Listing
   recentListing: Listing
   lastSale: ListingSale
-  
+
   # Extras
   nonFungible: Boolean!
   metadata: Metadata
@@ -1038,7 +675,7 @@ type TokenRarity @entity {
 }
 
 type TokenApproval {
-  who: String!
+  account: String!
   amount: BigInt!
   expiration: Int
 }
@@ -1067,7 +704,7 @@ type TokenAccount @entity {
   isFrozen: Boolean!
 
   # Relations
-  who: Account! @index
+  account: Account! @index
   collection: Collection! @index
   token: Token! @index
 
@@ -1187,8 +824,6 @@ type Bid @entity {
   createdAt: DateTime!
 }
 
-
-
 enum ListingStatusType {
   Active
   Cancelled
@@ -1218,7 +853,7 @@ type CounterOffer @entity {
   sellerPrice: BigInt
   buyerPrice: BigInt
   amount: BigInt!
-  who: Account!
+  account: Account!
   listing: Listing!
   createdAt: DateTime!
 
@@ -1265,11 +900,10 @@ enum AccountClaimType {
   EVM
 }
 
-
 type ClaimRequest @entity {
   id: ID!
 
-  who: String!
+  account: String!
   acountType: AccountClaimType!
   hash: String @unique
   amountClaimable: BigInt!
@@ -1289,7 +923,7 @@ type ClaimRequest @entity {
 type Claim @entity {
   id: ID!
 
-  who: Account!
+  account: Account!
   amount: BigInt!
 
   efiSum: BigInt!
@@ -1308,7 +942,7 @@ type ClaimDetails @entity {
 type MultiTokensClaims @entity {
   id: ID!
 
-  who: Account!
+  account: Account!
   ethAccount: String!
   completed: Boolean!
 
@@ -1356,7 +990,7 @@ type FuelTankUserAccountManagement {
 type FuelTankUserAccounts @entity {
   id: ID!
   tank: FuelTank!
-  who: Account!
+  account: Account!
 
   tankDeposit: BigInt!
   userDeposit: BigInt!
@@ -1391,7 +1025,6 @@ type FuelTankRuleSet @entity {
   permittedExtrinsics: [PermittedExtrinsics] @derivedFrom(field: "ruleSet")
 }
 
-
 enum CoveragePolicy {
   Fees
   FeesAndDeposit
@@ -1413,3 +1046,365 @@ type FuelTank @entity {
   accountRules: [FuelTankAccountRules] @derivedFrom(field: "tank")
   ruleSets: [FuelTankRuleSet] @derivedFrom(field: "tank")
 }
+
+
+type StakingEraPaid {
+  eraIndex: Int!
+  validatorPayout: BigInt!
+  remainder: BigInt!
+}
+
+type ImOnlineSomeOffline {
+  validators: [String]!
+}
+
+type ValidatorPrefsSet {
+  validator: String!
+}
+
+type StakeExchangeOfferCreated {
+  offerId: BigInt!
+  account: Account!
+  total: BigInt!
+  rate: BigInt!
+  minAverageCommission: Int! @deprecated
+  minAverageRewardRate: BigInt!
+}
+
+type StakeExchangeOfferCancelled {
+  offerId: BigInt!
+}
+
+type StakeExchangeLiquidityWithdrawn {
+  offerId: BigInt!
+  account: Account!
+  amount: BigInt!
+}
+
+type StakeExchangeLiquidityAdded {
+  offerId: BigInt!
+  account: Account!
+  amount: BigInt!
+}
+
+type StakeExchangeLiquidityConfigUpdated {
+  account: Account!
+  tokenFilter: StakeExchangeTokenFilter!
+}
+
+type StakeExchangeBuyOrderCompleted {
+  offerId: BigInt!
+  account: Account!
+  tokenId: BigInt!
+  amount: BigInt!
+  rate: BigInt!
+  points: BigInt!
+}
+
+type StakeExchangeOfferCompleted {
+  offerId: BigInt!
+}
+
+type NominationPoolsCreated {
+  pool: String!
+}
+
+type NominationPoolsDestroyed {
+  pool: String!
+}
+
+type NominationPoolsPoolMutated {
+  pool: String!
+  mutation: JSON!
+}
+
+type NominationPoolsBonded {
+  pool: String!
+  account: Account!
+  bonded: BigInt!
+}
+
+type NominationPoolsUnbonded {
+  account: Account!
+  unbondingPoints: BigInt!
+  balance: BigInt!
+  pool: String!
+  era: Int!
+}
+
+type NominationPoolsWithdrawn {
+  account: Account!
+  balance: BigInt!
+  points: BigInt!
+  numSlashingSpans: Int
+  pool: String!
+}
+
+type NominationPoolsEraRewardsProcessed {
+  pool: String!
+  era: Int!
+  eraReward: EraReward!
+  rate: BigInt!
+}
+
+type NominationPoolsRewardPaid {
+  pool: String!
+  era: Int!
+  validatorStash: Account!
+  reward: BigInt!
+  bonus: BigInt!
+}
+
+type NominationPoolsPoolSlashed {
+  pool: String!
+  balance: BigInt!
+}
+
+type NominationPoolsNominated {
+  pool: String!
+  validators: [String]!
+}
+
+type NominationPoolsEarlyBirdBonusPaymentUnlocked {
+  paymentId: Int!
+  nextPaymentBlock: Int!
+}
+
+type NominationPoolsEarlyBirdBonusCalculated {
+  totalAmount: BigInt!
+}
+
+type NominationPoolsEarlyBirdSharesCaptured {
+  pool: String!
+  totalAccounts: Int!
+}
+
+type NominationPoolsEarlyBirdBonusPaid {
+  pool: String!
+  paymentId: Int!
+  totalAccounts: Int!
+}
+
+enum StakeExchangeTokenFilterType {
+  Whitelist
+  BlockList
+  All
+}
+
+type StakeExchangeTokenFilter @entity {
+  value: [String]
+  type: StakeExchangeTokenFilterType!
+  account: Account @unique
+  offer: StakeExchangeOffer @unique
+}
+
+enum PoolState {
+  Open,
+  Blocked,
+  Destroying
+}
+
+type CommissionChangeRate {
+  maxDelta: Float
+  minDelay: Int
+}
+
+type Commission {
+  current: Float
+  max: Float
+  changeRate: CommissionChangeRate
+  throttleFrom: Int
+}
+
+type BonusCycle {
+  previousStart: Int
+  start: Int!
+  end: Int!
+  pendingDuration: Int
+}
+
+type PoolSlash {
+  amount: BigInt!
+  appliedAt: DateTime!
+  appliedBlock: Int!
+}
+
+type UnbondingEras {
+  era: Int!
+  balance: BigInt!
+}
+
+type PoolMember @entity {
+  id: ID!
+  pool: NominationPool!
+  account: Account!
+  bonded: BigInt!
+  tokenAccount: TokenAccount
+  rewards: [PoolMemberRewards!] @derivedFrom(field: "member")
+  unbondingEras: [UnbondingEras!]
+  joinedEra: Era
+}
+
+type PoolMemberRewards @entity {
+  id: ID!
+  pool: NominationPool!
+  member: PoolMember!
+  reward: EraReward!
+  points: BigInt!
+}
+
+type Validator @entity {
+  id: ID!
+  account: Account!
+  commission: Int
+  blocked: Boolean
+
+  # Relationships
+  pools: [PoolValidator]! @derivedFrom(field: "validator")
+}
+
+type PoolValidator @entity {
+  id: ID!
+  pool: NominationPool!
+  validator: Validator!
+}
+
+type PoolBalance {
+  stash: BigInt!
+  reward: BigInt!
+  bonus: BigInt!
+  active: BigInt!
+}
+
+type EarlyBirdBonus {
+  amount: BigInt!
+  shareCaptureBlock: Int
+  lastPaymentId: Int
+  totalPaid: BigInt
+}
+
+type NominationPool @entity {
+  id: ID!
+
+  # Storage defaults
+  name: String!
+  points: BigInt! # sEnj
+  state: PoolState!
+  commission: Commission!
+  capacity: BigInt!
+  deposit: BigInt!
+  bonusCycle: BonusCycle!
+  tokenId: BigInt!
+
+  balance: PoolBalance!
+  rate: BigInt!
+  apy: Float!
+  historicalApy: Float!
+  saturation: BigInt!
+  availableStakeAmount: BigInt!
+  availableStakePoints: BigInt!
+  earlyBirdBonus: EarlyBirdBonus
+
+  # Relationships
+  members: [PoolMember]! @derivedFrom(field: "pool")
+  eraRewards: [EraReward]! @derivedFrom(field: "pool")
+  slashes: [PoolSlash]!
+  validators: [PoolValidator]! @derivedFrom(field: "pool")
+  degenToken: Token! @unique
+
+  # Extras
+  totalMembers: Int!
+  createdAt: DateTime!
+  createdBlock: Int!
+}
+
+type EarlyBirdShares @entity {
+  id: ID!
+
+  pool: NominationPool!
+  account: Account!
+  shares: BigInt!
+}
+
+type Era @entity {
+  id: ID!
+
+  index: Int!
+  startAt: DateTime!
+  startBlock: Int!
+  endAt: DateTime
+  endBlock: Int
+}
+
+type CommissionPayment {
+  beneficiary: Account!
+  amount: BigInt!
+}
+
+type EraReward @entity {
+  id: ID!
+
+  pool: NominationPool!
+  era: Era!
+  rate: BigInt!
+  changeInRate: BigInt!
+  active: BigInt!
+  commission: CommissionPayment
+  bonus: BigInt!
+  reinvested: BigInt!
+  apy: Float!
+  averageApy: Float!
+
+  memberRewards: [PoolMemberRewards!]! @derivedFrom(field: "reward")
+}
+
+enum StakeExchangeOfferState {
+  Active
+  Cancelled
+  Completed
+}
+
+type StakeExchangeOffer @entity {
+  id: ID!
+  offerId: BigInt!
+
+  state: StakeExchangeOfferState!
+  account: Account!
+  total: BigInt!
+  rate: BigInt!
+  minAverageRewardRate: BigInt!
+
+  tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "offer")
+
+  createdAt: DateTime!
+  createdBlock: Int!
+}
+
+type EarlyBirdDetails @entity {
+  id: ID!
+
+  bonusCalculated: Boolean!
+  currentPaymentId: Int
+  nextPaymentBlock: Int
+  earlyBirdBonusDistributionBlock: Int!
+  totalPaid: BigInt
+}
+
+union EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned
+  | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated
+  | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted
+  | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated
+  | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved
+  | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated
+  | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved
+  | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum
+  | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed
+  | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated
+  | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
+  | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded
+  | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated
+  | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet
+  | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed
+  | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated
+  | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn
+  | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted

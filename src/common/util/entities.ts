@@ -3,7 +3,8 @@ import { Account, Balance, Listing } from '../../model'
 import { CommonContext } from '../types/contexts'
 import { encodeId } from '../tools'
 import { ExtrinsicSignature } from '@subsquid/substrate-runtime'
-import { AccountNotParsableError } from '@enjin/indexer/common/errors'
+import { AccountNotParsableError } from '../errors'
+import { RootOrSigned, MultiAddress } from '../../mappings/common/types'
 
 interface AddressWithKind {
     __kind: 'Id' | 'AccountId'
@@ -34,7 +35,9 @@ export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined)
     return typeof address === 'object' && '__kind' in address ? address.value : (address as string)
 }
 
-export function unwrapAccount(account: Uint8Array | string | { __kind: string; value?: string } | undefined): string {
+export function unwrapAccount(
+    account: Uint8Array | string | { __kind: string; value?: string } | MultiAddress | RootOrSigned | undefined
+): string {
     if (!account) {
         throw new AccountNotParsableError('undefined')
     }
@@ -47,8 +50,8 @@ export function unwrapAccount(account: Uint8Array | string | { __kind: string; v
         return account
     }
 
-    if (account.value) {
-        return account.value
+    if ('value' in account && account.value !== undefined) {
+        return typeof account.value === 'string' ? account.value : account.value.toString()
     }
 
     throw new AccountNotParsableError(account.__kind)

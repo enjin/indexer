@@ -1,4 +1,4 @@
-import { AccountId32, H256 } from '@enjin/indexer/mappings/common/types'
+import { AccountId32, H256 } from '../../../common/types'
 
 export type CounterOfferRemoved = {
     listingId: H256

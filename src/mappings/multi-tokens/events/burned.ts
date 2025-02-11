@@ -2,7 +2,7 @@ import { multiTokens } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token } from '@enjin/indexer/model'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensBurned, Token } from '../../../model'
 import { Burned } from './types'
 
 export function burned(event: EventItem): Burned {

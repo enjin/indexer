@@ -2,16 +2,8 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import {
-    Account,
-    AccountTokenEvent,
-    Event as EventModel,
-    Extrinsic,
-    Listing,
-    MarketplaceBidPlaced,
-    Token,
-} from '@enjin/indexer/model'
-import { BidPlaced } from '@enjin/indexer/mappings/marketplace/events/types'
+import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceBidPlaced, Token } from '../../../model'
+import { BidPlaced } from './types'
 
 export function bidPlaced(event: EventItem): BidPlaced {
     return match(event)
