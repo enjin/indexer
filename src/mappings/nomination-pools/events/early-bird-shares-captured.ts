@@ -8,13 +8,19 @@ import { EarlyBirdSharesCaptured } from './types'
 export function earlyBirdSharesCaptured(event: EventItem): EarlyBirdSharesCaptured {
     return match(event)
         .returnType<EarlyBirdSharesCaptured>()
-        .when(() => nominationPools.earlyBirdSharesCaptured.enjinV1022.is(event), nominationPools.earlyBirdSharesCaptured.enjinV1022.decode)
+        .when(
+            () => nominationPools.earlyBirdSharesCaptured.enjinV1022.is(event),
+            () => nominationPools.earlyBirdSharesCaptured.enjinV1022.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })
 }
 
-export function earlyBirdSharesCapturedEventModel(item: EventItem, data: EarlyBirdSharesCaptured): EventModel | undefined {
+export function earlyBirdSharesCapturedEventModel(
+    item: EventItem,
+    data: EarlyBirdSharesCaptured
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEarlyBirdSharesCaptured.name,

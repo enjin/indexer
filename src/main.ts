@@ -24,7 +24,12 @@ Sentry.init({
     profilesSampleRate: 1.0,
 })
 
-async function handleEvents(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave = false): Promise<Event | [Event, AccountTokenEvent] | undefined> {
+async function handleEvents(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem,
+    skipSave = false
+): Promise<Event | [Event, AccountTokenEvent] | undefined> {
     switch (item.name) {
         case events.multiTokens.approved.name:
             return processors.multiTokens.approved(ctx, item, skipSave)
@@ -216,7 +221,9 @@ processor.run(
     }),
     async (ctx) => {
         try {
-            ctx.log.info(`Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`)
+            ctx.log.info(
+                `Processing batch of blocks from ${ctx.blocks[0].header.height} to ${ctx.blocks[ctx.blocks.length - 1].header.height}`
+            )
 
             for (const block of ctx.blocks) {
                 // const extrinsics: Extrinsic[] = []
@@ -242,7 +249,9 @@ processor.run(
                     await syncAllCollections()
                 }
 
-                ctx.log.info(`Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`)
+                ctx.log.info(
+                    `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
+                )
 
                 for (const extrinsic of block.extrinsics) {
                     const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
@@ -257,15 +266,23 @@ processor.run(
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
                         const tankData = mappings.fuelTanks.calls.dispatch(call)
-                        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, { id: unwrapAccount(tankData.tankId) })
+                        const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
+                            id: unwrapAccount(tankData.tankId),
+                        })
 
                         fuelTank = new FuelTankData({
                             id: tank.id,
                             name: tank.name,
                             feePaid: 0n,
                             ruleSetId: tankData.ruleSetId,
-                            paysRemainingFee: 'settings' in tankData && tankData.settings !== undefined ? tankData.settings.paysRemainingFee : null,
-                            useNoneOrigin: 'settings' in tankData && tankData.settings !== undefined ? tankData.settings.useNoneOrigin : null,
+                            paysRemainingFee:
+                                'settings' in tankData && tankData.settings !== undefined
+                                    ? tankData.settings.paysRemainingFee
+                                    : null,
+                            useNoneOrigin:
+                                'settings' in tankData && tankData.settings !== undefined
+                                    ? tankData.settings.useNoneOrigin
+                                    : null,
                         })
 
                         for (const eventItem of block.events) {
@@ -313,8 +330,12 @@ processor.run(
                     if (
                         call.name === 'Marketplace.fill_listing' ||
                         call.name === 'Marketplace.finalize_auction' ||
-                        (fuelTank && call.args.call?.__kind === 'Marketplace' && call.args.call?.value?.__kind === 'fill_listing') ||
-                        (fuelTank && call.args.call?.__kind === 'Marketplace' && call.args.call?.value?.__kind === 'finalize_auction')
+                        (fuelTank &&
+                            call.args.call?.__kind === 'Marketplace' &&
+                            call.args.call?.value?.__kind === 'fill_listing') ||
+                        (fuelTank &&
+                            call.args.call?.__kind === 'Marketplace' &&
+                            call.args.call?.value?.__kind === 'finalize_auction')
                     ) {
                         const listingId = call.args.call?.value?.listingId ?? call.args.listingId
 

@@ -6,7 +6,6 @@
   "semi": false,
   "singleQuote": true,
   "arrowParens": "always",
-  "printWidth": 190,
-  "endOfLine": "lf",
-  "objectWrap": "collapse"
+  "printWidth": 120,
+  "endOfLine": "lf"
 }

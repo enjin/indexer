@@ -7,11 +7,26 @@ import { DispatchAndTouch } from './types'
 export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
     return match(call)
         .returnType<DispatchAndTouch>()
-        .when(() => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call), calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.decode)
-        .when(() => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.is(call), calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.decode)
-        .when(() => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.is(call), calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.decode)
-        .when(() => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1003.is(call), calls.fuelTanks.dispatchAndTouch.matrixEnjinV1003.decode)
-        .when(() => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1000.is(call), calls.fuelTanks.dispatchAndTouch.matrixEnjinV1000.decode)
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1005.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1004.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1003.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1003.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1000.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1000.decode(call)
+        )
         .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV603.is(call),
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV603.decode(call)

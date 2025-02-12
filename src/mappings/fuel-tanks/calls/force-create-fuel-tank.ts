@@ -7,12 +7,30 @@ import { ForceCreateFuelTank } from './types'
 export function forceCreateFuelTank(call: CallItem): ForceCreateFuelTank {
     return match(call)
         .returnType<ForceCreateFuelTank>()
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.decode)
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.decode)
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.decode)
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.decode)
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.decode)
-        .when(() => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.is(call), calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.decode)
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1005.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1004.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1003.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1000.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.is(call),
+            () => calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.decode(call)
+        )
         .when(
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1012.is(call),
             () => calls.fuelTanks.forceCreateFuelTank.matrixV1012.decode(call)

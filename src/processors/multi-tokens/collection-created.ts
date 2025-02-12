@@ -34,7 +34,9 @@ export async function collectionCreated(
     const eventData = mappings.multiTokens.events.collectionCreated(item)
 
     if (skipSave) {
-        const collection = await ctx.store.findOne<Collection>(Collection, { where: { id: eventData.collectionId.toString() } })
+        const collection = await ctx.store.findOne<Collection>(Collection, {
+            where: { id: eventData.collectionId.toString() },
+        })
 
         if (collection) {
             collection.createdAt = new Date(block.timestamp ?? 0)
@@ -44,7 +46,7 @@ export async function collectionCreated(
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    const callData = mappings.multiTokens.calls.createCollection(item.call)
+    const callData = mappings.multiTokens.calls.createOrForceCreateCollection(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({

@@ -7,7 +7,10 @@ import { ClaimTokensInitiated } from './types'
 export function claimTokensInitiated(event: EventItem): ClaimTokensInitiated {
     return match(event)
         .returnType<ClaimTokensInitiated>()
-        .when(() => multiTokens.claimTokensInitiated.matrixEnjinV1000.is(event), multiTokens.claimTokensInitiated.matrixEnjinV1000.decode)
+        .when(
+            () => multiTokens.claimTokensInitiated.matrixEnjinV1000.is(event),
+            () => multiTokens.claimTokensInitiated.matrixEnjinV1000.decode(event)
+        )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
         })

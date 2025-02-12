@@ -15,35 +15,47 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import * as mappings from './../../mappings'
 
-export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function fuelTankCreated(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
-    const eventData = mappings.fuelTanks.events.fuelTankCreated(item)
-    const callData = mappings.fuelTanks.calls.createFuelTank(item.call)
+    const event = mappings.fuelTanks.events.fuelTankCreated(item)
+    const call = mappings.fuelTanks.calls.createOrForceCreateFuelTank(item.call)
 
     const [tankAccount, owner] = await Promise.all([
-        getOrCreateAccount(ctx, eventData.tankId),
-        getOrCreateAccount(ctx, eventData.owner),
+        getOrCreateAccount(ctx, event.tankId),
+        getOrCreateAccount(ctx, event.owner),
     ])
 
     let userAccountManagement: FuelTankUserAccountManagement | undefined
-    if (callData.descriptor.userAccountManagement) {
+    if (call.descriptor.userAccountManagement) {
         userAccountManagement = new FuelTankUserAccountManagement({
-            tankReservesAccountCreationDeposit: callData.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
+            tankReservesAccountCreationDeposit:
+                call.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
             tankReservesExistentialDeposit:
-                'tankReservesExistentialDeposit' in callData.descriptor.userAccountManagement
-                    ? callData.descriptor.userAccountManagement.tankReservesExistentialDeposit
-                    : callData.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
+                'tankReservesExistentialDeposit' in call.descriptor.userAccountManagement
+                    ? call.descriptor.userAccountManagement.tankReservesExistentialDeposit
+                    : call.descriptor.userAccountManagement.tankReservesAccountCreationDeposit,
         })
+    }
+
+    let providesDeposit: boolean | undefined
+    if (call.descriptor.providesDeposit !== undefined) {
+        providesDeposit = call.descriptor.providesDeposit
     }
 
     const fuelTank = new FuelTank({
         id: tankAccount.id,
         tankAccount,
-        name: hexToString(eventData.name),
+        name: hexToString(event.name),
         owner,
         isFrozen: false,
         accountCount: 0,
+        providesDeposit: providesDeposit,
+        coveragePolicy: null,
         // providesDeposit: 'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
         // coveragePolicy:
         //     'coveragePolicy' in callData.descriptor ? CoveragePolicy[callData.descriptor.coveragePolicy.__kind] : null,
@@ -52,8 +64,8 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
 
     await ctx.store.save(fuelTank)
 
-    if (callData.descriptor.accountRules.length > 0) {
-        for (const rule of callData.descriptor.accountRules) {
+    if (call.descriptor.accountRules.length > 0) {
+        for (const rule of call.descriptor.accountRules) {
             let accountRule: WhitelistedCallers | RequireToken
             if (rule.__kind === 'WhitelistedCallers') {
                 accountRule = new WhitelistedCallers({
@@ -131,7 +143,7 @@ export async function fuelTankCreated(ctx: CommonContext, block: BlockHeader, it
         data: new FuelTankCreated({
             tank: fuelTank.id,
             owner: owner.id,
-            name: hexToString(eventData.name),
+            name: hexToString(event.name),
         }),
     })
 }

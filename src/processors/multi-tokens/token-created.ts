@@ -10,11 +10,11 @@ export async function tokenCreated(
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
-    const eventData = mappings.multiTokens.events.tokenCreated(item)
+    const event = mappings.multiTokens.events.tokenCreated(item)
 
     if (skipSave && item.call) {
         const token = await ctx.store.findOne<Token>(Token, {
-            where: { id: `${eventData.collectionId}-${eventData.tokenId}` },
+            where: { id: `${event.collectionId}-${event.tokenId}` },
         })
 
         if (token) {
@@ -22,27 +22,27 @@ export async function tokenCreated(
             await ctx.store.save(token)
         }
 
-        return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
+        return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
     }
 
     if (item.call) {
         const collection = await ctx.store.findOne<Collection>(Collection, {
-            where: { id: eventData.collectionId.toString() },
+            where: { id: event.collectionId.toString() },
         })
 
         if (!collection) {
-            throwError(`[TokenCreated] We have not found collection ${eventData.collectionId.toString()}.`, 'fatal')
-            return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
+            throwError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`, 'fatal')
+            return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
 
-        const callData = mappings.multiTokens.calls.mint(item.call)
-        const params = callData.params as DefaultMintParams_CreateToken
+        const call = mappings.multiTokens.calls.mintOrForceMint(item.call)
+        const params = call.params as DefaultMintParams_CreateToken
         const minBalance = params.sufficiency?.__kind === 'Sufficient' ? params.sufficiency.minimumBalance : 1n
         const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.unitPrice ?? 1n) : 1n
 
         const token = new Token({
-            id: `${eventData.collectionId}-${eventData.tokenId}`,
-            tokenId: eventData.tokenId,
+            id: `${event.collectionId}-${event.tokenId}`,
+            tokenId: event.tokenId,
             supply: 0n, // Supply is updated on Mint/Burn events
             cap: null, //params.cap,
             behavior: null, //params.behavior,
@@ -67,5 +67,5 @@ export async function tokenCreated(
         await ctx.store.save(token)
     }
 
-    return mappings.multiTokens.events.tokenCreatedEventModel(item, eventData)
+    return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
 }

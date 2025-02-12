@@ -21,7 +21,10 @@ import { CounterOfferAnswered } from './types'
 export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
     return match(event)
         .returnType<CounterOfferAnswered>()
-        .when(() => marketplace.counterOfferAnswered.matrixEnjinV1012.is(event), marketplace.counterOfferAnswered.matrixEnjinV1012.decode)
+        .when(
+            () => marketplace.counterOfferAnswered.matrixEnjinV1012.is(event),
+            () => marketplace.counterOfferAnswered.matrixEnjinV1012.decode(event)
+        )
         .when(
             () => marketplace.counterOfferAnswered.matrixV1011.is(event),
             () => marketplace.counterOfferAnswered.matrixV1011.decode(event)
@@ -43,7 +46,12 @@ export function counterOfferAnswered(event: EventItem): CounterOfferAnswered {
         })
 }
 
-export function counterOfferAnsweredEventModel(item: EventItem, data: CounterOfferAnswered, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
+export function counterOfferAnsweredEventModel(
+    item: EventItem,
+    data: CounterOfferAnswered,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
     let response: CounterOfferResponse
 
     switch (data.response?.__kind) {
@@ -51,7 +59,10 @@ export function counterOfferAnsweredEventModel(item: EventItem, data: CounterOff
             response = new CounterOfferResponseAccept({ kind: CounterOfferResponseType.Accept })
             break
         case 'Counter':
-            response = new CounterOfferResponseCounter({ kind: CounterOfferResponseType.Counter, value: data.response.value })
+            response = new CounterOfferResponseCounter({
+                kind: CounterOfferResponseType.Counter,
+                value: data.response.value,
+            })
             break
         case 'Reject':
             response = new CounterOfferResponseReject({ kind: CounterOfferResponseType.Reject })

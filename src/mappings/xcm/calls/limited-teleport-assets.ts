@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '../../../common/types/contexts'
 import { match } from 'ts-pattern'
-import { LimitedTeleportAssets } from '../../../mappings/xcm/calls/types'
+import { LimitedTeleportAssets } from './types'
 
 export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
     return match(call)
