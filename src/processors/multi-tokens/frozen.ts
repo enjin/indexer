@@ -1,9 +1,17 @@
 import { throwError } from '../../common/errors'
-import { Collection, CollectionAccount, Event as EventModel, FreezeState, Token, TokenAccount, TransferPolicy } from '../../model'
+import {
+    Collection,
+    CollectionAccount,
+    Event as EventModel,
+    FreezeState,
+    Token,
+    TokenAccount,
+    TransferPolicy,
+} from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { match } from 'ts-pattern'
 
 export async function frozen(
@@ -52,7 +60,10 @@ export async function frozen(
         })
 
         if (!token) {
-            throwError(`[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`, 'fatal')
+            throwError(
+                `[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`,
+                'fatal'
+            )
             return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
@@ -111,7 +122,7 @@ export async function frozen(
         })
     }
 
-    syncCollectionStats(event.collectionId.toString())
+    // syncCollectionStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.frozenEventModel(item, event)
 }

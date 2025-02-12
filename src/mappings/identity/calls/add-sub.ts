@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '../../../common/types/contexts'
 import { match } from 'ts-pattern'
-import { AddSub } from '../../../mappings/identity/calls/types'
+import { AddSub } from './types'
 
 export function addSub(call: CallItem): AddSub {
     return match(call)

@@ -15,8 +15,8 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
-import { computeTraits } from '../../jobs/compute-traits'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { computeTraits } from '../../jobs/compute-traits'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
@@ -141,8 +141,8 @@ export async function tokenDestroyed(
     ])
 
     await ctx.store.remove(token)
-    syncCollectionStats(data.collectionId.toString())
-    computeTraits(data.collectionId.toString())
+    // syncCollectionStats(data.collectionId.toString())
+    // computeTraits(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

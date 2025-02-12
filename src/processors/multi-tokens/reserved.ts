@@ -1,7 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { throwError } from '../../common/errors'
 import * as mappings from './../../mappings'
 import { match, P } from 'ts-pattern'
@@ -39,8 +39,11 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
 
         await ctx.store.save(tokenAccount)
     } else {
-        throwError(`[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(
+            `[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
-    syncCollectionStats(data.collectionId.toString())
+    // syncCollectionStats(data.collectionId.toString())
 }

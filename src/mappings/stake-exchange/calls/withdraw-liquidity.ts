@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../common/errors'
 import { calls } from '../../../types/generated'
 import { CallItem } from '../../../common/types/contexts'
 import { match } from 'ts-pattern'
-import { WithdrawLiquidity } from '../../../mappings/stake-exchange/calls/types'
+import { WithdrawLiquidity } from './types'
 
 export function withdrawLiquidity(call: CallItem): WithdrawLiquidity {
     return match(call)

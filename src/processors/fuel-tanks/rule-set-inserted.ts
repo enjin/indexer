@@ -4,17 +4,21 @@ import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } f
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
-export async function ruleSetInserted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function ruleSetInserted(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
     if (item.call.name === calls.fuelTanks.createFuelTank.name) {
         return undefined
     }
 
-    const eventData = mappings.fuelTanks.events.ruleSetInserted(item)
-    const callData = mappings.fuelTanks.calls.insertRuleSet(item.call)
+    const event = mappings.fuelTanks.events.ruleSetInserted(item)
+    const call = mappings.fuelTanks.calls.insertRuleSet(item.call)
 
-    const ruleSetId = `${eventData.tankId}-${eventData.ruleSetId}`
+    const ruleSetId = `${event.tankId}-${event.ruleSetId}`
 
     const [pE, rS] = await Promise.all([
         ctx.store.find(PermittedExtrinsics, { where: { ruleSet: { id: ruleSetId } } }),

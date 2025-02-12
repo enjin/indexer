@@ -1,10 +1,14 @@
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/entities'
+import { getOrCreateAccount, unwrapSigner } from '../../common/util/entities'
 import config from '../../config'
 import * as mappings from './../../mappings'
 
-export async function attempted(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function attempted(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.call || !item.extrinsic) return undefined
 
     const call = mappings.xcm.calls.teleportAssets(item.call)
@@ -47,7 +51,7 @@ export async function attempted(ctx: CommonContext, block: BlockHeader, item: Ev
         return undefined
     }
 
-    const account = await getOrCreateAccount(ctx, unwrapSignatureSigner(item.extrinsic.signature))
+    const account = await getOrCreateAccount(ctx, unwrapSigner(item.extrinsic))
     const beneficiaryAccount = await getOrCreateAccount(ctx, beneficiary)
 
     return new EventModel({

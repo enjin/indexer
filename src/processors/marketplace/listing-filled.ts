@@ -11,7 +11,7 @@ import {
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getBestListing } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
@@ -76,7 +76,7 @@ export async function listingFilled(
 
     if (listing.data.listingType === ListingType.Offer) {
         await ctx.store.save(listing.takeAssetId)
-        syncCollectionStats(listing.takeAssetId.collection.id)
+        // syncCollectionStats(listing.takeAssetId.collection.id)
     } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && event.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -86,7 +86,7 @@ export async function listingFilled(
             }
         }
         await ctx.store.save(listing.makeAssetId)
-        syncCollectionStats(listing.makeAssetId.collection.id)
+        // syncCollectionStats(listing.makeAssetId.collection.id)
     }
 
     if (item.extrinsic) {

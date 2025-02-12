@@ -1,12 +1,12 @@
 import { throwError } from '../../common/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { computeTraits } from '../../jobs/compute-traits'
+// import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { processMetadata } from '../../jobs/process-metadata'
+// import { processMetadata } from '../../jobs/process-metadata'
 import { isNonFungible } from './utils/helpers'
 
 export async function minted(
@@ -49,7 +49,10 @@ export async function minted(
     })
 
     if (!tokenAccount) {
-        throwError(`[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(
+            `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
 
         await Promise.all(promises)
         return mappings.multiTokens.events.mintedEventModel(item, data, token)
@@ -62,9 +65,9 @@ export async function minted(
 
     await Promise.all(promises)
 
-    await processMetadata(token.id, 'token')
-    computeTraits(data.collectionId.toString())
-    syncCollectionStats(data.collectionId.toString())
+    // await processMetadata(token.id, 'token')
+    // computeTraits(data.collectionId.toString())
+    // syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

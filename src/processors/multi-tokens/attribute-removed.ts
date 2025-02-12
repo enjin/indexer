@@ -1,8 +1,8 @@
 import { throwError } from '../../common/errors'
 import { Attribute, Collection, Event as EventModel, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { processMetadata } from '../../jobs/process-metadata'
-import { computeTraits } from '../../jobs/compute-traits'
+// import { processMetadata } from '../../jobs/process-metadata'
+// import { computeTraits } from '../../jobs/compute-traits'
 import * as mappings from './../../mappings'
 
 export async function attributeRemoved(
@@ -38,8 +38,8 @@ export async function attributeRemoved(
 
             token.attributeCount -= 1
             await ctx.store.save(token)
-            await processMetadata(token.id, 'token')
-            computeTraits(data.collectionId.toString())
+            // await processMetadata(token.id, 'token')
+            // computeTraits(data.collectionId.toString())
         } else {
             const collection = await ctx.store.findOne<Collection>(Collection, {
                 where: { id: data.collectionId.toString() },
@@ -52,7 +52,7 @@ export async function attributeRemoved(
 
             collection.attributeCount -= 1
             await ctx.store.save(collection)
-            await processMetadata(collection.id, 'collection')
+            // await processMetadata(collection.id, 'collection')
         }
 
         await ctx.store.remove(attribute)

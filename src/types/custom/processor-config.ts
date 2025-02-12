@@ -12,7 +12,12 @@ export interface ProcessorConfig {
     erasPerYear: number
     batchSize?: number
     dataSource: DataSource
-    redisUrl: string
+    redis: {
+        db: number
+        host: string
+        port: number
+        tls: boolean
+    }
     marketplaceUrl: string
     sentryDsn?: string
     amazonSns: {

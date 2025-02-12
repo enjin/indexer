@@ -71,9 +71,12 @@ importers:
       big.js:
         specifier: ^6.2.2
         version: 6.2.2
-      bull:
-        specifier: ^4.16.5
-        version: 4.16.5
+      bullmq:
+        specifier: ^5.40.3
+        version: 5.40.3
+      bullmq-otel:
+        specifier: ^1.0.1
+        version: 1.0.1
       cacheable-request:
         specifier: ^8.3.1
         version: 8.3.1
@@ -2015,9 +2018,11 @@ packages:
     resolution: {integrity: sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==}
     engines: {node: '>=6.14.2'}
 
-  bull@4.16.5:
-    resolution: {integrity: sha512-lDsx2BzkKe7gkCYiT5Acj02DpTwDznl/VNN7Psn7M3USPG7Vs/BaClZJJTAG+ufAR9++N1/NiUTdaFBWDIl5TQ==}
-    engines: {node: '>=12'}
+  bullmq-otel@1.0.1:
+    resolution: {integrity: sha512-9SSBA/iq8bFUJ9I5bDwv1UmtbJAmIGHt796g5lsYZWasqouTqkFA3+Z/n17mCc8VzfxxygCCCBsXdC1mICbxdw==}
+
+  bullmq@5.40.3:
+    resolution: {integrity: sha512-ZHGHilK/A8wo5HHlPbwyOWMCEMRsyEmwFubEu98Xb7IyELyJCDn2hXYQVemG8dqFovkgIxXmerf4y3OHcmwmOQ==}
 
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
@@ -2670,10 +2675,6 @@ packages:
     resolution: {integrity: sha512-vg59F3kcXBOtcIijwtdAyCxFocyv/fVkGQvw1kVGrxFO1U4SSGkGjrbASg5DN3TVekVle/jltwOjYRnZWc1YdA==}
     engines: {node: '>=0.10.0'}
     hasBin: true
-
-  get-port@5.1.1:
-    resolution: {integrity: sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==}
-    engines: {node: '>=8'}
 
   get-proto@1.0.1:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
@@ -4157,10 +4158,6 @@ packages:
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
-
-  uuid@8.3.2:
-    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    hasBin: true
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
@@ -7235,15 +7232,22 @@ snapshots:
     dependencies:
       node-gyp-build: 4.8.4
 
-  bull@4.16.5:
+  bullmq-otel@1.0.1:
+    dependencies:
+      '@opentelemetry/api': 1.9.0
+      bullmq: 5.40.3
+    transitivePeerDependencies:
+      - supports-color
+
+  bullmq@5.40.3:
     dependencies:
       cron-parser: 4.9.0
-      get-port: 5.1.1
       ioredis: 5.4.2
-      lodash: 4.17.21
       msgpackr: 1.11.2
+      node-abort-controller: 3.1.1
       semver: 7.7.1
-      uuid: 8.3.2
+      tslib: 2.8.1
+      uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
 
@@ -7947,8 +7951,6 @@ snapshots:
   get-package-type@0.1.0: {}
 
   get-port@1.0.0: {}
-
-  get-port@5.1.1: {}
 
   get-proto@1.0.1:
     dependencies:
@@ -9408,8 +9410,6 @@ snapshots:
       which-typed-array: 1.1.18
 
   utils-merge@1.0.1: {}
-
-  uuid@8.3.2: {}
 
   uuid@9.0.1: {}
 

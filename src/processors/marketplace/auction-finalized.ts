@@ -11,7 +11,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getBestListing } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function auctionFinalized(
     ctx: CommonContext,
@@ -66,7 +66,7 @@ export async function auctionFinalized(
     }
     await ctx.store.save(listing.makeAssetId)
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    // syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

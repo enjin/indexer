@@ -2,10 +2,14 @@ import { BlockHeader } from '../../../common/types/contexts'
 import { UnsupportedStorageError } from '../../../common/errors'
 import { storage } from '../../../types/generated'
 import { match } from 'ts-pattern'
-import { TokenAccount } from './types/token-accounts'
+import { TokenAccount } from './types'
 import { AccountId32 } from '../../common/types'
 
-export async function tokenAccounts(block: BlockHeader, collectionId: bigint, tokenId: bigint): Promise<[k: [bigint, bigint, AccountId32], v: TokenAccount | undefined][]> {
+export async function tokenAccounts(
+    block: BlockHeader,
+    collectionId: bigint,
+    tokenId: bigint
+): Promise<[k: [bigint, bigint, AccountId32], v: TokenAccount | undefined][]> {
     return (
         match(block)
             .returnType<Promise<[k: [bigint, bigint, string], v: TokenAccount | undefined][]>>()

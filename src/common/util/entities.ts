@@ -1,8 +1,7 @@
 import { isU8a, u8aToHex } from '@polkadot/util'
 import { Account, Balance, Listing } from '../../model'
-import { CommonContext } from '../types/contexts'
+import { CommonContext, ExtrinsicItem } from '../types/contexts'
 import { encodeId } from '../tools'
-import { ExtrinsicSignature } from '@subsquid/substrate-runtime'
 import { AccountNotParsableError } from '../errors'
 import { RootOrSigned, MultiAddress } from '../../mappings/common/types'
 
@@ -11,24 +10,11 @@ interface AddressWithKind {
     value: string
 }
 
-// if (!signatureUnknown) {
-//     publicKey = call.args.dest ?? call.args.destination
-//     extrinsicSignature = {
-//         address: call.args.dest ?? call.args.destination,
-//         signature: call.args.ethereumSignature,
-//     }
-// } else {
-//     publicKey = (
-//         signatureUnknown.address.__kind === 'Id' || signatureUnknown.address.__kind === 'AccountId'
-//             ? signatureUnknown.address.value
-//             : signatureUnknown.address
-//     ) as string
-//     extrinsicSignature = signatureUnknown
-// }
+export function unwrapSigner(extrinsic: ExtrinsicItem): string | undefined {
+    const { signature } = extrinsic
 
-export function unwrapSignatureSigner(signature: ExtrinsicSignature | undefined): string | undefined {
-    if (!signature?.address) {
-        return undefined
+    if (signature === undefined) {
+        return extrinsic.call?.args.dest ?? extrinsic.call?.args.destination
     }
 
     const address = signature.address as AddressWithKind

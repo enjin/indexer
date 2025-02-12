@@ -92,6 +92,14 @@ services:
       - indexer_db
       - indexer_redis
 
+  indexer_jaeger:
+    container_name: indexer_jaeger
+    image: jaegertracing/all-in-one:latest
+    restart: unless-stopped
+    ports:
+      - '4318:4318'
+      - '16686:16686'
+
 volumes:
   indexer_db:
   redis_db:

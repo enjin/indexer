@@ -11,9 +11,12 @@ const config: ProcessorConfig = {
         fromBlock: process.env.FROM_BLOCK ? parseInt(process.env.FROM_BLOCK, 10) : 0,
     },
     erasPerYear: process.env.ERAS_PER_YEAR ? parseInt(process.env.ERAS_PER_YEAR, 10) : 365,
-    redisUrl:
-        process.env.REDIS_URL ||
-        `${process.env.REDIS_SUPPORTS_TLS ? 'rediss' : 'redis'}://${process.env.REDIS_HOST}:${process.env.REDIS_PORT ?? 6379}/${process.env.REDIS_DB ?? 0}`,
+    redis: {
+        db: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379,
+        tls: !!process.env.REDIS_SUPPORTS_TLS,
+    },
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
     amazonSns: {

@@ -14,8 +14,8 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
 import { safeString } from '../../common/tools'
-import { computeTraits } from '../../jobs/compute-traits'
-import { processMetadata } from '../../jobs/process-metadata'
+// import { computeTraits } from '../../jobs/compute-traits'
+// import { processMetadata } from '../../jobs/process-metadata'
 import * as mappings from './../../mappings'
 
 export async function attributeSet(
@@ -100,13 +100,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             await ctx.store.save(token)
-            await processMetadata(token.id, 'token')
+            // await processMetadata(token.id, 'token')
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            await processMetadata(collection.id, 'collection', false, true)
+            // await processMetadata(collection.id, 'collection', false, true)
         }
         await ctx.store.save(attribute)
     } else {
@@ -129,18 +129,18 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            await processMetadata(token.id, 'token')
+            // await processMetadata(token.id, 'token')
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            await processMetadata(collection.id, 'collection', false, true)
+            // await processMetadata(collection.id, 'collection', false, true)
         }
     }
     if (token) {
-        computeTraits(collection.id)
+        // computeTraits(collection.id)
     }
 
     return mappings.multiTokens.events.attributeSetEventModel(item, data)

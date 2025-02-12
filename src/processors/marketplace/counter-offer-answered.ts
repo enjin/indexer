@@ -3,7 +3,7 @@ import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, ListingT
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/entities'
+import { getOrCreateAccount, unwrapSigner } from '../../common/util/entities'
 
 export async function counterOfferAnswered(
     ctx: CommonContext,
@@ -29,11 +29,13 @@ export async function counterOfferAnswered(
     assert(listing.state.listingType === ListingType.Offer, 'Listing is not an offer')
 
     const creator = await getOrCreateAccount(ctx, event.creator)
-    const signer = await getOrCreateAccount(ctx, unwrapSignatureSigner(item.extrinsic.signature))
+    const signer = await getOrCreateAccount(ctx, unwrapSigner(item.extrinsic))
 
     listing.updatedAt = new Date(block.timestamp ?? 0)
 
-    const counterOffer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, { id: `${listing.id}-${creator.id}` })
+    const counterOffer = await ctx.store.findOneByOrFail<CounterOffer>(CounterOffer, {
+        id: `${listing.id}-${creator.id}`,
+    })
 
     if (event.response != undefined && event.response.__kind === 'Counter') {
         if (signer.id !== creator.id) {

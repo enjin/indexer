@@ -1,7 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { Event as EventModel, Identity, Registration } from '../../model'
 import { BlockHeader, CallItem, CommonContext } from '../../common/types/contexts'
-import { getOrCreateAccount, unwrapSignatureSigner } from '../../common/util/entities'
+import { getOrCreateAccount, unwrapSigner } from '../../common/util/entities'
 import * as mappings from '../../mappings'
 
 export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
@@ -10,7 +10,7 @@ export async function setSubs(ctx: CommonContext, block: BlockHeader, item: Call
     }
 
     const call = mappings.identity.calls.setSubs(item)
-    const pk = unwrapSignatureSigner(item.extrinsic.signature)
+    const pk = unwrapSigner(item.extrinsic)
     const signer = await getOrCreateAccount(ctx, pk)
 
     const subIdentities = await ctx.store.find<Identity>(Identity, {

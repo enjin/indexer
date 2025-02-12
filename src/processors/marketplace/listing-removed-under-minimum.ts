@@ -1,9 +1,16 @@
-import { AccountTokenEvent, Event as EventModel, Listing, ListingStatus, ListingStatusType, ListingType } from '../../model'
+import {
+    AccountTokenEvent,
+    Event as EventModel,
+    Listing,
+    ListingStatus,
+    ListingStatusType,
+    ListingType,
+} from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getBestListing } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
@@ -50,7 +57,7 @@ export async function listingRemovedUnderMinimum(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    // syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

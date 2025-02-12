@@ -8,14 +8,14 @@ import { createDefaultData } from './create-default-data'
 import { chainState } from './chain-state'
 import { processors } from './processors'
 import * as mappings from './mappings'
-import { getOrCreateAccount, unwrapAccount, unwrapSignatureSigner } from './common/util/entities'
+import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './common/util/entities'
 import { events, calls } from './types/generated'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './common/types/contexts'
 import { updateClaimDetails } from './processors/claims/common'
-import { syncAllCollections } from './jobs/collection-stats'
-import { metadataQueue } from './jobs/process-metadata'
+// import { syncAllCollections } from './jobs/collection-stats'
+// import { metadataQueue } from './jobs/process-metadata'
 import { processor } from './processor'
-import { syncAllBalances } from './jobs/fetch-balance'
+// import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
 
 Sentry.init({
@@ -239,14 +239,14 @@ processor.run(
                         await updateClaimDetails(ctx, block.header)
                     }
 
-                    await metadataQueue.pause().catch(() => {})
+                    // await metadataQueue.pause().catch(() => {})
                     // await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
-                    await syncAllBalances(ctx, block.header)
-                    metadataQueue.resume().catch(() => {})
-                    await syncAllCollections()
+                    // await syncAllBalances(ctx, block.header)
+                    // metadataQueue.resume().catch(() => {})
+                    // await syncAllCollections()
                 }
 
                 ctx.log.info(
@@ -254,7 +254,7 @@ processor.run(
                 )
 
                 for (const extrinsic of block.extrinsics) {
-                    const { id, fee, hash, signature: signatureUnknown, success, tip, call, error } = extrinsic
+                    const { id, fee, hash, success, tip, call, error } = extrinsic
 
                     let fuelTank = null
                     if (!call) {
@@ -298,8 +298,7 @@ processor.run(
                         }
                     }
 
-                    const signatureSigner = unwrapSignatureSigner(signatureUnknown)
-                    const signer = await getOrCreateAccount(ctx, signatureSigner)
+                    const signer = await getOrCreateAccount(ctx, unwrapSigner(extrinsic))
                     const callName = call.name.split('.')
                     const txFee = (fee ?? 0n) + (fuelTank?.feePaid ?? 0n)
 
@@ -392,7 +391,7 @@ processor.run(
                 await chainState(ctx as unknown as CommonContext, lastBlock)
             }
         } catch (error) {
-            await metadataQueue.resume()
+            // await metadataQueue.resume()
             Sentry.captureException(error)
             throw error
         }

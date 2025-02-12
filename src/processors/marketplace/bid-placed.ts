@@ -3,7 +3,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 import { getBestListing, getOrCreateAccount } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function bidPlaced(
     ctx: CommonContext,
@@ -60,7 +60,7 @@ export async function bidPlaced(
         }
     }
 
-    syncCollectionStats(listing.makeAssetId.collection.id)
+    // syncCollectionStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

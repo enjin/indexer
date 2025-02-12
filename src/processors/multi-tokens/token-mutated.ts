@@ -1,39 +1,9 @@
 import { throwError } from '../../common/errors'
-import {
-    Event as EventModel,
-    NativeTokenMetadata,
-    Royalty,
-    Token,
-    TokenBehaviorHasRoyalty,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
-} from '../../model'
+import { Event as EventModel, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'
-import { TokenMarketBehavior } from '../../types/generated/v100'
-
-async function getBehavior(
-    ctx: CommonContext,
-    behavior: TokenMarketBehavior
-): Promise<TokenBehaviorIsCurrency | TokenBehaviorHasRoyalty> {
-    if (behavior.__kind === TokenBehaviorType.IsCurrency) {
-        return new TokenBehaviorIsCurrency({
-            type: TokenBehaviorType.IsCurrency,
-        })
-    }
-
-    const account = await getOrCreateAccount(ctx, behavior.value.beneficiary)
-    return new TokenBehaviorHasRoyalty({
-        type: TokenBehaviorType.HasRoyalty,
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: behavior.value.percentage,
-        }),
-    })
-}
 
 export async function tokenMutated(
     ctx: CommonContext,
@@ -81,7 +51,7 @@ export async function tokenMutated(
     token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
-    syncCollectionStats(data.collectionId.toString())
+    // syncCollectionStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }

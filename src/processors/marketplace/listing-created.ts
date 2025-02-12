@@ -18,7 +18,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../common/types/contex
 import { getOrCreateAccount } from '../../common/util/entities'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function listingCreated(
     ctx: CommonContext,
@@ -125,7 +125,10 @@ export async function listingCreated(
     })
 
     if (event.listing.data.__kind !== 'Offer') {
-        if ((makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) || !makeAssetId.bestListing) {
+        if (
+            (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) ||
+            !makeAssetId.bestListing
+        ) {
             makeAssetId.bestListing = listing
         }
         makeAssetId.recentListing = listing
@@ -133,7 +136,7 @@ export async function listingCreated(
 
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
-    syncCollectionStats(event.listing.makeAssetId.collectionId.toString())
+    // syncCollectionStats(event.listing.makeAssetId.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../common/errors'
 import { CallItem } from '../../../common/types/contexts'
 import { calls } from '../../../types/generated'
 import { match } from 'ts-pattern'
-import { Buy } from '../../../mappings/stake-exchange/calls/types'
+import { Buy } from './types'
 
 export function buy(call: CallItem): Buy {
     return match(call)

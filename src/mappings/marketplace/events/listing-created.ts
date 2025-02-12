@@ -2,7 +2,16 @@ import { marketplace } from '../../../types/generated/events'
 import { EventItem } from '../../../common/types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceListingCreated, MarketplaceOfferCreated, Token, TokenAccount } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    MarketplaceListingCreated,
+    MarketplaceOfferCreated,
+    Token,
+} from '../../../model'
 import { ListingCreated } from './types'
 
 export function listingCreated(event: EventItem): ListingCreated {
@@ -57,7 +66,11 @@ export function listingCreated(event: EventItem): ListingCreated {
         })
 }
 
-export async function listingCreatedEventModel(item: EventItem, data: ListingCreated, listing: Listing): Promise<[EventModel, AccountTokenEvent] | undefined> {
+export async function listingCreatedEventModel(
+    item: EventItem,
+    data: ListingCreated,
+    listing: Listing
+): Promise<[EventModel, AccountTokenEvent] | undefined> {
     let event: EventModel
 
     event = new EventModel({

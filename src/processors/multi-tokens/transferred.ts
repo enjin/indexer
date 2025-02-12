@@ -2,7 +2,7 @@ import { throwError } from '../../common/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
 
@@ -47,7 +47,10 @@ export async function transferred(
         fromTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(fromTokenAccount)
     } else {
-        throwError(`[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(
+            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
     if (toTokenAccount) {
@@ -56,10 +59,13 @@ export async function transferred(
         toTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(toTokenAccount)
     } else {
-        throwError(`[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwError(
+            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`,
+            'fatal'
+        )
     }
 
-    syncCollectionStats(data.collectionId.toString())
+    // syncCollectionStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

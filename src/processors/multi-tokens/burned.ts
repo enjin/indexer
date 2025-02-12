@@ -3,9 +3,9 @@ import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import { Sns } from '../../common/sns'
 import * as mappings from './../../mappings'
-import { computeTraits } from '../../jobs/compute-traits'
+// import { computeTraits } from '../../jobs/compute-traits'
 import { getOrCreateAccount } from '../../common/util/entities'
-import { syncCollectionStats } from '../../jobs/collection-stats'
+// import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function burned(
     ctx: CommonContext,
@@ -47,8 +47,8 @@ export async function burned(
             token.infusion = 0n
         }
         await ctx.store.save(token)
-        computeTraits(data.collectionId.toString())
-        syncCollectionStats(data.collectionId.toString())
+        // computeTraits(data.collectionId.toString())
+        // syncCollectionStats(data.collectionId.toString())
     } else {
         throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
     }

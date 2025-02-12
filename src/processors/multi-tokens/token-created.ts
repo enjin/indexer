@@ -1,5 +1,5 @@
 import { throwError } from '../../common/errors'
-import { Collection, Event as EventModel, FreezeState, NativeTokenMetadata, Token } from '../../model'
+import { Collection, Event as EventModel, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 import { DefaultMintParams_CreateToken } from '../../mappings/common/types'

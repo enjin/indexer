@@ -4,9 +4,9 @@ import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
 import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Token } from '../model'
-import { computeTraits } from '../jobs/compute-traits'
-import { syncCollectionStats } from '../jobs/collection-stats'
-import { processMetadata } from '../jobs/process-metadata'
+// import { computeTraits } from '../jobs/compute-traits'
+// import { syncCollectionStats } from '../jobs/collection-stats'
+// import { processMetadata } from '../jobs/process-metadata'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',
@@ -79,13 +79,13 @@ export class RefreshMetadataResolver {
             return { status: RefreshMetadataResponseStatus.ERROR, error: 'Resource not found' }
         }
 
-        await processMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
+        // await processMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
 
-        if (!isToken) {
-            syncCollectionStats(collectionId)
-        }
+        // if (!isToken) {
+        //     syncCollectionStats(collectionId)
+        // }
 
-        computeTraits(collectionId)
+        // computeTraits(collectionId)
 
         return { status: RefreshMetadataResponseStatus.SUCCESS }
     }

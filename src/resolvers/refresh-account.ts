@@ -3,7 +3,7 @@ import 'reflect-metadata'
 import type { EntityManager } from 'typeorm'
 import { decodeAddress } from '@polkadot/util-crypto'
 import { u8aToHex } from '@polkadot/util'
-import { fetchAccountsDetail } from '../jobs/fetch-account'
+// import { fetchAccountsDetail } from '../jobs/fetch-account'
 
 @Resolver()
 export class RefreshAccountResolver {
@@ -26,7 +26,7 @@ export class RefreshAccountResolver {
             return u8aToHex(decodeAddress(id))
         })
 
-        fetchAccountsDetail(pks)
+        // fetchAccountsDetail(pks)
 
         return true
     }
