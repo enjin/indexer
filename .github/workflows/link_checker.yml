@@ -1,15 +1,12 @@
-name: Link Check
+name: Link Checker
 on:
   push:
-    branches:
-      - master
-  pull_request:
 
 # Declare default permissions as read only.
 permissions: read-all
 
 jobs:
-  markdown-link-check:
+  check:
     name: Markdown link checks
     runs-on: ubuntu-latest
     steps:

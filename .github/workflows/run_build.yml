@@ -1,9 +1,6 @@
 name: Node CI
 on:
   push:
-    branches:
-      - master
-  pull_request:
 
 jobs:
   build:
@@ -18,8 +15,14 @@ jobs:
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
-
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run build --if-present
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm run build
