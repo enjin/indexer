@@ -36,7 +36,7 @@ type MultiAddress_Address32 = {
     __kind: 'Address32'
     value: H256
 }
-type MultiAddress_Id = {
+export type MultiAddress_Id = {
     __kind: 'Id'
     value: AccountId32
 }
@@ -238,7 +238,10 @@ type CounterOfferResponse_Reject = {
     __kind: 'Reject'
 }
 
-export type CounterOfferResponse = CounterOfferResponse_Accept | CounterOfferResponse_Counter | CounterOfferResponse_Reject
+export type CounterOfferResponse =
+    | CounterOfferResponse_Accept
+    | CounterOfferResponse_Counter
+    | CounterOfferResponse_Reject
 
 export type Deposit = {
     depositor: AccountId32
@@ -503,7 +506,11 @@ type FreezeType_TokenAccount = {
     accountId: AccountId32
 }
 
-export type FreezeType = FreezeType_Collection | FreezeType_CollectionAccount | FreezeType_Token | FreezeType_TokenAccount
+export type FreezeType =
+    | FreezeType_Collection
+    | FreezeType_CollectionAccount
+    | FreezeType_Token
+    | FreezeType_TokenAccount
 
 export type DefaultRoyaltyInfo = {
     beneficiary: AccountId32
@@ -562,7 +569,9 @@ export type ShouldMutate_ListingForbidden_SomeMutation = {
     value: boolean
 }
 
-export type ShouldMutate_ListingForbidden = ShouldMutate_ListingForbidden_NoMutation | ShouldMutate_ListingForbidden_SomeMutation
+export type ShouldMutate_ListingForbidden =
+    | ShouldMutate_ListingForbidden_NoMutation
+    | ShouldMutate_ListingForbidden_SomeMutation
 
 export type ForeignTokenMetadata = {
     decimalCount: number
@@ -594,7 +603,10 @@ export type DefaultTokenMetadata_Current = {
     foreign?: DefaultForeignTokenMetadata
 }
 
-export type DefaultTokenMetadata = DefaultTokenMetadata_Foreign | DefaultTokenMetadata_Native | DefaultTokenMetadata_Current
+export type DefaultTokenMetadata =
+    | DefaultTokenMetadata_Foreign
+    | DefaultTokenMetadata_Native
+    | DefaultTokenMetadata_Current
 
 export type ShouldMutate_Metadata_NoMutation = {
     __kind: 'NoMutation'
@@ -627,7 +639,9 @@ export type ShouldMutate_AnyoneCanInfuse_SomeMutation = {
     value: boolean
 }
 
-export type ShouldMutate_AnyoneCanInfuse = ShouldMutate_AnyoneCanInfuse_NoMutation | ShouldMutate_AnyoneCanInfuse_SomeMutation
+export type ShouldMutate_AnyoneCanInfuse =
+    | ShouldMutate_AnyoneCanInfuse_NoMutation
+    | ShouldMutate_AnyoneCanInfuse_SomeMutation
 
 export type TokenMutation = {
     behavior: ShouldMutate_Behavior
