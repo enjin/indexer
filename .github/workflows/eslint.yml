@@ -23,7 +23,9 @@ jobs:
         cache: 'pnpm'
 
     - name: Install packages
-      run: pnpm -r install
+      run: |
+        pnpm add -g eslint
+        pnpm install
 
     - name: Run ESLint
       run: pnpm run lint:ci
