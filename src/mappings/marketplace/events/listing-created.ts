@@ -7,7 +7,6 @@ import {
     AccountTokenEvent,
     Event as EventModel,
     Extrinsic,
-    Listing,
     MarketplaceListingCreated,
     MarketplaceOfferCreated,
     Token,
@@ -66,11 +65,10 @@ export function listingCreated(event: EventItem): ListingCreated {
         })
 }
 
-export async function listingCreatedEventModel(
+export function listingCreatedEventModel(
     item: EventItem,
-    data: ListingCreated,
-    listing: Listing
-): Promise<[EventModel, AccountTokenEvent] | undefined> {
+    data: ListingCreated
+): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
     event = new EventModel({

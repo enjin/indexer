@@ -2,8 +2,6 @@ import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../..
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
-const uc = <T extends string>(x: T) => (x.charAt(0).toLowerCase() + x.slice(1)) as Uncapitalize<T>
-
 export async function accountRuleDataRemoved(
     ctx: CommonContext,
     block: BlockHeader,

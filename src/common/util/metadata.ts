@@ -30,7 +30,7 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
         if (finalUrl.startsWith('https://ipfs.enjin.services/ipfs/')) {
             api.defaults.headers['x-pinata-gateway-token'] = process.env.PINATA_GATEWAY_TOKEN as string
         }
-        job.log(`Fetching metadata from ${finalUrl} attempt ${job.attemptsMade}`)
+        await job.log(`Fetching metadata from ${finalUrl} attempt ${job.attemptsMade}`)
     }
 
     try {
@@ -40,35 +40,33 @@ export async function fetchMetadata(url: string, job: Queue.Job) {
                 return data
             }
 
-            job.log(`Invalid response from ${url}`)
-            job.log(data)
+            await job.log(`Invalid response from ${url}`)
+            await job.log(data)
         } else {
-            job.log(`Status code ${status} received from ${url}`)
+            await job.log(`Status code ${status} received from ${url}`)
         }
-
-        throw new Error(`Failed to fetch metadata from ${url}`)
-    } catch (error: unknown) {
+    } catch (error) {
         if (!Axios.isAxiosError(error)) {
-            job.log(`Failed to fetch metadata from ${url} (non-axios) : ${(error as any).toString()}`)
+            await job.log(`Failed to fetch metadata from ${url} (non-axios) : ${error}`)
             throw error
         }
 
-        job.log(`Failed to fetch metadata from ${url} (axios)`)
+        await job.log(`Failed to fetch metadata from ${url} (axios)`)
         if (error.response) {
             if (error.response.status === 404) {
                 return null
             }
 
-            job.log(`url: ${error.response.request.res.responseUrl} status: ${error.response.status.toString()}`)
-            job.log(`redirectsCount: ${error.response.request.res.redirects.length.toString()}`)
-            job.log(error.response.data)
+            await job.log(`url: ${error.response.request.res.responseUrl} status: ${error.response.status.toString()}`)
+            await job.log(`redirectsCount: ${error.response.request.res.redirects.length.toString()}`)
+            await job.log(error.response.data)
         }
 
         throw error
     }
 }
 
-export function parseMedia(value: string | Media[]) {
+export function parseMedia(value: string | Media[]): MetadataMedia[] | undefined {
     try {
         const media = typeof value === 'string' ? JSON.parse(value) : value
         if (typeof media === 'object' && Array.isArray(media)) {
@@ -83,14 +81,15 @@ export function parseMedia(value: string | Media[]) {
                         })
                 )
         }
-        return null
-    } catch (_e) {
-        return null
+    } catch {
+        // empty
     }
+
+    return
 }
 
-function parseObjectProperties(value: object) {
-    const properties: any = {}
+function parseObjectProperties(value: object): Record<string, unknown> {
+    const properties: Record<string, unknown> = {}
 
     for (const [k, v] of Object.entries(value)) {
         if (typeof v === 'object' && v !== null && 'value' in v && v.value && typeof v.value !== 'object') {
@@ -105,7 +104,7 @@ function parseObjectProperties(value: object) {
     return properties
 }
 
-function imageToMedia(value: string) {
+function imageToMedia(value: string): MetadataMedia[] {
     return [
         new MetadataMedia({
             url: value,
@@ -141,7 +140,7 @@ function parseArrayAttributes(
         if (attr.trait_type) {
             key = attr.trait_type
         }
-        if (key && attr.value !== null && attr.value !== '' && typeof attr.value !== 'object') {
+        if (key && attr.value !== undefined && attr.value !== '' && typeof attr.value !== 'object') {
             obj[key] = { ...attr, type: attr.display_type ?? attr.type ?? undefined }
         }
     })
@@ -162,7 +161,7 @@ export function metadataParser(
         properties: unknown
         attributes: unknown
     } | null
-) {
+): Metadata {
     if (externalMetadata?.name) {
         metadata.name = safeString(externalMetadata.name)
     }
@@ -215,7 +214,7 @@ export function metadataParser(
                     metadata.attributes = parseArrayAttributes(attributes)
                 }
             }
-        } catch (_e) {
+        } catch {
             /* empty */
         }
     }

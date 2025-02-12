@@ -1,12 +1,29 @@
-import { FetchBalanceWorker } from './jobs'
+import {
+    ComputeMetadataWorker,
+    ComputeRarityWorker,
+    ComputeStatsWorker,
+    DeleteTraitsWorker,
+    FetchAccountsWorker,
+    FetchBalancesWorker,
+    FetchCollectionsWorker,
+    InvalidateListingsWorker,
+} from './jobs'
 import { BalancesQueue, JobsEnum } from './index'
 
-const WorkerMap = new Map([['FetchBalance', FetchBalanceWorker]])
+const WorkerMap = new Map([
+    ['ComputeMetadata', ComputeMetadataWorker],
+    ['ComputeRarity', ComputeRarityWorker],
+    ['ComputeStats', ComputeStatsWorker],
+    ['DeleteTraits', DeleteTraitsWorker],
+    ['FetchAccounts', FetchAccountsWorker],
+    ['FetchBalances', FetchBalancesWorker],
+    ['FetchCollections', FetchCollectionsWorker],
+    ['InvalidateListings', InvalidateListingsWorker],
+])
 
 /**
  * Initialize workers by binding an event listener to it
  */
-
 export function initializeJobs() {
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
@@ -16,7 +33,7 @@ export function initializeJobs() {
 }
 
 export function dispatchFetchBalances(ids: string[]) {
-    BalancesQueue.add(JobsEnum.FETCH_BALANCE, { ids }).catch(() => {
+    BalancesQueue.add(JobsEnum.FETCH_BALANCES, { ids }).catch(() => {
         console.log('Failed to dispatch a job on balances queue')
     })
 }

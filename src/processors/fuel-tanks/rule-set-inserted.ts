@@ -1,6 +1,6 @@
 import { CallNotDefinedError } from '../../common/errors'
 import { calls } from '../../types/generated'
-import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
+import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
@@ -16,7 +16,7 @@ export async function ruleSetInserted(
     }
 
     const event = mappings.fuelTanks.events.ruleSetInserted(item)
-    const call = mappings.fuelTanks.calls.insertRuleSet(item.call)
+    // const call = mappings.fuelTanks.calls.insertRuleSet(item.call)
 
     const ruleSetId = `${event.tankId}-${event.ruleSetId}`
 

@@ -11,7 +11,11 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
 import * as mappings from './../../mappings'
 
-export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function fuelTankMutated(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.fuelTankMutated(item)
     const { tankId } = eventData
 
@@ -52,13 +56,11 @@ export async function fuelTankMutated(ctx: CommonContext, block: BlockHeader, it
                 accountRule = new WhitelistedCallers({
                     value: rule.value.map((account) => account),
                 })
-            } else if (rule.__kind === 'RequireToken') {
+            } else {
                 accountRule = new RequireToken({
                     tokenId: rule.value.tokenId,
                     collectionId: rule.value.collectionId,
                 })
-            } else {
-                throw new Error('Unknown rule type')
             }
 
             const accountRuleModel = new FuelTankAccountRules({

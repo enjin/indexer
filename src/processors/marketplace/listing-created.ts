@@ -163,5 +163,5 @@ export async function listingCreated(
         })
     }
 
-    return await mappings.marketplace.events.listingCreatedEventModel(item, event, listing)
+    return mappings.marketplace.events.listingCreatedEventModel(item, event, listing)
 }
