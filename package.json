@@ -22,6 +22,7 @@
     "metrics": "node -r dotenv/config lib/prom-metrics/index.js",
     "worker": "node -r dotenv/config lib/worker/index.js",
     "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
     "build": "rm -rf lib && tsc",
     "build:ci": "rm -rf lib && tsc && pnpm run sentry:sourcemaps",
     "db:migrate": "npx squid-typeorm-migration apply",

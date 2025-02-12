@@ -11,7 +11,7 @@
 [![Discord](https://img.shields.io/discord/783393889548501023?style=flat)](https://discord.gg/EUKexwF5RM)
 ![GitHub Org's stars](https://img.shields.io/github/stars/enjin?style=flat)
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UC7F0a-BLue6W5E0Qcg-r5kw?style=flat&logo=youtube)](https://youtube.com/c/EnjinTV)
-[![Enjin Blog](https://img.shields.io/badge/Visit-blog-blue.svg?style=flat)](https://enjin.io/blog)
+[![Enjin Blog](https://img.shields.io/badge/Visit-enjin.io-blue.svg?style=flat)](https://enjin.io) <!-- markdown-link-check-disable-line -->
 	
 </div>
 
