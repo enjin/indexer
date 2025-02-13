@@ -40,8 +40,32 @@ import {MultiTokensClaimTokensInitiated} from "./_multiTokensClaimTokensInitiate
 import {MultiTokensClaimTokensCompleted} from "./_multiTokensClaimTokensCompleted"
 import {MultiTokensCollectionTransferred} from "./_multiTokensCollectionTransferred"
 import {MultiTokensInfused} from "./_multiTokensInfused"
+import {StakingEraPaid} from "./_stakingEraPaid"
+import {NominationPoolsBonded} from "./_nominationPoolsBonded"
+import {NominationPoolsUnbonded} from "./_nominationPoolsUnbonded"
+import {NominationPoolsEarlyBirdBonusPaymentUnlocked} from "./_nominationPoolsEarlyBirdBonusPaymentUnlocked"
+import {NominationPoolsEarlyBirdBonusCalculated} from "./_nominationPoolsEarlyBirdBonusCalculated"
+import {NominationPoolsEarlyBirdSharesCaptured} from "./_nominationPoolsEarlyBirdSharesCaptured"
+import {NominationPoolsEarlyBirdBonusPaid} from "./_nominationPoolsEarlyBirdBonusPaid"
+import {ImOnlineSomeOffline} from "./_imOnlineSomeOffline"
+import {ValidatorPrefsSet} from "./_validatorPrefsSet"
+import {NominationPoolsWithdrawn} from "./_nominationPoolsWithdrawn"
+import {NominationPoolsEraRewardsProcessed} from "./_nominationPoolsEraRewardsProcessed"
+import {NominationPoolsRewardPaid} from "./_nominationPoolsRewardPaid"
+import {NominationPoolsPoolSlashed} from "./_nominationPoolsPoolSlashed"
+import {NominationPoolsNominated} from "./_nominationPoolsNominated"
+import {NominationPoolsCreated} from "./_nominationPoolsCreated"
+import {NominationPoolsDestroyed} from "./_nominationPoolsDestroyed"
+import {NominationPoolsPoolMutated} from "./_nominationPoolsPoolMutated"
+import {StakeExchangeOfferCreated} from "./_stakeExchangeOfferCreated"
+import {StakeExchangeOfferCancelled} from "./_stakeExchangeOfferCancelled"
+import {StakeExchangeLiquidityWithdrawn} from "./_stakeExchangeLiquidityWithdrawn"
+import {StakeExchangeLiquidityConfigUpdated} from "./_stakeExchangeLiquidityConfigUpdated"
+import {StakeExchangeLiquidityAdded} from "./_stakeExchangeLiquidityAdded"
+import {StakeExchangeBuyOrderCompleted} from "./_stakeExchangeBuyOrderCompleted"
+import {StakeExchangeOfferCompleted} from "./_stakeExchangeOfferCompleted"
 
-export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused
+export type EventData = MultiTokensApproved | MultiTokensAttributeRemoved | MultiTokensAttributeSet | MultiTokensBurned | MultiTokensCollectionAccountCreated | MultiTokensCollectionAccountDestroyed | MultiTokensCollectionCreated | MultiTokensCollectionDestroyed | MultiTokensCollectionMutated | MultiTokensFrozen | MultiTokensMinted | MultiTokensThawed | MultiTokensTokenAccountCreated | MultiTokensTokenAccountDestroyed | MultiTokensTokenCreated | MultiTokensTokenDestroyed | MultiTokensTokenMutated | MultiTokensTransferred | MultiTokensUnapproved | MarketplaceAuctionFinalized | MarketplaceBidPlaced | MarketplaceListingCancelled | MarketplaceListingCreated | MarketplaceListingFilled | MarketplaceCounterOfferPlaced | MarketplaceCounterOfferAnswered | MarketplaceCounterOfferRemoved | MarketplaceOfferCreated | MarketplaceOfferSettled | MarketplaceOfferCancelled | MarketplaceListingRemovedUnderMinimum | BalancesTransfer | TeleportBalanceWithdrawn | ClaimsClaimRequested | ClaimsClaimed | FuelTankCreated | FuelTankDestroyed | MultiTokensClaimedCollections | MultiTokensClaimTokensInitiated | MultiTokensClaimTokensCompleted | MultiTokensCollectionTransferred | MultiTokensInfused | StakingEraPaid | NominationPoolsBonded | NominationPoolsUnbonded | NominationPoolsEarlyBirdBonusPaymentUnlocked | NominationPoolsEarlyBirdBonusCalculated | NominationPoolsEarlyBirdSharesCaptured | NominationPoolsEarlyBirdBonusPaid | ImOnlineSomeOffline | ValidatorPrefsSet | NominationPoolsWithdrawn | NominationPoolsEraRewardsProcessed | NominationPoolsRewardPaid | NominationPoolsPoolSlashed | NominationPoolsNominated | NominationPoolsCreated | NominationPoolsDestroyed | NominationPoolsPoolMutated | StakeExchangeOfferCreated | StakeExchangeOfferCancelled | StakeExchangeLiquidityWithdrawn | StakeExchangeLiquidityConfigUpdated | StakeExchangeLiquidityAdded | StakeExchangeBuyOrderCompleted | StakeExchangeOfferCompleted
 
 export function fromJsonEventData(json: any): EventData {
     switch(json?.isTypeOf) {
@@ -87,6 +111,30 @@ export function fromJsonEventData(json: any): EventData {
         case 'MultiTokensClaimTokensCompleted': return new MultiTokensClaimTokensCompleted(undefined, json)
         case 'MultiTokensCollectionTransferred': return new MultiTokensCollectionTransferred(undefined, json)
         case 'MultiTokensInfused': return new MultiTokensInfused(undefined, json)
+        case 'StakingEraPaid': return new StakingEraPaid(undefined, json)
+        case 'NominationPoolsBonded': return new NominationPoolsBonded(undefined, json)
+        case 'NominationPoolsUnbonded': return new NominationPoolsUnbonded(undefined, json)
+        case 'NominationPoolsEarlyBirdBonusPaymentUnlocked': return new NominationPoolsEarlyBirdBonusPaymentUnlocked(undefined, json)
+        case 'NominationPoolsEarlyBirdBonusCalculated': return new NominationPoolsEarlyBirdBonusCalculated(undefined, json)
+        case 'NominationPoolsEarlyBirdSharesCaptured': return new NominationPoolsEarlyBirdSharesCaptured(undefined, json)
+        case 'NominationPoolsEarlyBirdBonusPaid': return new NominationPoolsEarlyBirdBonusPaid(undefined, json)
+        case 'ImOnlineSomeOffline': return new ImOnlineSomeOffline(undefined, json)
+        case 'ValidatorPrefsSet': return new ValidatorPrefsSet(undefined, json)
+        case 'NominationPoolsWithdrawn': return new NominationPoolsWithdrawn(undefined, json)
+        case 'NominationPoolsEraRewardsProcessed': return new NominationPoolsEraRewardsProcessed(undefined, json)
+        case 'NominationPoolsRewardPaid': return new NominationPoolsRewardPaid(undefined, json)
+        case 'NominationPoolsPoolSlashed': return new NominationPoolsPoolSlashed(undefined, json)
+        case 'NominationPoolsNominated': return new NominationPoolsNominated(undefined, json)
+        case 'NominationPoolsCreated': return new NominationPoolsCreated(undefined, json)
+        case 'NominationPoolsDestroyed': return new NominationPoolsDestroyed(undefined, json)
+        case 'NominationPoolsPoolMutated': return new NominationPoolsPoolMutated(undefined, json)
+        case 'StakeExchangeOfferCreated': return new StakeExchangeOfferCreated(undefined, json)
+        case 'StakeExchangeOfferCancelled': return new StakeExchangeOfferCancelled(undefined, json)
+        case 'StakeExchangeLiquidityWithdrawn': return new StakeExchangeLiquidityWithdrawn(undefined, json)
+        case 'StakeExchangeLiquidityConfigUpdated': return new StakeExchangeLiquidityConfigUpdated(undefined, json)
+        case 'StakeExchangeLiquidityAdded': return new StakeExchangeLiquidityAdded(undefined, json)
+        case 'StakeExchangeBuyOrderCompleted': return new StakeExchangeBuyOrderCompleted(undefined, json)
+        case 'StakeExchangeOfferCompleted': return new StakeExchangeOfferCompleted(undefined, json)
         default: throw new TypeError('Unknown json object passed as EventData')
     }
 }

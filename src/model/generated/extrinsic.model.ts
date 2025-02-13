@@ -37,9 +37,6 @@ export class Extrinsic {
     @JSONColumn_({nullable: true})
     args!: unknown | undefined | null
 
-    @JSONColumn_({nullable: false})
-    signature!: unknown
-
     @Index_()
     @ManyToOne_(() => Account, {nullable: true})
     signer!: Account

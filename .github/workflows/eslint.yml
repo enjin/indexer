@@ -1,29 +1,31 @@
 name: ESLint
 on:
   push:
-    branches:
-      - master
-  pull_request:
 
 jobs:
-
-  tests:
-
+  lint:
     name: Code Standard & Format
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Install Node v20
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: latest
+        run_install: false
+
+    - name: Install Node 20.x
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        cache: 'pnpm'
 
-    - name: Install modules
-      run: npm ci
+    - name: Install packages
+      run: |
+        pnpm add -g eslint
+        pnpm install
 
     - name: Run ESLint
-      run: npm run lint
+      run: pnpm run lint:ci

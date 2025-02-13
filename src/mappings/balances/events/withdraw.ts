@@ -1,16 +1,17 @@
-import { BlockHeader } from '@subsquid/substrate-processor'
-import { UnsupportedEventError } from '../../../common/errors'
-import { balances } from '../../../types/generated/events'
-import { CommonContext, EventItem } from '../../types/contexts'
+import { balances } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
+import { match } from 'ts-pattern'
+import { Withdraw } from './types'
 
-function getEventData(ctx: CommonContext, event: EventItem) {
-    if (balances.withdraw.matrixEnjinV603.is(event)) {
-        return balances.withdraw.matrixEnjinV603.decode(event)
-    }
-
-    throw new UnsupportedEventError(balances.withdraw.name)
-}
-
-export async function withdraw(ctx: CommonContext, block: BlockHeader, item: EventItem) {
-    return getEventData(ctx, item)
+export function withdraw(event: EventItem): Withdraw {
+    return match(event)
+        .returnType<Withdraw>()
+        .when(
+            () => balances.withdraw.matrixEnjinV603.is(event),
+            () => balances.withdraw.matrixEnjinV603.decode(event)
+        )
+        .otherwise(() => {
+            throw new UnsupportedEventError(event)
+        })
 }

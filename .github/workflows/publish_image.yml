@@ -2,7 +2,6 @@ name: Publish docker image
 
 on:
   workflow_dispatch:
-    
   push:
     tags:
       - v*
@@ -31,7 +30,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: indexer-matrixchain
+          ECR_REPOSITORY: indexer-matrix
           IMAGE_TAG: ${{ github.sha }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |

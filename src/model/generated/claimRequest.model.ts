@@ -11,7 +11,7 @@ export class ClaimRequest {
     id!: string
 
     @StringColumn_({nullable: false})
-    account!: string
+    who!: string
 
     @Column_("varchar", {length: 9, nullable: false})
     acountType!: AccountClaimType

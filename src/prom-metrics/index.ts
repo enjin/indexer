@@ -1,10 +1,9 @@
-/* eslint-disable no-console */
 import http from 'http'
 import client from 'prom-client'
-import trottle from 'lodash/throttle'
-import updateMultiTokenMetrics from './definitions/multiToken'
+import throttle from 'lodash/throttle'
+import updateMultiTokenMetrics from './definitions/multi-token'
 import updateTransactionMetrics from './definitions/transaction'
-import updateFuelTankMetrics from './definitions/fuelTank'
+import updateFuelTankMetrics from './definitions/fuel-tank'
 import updateInfoMetrics from './definitions/info'
 import updateMigrationMetrics from './definitions/migration'
 import updateMarketplaceMetrics from './definitions/marketplace'
@@ -27,23 +26,24 @@ const updateMetrics = async () => {
     ])
 }
 
-const throttledUpdateMetrics = trottle(updateMetrics, 10_000)
+const throttledUpdateMetrics = throttle(updateMetrics, 10_000)
 
-const server = http.createServer(async (req, res) => {
-    if (!req.url) throw new Error('No url')
-
-    if (req.url === '/_metrics') {
-        await throttledUpdateMetrics()
-        res.setHeader('Content-Type', register.contentType)
-        res.end(await register.metrics())
-    } else if (req.url === '/health') {
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ status: 'ok' }))
-    } else {
-        res.writeHead(404)
-        res.end()
+const server = http.createServer((req, res) => {
+    switch (req.url) {
+        case '/_metrics':
+            throttledUpdateMetrics()
+                .then(() => register.metrics())
+                .then((metrics) => res.writeHead(200, { 'Content-Type': register.contentType }).end(metrics))
+                .catch(() => res.writeHead(500).end())
+            break
+        case '/health':
+            res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ status: 'ok' }))
+            break
+        default:
+            res.writeHead(404).end()
     }
 })
 
-server.listen(process.env.PROM_PORT || 8080)
-console.log(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
+server.listen(process.env.PROM_PORT || 8080, () => {
+    console.log(`Prometheus metrics server started on port ${process.env.PROM_PORT || 8080}`)
+})

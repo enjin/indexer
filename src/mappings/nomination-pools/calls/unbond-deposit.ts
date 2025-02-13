@@ -1,0 +1,17 @@
+import { UnsupportedCallError } from '../../../utils/errors'
+import { CallItem } from '../../../contexts'
+import { calls } from '../../../types'
+import { match } from 'ts-pattern'
+import { UnbondDeposit } from './types'
+
+export function unbondDeposit(call: CallItem): UnbondDeposit {
+    return match(call)
+        .returnType<UnbondDeposit>()
+        .when(
+            () => calls.nominationPools.unbondDeposit.enjinV100.is(call),
+            () => calls.nominationPools.unbondDeposit.enjinV100.decode(call)
+        )
+        .otherwise(() => {
+            throw new UnsupportedCallError(call)
+        })
+}

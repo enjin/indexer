@@ -1,57 +1,41 @@
-import tsParser from '@typescript-eslint/parser'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
+    import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import prettierConfig from 'eslint-config-prettier'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all,
-})
-
-export default [
+export default tseslint.config(
+    eslint.configs.recommended,
+    tseslint.configs.strictTypeChecked,
+    prettierConfig,
     {
-        ignores: ['src/model', 'src/types'],
+        ignores: [
+            '.github/',
+            '.vscode/',
+            '.idea/',
+            'node_modules/',
+            'lib/',
+            'db/',
+            'typegen/',
+            'src/types/',
+            'src/model/',
+            'eslint.config.mjs',
+            'src/server-extension/',
+        ],
     },
-    ...compat.extends('plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'prettier'),
     {
+        rules: {
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/restrict-template-expressions': 'off',
+            '@typescript-eslint/unbound-method': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+        },
         languageOptions: {
-            parser: tsParser,
-            ecmaVersion: 5,
-            sourceType: 'script',
-
             parserOptions: {
-                project: './tsconfig.json',
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
             },
         },
-
-        rules: {
-            'no-console': 'warn',
-            'import/prefer-default-export': 'off',
-            'class-methods-use-this': 'off',
-            'no-param-reassign': 'off',
-            'no-underscore-dangle': 'off',
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-unused-vars': [
-                'warn',
-                {
-                    varsIgnorePattern: '^_',
-                    argsIgnorePattern: '^_',
-                    caughtErrorsIgnorePattern: '^_',
-                },
-            ],
-            'max-len': [
-                'error',
-                {
-                    code: 130,
-                    ignoreComments: true,
-                    ignoreStrings: true,
-                    ignoreTemplateLiterals: true,
-                },
-            ],
-        },
-    },
-]
+    }
+)
