@@ -35,28 +35,28 @@ services:
       context: .
       args:
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
       - indexer_worker
 
-  indexer_hasura:
-    container_name: indexer_hasura
-    restart: unless-stopped
-    image: hasura/graphql-engine:latest
-    env_file:
-      - .env
-    environment:
-      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}"
-      HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: true
-      HASURA_GRAPHQL_ENABLE_CONSOLE: true
-      HASURA_GRAPHQL_DEV_MODE: true
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
-    ports:
-      - "8080:8080"
-    depends_on:
-      - indexer_db
+#  indexer_hasura:
+#    container_name: indexer_hasura
+#    restart: unless-stopped
+#    image: hasura/graphql-engine:latest
+#    env_file:
+#      - .env
+#    environment:
+#      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}"
+#      HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: true
+#      HASURA_GRAPHQL_ENABLE_CONSOLE: true
+#      HASURA_GRAPHQL_DEV_MODE: true
+#      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - indexer_db
 #      - indexer_processor
 
   indexer_graphql:
@@ -70,8 +70,8 @@ services:
     ports:
       - "4000:4000"
       - "8080:8080"
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
 #      - indexer_processor
@@ -86,21 +86,20 @@ services:
       context: .
     ports:
       - "9090:9090"
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
       - indexer_redis
 
-  indexer_jaeger:
-    container_name: indexer_jaeger
-    image: jaegertracing/all-in-one:latest
-    restart: unless-stopped
-    ports:
-      - '4318:4318'
-      - '16686:16686'
+#  indexer_jaeger:
+#    container_name: indexer_jaeger
+#    image: jaegertracing/all-in-one:latest
+#    restart: unless-stopped
+#    ports:
+#      - '4318:4318'
+#      - '16686:16686'
 
 volumes:
   indexer_db:
   redis_db:
-  
