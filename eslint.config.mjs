@@ -15,7 +15,7 @@ export default tseslint.config(
             'lib/',
             'db/',
             'typegen/',
-            'src/types/generated/',
+            'src/types/',
             'src/model/',
             'eslint.config.mjs',
             'src/server-extension/',

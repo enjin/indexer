@@ -1,9 +1,9 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
-import { dataHandlerContext } from '../../../../connection'
-import { fetchBalances, SystemAccount } from '../../../../common/util/balance'
+import { dataHandlerContext } from '../../../../contexts'
+import { fetchBalances, SystemAccount } from '../../../../utils/balance'
 import { Account } from '../../../../model'
-import { getOrCreateAccount } from '../../../../common/util/entities'
+import { getOrCreateAccount } from '../../../../utils/entities'
 import { decodeAddress } from '@polkadot/util-crypto'
 
 export default class FetchBalancesProcessor implements ProcessorDef {

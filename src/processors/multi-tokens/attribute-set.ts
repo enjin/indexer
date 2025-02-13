@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import {
     Attribute,
     Collection,
@@ -11,9 +11,9 @@ import {
     MintPolicy,
     Token,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
-import { safeString } from '../../common/tools'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
+import { safeString } from '../../utils/tools'
 // import { computeTraits } from '../../jobs/compute-traits'
 // import { processMetadata } from '../../jobs/process-metadata'
 import * as mappings from './../../mappings'

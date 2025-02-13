@@ -1,7 +1,7 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
 export async function tokenAccountCreated(

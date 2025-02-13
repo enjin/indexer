@@ -1,10 +1,10 @@
-import { multiTokens } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { multiTokens } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensTokenCreated } from '../../../model'
-import { TokenCreated } from './types/token-created'
-import { unwrapAccount } from '../../../common/util/entities'
+import { TokenCreated } from './types'
+import { unwrapAccount } from '../../../utils/entities'
 
 export function tokenCreated(event: EventItem): TokenCreated {
     return match(event)

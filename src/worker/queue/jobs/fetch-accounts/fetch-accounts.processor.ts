@@ -1,9 +1,9 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
-import { dataHandlerContext } from '../../../../connection'
-import { getOrCreateAccount } from '../../../../common/util/entities'
+import { dataHandlerContext } from '../../../../contexts'
+import { getOrCreateAccount } from '../../../../utils/entities'
 import { decodeAddress } from '@polkadot/util-crypto'
-import { fetchAccountsDetail } from '../../../../common/util/marketplace'
+import { fetchAccountsDetail } from '../../../../utils/marketplace'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null

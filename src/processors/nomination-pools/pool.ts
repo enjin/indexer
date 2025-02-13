@@ -1,7 +1,7 @@
 import { BN, bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 import Big from 'big.js'
-import { constants } from '../../types/generated'
-import { BlockHeader, CommonContext } from '../../common/types/contexts'
+import { constants } from '../../types'
+import { BlockHeader, CommonContext } from '../../contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
 import * as mappings from './../../mappings'
@@ -13,7 +13,13 @@ const U32_OPTS = { bitLength: 32, isLe: true }
 export function createAccount(block: BlockHeader, poolId: string, index: number) {
     const palletId = constants.nominationPools.palletId.enjinV100.get(block)
     return u8aToHex(
-        u8aConcat(MOD_PREFIX, hexToU8a(palletId), new Uint8Array([index]), bnToU8a(new BN(poolId), U32_OPTS), EMPTY_H256)
+        u8aConcat(
+            MOD_PREFIX,
+            hexToU8a(palletId),
+            new Uint8Array([index]),
+            bnToU8a(new BN(poolId), U32_OPTS),
+            EMPTY_H256
+        )
     )
 }
 
@@ -77,7 +83,8 @@ export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId:
 
 export async function updateEarlyBirdInfo(ctx: CommonContext, block: BlockHeader) {
     try {
-        const earlyBirdBonusDistributionBlock = mappings.nominationPools.constants.earlyBirdBonusDistributionBlock(block)
+        const earlyBirdBonusDistributionBlock =
+            mappings.nominationPools.constants.earlyBirdBonusDistributionBlock(block)
         const bonusInfo = await mappings.nominationPools.storage.earlyBirdBonusInfo(block)
         const earlyBird = new EarlyBirdDetails({
             id: '0',

@@ -1,8 +1,8 @@
 import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { getBestListing, getOrCreateAccount } from '../../common/util/entities'
+import { getBestListing, getOrCreateAccount } from '../../utils/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function bidPlaced(

@@ -1,8 +1,12 @@
 import { Event as EventModel, Identity, Registration } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
-export async function identityCleared(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function identityCleared(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const event = mappings.identity.events.identityCleared(item)
 
     const identity = await ctx.store.findOneOrFail<Identity>(Identity, {

@@ -1,6 +1,6 @@
 import { Event as EventModel, Extrinsic, MultiTokensClaims, MultiTokensClaimTokensCompleted } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 export async function claimTokensCompleted(
@@ -9,7 +9,9 @@ export async function claimTokensCompleted(
     item: EventItem
 ): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.claimTokensCompleted(item)
-    const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, { id: `${data.destination}-${data.ethereumAddress}` })
+    const claim = await ctx.store.findOneByOrFail(MultiTokensClaims, {
+        id: `${data.destination}-${data.ethereumAddress}`,
+    })
 
     claim.completed = true
 

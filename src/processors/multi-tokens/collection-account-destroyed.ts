@@ -1,6 +1,6 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { CollectionAccount, Event as EventModel } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function collectionAccountDestroyed(
@@ -19,7 +19,10 @@ export async function collectionAccountDestroyed(
     if (collectionAccount) {
         await ctx.store.remove(collectionAccount)
     } else {
-        throwError(`[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+        throwError(
+            `[CollectionAccountDestroyed] We have not found collection account ${data.collectionId}-${address}.`,
+            'fatal'
+        )
     }
 
     return mappings.multiTokens.events.collectionAccountDestroyedEventModel(item, data)

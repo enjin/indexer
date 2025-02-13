@@ -1,6 +1,6 @@
 import { Event as EventModel, Identity } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
 export async function subIdentityRevoked(

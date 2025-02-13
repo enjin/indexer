@@ -1,6 +1,6 @@
-import { claims } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { claims } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { DelayTimeForClaimSet } from './types'
 

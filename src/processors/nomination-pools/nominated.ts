@@ -1,9 +1,13 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, NominationPool, PoolValidator, Validator } from '../../model'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
-export async function nominated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function nominated(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.nominated(item)
@@ -19,7 +23,8 @@ export async function nominated(ctx: CommonContext, block: BlockHeader, item: Ev
     await ctx.store.remove(existingPoolValidators)
 
     const poolValidators = accounts.map(
-        (account) => new PoolValidator({ id: `${pool.id}-${account.id}`, validator: new Validator({ id: account.id }), pool })
+        (account) =>
+            new PoolValidator({ id: `${pool.id}-${account.id}`, validator: new Validator({ id: account.id }), pool })
     )
 
     await ctx.store.save(poolValidators)

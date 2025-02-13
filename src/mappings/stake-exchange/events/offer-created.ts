@@ -1,6 +1,6 @@
-import { stakeExchange } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { stakeExchange } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, StakeExchangeOfferCreated } from '../../../model'
 import { OfferCreated } from './types'
@@ -49,7 +49,11 @@ export function offerCreated(event: EventItem): OfferCreated {
         })
 }
 
-export function offerCreatedEventModel(item: EventItem, data: OfferCreated, rewardRateAsFixedu128: bigint): EventModel | undefined {
+export function offerCreatedEventModel(
+    item: EventItem,
+    data: OfferCreated,
+    rewardRateAsFixedu128: bigint
+): EventModel | undefined {
     const rate = typeof data.offer.rate === 'bigint' ? data.offer.rate : BigInt(data.offer.rate * 10 ** 9)
     return new EventModel({
         id: item.id,

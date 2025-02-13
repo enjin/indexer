@@ -1,11 +1,15 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '../../model'
-import { encodeId } from '../../common/tools'
-import { Sns } from '../../common/sns'
-import { CommonContext, EventItem } from '../../common/types/contexts'
+import { encodeId } from '../../utils/tools'
+import { Sns } from '../../utils/sns'
+import { CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
-export async function approved(ctx: CommonContext, item: EventItem, skipSave: boolean): Promise<EventModel | undefined> {
+export async function approved(
+    ctx: CommonContext,
+    item: EventItem,
+    skipSave: boolean
+): Promise<EventModel | undefined> {
     const data = mappings.multiTokens.events.approved(item)
 
     if (skipSave) return mappings.multiTokens.events.approvedEventModel(item, data)
@@ -18,7 +22,10 @@ export async function approved(ctx: CommonContext, item: EventItem, skipSave: bo
         })
 
         if (!tokenAccount) {
-            throwError(`[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+            throwError(
+                `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
+                'fatal'
+            )
             return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 

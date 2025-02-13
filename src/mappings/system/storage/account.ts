@@ -1,5 +1,5 @@
-import { system } from '../../../types/generated/storage'
-import { UnsupportedStorageError } from '../../../common/errors'
+import { system } from '../../../types/storage'
+import { UnsupportedStorageError } from '../../../utils/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
 import { AccountInfo } from './types'

@@ -1,6 +1,6 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, StakeExchangeOffer } from '../../model'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 import * as mappings from '../../mappings'
 
 export async function liquidityWithdrawn(
@@ -13,7 +13,9 @@ export async function liquidityWithdrawn(
     const event = mappings.stakeExchange.events.liquidityWithdrawn(item)
     const call = mappings.stakeExchange.calls.withdrawLiquidity(item.extrinsic.call)
 
-    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, { id: event.offerId.toString() })
+    const offer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
+        id: event.offerId.toString(),
+    })
     offer.total -= call.amount
 
     await ctx.store.save(offer)

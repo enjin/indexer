@@ -1,7 +1,7 @@
 import { Collection, Era, Event as EventModel, PoolMember, Token, TokenAccount } from '../../model'
-import { Sns } from '../../common/sns'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { Sns } from '../../utils/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import { updatePool } from './pool'
 import * as mappings from './../../mappings'
 

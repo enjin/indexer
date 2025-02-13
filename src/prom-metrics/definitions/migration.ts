@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../connection'
+import connection from '../../contexts'
 
 export const indexer_migration_enj_migrated_total = new client.Gauge({
     name: 'indexer_migration_enj_migrated_total',

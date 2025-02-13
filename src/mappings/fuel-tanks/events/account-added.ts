@@ -1,6 +1,6 @@
-import { fuelTanks } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { fuelTanks } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { AccountAdded } from './types'
 

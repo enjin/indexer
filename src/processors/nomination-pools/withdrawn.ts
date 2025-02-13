@@ -1,8 +1,8 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Era, Event as EventModel, PoolMember, PoolMemberRewards } from '../../model'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount } from '../../utils/entities'
 import { updatePool } from './pool'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 function getActiveEra(ctx: CommonContext) {
@@ -14,7 +14,11 @@ function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function withdrawn(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function withdrawn(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
     if (!item.extrinsic.call) return undefined
 
@@ -42,7 +46,9 @@ export async function withdrawn(ctx: CommonContext, block: BlockHeader, item: Ev
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
-        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, { member: { id: poolMember.id } })
+        const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
+            member: { id: poolMember.id },
+        })
         await ctx.store.remove(poolMemberRewards)
         await ctx.store.remove(poolMember)
         pool.totalMembers -= 1

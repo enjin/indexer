@@ -1,8 +1,16 @@
-import { marketplace } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { marketplace } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceBidPlaced, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    MarketplaceBidPlaced,
+    Token,
+} from '../../../model'
 import { BidPlaced } from './types'
 
 export function bidPlaced(event: EventItem): BidPlaced {
@@ -17,7 +25,12 @@ export function bidPlaced(event: EventItem): BidPlaced {
         })
 }
 
-export function bidPlacedEventModel(item: EventItem, data: BidPlaced, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
+export function bidPlacedEventModel(
+    item: EventItem,
+    data: BidPlaced,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceBidPlaced.name,

@@ -1,6 +1,6 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { Attribute, Collection, Event as EventModel, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 // import { processMetadata } from '../../jobs/process-metadata'
 // import { computeTraits } from '../../jobs/compute-traits'
 import * as mappings from './../../mappings'

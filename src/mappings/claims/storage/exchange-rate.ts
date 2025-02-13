@@ -1,6 +1,6 @@
-import { BlockHeader } from '../../../common/types/contexts'
-import { UnsupportedStorageError } from '../../../common/errors'
-import { claims } from '../../../types/generated/storage'
+import { BlockHeader } from '../../../contexts'
+import { UnsupportedStorageError } from '../../../utils/errors'
+import { claims } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { ExchangeRate } from './types'
 

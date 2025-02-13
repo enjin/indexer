@@ -14,9 +14,9 @@ import {
     OfferState,
     Token,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 

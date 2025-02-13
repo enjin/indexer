@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
-import { dataHandlerContext } from '../../../../connection'
-import { fetchCollectionsExtra } from '../../../../common/util/marketplace'
+import { dataHandlerContext } from '../../../../contexts'
+import { fetchCollectionsExtra } from '../../../../utils/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../../../../model'
 
 function isNotNull<T>(input: null | T): input is T {

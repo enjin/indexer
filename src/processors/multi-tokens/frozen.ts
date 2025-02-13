@@ -1,4 +1,4 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import {
     Collection,
     CollectionAccount,
@@ -8,8 +8,8 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import { match } from 'ts-pattern'

@@ -1,7 +1,7 @@
-import { BlockHeader } from '../../../common/types/contexts'
-import { claims } from '../../../types/generated/storage'
+import { BlockHeader } from '../../../contexts'
+import { claims } from '../../../types/storage'
 import { match } from 'ts-pattern'
-import { UnsupportedStorageError } from '../../../common/errors'
+import { UnsupportedStorageError } from '../../../utils/errors'
 
 export async function delayClaimsPeriod(block: BlockHeader): Promise<number | undefined> {
     return match(block)

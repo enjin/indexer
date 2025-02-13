@@ -1,8 +1,18 @@
-import { marketplace } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { marketplace } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, ListingType, MarketplaceListingFilled, MarketplaceOfferSettled, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    ListingType,
+    MarketplaceListingFilled,
+    MarketplaceOfferSettled,
+    Token,
+} from '../../../model'
 import { ListingFilled } from './types'
 
 export function listingFilled(event: EventItem): ListingFilled {
@@ -45,7 +55,11 @@ export function listingFilled(event: EventItem): ListingFilled {
         })
 }
 
-export function listingFilledEventModel(item: EventItem, data: ListingFilled, listing: Listing): [EventModel, AccountTokenEvent] | undefined {
+export function listingFilledEventModel(
+    item: EventItem,
+    data: ListingFilled,
+    listing: Listing
+): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
     event = new EventModel({

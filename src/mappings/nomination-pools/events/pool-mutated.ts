@@ -1,6 +1,6 @@
-import { nominationPools } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { nominationPools } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '../../../model'
 import { hexToString } from '@polkadot/util'
@@ -44,7 +44,11 @@ export function poolMutated(event: EventItem): PoolMutated {
 
 export function poolMutatedEventModel(item: EventItem, data: PoolMutated): EventModel | undefined {
     const mutation: Record<string, string | number | undefined> = {}
-    if (data.mutation.newCommission !== undefined && data.mutation.newCommission.__kind === 'SomeMutation' && data.mutation.newCommission.value !== undefined) {
+    if (
+        data.mutation.newCommission !== undefined &&
+        data.mutation.newCommission.__kind === 'SomeMutation' &&
+        data.mutation.newCommission.value !== undefined
+    ) {
         mutation.newCommission = data.mutation.newCommission.value
     } else {
         mutation.newCommission = undefined

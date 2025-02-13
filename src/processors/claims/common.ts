@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext } from '../../common/types/contexts'
+import { BlockHeader, CommonContext } from '../../contexts'
 import { ClaimDetails } from '../../model'
 import * as mappings from './../../mappings'
 

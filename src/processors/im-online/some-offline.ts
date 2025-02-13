@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, Extrinsic, ImOnlineSomeOffline } from '../../model'
 import * as mappings from '../../mappings'
 

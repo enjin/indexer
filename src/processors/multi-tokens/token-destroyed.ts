@@ -1,4 +1,4 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import {
     AccountTokenEvent,
     Attribute,
@@ -11,8 +11,8 @@ import {
     TokenRarity,
     TraitToken,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 // import { computeTraits } from '../../jobs/compute-traits'

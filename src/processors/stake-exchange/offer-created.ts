@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import {
     Event as EventModel,
     StakeExchangeOffer,
@@ -6,8 +6,8 @@ import {
     StakeExchangeTokenFilter,
     StakeExchangeTokenFilterType,
 } from '../../model'
-import { getOrCreateAccount } from '../../common/util/entities'
-import { Sns } from '../../common/sns'
+import { getOrCreateAccount } from '../../utils/entities'
+import { Sns } from '../../utils/sns'
 import * as mappings from '../../mappings'
 import { TokenFilter } from '../../mappings/common/types'
 
@@ -39,7 +39,11 @@ function getFilterFromType(tokenFilter: TokenFilter | undefined) {
     return entity
 }
 
-export async function offerCreated(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function offerCreated(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const event = mappings.stakeExchange.events.offerCreated(item)
 
     let rewardRate: bigint

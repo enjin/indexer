@@ -1,6 +1,6 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { Event as EventModel, NativeTokenMetadata, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'

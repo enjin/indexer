@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../connection'
+import connection from '../../contexts'
 
 export const indexer_identity_registrars_total = new client.Gauge({
     name: 'indexer_identity_registrars_total',
@@ -48,7 +48,9 @@ export default async () => {
 
     const [registrars, mainIdentities, subIdentities, identities, subAvg] = await Promise.all([
         em.query('SELECT COUNT(*) FROM identity_registrar'),
-        em.query("SELECT COUNT(*) FROM extrinsic WHERE pallet = 'Identity' AND method = 'set_identity' AND success = true"),
+        em.query(
+            "SELECT COUNT(*) FROM extrinsic WHERE pallet = 'Identity' AND method = 'set_identity' AND success = true"
+        ),
         em.query(
             `SELECT SUM(count) as count
             FROM (

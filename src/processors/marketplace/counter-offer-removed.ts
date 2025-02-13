@@ -1,9 +1,9 @@
 import assert from 'assert'
 import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount } from '../../utils/entities'
 
 export async function counterOfferRemoved(
     ctx: CommonContext,

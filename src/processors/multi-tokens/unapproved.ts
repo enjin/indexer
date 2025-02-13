@@ -1,9 +1,9 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { CollectionAccount, Event as EventModel, TokenAccount } from '../../model'
-import { encodeId } from '../../common/tools'
-import { Sns } from '../../common/sns'
+import { encodeId } from '../../utils/tools'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 
 export async function unapproved(
     ctx: CommonContext,
@@ -23,12 +23,17 @@ export async function unapproved(
         })
 
         if (tokenAccount) {
-            tokenAccount.approvals = tokenAccount.approvals?.filter((approval) => approval.account !== encodeId(data.operator))
+            tokenAccount.approvals = tokenAccount.approvals?.filter(
+                (approval) => approval.account !== encodeId(data.operator)
+            )
             tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
             await ctx.store.save(tokenAccount)
         } else {
-            throwError(`[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'fatal')
+            throwError(
+                `[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
+                'fatal'
+            )
         }
     } else {
         const collectionAccount = await ctx.store.findOne<CollectionAccount>(CollectionAccount, {

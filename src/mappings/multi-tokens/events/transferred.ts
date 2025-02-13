@@ -1,8 +1,15 @@
-import { multiTokens } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { multiTokens } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensTransferred, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    MultiTokensTransferred,
+    Token,
+} from '../../../model'
 import { Transferred } from './types'
 
 export function transferred(event: EventItem): Transferred {
@@ -16,7 +23,11 @@ export function transferred(event: EventItem): Transferred {
         })
 }
 
-export function transferredEventModel(item: EventItem, data: Transferred, token?: Token): [EventModel, AccountTokenEvent] | EventModel | undefined {
+export function transferredEventModel(
+    item: EventItem,
+    data: Transferred,
+    token?: Token
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensTransferred.name,

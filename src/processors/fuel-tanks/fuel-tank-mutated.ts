@@ -8,7 +8,7 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function fuelTankMutated(

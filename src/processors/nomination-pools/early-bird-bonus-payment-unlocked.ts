@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdBonusPaymentUnlocked } from '../../model'
 import { updateEarlyBirdInfo } from './pool'
 import * as mappings from './../../mappings'

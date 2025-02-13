@@ -1,7 +1,7 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../connection'
-import Rpc from '../../common/rpc'
+import connection from '../../contexts'
+import Rpc from '../../utils/rpc'
 import { BN } from '@polkadot/util'
 
 export const indexer_staking_staked_total = new client.Gauge({

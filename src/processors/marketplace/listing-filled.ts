@@ -9,10 +9,10 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getBestListing } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getBestListing } from '../../utils/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 export async function listingFilled(

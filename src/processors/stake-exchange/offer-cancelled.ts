@@ -1,9 +1,13 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, StakeExchangeOffer, StakeExchangeOfferState } from '../../model'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 import * as mappings from '../../mappings'
 
-export async function offerCancelled(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function offerCancelled(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const event = mappings.stakeExchange.events.offerCancelled(item)
     const stakeExchangeOffer = await ctx.store.findOneByOrFail<StakeExchangeOffer>(StakeExchangeOffer, {
         id: event.offerId.toString(),

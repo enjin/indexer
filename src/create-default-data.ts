@@ -1,7 +1,16 @@
-import { BlockHeader, CommonContext } from './common/types/contexts'
-import { Collection, CollectionFlags, CollectionSocials, CollectionStats, Metadata, MintPolicy, Token, TransferPolicy } from './model'
-import { getOrCreateAccount } from './common/util/entities'
-import { isMainnet } from './common/tools'
+import { BlockHeader, CommonContext } from './contexts'
+import {
+    Collection,
+    CollectionFlags,
+    CollectionSocials,
+    CollectionStats,
+    Metadata,
+    MintPolicy,
+    Token,
+    TransferPolicy,
+} from './model'
+import { getOrCreateAccount } from './utils/entities'
+import { isMainnet } from './utils/tools'
 
 export async function createDefaultData(ctx: CommonContext, block: BlockHeader) {
     const enjinCoin = await ctx.store.findOneBy<Token>(Token, { id: '0-0' })

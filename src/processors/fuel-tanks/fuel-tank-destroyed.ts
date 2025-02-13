@@ -7,7 +7,7 @@ import {
     FuelTankRuleSet,
     PermittedExtrinsics,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function fuelTankDestroyed(
@@ -29,7 +29,11 @@ export async function fuelTankDestroyed(
         ctx.store.findOneByOrFail(FuelTank, { id: tankId }),
     ])
 
-    await Promise.all([ctx.store.remove(permittedExtrinsics), ctx.store.remove(ruleSet), ctx.store.remove(accountRuleSet)])
+    await Promise.all([
+        ctx.store.remove(permittedExtrinsics),
+        ctx.store.remove(ruleSet),
+        ctx.store.remove(accountRuleSet),
+    ])
 
     await ctx.store.remove(tank)
 

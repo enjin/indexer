@@ -1,6 +1,6 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { CollectionAccount, Event as EventModel, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function tokenAccountDestroyed(

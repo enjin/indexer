@@ -1,6 +1,6 @@
-import { nominationPools } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { nominationPools } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsEraRewardsProcessed } from '../../../model'
 import { EraRewardsProcessed } from './types'
@@ -29,7 +29,11 @@ export function eraRewardsProcessed(event: EventItem): EraRewardsProcessed {
         })
 }
 
-export function eraRewardsProcessedEventModel(item: EventItem, data: EraRewardsProcessed, rate: bigint = 0n): EventModel | undefined {
+export function eraRewardsProcessedEventModel(
+    item: EventItem,
+    data: EraRewardsProcessed,
+    rate: bigint = 0n
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: NominationPoolsEraRewardsProcessed.name,

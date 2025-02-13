@@ -1,10 +1,14 @@
 import { LessThan } from 'typeorm'
 import { Claim, ClaimDetails, ClaimRequest, ClaimsClaimed, Event as EventModel, Extrinsic } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
-export async function claimed(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function claimed(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
 
     const event = mappings.claims.events.claimed(item)
@@ -36,11 +40,17 @@ export async function claimed(ctx: CommonContext, block: BlockHeader, item: Even
         throw new Error(`No claim requests found for ${claimAccount}`)
     }
 
-    const efiSum = claimRequests.filter((request) => request.isEfiToken).reduce((sum, request) => sum + request.amountClaimable, 0n)
+    const efiSum = claimRequests
+        .filter((request) => request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountClaimable, 0n)
 
-    const enjSum = claimRequests.filter((request) => !request.isEfiToken).reduce((sum, request) => sum + request.amountClaimable, 0n)
+    const enjSum = claimRequests
+        .filter((request) => !request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountClaimable, 0n)
 
-    const efiBurned = claimRequests.filter((request) => request.isEfiToken).reduce((sum, request) => sum + request.amountBurned, 0n)
+    const efiBurned = claimRequests
+        .filter((request) => request.isEfiToken)
+        .reduce((sum, request) => sum + request.amountBurned, 0n)
 
     let updatedClaim: Claim
 

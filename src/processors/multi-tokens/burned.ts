@@ -1,10 +1,10 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 // import { computeTraits } from '../../jobs/compute-traits'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount } from '../../utils/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function burned(

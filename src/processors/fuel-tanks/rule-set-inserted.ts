@@ -1,7 +1,7 @@
-import { CallNotDefinedError } from '../../common/errors'
-import { calls } from '../../types/generated'
+import { CallNotDefinedError } from '../../utils/errors'
+import { calls } from '../../types'
 import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function ruleSetInserted(

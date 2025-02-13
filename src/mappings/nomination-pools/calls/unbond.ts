@@ -1,6 +1,6 @@
-import { UnsupportedCallError } from '../../../common/errors'
-import { CallItem } from '../../../common/types/contexts'
-import { calls } from '../../../types/generated'
+import { UnsupportedCallError } from '../../../utils/errors'
+import { CallItem } from '../../../contexts'
+import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { Unbond } from './types'
 

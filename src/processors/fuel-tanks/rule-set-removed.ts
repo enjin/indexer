@@ -1,8 +1,12 @@
 import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
-export async function ruleSetRemoved(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function ruleSetRemoved(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.ruleSetRemoved(item)
     const ruleId = `${eventData.tankId}-${eventData.ruleSetId}`
 

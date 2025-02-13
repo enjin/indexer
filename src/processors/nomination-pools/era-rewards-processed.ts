@@ -1,10 +1,18 @@
 import Big from 'big.js'
 import * as Sentry from '@sentry/node'
 import { groupBy } from 'lodash'
-import { BonusCycle, CommissionPayment, Era, EraReward, Event as EventModel, PoolMember, PoolMemberRewards } from '../../model'
+import {
+    BonusCycle,
+    CommissionPayment,
+    Era,
+    EraReward,
+    Event as EventModel,
+    PoolMember,
+    PoolMemberRewards,
+} from '../../model'
 import { updatePool } from './pool'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Sns } from '../../utils/sns'
 import config from '../../config'
 import * as mappings from './../../mappings'
 

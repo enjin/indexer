@@ -1,6 +1,6 @@
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount, unwrapSigner } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount, unwrapSigner } from '../../utils/entities'
 import config from '../../config'
 import * as mappings from './../../mappings'
 

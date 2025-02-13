@@ -1,6 +1,6 @@
-import { multiTokens } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { multiTokens } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
 import { Infused } from './types/infused'
@@ -17,7 +17,11 @@ export function infused(event: EventItem): Infused {
         })
 }
 
-export function infusedEventModel(item: EventItem, data: Infused, token?: Token): [EventModel, AccountTokenEvent] | EventModel | undefined {
+export function infusedEventModel(
+    item: EventItem,
+    data: Infused,
+    token?: Token
+): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
         id: item.id,
         name: MultiTokensInfused.name,

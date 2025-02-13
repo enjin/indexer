@@ -1,10 +1,14 @@
-import { CallNotDefinedError } from '../../common/errors'
+import { CallNotDefinedError } from '../../utils/errors'
 import { Event as EventModel, Judgement, JudgementType, Registration } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
-export async function judgementGiven(ctx: CommonContext, block: BlockHeader, item: EventItem): Promise<EventModel | undefined> {
+export async function judgementGiven(
+    ctx: CommonContext,
+    block: BlockHeader,
+    item: EventItem
+): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
     const event = mappings.identity.events.judgementGiven(item)

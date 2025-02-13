@@ -1,6 +1,6 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, Extrinsic, Validator, ValidatorPrefsSet } from '../../model'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from '../../mappings'
 
 export async function validatorPrefsSet(ctx: CommonContext, block: BlockHeader, item: EventItem) {

@@ -1,8 +1,8 @@
-import { throwError } from '../../common/errors'
+import { throwError } from '../../utils/errors'
 import { Collection, Event as EventModel, Listing, RoyaltyCurrency, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {

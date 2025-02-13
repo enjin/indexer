@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../connection'
+import connection from '../../contexts'
 
 export const indexer_multitokens_unique_holders_total = new client.Gauge({
     name: 'indexer_multitokens_unique_holders_total',
@@ -99,8 +99,12 @@ export default async () => {
         em.query(
             'SELECT AVG(sq.holders) as avg FROM (SELECT COUNT(id) as holders FROM collection_account GROUP BY collection_id) as sq'
         ),
-        em.query('SELECT AVG(sq.tokens) as avg FROM (SELECT COUNT(id) as tokens FROM token GROUP BY collection_id) as sq'),
-        em.query('SELECT AVG(sq.tokens) as avg FROM (SELECT COUNT(id) as tokens FROM token_account GROUP BY account_id) as sq'),
+        em.query(
+            'SELECT AVG(sq.tokens) as avg FROM (SELECT COUNT(id) as tokens FROM token GROUP BY collection_id) as sq'
+        ),
+        em.query(
+            'SELECT AVG(sq.tokens) as avg FROM (SELECT COUNT(id) as tokens FROM token_account GROUP BY account_id) as sq'
+        ),
         em.query('SELECT SUM(unit_price)::numeric / POW(10,18) as sum FROM token'),
         em.query('SELECT SUM(infusion)::numeric / POW(10,18) as sum FROM token WHERE infusion::numeric > 0'),
         em.query('SELECT SUM(supply::numeric) as sum FROM token WHERE infusion::numeric > 0'),

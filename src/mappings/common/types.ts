@@ -1,5 +1,5 @@
-import { BoundedString, V3MultiLocation } from '../../types/generated/v100'
-import { V4Location } from '../../types/generated/v1030'
+import { BoundedString, V3MultiLocation } from '../../types/v100'
+import { V4Location } from '../../types/v1030'
 
 export type Bytes = string // HexBytes
 export type H160 = Bytes // HexBytes

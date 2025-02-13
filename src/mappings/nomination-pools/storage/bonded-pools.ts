@@ -1,6 +1,6 @@
-import { UnsupportedStorageError } from '../../../common/errors'
+import { UnsupportedStorageError } from '../../../utils/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
-import { storage } from '../../../types/generated'
+import { storage } from '../../../types'
 import { match } from 'ts-pattern'
 import { BondedPools } from '../../../mappings/nomination-pools/storage/types'
 

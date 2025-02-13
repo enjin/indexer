@@ -1,8 +1,16 @@
-import { marketplace } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { marketplace } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceCounterOfferPlaced, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    MarketplaceCounterOfferPlaced,
+    Token,
+} from '../../../model'
 import { CounterOfferPlaced } from './types'
 
 export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
@@ -33,7 +41,12 @@ export function counterOfferPlaced(event: EventItem): CounterOfferPlaced {
         })
 }
 
-export function counterOfferPlacedEventModel(item: EventItem, data: CounterOfferPlaced, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
+export function counterOfferPlacedEventModel(
+    item: EventItem,
+    data: CounterOfferPlaced,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferPlaced.name,
@@ -42,7 +55,10 @@ export function counterOfferPlacedEventModel(item: EventItem, data: CounterOffer
         tokenId: listing.takeAssetId.id,
         data: new MarketplaceCounterOfferPlaced({
             listing: listing.id,
-            accountId: data.counterOffer.deposit != undefined ? data.counterOffer.deposit.depositor : data.counterOffer.accountId,
+            accountId:
+                data.counterOffer.deposit != undefined
+                    ? data.counterOffer.deposit.depositor
+                    : data.counterOffer.accountId,
             buyerPrice: data.counterOffer.price != undefined ? data.counterOffer.price : data.counterOffer.buyerPrice,
             depositAmount: data.counterOffer.deposit != undefined ? data.counterOffer.deposit.amount : 1n,
             sellerPrice: data.counterOffer.sellerPrice != undefined ? data.counterOffer.sellerPrice : 1n,

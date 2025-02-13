@@ -9,10 +9,10 @@ import {
     CollectionFlags,
     CollectionStats,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getOrCreateAccount } from '../../common/util/entities'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from '../../mappings'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 //     const account = await getOrCreateAccount(ctx, royalty.beneficiary)

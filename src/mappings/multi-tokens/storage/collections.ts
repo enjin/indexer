@@ -1,6 +1,6 @@
-import { BlockHeader } from '../../../common/types/contexts'
-import { UnsupportedStorageError } from '../../../common/errors'
-import { multiTokens } from '../../../types/generated/storage'
+import { BlockHeader } from '../../../contexts'
+import { UnsupportedStorageError } from '../../../utils/errors'
+import { multiTokens } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { Collection } from './types'
 

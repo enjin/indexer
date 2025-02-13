@@ -1,6 +1,6 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import config from './config'
-import { calls, events } from './types/generated'
+import { calls, events } from './types'
 
 export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)

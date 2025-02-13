@@ -1,6 +1,6 @@
-import { BlockHeader } from '../../../common/types/contexts'
-import { UnsupportedStorageError } from '../../../common/errors'
-import { identity } from '../../../types/generated/storage'
+import { BlockHeader } from '../../../contexts'
+import { UnsupportedStorageError } from '../../../utils/errors'
+import { identity } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { RegistrarInfo } from '../../../mappings/identity/storage/types'
 

@@ -6,9 +6,9 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
-import { getBestListing } from '../../common/util/entities'
-import { Sns } from '../../common/sns'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { getBestListing } from '../../utils/entities'
+import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 

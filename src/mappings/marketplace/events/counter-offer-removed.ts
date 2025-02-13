@@ -1,8 +1,16 @@
-import { marketplace } from '../../../types/generated/events'
-import { EventItem } from '../../../common/types/contexts'
-import { UnsupportedEventError } from '../../../common/errors'
+import { marketplace } from '../../../types/events'
+import { EventItem } from '../../../contexts'
+import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, Listing, MarketplaceCounterOfferRemoved, Token } from '../../../model'
+import {
+    Account,
+    AccountTokenEvent,
+    Event as EventModel,
+    Extrinsic,
+    Listing,
+    MarketplaceCounterOfferRemoved,
+    Token,
+} from '../../../model'
 import { CounterOfferRemoved } from './types'
 
 export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
@@ -17,7 +25,12 @@ export function counterOfferRemoved(event: EventItem): CounterOfferRemoved {
         })
 }
 
-export function counterOfferRemovedEventModel(item: EventItem, data: CounterOfferRemoved, listing: Listing, account: Account): [EventModel, AccountTokenEvent] | undefined {
+export function counterOfferRemovedEventModel(
+    item: EventItem,
+    data: CounterOfferRemoved,
+    listing: Listing,
+    account: Account
+): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
         name: MarketplaceCounterOfferRemoved.name,

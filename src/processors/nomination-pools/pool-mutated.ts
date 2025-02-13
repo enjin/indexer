@@ -1,6 +1,6 @@
-import { BlockHeader, CommonContext, EventItem } from '../../common/types/contexts'
+import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { CommissionChangeRate, NominationPool } from '../../model'
-import { Sns } from '../../common/sns'
+import { Sns } from '../../utils/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from './../../mappings'
 

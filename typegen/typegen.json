@@ -1,5 +1,5 @@
 {
-  "outDir": "../src/types/generated",
+  "outDir": "../src/types",
   "specVersions": "./chain-specs.jsonl",
   "events": true,
   "calls": true,

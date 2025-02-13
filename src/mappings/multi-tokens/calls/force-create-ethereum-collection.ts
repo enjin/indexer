@@ -1,6 +1,6 @@
-import { CallItem } from '../../../common/types/contexts'
-import { UnsupportedCallError } from '../../../common/errors'
-import { calls } from '../../../types/generated'
+import { CallItem } from '../../../contexts'
+import { UnsupportedCallError } from '../../../utils/errors'
+import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { ForceCreateEthereumCollection } from './types'
 

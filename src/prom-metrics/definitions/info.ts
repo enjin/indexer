@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../connection'
+import connection from '../../contexts'
 
 export const indexer_info_unique_holders_total = new client.Gauge({
     name: 'indexer_info_unique_holders_total',
