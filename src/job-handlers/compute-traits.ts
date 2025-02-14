@@ -14,7 +14,7 @@ const hash = (str: string) => {
 
 export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
     if (!job.data.collectionId) {
-        throw new Error('Collection ID not provided.')
+        done(new Error('Collection ID not provided.'))
     }
 
     if (!connection.isInitialized) {
@@ -81,13 +81,13 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
 
         if (!traitTypeMap.size) {
-            job.log(`No traits found for collection ${collectionId}`)
+            await job.log(`No traits found for collection ${collectionId}`)
             done()
 
             return
         }
 
-        job.log(`Found ${traitTypeMap.size} trait types`)
+        await job.log(`Found ${traitTypeMap.size} trait types`)
         const traitsToSave: Trait[] = []
 
         traitTypeMap.forEach((traitValueMap, traitType) => {
@@ -104,7 +104,7 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
             })
         })
 
-        job.log(`Saving ${traitsToSave.length} traits`)
+        await job.log(`Saving ${traitsToSave.length} traits`)
         await em.save(Trait, traitsToSave as any, { chunk: 1000 })
         const traitTokensToSave: TraitToken[] = []
 
@@ -122,11 +122,11 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
         })
 
         if (traitTokensToSave.length) {
-            job.log(`Saving ${traitsToSave.length} token traits`)
+            await job.log(`Saving ${traitsToSave.length} token traits`)
             await em.save(TraitToken, traitTokensToSave as any, { chunk: 1000 })
         }
 
-        computeRarityRank(collectionId)
+        await computeRarityRank(collectionId)
 
         done(null, { timeElapsed: new Date().getTime() - start.getTime() })
     })
