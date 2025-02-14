@@ -27,14 +27,12 @@ We recommend that you read SubSquid docs to understand how it works: https://doc
 
 ## Prerequisites
 
-- Docker
-
-OR
-
 - Node 20.x
+- PNPM 8.x
 - PostgreSQL 16.x
 - Redis 7.x
 
+Or you can use **Docker** with the provided docker-compose file to start all services.
 
 ## Quick-start (using Docker)
 
@@ -56,17 +54,18 @@ The indexer is composed of 4 containers
 The chain metadata is used to generate the interface classes through typegen. To scan the blockchain and get the all the metadata ever used you can use the following command:
 
 ```bash
-npm run metadata:fetch
+pnpm run metadata:fetch
 ```
 
-In this indexer we use all the metadata of **Enjin Matrixchain** and **Canary Matrixchain** so make sure you save them and use the proper WSS endpoint to gather them.
+This indexer works with all Enjin networks, so make sure you always save the metadata from all of them before generating the typegen.
+
 
 ## Typegen
 
 The typegen tool is used for generating TypeScript interface classes for Substrate events, calls and storage. To generate it, first you should merge both metadata from **Enjin Matrixchain** and **Canary Matrixchain** into a single file. Then you can use the following command:
 
 ```bash
-npm run metadata:typegen
+pnpm run metadata:typegen
 ```
 
 ## Codegen
@@ -74,7 +73,7 @@ npm run metadata:typegen
 The codegen tool is used for generating the model classes based on the GraphQL schema. If you edit the `schema.graphql` you should regenerate it by running:
 
 ```bash
-npm run schema:codegen
+pnpm run schema:codegen
 ```
 
 ## Migrations
@@ -82,8 +81,8 @@ npm run schema:codegen
 When the schema is changed we need to make a new migration. For development purposes the simplest way is to drop the database and generate the migrations from scratch. To do that, after you are finished editing the `schema.graphql` file and have generated all model files. You might run:
 
 ```bash
-npm run db:generate
-npm run db:migrate
+pnpm run db:generate
+pnpm run db:migrate
 ```
 
 **Please note:** you need to delete the files under `db/migrations` and your database must be clean before running the `generate` command as this will connect to your database for checking the "changes" and generate the file based on it.

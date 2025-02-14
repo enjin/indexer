@@ -1,17 +1,36 @@
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { BlockHeader, CallItem, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount, unwrapSigner } from '../../utils/entities'
 import config from '../../config'
 import * as mappings from './../../mappings'
+import { calls } from '../../types'
+import { match } from 'ts-pattern'
+import { UnsupportedCallError } from '../../utils/errors'
 
 export async function attempted(
     ctx: CommonContext,
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    if (!item.call || !item.extrinsic) return undefined
+    if (item.call === undefined || !item.extrinsic) return undefined
 
-    const call = mappings.xcm.calls.teleportAssets(item.call)
+    const call = match(item.call)
+        .returnType<unknown>()
+        .with({ name: calls.xcmPallet.limitedTeleportAssets.name }, (call) =>
+            mappings.xcmPallet.calls.limitedTeleportAssets(call)
+        )
+        .with({ name: calls.polkadotXcm.limitedTeleportAssets.name }, (call) =>
+            mappings.polkadotXcm.calls.limitedTeleportAssets(call)
+        )
+        .with({ name: calls.xcmPallet.teleportAssets.name }, (call) => mappings.xcmPallet.calls.teleportAssets(call))
+        .with({ name: calls.polkadotXcm.teleportAssets.name }, (call) =>
+            mappings.polkadotXcm.calls.teleportAssets(call)
+        )
+        .otherwise(() => {
+            throw new UnsupportedCallError(item.call as CallItem)
+        })
+
+    console.log(call)
 
     if (!('dest' in call) || !('beneficiary' in call) || !('assets' in call)) {
         return undefined

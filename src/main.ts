@@ -265,7 +265,7 @@ processor.run(
                     }
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
-                        const tankData = mappings.fuelTanks.calls.dispatch(call)
+                        const tankData = mappings.fuelTanks.calls.dispatchOrDispatchAndTouch(call)
                         const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
                             id: unwrapAccount(tankData.tankId),
                         })
@@ -338,7 +338,7 @@ processor.run(
                     ) {
                         const listingId = call.args.call?.value?.listingId ?? call.args.listingId
 
-                        const listing = await ctx.store.findOne(Listing, {
+                        const listing = await ctx.store.findOne<Listing>(Listing, {
                             where: { id: hexStripPrefix(listingId) },
                             relations: { seller: true },
                         })

@@ -2,11 +2,13 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { TeleportAssets } from '../../../mappings/xcm/calls/types'
+import { LimitedTeleportAssets } from './types'
 
-export function teleportAssets(call: CallItem): TeleportAssets {
+export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
+    console.log('Was dispatched: ', call.wasDispatched)
+
     return match(call)
-        .returnType<TeleportAssets>()
+        .returnType<LimitedTeleportAssets>()
         .when(
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is(call),
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call)

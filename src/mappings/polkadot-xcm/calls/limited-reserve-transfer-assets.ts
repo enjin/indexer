@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { LimitedReserveTransferAssets } from '../../../mappings/xcm/calls/types'
+import { LimitedReserveTransferAssets } from './types'
 
 export function limitedReserveTransferAssets(call: CallItem): LimitedReserveTransferAssets {
     return match(call)

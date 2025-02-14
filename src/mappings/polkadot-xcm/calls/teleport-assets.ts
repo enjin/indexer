@@ -2,11 +2,11 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { LimitedTeleportAssets } from './types'
+import { TeleportAssets } from './types'
 
-export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
+export function teleportAssets(call: CallItem): TeleportAssets {
     return match(call)
-        .returnType<LimitedTeleportAssets>()
+        .returnType<TeleportAssets>()
         .when(
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is(call),
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call)
