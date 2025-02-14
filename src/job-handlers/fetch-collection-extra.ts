@@ -5,7 +5,7 @@ import { fetchCollectionsExtra } from '../mappings/util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../model'
 import { computeTraits } from '../jobs/compute-traits'
 import { syncCollectionStats } from '../jobs/collection-stats'
-import { safeJsonString } from 'matrixchain-indexer/common/tools'
+import { safeJsonString } from '../common/tools'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
