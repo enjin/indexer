@@ -1,4 +1,3 @@
-import '@polkadot/api-augment/substrate'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import { hexStripPrefix } from '@polkadot/util'
 import * as Sentry from '@sentry/node'
