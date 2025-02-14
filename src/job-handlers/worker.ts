@@ -44,6 +44,30 @@ async function main() {
         throwError(`metadataQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
     })
 
+    rarityQueue.on('global:failed', (job, err) => {
+        throwError(`rarityQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
+    collectionStatsQueue.on('global:failed', (job, err) => {
+        throwError(`collectionStatsQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
+    fetchAccountQueue.on('global:failed', (job, err) => {
+        throwError(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
+    fetchBalanceQueue.on('global:failed', (job, err) => {
+        throwError(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
+    fetchCollectionExtraQueue.on('global:failed', (job, err) => {
+        throwError(`fetchCollectionExtraQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
+    invalidateExpiredListings.on('global:failed', (job, err) => {
+        throwError(`invalidateExpiredListings:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
     const serverAdapter = new ExpressAdapter()
     serverAdapter.setBasePath('/')
 
