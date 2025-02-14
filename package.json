@@ -44,6 +44,7 @@
   "dependencies": {
     "@aws-sdk/client-sns": "^3.744.0",
     "@polkadot/api": "^15.5.2",
+    "@polkadot/api-augment": "^15.5.2",
     "@polkadot/keyring": "^13.2.3",
     "@polkadot/types": "^15.5.2",
     "@polkadot/util": "^13.3.1",
@@ -78,7 +79,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
-    "@polkadot/api-augment": "^15.5.2",
     "@polkadot/typegen": "^15.5.2",
     "@sentry/cli": "^2.41.1",
     "@subsquid/substrate-metadata-explorer": "^3.1.2",
