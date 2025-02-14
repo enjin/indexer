@@ -1,5 +1,6 @@
 import axios from 'axios'
 import config from '../../config'
+import { isMainnet } from '../../common/tools'
 
 const addressesQuery = `query AddressesQuery($ids: [String!]) {
     result: AddressesVerification(publicKeys:$ids){
@@ -63,6 +64,8 @@ export async function fetchAccountsDetail(ids: string[]) {
             },
             {
                 headers: {
+                    Accept: 'application/json',
+                    'X-Network': isMainnet() ? 'enjin' : 'canary',
                     'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
                     'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
                 },
@@ -106,6 +109,7 @@ export async function fetchCollectionsExtra(ids: string[]) {
             {
                 headers: {
                     Accept: 'application/json',
+                    'X-Network': isMainnet() ? 'enjin' : 'canary',
                     'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
                     'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
                 },
