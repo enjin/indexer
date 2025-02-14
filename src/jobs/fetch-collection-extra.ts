@@ -4,7 +4,7 @@ import { redisConfig } from './common'
 export type JobData = { ids: string[] }
 
 export const fetchCollectionExtraQueue = new Queue<JobData>('fetchCollectionExtraQueue', {
-    defaultJobOptions: { attempts: 3, removeOnComplete: 50 },
+    defaultJobOptions: { attempts: 3, removeOnComplete: 100 },
     redis: redisConfig,
     settings: {
         maxStalledCount: 3,

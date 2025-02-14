@@ -5,7 +5,6 @@ import { fetchCollectionsExtra } from '../mappings/util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../model'
 import { computeTraits } from '../jobs/compute-traits'
 import { syncCollectionStats } from '../jobs/collection-stats'
-import { safeJsonString } from '../common/tools'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
@@ -50,13 +49,8 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
         await Promise.all(collectionsPromise)
 
-        await job.log(`Data: ${safeJsonString(data)}`)
-
         done(null, data)
     } catch (err) {
-        const error = err as Error
-        await job.log(`Error: ${safeJsonString(error.message)}`)
-
-        done(error)
+        done(err as Error)
     }
 }

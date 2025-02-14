@@ -4,7 +4,7 @@ import { redisConfig } from './common'
 export type JobData = { collectionId: string }
 
 export const rarityQueue = new Queue<JobData>('rarityQueue', {
-    defaultJobOptions: { delay: 1000, attempts: 2, removeOnComplete: true },
+    defaultJobOptions: { delay: 1000, attempts: 2, removeOnComplete: 100 },
     redis: redisConfig,
     settings: {
         maxStalledCount: 3,
