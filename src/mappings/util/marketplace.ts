@@ -105,6 +105,7 @@ export async function fetchCollectionsExtra(ids: string[]) {
             },
             {
                 headers: {
+                    Accept: 'application/json',
                     'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
                     'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
                 },
