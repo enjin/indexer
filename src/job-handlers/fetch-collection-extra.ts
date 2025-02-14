@@ -50,12 +50,12 @@ export default async (job: Queue.Job<JobData>, done: Queue.DoneCallback) => {
 
         await Promise.all(collectionsPromise)
 
-        job.log(`Data: ${safeJsonString(data)}`)
+        await job.log(`Data: ${safeJsonString(data)}`)
 
         done(null, data)
     } catch (err) {
         const error = err as Error
-        job.log(`Error: ${safeJsonString(error.message)}`)
+        await job.log(`Error: ${safeJsonString(error.message)}`)
 
         done(error)
     }

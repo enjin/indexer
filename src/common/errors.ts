@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node'
-import { CallItem } from 'matrixchain-indexer/mappings/types/contexts'
+import { CallItem } from '../mappings/types/contexts'
 
 export class UnsupportedEventError extends Error {
     constructor(name: string) {
