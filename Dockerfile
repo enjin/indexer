@@ -20,6 +20,7 @@ LABEL org.opencontainers.image.licenses=GPLv3
 
 WORKDIR /squid
 
+COPY --from=prod-deps /app/package.json /squid/package.json
 COPY --from=prod-deps /app/node_modules /squid/node_modules
 COPY --from=build /app/lib /squid/lib
 
@@ -34,4 +35,4 @@ EXPOSE 8000
 
 COPY --chmod=0755 start.sh .
 
-CMD ["/bin/sh", "-c", "/app/start.sh"]
+CMD ["/bin/sh", "-c", "/squid/start.sh"]
