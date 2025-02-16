@@ -8,7 +8,7 @@ const con = new DataSource({
     maxQueryExecutionTime: 5000,
     poolSize: 200,
     logging: ['error'],
-    logger: 'advanced-console',
+    logger: 'simple-console',
 } as PostgresConnectionOptions)
 
 export default con
