@@ -105,10 +105,6 @@ async function main() {
     app.listen(9090, () => {
         // eslint-disable-next-line no-console
         console.log('Running on 9090...')
-        console.log(process.env.DB_HOST)
-        console.log(process.env.DB_USER)
-        console.log(process.env.DB_PASS)
-        console.log(process.env.DB_NAME)
     })
 }
 
