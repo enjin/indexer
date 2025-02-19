@@ -74,6 +74,7 @@ const ListingData = createUnionType({
     resolveType: (value) => {
         if (value.listingType === 'FixedPrice') return FixedPriceData
         if (value.listingType === 'Auction') return AuctionData
+        if (value.listingType === 'Offer') return OfferData
         return undefined
     },
 })
@@ -108,6 +109,7 @@ const ListingState = createUnionType({
     resolveType: (value) => {
         if (value.listingType === 'FixedPrice') return FixedPriceState
         if (value.listingType === 'Auction') return AuctionState
+        if (value.listingType === 'Offer') return OfferState
         return undefined
     },
 })
