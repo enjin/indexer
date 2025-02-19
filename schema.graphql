@@ -789,6 +789,7 @@ enum ListingType {
 
 type FixedPriceData {
   listingType: ListingType!
+  notUsed: Int
 }
 
 type AuctionData {
