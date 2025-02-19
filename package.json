@@ -74,9 +74,7 @@
     "typescript": "^5.7.3"
   },
   "peerDependencies": {
-    "@subsquid/openreader": "5.1.1",
     "@subsquid/typeorm-config": "4.1.1",
-    "graphql": "15.8.0",
     "@subsquid/util-internal-hex": "1.2.2",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.11"
