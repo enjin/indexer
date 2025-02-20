@@ -28,12 +28,16 @@ export function unwrapFuelTankCall(call: CallItem): unknown {
 }
 
 export function anyCreateFuelTank(call: CallItem): ForceCreateFuelTank | CreateFuelTank {
-    return match(call.name)
-        .with(calls.fuelTanks.createFuelTank.name, () => mappings.fuelTanks.calls.createFuelTank(call))
-        .with(calls.fuelTanks.forceCreateFuelTank.name, () => mappings.fuelTanks.calls.forceCreateFuelTank(call))
-        .otherwise(() => {
-            throw new UnsupportedCallError(call)
-        })
+    const processCall = withDispatchCheck((call: CallItem): ForceCreateFuelTank | CreateFuelTank => {
+        return match(call.name)
+            .with(calls.fuelTanks.createFuelTank.name, () => mappings.fuelTanks.calls.createFuelTank(call))
+            .with(calls.fuelTanks.forceCreateFuelTank.name, () => mappings.fuelTanks.calls.forceCreateFuelTank(call))
+            .otherwise(() => {
+                throw new UnsupportedCallError(call)
+            })
+    })
+
+    return processCall(call)
 }
 
 export function anyDispatch(call: CallItem): Dispatch | DispatchAndTouch {

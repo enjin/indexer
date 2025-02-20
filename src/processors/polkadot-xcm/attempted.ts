@@ -12,8 +12,6 @@ export async function attempted(
     if (item.call === undefined || !item.extrinsic) return undefined
 
     const call = mappings.polkadotXcm.utils.anyTeleportAssets(item.call)
-    console.log(call)
-
     if (!('dest' in call) || !('beneficiary' in call) || !('assets' in call)) {
         return undefined
     }

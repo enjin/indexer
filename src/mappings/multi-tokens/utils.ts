@@ -5,30 +5,39 @@ import { calls } from '../../types'
 import * as mappings from '../index'
 import { CreateCollection, ForceCreateCollection, Mint, ForceMint, BatchMint } from './calls'
 import { DefaultMintParams_CreateToken } from '../common/types'
+import { withDispatchCheck } from '../fuel-tanks/utils'
 
 export function anyCreateCollection(call: CallItem): CreateCollection | ForceCreateCollection {
-    return match(call.name)
-        .returnType<CreateCollection | ForceCreateCollection>()
-        .with(calls.multiTokens.createCollection.name, () => mappings.multiTokens.calls.createCollection(call))
-        .with(calls.multiTokens.forceCreateCollection.name, () =>
-            mappings.multiTokens.calls.forceCreateCollection(call)
-        )
-        .otherwise(() => {
-            throw new UnsupportedCallError(call)
-        })
+    const processCall = withDispatchCheck((call: CallItem): CreateCollection | ForceCreateCollection => {
+        return match(call.name)
+            .returnType<CreateCollection | ForceCreateCollection>()
+            .with(calls.multiTokens.createCollection.name, () => mappings.multiTokens.calls.createCollection(call))
+            .with(calls.multiTokens.forceCreateCollection.name, () =>
+                mappings.multiTokens.calls.forceCreateCollection(call)
+            )
+            .otherwise(() => {
+                throw new UnsupportedCallError(call)
+            })
+    })
+
+    return processCall(call)
 }
 
 export function anyMint(call: CallItem, tokenId?: bigint): Mint | ForceMint {
-    return match(call.name)
-        .returnType<Mint | ForceMint>()
-        .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
-        .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
-        .with(calls.multiTokens.batchMint.name, () =>
-            filterMintCall(mappings.multiTokens.calls.batchMint(call), tokenId)
-        )
-        .otherwise(() => {
-            throw new UnsupportedCallError(call)
-        })
+    const processCall = withDispatchCheck((call: CallItem): Mint | ForceMint => {
+        return match(call.name)
+            .returnType<Mint | ForceMint>()
+            .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
+            .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
+            .with(calls.multiTokens.batchMint.name, () =>
+                filterMintCall(mappings.multiTokens.calls.batchMint(call), tokenId)
+            )
+            .otherwise(() => {
+                throw new UnsupportedCallError(call)
+            })
+    })
+
+    return processCall(call)
 }
 
 function filterMintCall(call: BatchMint, tokenId?: bigint): Mint | ForceMint {
