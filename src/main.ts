@@ -134,7 +134,7 @@ async function handleEvents(
         case events.marketplace.listingRemovedUnderMinimum.name:
             return processors.marketplace.listingRemovedUnderMinimum(ctx, block, item)
         case events.polkadotXcm.attempted.name:
-            return processors.xcm.attempted(ctx, block, item)
+            return processors.polkadotXcm.attempted(ctx, block, item)
         case events.fuelTanks.accountAdded.name:
             return processors.fuelTanks.accountAdded(ctx, block, item)
         case events.fuelTanks.accountRemoved.name:

@@ -3,7 +3,8 @@ import { claims } from './claims'
 import { identity } from './identity'
 import { multiTokens } from './multi-tokens'
 import { marketplace } from './marketplace'
-import { xcm } from './xcm'
+import { xcmPallet } from './xcm-pallet'
+import { polkadotXcm } from './polkadot-xcm'
 import { fuelTanks } from './fuel-tanks'
 
 export const processors = {
@@ -12,7 +13,8 @@ export const processors = {
     identity,
     multiTokens,
     marketplace,
-    xcm,
+    xcmPallet,
+    polkadotXcm,
     fuelTanks,
 }
 

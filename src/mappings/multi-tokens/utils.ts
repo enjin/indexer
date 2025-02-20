@@ -8,6 +8,7 @@ import { DefaultMintParams_CreateToken } from '../common/types'
 
 export function anyCreateCollection(call: CallItem): CreateCollection | ForceCreateCollection {
     return match(call.name)
+        .returnType<CreateCollection | ForceCreateCollection>()
         .with(calls.multiTokens.createCollection.name, () => mappings.multiTokens.calls.createCollection(call))
         .with(calls.multiTokens.forceCreateCollection.name, () =>
             mappings.multiTokens.calls.forceCreateCollection(call)
@@ -19,6 +20,7 @@ export function anyCreateCollection(call: CallItem): CreateCollection | ForceCre
 
 export function anyMint(call: CallItem, tokenId?: bigint): Mint | ForceMint {
     return match(call.name)
+        .returnType<Mint | ForceMint>()
         .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
         .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
         .with(calls.multiTokens.batchMint.name, () =>

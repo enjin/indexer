@@ -1,7 +1,7 @@
 import { attempted } from './attempted'
 
-export const xcm = {
+export const polkadotXcm = {
     attempted,
 }
 
-export default xcm
+export default polkadotXcm
