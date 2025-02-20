@@ -3,8 +3,9 @@ import { CallItem } from '../../../contexts'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { WithdrawUnbonded } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function withdrawUnbonded(call: CallItem): WithdrawUnbonded {
+export const withdrawUnbonded = withDispatchCheck((call: CallItem): WithdrawUnbonded => {
     return match(call)
         .returnType<WithdrawUnbonded>()
         .when(
@@ -14,4 +15,4 @@ export function withdrawUnbonded(call: CallItem): WithdrawUnbonded {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

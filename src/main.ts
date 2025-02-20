@@ -265,7 +265,7 @@ processor.run(
                     }
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
-                        const tankData = mappings.fuelTanks.calls.dispatchOrDispatchAndTouch(call)
+                        const tankData = mappings.fuelTanks.utils.anyDispatch(call)
                         const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
                             id: unwrapAccount(tankData.tankId),
                         })

@@ -3,8 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { InsertRuleSet } from './types'
+import { withDispatchCheck } from '../utils'
 
-export function insertRuleSet(call: CallItem): InsertRuleSet {
+export const insertRuleSet = withDispatchCheck((call: CallItem): InsertRuleSet => {
     return match(call)
         .returnType<InsertRuleSet>()
         .when(
@@ -170,4 +171,4 @@ export function insertRuleSet(call: CallItem): InsertRuleSet {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

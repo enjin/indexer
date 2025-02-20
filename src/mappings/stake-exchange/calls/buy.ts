@@ -3,8 +3,9 @@ import { CallItem } from '../../../contexts'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { Buy } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function buy(call: CallItem): Buy {
+export const buy = withDispatchCheck((call: CallItem): Buy => {
     return match(call)
         .returnType<Buy>()
         .when(
@@ -36,4 +37,4 @@ export function buy(call: CallItem): Buy {
     // }
     //
     // throw new UnsupportedCallError(call)
-}
+})

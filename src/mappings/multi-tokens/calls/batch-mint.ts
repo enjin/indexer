@@ -3,8 +3,9 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { BatchMint } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function batchMint(call: CallItem): BatchMint {
+export const batchMint = withDispatchCheck((call: CallItem): BatchMint => {
     return match(call)
         .returnType<BatchMint>()
         .when(
@@ -54,4 +55,4 @@ export function batchMint(call: CallItem): BatchMint {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

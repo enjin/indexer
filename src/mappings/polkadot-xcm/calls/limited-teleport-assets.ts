@@ -3,10 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { LimitedTeleportAssets } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
-    console.log('Was dispatched: ', call.wasDispatched)
-
+export const limitedTeleportAssets = withDispatchCheck((call: CallItem): LimitedTeleportAssets => {
     return match(call)
         .returnType<LimitedTeleportAssets>()
         .when(
@@ -28,4 +27,4 @@ export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

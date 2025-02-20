@@ -3,8 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { LimitedReserveTransferAssets } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function limitedReserveTransferAssets(call: CallItem): LimitedReserveTransferAssets {
+export const limitedReserveTransferAssets = withDispatchCheck((call: CallItem): LimitedReserveTransferAssets => {
     return match(call)
         .returnType<LimitedReserveTransferAssets>()
         .when(
@@ -26,4 +27,4 @@ export function limitedReserveTransferAssets(call: CallItem): LimitedReserveTran
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

@@ -11,7 +11,6 @@ import {
     SubstrateBatchProcessorFields,
 } from '@subsquid/substrate-processor'
 import { processor } from './processor'
-import { calls } from './types'
 
 const cfg: DataSourceOptions = createOrmConfig() as PostgresConnectionOptions
 const con: DataSource = new DataSource({ ...cfg, poolSize: 200, pool: { max: 100 } } as PostgresConnectionOptions)
@@ -33,15 +32,6 @@ type Fields = SubstrateBatchProcessorFields<typeof processor>
 
 export type CommonContext = DataHandlerContext<Store, Fields>
 export type BlockHeader = _BlockHeader<Fields>
-export type CallItem = Call<Fields> & {
-    wasDispatched?: boolean
-}
+export type CallItem = Call<Fields>
 export type EventItem = Event<Fields>
 export type ExtrinsicItem = Extrinsic<Fields>
-
-export const CallItem = (call: Call<Fields>): CallItem => {
-    return {
-        ...call,
-        wasDispatched: [calls.fuelTanks.dispatch.name, calls.fuelTanks.dispatchAndTouch.name].includes(call.name),
-    }
-}
