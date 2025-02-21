@@ -3,8 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { AddSub } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function addSub(call: CallItem): AddSub {
+export const addSub = withDispatchCheck((call: CallItem): AddSub => {
     return match(call)
         .returnType<AddSub>()
         .when(
@@ -14,4 +15,4 @@ export function addSub(call: CallItem): AddSub {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

@@ -3,8 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { WithdrawLiquidity } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function withdrawLiquidity(call: CallItem): WithdrawLiquidity {
+export const withdrawLiquidity = withDispatchCheck((call: CallItem): WithdrawLiquidity => {
     return match(call)
         .returnType<WithdrawLiquidity>()
         .when(
@@ -14,4 +15,4 @@ export function withdrawLiquidity(call: CallItem): WithdrawLiquidity {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

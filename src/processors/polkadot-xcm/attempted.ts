@@ -9,10 +9,9 @@ export async function attempted(
     block: BlockHeader,
     item: EventItem
 ): Promise<EventModel | undefined> {
-    if (!item.call || !item.extrinsic) return undefined
+    if (item.call === undefined || !item.extrinsic) return undefined
 
-    const call = mappings.xcm.calls.teleportAssets(item.call)
-
+    const call = mappings.polkadotXcm.utils.anyTeleportAssets(item.call)
     if (!('dest' in call) || !('beneficiary' in call) || !('assets' in call)) {
         return undefined
     }

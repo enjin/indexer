@@ -13,7 +13,7 @@ export type ExtraFlags = bigint
 export type BoundedVec = Bytes
 export type Call = {
     __kind: string
-    // value: Bytes - We don't need this
+    value: unknown
 }
 
 export type Account_EVM = {

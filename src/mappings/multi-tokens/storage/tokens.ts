@@ -2,7 +2,7 @@ import { BlockHeader } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { storage } from '../../../types'
 import { match } from 'ts-pattern'
-import { Token } from './types/tokens'
+import { Token } from './types'
 
 export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: bigint): Promise<Token | undefined> {
     return match(block)

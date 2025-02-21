@@ -4,6 +4,7 @@ import { dataHandlerContext } from '../../../../contexts'
 import { getOrCreateAccount } from '../../../../utils/entities'
 import { decodeAddress } from '@polkadot/util-crypto'
 import { fetchAccountsDetail } from '../../../../utils/marketplace'
+import { Account } from '../../../../model'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
@@ -28,6 +29,6 @@ export default class FetchAccountsProcessor implements ProcessorDef {
             })
         )
 
-        await ctx.store.save(accounts)
+        await ctx.store.save<Account>(accounts)
     }
 }

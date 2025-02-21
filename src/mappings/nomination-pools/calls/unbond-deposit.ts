@@ -3,8 +3,9 @@ import { CallItem } from '../../../contexts'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { UnbondDeposit } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function unbondDeposit(call: CallItem): UnbondDeposit {
+export const unbondDeposit = withDispatchCheck((call: CallItem): UnbondDeposit => {
     return match(call)
         .returnType<UnbondDeposit>()
         .when(
@@ -14,4 +15,4 @@ export function unbondDeposit(call: CallItem): UnbondDeposit {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

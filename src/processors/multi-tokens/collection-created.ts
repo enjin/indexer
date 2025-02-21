@@ -46,7 +46,7 @@ export async function collectionCreated(
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    const callData = mappings.multiTokens.calls.createOrForceCreateCollection(item.call)
+    const callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({

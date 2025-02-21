@@ -3,8 +3,9 @@ import { CallItem } from '../../../contexts'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { CreatePool } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function create(call: CallItem): CreatePool {
+export const create = withDispatchCheck((call: CallItem): CreatePool => {
     return match(call)
         .returnType<CreatePool>()
         .when(
@@ -38,4 +39,4 @@ export function create(call: CallItem): CreatePool {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

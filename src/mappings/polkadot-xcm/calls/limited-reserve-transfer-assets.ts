@@ -2,11 +2,12 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { LimitedTeleportAssets } from './types'
+import { LimitedReserveTransferAssets } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
+export const limitedReserveTransferAssets = withDispatchCheck((call: CallItem): LimitedReserveTransferAssets => {
     return match(call)
-        .returnType<LimitedTeleportAssets>()
+        .returnType<LimitedReserveTransferAssets>()
         .when(
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.is(call),
             () => calls.polkadotXcm.limitedTeleportAssets.matrixEnjinV1012.decode(call)
@@ -26,4 +27,4 @@ export function limitedTeleportAssets(call: CallItem): LimitedTeleportAssets {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

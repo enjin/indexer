@@ -2,9 +2,10 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { SetIdentity } from '../../../mappings/identity/calls/types'
+import { SetIdentity } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function setIdentity(call: CallItem): SetIdentity {
+export const setIdentity = withDispatchCheck((call: CallItem): SetIdentity => {
     return match(call)
         .returnType<SetIdentity>()
         .when(
@@ -14,4 +15,4 @@ export function setIdentity(call: CallItem): SetIdentity {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

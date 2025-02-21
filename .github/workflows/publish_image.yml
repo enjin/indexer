@@ -30,7 +30,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: indexer-matrix
+          ECR_REPOSITORY: indexer-matrixchain
           IMAGE_TAG: ${{ github.sha }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
@@ -40,5 +40,5 @@ jobs:
           
           export VERSION=$VERSION
           docker compose build indexer_processor --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
-          docker tag ghcr.io/efinity/indexer:$VERSION $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag ghcr.io/enjin/indexer:$VERSION $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

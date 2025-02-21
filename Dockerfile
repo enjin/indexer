@@ -18,8 +18,12 @@ LABEL org.opencontainers.image.source=https://github.com/enjin/indexer
 LABEL org.opencontainers.image.description="Enjin Blockchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
 
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/lib /app/lib
+WORKDIR /squid
+
+COPY --from=prod-deps /app/package.json /squid/package.json
+COPY --from=prod-deps /app/node_modules /squid/node_modules
+COPY --from=build /app/lib /squid/lib
+
 ADD db db
 ADD schema.graphql .
 ENV PROCESSOR_PROMETHEUS_PORT 3000
@@ -31,4 +35,4 @@ EXPOSE 8000
 
 COPY --chmod=0755 start.sh .
 
-CMD ["/bin/sh", "-c", "/app/start.sh"]
+CMD ["/bin/sh", "-c", "/squid/start.sh"]

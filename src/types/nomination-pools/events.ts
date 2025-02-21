@@ -12,7 +12,7 @@ import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 
 export const created = {
-    name: 'NominationPools.Created',
+    name: 'NominationPools.Created' as const,
     /**
      * A pool has been created.
      */

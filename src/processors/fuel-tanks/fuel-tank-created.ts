@@ -23,7 +23,7 @@ export async function fuelTankCreated(
     if (!item.call) throw new CallNotDefinedError()
 
     const event = mappings.fuelTanks.events.fuelTankCreated(item)
-    const call = mappings.fuelTanks.calls.createOrForceCreateFuelTank(item.call)
+    const call = mappings.fuelTanks.utils.anyCreateFuelTank(item.call)
 
     const [tankAccount, owner] = await Promise.all([
         getOrCreateAccount(ctx, event.tankId),

@@ -2,7 +2,7 @@ import { imOnline } from '../../../types/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { SomeOffline } from '../../../mappings/im-online/events/types'
+import { SomeOffline } from './types'
 
 export function someOffline(event: EventItem): SomeOffline {
     return match(event)

@@ -3,8 +3,9 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { CreateCollection } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function createCollection(call: CallItem): CreateCollection {
+export const createCollection = withDispatchCheck((call: CallItem): CreateCollection => {
     return match(call)
         .returnType<CreateCollection>()
         .when(
@@ -46,4 +47,4 @@ export function createCollection(call: CallItem): CreateCollection {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

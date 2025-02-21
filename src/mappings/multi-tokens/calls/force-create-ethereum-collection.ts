@@ -3,8 +3,9 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { ForceCreateEthereumCollection } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function forceCreateEthereumCollection(call: CallItem): ForceCreateEthereumCollection {
+export const forceCreateEthereumCollection = withDispatchCheck((call: CallItem): ForceCreateEthereumCollection => {
     return match(call)
         .returnType<ForceCreateEthereumCollection>()
         .when(
@@ -54,4 +55,4 @@ export function forceCreateEthereumCollection(call: CallItem): ForceCreateEthere
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

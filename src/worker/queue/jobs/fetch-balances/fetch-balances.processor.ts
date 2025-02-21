@@ -13,6 +13,8 @@ export default class FetchBalancesProcessor implements ProcessorDef {
         const { ids } = job.data
         const data: SystemAccount[] = await fetchBalances(ids)
 
+        const promises: Promise<void>[] = []
+
         for (const systemAccount of data) {
             const account: Account = await getOrCreateAccount(ctx, decodeAddress(systemAccount.address))
 
@@ -23,7 +25,9 @@ export default class FetchBalancesProcessor implements ProcessorDef {
             account.balance.transferable = account.balance.free - account.balance.miscFrozen
             account.balance.feeFrozen = 0n
 
-            await ctx.store.save<Account>(account)
+            promises.push(ctx.store.save<Account>(account))
         }
+
+        await Promise.all(promises)
     }
 }

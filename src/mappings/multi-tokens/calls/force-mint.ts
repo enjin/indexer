@@ -3,8 +3,9 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { ForceMint } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function forceMint(call: CallItem): ForceMint {
+export const forceMint = withDispatchCheck((call: CallItem): ForceMint => {
     return match(call)
         .returnType<ForceMint>()
         .when(
@@ -62,4 +63,4 @@ export function forceMint(call: CallItem): ForceMint {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

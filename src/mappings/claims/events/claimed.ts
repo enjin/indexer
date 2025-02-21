@@ -2,7 +2,7 @@ import { claims } from '../../../types/events'
 import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
-import { Claimed } from './types/claimed'
+import { Claimed } from './types'
 
 export function claimed(event: EventItem): Claimed {
     return match(event)
