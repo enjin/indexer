@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
+import { connectionManager } from '../../contexts'
 
 export const indexer_fueltanks_tanks_total = new client.Gauge({
     name: 'indexer_fueltanks_tanks_total',
@@ -31,13 +31,7 @@ export const indexer_fueltanks_enj_subsidy_avg = new client.Gauge({
 })
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
-
-    const em = connection.manager
+    const em = connectionManager()
 
     const [tanks, dispatchedTotal, enjConsumed] = await Promise.all([
         em.query('SELECT COUNT(*) FROM fuel_tank'),

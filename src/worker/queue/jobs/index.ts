@@ -2,6 +2,7 @@ export { default as ComputeMetadataWorker } from './compute-metadata/compute-met
 export { default as ComputeRarityWorker } from './compute-rarity/compute-rarity.worker'
 export { default as ComputeStatsWorker } from './compute-stats/compute-stats.worker'
 export { default as ComputeTraitsWorker } from './compute-traits/compute-traits.worker'
+export { default as ComputeValidatorsWorker } from './compute-validators/compute-validators.worker'
 export { default as DeleteTraitsWorker } from './delete-traits/delete-traits.worker'
 export { default as FetchAccountsWorker } from './fetch-accounts/fetch-accounts.worker'
 export { default as FetchBalancesWorker } from './fetch-balances/fetch-balances.worker'

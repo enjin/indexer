@@ -23,4 +23,7 @@ export class Era {
 
     @IntColumn_({nullable: true})
     endBlock!: number | undefined | null
+
+    @IntColumn_({nullable: false})
+    nodeCount!: number
 }

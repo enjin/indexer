@@ -70,6 +70,7 @@ export default class ComputeRarityProcessor implements ProcessorDef {
         // check if total supply is greater than 0
         if (!totalSupply || totalSupply <= 0) {
             // return done()
+            return
         }
 
         try {
@@ -113,7 +114,7 @@ export default class ComputeRarityProcessor implements ProcessorDef {
 
             // return done()
         } catch (error) {
-            console.log('Error in rarity ranker', job.data.collectionId, (error as any).message)
+            console.log('Error in rarity ranker', job.data.collectionId, (error as Error).message)
             console.error(error)
             // return done(error as Error)
         }

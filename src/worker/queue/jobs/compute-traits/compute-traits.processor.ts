@@ -5,6 +5,8 @@ import { connectionManager } from '../../../../contexts'
 import { Collection, Token, Trait, TraitToken } from '../../../../model'
 import { isPlainObject } from 'lodash'
 
+type TraitValueMap = Map<string, bigint>
+
 const hash = (str: string) => {
     return createHash('sha1').update(str).digest('hex')
 }
@@ -20,7 +22,7 @@ export default class ComputeTraitsProcessor implements ProcessorDef {
         const traitTypeMap = new Map<string, TraitValueMap>()
         const tokenTraitMap = new Map<string, string[]>()
 
-        const start = new Date()
+        // const start = new Date()
 
         const { collectionId } = job.data satisfies JobData
 
@@ -102,7 +104,7 @@ export default class ComputeTraitsProcessor implements ProcessorDef {
         })
 
         await job.log(`Saving ${traitsToSave.length} traits`)
-        await em.save(Trait, traitsToSave as any, { chunk: 1000 })
+        await em.save(Trait, traitsToSave, { chunk: 1000 })
         const traitTokensToSave: TraitToken[] = []
 
         tokenTraitMap.forEach((traits, tokenId) => {
@@ -120,11 +122,10 @@ export default class ComputeTraitsProcessor implements ProcessorDef {
 
         if (traitTokensToSave.length) {
             await job.log(`Saving ${traitsToSave.length} token traits`)
-            await em.save(TraitToken, traitTokensToSave as any, { chunk: 1000 })
+            await em.save(TraitToken, traitTokensToSave, { chunk: 1000 })
         }
 
         // computeRarityRank(collectionId)
-
         // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
     }
 }

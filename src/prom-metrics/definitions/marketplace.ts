@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
+import { connectionManager } from '../../contexts'
 
 export const indexer_marketplace_trades_total = new client.Gauge({
     name: 'indexer_marketplace_trades_total',
@@ -87,13 +87,7 @@ export const indexer_marketplace_unique_buyers_total = new client.Gauge({
 })
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
-
-    const em = connection.manager
+    const em = connectionManager()
 
     const [
         tradesTotal,

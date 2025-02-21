@@ -2,26 +2,26 @@ import assert from "assert"
 import * as marshal from "./marshal"
 
 export class TokenApproval {
-    private _account!: string
+    private _accountId!: string
     private _amount!: bigint
     private _expiration!: number | undefined | null
 
     constructor(props?: Partial<Omit<TokenApproval, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._account = marshal.string.fromJSON(json.account)
+            this._accountId = marshal.string.fromJSON(json.accountId)
             this._amount = marshal.bigint.fromJSON(json.amount)
             this._expiration = json.expiration == null ? undefined : marshal.int.fromJSON(json.expiration)
         }
     }
 
-    get account(): string {
-        assert(this._account != null, 'uninitialized access')
-        return this._account
+    get accountId(): string {
+        assert(this._accountId != null, 'uninitialized access')
+        return this._accountId
     }
 
-    set account(value: string) {
-        this._account = value
+    set accountId(value: string) {
+        this._accountId = value
     }
 
     get amount(): bigint {
@@ -43,7 +43,7 @@ export class TokenApproval {
 
     toJSON(): object {
         return {
-            account: this.account,
+            accountId: this.accountId,
             amount: marshal.bigint.toJSON(this.amount),
             expiration: this.expiration,
         }

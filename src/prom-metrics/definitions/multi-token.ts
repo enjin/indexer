@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
+import { connectionManager } from '../../contexts'
 
 export const indexer_multitokens_unique_holders_total = new client.Gauge({
     name: 'indexer_multitokens_unique_holders_total',
@@ -73,13 +73,7 @@ export const indexer_multitokens_infused_unique_tokens_total = new client.Gauge(
 })
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
-
-    const em = connection.manager
+    const em = connectionManager()
 
     const [
         uniqueHolders,

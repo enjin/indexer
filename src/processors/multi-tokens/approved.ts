@@ -32,7 +32,7 @@ export async function approved(
         const approvals = tokenAccount.approvals ?? []
         approvals.push(
             new TokenApproval({
-                account: encodeId(data.operator),
+                accountId: encodeId(data.operator),
                 amount: data.amount,
                 expiration: data.expiration,
             })
@@ -54,7 +54,7 @@ export async function approved(
         const approvals = collectionAccount.approvals ?? []
         approvals.push(
             new CollectionApproval({
-                account: encodeId(data.operator),
+                accountId: encodeId(data.operator),
                 expiration: data.expiration,
             })
         )

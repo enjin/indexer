@@ -76,6 +76,7 @@ export default class ComputeMetadataProcessor implements ProcessorDef {
 
                 if (!resource) {
                     // return done(new Error('Resource not found'), null)
+                    return
                 }
 
                 let uriAttribute = null
@@ -111,8 +112,8 @@ export default class ComputeMetadataProcessor implements ProcessorDef {
                         typeof response[0].metadata === 'object' &&
                         !jobData.force
                     ) {
-                        job.log(`Metadata for ${jobData.resourceId} already exists`)
-                        job.log(JSON.stringify(response[0].metadata))
+                        await job.log(`Metadata for ${jobData.resourceId} already exists`)
+                        await job.log(JSON.stringify(response[0].metadata))
                         externalMetadata = response[0].metadata
                     } else {
                         const externalResponse = await fetchMetadata(uriAttribute.value, job)
@@ -154,7 +155,8 @@ export default class ComputeMetadataProcessor implements ProcessorDef {
 
                     for await (const tokens of batch) {
                         tokens.forEach((token) => {
-                            processMetadata(token.id, 'token', jobData.force)
+                            // Do nothing for now
+                            // processMetadata(token.id, 'token', jobData.force)
                         })
                     }
                 }

@@ -18,4 +18,5 @@ export const enum QueuesEnum {
     METADATA = 'METADATA',
     TOKENS = 'TOKENS',
     TRAITS = 'TRAITS',
+    VALIDATORS = 'VALIDATORS',
 }

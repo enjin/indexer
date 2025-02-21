@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
+import { connectionManager } from '../../contexts'
 
 export const indexer_migration_enj_migrated_total = new client.Gauge({
     name: 'indexer_migration_enj_migrated_total',
@@ -41,13 +41,7 @@ const ENJ_MIGRATION_TARGET = 1000_000_000
 const EFI_MIGRATION_TARGET = 500_000_000
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
-
-    const em = connection.manager
+    const em = connectionManager()
 
     const [enjMigrated, efiMigrated, claimRequests] = await Promise.all([
         em.query('SELECT SUM(enj_sum) FROM claim'),

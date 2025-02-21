@@ -1,8 +1,8 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
 import Rpc from '../../utils/rpc'
 import { BN } from '@polkadot/util'
+import { connectionManager } from '../../contexts'
 
 export const indexer_staking_staked_total = new client.Gauge({
     name: 'indexer_staking_staked_total',
@@ -131,14 +131,8 @@ export const indexer_staking_fulfilled_exchange_amount_total = new client.Gauge(
 })
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
+    const em = connectionManager()
     const { api } = await Rpc.getInstance()
-
-    const em = connection.manager
 
     const activeEra = await api.query.staking.activeEra()
     const [totalIssuance, stakedTotal] = await Promise.all([
