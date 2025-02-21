@@ -10,7 +10,6 @@ function isNotNull<T>(input: null | T): input is T {
 
 export default class FetchCollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const ctx = dataHandlerContext()
 
         const { ids } = job.data
@@ -18,6 +17,7 @@ export default class FetchCollectionsProcessor implements ProcessorDef {
 
         const collectionsPromise = data.filter(isNotNull).map((_c) => {
             const collection = new Collection({})
+            collection.id = _c.collectionId
             collection.hidden = _c.hidden
             collection.category = _c.category
             collection.flags = new CollectionFlags({
@@ -36,7 +36,7 @@ export default class FetchCollectionsProcessor implements ProcessorDef {
 
             // syncCollectionStats(_c.collectionId)
             // computeTraits(_c.collectionId)
-            // return ctx.store.update(Collection, { id: _c.collectionId }, collection)
+            return ctx.store.save<Collection>(collection)
         })
 
         await Promise.all(collectionsPromise)

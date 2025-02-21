@@ -15,7 +15,15 @@ import { processor } from './processor'
 const cfg: DataSourceOptions = createOrmConfig() as PostgresConnectionOptions
 const con: DataSource = new DataSource({ ...cfg, poolSize: 200, pool: { max: 100 } } as PostgresConnectionOptions)
 
-export default con
+export const connectionManager = () => {
+    if (!con.isInitialized) {
+        con.initialize().catch((err: unknown) => {
+            throw err
+        })
+    }
+
+    return con.manager
+}
 
 export const dataHandlerContext = () => {
     if (!con.isInitialized) {

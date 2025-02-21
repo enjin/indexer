@@ -1,7 +1,8 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
-import { Token, Trait } from '../../../../model'
+import { Collection, Token, TokenRarity, Trait } from '../../../../model'
 import * as mathjs from 'mathjs'
+import { connectionManager } from '../../../../contexts'
 
 export const informationContentScoring = {
     scoreToken(totalSupply: bigint, entropy: number, token: Token) {
@@ -38,6 +39,83 @@ export const informationContentScoring = {
 }
 
 export default class ComputeRarityProcessor implements ProcessorDef {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async handle(job: Job): Promise<void> {}
+    async handle(job: Job): Promise<void> {
+        if (!job.data.collectionId) {
+            throw new Error('Collection ID not provided.')
+        }
+
+        const em = connectionManager()
+
+        console.time('rarity-ranker')
+
+        const [collection, tokens] = await Promise.all([
+            em.findOneOrFail(Collection, {
+                relations: {
+                    traits: true,
+                },
+                where: { id: job.data.collectionId },
+            }),
+            em.find(Token, {
+                relations: {
+                    traits: {
+                        trait: true,
+                    },
+                },
+                where: { collection: { id: job.data.collectionId } },
+            }),
+        ])
+
+        const totalSupply = collection.stats.supply
+
+        // check if total supply is greater than 0
+        if (!totalSupply || totalSupply <= 0) {
+            // return done()
+        }
+
+        try {
+            const entropy = informationContentScoring.collectionEntropy(totalSupply, collection.traits)
+
+            if (!entropy || collection.traits.length === 0) {
+                // return done()
+            }
+
+            const tokenRarities = tokens.map((token) => {
+                return { score: informationContentScoring.scoreToken(totalSupply, entropy, token), token }
+            })
+
+            tokenRarities.sort((a, b) => Number(mathjs.compare(b.score, a.score)))
+
+            // sort by token.id if two tokens have the same score
+            tokenRarities.sort((a, b) => {
+                if (Number(mathjs.compare(a.score, b.score)) === 0) {
+                    return Number(mathjs.compare(mathjs.bignumber(a.token.tokenId), mathjs.bignumber(b.token.tokenId)))
+                }
+                return 0
+            })
+
+            const tokenRanks = tokenRarities.map((tokenRarity, index) => {
+                return new TokenRarity({
+                    id: tokenRarity.token.id,
+                    collection,
+                    token: tokenRarity.token,
+                    score: tokenRarity.score.toNumber(),
+                    rank: index + 1,
+                })
+            })
+
+            // delete existing token rarities
+            await em.delete(TokenRarity, { collection: { id: job.data.collectionId } })
+
+            // save new token rarities
+            await em.save(tokenRanks, { chunk: 1000 })
+
+            console.timeEnd('rarity-ranker')
+
+            // return done()
+        } catch (error) {
+            console.log('Error in rarity ranker', job.data.collectionId, (error as any).message)
+            console.error(error)
+            // return done(error as Error)
+        }
+    }
 }
