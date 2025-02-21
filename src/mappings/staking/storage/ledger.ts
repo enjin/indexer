@@ -2,7 +2,7 @@ import { BlockHeader } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { storage } from '../../../types'
 import { match } from 'ts-pattern'
-import { StakingLedger } from '../../../mappings/staking/storage/types'
+import { StakingLedger } from './types'
 
 export async function ledger(block: BlockHeader, account: string): Promise<StakingLedger | undefined> {
     return match(block)

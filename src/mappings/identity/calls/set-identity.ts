@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { SetIdentity } from '../../../mappings/identity/calls/types'
+import { SetIdentity } from './types'
 import { withDispatchCheck } from '../../fuel-tanks/utils'
 
 export const setIdentity = withDispatchCheck((call: CallItem): SetIdentity => {

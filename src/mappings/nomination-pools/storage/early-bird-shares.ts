@@ -2,7 +2,7 @@ import { UnsupportedStorageError } from '../../../utils/errors'
 import { BlockHeader } from '@subsquid/substrate-processor'
 import { storage } from '../../../types'
 import { match } from 'ts-pattern'
-import { EarlyBirdShares } from '../../../mappings/nomination-pools/storage/types'
+import { EarlyBirdShares } from './types'
 
 export function earlyBirdShares(block: BlockHeader, poolId: number): Promise<EarlyBirdShares> {
     return match(block)

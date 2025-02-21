@@ -17,6 +17,8 @@ import { updateClaimDetails } from './processors/claims/common'
 import { processor } from './processor'
 // import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
+import { match } from 'ts-pattern'
+import { UnsupportedEventError } from './utils/errors'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -30,154 +32,136 @@ async function handleEvents(
     item: EventItem,
     skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
-    switch (item.name) {
-        case events.multiTokens.approved.name:
-            return processors.multiTokens.approved(ctx, item, skipSave)
-        case events.multiTokens.attributeRemoved.name:
-            return processors.multiTokens.attributeRemoved(ctx, block, item, skipSave)
-        case events.multiTokens.attributeSet.name:
-            return processors.multiTokens.attributeSet(ctx, block, item, skipSave)
-        case events.multiTokens.burned.name:
-            return processors.multiTokens.burned(ctx, block, item, skipSave)
-        case events.multiTokens.collectionAccountCreated.name:
-            return processors.multiTokens.collectionAccountCreated(ctx, block, item, skipSave)
-        case events.multiTokens.collectionAccountDestroyed.name:
-            return processors.multiTokens.collectionAccountDestroyed(ctx, block, item, skipSave)
-        case events.multiTokens.collectionCreated.name:
-            return processors.multiTokens.collectionCreated(ctx, block, item, skipSave)
-        case events.multiTokens.collectionDestroyed.name:
-            return processors.multiTokens.collectionDestroyed(ctx, block, item, skipSave)
-        case events.multiTokens.collectionMutated.name:
-            return processors.multiTokens.collectionMutated(ctx, block, item, skipSave)
-        case events.multiTokens.collectionTransferred.name:
-            return processors.multiTokens.collectionTransferred(ctx, block, item, skipSave)
-        case events.multiTokens.frozen.name:
-            return processors.multiTokens.frozen(ctx, block, item, skipSave)
-        case events.multiTokens.minted.name:
-            return processors.multiTokens.minted(ctx, block, item, skipSave)
-        case events.multiTokens.infused.name:
-            return processors.multiTokens.infused(ctx, block, item, skipSave)
-        case events.multiTokens.reserved.name:
-            return processors.multiTokens.reserved(ctx, block, item, skipSave)
-        case events.multiTokens.thawed.name:
-            return processors.multiTokens.thawed(ctx, block, item, skipSave)
-        case events.multiTokens.tokenAccountCreated.name:
-            return processors.multiTokens.tokenAccountCreated(ctx, block, item, skipSave)
-        case events.multiTokens.tokenAccountDestroyed.name:
-            return processors.multiTokens.tokenAccountDestroyed(ctx, block, item, skipSave)
-        case events.multiTokens.tokenCreated.name:
-            return processors.multiTokens.tokenCreated(ctx, block, item, skipSave)
-        case events.multiTokens.tokenDestroyed.name:
-            return processors.multiTokens.tokenDestroyed(ctx, block, item, skipSave)
-        case events.multiTokens.tokenMutated.name:
-            return processors.multiTokens.tokenMutated(ctx, block, item, skipSave)
-        case events.multiTokens.transferred.name:
-            return processors.multiTokens.transferred(ctx, block, item, skipSave)
-        case events.multiTokens.unapproved.name:
-            return processors.multiTokens.unapproved(ctx, block, item, skipSave)
-        case events.multiTokens.unreserved.name:
-            return processors.multiTokens.unreserved(ctx, block, item, skipSave)
-        case events.multiTokens.claimedCollections.name:
-            return processors.multiTokens.claimedCollections(ctx, block, item)
-        case events.multiTokens.claimTokensInitiated.name:
-            return processors.multiTokens.claimTokensInitiated(ctx, block, item)
-        case events.multiTokens.claimTokensCompleted.name:
-            return processors.multiTokens.claimTokensCompleted(ctx, block, item)
-        case events.balances.balanceSet.name:
-        case events.balances.burned.name:
-        case events.balances.deposit.name:
-        case events.balances.dustLost.name:
-        case events.balances.endowed.name:
-        case events.balances.frozen.name:
-        case events.balances.locked.name:
-        case events.balances.minted.name:
-        case events.balances.reserveRepatriated.name:
-        case events.balances.reserved.name:
-        case events.balances.restored.name:
-        case events.balances.slashed.name:
-        case events.balances.suspended.name:
-        case events.balances.thawed.name:
-        case events.balances.unlocked.name:
-        case events.balances.unreserved.name:
-        case events.balances.withdraw.name:
-            return processors.balances.save(item)
-        case events.balances.transfer.name:
-            return processors.balances.save(item)
-        case events.claims.claimRequested.name:
-            return processors.claims.claimRequested(ctx, block, item)
-        case events.claims.claimRejected.name:
-            return processors.claims.claimRejected(ctx, block, item)
-        case events.claims.claimMinted.name:
-            return processors.claims.claimMinted(ctx, block, item)
-        case events.claims.claimed.name:
-            return processors.claims.claimed(ctx, block, item)
-        case events.claims.exchangeRateSet.name:
-            return processors.claims.exchangeRateSet(ctx, block, item)
-        case events.claims.delayTimeForClaimSet.name:
-            return processors.claims.delayTimeForClaimSet(ctx, block, item)
-        case events.marketplace.listingCreated.name:
-            return processors.marketplace.listingCreated(ctx, block, item)
-        case events.marketplace.listingCancelled.name:
-            return processors.marketplace.listingCancelled(ctx, block, item)
-        case events.marketplace.listingFilled.name:
-            return processors.marketplace.listingFilled(ctx, block, item)
-        case events.marketplace.bidPlaced.name:
-            return processors.marketplace.bidPlaced(ctx, block, item)
-        case events.marketplace.auctionFinalized.name:
-            return processors.marketplace.auctionFinalized(ctx, block, item)
-        case events.marketplace.counterOfferPlaced.name:
-            return processors.marketplace.counterOfferPlaced(ctx, block, item)
-        case events.marketplace.counterOfferAnswered.name:
-            return processors.marketplace.counterOfferAnswered(ctx, block, item)
-        case events.marketplace.counterOfferRemoved.name:
-            return processors.marketplace.counterOfferRemoved(ctx, block, item)
-        case events.marketplace.listingRemovedUnderMinimum.name:
-            return processors.marketplace.listingRemovedUnderMinimum(ctx, block, item)
-        case events.polkadotXcm.attempted.name:
-            return processors.polkadotXcm.attempted(ctx, block, item)
-        case events.fuelTanks.accountAdded.name:
-            return processors.fuelTanks.accountAdded(ctx, block, item)
-        case events.fuelTanks.accountRemoved.name:
-            return processors.fuelTanks.accountRemoved(ctx, block, item)
-        case events.fuelTanks.accountRuleDataRemoved.name:
-            return processors.fuelTanks.accountRuleDataRemoved(ctx, block, item)
-        case events.fuelTanks.freezeStateMutated.name:
-            return processors.fuelTanks.freezeStateMutated(ctx, block, item)
-        case events.fuelTanks.fuelTankCreated.name:
-            return processors.fuelTanks.fuelTankCreated(ctx, block, item)
-        case events.fuelTanks.fuelTankDestroyed.name:
-            return processors.fuelTanks.fuelTankDestroyed(ctx, block, item)
-        case events.fuelTanks.fuelTankMutated.name:
-            return processors.fuelTanks.fuelTankMutated(ctx, block, item)
-        case events.fuelTanks.ruleSetInserted.name:
-            return processors.fuelTanks.ruleSetInserted(ctx, block, item)
-        case events.fuelTanks.ruleSetRemoved.name:
-            return processors.fuelTanks.ruleSetRemoved(ctx, block, item)
-        case events.identity.identityCleared.name:
-            return processors.identity.identityCleared(ctx, block, item)
-        case events.identity.identityKilled.name:
-            return processors.identity.identityKilled(ctx, block, item)
-        case events.identity.identitySet.name:
-            return processors.identity.identitySet(ctx, block, item)
-        case events.identity.judgementGiven.name:
-            return processors.identity.judgementGiven(ctx, block, item)
-        case events.identity.judgementRequested.name:
-            return processors.identity.judgementRequested(ctx, block, item)
-        case events.identity.judgementUnrequested.name:
-            return processors.identity.judgementUnrequested(ctx, block, item)
-        case events.identity.registrarAdded.name:
-            return processors.identity.registrarAdded(ctx, block, item)
-        case events.identity.subIdentityAdded.name:
-            return processors.identity.subIdentityAdded(ctx, block, item)
-        case events.identity.subIdentityRemoved.name:
-            return processors.identity.subIdentityRemoved(ctx, block, item)
-        case events.identity.subIdentityRevoked.name:
-            return processors.identity.subIdentityRevoked(ctx, block, item)
-        default: {
-            ctx.log.error(`Event not handled: ${item.name}`)
-            return undefined
-        }
-    }
+    return match(item.name)
+        .with(events.multiTokens.approved.name, () => processors.multiTokens.approved(ctx, item, skipSave))
+        .with(events.multiTokens.attributeRemoved.name, () =>
+            processors.multiTokens.attributeRemoved(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.attributeSet.name, () =>
+            processors.multiTokens.attributeSet(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.burned.name, () => processors.multiTokens.burned(ctx, block, item, skipSave))
+        .with(events.multiTokens.collectionAccountCreated.name, () =>
+            processors.multiTokens.collectionAccountCreated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.collectionAccountDestroyed.name, () =>
+            processors.multiTokens.collectionAccountDestroyed(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.collectionCreated.name, () =>
+            processors.multiTokens.collectionCreated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.collectionDestroyed.name, () =>
+            processors.multiTokens.collectionDestroyed(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.collectionMutated.name, () =>
+            processors.multiTokens.collectionMutated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.collectionTransferred.name, () =>
+            processors.multiTokens.collectionTransferred(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.frozen.name, () => processors.multiTokens.frozen(ctx, block, item, skipSave))
+        .with(events.multiTokens.minted.name, () => processors.multiTokens.minted(ctx, block, item, skipSave))
+        .with(events.multiTokens.infused.name, () => processors.multiTokens.infused(ctx, block, item, skipSave))
+        .with(events.multiTokens.reserved.name, () => processors.multiTokens.reserved(ctx, block, item, skipSave))
+        .with(events.multiTokens.thawed.name, () => processors.multiTokens.thawed(ctx, block, item, skipSave))
+        .with(events.multiTokens.tokenAccountCreated.name, () =>
+            processors.multiTokens.tokenAccountCreated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.tokenAccountDestroyed.name, () =>
+            processors.multiTokens.tokenAccountDestroyed(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.tokenCreated.name, () =>
+            processors.multiTokens.tokenCreated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.tokenDestroyed.name, () =>
+            processors.multiTokens.tokenDestroyed(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.tokenMutated.name, () =>
+            processors.multiTokens.tokenMutated(ctx, block, item, skipSave)
+        )
+        .with(events.multiTokens.transferred.name, () => processors.multiTokens.transferred(ctx, block, item, skipSave))
+        .with(events.multiTokens.unapproved.name, () => processors.multiTokens.unapproved(ctx, block, item, skipSave))
+        .with(events.multiTokens.unreserved.name, () => processors.multiTokens.unreserved(ctx, block, item, skipSave))
+        .with(events.multiTokens.claimedCollections.name, () =>
+            processors.multiTokens.claimedCollections(ctx, block, item)
+        )
+        .with(events.multiTokens.claimTokensInitiated.name, () =>
+            processors.multiTokens.claimTokensInitiated(ctx, block, item)
+        )
+        .with(events.multiTokens.claimTokensCompleted.name, () =>
+            processors.multiTokens.claimTokensCompleted(ctx, block, item)
+        )
+        .with(
+            events.balances.balanceSet.name,
+            events.balances.burned.name,
+            events.balances.deposit.name,
+            events.balances.dustLost.name,
+            events.balances.endowed.name,
+            events.balances.frozen.name,
+            events.balances.locked.name,
+            events.balances.minted.name,
+            events.balances.reserveRepatriated.name,
+            events.balances.reserved.name,
+            events.balances.restored.name,
+            events.balances.slashed.name,
+            events.balances.suspended.name,
+            events.balances.thawed.name,
+            events.balances.unlocked.name,
+            events.balances.unreserved.name,
+            events.balances.transfer.name,
+            events.balances.withdraw.name,
+            () => processors.balances.save(item)
+        )
+        .with(events.claims.claimRequested.name, () => processors.claims.claimRequested(ctx, block, item))
+        .with(events.claims.claimRejected.name, () => processors.claims.claimRejected(ctx, block, item))
+        .with(events.claims.claimMinted.name, () => processors.claims.claimMinted(ctx, block, item))
+        .with(events.claims.claimed.name, () => processors.claims.claimed(ctx, block, item))
+        .with(events.claims.exchangeRateSet.name, () => processors.claims.exchangeRateSet(ctx, block, item))
+        .with(events.claims.delayTimeForClaimSet.name, () => processors.claims.delayTimeForClaimSet(ctx, block, item))
+        .with(events.marketplace.listingCreated.name, () => processors.marketplace.listingCreated(ctx, block, item))
+        .with(events.marketplace.listingCancelled.name, () => processors.marketplace.listingCancelled(ctx, block, item))
+        .with(events.marketplace.listingFilled.name, () => processors.marketplace.listingFilled(ctx, block, item))
+        .with(events.marketplace.bidPlaced.name, () => processors.marketplace.bidPlaced(ctx, block, item))
+        .with(events.marketplace.auctionFinalized.name, () => processors.marketplace.auctionFinalized(ctx, block, item))
+        .with(events.marketplace.counterOfferPlaced.name, () =>
+            processors.marketplace.counterOfferPlaced(ctx, block, item)
+        )
+        .with(events.marketplace.counterOfferAnswered.name, () =>
+            processors.marketplace.counterOfferAnswered(ctx, block, item)
+        )
+        .with(events.marketplace.counterOfferRemoved.name, () =>
+            processors.marketplace.counterOfferRemoved(ctx, block, item)
+        )
+        .with(events.marketplace.listingRemovedUnderMinimum.name, () =>
+            processors.marketplace.listingRemovedUnderMinimum(ctx, block, item)
+        )
+        .with(events.polkadotXcm.attempted.name, () => processors.polkadotXcm.attempted(ctx, block, item))
+        .with(events.fuelTanks.accountAdded.name, () => processors.fuelTanks.accountAdded(ctx, block, item))
+        .with(events.fuelTanks.accountRemoved.name, () => processors.fuelTanks.accountRemoved(ctx, block, item))
+        .with(events.fuelTanks.accountRuleDataRemoved.name, () =>
+            processors.fuelTanks.accountRuleDataRemoved(ctx, block, item)
+        )
+        .with(events.fuelTanks.freezeStateMutated.name, () => processors.fuelTanks.freezeStateMutated(ctx, block, item))
+        .with(events.fuelTanks.fuelTankCreated.name, () => processors.fuelTanks.fuelTankCreated(ctx, block, item))
+        .with(events.fuelTanks.fuelTankDestroyed.name, () => processors.fuelTanks.fuelTankDestroyed(ctx, block, item))
+        .with(events.fuelTanks.fuelTankMutated.name, () => processors.fuelTanks.fuelTankMutated(ctx, block, item))
+        .with(events.fuelTanks.ruleSetInserted.name, () => processors.fuelTanks.ruleSetInserted(ctx, block, item))
+        .with(events.fuelTanks.ruleSetRemoved.name, () => processors.fuelTanks.ruleSetRemoved(ctx, block, item))
+        .with(events.identity.identityCleared.name, () => processors.identity.identityCleared(ctx, block, item))
+        .with(events.identity.identityKilled.name, () => processors.identity.identityKilled(ctx, block, item))
+        .with(events.identity.identitySet.name, () => processors.identity.identitySet(ctx, block, item))
+        .with(events.identity.judgementGiven.name, () => processors.identity.judgementGiven(ctx, block, item))
+        .with(events.identity.judgementRequested.name, () => processors.identity.judgementRequested(ctx, block, item))
+        .with(events.identity.judgementUnrequested.name, () =>
+            processors.identity.judgementUnrequested(ctx, block, item)
+        )
+        .with(events.identity.registrarAdded.name, () => processors.identity.registrarAdded(ctx, block, item))
+        .with(events.identity.subIdentityAdded.name, () => processors.identity.subIdentityAdded(ctx, block, item))
+        .with(events.identity.subIdentityRemoved.name, () => processors.identity.subIdentityRemoved(ctx, block, item))
+        .with(events.identity.subIdentityRevoked.name, () => processors.identity.subIdentityRevoked(ctx, block, item))
+        .otherwise(() => {
+            throw new UnsupportedEventError(item)
+        })
 }
 
 async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallItem) {

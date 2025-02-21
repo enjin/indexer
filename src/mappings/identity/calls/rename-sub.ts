@@ -2,7 +2,7 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { RenameSub } from '../../../mappings/identity/calls/types'
+import { RenameSub } from './types'
 import { withDispatchCheck } from '../../fuel-tanks/utils'
 
 export const renameSub = withDispatchCheck((call: CallItem): RenameSub => {
