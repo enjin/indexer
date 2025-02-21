@@ -18,7 +18,6 @@ import { processor } from './processor'
 // import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
-import { UnsupportedEventError } from './utils/errors'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -160,7 +159,8 @@ async function handleEvents(
         .with(events.identity.subIdentityRemoved.name, () => processors.identity.subIdentityRemoved(ctx, block, item))
         .with(events.identity.subIdentityRevoked.name, () => processors.identity.subIdentityRevoked(ctx, block, item))
         .otherwise(() => {
-            throw new UnsupportedEventError(item)
+            ctx.log.error(`Unsupported event on handle event: ${item.name}`)
+            return undefined
         })
 }
 

@@ -23,6 +23,18 @@ const commonEvents: string[] = [
     ...getEventNames(events.multiTokens),
 ]
 
+const ignoreEvents: string[] = [
+    events.fuelTanks.callDispatched.name,
+    events.fuelTanks.dispatchFailed.name,
+    events.claims.ethereumBlocksProcessed.name,
+]
+
+const eventItems: string[] = [
+    ...new Set(
+        [...commonEvents, ...(isRelay() ? relayEvents : matrixEvents)].filter((event) => !ignoreEvents.includes(event))
+    ),
+]
+
 export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
@@ -31,7 +43,7 @@ export const processor = new SubstrateBatchProcessor()
         stack: true,
     })
     .addEvent({
-        name: [...commonEvents, ...(isRelay() ? relayEvents : matrixEvents)],
+        name: eventItems,
         extrinsic: true,
         stack: true,
         call: true,
