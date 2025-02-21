@@ -3,7 +3,7 @@ import config from './config'
 import { calls, events } from './types'
 import { isRelay } from './utils/tools'
 
-const getEventNames = (eventGroup: object) => Object.values(eventGroup).map((event) => event.name)
+const getEventNames = (pallet: object): string[] => Object.values(pallet).map((event) => event.name)
 
 const matrixEvents: string[] = [...getEventNames(events.claims), ...getEventNames(events.polkadotXcm)]
 
