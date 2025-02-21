@@ -3,22 +3,36 @@ import { match } from 'ts-pattern'
 import { UnsupportedCallError } from '../../utils/errors'
 import { calls } from '../../types'
 import * as mappings from '../index'
-import { CreateCollection, ForceCreateCollection, Mint, ForceMint, BatchMint } from './calls'
+import {
+    CreateCollection,
+    ForceCreateCollection,
+    Mint,
+    ForceMint,
+    BatchMint,
+    ForceCreateEthereumCollection,
+} from './calls'
 import { DefaultMintParams_CreateToken } from '../common/types'
 import { withDispatchCheck } from '../fuel-tanks/utils'
 
-export function anyCreateCollection(call: CallItem): CreateCollection | ForceCreateCollection {
-    const processCall = withDispatchCheck((call: CallItem): CreateCollection | ForceCreateCollection => {
-        return match(call.name)
-            .returnType<CreateCollection | ForceCreateCollection>()
-            .with(calls.multiTokens.createCollection.name, () => mappings.multiTokens.calls.createCollection(call))
-            .with(calls.multiTokens.forceCreateCollection.name, () =>
-                mappings.multiTokens.calls.forceCreateCollection(call)
-            )
-            .otherwise(() => {
-                throw new UnsupportedCallError(call)
-            })
-    })
+export function anyCreateCollection(
+    call: CallItem
+): CreateCollection | ForceCreateCollection | ForceCreateEthereumCollection {
+    const processCall = withDispatchCheck(
+        (call: CallItem): CreateCollection | ForceCreateCollection | ForceCreateEthereumCollection => {
+            return match(call.name)
+                .returnType<CreateCollection | ForceCreateCollection | ForceCreateEthereumCollection>()
+                .with(calls.multiTokens.createCollection.name, () => mappings.multiTokens.calls.createCollection(call))
+                .with(calls.multiTokens.forceCreateCollection.name, () =>
+                    mappings.multiTokens.calls.forceCreateCollection(call)
+                )
+                .with(calls.multiTokens.forceCreateEthereumCollection.name, () =>
+                    mappings.multiTokens.calls.forceCreateEthereumCollection(call)
+                )
+                .otherwise(() => {
+                    throw new UnsupportedCallError(call)
+                })
+        }
+    )
 
     return processCall(call)
 }
