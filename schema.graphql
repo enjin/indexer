@@ -553,7 +553,7 @@ type Collection @entity {
 }
 
 type CollectionApproval {
-  account: String!
+  accountId: String!
   expiration: Int
 }
 
@@ -675,7 +675,7 @@ type TokenRarity @entity {
 }
 
 type TokenApproval {
-  account: String!
+  accountId: String!
   amount: BigInt!
   expiration: Int
 }
