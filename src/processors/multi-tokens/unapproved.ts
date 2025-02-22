@@ -24,7 +24,7 @@ export async function unapproved(
 
         if (tokenAccount) {
             tokenAccount.approvals = tokenAccount.approvals?.filter(
-                (approval) => approval.account !== encodeId(data.operator)
+                (approval) => approval.accountId !== encodeId(data.operator)
             )
             tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
@@ -42,7 +42,7 @@ export async function unapproved(
 
         if (collectionAccount) {
             collectionAccount.approvals = collectionAccount.approvals?.filter(
-                (approval) => approval.account !== encodeId(data.operator)
+                (approval) => approval.accountId !== encodeId(data.operator)
             )
             collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
 
