@@ -2,24 +2,24 @@ import assert from "assert"
 import * as marshal from "./marshal"
 
 export class CollectionApproval {
-    private _accountId!: string
+    private _account!: string
     private _expiration!: number | undefined | null
 
     constructor(props?: Partial<Omit<CollectionApproval, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._accountId = marshal.string.fromJSON(json.accountId)
+            this._account = marshal.string.fromJSON(json.account)
             this._expiration = json.expiration == null ? undefined : marshal.int.fromJSON(json.expiration)
         }
     }
 
-    get accountId(): string {
-        assert(this._accountId != null, 'uninitialized access')
-        return this._accountId
+    get account(): string {
+        assert(this._account != null, 'uninitialized access')
+        return this._account
     }
 
-    set accountId(value: string) {
-        this._accountId = value
+    set account(value: string) {
+        this._account = value
     }
 
     get expiration(): number | undefined | null {
@@ -32,7 +32,7 @@ export class CollectionApproval {
 
     toJSON(): object {
         return {
-            accountId: this.accountId,
+            account: this.account,
             expiration: this.expiration,
         }
     }
