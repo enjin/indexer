@@ -32,7 +32,7 @@ export async function approved(
         const approvals = tokenAccount.approvals ?? []
         approvals.push(
             new TokenApproval({
-                accountId: encodeId(data.operator),
+                account: encodeId(data.operator),
                 amount: data.amount,
                 expiration: data.expiration,
             })
