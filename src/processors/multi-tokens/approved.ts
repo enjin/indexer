@@ -54,7 +54,7 @@ export async function approved(
         const approvals = collectionAccount.approvals ?? []
         approvals.push(
             new CollectionApproval({
-                accountId: encodeId(data.operator),
+                account: encodeId(data.operator),
                 expiration: data.expiration,
             })
         )
