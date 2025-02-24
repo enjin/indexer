@@ -1,5 +1,5 @@
-module.exports = class Data1739308947849 {
-    name = 'Data1739308947849'
+module.exports = class Data1740171152479 {
+    name = 'Data1740171152479'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "validator" text, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -109,7 +109,7 @@ module.exports = class Data1739308947849 {
         await db.query(`CREATE TABLE "stake_exchange_token_filter" ("id" character varying NOT NULL, "value" text array, "type" character varying(9) NOT NULL, "account_id" character varying, "offer_id" character varying, CONSTRAINT "REL_c8079f81596e23fb2995dcacee" UNIQUE ("account_id"), CONSTRAINT "REL_628f51d61737644e07a7bae087" UNIQUE ("offer_id"), CONSTRAINT "PK_f14e3b265d4de17048b6a72f494" PRIMARY KEY ("id"))`)
         await db.query(`CREATE UNIQUE INDEX "IDX_c8079f81596e23fb2995dcacee" ON "stake_exchange_token_filter" ("account_id") `)
         await db.query(`CREATE UNIQUE INDEX "IDX_628f51d61737644e07a7bae087" ON "stake_exchange_token_filter" ("offer_id") `)
-        await db.query(`CREATE TABLE "era" ("id" character varying NOT NULL, "index" integer NOT NULL, "start_at" TIMESTAMP WITH TIME ZONE NOT NULL, "start_block" integer NOT NULL, "end_at" TIMESTAMP WITH TIME ZONE, "end_block" integer, CONSTRAINT "PK_a30749cdf0189d890a8dbc9aa7d" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "era" ("id" character varying NOT NULL, "index" integer NOT NULL, "start_at" TIMESTAMP WITH TIME ZONE NOT NULL, "start_block" integer NOT NULL, "end_at" TIMESTAMP WITH TIME ZONE, "end_block" integer, "node_count" integer NOT NULL, CONSTRAINT "PK_a30749cdf0189d890a8dbc9aa7d" PRIMARY KEY ("id"))`)
         await db.query(`CREATE TABLE "pool_member_rewards" ("id" character varying NOT NULL, "points" numeric NOT NULL, "pool_id" character varying, "member_id" character varying, "reward_id" character varying, CONSTRAINT "PK_5adedb68ca0fe093fae3297abc3" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_c897bd2c750fbad1abff8066b0" ON "pool_member_rewards" ("pool_id") `)
         await db.query(`CREATE INDEX "IDX_6869594ced77d182fd48e72afb" ON "pool_member_rewards" ("member_id") `)
@@ -117,7 +117,7 @@ module.exports = class Data1739308947849 {
         await db.query(`CREATE TABLE "era_reward" ("id" character varying NOT NULL, "rate" numeric NOT NULL, "change_in_rate" numeric NOT NULL, "active" numeric NOT NULL, "commission" jsonb, "bonus" numeric NOT NULL, "reinvested" numeric NOT NULL, "apy" numeric NOT NULL, "average_apy" numeric NOT NULL, "pool_id" character varying, "era_id" character varying, CONSTRAINT "PK_453bbf1330f8d18843f5d7d1e5f" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_c4613812dcf3d0f1199b656d4f" ON "era_reward" ("pool_id") `)
         await db.query(`CREATE INDEX "IDX_39dc526618fa814c2507dbeafc" ON "era_reward" ("era_id") `)
-        await db.query(`CREATE TABLE "validator" ("id" character varying NOT NULL, "commission" integer, "blocked" boolean, "account_id" character varying, CONSTRAINT "PK_ae0a943022c24bd60e7161e0fad" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "validator" ("id" character varying NOT NULL, "commission" integer, "blocked" boolean, "node_count28d" integer array, "commission28d" integer array, "block_production28d" integer array, "slashes84d" boolean array, "peer_commission28d" integer array, "grade" character varying(1), "account_id" character varying, CONSTRAINT "PK_ae0a943022c24bd60e7161e0fad" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_4ddc35f6074f65fa2314a425a6" ON "validator" ("account_id") `)
         await db.query(`CREATE TABLE "pool_validator" ("id" character varying NOT NULL, "pool_id" character varying, "validator_id" character varying, CONSTRAINT "PK_9722f461fdfb3dc5ad99dc3937c" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_e33e3049f88e1771becd718318" ON "pool_validator" ("pool_id") `)

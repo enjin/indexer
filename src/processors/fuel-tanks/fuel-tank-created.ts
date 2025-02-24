@@ -7,6 +7,7 @@ import {
     FuelTank,
     FuelTankAccountRules,
     FuelTankCreated,
+    FuelTankRuleSet,
     FuelTankUserAccountManagement,
     RequireToken,
     WhitelistedCallers,
@@ -14,6 +15,7 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
+import { rulesToMap } from '../../mappings/fuel-tanks/utils'
 
 export async function fuelTankCreated(
     ctx: CommonContext,
@@ -88,53 +90,53 @@ export async function fuelTankCreated(
         }
     }
 
-    // if (callData.descriptor.ruleSets.length > 0) {
-    // for (const ruleSet of callData.descriptor.ruleSets) {
-    // const index = ruleSet[0]
-    // let rules = ruleSet[1]
-    //
-    // if (!Array.isArray(rules)) {
-    //     rules = rules.rules
-    // }
+    if (call.descriptor.ruleSets.length > 0) {
+        for (const ruleSet of call.descriptor.ruleSets) {
+            const index = ruleSet[0]
+            let rules = ruleSet[1]
 
-    // const {
-    //     whitelistedCallers,
-    //     whitelistedCollections,
-    //     whitelistedPallets,
-    //     maxFuelBurnPerTransaction,
-    //     userFuelBudget,
-    //     tankFuelBudget,
-    //     requireToken,
-    //     permittedCalls,
-    //     permittedExtrinsics,
-    //     minimumInfusion,
-    // } = rulesToMap(`${fuelTank.id}-${index}`, rules)
-    //
-    // const ruleSetModel = new FuelTankRuleSet({
-    //     id: `${fuelTank.id}-${index}`,
-    //     tank: fuelTank,
-    //     index,
-    //     isFrozen: false,
-    //     isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
-    //     isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
-    //     whitelistedCallers,
-    //     whitelistedCollections,
-    //     whitelistedPallets,
-    //     maxFuelBurnPerTransaction,
-    //     userFuelBudget,
-    //     tankFuelBudget,
-    //     requireToken,
-    //     permittedCalls,
-    //     minimumInfusion,
-    // })
-    //
-    // await ctx.store.save(ruleSetModel)
-    //
-    // if (permittedExtrinsics && permittedExtrinsics.length > 0) {
-    //     await ctx.store.save(permittedExtrinsics)
-    // }
-    // }
-    // }
+            if (!Array.isArray(rules)) {
+                rules = rules.rules
+            }
+
+            const {
+                whitelistedCallers,
+                whitelistedCollections,
+                whitelistedPallets,
+                maxFuelBurnPerTransaction,
+                userFuelBudget,
+                tankFuelBudget,
+                requireToken,
+                permittedCalls,
+                permittedExtrinsics,
+                minimumInfusion,
+            } = rulesToMap(`${fuelTank.id}-${index}`, rules)
+
+            const ruleSetModel = new FuelTankRuleSet({
+                id: `${fuelTank.id}-${index}`,
+                tank: fuelTank,
+                index,
+                isFrozen: false,
+                isPermittedExtrinsicsEmpty: permittedExtrinsics === undefined || permittedExtrinsics.length === 0,
+                isPermittedExtrinsicsNull: permittedExtrinsics === undefined,
+                whitelistedCallers,
+                whitelistedCollections,
+                whitelistedPallets,
+                maxFuelBurnPerTransaction,
+                userFuelBudget,
+                tankFuelBudget,
+                requireToken,
+                permittedCalls,
+                minimumInfusion,
+            })
+
+            await ctx.store.save(ruleSetModel)
+
+            if (permittedExtrinsics && permittedExtrinsics.length > 0) {
+                await ctx.store.save(permittedExtrinsics)
+            }
+        }
+    }
 
     return new EventModel({
         id: item.id,

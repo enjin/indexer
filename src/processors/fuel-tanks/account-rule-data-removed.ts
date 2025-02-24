@@ -22,8 +22,10 @@ export async function accountRuleDataRemoved(
             permittedExtrinsics.map((x) => x.id)
         )
     } else {
-        // TODO: Fix this
-        // ruleSet[uc(kind)] = undefined
+        const ruleKind = kind.charAt(0).toLowerCase() + kind.slice(1)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        ruleSet[ruleKind] = undefined
     }
 
     await ctx.store.save(ruleSet)
