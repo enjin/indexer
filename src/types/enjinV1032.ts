@@ -12055,14 +12055,6 @@ export const Deposit: sts.Type<Deposit> = sts.struct(() => {
     }
 })
 
-export const CounterOfferResponse: sts.Type<CounterOfferResponse> = sts.closedEnum(() => {
-    return {
-        Accept: sts.unit(),
-        Counter: sts.bigint(),
-        Reject: sts.unit(),
-    }
-})
-
 export const Bid: sts.Type<Bid> = sts.struct(() => {
     return {
         bidder: AccountId32,
@@ -15304,6 +15296,14 @@ export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
         Any: sts.unit(),
         Governance: sts.unit(),
         Tokens: sts.unit(),
+    }
+})
+
+export const CounterOfferResponse: sts.Type<CounterOfferResponse> = sts.closedEnum(() => {
+    return {
+        Accept: sts.unit(),
+        Counter: sts.bigint(),
+        Reject: sts.unit(),
     }
 })
 

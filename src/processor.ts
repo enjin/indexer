@@ -24,9 +24,11 @@ const commonEvents: string[] = [
 ]
 
 const ignoreEvents: string[] = [
+    events.multiTokens.nextCollectionIdUpdated.name,
     events.fuelTanks.callDispatched.name,
     events.fuelTanks.dispatchFailed.name,
     events.claims.ethereumBlocksProcessed.name,
+    events.polkadotXcm.versionNotifyStarted.name,
 ]
 
 const eventItems: string[] = [

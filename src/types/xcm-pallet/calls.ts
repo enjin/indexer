@@ -5,7 +5,7 @@ import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const send = {
     name: 'XcmPallet.send',
@@ -990,16 +990,16 @@ export const transferAssetsUsingTypeAndThen = {
      *   transfer, which also determines what happens to the assets on the destination chain.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'XcmPallet.transfer_assets_using_type_and_then',
         sts.struct({
-            dest: v1050.VersionedLocation,
-            assets: v1050.VersionedAssets,
-            assetsTransferType: v1050.TransferType,
-            remoteFeesId: v1050.VersionedAssetId,
-            feesTransferType: v1050.TransferType,
-            customXcmOnDest: v1050.VersionedXcm,
-            weightLimit: v1050.V3WeightLimit,
+            dest: enjinV1050.VersionedLocation,
+            assets: enjinV1050.VersionedAssets,
+            assetsTransferType: enjinV1050.TransferType,
+            remoteFeesId: enjinV1050.VersionedAssetId,
+            feesTransferType: enjinV1050.TransferType,
+            customXcmOnDest: enjinV1050.VersionedXcm,
+            weightLimit: enjinV1050.V3WeightLimit,
         })
     ),
 }

@@ -13,6 +13,7 @@ import {
 } from './calls'
 import { DefaultMintParams_CreateToken } from '../common/types'
 import { withDispatchCheck } from '../fuel-tanks/utils'
+import { Batch } from '../matrix-utility/calls'
 
 export function anyCreateCollection(
     call: CallItem
@@ -37,28 +38,56 @@ export function anyCreateCollection(
     return processCall(call)
 }
 
-export function anyMint(call: CallItem, tokenId?: bigint): Mint | ForceMint {
+export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): Mint | ForceMint {
     const processCall = withDispatchCheck((call: CallItem): Mint | ForceMint => {
-        return match(call.name)
-            .returnType<Mint | ForceMint>()
-            .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
-            .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
-            .with(calls.multiTokens.batchMint.name, () =>
-                filterMintCall(mappings.multiTokens.calls.batchMint(call), tokenId)
-            )
-            .otherwise(() => {
-                throw new UnsupportedCallError(call)
-            })
+        return (
+            match(call.name)
+                .returnType<Mint | ForceMint>()
+                .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
+                .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
+                .with(calls.multiTokens.batchMint.name, () =>
+                    filterMintCall(mappings.multiTokens.calls.batchMint(call), tokenId)
+                )
+                // TODO: We probably need some way to handle `matrixUtility.batch` calls automatically
+                .with(calls.matrixUtility.batch.name, () =>
+                    filterBatchCall(mappings.matrixUtility.calls.batch(call), collectionId, tokenId)
+                )
+                .otherwise(() => {
+                    throw new UnsupportedCallError(call)
+                })
+        )
     })
 
     return processCall(call)
 }
 
-function filterMintCall(call: BatchMint, tokenId?: bigint): Mint | ForceMint {
-    if (tokenId === undefined) {
-        throw new Error('Invalid token id')
+function filterBatchCall(call: Batch, collectionId: bigint, tokenId: bigint): Mint | ForceMint {
+    for (const c of call.calls) {
+        if (c.__kind !== 'MultiTokens') {
+            continue
+        }
+
+        if (c.value.__kind === 'mint' || c.value.__kind === 'force_mint') {
+            const { recipient, params } = c.value
+
+            if (collectionId != c.value.collectionId || params.__kind !== 'CreateToken') {
+                continue
+            }
+
+            if (params.tokenId === tokenId) {
+                return {
+                    collectionId,
+                    recipient,
+                    params: params as DefaultMintParams_CreateToken,
+                }
+            }
+        }
     }
 
+    throw new Error('Invalid token id')
+}
+
+function filterMintCall(call: BatchMint, tokenId: bigint): Mint | ForceMint {
     const { collectionId, recipients } = call
 
     const recipientCall = recipients.find((r) => r.params.tokenId === tokenId)

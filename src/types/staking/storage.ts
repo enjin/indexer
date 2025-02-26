@@ -3,7 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const validatorCount = {
     /**
@@ -1784,12 +1784,12 @@ export const virtualStakers = {
      *  directly via this pallet. Instead, these accounts are managed by other pallets and accessed
      *  via low level apis. We keep track of them to do minimal integrity checks.
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'Staking.VirtualStakers',
         'Optional',
-        [v1050.AccountId32],
+        [enjinV1050.AccountId32],
         sts.unit()
-    ) as VirtualStakersV1050,
+    ) as VirtualStakersEnjinV1050,
 }
 
 /**
@@ -1800,40 +1800,40 @@ export const virtualStakers = {
  *  directly via this pallet. Instead, these accounts are managed by other pallets and accessed
  *  via low level apis. We keep track of them to do minimal integrity checks.
  */
-export interface VirtualStakersV1050 {
+export interface VirtualStakersEnjinV1050 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1050.AccountId32): Promise<null | undefined>
-    getMany(block: Block, keys: v1050.AccountId32[]): Promise<(null | undefined)[]>
-    getKeys(block: Block): Promise<v1050.AccountId32[]>
-    getKeys(block: Block, key: v1050.AccountId32): Promise<v1050.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1050.AccountId32[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1050.AccountId32): AsyncIterable<v1050.AccountId32[]>
-    getPairs(block: Block): Promise<[k: v1050.AccountId32, v: null | undefined][]>
-    getPairs(block: Block, key: v1050.AccountId32): Promise<[k: v1050.AccountId32, v: null | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1050.AccountId32, v: null | undefined][]>
+    get(block: Block, key: enjinV1050.AccountId32): Promise<null | undefined>
+    getMany(block: Block, keys: enjinV1050.AccountId32[]): Promise<(null | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1050.AccountId32[]>
+    getKeys(block: Block, key: enjinV1050.AccountId32): Promise<enjinV1050.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1050.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1050.AccountId32): AsyncIterable<enjinV1050.AccountId32[]>
+    getPairs(block: Block): Promise<[k: enjinV1050.AccountId32, v: null | undefined][]>
+    getPairs(block: Block, key: enjinV1050.AccountId32): Promise<[k: enjinV1050.AccountId32, v: null | undefined][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: enjinV1050.AccountId32, v: null | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1050.AccountId32
-    ): AsyncIterable<[k: v1050.AccountId32, v: null | undefined][]>
+        key: enjinV1050.AccountId32
+    ): AsyncIterable<[k: enjinV1050.AccountId32, v: null | undefined][]>
 }
 
 export const counterForVirtualStakers = {
     /**
      * Counter for the related counted storage map
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'Staking.CounterForVirtualStakers',
         'Default',
         [],
         sts.number()
-    ) as CounterForVirtualStakersV1050,
+    ) as CounterForVirtualStakersEnjinV1050,
 }
 
 /**
  * Counter for the related counted storage map
  */
-export interface CounterForVirtualStakersV1050 {
+export interface CounterForVirtualStakersEnjinV1050 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
     get(block: Block): Promise<number | undefined>
@@ -1849,12 +1849,12 @@ export const disabledValidators = {
      *  The vec is always kept sorted so that we can find whether a given validator has previously
      *  offended using binary search.
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'Staking.DisabledValidators',
         'Default',
         [],
         sts.array(() => sts.number())
-    ) as DisabledValidatorsV1050,
+    ) as DisabledValidatorsEnjinV1050,
 }
 
 /**
@@ -1866,7 +1866,7 @@ export const disabledValidators = {
  *  The vec is always kept sorted so that we can find whether a given validator has previously
  *  offended using binary search.
  */
-export interface DisabledValidatorsV1050 {
+export interface DisabledValidatorsEnjinV1050 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number[]
     get(block: Block): Promise<number[] | undefined>

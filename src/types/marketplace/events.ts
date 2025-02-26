@@ -8,9 +8,11 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1014 from '../matrixEnjinV1014'
+import * as matrixV1020 from '../matrixV1020'
 import * as v1030 from '../v1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
 export const listingCreated = {
@@ -98,6 +100,22 @@ export const listingCreated = {
     /**
      * A listing was created
      */
+    matrixV1020: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1020.H256,
+            /**
+             * The listing
+             */
+            listing: matrixV1020.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
     enjinV110: new EventType(
         'Marketplace.ListingCreated',
         sts.struct({
@@ -125,6 +143,22 @@ export const listingCreated = {
              * The listing
              */
             listing: enjinV1032.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    enjinV1050: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: enjinV1050.H256,
+            /**
+             * The listing
+             */
+            listing: enjinV1050.Listing,
         })
     ),
     /**
@@ -822,10 +856,10 @@ export const listingUpgraded = {
     /**
      * A listing has been upgraded
      */
-    v1050: new EventType(
+    matrixV1020: new EventType(
         'Marketplace.ListingUpgraded',
         sts.struct({
-            listingId: v1050.H256,
+            listingId: matrixV1020.H256,
         })
     ),
 }

@@ -288,7 +288,7 @@ export const initialized = {
  */
 export interface InitializedEnjinV100 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<enjinV100.PreDigest | undefined>
+    get(block: Block): Promise<(enjinV100.PreDigest | undefined) | undefined>
 }
 
 /**
@@ -297,7 +297,7 @@ export interface InitializedEnjinV100 {
  */
 export interface InitializedEnjinV1032 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<enjinV1032.PreDigest | undefined>
+    get(block: Block): Promise<(enjinV1032.PreDigest | undefined) | undefined>
 }
 
 /**
@@ -306,7 +306,7 @@ export interface InitializedEnjinV1032 {
  */
 export interface InitializedV100 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<v100.PreDigest | undefined>
+    get(block: Block): Promise<(v100.PreDigest | undefined) | undefined>
 }
 
 /**
@@ -315,7 +315,7 @@ export interface InitializedV100 {
  */
 export interface InitializedV104 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<v104.PreDigest | undefined>
+    get(block: Block): Promise<(v104.PreDigest | undefined) | undefined>
 }
 
 /**
@@ -324,7 +324,7 @@ export interface InitializedV104 {
  */
 export interface InitializedV1030 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<v1030.PreDigest | undefined>
+    get(block: Block): Promise<(v1030.PreDigest | undefined) | undefined>
 }
 
 export const authorVrfRandomness = {
@@ -351,7 +351,7 @@ export const authorVrfRandomness = {
 export interface AuthorVrfRandomnessEnjinV100 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): Bytes | undefined
-    get(block: Block): Promise<Bytes | undefined>
+    get(block: Block): Promise<(Bytes | undefined) | undefined>
 }
 
 export const epochStart = {

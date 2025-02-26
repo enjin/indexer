@@ -224,5 +224,5 @@ export const frozen = {
 export interface FrozenEnjinV100 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number | undefined
-    get(block: Block): Promise<number | undefined>
+    get(block: Block): Promise<(number | undefined) | undefined>
 }

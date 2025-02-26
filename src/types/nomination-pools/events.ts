@@ -12,7 +12,7 @@ import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 
 export const created = {
-    name: 'NominationPools.Created' as const,
+    name: 'NominationPools.Created',
     /**
      * A pool has been created.
      */
@@ -625,6 +625,19 @@ export const earlyBirdBonusPaid = {
     ),
 }
 
+export const earlyBirdSharesRemoved = {
+    name: 'NominationPools.EarlyBirdSharesRemoved',
+    enjinV1050: new EventType(
+        'NominationPools.EarlyBirdSharesRemoved',
+        sts.struct({
+            /**
+             * Number of items removed
+             */
+            count: sts.number(),
+        })
+    ),
+}
+
 export const rolesUpdated = {
     name: 'NominationPools.RolesUpdated',
     /**
@@ -763,19 +776,6 @@ export const rewardReinvested = {
         sts.struct({
             poolId: sts.number(),
             amount: sts.bigint(),
-        })
-    ),
-}
-
-export const earlyBirdSharesRemoved = {
-    name: 'NominationPools.EarlyBirdSharesRemoved',
-    v1050: new EventType(
-        'NominationPools.EarlyBirdSharesRemoved',
-        sts.struct({
-            /**
-             * Number of items removed
-             */
-            count: sts.number(),
         })
     ),
 }

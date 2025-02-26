@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const reportEquivocation = {
     name: 'Beefy.report_equivocation',
@@ -65,11 +65,11 @@ export const reportDoubleVoting = {
      * against the extracted offender. If both are valid, the offence
      * will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_double_voting',
         sts.struct({
-            equivocationProof: v1050.DoubleVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.DoubleVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
@@ -87,11 +87,11 @@ export const reportDoubleVotingUnsigned = {
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_double_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.DoubleVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.DoubleVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
@@ -103,11 +103,11 @@ export const reportForkVoting = {
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_fork_voting',
         sts.struct({
-            equivocationProof: v1050.ForkVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.ForkVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
@@ -124,11 +124,11 @@ export const reportForkVotingUnsigned = {
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_fork_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.ForkVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.ForkVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
@@ -140,11 +140,11 @@ export const reportFutureBlockVoting = {
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_future_block_voting',
         sts.struct({
-            equivocationProof: v1050.FutureBlockVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.FutureBlockVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
@@ -161,11 +161,11 @@ export const reportFutureBlockVotingUnsigned = {
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_future_block_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.FutureBlockVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.FutureBlockVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }

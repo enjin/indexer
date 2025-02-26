@@ -5,7 +5,7 @@ import * as enjinV101 from '../enjinV101'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const queryCounter = {
     /**
@@ -1977,7 +1977,7 @@ export const shouldRecordXcm = {
      *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
      *  implementation in the XCM executor configuration.
      */
-    v1050: new StorageType('XcmPallet.ShouldRecordXcm', 'Default', [], sts.boolean()) as ShouldRecordXcmV1050,
+    enjinV1050: new StorageType('XcmPallet.ShouldRecordXcm', 'Default', [], sts.boolean()) as ShouldRecordXcmEnjinV1050,
 }
 
 /**
@@ -1989,7 +1989,7 @@ export const shouldRecordXcm = {
  *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
  *  implementation in the XCM executor configuration.
  */
-export interface ShouldRecordXcmV1050 {
+export interface ShouldRecordXcmEnjinV1050 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
     get(block: Block): Promise<boolean | undefined>
@@ -2004,12 +2004,12 @@ export const recordedXcm = {
      *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
      *  implementation in the XCM executor configuration.
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'XcmPallet.RecordedXcm',
         'Optional',
         [],
-        sts.array(() => v1050.V4Instruction)
-    ) as RecordedXcmV1050,
+        sts.array(() => enjinV1050.V4Instruction)
+    ) as RecordedXcmEnjinV1050,
 }
 
 /**
@@ -2020,7 +2020,7 @@ export const recordedXcm = {
  *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
  *  implementation in the XCM executor configuration.
  */
-export interface RecordedXcmV1050 {
+export interface RecordedXcmEnjinV1050 {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<v1050.V4Instruction[] | undefined>
+    get(block: Block): Promise<enjinV1050.V4Instruction[] | undefined>
 }

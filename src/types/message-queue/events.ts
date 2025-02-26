@@ -1,6 +1,9 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV101 from '../enjinV101'
+import * as v105 from '../v105'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1020 from '../matrixV1020'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
 export const processingFailed = {
@@ -31,12 +34,69 @@ export const processingFailed = {
     /**
      * Message discarded due to an error in the `MessageProcessor` (usually a format error).
      */
+    matrixV1020: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: matrixV1020.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: matrixV1020.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             *
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: matrixV1020.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
     enjinV101: new EventType(
         'MessageQueue.ProcessingFailed',
         sts.struct({
             id: sts.bytes(),
             origin: enjinV101.AggregateMessageOrigin,
             error: enjinV101.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    enjinV1050: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: enjinV1050.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: enjinV1050.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             *
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: enjinV1050.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    v105: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            id: sts.bytes(),
+            origin: v105.AggregateMessageOrigin,
+            error: v105.ProcessMessageError,
         })
     ),
     /**

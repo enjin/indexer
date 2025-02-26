@@ -226,38 +226,53 @@ export const migrationReimburser = {
     matrixEnjinV1012: new ConstantType('MultiTokens.MigrationReimburser', matrixEnjinV1012.AccountId32),
 }
 
+export const tokenGroupDeposit = {
+    /**
+     *  The amount of [`Balance`](BalanceOf) that must be reserved for a token group to be
+     *  maintained
+     */
+    matrixV1020: new ConstantType('MultiTokens.TokenGroupDeposit', sts.bigint()),
+}
+
 export const maxRoyaltyBeneficiaries = {
     /**
      *  The maximum number of beneficiaries for a royalty
      */
-    v1050: new ConstantType('MultiTokens.MaxRoyaltyBeneficiaries', sts.number()),
+    matrixV1020: new ConstantType('MultiTokens.MaxRoyaltyBeneficiaries', sts.number()),
 }
 
 export const maxTokensToRead = {
     /**
      *  The maximum number of tokens to read in a single call
      */
-    v1050: new ConstantType('MultiTokens.MaxTokensToRead', sts.number()),
+    matrixV1020: new ConstantType('MultiTokens.MaxTokensToRead', sts.number()),
 }
 
 export const maxAttributesToRead = {
     /**
      *  The maximum number of attributes to read in a single call
      */
-    v1050: new ConstantType('MultiTokens.MaxAttributesToRead', sts.number()),
+    matrixV1020: new ConstantType('MultiTokens.MaxAttributesToRead', sts.number()),
 }
 
 export const maxKeyLength = {
     /**
      *  The maximum length of the key
      */
-    v1050: new ConstantType('MultiTokens.MaxKeyLength', sts.number()),
+    matrixV1020: new ConstantType('MultiTokens.MaxKeyLength', sts.number()),
 }
 
 export const maxUpgradeBatchSize = {
     /**
-     *  Max number of elements that can be migrated in a single call of
-     *  [`upgrade_token_accounts`](Pallet::upgrade_token_accounts)
+     *  Max number of elements that can be migrated in a single lazy migration call
      */
-    v1050: new ConstantType('MultiTokens.MaxUpgradeBatchSize', sts.number()),
+    matrixV1020: new ConstantType('MultiTokens.MaxUpgradeBatchSize', sts.number()),
+}
+
+export const maxCollectionAccountUpdateCount = {
+    /**
+     *  Max number of elements that can be processed in a single call of
+     *  [`update_collection_account_approvals`](Pallet::update_collection_account_approvals)
+     */
+    matrixV1020: new ConstantType('MultiTokens.MaxCollectionAccountUpdateCount', sts.number()),
 }

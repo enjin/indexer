@@ -3036,6 +3036,34 @@ export const PrimaryPreDigest: sts.Type<PrimaryPreDigest> = sts.struct(() => {
     }
 })
 
+export interface ProxyDefinition {
+    delegate: AccountId32
+    proxyType: ProxyType
+    delay: number
+}
+
+export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
+
+export interface ProxyType_Any {
+    __kind: 'Any'
+}
+
+export interface ProxyType_Governance {
+    __kind: 'Governance'
+}
+
+export interface ProxyType_Tokens {
+    __kind: 'Tokens'
+}
+
+export const ProxyDefinition: sts.Type<ProxyDefinition> = sts.struct(() => {
+    return {
+        delegate: AccountId32,
+        proxyType: ProxyType,
+        delay: sts.number(),
+    }
+})
+
 export interface Registration {
     judgements: [number, Judgement][]
     deposit: bigint
@@ -6642,20 +6670,6 @@ export interface ProxyEvent_PureCreated {
     who: AccountId32
     proxyType: ProxyType
     disambiguationIndex: number
-}
-
-export type ProxyType = ProxyType_Any | ProxyType_Governance | ProxyType_Tokens
-
-export interface ProxyType_Any {
-    __kind: 'Any'
-}
-
-export interface ProxyType_Governance {
-    __kind: 'Governance'
-}
-
-export interface ProxyType_Tokens {
-    __kind: 'Tokens'
 }
 
 /**
@@ -15145,14 +15159,6 @@ export interface ConfigOp_Set {
     __kind: 'Set'
     value: bigint
 }
-
-export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
-    return {
-        Any: sts.unit(),
-        Governance: sts.unit(),
-        Tokens: sts.unit(),
-    }
-})
 
 export const ListingData: sts.Type<ListingData> = sts.closedEnum(() => {
     return {
@@ -25995,6 +26001,14 @@ export const RewardDestination: sts.Type<RewardDestination> = sts.closedEnum(() 
         None: sts.unit(),
         Staked: sts.unit(),
         Stash: sts.unit(),
+    }
+})
+
+export const ProxyType: sts.Type<ProxyType> = sts.closedEnum(() => {
+    return {
+        Any: sts.unit(),
+        Governance: sts.unit(),
+        Tokens: sts.unit(),
     }
 })
 

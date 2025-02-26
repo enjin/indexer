@@ -9057,28 +9057,6 @@ export const MessageQueueEvent: sts.Type<MessageQueueEvent> = sts.closedEnum(() 
     }
 })
 
-export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
-    return {
-        BadFormat: sts.unit(),
-        Corrupt: sts.unit(),
-        Overweight: Weight,
-        Unsupported: sts.unit(),
-        Yield: sts.unit(),
-    }
-})
-
-export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
-    return {
-        Ump: UmpQueueId,
-    }
-})
-
-export const UmpQueueId: sts.Type<UmpQueueId> = sts.closedEnum(() => {
-    return {
-        Para: Id,
-    }
-})
-
 /**
  * 
 			The [event](https://docs.substrate.io/main-docs/build/events-errors/) emitted
@@ -19391,6 +19369,28 @@ export const Pays: sts.Type<Pays> = sts.closedEnum(() => {
 export const H256 = sts.bytes()
 
 export const Id = sts.number()
+
+export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
+    return {
+        BadFormat: sts.unit(),
+        Corrupt: sts.unit(),
+        Overweight: Weight,
+        Unsupported: sts.unit(),
+        Yield: sts.unit(),
+    }
+})
+
+export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
+    return {
+        Ump: UmpQueueId,
+    }
+})
+
+export const UmpQueueId: sts.Type<UmpQueueId> = sts.closedEnum(() => {
+    return {
+        Para: Id,
+    }
+})
 
 export const AccountId32 = sts.bytes()
 

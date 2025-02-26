@@ -10154,28 +10154,6 @@ export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
     }
 })
 
-export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = sts.struct(() => {
-    return {
-        owner: sts.option(() => AccountId32),
-        royalty: Type_181,
-        explicitRoyaltyCurrencies: sts.option(() => sts.array(() => AssetId)),
-    }
-})
-
-export const Type_181: sts.Type<Type_181> = sts.closedEnum(() => {
-    return {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
-    return {
-        beneficiary: AccountId32,
-        percentage: sts.number(),
-    }
-})
-
 export const CollectionAccount: sts.Type<CollectionAccount> = sts.struct(() => {
     return {
         isFrozen: sts.boolean(),
@@ -18356,6 +18334,13 @@ export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum
     }
 })
 
+export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
+    return {
+        beneficiary: AccountId32,
+        percentage: sts.number(),
+    }
+})
+
 export const TokenCap: sts.Type<TokenCap> = sts.closedEnum(() => {
     return {
         CollapsingSupply: sts.bigint(),
@@ -20587,8 +20572,6 @@ export const Approval: sts.Type<Approval> = sts.struct(() => {
     }
 })
 
-export const AccountId32 = sts.bytes()
-
 export const Token: sts.Type<Token> = sts.struct(() => {
     return {
         supply: sts.bigint(),
@@ -20670,6 +20653,8 @@ export const DefaultMintPolicy: sts.Type<DefaultMintPolicy> = sts.struct(() => {
     }
 })
 
+export const AccountId32 = sts.bytes()
+
 export const DefaultTokenMutation: sts.Type<DefaultTokenMutation> = sts.struct(() => {
     return {
         behavior: Type_194,
@@ -20696,6 +20681,21 @@ export const Type_194: sts.Type<Type_194> = sts.closedEnum(() => {
     return {
         NoMutation: sts.unit(),
         SomeMutation: sts.option(() => TokenMarketBehavior),
+    }
+})
+
+export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = sts.struct(() => {
+    return {
+        owner: sts.option(() => AccountId32),
+        royalty: Type_181,
+        explicitRoyaltyCurrencies: sts.option(() => sts.array(() => AssetId)),
+    }
+})
+
+export const Type_181: sts.Type<Type_181> = sts.closedEnum(() => {
+    return {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => DefaultRoyalty),
     }
 })
 

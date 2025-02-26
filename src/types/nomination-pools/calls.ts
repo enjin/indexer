@@ -1058,6 +1058,19 @@ export const payEarlyBirdBonus = {
     ),
 }
 
+export const removeEarlyBirdShares = {
+    name: 'NominationPools.remove_early_bird_shares',
+    /**
+     * Remove early bird shares storages
+     */
+    enjinV1050: new CallType(
+        'NominationPools.remove_early_bird_shares',
+        sts.struct({
+            count: sts.number(),
+        })
+    ),
+}
+
 export const updateRoles = {
     name: 'NominationPools.update_roles',
     /**
@@ -1158,19 +1171,6 @@ export const mutatePool = {
         sts.struct({
             poolId: sts.number(),
             mutation: v101.PoolMutation,
-        })
-    ),
-}
-
-export const removeEarlyBirdShares = {
-    name: 'NominationPools.remove_early_bird_shares',
-    /**
-     * Remove early bird shares storages
-     */
-    v1050: new CallType(
-        'NominationPools.remove_early_bird_shares',
-        sts.struct({
-            count: sts.number(),
         })
     ),
 }

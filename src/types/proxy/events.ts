@@ -1,5 +1,7 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1030 from '../v1030'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
 export const proxyExecuted = {
@@ -30,6 +32,32 @@ export const pureCreated = {
             pure: matrixEnjinV1012.AccountId32,
             who: matrixEnjinV1012.AccountId32,
             proxyType: matrixEnjinV1012.ProxyType,
+            disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    enjinV1050: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: enjinV1050.AccountId32,
+            who: enjinV1050.AccountId32,
+            proxyType: enjinV1050.ProxyType,
+            disambiguationIndex: sts.number(),
+        })
+    ),
+    /**
+     * A pure account has been created by new proxy with given
+     * disambiguation index and proxy type.
+     */
+    v1030: new EventType(
+        'Proxy.PureCreated',
+        sts.struct({
+            pure: v1030.AccountId32,
+            who: v1030.AccountId32,
+            proxyType: v1030.ProxyType,
             disambiguationIndex: sts.number(),
         })
     ),
@@ -80,6 +108,30 @@ export const proxyAdded = {
     /**
      * A proxy was added.
      */
+    enjinV1050: new EventType(
+        'Proxy.ProxyAdded',
+        sts.struct({
+            delegator: enjinV1050.AccountId32,
+            delegatee: enjinV1050.AccountId32,
+            proxyType: enjinV1050.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was added.
+     */
+    v1030: new EventType(
+        'Proxy.ProxyAdded',
+        sts.struct({
+            delegator: v1030.AccountId32,
+            delegatee: v1030.AccountId32,
+            proxyType: v1030.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was added.
+     */
     v1050: new EventType(
         'Proxy.ProxyAdded',
         sts.struct({
@@ -102,6 +154,30 @@ export const proxyRemoved = {
             delegator: matrixEnjinV1012.AccountId32,
             delegatee: matrixEnjinV1012.AccountId32,
             proxyType: matrixEnjinV1012.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was removed.
+     */
+    enjinV1050: new EventType(
+        'Proxy.ProxyRemoved',
+        sts.struct({
+            delegator: enjinV1050.AccountId32,
+            delegatee: enjinV1050.AccountId32,
+            proxyType: enjinV1050.ProxyType,
+            delay: sts.number(),
+        })
+    ),
+    /**
+     * A proxy was removed.
+     */
+    v1030: new EventType(
+        'Proxy.ProxyRemoved',
+        sts.struct({
+            delegator: v1030.AccountId32,
+            delegatee: v1030.AccountId32,
+            proxyType: v1030.ProxyType,
             delay: sts.number(),
         })
     ),

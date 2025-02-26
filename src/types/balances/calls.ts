@@ -225,7 +225,7 @@ export const burn = {
      * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
      * this `burn` operation will reduce total issuance by the amount _burned_.
      */
-    v1050: new CallType(
+    matrixV1020: new CallType(
         'Balances.burn',
         sts.struct({
             value: sts.bigint(),

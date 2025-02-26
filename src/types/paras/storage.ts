@@ -3,6 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
 export const pvfActiveVoteMap = {
@@ -30,6 +31,18 @@ export const pvfActiveVoteMap = {
         [enjinV1032.ValidationCodeHash],
         enjinV1032.PvfCheckActiveVoteState
     ) as PvfActiveVoteMapEnjinV1032,
+    /**
+     *  All currently active PVF pre-checking votes.
+     *
+     *  Invariant:
+     *  - There are no PVF pre-checking votes that exists in list but not in the set and vice versa.
+     */
+    enjinV1050: new StorageType(
+        'Paras.PvfActiveVoteMap',
+        'Optional',
+        [enjinV1050.ValidationCodeHash],
+        enjinV1050.PvfCheckActiveVoteState
+    ) as PvfActiveVoteMapEnjinV1050,
     /**
      *  All currently active PVF pre-checking votes.
      *
@@ -144,6 +157,45 @@ export interface PvfActiveVoteMapEnjinV1032 {
         block: Block,
         key: enjinV1032.ValidationCodeHash
     ): AsyncIterable<[k: enjinV1032.ValidationCodeHash, v: enjinV1032.PvfCheckActiveVoteState | undefined][]>
+}
+
+/**
+ *  All currently active PVF pre-checking votes.
+ *
+ *  Invariant:
+ *  - There are no PVF pre-checking votes that exists in list but not in the set and vice versa.
+ */
+export interface PvfActiveVoteMapEnjinV1050 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block, key: enjinV1050.ValidationCodeHash): Promise<enjinV1050.PvfCheckActiveVoteState | undefined>
+    getMany(
+        block: Block,
+        keys: enjinV1050.ValidationCodeHash[]
+    ): Promise<(enjinV1050.PvfCheckActiveVoteState | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1050.ValidationCodeHash[]>
+    getKeys(block: Block, key: enjinV1050.ValidationCodeHash): Promise<enjinV1050.ValidationCodeHash[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1050.ValidationCodeHash[]>
+    getKeysPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1050.ValidationCodeHash
+    ): AsyncIterable<enjinV1050.ValidationCodeHash[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: enjinV1050.ValidationCodeHash, v: enjinV1050.PvfCheckActiveVoteState | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1050.ValidationCodeHash
+    ): Promise<[k: enjinV1050.ValidationCodeHash, v: enjinV1050.PvfCheckActiveVoteState | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1050.ValidationCodeHash, v: enjinV1050.PvfCheckActiveVoteState | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1050.ValidationCodeHash
+    ): AsyncIterable<[k: enjinV1050.ValidationCodeHash, v: enjinV1050.PvfCheckActiveVoteState | undefined][]>
 }
 
 /**
@@ -960,12 +1012,12 @@ export const futureCodeUpgradesAt = {
      *
      *  Ordered ascending by block number.
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'Paras.FutureCodeUpgradesAt',
         'Default',
         [],
-        sts.array(() => sts.tuple(() => [v1050.Id, sts.number()]))
-    ) as FutureCodeUpgradesAtV1050,
+        sts.array(() => sts.tuple(() => [enjinV1050.Id, sts.number()]))
+    ) as FutureCodeUpgradesAtEnjinV1050,
 }
 
 /**
@@ -978,8 +1030,8 @@ export const futureCodeUpgradesAt = {
  *
  *  Ordered ascending by block number.
  */
-export interface FutureCodeUpgradesAtV1050 {
+export interface FutureCodeUpgradesAtEnjinV1050 {
     is(block: RuntimeCtx): boolean
-    getDefault(block: Block): [v1050.Id, number][]
-    get(block: Block): Promise<[v1050.Id, number][] | undefined>
+    getDefault(block: Block): [enjinV1050.Id, number][]
+    get(block: Block): Promise<[enjinV1050.Id, number][] | undefined>
 }

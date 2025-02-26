@@ -35,7 +35,7 @@ export async function tokenCreated(
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
 
-        const call = mappings.multiTokens.utils.anyMint(item.call, event.tokenId)
+        const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
         const params = call.params as DefaultMintParams_CreateToken
         const minBalance = params.sufficiency?.__kind === 'Sufficient' ? params.sufficiency.minimumBalance : 1n
         const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.unitPrice ?? 1n) : 1n

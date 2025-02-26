@@ -3,7 +3,7 @@ import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const hrmpInitOpenChannel = {
     name: 'Hrmp.hrmp_init_open_channel',
@@ -268,10 +268,10 @@ export const establishChannelWithSystem = {
      *
      * The origin needs to be the parachain origin.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Hrmp.establish_channel_with_system',
         sts.struct({
-            targetSystemChain: v1050.Id,
+            targetSystemChain: enjinV1050.Id,
         })
     ),
 }

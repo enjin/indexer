@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as v1050 from '../v1050'
+import * as matrixV1020 from '../matrixV1020'
 
 export const heapSize = {
     /**
@@ -44,8 +44,8 @@ export const idleMaxServiceWeight = {
      *
      *  If `None`, it will not call `ServiceQueues::service_queues` in `on_idle`.
      */
-    v1050: new ConstantType(
+    matrixV1020: new ConstantType(
         'MessageQueue.IdleMaxServiceWeight',
-        sts.option(() => v1050.Weight)
+        sts.option(() => matrixV1020.Weight)
     ),
 }

@@ -68,21 +68,21 @@ export const whitelistedAccountDeposit = {
     /**
      *  The deposit for each whitelisted account in a listing
      */
-    v1050: new ConstantType('Marketplace.WhitelistedAccountDeposit', sts.bigint()),
+    matrixV1020: new ConstantType('Marketplace.WhitelistedAccountDeposit', sts.bigint()),
 }
 
 export const maxPendingActions = {
     /**
      *  Max number of actions in [`PendingActions`]
      */
-    v1050: new ConstantType('Marketplace.MaxPendingActions', sts.number()),
+    matrixV1020: new ConstantType('Marketplace.MaxPendingActions', sts.number()),
 }
 
 export const maxWhitelistedAccountsPerExtrinsic = {
     /**
      *  Max number of accounts parameters accepted by whitelist related extrinsics
      */
-    v1050: new ConstantType('Marketplace.MaxWhitelistedAccountsPerExtrinsic', sts.number()),
+    matrixV1020: new ConstantType('Marketplace.MaxWhitelistedAccountsPerExtrinsic', sts.number()),
 }
 
 export const maxUpgradeBatchSize = {
@@ -90,5 +90,5 @@ export const maxUpgradeBatchSize = {
      *  Max number of listings that can be migrated in a single call of
      *  [`upgrade_listings`](Pallet::upgrade_listings)
      */
-    v1050: new ConstantType('Marketplace.MaxUpgradeBatchSize', sts.number()),
+    matrixV1020: new ConstantType('Marketplace.MaxUpgradeBatchSize', sts.number()),
 }

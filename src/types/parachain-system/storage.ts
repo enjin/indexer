@@ -161,7 +161,7 @@ export const upgradeRestrictionSignal = {
 export interface UpgradeRestrictionSignalMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV603.V4UpgradeRestriction | undefined
-    get(block: Block): Promise<matrixEnjinV603.V4UpgradeRestriction | undefined>
+    get(block: Block): Promise<(matrixEnjinV603.V4UpgradeRestriction | undefined) | undefined>
 }
 
 export const relayStateProof = {
@@ -854,7 +854,7 @@ export const upgradeGoAhead = {
 export interface UpgradeGoAheadMatrixEnjinV1012 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): matrixEnjinV1012.V6UpgradeGoAhead | undefined
-    get(block: Block): Promise<matrixEnjinV1012.V6UpgradeGoAhead | undefined>
+    get(block: Block): Promise<(matrixEnjinV1012.V6UpgradeGoAhead | undefined) | undefined>
 }
 
 export const upwardDeliveryFeeFactor = {

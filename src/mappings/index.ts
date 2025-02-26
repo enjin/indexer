@@ -11,6 +11,7 @@ import fuelTanks from './fuel-tanks'
 import imOnline from './im-online'
 import system from './system'
 import polkadotXcm from './polkadot-xcm'
+import matrixUtility from './matrix-utility'
 
 export {
     multiTokens,
@@ -26,4 +27,5 @@ export {
     claims,
     system,
     polkadotXcm,
+    matrixUtility,
 }

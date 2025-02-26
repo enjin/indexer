@@ -12,7 +12,7 @@ import {
     TankFuelBudget,
     UserFuelBudget,
 } from '../../model'
-import { DispatchRuleDescriptor, RuleSetDescriptor } from '../common/types'
+import { DispatchRuleDescriptor } from '../common/types'
 
 export function withDispatchCheck<T>(fn: (call: CallItem) => T): (call: CallItem) => T {
     return (call: CallItem) => {

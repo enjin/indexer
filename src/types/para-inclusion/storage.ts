@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const availabilityBitfields = {
     /**
@@ -136,12 +136,12 @@ export const v1 = {
      *  would otherwise have the exact same prefix which could cause undefined behaviour when doing
      *  the migration.
      */
-    v1050: new StorageType(
+    enjinV1050: new StorageType(
         'ParaInclusion.V1',
         'Optional',
-        [v1050.Id],
-        sts.array(() => v1050.CandidatePendingAvailability)
-    ) as V1V1050,
+        [enjinV1050.Id],
+        sts.array(() => enjinV1050.CandidatePendingAvailability)
+    ) as V1EnjinV1050,
 }
 
 /**
@@ -151,23 +151,26 @@ export const v1 = {
  *  would otherwise have the exact same prefix which could cause undefined behaviour when doing
  *  the migration.
  */
-export interface V1V1050 {
+export interface V1EnjinV1050 {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: v1050.Id): Promise<v1050.CandidatePendingAvailability[] | undefined>
-    getMany(block: Block, keys: v1050.Id[]): Promise<(v1050.CandidatePendingAvailability[] | undefined)[]>
-    getKeys(block: Block): Promise<v1050.Id[]>
-    getKeys(block: Block, key: v1050.Id): Promise<v1050.Id[]>
-    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1050.Id[]>
-    getKeysPaged(pageSize: number, block: Block, key: v1050.Id): AsyncIterable<v1050.Id[]>
-    getPairs(block: Block): Promise<[k: v1050.Id, v: v1050.CandidatePendingAvailability[] | undefined][]>
-    getPairs(block: Block, key: v1050.Id): Promise<[k: v1050.Id, v: v1050.CandidatePendingAvailability[] | undefined][]>
+    get(block: Block, key: enjinV1050.Id): Promise<enjinV1050.CandidatePendingAvailability[] | undefined>
+    getMany(block: Block, keys: enjinV1050.Id[]): Promise<(enjinV1050.CandidatePendingAvailability[] | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1050.Id[]>
+    getKeys(block: Block, key: enjinV1050.Id): Promise<enjinV1050.Id[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1050.Id[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1050.Id): AsyncIterable<enjinV1050.Id[]>
+    getPairs(block: Block): Promise<[k: enjinV1050.Id, v: enjinV1050.CandidatePendingAvailability[] | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1050.Id
+    ): Promise<[k: enjinV1050.Id, v: enjinV1050.CandidatePendingAvailability[] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block
-    ): AsyncIterable<[k: v1050.Id, v: v1050.CandidatePendingAvailability[] | undefined][]>
+    ): AsyncIterable<[k: enjinV1050.Id, v: enjinV1050.CandidatePendingAvailability[] | undefined][]>
     getPairsPaged(
         pageSize: number,
         block: Block,
-        key: v1050.Id
-    ): AsyncIterable<[k: v1050.Id, v: v1050.CandidatePendingAvailability[] | undefined][]>
+        key: enjinV1050.Id
+    ): AsyncIterable<[k: enjinV1050.Id, v: enjinV1050.CandidatePendingAvailability[] | undefined][]>
 }

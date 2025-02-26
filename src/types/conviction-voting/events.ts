@@ -1,6 +1,6 @@
 import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const delegated = {
     name: 'ConvictionVoting.Delegated',
@@ -23,11 +23,11 @@ export const voted = {
     /**
      * An account that has voted
      */
-    v1050: new EventType(
+    enjinV1050: new EventType(
         'ConvictionVoting.Voted',
         sts.struct({
-            who: v1050.AccountId32,
-            vote: v1050.AccountVote,
+            who: enjinV1050.AccountId32,
+            vote: enjinV1050.AccountVote,
         })
     ),
 }
@@ -37,11 +37,11 @@ export const voteRemoved = {
     /**
      * A vote that been removed
      */
-    v1050: new EventType(
+    enjinV1050: new EventType(
         'ConvictionVoting.VoteRemoved',
         sts.struct({
-            who: v1050.AccountId32,
-            vote: v1050.AccountVote,
+            who: enjinV1050.AccountId32,
+            vote: enjinV1050.AccountVote,
         })
     ),
 }

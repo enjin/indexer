@@ -4,6 +4,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1020 from '../matrixV1020'
 
 export const queryCounter = {
     /**
@@ -2061,4 +2062,67 @@ export interface XcmExecutionSuspendedMatrixEnjinV603 {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
     get(block: Block): Promise<boolean | undefined>
+}
+
+export const shouldRecordXcm = {
+    /**
+     *  Whether or not incoming XCMs (both executed locally and received) should be recorded.
+     *  Only one XCM program will be recorded at a time.
+     *  This is meant to be used in runtime APIs, and it's advised it stays false
+     *  for all other use cases, so as to not degrade regular performance.
+     *
+     *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+     *  implementation in the XCM executor configuration.
+     */
+    matrixV1020: new StorageType(
+        'PolkadotXcm.ShouldRecordXcm',
+        'Default',
+        [],
+        sts.boolean()
+    ) as ShouldRecordXcmMatrixV1020,
+}
+
+/**
+ *  Whether or not incoming XCMs (both executed locally and received) should be recorded.
+ *  Only one XCM program will be recorded at a time.
+ *  This is meant to be used in runtime APIs, and it's advised it stays false
+ *  for all other use cases, so as to not degrade regular performance.
+ *
+ *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+ *  implementation in the XCM executor configuration.
+ */
+export interface ShouldRecordXcmMatrixV1020 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): boolean
+    get(block: Block): Promise<boolean | undefined>
+}
+
+export const recordedXcm = {
+    /**
+     *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+     *  will be stored here.
+     *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+     *
+     *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+     *  implementation in the XCM executor configuration.
+     */
+    matrixV1020: new StorageType(
+        'PolkadotXcm.RecordedXcm',
+        'Optional',
+        [],
+        sts.array(() => matrixV1020.V4Instruction)
+    ) as RecordedXcmMatrixV1020,
+}
+
+/**
+ *  If [`ShouldRecordXcm`] is set to true, then the last XCM program executed locally
+ *  will be stored here.
+ *  Runtime APIs can fetch the XCM that was executed by accessing this value.
+ *
+ *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
+ *  implementation in the XCM executor configuration.
+ */
+export interface RecordedXcmMatrixV1020 {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<matrixV1020.V4Instruction[] | undefined>
 }

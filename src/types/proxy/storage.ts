@@ -1,5 +1,7 @@
 import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1030 from '../v1030'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
 export const proxies = {
@@ -13,6 +15,26 @@ export const proxies = {
         [matrixEnjinV1012.AccountId32],
         sts.tuple(() => [sts.array(() => matrixEnjinV1012.ProxyDefinition), sts.bigint()])
     ) as ProxiesMatrixEnjinV1012,
+    /**
+     *  The set of account proxies. Maps the account which has delegated to the accounts
+     *  which are being delegated to, together with the amount held on deposit.
+     */
+    enjinV1050: new StorageType(
+        'Proxy.Proxies',
+        'Default',
+        [enjinV1050.AccountId32],
+        sts.tuple(() => [sts.array(() => enjinV1050.ProxyDefinition), sts.bigint()])
+    ) as ProxiesEnjinV1050,
+    /**
+     *  The set of account proxies. Maps the account which has delegated to the accounts
+     *  which are being delegated to, together with the amount held on deposit.
+     */
+    v1030: new StorageType(
+        'Proxy.Proxies',
+        'Default',
+        [v1030.AccountId32],
+        sts.tuple(() => [sts.array(() => v1030.ProxyDefinition), sts.bigint()])
+    ) as ProxiesV1030,
     /**
      *  The set of account proxies. Maps the account which has delegated to the accounts
      *  which are being delegated to, together with the amount held on deposit.
@@ -64,6 +86,69 @@ export interface ProxiesMatrixEnjinV1012 {
         block: Block,
         key: matrixEnjinV1012.AccountId32
     ): AsyncIterable<[k: matrixEnjinV1012.AccountId32, v: [matrixEnjinV1012.ProxyDefinition[], bigint] | undefined][]>
+}
+
+/**
+ *  The set of account proxies. Maps the account which has delegated to the accounts
+ *  which are being delegated to, together with the amount held on deposit.
+ */
+export interface ProxiesEnjinV1050 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [enjinV1050.ProxyDefinition[], bigint]
+    get(block: Block, key: enjinV1050.AccountId32): Promise<[enjinV1050.ProxyDefinition[], bigint] | undefined>
+    getMany(
+        block: Block,
+        keys: enjinV1050.AccountId32[]
+    ): Promise<([enjinV1050.ProxyDefinition[], bigint] | undefined)[]>
+    getKeys(block: Block): Promise<enjinV1050.AccountId32[]>
+    getKeys(block: Block, key: enjinV1050.AccountId32): Promise<enjinV1050.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<enjinV1050.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: enjinV1050.AccountId32): AsyncIterable<enjinV1050.AccountId32[]>
+    getPairs(
+        block: Block
+    ): Promise<[k: enjinV1050.AccountId32, v: [enjinV1050.ProxyDefinition[], bigint] | undefined][]>
+    getPairs(
+        block: Block,
+        key: enjinV1050.AccountId32
+    ): Promise<[k: enjinV1050.AccountId32, v: [enjinV1050.ProxyDefinition[], bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: enjinV1050.AccountId32, v: [enjinV1050.ProxyDefinition[], bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: enjinV1050.AccountId32
+    ): AsyncIterable<[k: enjinV1050.AccountId32, v: [enjinV1050.ProxyDefinition[], bigint] | undefined][]>
+}
+
+/**
+ *  The set of account proxies. Maps the account which has delegated to the accounts
+ *  which are being delegated to, together with the amount held on deposit.
+ */
+export interface ProxiesV1030 {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): [v1030.ProxyDefinition[], bigint]
+    get(block: Block, key: v1030.AccountId32): Promise<[v1030.ProxyDefinition[], bigint] | undefined>
+    getMany(block: Block, keys: v1030.AccountId32[]): Promise<([v1030.ProxyDefinition[], bigint] | undefined)[]>
+    getKeys(block: Block): Promise<v1030.AccountId32[]>
+    getKeys(block: Block, key: v1030.AccountId32): Promise<v1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1030.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1030.AccountId32): AsyncIterable<v1030.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1030.AccountId32, v: [v1030.ProxyDefinition[], bigint] | undefined][]>
+    getPairs(
+        block: Block,
+        key: v1030.AccountId32
+    ): Promise<[k: v1030.AccountId32, v: [v1030.ProxyDefinition[], bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block
+    ): AsyncIterable<[k: v1030.AccountId32, v: [v1030.ProxyDefinition[], bigint] | undefined][]>
+    getPairsPaged(
+        pageSize: number,
+        block: Block,
+        key: v1030.AccountId32
+    ): AsyncIterable<[k: v1030.AccountId32, v: [v1030.ProxyDefinition[], bigint] | undefined][]>
 }
 
 /**

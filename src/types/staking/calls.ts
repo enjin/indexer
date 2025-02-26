@@ -5,7 +5,7 @@ import * as enjinV101 from '../enjinV101'
 import * as v105 from '../v105'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
 export const bond = {
     name: 'Staking.bond',
@@ -988,13 +988,13 @@ export const restoreLedger = {
      * ledger associated with the stash. If the input parameters are not set, the ledger will
      * be reset values from on-chain state.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Staking.restore_ledger',
         sts.struct({
-            stash: v1050.AccountId32,
-            maybeController: sts.option(() => v1050.AccountId32),
+            stash: enjinV1050.AccountId32,
+            maybeController: sts.option(() => enjinV1050.AccountId32),
             maybeTotal: sts.option(() => sts.bigint()),
-            maybeUnlocking: sts.option(() => sts.array(() => v1050.UnlockChunk)),
+            maybeUnlocking: sts.option(() => sts.array(() => enjinV1050.UnlockChunk)),
         })
     ),
 }
