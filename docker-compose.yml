@@ -1,6 +1,6 @@
 services:
-  indexer_db:
-    container_name: indexer_db
+  indexer_db_old:
+    container_name: indexer_db_old
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - indexer_db:/var/lib/postgresql/data
+      - indexer_db_old:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     command: [
@@ -16,65 +16,6 @@ services:
       "-c", "max_connections=200"
     ]
 
-  indexer_redis:
-    container_name: indexer_redis
-    image: redis:7.0
-    restart: on-failure
-    volumes:
-      - redis_db:/data
-    ports:
-      - "6389:6379"
-
-  indexer_processor:
-    container_name: indexer_processor
-    restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
-    environment:
-      CONTAINER_ROLE: processor
-    build:
-      context: .
-      args:
-        SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    volumes:
-      - .env:/squid/.env
-    depends_on:
-      - indexer_db
-      - indexer_worker
-
-  indexer_graphql:
-    container_name: indexer_graphql
-    restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
-    environment:
-      CONTAINER_ROLE: graphql
-    build:
-      context: .
-    ports:
-      - "4000:4000"
-      - "8080:8080"
-    volumes:
-      - .env:/squid/.env
-    depends_on:
-      - indexer_db
-      - indexer_processor
-
-  indexer_worker:
-    container_name: indexer_worker
-    restart: unless-stopped
-    image: ghcr.io/efinity/indexer:${VERSION:-latest}
-    environment:
-      CONTAINER_ROLE: worker
-    build:
-      context: .
-    ports:
-      - "9090:9090"
-    volumes:
-      - .env:/squid/.env
-    depends_on:
-      - indexer_db
-      - indexer_redis
-
 volumes:
-  indexer_db:
-  redis_db:
+  indexer_db_old:
   
