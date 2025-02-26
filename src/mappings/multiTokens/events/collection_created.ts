@@ -18,16 +18,35 @@ import {
 import { CommonContext, BlockHeader, CallItem, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
 import { Sns } from '../../../common/sns'
-import { DefaultRoyalty } from '../../../types/generated/v500'
+import { DefaultRoyalty as DefaultRoyalty500 } from '../../../types/generated/v500'
+import { DefaultRoyalty as DefaultRoyalty1020 } from '../../../types/generated/v1020'
 import { AssetId } from '../../../types/generated/matrixEnjinV603'
 
+type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
+
 async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
-    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
+    const beneficiaries =
+        'beneficiaries' in royalty
+            ? royalty.beneficiaries
+            : [
+                  {
+                      beneficiary: royalty.beneficiary,
+                      percentage: royalty.percentage,
+                  },
+              ]
+
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new Royalty({
+                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
     return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: royalty.percentage,
-        }),
+        royalty: beneficiariesWithAccount[0],
+        beneficiaries: beneficiariesWithAccount,
     })
 }
 
@@ -97,6 +116,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'MultiTokens.create_collection') {
         if (calls.multiTokens.createCollection.matrixEnjinV1012.is(call)) {
             const data = calls.multiTokens.createCollection.matrixEnjinV1012.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
+        if (calls.multiTokens.createCollection.v1020.is(call)) {
+            const data = calls.multiTokens.createCollection.v1020.decode(call)
             const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
             const royalty = data.descriptor.policy.market?.royalty
             const market = royalty ? await getMarket(ctx, royalty) : null

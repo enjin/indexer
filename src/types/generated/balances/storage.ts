@@ -4,6 +4,7 @@ import * as v602 from '../v602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1020 from '../v1020'
 
 export const totalIssuance =  {
     /**
@@ -313,6 +314,10 @@ export const holds =  {
      *  Holds on account balances.
      */
     v1010: new StorageType('Balances.Holds', 'Default', [v1010.AccountId32], sts.array(() => v1010.IdAmount)) as HoldsV1010,
+    /**
+     *  Holds on account balances.
+     */
+    v1020: new StorageType('Balances.Holds', 'Default', [v1020.AccountId32], sts.array(() => v1020.IdAmount)) as HoldsV1020,
 }
 
 /**
@@ -385,6 +390,24 @@ export interface HoldsV1010  {
     getPairs(block: Block, key: v1010.AccountId32): Promise<[k: v1010.AccountId32, v: (v1010.IdAmount[] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1010.AccountId32, v: (v1010.IdAmount[] | undefined)][]>
     getPairsPaged(pageSize: number, block: Block, key: v1010.AccountId32): AsyncIterable<[k: v1010.AccountId32, v: (v1010.IdAmount[] | undefined)][]>
+}
+
+/**
+ *  Holds on account balances.
+ */
+export interface HoldsV1020  {
+    is(block: RuntimeCtx): boolean
+    getDefault(block: Block): v1020.IdAmount[]
+    get(block: Block, key: v1020.AccountId32): Promise<(v1020.IdAmount[] | undefined)>
+    getMany(block: Block, keys: v1020.AccountId32[]): Promise<(v1020.IdAmount[] | undefined)[]>
+    getKeys(block: Block): Promise<v1020.AccountId32[]>
+    getKeys(block: Block, key: v1020.AccountId32): Promise<v1020.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block): AsyncIterable<v1020.AccountId32[]>
+    getKeysPaged(pageSize: number, block: Block, key: v1020.AccountId32): AsyncIterable<v1020.AccountId32[]>
+    getPairs(block: Block): Promise<[k: v1020.AccountId32, v: (v1020.IdAmount[] | undefined)][]>
+    getPairs(block: Block, key: v1020.AccountId32): Promise<[k: v1020.AccountId32, v: (v1020.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: v1020.AccountId32, v: (v1020.IdAmount[] | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: v1020.AccountId32): AsyncIterable<[k: v1020.AccountId32, v: (v1020.IdAmount[] | undefined)][]>
 }
 
 export const freezes =  {

@@ -34,6 +34,10 @@ function getEventData(ctx: CommonContext, event: EventItem) {
         return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
     }
 
+    if (events.marketplace.listingCreated.v1020.is(event)) {
+        return events.marketplace.listingCreated.v1020.decode(event)
+    }
+
     if (events.marketplace.listingCreated.v1011.is(event)) {
         return events.marketplace.listingCreated.v1011.decode(event)
     }
@@ -133,7 +137,8 @@ export async function listingCreated(
         case ListingType.Auction:
             listingData = new AuctionData({
                 listingType: ListingType.Auction,
-                startHeight: data.listing.data.value.startBlock,
+                // TODO: There is no start block for auctions anymore
+                startHeight: 'startBlock' in data.listing.data.value ? data.listing.data.value.startBlock : 0,
                 endHeight: data.listing.data.value.endBlock,
             })
             break

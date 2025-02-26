@@ -6,6 +6,7 @@ import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1014 from '../matrixEnjinV1014'
+import * as v1020 from '../v1020'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -87,6 +88,22 @@ export const listingCreated =  {
              * The listing
              */
             listing: v1011.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    v1020: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: v1020.H256,
+            /**
+             * The listing
+             */
+            listing: v1020.Listing,
         })
     ),
 }
@@ -507,6 +524,19 @@ export const listingRemovedUnderMinimum =  {
              * Id for the listing
              */
             listingId: matrixEnjinV1014.H256,
+        })
+    ),
+}
+
+export const listingUpgraded =  {
+    name: 'Marketplace.ListingUpgraded',
+    /**
+     * A listing has been upgraded
+     */
+    v1020: new EventType(
+        'Marketplace.ListingUpgraded',
+        sts.struct({
+            listingId: v1020.H256,
         })
     ),
 }

@@ -13,6 +13,7 @@ import * as v1010 from '../v1010'
 import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
+import * as v1020 from '../v1020'
 
 export const batch =  {
     name: 'MatrixUtility.batch',
@@ -273,6 +274,28 @@ export const batch =  {
         'MatrixUtility.batch',
         sts.struct({
             calls: sts.array(() => v1012.Call),
+            continueOnFailure: sts.boolean(),
+        })
+    ),
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    v1020: new CallType(
+        'MatrixUtility.batch',
+        sts.struct({
+            calls: sts.array(() => v1020.Call),
             continueOnFailure: sts.boolean(),
         })
     ),

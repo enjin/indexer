@@ -1,12 +1,16 @@
-import { hexToString } from '@polkadot/util'
 import { TokenAccount } from '../../../model'
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { UnsupportedEventError, throwError } from '../../../common/errors'
+import { getReserveId } from './reserved'
 
 function getEventData(eventItem: EventItem) {
     if (events.multiTokens.unreserved.matrixEnjinV603.is(eventItem)) {
         return events.multiTokens.unreserved.matrixEnjinV603.decode(eventItem)
+    }
+
+    if (events.multiTokens.unreserved.v1020.is(eventItem)) {
+        return events.multiTokens.unreserved.v1020.decode(eventItem)
     }
 
     throw new UnsupportedEventError(events.multiTokens.unreserved.name)
@@ -31,7 +35,7 @@ export async function unreserved(ctx: CommonContext, block: BlockHeader, item: E
     } else {
         tokenAccount.balance += data.amount
         tokenAccount.reservedBalance -= data.amount
-        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === hexToString(data.reserveId))
+        const pallet = tokenAccount.namedReserves?.find((nr) => nr.pallet === getReserveId(data.reserveId))
 
         if (pallet) {
             pallet.amount -= data.amount

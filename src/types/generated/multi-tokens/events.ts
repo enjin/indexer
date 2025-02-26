@@ -8,6 +8,7 @@ import * as v1000 from '../v1000'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1020 from '../v1020'
 
 export const collectionCreated =  {
     name: 'MultiTokens.CollectionCreated',
@@ -66,6 +67,22 @@ export const collectionMutated =  {
              * The mutation that was applied to the collection
              */
             mutation: matrixEnjinV603.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * A collection was mutated
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionMutated',
+        sts.struct({
+            /**
+             * collection id of the Collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The mutation that was applied to the collection
+             */
+            mutation: v1020.DefaultCollectionMutation,
         })
     ),
 }
@@ -214,6 +231,26 @@ export const tokenMutated =  {
              * mutation that was applied to the [`Token`](ep_multi_tokens::Token)
              */
             mutation: v1010.DefaultTokenMutation,
+        })
+    ),
+    /**
+     * A token was mutated
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenMutated',
+        sts.struct({
+            /**
+             * The collection id where the Token belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * Id of the Token mutated
+             */
+            tokenId: sts.bigint(),
+            /**
+             * mutation that was applied to the Token
+             */
+            mutation: v1020.DefaultTokenMutation,
         })
     ),
 }
@@ -567,6 +604,34 @@ export const reserved =  {
             reserveId: sts.option(() => sts.bytes()),
         })
     ),
+    /**
+     * Token units were reserved
+     */
+    v1020: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: v1020.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: v1020.RuntimeHoldReason,
+        })
+    ),
 }
 
 export const unreserved =  {
@@ -597,6 +662,34 @@ export const unreserved =  {
              * The identifier of the unreserved tokens
              */
             reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    v1020: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: v1020.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: v1020.RuntimeHoldReason,
         })
     ),
 }
@@ -635,6 +728,38 @@ export const movedReserves =  {
             reserveId: sts.option(() => sts.bytes()),
         })
     ),
+    /**
+     * Reserved token units were moved
+     */
+    v1020: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v1020.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v1020.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: v1020.RuntimeHoldReason,
+        })
+    ),
 }
 
 export const reserveRepatriated =  {
@@ -669,6 +794,38 @@ export const reserveRepatriated =  {
              * The identifier of the moved reserves
              */
             reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    v1020: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v1020.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v1020.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: v1020.RuntimeHoldReason,
         })
     ),
 }
@@ -855,6 +1012,22 @@ export const collectionUpdated =  {
             value: sts.option(() => v1010.Collection),
         })
     ),
+    /**
+     * Collection storage was set to `value`
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => v1020.Collection),
+        })
+    ),
 }
 
 export const tokenUpdated =  {
@@ -957,6 +1130,26 @@ export const tokenUpdated =  {
              * new value of Token storage
              */
             value: sts.option(() => v1010.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => v1020.Token),
         })
     ),
 }
@@ -1094,6 +1287,30 @@ export const tokenAccountUpdated =  {
              * new value of TokenAccount storage
              */
             value: sts.option(() => v1010.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: v1020.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => v1020.TokenAccount),
         })
     ),
 }
@@ -1353,6 +1570,30 @@ export const infused =  {
             amount: sts.bigint(),
         })
     ),
+    /**
+     * The token was infused with ENJ
+     */
+    v1020: new EventType(
+        'MultiTokens.Infused',
+        sts.struct({
+            /**
+             * The collection that was infused
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was infused
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that infused the token
+             */
+            accountId: v1020.RootOrSigned,
+            /**
+             * The amount that was infused
+             */
+            amount: sts.bigint(),
+        })
+    ),
 }
 
 export const migrationStep =  {
@@ -1371,6 +1612,290 @@ export const migrationStep =  {
              * The migration phase
              */
             phase: sts.number(),
+        })
+    ),
+}
+
+export const collectionDepositRecalculationInProgress =  {
+    name: 'MultiTokens.CollectionDepositRecalculationInProgress',
+    /**
+     * Collection deposit update in progress
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionDepositRecalculationInProgress',
+        sts.struct({
+            /**
+             * The collection id
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The number of tokens processed
+             */
+            processedTokens: sts.number(),
+            /**
+             * The number of attributes processed
+             */
+            processedAttributes: sts.number(),
+        })
+    ),
+}
+
+export const collectionDepositUpdateCompleted =  {
+    name: 'MultiTokens.CollectionDepositUpdateCompleted',
+    /**
+     * Collection deposit update completed
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionDepositUpdateCompleted',
+        sts.struct({
+            /**
+             * The collection id
+             */
+            collectionId: sts.bigint(),
+        })
+    ),
+}
+
+export const tokenAccountUpgraded =  {
+    name: 'MultiTokens.TokenAccountUpgraded',
+    /**
+     * A token account was upgraded
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenAccountUpgraded',
+        sts.struct({
+            /**
+             * The account's collection id
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The account's token id
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The holder of the account
+             */
+            accountId: v1020.AccountId32,
+            /**
+             * The version of the storage this element was migrated to
+             */
+            storageVersion: sts.number(),
+        })
+    ),
+}
+
+export const tokenUpgraded =  {
+    name: 'MultiTokens.TokenUpgraded',
+    /**
+     * A token was upgraded
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenUpgraded',
+        sts.struct({
+            /**
+             * The collection id of the token
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The version of the storage this element was migrated to
+             */
+            storageVersion: sts.number(),
+        })
+    ),
+}
+
+export const collectionUpgraded =  {
+    name: 'MultiTokens.CollectionUpgraded',
+    /**
+     * A collection was upgraded
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionUpgraded',
+        sts.struct({
+            /**
+             * The collection id
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The version of the storage this element was migrated to
+             */
+            storageVersion: sts.number(),
+        })
+    ),
+}
+
+export const collectionAccountApprovalsUpdated =  {
+    name: 'MultiTokens.CollectionAccountApprovalsUpdated',
+    /**
+     * A collection was upgraded
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionAccountApprovalsUpdated',
+        sts.struct({
+            /**
+             * The collection id
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The account that owns the collection
+             */
+            accountId: v1020.AccountId32,
+            /**
+             * Approval expirations before the update call
+             */
+            oldApprovals: sts.array(() => sts.tuple(() => [v1020.AccountId32, sts.option(() => sts.number())])),
+        })
+    ),
+}
+
+export const collectionAccountApprovalsMismatch =  {
+    name: 'MultiTokens.CollectionAccountApprovalsMismatch',
+    /**
+     * A given collection expiration list doesn't its current approvals
+     */
+    v1020: new EventType(
+        'MultiTokens.CollectionAccountApprovalsMismatch',
+        sts.struct({
+            /**
+             * The collection id
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The account that owns the collection
+             */
+            accountId: v1020.AccountId32,
+        })
+    ),
+}
+
+export const tokenGroupCreated =  {
+    name: 'MultiTokens.TokenGroupCreated',
+    /**
+     * A new token group was created
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupCreated',
+        sts.struct({
+            /**
+             * collection where the token group belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+        })
+    ),
+}
+
+export const tokenGroupDestroyed =  {
+    name: 'MultiTokens.TokenGroupDestroyed',
+    /**
+     * A token group was destroyed
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupDestroyed',
+        sts.struct({
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+        })
+    ),
+}
+
+export const tokenGroupAdded =  {
+    name: 'MultiTokens.TokenGroupAdded',
+    /**
+     * A token was added to a group
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupAdded',
+        sts.struct({
+            /**
+             * collection id of the token
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token
+             */
+            tokenId: sts.bigint(),
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+        })
+    ),
+}
+
+export const tokenGroupRemoved =  {
+    name: 'MultiTokens.TokenGroupRemoved',
+    /**
+     * A token was removed from a group
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupRemoved',
+        sts.struct({
+            /**
+             * collection id of the token
+             */
+            collectionId: sts.bigint(),
+            /**
+             * id of the token
+             */
+            tokenId: sts.bigint(),
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+        })
+    ),
+}
+
+export const tokenGroupAttributeSet =  {
+    name: 'MultiTokens.TokenGroupAttributeSet',
+    /**
+     * New attribute has been set on a token group
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupAttributeSet',
+        sts.struct({
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+            /**
+             * key of attribute set
+             */
+            key: sts.bytes(),
+            /**
+             * value of attribute set
+             */
+            value: sts.bytes(),
+        })
+    ),
+}
+
+export const tokenGroupAttributeRemoved =  {
+    name: 'MultiTokens.TokenGroupAttributeRemoved',
+    /**
+     * An attribute has been removed from a token group
+     */
+    v1020: new EventType(
+        'MultiTokens.TokenGroupAttributeRemoved',
+        sts.struct({
+            /**
+             * id of the token group
+             */
+            tokenGroupId: sts.bigint(),
+            /**
+             * key of attribute cleared
+             */
+            key: sts.bytes(),
         })
     ),
 }

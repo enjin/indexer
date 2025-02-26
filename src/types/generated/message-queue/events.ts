@@ -1,5 +1,6 @@
 import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as v1020 from '../v1020'
 
 export const processingFailed =  {
     name: 'MessageQueue.ProcessingFailed',
@@ -24,6 +25,29 @@ export const processingFailed =  {
              * by the `MessageProcessor`.
              */
             error: matrixEnjinV1012.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    v1020: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: v1020.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: v1020.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             * 
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: v1020.ProcessMessageError,
         })
     ),
 }

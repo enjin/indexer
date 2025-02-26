@@ -13,12 +13,45 @@ import {
 } from '../../../model'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { DefaultRoyalty } from '../../../types/generated/v500'
 import { Sns } from '../../../common/sns'
+import { DefaultRoyalty as DefaultRoyalty1020 } from '../../../types/generated/v1020'
+import { DefaultRoyalty as DefaultRoyalty500 } from '../../../types/generated/v500'
+
+type DefaultRoyalty = DefaultRoyalty500 | DefaultRoyalty1020
+
+async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
+    const beneficiaries =
+        'beneficiaries' in royalty
+            ? royalty.beneficiaries
+            : [
+                  {
+                      beneficiary: royalty.beneficiary,
+                      percentage: royalty.percentage,
+                  },
+              ]
+
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new Royalty({
+                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
+    return new MarketPolicy({
+        royalty: beneficiariesWithAccount[0],
+        beneficiaries: beneficiariesWithAccount,
+    })
+}
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.collectionMutated.matrixEnjinV603.is(event)) {
         return events.multiTokens.collectionMutated.matrixEnjinV603.decode(event)
+    }
+
+    if (events.multiTokens.collectionMutated.v1020.is(event)) {
+        return events.multiTokens.collectionMutated.v1020.decode(event)
     }
 
     throw new UnsupportedEventError(events.multiTokens.collectionMutated.name)
@@ -33,16 +66,6 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
         tokenId: null,
         data: new MultiTokensCollectionMutated({
             collectionId: data.collectionId,
-        }),
-    })
-}
-
-async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty): Promise<MarketPolicy> {
-    const account = await getOrCreateAccount(ctx, royalty.beneficiary)
-    return new MarketPolicy({
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: royalty.percentage,
         }),
     })
 }
@@ -77,6 +100,7 @@ export async function collectionMutated(
         } else {
             const currentRoyalty = collection.marketPolicy?.royalty.percentage || 0
             collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
+
             if (collection.marketPolicy.royalty.percentage > currentRoyalty) {
                 // royalty has increased
                 // we need to update all active listings

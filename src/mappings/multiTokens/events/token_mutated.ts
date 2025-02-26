@@ -15,8 +15,11 @@ import {
 import { isNonFungible } from '../utils/helpers'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { getOrCreateAccount } from '../../util/entities'
-import { TokenMarketBehavior } from '../../../types/generated/v500'
+import { TokenMarketBehavior as TokenMarketBehavior500 } from '../../../types/generated/v500'
+import { TokenMarketBehavior as TokenMarketBehavior1020 } from '../../../types/generated/v1020'
 import { syncCollectionStats } from '../../../jobs/collection-stats'
+
+type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
 function getEventData(event: EventItem) {
     if (events.multiTokens.tokenMutated.matrixEnjinV1012.is(event)) {
@@ -69,14 +72,29 @@ async function getBehavior(
             type: TokenBehaviorType.IsCurrency,
         })
     }
+    const beneficiaries =
+        'beneficiaries' in behavior.value
+            ? behavior.value.beneficiaries
+            : [
+                  {
+                      beneficiary: behavior.value.beneficiary,
+                      percentage: behavior.value.percentage,
+                  },
+              ]
 
-    const account = await getOrCreateAccount(ctx, behavior.value.beneficiary)
+    const beneficiariesWithAccount = await Promise.all(
+        beneficiaries.map(async (v) => {
+            return new Royalty({
+                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+                percentage: v.percentage,
+            })
+        })
+    )
+
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
-        royalty: new Royalty({
-            beneficiary: account.id,
-            percentage: behavior.value.percentage,
-        }),
+        royalty: beneficiariesWithAccount[0],
+        beneficiaries: beneficiariesWithAccount,
     })
 }
 

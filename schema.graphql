@@ -478,7 +478,8 @@ type TransferPolicy {
 }
 
 type MarketPolicy {
-  royalty: Royalty!
+  royalty: Royalty! @deprecated
+  beneficiaries: [Royalty!]
 }
 
 type RoyaltyCurrency @entity {
@@ -617,7 +618,8 @@ type Royalty {
 
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
-  royalty: Royalty!
+  royalty: Royalty! @deprecated
+  beneficiaries: [Royalty!]
 }
 
 type TokenBehaviorIsCurrency {
