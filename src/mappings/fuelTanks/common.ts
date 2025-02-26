@@ -131,6 +131,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
             return fuelTanks.dispatch.matrixEnjinV603.decode(call)
         }
 
+        if (fuelTanks.dispatch.v1020.is(call)) {
+            return fuelTanks.dispatch.v1020.decode(call)
+        }
+
         if (fuelTanks.dispatch.v1012.is(call)) {
             return fuelTanks.dispatch.v1012.decode(call)
         }
@@ -204,6 +208,10 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
 
     if (fuelTanks.dispatchAndTouch.matrixEnjinV603.is(call)) {
         return fuelTanks.dispatchAndTouch.matrixEnjinV603.decode(call)
+    }
+
+    if (fuelTanks.dispatchAndTouch.v1020.is(call)) {
+        return fuelTanks.dispatchAndTouch.v1020.decode(call)
     }
 
     if (fuelTanks.dispatchAndTouch.v1012.is(call)) {
