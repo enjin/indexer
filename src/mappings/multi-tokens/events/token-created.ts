@@ -7,12 +7,6 @@ import { TokenCreated } from './types'
 import { unwrapAccount } from '../../../utils/entities'
 
 export function tokenCreated(event: EventItem): TokenCreated {
-    console.log(event)
-    console.log(event.call)
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    console.log(JSON.stringify(event.call.args))
-
     return match(event)
         .returnType<TokenCreated>()
         .when(

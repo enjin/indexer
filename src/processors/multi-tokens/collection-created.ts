@@ -47,6 +47,10 @@ export async function collectionCreated(
     }
 
     const callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
+    const forceSingleMint =
+        'forceSingleMint' in callData.descriptor.policy.mint
+            ? callData.descriptor.policy.mint.forceSingleMint
+            : callData.descriptor.policy.mint.forceCollapsingSupply
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
@@ -56,8 +60,7 @@ export async function collectionCreated(
         mintPolicy: new MintPolicy({
             maxTokenCount: callData.descriptor.policy.mint.maxTokenCount,
             maxTokenSupply: callData.descriptor.policy.mint.maxTokenSupply,
-            // TODO: Check forceCollapsingSupply too
-            forceSingleMint: callData.descriptor.policy.mint.forceSingleMint,
+            forceSingleMint: forceSingleMint,
         }),
         // TODO: Fix this
         // marketPolicy: callData.descriptor.policy.market,
