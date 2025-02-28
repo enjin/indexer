@@ -500,6 +500,39 @@ async function getCallData(ctx: CommonContext, call: CallItem, event: ReturnType
             }
         }
 
+        if (calls.multiTokens.mint.v1020.is(call)) {
+            const { collectionId } = calls.multiTokens.mint.v1020.decode(call)
+            const { params } = calls.multiTokens.mint.v1020.decode(call)
+            if (params.__kind !== 'CreateToken') {
+                throw new Error('Invalid params')
+            }
+            const cap = params.cap ? getCapType(params.cap) : null
+            const behavior = params.behavior ? await getBehavior(ctx, params.behavior) : null
+            const freezeState = params.freezeState ? getFreezeState(params.freezeState) : null
+            const unitPrice: bigint = 10_000_000_000_000_000n
+            const minimumBalance = 1n
+
+            return {
+                collectionId,
+                tokenId: params.tokenId,
+                initialSupply: params.initialSupply,
+                minimumBalance,
+                unitPrice,
+                cap,
+                behavior,
+                freezeState,
+                listingForbidden: params.listingForbidden ?? false,
+                nativeMetadata: new NativeTokenMetadata({
+                    decimalCount: params.metadata.decimalCount,
+                    name: hexToString(params.metadata.name),
+                    symbol: hexToString(params.metadata.symbol),
+                }),
+                anyoneCanInfuse: params.anyoneCanInfuse,
+                infusion: params.infusion,
+                accountDepositCount: params.accountDepositCount,
+            }
+        }
+
         if (calls.multiTokens.mint.v1010.is(call)) {
             const { collectionId } = calls.multiTokens.mint.v1010.decode(call)
             const { params } = calls.multiTokens.mint.v1010.decode(call)
