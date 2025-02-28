@@ -46,8 +46,10 @@ export async function fuelTankCreated(
 
     let providesDeposit: boolean | undefined
     if (call.descriptor.providesDeposit !== undefined) {
+        //  'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
         providesDeposit = call.descriptor.providesDeposit
     }
+    //  'coveragePolicy' in callData.descriptor ? CoveragePolicy[callData.descriptor.coveragePolicy.__kind] : null,
 
     const fuelTank = new FuelTank({
         id: tankAccount.id,
@@ -56,11 +58,8 @@ export async function fuelTankCreated(
         owner,
         isFrozen: false,
         accountCount: 0,
-        providesDeposit: providesDeposit,
+        providesDeposit: providesDeposit ?? false,
         coveragePolicy: null,
-        // providesDeposit: 'providesDeposit' in callData.descriptor ? callData.descriptor.providesDeposit : false,
-        // coveragePolicy:
-        //     'coveragePolicy' in callData.descriptor ? CoveragePolicy[callData.descriptor.coveragePolicy.__kind] : null,
         userAccountManagement,
     })
 
