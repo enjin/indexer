@@ -22,6 +22,19 @@ import { syncCollectionStats } from '../../../jobs/collection-stats'
 type TokenMarketBehavior = TokenMarketBehavior500 | TokenMarketBehavior1020
 
 function getEventData(event: EventItem) {
+    if (events.multiTokens.tokenMutated.v1020.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.v1020.decode(event)
+
+        return {
+            collectionId,
+            tokenId,
+            behavior: mutation.behavior,
+            name: mutation.name,
+            anyoneCanInfuse: mutation.anyoneCanInfuse,
+            listingForbidden: mutation.listingForbidden,
+        }
+    }
+
     if (events.multiTokens.tokenMutated.matrixEnjinV1012.is(event)) {
         const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV1012.decode(event)
 
