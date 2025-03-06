@@ -3,10 +3,15 @@ import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokens
 import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
+import { u8aToHex } from '@polkadot/util'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.infused.matrixEnjinV1012.is(event)) {
         return events.multiTokens.infused.matrixEnjinV1012.decode(event)
+    }
+
+    if (events.multiTokens.infused.v1020.is(event)) {
+        return events.multiTokens.infused.v1020.decode(event)
     }
 
     throw new UnsupportedEventError(events.multiTokens.infused.name)
@@ -17,6 +22,13 @@ function getEvent(
     data: ReturnType<typeof getEventData>,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
+    const accountId =
+        typeof data.accountId == 'string'
+            ? data.accountId
+            : data.accountId.__kind == 'Root'
+              ? u8aToHex(new Uint8Array(32).fill(0))
+              : data.accountId.value
+
     const event = new EventModel({
         id: item.id,
         name: MultiTokensInfused.name,
@@ -27,7 +39,7 @@ function getEvent(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             amount: data.amount,
-            accountId: data.accountId,
+            accountId,
         }),
     })
 
@@ -36,7 +48,7 @@ function getEvent(
         new AccountTokenEvent({
             id: item.id,
             token,
-            from: new Account({ id: data.accountId }),
+            from: new Account({ id: accountId }),
             event,
         }),
     ]
