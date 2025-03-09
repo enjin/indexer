@@ -11,8 +11,8 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { match } from 'ts-pattern'
+import { QueueUtils } from '../../worker/queue'
 
 export async function frozen(
     ctx: CommonContext,
@@ -122,7 +122,7 @@ export async function frozen(
         })
     }
 
-    // syncCollectionStats(event.collectionId.toString())
+    QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.frozenEventModel(item, event)
 }

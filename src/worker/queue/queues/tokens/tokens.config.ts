@@ -9,6 +9,10 @@ const config: QueueConfigType = {
     queueName: QueuesEnum.TOKENS,
     defaultJobOptions: {
         attempts: 5,
+        backoff: {
+            type: 'exponential',
+            delay: 3000,
+        },
         removeOnComplete: 300,
     },
 }

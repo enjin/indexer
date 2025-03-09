@@ -31,7 +31,7 @@ export const indexer_fueltanks_enj_subsidy_avg = new client.Gauge({
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [tanks, dispatchedTotal, enjConsumed] = await Promise.all([
         em.query('SELECT COUNT(*) FROM fuel_tank'),

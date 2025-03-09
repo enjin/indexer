@@ -41,7 +41,7 @@ const ENJ_MIGRATION_TARGET = 1000_000_000
 const EFI_MIGRATION_TARGET = 500_000_000
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [enjMigrated, efiMigrated, claimRequests] = await Promise.all([
         em.query('SELECT SUM(enj_sum) FROM claim'),

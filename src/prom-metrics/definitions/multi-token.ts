@@ -73,7 +73,7 @@ export const indexer_multitokens_infused_unique_tokens_total = new client.Gauge(
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [
         uniqueHolders,

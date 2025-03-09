@@ -12,7 +12,7 @@ export class ComputeStatsProcessor implements ProcessorDef {
         }
 
         const { id: collectionId } = job.data
-        const em = connectionManager()
+        const em = await connectionManager()
 
         const promises = [
             em
@@ -67,6 +67,18 @@ export class ComputeStatsProcessor implements ProcessorDef {
         await em.update(Collection, { id: collectionId }, { stats })
 
         // done(null, { id: collectionId, stats: stats.toJSON() })
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

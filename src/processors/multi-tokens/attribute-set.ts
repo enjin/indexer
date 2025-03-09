@@ -14,9 +14,8 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import { safeString } from '../../utils/tools'
-// import { computeTraits } from '../../jobs/compute-traits'
-// import { processMetadata } from '../../jobs/process-metadata'
 import * as mappings from './../../mappings'
+import { QueueUtils } from '../../worker/queue'
 
 export async function attributeSet(
     ctx: CommonContext,
@@ -100,13 +99,13 @@ export async function attributeSet(
                 token.metadata = new Metadata()
             }
             await ctx.store.save(token)
-            // await processMetadata(token.id, 'token')
+            QueueUtils.dispatchComputeMetadata(token.id, 'token')
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             await ctx.store.save(collection)
-            // await processMetadata(collection.id, 'collection', false, true)
+            QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
         }
         await ctx.store.save(attribute)
     } else {
@@ -129,18 +128,18 @@ export async function attributeSet(
             }
             token.attributeCount += 1
             await ctx.store.save(token)
-            // await processMetadata(token.id, 'token')
+            QueueUtils.dispatchComputeMetadata(token.id, 'token')
         } else {
             if (!collection.metadata) {
                 collection.metadata = new Metadata()
             }
             collection.attributeCount += 1
             await ctx.store.save(collection)
-            // await processMetadata(collection.id, 'collection', false, true)
+            QueueUtils.dispatchComputeMetadata(collection.id, 'collection', false, true)
         }
     }
     if (token) {
-        // computeTraits(collection.id)
+        QueueUtils.dispatchComputeTraits(token.id)
     }
 
     return mappings.multiTokens.events.attributeSetEventModel(item, data)

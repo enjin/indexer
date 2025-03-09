@@ -37,9 +37,20 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 
 export class ComputeMetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        const jobData = job.data
-        const con = connectionManager()
+        const con = await connectionManager()
 
+        const result = await con.query(
+            `
+        SELECT count(*) as active_connections 
+        FROM pg_stat_activity 
+        WHERE datname = $1
+      `,
+            [con.connection.options.database]
+        )
+
+        await job.log(`Active connections: ${parseInt(result[0].active_connections)}`)
+
+        const jobData = job.data
         await con.transaction('READ UNCOMMITTED', async (em) => {
             let resource: Collection | Token | null
             let attributes: Attribute[] = []
@@ -165,6 +176,18 @@ export class ComputeMetadataProcessor implements ProcessorDef {
                 // done('message' in e ? e.message : e, null)
             }
         })
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

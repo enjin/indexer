@@ -1,5 +1,3 @@
-import DeleteTraitsProcessor from './delete-traits.processor'
-
-const instance = new DeleteTraitsProcessor()
+import instance from './delete-traits.processor'
 
 export default instance.handle

@@ -24,7 +24,7 @@ export const indexer_transactions_token_transfer_total = new client.Gauge({
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [extrinsicsTotal, enjTransferTotal, tokenTransferTotal] = await Promise.all([
         em.query('SELECT COUNT(*) FROM extrinsic WHERE success = true'),

@@ -6,7 +6,7 @@ import { QueueUtils } from '../..'
 
 export class ComputeCollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        const em = connectionManager()
+        const em = await connectionManager()
 
         const collections = await em.find(Collection, {
             select: ['id'],
@@ -16,7 +16,17 @@ export class ComputeCollectionsProcessor implements ProcessorDef {
             QueueUtils.dispatchComputeStats(collection.id)
             QueueUtils.dispatchComputeTraits(collection.id)
         })
+    }
 
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
         await job.log('Finished computing collections')
     }
 }

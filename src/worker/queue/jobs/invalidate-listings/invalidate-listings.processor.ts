@@ -7,7 +7,7 @@ import { Brackets } from 'typeorm'
 export default class InvalidateListingsProcessor implements ProcessorDef {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async handle(job: Job): Promise<void> {
-        const con = connectionManager()
+        const con = await connectionManager()
 
         await con.transaction('READ COMMITTED', async (em) => {
             const status: { height: number }[] = await em.query(
@@ -41,5 +41,17 @@ export default class InvalidateListingsProcessor implements ProcessorDef {
 
             // done(null, { at: height, affected: q.affected, raw: q.raw })
         })
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }

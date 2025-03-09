@@ -8,7 +8,7 @@ import { decodeAddress } from '@polkadot/util-crypto'
 
 export class FetchBalancesProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        const ctx = dataHandlerContext()
+        const ctx = await dataHandlerContext()
 
         const { ids } = job.data
         const data: SystemAccount[] = await fetchBalances(ids)
@@ -30,6 +30,18 @@ export class FetchBalancesProcessor implements ProcessorDef {
         await Promise.all(promises)
 
         await job.log('Finished fetching balances')
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

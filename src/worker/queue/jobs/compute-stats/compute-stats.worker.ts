@@ -1,4 +1,4 @@
-import { Worker } from 'bullmq'
+import { Job, Worker } from 'bullmq'
 import computeStatsConfig from './compute-stats.config'
 import instance from './compute-stats.processor'
 
@@ -10,7 +10,12 @@ const worker = new Worker(queueName, processor, {
     connection,
 })
 
-// worker.on('failed', instance.failed)
-// worker.on('completed', instance.completed)
+worker.on('failed', (job?: Job) => {
+    void instance.failed(job)
+})
+
+worker.on('completed', (job) => {
+    void instance.completed(job)
+})
 
 export default worker

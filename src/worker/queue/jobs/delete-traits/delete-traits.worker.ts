@@ -1,8 +1,6 @@
-import { Worker } from 'bullmq'
+import { Job, Worker } from 'bullmq'
 import deleteTraitsConfig from './delete-traits.config'
-import DeleteTraitsProcessor from './delete-traits.processor'
-
-const instance = new DeleteTraitsProcessor()
+import instance from './delete-traits.processor'
 
 const { queueName, connection, isSandboxed } = deleteTraitsConfig
 
@@ -12,7 +10,12 @@ const worker = new Worker(queueName, processor, {
     connection,
 })
 
-// worker.on('failed', instance.failed)
-// worker.on('completed', instance.completed)
+worker.on('failed', (job?: Job) => {
+    void instance.failed(job)
+})
+
+worker.on('completed', (job) => {
+    void instance.completed(job)
+})
 
 export default worker

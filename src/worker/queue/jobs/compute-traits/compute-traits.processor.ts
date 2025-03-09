@@ -1,4 +1,4 @@
-import { Job, JobData } from 'bullmq'
+import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { createHash } from 'crypto'
 import { connectionManager } from '../../../../contexts'
@@ -17,7 +17,7 @@ export class ComputeTraitsProcessor implements ProcessorDef {
             throw new Error('Collection ID not provided.')
         }
 
-        const em = connectionManager()
+        const em = await connectionManager()
 
         const traitTypeMap = new Map<string, TraitValueMap>()
         const tokenTraitMap = new Map<string, string[]>()
@@ -126,6 +126,18 @@ export class ComputeTraitsProcessor implements ProcessorDef {
 
         // computeRarityRank(collectionId)
         // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

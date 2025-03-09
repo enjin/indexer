@@ -8,7 +8,11 @@ const config: QueueConfigType = {
     telemetry: new BullMQOtel('enjin'),
     queueName: QueuesEnum.BALANCES,
     defaultJobOptions: {
-        attempts: 3,
+        attempts: 5,
+        backoff: {
+            type: 'exponential',
+            delay: 3000,
+        },
         removeOnComplete: 50,
     },
 }

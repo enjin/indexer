@@ -3,8 +3,8 @@ import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { match } from 'ts-pattern'
+import { QueueUtils } from '../../worker/queue'
 
 export async function thawed(
     ctx: CommonContext,
@@ -97,7 +97,7 @@ export async function thawed(
         })
     }
 
-    // syncCollectionStats(event.collectionId.toString())
+    QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.thawedEventModel(item, event)
 }

@@ -17,7 +17,7 @@ export const indexer_info_unique_enj_holders_total = new client.Gauge({
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [uniqueHolders, uniqueEnjHolders] = await Promise.all([
         em.query(

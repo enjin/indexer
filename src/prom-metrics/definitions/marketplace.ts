@@ -87,7 +87,7 @@ export const indexer_marketplace_unique_buyers_total = new client.Gauge({
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [
         tradesTotal,

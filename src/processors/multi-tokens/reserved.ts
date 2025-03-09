@@ -1,7 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
+import { QueueUtils } from '../../worker/queue'
 import { throwError } from '../../utils/errors'
 import * as mappings from './../../mappings'
 import { match, P } from 'ts-pattern'
@@ -45,5 +45,5 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
         )
     }
 
-    // syncCollectionStats(data.collectionId.toString())
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 }

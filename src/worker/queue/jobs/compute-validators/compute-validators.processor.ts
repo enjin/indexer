@@ -13,7 +13,7 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
 export default class ComputeValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         // const start = new Date()
-        const em = connectionManager()
+        const em = await connectionManager()
 
         const validators = await em
             .getRepository(Validator)
@@ -90,6 +90,18 @@ export default class ComputeValidatorsProcessor implements ProcessorDef {
         }
 
         // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

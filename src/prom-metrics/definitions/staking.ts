@@ -131,7 +131,7 @@ export const indexer_staking_fulfilled_exchange_amount_total = new client.Gauge(
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
     const { api } = await Rpc.getInstance()
 
     const activeEra = await api.query.staking.activeEra()

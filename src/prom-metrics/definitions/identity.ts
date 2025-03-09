@@ -38,7 +38,7 @@ export const indexer_identity_indeitities_sub_avg = new client.Gauge({
 })
 
 export default async () => {
-    const em = connectionManager()
+    const em = await connectionManager()
 
     const [registrars, mainIdentities, subIdentities, identities, subAvg] = await Promise.all([
         em.query('SELECT COUNT(*) FROM identity_registrar'),

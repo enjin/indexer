@@ -44,7 +44,7 @@ export class ComputeRarityProcessor implements ProcessorDef {
             throw new Error('Collection ID not provided.')
         }
 
-        const em = connectionManager()
+        const em = await connectionManager()
 
         console.time('rarity-ranker')
 
@@ -118,6 +118,18 @@ export class ComputeRarityProcessor implements ProcessorDef {
             console.error(error)
             // return done(error as Error)
         }
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

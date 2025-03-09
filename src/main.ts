@@ -12,12 +12,12 @@ import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './utils/entitie
 import { events, calls } from './types'
 import { BlockHeader, CallItem, CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './processors/claims/common'
-// import { syncAllCollections } from './jobs/collection-stats'
 // import { metadataQueue } from './jobs/process-metadata'
 import { processor } from './processor'
 // import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
+import { QueueUtils } from './worker/queue'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -230,7 +230,7 @@ processor.run(
                 if (block.header.height === config.lastBlockHeight) {
                     // await syncAllBalances(ctx, block.header)
                     // metadataQueue.resume().catch(() => {})
-                    // await syncAllCollections()
+                    QueueUtils.dispatchComputeCollections()
                 }
 
                 ctx.log.info(

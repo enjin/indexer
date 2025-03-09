@@ -2,9 +2,9 @@ import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
+import { QueueUtils } from '../../worker/queue'
 
 export async function transferred(
     ctx: CommonContext,
@@ -65,7 +65,7 @@ export async function transferred(
         )
     }
 
-    // syncCollectionStats(data.collectionId.toString())
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

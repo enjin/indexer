@@ -12,7 +12,7 @@ function isNotNull<T>(input: null | T): input is T {
 
 export class FetchAccountsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        const ctx = dataHandlerContext()
+        const ctx = await dataHandlerContext()
 
         const { ids } = job.data
         const data = await fetchAccountsDetail(ids)
@@ -32,6 +32,18 @@ export class FetchAccountsProcessor implements ProcessorDef {
         await ctx.store.save<Account>(accounts)
 
         await job.log('Finished fetching accounts')
+    }
+
+    async failed(job?: Job) {
+        if (!job) {
+            return
+        }
+
+        await job.log('Failed to compute collections')
+    }
+
+    async completed(job: Job) {
+        await job.log('Finished computing collections')
     }
 }
 

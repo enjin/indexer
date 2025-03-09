@@ -1,9 +1,9 @@
 import { throwError } from '../../utils/errors'
 import { Event as EventModel, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'
+import { QueueUtils } from '../../worker/queue'
 
 export async function tokenMutated(
     ctx: CommonContext,
@@ -51,7 +51,7 @@ export async function tokenMutated(
     token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
-    // syncCollectionStats(data.collectionId.toString())
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
 }
