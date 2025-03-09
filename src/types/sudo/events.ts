@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -11,7 +11,7 @@ import * as matrixV1010 from '../matrixV1010'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 
-export const sudid = {
+export const sudid =  {
     name: 'Sudo.Sudid',
     /**
      * A sudo just took place. \[result\]
@@ -19,10 +19,7 @@ export const sudid = {
     matrixV500: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -31,10 +28,7 @@ export const sudid = {
     matrixV602: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -43,10 +37,7 @@ export const sudid = {
     matrixV1000: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV1000.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV1000.DispatchError),
         })
     ),
     /**
@@ -55,10 +46,7 @@ export const sudid = {
     enjinV100: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => enjinV100.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
         })
     ),
     /**
@@ -67,10 +55,7 @@ export const sudid = {
     enjinV101: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => enjinV101.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
         })
     ),
     /**
@@ -79,10 +64,7 @@ export const sudid = {
     v100: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v100.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v100.DispatchError),
         })
     ),
     /**
@@ -91,10 +73,7 @@ export const sudid = {
     v104: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v104.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v104.DispatchError),
         })
     ),
     /**
@@ -103,15 +82,12 @@ export const sudid = {
     v105: new EventType(
         'Sudo.Sudid',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v105.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }
 
-export const keyChanged = {
+export const keyChanged =  {
     name: 'Sudo.KeyChanged',
     /**
      * The \[sudoer\] just switched identity; the old key is supplied if one existed.
@@ -190,7 +166,7 @@ export const keyChanged = {
     ),
 }
 
-export const sudoAsDone = {
+export const sudoAsDone =  {
     name: 'Sudo.SudoAsDone',
     /**
      * A sudo just took place. \[result\]
@@ -198,10 +174,7 @@ export const sudoAsDone = {
     matrixV500: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -210,10 +183,7 @@ export const sudoAsDone = {
     matrixV602: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -222,10 +192,7 @@ export const sudoAsDone = {
     matrixV1000: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => matrixV1000.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => matrixV1000.DispatchError),
         })
     ),
     /**
@@ -234,10 +201,7 @@ export const sudoAsDone = {
     enjinV100: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => enjinV100.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
         })
     ),
     /**
@@ -246,10 +210,7 @@ export const sudoAsDone = {
     enjinV101: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => enjinV101.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
         })
     ),
     /**
@@ -258,10 +219,7 @@ export const sudoAsDone = {
     v100: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v100.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v100.DispatchError),
         })
     ),
     /**
@@ -270,10 +228,7 @@ export const sudoAsDone = {
     v104: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v104.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v104.DispatchError),
         })
     ),
     /**
@@ -282,18 +237,18 @@ export const sudoAsDone = {
     v105: new EventType(
         'Sudo.SudoAsDone',
         sts.struct({
-            sudoResult: sts.result(
-                () => sts.unit(),
-                () => v105.DispatchError
-            ),
+            sudoResult: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }
 
-export const keyRemoved = {
+export const keyRemoved =  {
     name: 'Sudo.KeyRemoved',
     /**
      * The key was permanently removed.
      */
-    matrixV1010: new EventType('Sudo.KeyRemoved', sts.unit()),
+    matrixV1010: new EventType(
+        'Sudo.KeyRemoved',
+        sts.unit()
+    ),
 }

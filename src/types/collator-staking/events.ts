@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const newInvulnerables = {
+export const newInvulnerables =  {
     name: 'CollatorStaking.NewInvulnerables',
     /**
      * A new list of invulnerables has been set by root.
@@ -17,7 +17,7 @@ export const newInvulnerables = {
     ),
 }
 
-export const roundFinalized = {
+export const roundFinalized =  {
     name: 'CollatorStaking.RoundFinalized',
     /**
      * A new round was finalized
@@ -33,7 +33,7 @@ export const roundFinalized = {
     ),
 }
 
-export const candidateJoined = {
+export const candidateJoined =  {
     name: 'CollatorStaking.CandidateJoined',
     /**
      * A new candidate joined the list of candidates.
@@ -57,7 +57,7 @@ export const candidateJoined = {
     ),
 }
 
-export const candidateRemoved = {
+export const candidateRemoved =  {
     name: 'CollatorStaking.CandidateRemoved',
     /**
      * Candidate was removed.
@@ -73,7 +73,7 @@ export const candidateRemoved = {
     ),
 }
 
-export const nominated = {
+export const nominated =  {
     name: 'CollatorStaking.Nominated',
     /**
      * A new nomination was registered for a specific candidate.
@@ -97,7 +97,7 @@ export const nominated = {
     ),
 }
 
-export const nominationRemoved = {
+export const nominationRemoved =  {
     name: 'CollatorStaking.NominationRemoved',
     /**
      * Nomination was removed.
@@ -121,7 +121,7 @@ export const nominationRemoved = {
     ),
 }
 
-export const collatorSelected = {
+export const collatorSelected =  {
     name: 'CollatorStaking.CollatorSelected',
     /**
      * A candidate has been selected to become a collator for the current round.

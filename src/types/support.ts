@@ -1,18 +1,22 @@
-import type { BitSequence, Bytes, QualifiedName, Runtime } from '@subsquid/substrate-runtime'
+import type {BitSequence, Bytes, QualifiedName, Runtime} from '@subsquid/substrate-runtime'
 import * as sts from '@subsquid/substrate-runtime/lib/sts'
-import { Option, Result } from '@subsquid/substrate-runtime/lib/sts'
+import {Option, Result} from '@subsquid/substrate-runtime/lib/sts'
 import assert from 'assert'
 
-export { sts, Bytes, BitSequence, Option, Result }
+
+export {sts, Bytes, BitSequence, Option, Result}
+
 
 export interface RuntimeCtx {
     _runtime: Runtime
 }
 
+
 export interface Block extends RuntimeCtx {
     hash: Bytes
     height: number
 }
+
 
 interface Event {
     block: RuntimeCtx
@@ -20,17 +24,16 @@ interface Event {
     args: unknown
 }
 
+
 interface Call {
     block: RuntimeCtx
     name: QualifiedName
     args: unknown
 }
 
+
 export class EventType<T extends sts.Type> {
-    constructor(
-        public readonly name: QualifiedName,
-        private type: T
-    ) {}
+    constructor(public readonly name: QualifiedName, private type: T) {}
 
     matches(block: RuntimeCtx): boolean {
         return block._runtime.events.checkType(this.name, this.type)
@@ -46,11 +49,9 @@ export class EventType<T extends sts.Type> {
     }
 }
 
+
 export class CallType<T extends sts.Type> {
-    constructor(
-        public readonly name: QualifiedName,
-        private type: T
-    ) {}
+    constructor(public readonly name: QualifiedName, private type: T) {}
 
     matches(block: RuntimeCtx): boolean {
         return block._runtime.calls.checkType(this.name, this.type)
@@ -66,11 +67,9 @@ export class CallType<T extends sts.Type> {
     }
 }
 
+
 export class ConstantType<T extends sts.Type> {
-    constructor(
-        private name: QualifiedName,
-        private type: T
-    ) {}
+    constructor(private name: QualifiedName, private type: T) {}
 
     is(block: RuntimeCtx): boolean {
         return block._runtime.checkConstantType(this.name, this.type)
@@ -81,6 +80,7 @@ export class ConstantType<T extends sts.Type> {
         return block._runtime.getConstant(this.name)
     }
 }
+
 
 export class StorageType {
     constructor(

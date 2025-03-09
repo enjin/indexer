@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 
-export const upgradeStarted = {
+export const upgradeStarted =  {
     name: 'Migrations.UpgradeStarted',
     /**
      * A Runtime upgrade started.
-     *
+     * 
      * Its end is indicated by `UpgradeCompleted` or `UpgradeFailed`.
      */
     matrixEnjinV1012: new EventType(
@@ -12,7 +12,7 @@ export const upgradeStarted = {
         sts.struct({
             /**
              * The number of migrations that this upgrade contains.
-             *
+             * 
              * This can be used to design a progress indicator in combination with counting the
              * `MigrationCompleted` and `MigrationSkipped` events.
              */
@@ -21,27 +21,33 @@ export const upgradeStarted = {
     ),
 }
 
-export const upgradeCompleted = {
+export const upgradeCompleted =  {
     name: 'Migrations.UpgradeCompleted',
     /**
      * The current runtime upgrade completed.
-     *
+     * 
      * This implies that all of its migrations completed successfully as well.
      */
-    matrixEnjinV1012: new EventType('Migrations.UpgradeCompleted', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'Migrations.UpgradeCompleted',
+        sts.unit()
+    ),
 }
 
-export const upgradeFailed = {
+export const upgradeFailed =  {
     name: 'Migrations.UpgradeFailed',
     /**
      * Runtime upgrade failed.
-     *
+     * 
      * This is very bad and will require governance intervention.
      */
-    matrixEnjinV1012: new EventType('Migrations.UpgradeFailed', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'Migrations.UpgradeFailed',
+        sts.unit()
+    ),
 }
 
-export const migrationSkipped = {
+export const migrationSkipped =  {
     name: 'Migrations.MigrationSkipped',
     /**
      * A migration was skipped since it was already executed in the past.
@@ -57,7 +63,7 @@ export const migrationSkipped = {
     ),
 }
 
-export const migrationAdvanced = {
+export const migrationAdvanced =  {
     name: 'Migrations.MigrationAdvanced',
     /**
      * A migration progressed.
@@ -77,7 +83,7 @@ export const migrationAdvanced = {
     ),
 }
 
-export const migrationCompleted = {
+export const migrationCompleted =  {
     name: 'Migrations.MigrationCompleted',
     /**
      * A Migration completed.
@@ -97,11 +103,11 @@ export const migrationCompleted = {
     ),
 }
 
-export const migrationFailed = {
+export const migrationFailed =  {
     name: 'Migrations.MigrationFailed',
     /**
      * A Migration failed.
-     *
+     * 
      * This implies that the whole upgrade failed and governance intervention is required.
      */
     matrixEnjinV1012: new EventType(
@@ -119,7 +125,7 @@ export const migrationFailed = {
     ),
 }
 
-export const historicCleared = {
+export const historicCleared =  {
     name: 'Migrations.HistoricCleared',
     /**
      * The set of historical migrations has been cleared.

@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const transferredMultiAssets = {
+export const transferredMultiAssets =  {
     name: 'XTokens.TransferredMultiAssets',
     /**
      * Transferred `MultiAsset` with fee.
@@ -18,7 +18,7 @@ export const transferredMultiAssets = {
     ),
 }
 
-export const transferredAssets = {
+export const transferredAssets =  {
     name: 'XTokens.TransferredAssets',
     /**
      * Transferred `Asset` with fee.

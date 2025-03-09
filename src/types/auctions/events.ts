@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const auctionStarted = {
+export const auctionStarted =  {
     name: 'Auctions.AuctionStarted',
     /**
      * An auction started. Provides its index and the block number where it will begin to
@@ -17,7 +17,7 @@ export const auctionStarted = {
     ),
 }
 
-export const auctionClosed = {
+export const auctionClosed =  {
     name: 'Auctions.AuctionClosed',
     /**
      * An auction ended. All funds become unreserved.
@@ -30,7 +30,7 @@ export const auctionClosed = {
     ),
 }
 
-export const reserved = {
+export const reserved =  {
     name: 'Auctions.Reserved',
     /**
      * Funds were reserved for a winning bid. First balance is the extra amount reserved.
@@ -46,7 +46,7 @@ export const reserved = {
     ),
 }
 
-export const unreserved = {
+export const unreserved =  {
     name: 'Auctions.Unreserved',
     /**
      * Funds were unreserved since bidder is no longer active. `[bidder, amount]`
@@ -60,7 +60,7 @@ export const unreserved = {
     ),
 }
 
-export const reserveConfiscated = {
+export const reserveConfiscated =  {
     name: 'Auctions.ReserveConfiscated',
     /**
      * Someone attempted to lease the same slot twice for a parachain. The amount is held in reserve
@@ -76,7 +76,7 @@ export const reserveConfiscated = {
     ),
 }
 
-export const bidAccepted = {
+export const bidAccepted =  {
     name: 'Auctions.BidAccepted',
     /**
      * A new bid has been accepted as the current winner.
@@ -93,7 +93,7 @@ export const bidAccepted = {
     ),
 }
 
-export const winningOffset = {
+export const winningOffset =  {
     name: 'Auctions.WinningOffset',
     /**
      * The winning offset was chosen for an auction. This will map into the `Winning` storage map.

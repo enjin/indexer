@@ -1,8 +1,10 @@
 import * as ss58 from '@subsquid/ss58'
-import { decodeAddress, encodeAddress } from '@polkadot/keyring'
-import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
 import { Worker } from 'bullmq'
+import assert from 'assert'
+import { decode } from '@subsquid/ss58'
+import { HexString } from 'polkadot-api'
+import { stringToHex } from '@polkadot/util'
 
 export function isMainnet(): boolean {
     return ['enjin-relay', 'enjin-matrix'].includes(config.chainName)
@@ -14,40 +16,21 @@ export function isRelay(): boolean {
 
 export function isValidAddress(address: string): boolean {
     try {
-        encodeAddress(isHex(address) ? hexToU8a(address) : decodeAddress(address))
+        const decoded = ss58.decode(address)
+        ss58.encode(decoded)
+
         return true
     } catch {
         return false
     }
 }
 
-export function encodeId(id: Uint8Array | string) {
+export function encodeAddress(id: Uint8Array | string) {
     return ss58.codec(config.prefix).encode(id)
 }
 
-export function decodeId(id: string) {
-    return ss58.codec(config.prefix).decode(id)
-}
-
-export interface ItemBase {
-    id: string
-    timestamp: Date | null | undefined
-    blockNumber: bigint | null | undefined
-    extrinsicHash: string | null | undefined
-}
-
-export function isAddressSS58(address: Uint8Array): boolean {
-    switch (address.length) {
-        case 1:
-        case 2:
-        case 4:
-        case 8:
-        case 32:
-        case 33:
-            return true
-        default:
-            return false
-    }
+export function decodeAddress(id: string): HexString {
+    return decode(id).bytes
 }
 
 const regex = /\/\/u0000/ // null string unicode

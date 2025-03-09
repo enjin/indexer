@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -27,7 +27,7 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const whitelistCall = {
+export const whitelistCall =  {
     name: 'Whitelist.whitelist_call',
     enjinV100: new CallType(
         'Whitelist.whitelist_call',
@@ -37,7 +37,7 @@ export const whitelistCall = {
     ),
 }
 
-export const removeWhitelistedCall = {
+export const removeWhitelistedCall =  {
     name: 'Whitelist.remove_whitelisted_call',
     enjinV100: new CallType(
         'Whitelist.remove_whitelisted_call',
@@ -47,7 +47,7 @@ export const removeWhitelistedCall = {
     ),
 }
 
-export const dispatchWhitelistedCall = {
+export const dispatchWhitelistedCall =  {
     name: 'Whitelist.dispatch_whitelisted_call',
     enjinV100: new CallType(
         'Whitelist.dispatch_whitelisted_call',
@@ -59,7 +59,7 @@ export const dispatchWhitelistedCall = {
     ),
 }
 
-export const dispatchWhitelistedCallWithPreimage = {
+export const dispatchWhitelistedCallWithPreimage =  {
     name: 'Whitelist.dispatch_whitelisted_call_with_preimage',
     enjinV100: new CallType(
         'Whitelist.dispatch_whitelisted_call_with_preimage',

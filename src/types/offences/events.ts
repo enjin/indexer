@@ -1,6 +1,6 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 
-export const offence = {
+export const offence =  {
     name: 'Offences.Offence',
     /**
      * There is an offence reported of the given `kind` happened at the `session_index` and

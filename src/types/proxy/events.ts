@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1030 from '../v1030'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const proxyExecuted = {
+export const proxyExecuted =  {
     name: 'Proxy.ProxyExecuted',
     /**
      * A proxy was executed correctly, with the given.
@@ -12,15 +12,12 @@ export const proxyExecuted = {
     matrixEnjinV1012: new EventType(
         'Proxy.ProxyExecuted',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV1012.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV1012.DispatchError),
         })
     ),
 }
 
-export const pureCreated = {
+export const pureCreated =  {
     name: 'Proxy.PureCreated',
     /**
      * A pure account has been created by new proxy with given
@@ -76,7 +73,7 @@ export const pureCreated = {
     ),
 }
 
-export const announced = {
+export const announced =  {
     name: 'Proxy.Announced',
     /**
      * An announcement was placed to make a call in the future.
@@ -91,7 +88,7 @@ export const announced = {
     ),
 }
 
-export const proxyAdded = {
+export const proxyAdded =  {
     name: 'Proxy.ProxyAdded',
     /**
      * A proxy was added.
@@ -143,7 +140,7 @@ export const proxyAdded = {
     ),
 }
 
-export const proxyRemoved = {
+export const proxyRemoved =  {
     name: 'Proxy.ProxyRemoved',
     /**
      * A proxy was removed.

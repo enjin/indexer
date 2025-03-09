@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 
-export const proposed = {
+export const proposed =  {
     name: 'Council.Proposed',
     /**
      * A motion (given hash) has been proposed (by given account) with a threshold (given
@@ -21,7 +21,7 @@ export const proposed = {
     ),
 }
 
-export const voted = {
+export const voted =  {
     name: 'Council.Voted',
     /**
      * A motion (given hash) has been voted on by given account, leaving
@@ -39,7 +39,7 @@ export const voted = {
     ),
 }
 
-export const approved = {
+export const approved =  {
     name: 'Council.Approved',
     /**
      * A motion was approved by the required threshold.
@@ -52,7 +52,7 @@ export const approved = {
     ),
 }
 
-export const disapproved = {
+export const disapproved =  {
     name: 'Council.Disapproved',
     /**
      * A motion was not approved by the required threshold.
@@ -65,7 +65,7 @@ export const disapproved = {
     ),
 }
 
-export const executed = {
+export const executed =  {
     name: 'Council.Executed',
     /**
      * A motion was executed; result will be `Ok` if it returned without error.
@@ -74,10 +74,7 @@ export const executed = {
         'Council.Executed',
         sts.struct({
             proposalHash: matrixEnjinV603.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV603.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV603.DispatchError),
         })
     ),
     /**
@@ -87,10 +84,7 @@ export const executed = {
         'Council.Executed',
         sts.struct({
             proposalHash: matrixV500.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -100,10 +94,7 @@ export const executed = {
         'Council.Executed',
         sts.struct({
             proposalHash: matrixV602.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -113,15 +104,12 @@ export const executed = {
         'Council.Executed',
         sts.struct({
             proposalHash: matrixV604.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV604.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }
 
-export const memberExecuted = {
+export const memberExecuted =  {
     name: 'Council.MemberExecuted',
     /**
      * A single member did some action; result will be `Ok` if it returned without error.
@@ -130,10 +118,7 @@ export const memberExecuted = {
         'Council.MemberExecuted',
         sts.struct({
             proposalHash: matrixEnjinV603.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV603.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV603.DispatchError),
         })
     ),
     /**
@@ -143,10 +128,7 @@ export const memberExecuted = {
         'Council.MemberExecuted',
         sts.struct({
             proposalHash: matrixV500.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -156,10 +138,7 @@ export const memberExecuted = {
         'Council.MemberExecuted',
         sts.struct({
             proposalHash: matrixV602.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -169,15 +148,12 @@ export const memberExecuted = {
         'Council.MemberExecuted',
         sts.struct({
             proposalHash: matrixV604.H256,
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV604.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }
 
-export const closed = {
+export const closed =  {
     name: 'Council.Closed',
     /**
      * A proposal was closed because its threshold was reached or after its duration was up.

@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const assignPermParachainSlot = {
+export const assignPermParachainSlot =  {
     name: 'AssignedSlots.assign_perm_parachain_slot',
     /**
      * Assign a permanent parachain slot and immediately create a lease for it.
@@ -14,7 +14,7 @@ export const assignPermParachainSlot = {
     ),
 }
 
-export const assignTempParachainSlot = {
+export const assignTempParachainSlot =  {
     name: 'AssignedSlots.assign_temp_parachain_slot',
     /**
      * Assign a temporary parachain slot. The function tries to create a lease for it
@@ -30,7 +30,7 @@ export const assignTempParachainSlot = {
     ),
 }
 
-export const unassignParachainSlot = {
+export const unassignParachainSlot =  {
     name: 'AssignedSlots.unassign_parachain_slot',
     /**
      * Unassign a permanent or temporary parachain slot
@@ -43,7 +43,7 @@ export const unassignParachainSlot = {
     ),
 }
 
-export const setMaxPermanentSlots = {
+export const setMaxPermanentSlots =  {
     name: 'AssignedSlots.set_max_permanent_slots',
     /**
      * Sets the storage value [`MaxPermanentSlots`].
@@ -56,7 +56,7 @@ export const setMaxPermanentSlots = {
     ),
 }
 
-export const setMaxTemporarySlots = {
+export const setMaxTemporarySlots =  {
     name: 'AssignedSlots.set_max_temporary_slots',
     /**
      * Sets the storage value [`MaxTemporarySlots`].

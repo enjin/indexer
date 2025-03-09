@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const proposed = {
+export const proposed =  {
     name: 'Democracy.Proposed',
     /**
      * A motion has been proposed by a public account.
@@ -15,7 +15,7 @@ export const proposed = {
     ),
 }
 
-export const tabled = {
+export const tabled =  {
     name: 'Democracy.Tabled',
     /**
      * A public proposal has been tabled for referendum vote.
@@ -29,15 +29,18 @@ export const tabled = {
     ),
 }
 
-export const externalTabled = {
+export const externalTabled =  {
     name: 'Democracy.ExternalTabled',
     /**
      * An external proposal has been tabled.
      */
-    matrixEnjinV603: new EventType('Democracy.ExternalTabled', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'Democracy.ExternalTabled',
+        sts.unit()
+    ),
 }
 
-export const started = {
+export const started =  {
     name: 'Democracy.Started',
     /**
      * A referendum has begun.
@@ -51,7 +54,7 @@ export const started = {
     ),
 }
 
-export const passed = {
+export const passed =  {
     name: 'Democracy.Passed',
     /**
      * A proposal has been approved by referendum.
@@ -64,7 +67,7 @@ export const passed = {
     ),
 }
 
-export const notPassed = {
+export const notPassed =  {
     name: 'Democracy.NotPassed',
     /**
      * A proposal has been rejected by referendum.
@@ -77,7 +80,7 @@ export const notPassed = {
     ),
 }
 
-export const cancelled = {
+export const cancelled =  {
     name: 'Democracy.Cancelled',
     /**
      * A referendum has been cancelled.
@@ -90,7 +93,7 @@ export const cancelled = {
     ),
 }
 
-export const delegated = {
+export const delegated =  {
     name: 'Democracy.Delegated',
     /**
      * An account has delegated their vote to another account.
@@ -104,7 +107,7 @@ export const delegated = {
     ),
 }
 
-export const undelegated = {
+export const undelegated =  {
     name: 'Democracy.Undelegated',
     /**
      * An account has cancelled a previous delegation operation.
@@ -117,7 +120,7 @@ export const undelegated = {
     ),
 }
 
-export const vetoed = {
+export const vetoed =  {
     name: 'Democracy.Vetoed',
     /**
      * An external proposal has been vetoed.
@@ -132,7 +135,7 @@ export const vetoed = {
     ),
 }
 
-export const blacklisted = {
+export const blacklisted =  {
     name: 'Democracy.Blacklisted',
     /**
      * A proposal_hash has been blacklisted permanently.
@@ -145,7 +148,7 @@ export const blacklisted = {
     ),
 }
 
-export const voted = {
+export const voted =  {
     name: 'Democracy.Voted',
     /**
      * An account has voted in a referendum
@@ -160,7 +163,7 @@ export const voted = {
     ),
 }
 
-export const seconded = {
+export const seconded =  {
     name: 'Democracy.Seconded',
     /**
      * An account has secconded a proposal
@@ -174,7 +177,7 @@ export const seconded = {
     ),
 }
 
-export const proposalCanceled = {
+export const proposalCanceled =  {
     name: 'Democracy.ProposalCanceled',
     /**
      * A proposal got canceled.
@@ -187,7 +190,7 @@ export const proposalCanceled = {
     ),
 }
 
-export const metadataSet = {
+export const metadataSet =  {
     name: 'Democracy.MetadataSet',
     /**
      * Metadata for a proposal or a referendum has been set.
@@ -207,7 +210,7 @@ export const metadataSet = {
     ),
 }
 
-export const metadataCleared = {
+export const metadataCleared =  {
     name: 'Democracy.MetadataCleared',
     /**
      * Metadata for a proposal or a referendum has been cleared.
@@ -227,7 +230,7 @@ export const metadataCleared = {
     ),
 }
 
-export const metadataTransferred = {
+export const metadataTransferred =  {
     name: 'Democracy.MetadataTransferred',
     /**
      * Metadata has been transferred to new owner.

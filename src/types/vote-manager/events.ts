@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV120 from '../enjinV120'
 
-export const voted = {
+export const voted =  {
     name: 'VoteManager.Voted',
     /**
      * An account has voted in a referendum

@@ -1,15 +1,18 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const batchDispatched = {
+export const batchDispatched =  {
     name: 'MatrixUtility.BatchDispatched',
     /**
      * Batch of calls dispatched without errors.
      */
-    matrixEnjinV603: new EventType('MatrixUtility.BatchDispatched', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'MatrixUtility.BatchDispatched',
+        sts.unit()
+    ),
 }
 
-export const batchPartiallyDispatched = {
+export const batchPartiallyDispatched =  {
     name: 'MatrixUtility.BatchPartiallyDispatched',
     /**
      * Batch of calls dispatched, but some calls resulted in error.
@@ -21,7 +24,7 @@ export const batchPartiallyDispatched = {
     ),
 }
 
-export const batchFailed = {
+export const batchFailed =  {
     name: 'MatrixUtility.BatchFailed',
     /**
      * Batch of calls did not disptach completely.

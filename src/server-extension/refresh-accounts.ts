@@ -1,8 +1,7 @@
 import { Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
-import { decodeAddress } from '@polkadot/util-crypto'
-import { u8aToHex } from '@polkadot/util'
 import { QueueUtils } from '../worker/queue'
+import { decodeAddress } from '../utils/tools'
 
 @Resolver()
 export class RefreshAccountsResolver {
@@ -13,7 +12,7 @@ export class RefreshAccountsResolver {
         }
 
         const publicKeys = ids.map((id) => {
-            return u8aToHex(decodeAddress(id))
+            return decodeAddress(id)
         })
 
         QueueUtils.dispatchFetchAccounts(publicKeys)

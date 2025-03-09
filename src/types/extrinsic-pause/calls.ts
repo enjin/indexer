@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV101 from '../enjinV101'
 import * as v102 from '../v102'
@@ -44,18 +44,18 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const pauseExtrinsic = {
+export const pauseExtrinsic =  {
     name: 'ExtrinsicPause.pause_extrinsic',
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -68,14 +68,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -88,14 +88,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -128,14 +128,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -148,14 +148,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -168,14 +168,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -188,14 +188,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -208,14 +208,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -228,14 +228,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -248,14 +248,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -268,14 +268,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -308,14 +308,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -328,14 +328,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -348,14 +348,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -368,14 +368,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -388,14 +388,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -408,14 +408,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -428,14 +428,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -448,14 +448,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -468,14 +468,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -488,14 +488,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -508,14 +508,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -538,14 +538,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -558,14 +558,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -578,14 +578,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -598,14 +598,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -618,14 +618,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -638,14 +638,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -658,14 +658,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -678,14 +678,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -698,14 +698,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -718,14 +718,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -738,14 +738,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -758,14 +758,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -788,14 +788,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -808,14 +808,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -828,14 +828,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -848,14 +848,14 @@ export const pauseExtrinsic = {
     ),
     /**
      * Pause execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is paused, else the entire pallet is paused.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
      */
@@ -868,18 +868,18 @@ export const pauseExtrinsic = {
     ),
 }
 
-export const resumeExtrinsic = {
+export const resumeExtrinsic =  {
     name: 'ExtrinsicPause.resume_extrinsic',
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixEnjinV603: new CallType(
@@ -891,14 +891,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixEnjinV1000: new CallType(
@@ -910,14 +910,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixEnjinV1003: new CallType(
@@ -949,14 +949,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixEnjinV1012: new CallType(
@@ -968,14 +968,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV500: new CallType(
@@ -987,14 +987,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV600: new CallType(
@@ -1006,14 +1006,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV601: new CallType(
@@ -1025,14 +1025,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV602: new CallType(
@@ -1044,14 +1044,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV604: new CallType(
@@ -1063,14 +1063,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1000: new CallType(
@@ -1082,14 +1082,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1003: new CallType(
@@ -1121,14 +1121,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1010: new CallType(
@@ -1140,14 +1140,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1011: new CallType(
@@ -1159,14 +1159,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1012: new CallType(
@@ -1178,14 +1178,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     matrixV1020: new CallType(
@@ -1197,14 +1197,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV100: new CallType(
@@ -1216,14 +1216,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV101: new CallType(
@@ -1235,14 +1235,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV110: new CallType(
@@ -1254,14 +1254,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV120: new CallType(
@@ -1273,14 +1273,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV1021: new CallType(
@@ -1292,14 +1292,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV1022: new CallType(
@@ -1311,14 +1311,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV1023: new CallType(
@@ -1340,14 +1340,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV1032: new CallType(
@@ -1359,14 +1359,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     enjinV1050: new CallType(
@@ -1378,14 +1378,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v102: new CallType(
@@ -1397,14 +1397,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v103: new CallType(
@@ -1416,14 +1416,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v104: new CallType(
@@ -1435,14 +1435,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v105: new CallType(
@@ -1454,14 +1454,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v106: new CallType(
@@ -1473,14 +1473,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v110: new CallType(
@@ -1492,14 +1492,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v120: new CallType(
@@ -1511,14 +1511,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1021: new CallType(
@@ -1530,14 +1530,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1022: new CallType(
@@ -1549,14 +1549,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1023: new CallType(
@@ -1578,14 +1578,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1030: new CallType(
@@ -1597,14 +1597,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1031: new CallType(
@@ -1616,14 +1616,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1032: new CallType(
@@ -1635,14 +1635,14 @@ export const resumeExtrinsic = {
     ),
     /**
      * Resume execution of extrinsic(s)
-     *
+     * 
      * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
      * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
      * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
      * is resumed, else the entire pallet is resumed.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
      */
     v1050: new CallType(

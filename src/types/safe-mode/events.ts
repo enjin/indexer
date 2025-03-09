@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const entered = {
+export const entered =  {
     name: 'SafeMode.Entered',
     /**
      * The safe-mode was entered until inclusively this block.
@@ -14,7 +14,7 @@ export const entered = {
     ),
 }
 
-export const extended = {
+export const extended =  {
     name: 'SafeMode.Extended',
     /**
      * The safe-mode was extended until inclusively this block.
@@ -27,7 +27,7 @@ export const extended = {
     ),
 }
 
-export const exited = {
+export const exited =  {
     name: 'SafeMode.Exited',
     /**
      * Exited the safe-mode for a specific reason.
@@ -40,7 +40,7 @@ export const exited = {
     ),
 }
 
-export const depositPlaced = {
+export const depositPlaced =  {
     name: 'SafeMode.DepositPlaced',
     /**
      * An account reserved funds for either entering or extending the safe-mode.
@@ -54,7 +54,7 @@ export const depositPlaced = {
     ),
 }
 
-export const depositReleased = {
+export const depositReleased =  {
     name: 'SafeMode.DepositReleased',
     /**
      * An account had a reserve released that was reserved.
@@ -68,7 +68,7 @@ export const depositReleased = {
     ),
 }
 
-export const depositSlashed = {
+export const depositSlashed =  {
     name: 'SafeMode.DepositSlashed',
     /**
      * An account had reserve slashed that was reserved.
@@ -82,22 +82,28 @@ export const depositSlashed = {
     ),
 }
 
-export const cannotDeposit = {
+export const cannotDeposit =  {
     name: 'SafeMode.CannotDeposit',
     /**
      * Could not hold funds for entering or extending the safe-mode.
-     *
+     * 
      * This error comes from the underlying `Currency`.
      */
-    matrixEnjinV1012: new EventType('SafeMode.CannotDeposit', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'SafeMode.CannotDeposit',
+        sts.unit()
+    ),
 }
 
-export const cannotRelease = {
+export const cannotRelease =  {
     name: 'SafeMode.CannotRelease',
     /**
      * Could not release funds for entering or extending the safe-mode.
-     *
+     * 
      * This error comes from the underlying `Currency`.
      */
-    matrixEnjinV1012: new EventType('SafeMode.CannotRelease', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'SafeMode.CannotRelease',
+        sts.unit()
+    ),
 }

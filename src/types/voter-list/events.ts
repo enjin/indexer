@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const rebagged = {
+export const rebagged =  {
     name: 'VoterList.Rebagged',
     /**
      * Moved an account from one bag to another.
@@ -16,7 +16,7 @@ export const rebagged = {
     ),
 }
 
-export const scoreUpdated = {
+export const scoreUpdated =  {
     name: 'VoterList.ScoreUpdated',
     /**
      * Updated the score of some account to the given amount.

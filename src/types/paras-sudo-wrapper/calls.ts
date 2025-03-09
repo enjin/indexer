@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 
-export const sudoScheduleParaInitialize = {
+export const sudoScheduleParaInitialize =  {
     name: 'ParasSudoWrapper.sudo_schedule_para_initialize',
     /**
      * Schedule a para to be initialized at the start of the next session.
@@ -18,7 +18,7 @@ export const sudoScheduleParaInitialize = {
     ),
 }
 
-export const sudoScheduleParaCleanup = {
+export const sudoScheduleParaCleanup =  {
     name: 'ParasSudoWrapper.sudo_schedule_para_cleanup',
     /**
      * Schedule a para to be cleaned up at the start of the next session.
@@ -31,7 +31,7 @@ export const sudoScheduleParaCleanup = {
     ),
 }
 
-export const sudoScheduleParathreadUpgrade = {
+export const sudoScheduleParathreadUpgrade =  {
     name: 'ParasSudoWrapper.sudo_schedule_parathread_upgrade',
     /**
      * Upgrade a parathread to a parachain
@@ -44,7 +44,7 @@ export const sudoScheduleParathreadUpgrade = {
     ),
 }
 
-export const sudoScheduleParachainDowngrade = {
+export const sudoScheduleParachainDowngrade =  {
     name: 'ParasSudoWrapper.sudo_schedule_parachain_downgrade',
     /**
      * Downgrade a parachain to a parathread
@@ -57,11 +57,11 @@ export const sudoScheduleParachainDowngrade = {
     ),
 }
 
-export const sudoQueueDownwardXcm = {
+export const sudoQueueDownwardXcm =  {
     name: 'ParasSudoWrapper.sudo_queue_downward_xcm',
     /**
      * Send a downward XCM to the given para.
-     *
+     * 
      * The given parachain should exist and the payload should not exceed the preconfigured size
      * `config.max_downward_message_size`.
      */
@@ -74,7 +74,7 @@ export const sudoQueueDownwardXcm = {
     ),
     /**
      * Send a downward XCM to the given para.
-     *
+     * 
      * The given parachain should exist and the payload should not exceed the preconfigured
      * size `config.max_downward_message_size`.
      */
@@ -87,7 +87,7 @@ export const sudoQueueDownwardXcm = {
     ),
     /**
      * Send a downward XCM to the given para.
-     *
+     * 
      * The given parachain should exist and the payload should not exceed the preconfigured size
      * `config.max_downward_message_size`.
      */
@@ -100,7 +100,7 @@ export const sudoQueueDownwardXcm = {
     ),
     /**
      * Send a downward XCM to the given para.
-     *
+     * 
      * The given parachain should exist and the payload should not exceed the preconfigured
      * size `config.max_downward_message_size`.
      */
@@ -113,11 +113,11 @@ export const sudoQueueDownwardXcm = {
     ),
 }
 
-export const sudoEstablishHrmpChannel = {
+export const sudoEstablishHrmpChannel =  {
     name: 'ParasSudoWrapper.sudo_establish_hrmp_channel',
     /**
      * Forcefully establish a channel from the sender to the recipient.
-     *
+     * 
      * This is equivalent to sending an `Hrmp::hrmp_init_open_channel` extrinsic followed by
      * `Hrmp::hrmp_accept_open_channel`.
      */

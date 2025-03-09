@@ -4,8 +4,8 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, MultiTokensAttributeSet } from '../../../model'
 import { safeString } from '../../../utils/tools'
-import { hexToString } from '@polkadot/util'
 import { AttributeSet } from './types'
+import { hexToString } from '@polkadot/util'
 
 export function attributeSet(event: EventItem): AttributeSet {
     return match(event)
@@ -29,7 +29,7 @@ export function attributeSetEventModel(item: EventItem, data: AttributeSet): Eve
         data: new MultiTokensAttributeSet({
             collectionId: data.collectionId,
             tokenId: data.tokenId,
-            key: safeString(hexToString(data.key)),
+            key: safeString(data.key),
             value: safeString(hexToString(data.value)),
         }),
     })

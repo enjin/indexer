@@ -33,8 +33,8 @@ export class ClaimableCollectionsResolver {
             throw new Error('Invalid address')
         }
 
-        const { api } = await Rpc.getInstance()
-        const res = await api.query.multiTokens.claimableCollectionIds.multi(addresses)
+        const api = Rpc.getInstance().client.getUnsafeApi()
+        const res: any[] = await api.query.MultiTokens.ClaimableCollectionIds.getValues([addresses], { at: 'best' })
 
         return addresses.map((address, index) => {
             return {

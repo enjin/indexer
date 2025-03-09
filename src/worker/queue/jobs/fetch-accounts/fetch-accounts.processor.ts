@@ -2,9 +2,9 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { dataHandlerContext } from '../../../../contexts'
 import { getOrCreateAccount } from '../../../../utils/entities'
-import { decodeAddress } from '@polkadot/util-crypto'
 import { fetchAccountsDetail } from '../../../../utils/marketplace'
 import { Account } from '../../../../model'
+import { decode } from '@subsquid/ss58'
 
 function isNotNull<T>(input: null | T): input is T {
     return input != null
@@ -19,7 +19,7 @@ export class FetchAccountsProcessor implements ProcessorDef {
 
         const accounts = await Promise.all(
             data.filter(isNotNull).map(async (_d) => {
-                const account = await getOrCreateAccount(ctx, decodeAddress(_d.publicKey))
+                const account = await getOrCreateAccount(ctx, decode(_d.publicKey).bytes)
                 account.username = _d.username
                 account.image = _d.image
                 account.verifiedAt = _d.verifiedAt

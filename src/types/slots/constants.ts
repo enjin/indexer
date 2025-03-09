@@ -1,15 +1,21 @@
-import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx} from '../support'
 
-export const leasePeriod = {
+export const leasePeriod =  {
     /**
      *  The number of blocks over which a single period lasts.
      */
-    enjinV100: new ConstantType('Slots.LeasePeriod', sts.number()),
+    enjinV100: new ConstantType(
+        'Slots.LeasePeriod',
+        sts.number()
+    ),
 }
 
-export const leaseOffset = {
+export const leaseOffset =  {
     /**
      *  The number of blocks to offset each lease period by.
      */
-    enjinV100: new ConstantType('Slots.LeaseOffset', sts.number()),
+    enjinV100: new ConstantType(
+        'Slots.LeaseOffset',
+        sts.number()
+    ),
 }

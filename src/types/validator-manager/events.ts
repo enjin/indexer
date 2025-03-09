@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const validatorsRegistered = {
+export const validatorsRegistered =  {
     name: 'ValidatorManager.ValidatorsRegistered',
     /**
      * New validators were added to the set.
@@ -12,7 +12,7 @@ export const validatorsRegistered = {
     ),
 }
 
-export const validatorsDeregistered = {
+export const validatorsDeregistered =  {
     name: 'ValidatorManager.ValidatorsDeregistered',
     /**
      * Validators were removed from the set.

@@ -1,9 +1,9 @@
 import { throwError } from '../../utils/errors'
 import { CollectionAccount, Event as EventModel, TokenAccount } from '../../model'
-import { encodeId } from '../../utils/tools'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { encodeAddress } from '../../utils/tools'
 
 export async function unapproved(
     ctx: CommonContext,
@@ -24,7 +24,7 @@ export async function unapproved(
 
         if (tokenAccount) {
             tokenAccount.approvals = tokenAccount.approvals?.filter(
-                (approval) => approval.accountId !== encodeId(data.operator)
+                (approval) => approval.accountId !== encodeAddress(data.operator)
             )
             tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
 
@@ -42,7 +42,7 @@ export async function unapproved(
 
         if (collectionAccount) {
             collectionAccount.approvals = collectionAccount.approvals?.filter(
-                (approval) => approval.accountId !== encodeId(data.operator)
+                (approval) => approval.accountId !== encodeAddress(data.operator)
             )
             collectionAccount.updatedAt = new Date(block.timestamp ?? 0)
 

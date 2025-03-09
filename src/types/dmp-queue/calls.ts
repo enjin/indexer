@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const serviceOverweight = {
+export const serviceOverweight =  {
     name: 'DmpQueue.service_overweight',
     /**
      * Service a single overweight message.

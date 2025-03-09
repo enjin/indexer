@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const submitted = {
+export const submitted =  {
     name: 'Referenda.Submitted',
     /**
      * A referendum has been submitted.
@@ -25,7 +25,7 @@ export const submitted = {
     ),
 }
 
-export const decisionDepositPlaced = {
+export const decisionDepositPlaced =  {
     name: 'Referenda.DecisionDepositPlaced',
     /**
      * The decision deposit has been placed.
@@ -49,7 +49,7 @@ export const decisionDepositPlaced = {
     ),
 }
 
-export const decisionDepositRefunded = {
+export const decisionDepositRefunded =  {
     name: 'Referenda.DecisionDepositRefunded',
     /**
      * The decision deposit has been refunded.
@@ -73,7 +73,7 @@ export const decisionDepositRefunded = {
     ),
 }
 
-export const depositSlashed = {
+export const depositSlashed =  {
     name: 'Referenda.DepositSlashed',
     /**
      * A deposit has been slashaed.
@@ -93,7 +93,7 @@ export const depositSlashed = {
     ),
 }
 
-export const decisionStarted = {
+export const decisionStarted =  {
     name: 'Referenda.DecisionStarted',
     /**
      * A referendum has moved into the deciding phase.
@@ -121,7 +121,7 @@ export const decisionStarted = {
     ),
 }
 
-export const confirmStarted = {
+export const confirmStarted =  {
     name: 'Referenda.ConfirmStarted',
     enjinV100: new EventType(
         'Referenda.ConfirmStarted',
@@ -134,7 +134,7 @@ export const confirmStarted = {
     ),
 }
 
-export const confirmAborted = {
+export const confirmAborted =  {
     name: 'Referenda.ConfirmAborted',
     enjinV100: new EventType(
         'Referenda.ConfirmAborted',
@@ -147,7 +147,7 @@ export const confirmAborted = {
     ),
 }
 
-export const confirmed = {
+export const confirmed =  {
     name: 'Referenda.Confirmed',
     /**
      * A referendum has ended its confirmation phase and is ready for approval.
@@ -167,7 +167,7 @@ export const confirmed = {
     ),
 }
 
-export const approved = {
+export const approved =  {
     name: 'Referenda.Approved',
     /**
      * A referendum has been approved and its proposal has been scheduled.
@@ -183,7 +183,7 @@ export const approved = {
     ),
 }
 
-export const rejected = {
+export const rejected =  {
     name: 'Referenda.Rejected',
     /**
      * A proposal has been rejected by referendum.
@@ -203,7 +203,7 @@ export const rejected = {
     ),
 }
 
-export const timedOut = {
+export const timedOut =  {
     name: 'Referenda.TimedOut',
     /**
      * A referendum has been timed out without being decided.
@@ -223,7 +223,7 @@ export const timedOut = {
     ),
 }
 
-export const cancelled = {
+export const cancelled =  {
     name: 'Referenda.Cancelled',
     /**
      * A referendum has been cancelled.
@@ -243,7 +243,7 @@ export const cancelled = {
     ),
 }
 
-export const killed = {
+export const killed =  {
     name: 'Referenda.Killed',
     /**
      * A referendum has been killed.
@@ -263,7 +263,7 @@ export const killed = {
     ),
 }
 
-export const submissionDepositRefunded = {
+export const submissionDepositRefunded =  {
     name: 'Referenda.SubmissionDepositRefunded',
     /**
      * The submission deposit has been refunded.
@@ -287,7 +287,7 @@ export const submissionDepositRefunded = {
     ),
 }
 
-export const metadataSet = {
+export const metadataSet =  {
     name: 'Referenda.MetadataSet',
     /**
      * Metadata for a referendum has been set.
@@ -307,7 +307,7 @@ export const metadataSet = {
     ),
 }
 
-export const metadataCleared = {
+export const metadataCleared =  {
     name: 'Referenda.MetadataCleared',
     /**
      * Metadata for a referendum has been cleared.

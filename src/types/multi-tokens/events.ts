@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -21,7 +21,7 @@ import * as enjinV1032 from '../enjinV1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const collectionCreated = {
+export const collectionCreated =  {
     name: 'MultiTokens.CollectionCreated',
     /**
      * A new collection was created
@@ -41,7 +41,7 @@ export const collectionCreated = {
     ),
 }
 
-export const collectionDestroyed = {
+export const collectionDestroyed =  {
     name: 'MultiTokens.CollectionDestroyed',
     /**
      * A collection was destroyed.
@@ -61,7 +61,7 @@ export const collectionDestroyed = {
     ),
 }
 
-export const collectionMutated = {
+export const collectionMutated =  {
     name: 'MultiTokens.CollectionMutated',
     /**
      * A collection was mutated
@@ -166,7 +166,7 @@ export const collectionMutated = {
     ),
 }
 
-export const minted = {
+export const minted =  {
     name: 'MultiTokens.Minted',
     /**
      * Units of a token were minted
@@ -198,7 +198,7 @@ export const minted = {
     ),
 }
 
-export const tokenCreated = {
+export const tokenCreated =  {
     name: 'MultiTokens.TokenCreated',
     /**
      * A token was created
@@ -226,7 +226,7 @@ export const tokenCreated = {
     ),
 }
 
-export const tokenMutated = {
+export const tokenMutated =  {
     name: 'MultiTokens.TokenMutated',
     /**
      * A token was mutated
@@ -460,7 +460,7 @@ export const tokenMutated = {
     ),
 }
 
-export const burned = {
+export const burned =  {
     name: 'MultiTokens.Burned',
     /**
      * Units of a token were burned
@@ -488,7 +488,7 @@ export const burned = {
     ),
 }
 
-export const tokenDestroyed = {
+export const tokenDestroyed =  {
     name: 'MultiTokens.TokenDestroyed',
     /**
      * A token was destroyed
@@ -513,7 +513,7 @@ export const tokenDestroyed = {
     ),
 }
 
-export const transferred = {
+export const transferred =  {
     name: 'MultiTokens.Transferred',
     /**
      * Units of a token were transferred
@@ -549,23 +549,29 @@ export const transferred = {
     ),
 }
 
-export const frozen = {
+export const frozen =  {
     name: 'MultiTokens.Frozen',
     /**
      * Collection, token or account was frozen
      */
-    matrixEnjinV603: new EventType('MultiTokens.Frozen', matrixEnjinV603.Freeze),
+    matrixEnjinV603: new EventType(
+        'MultiTokens.Frozen',
+        matrixEnjinV603.Freeze
+    ),
 }
 
-export const thawed = {
+export const thawed =  {
     name: 'MultiTokens.Thawed',
     /**
      * Collection, token or account was unfrozen
      */
-    matrixEnjinV603: new EventType('MultiTokens.Thawed', matrixEnjinV603.Freeze),
+    matrixEnjinV603: new EventType(
+        'MultiTokens.Thawed',
+        matrixEnjinV603.Freeze
+    ),
 }
 
-export const attributeSet = {
+export const attributeSet =  {
     name: 'MultiTokens.AttributeSet',
     /**
      * New attribute has been set
@@ -593,7 +599,7 @@ export const attributeSet = {
     ),
 }
 
-export const attributeRemoved = {
+export const attributeRemoved =  {
     name: 'MultiTokens.AttributeRemoved',
     /**
      * An attribute has been removed
@@ -617,7 +623,7 @@ export const attributeRemoved = {
     ),
 }
 
-export const approved = {
+export const approved =  {
     name: 'MultiTokens.Approved',
     /**
      * An approval took place. If `token_id` is `None`, it applies to the whole collection.
@@ -653,7 +659,7 @@ export const approved = {
     ),
 }
 
-export const unapproved = {
+export const unapproved =  {
     name: 'MultiTokens.Unapproved',
     /**
      * An unapproval took place. If `token_id` is `None`, it applies to the collection.
@@ -681,7 +687,7 @@ export const unapproved = {
     ),
 }
 
-export const collectionAccountCreated = {
+export const collectionAccountCreated =  {
     name: 'MultiTokens.CollectionAccountCreated',
     /**
      * A new collection account was created
@@ -701,7 +707,7 @@ export const collectionAccountCreated = {
     ),
 }
 
-export const tokenAccountCreated = {
+export const tokenAccountCreated =  {
     name: 'MultiTokens.TokenAccountCreated',
     /**
      * A new token account was created
@@ -729,7 +735,7 @@ export const tokenAccountCreated = {
     ),
 }
 
-export const collectionAccountDestroyed = {
+export const collectionAccountDestroyed =  {
     name: 'MultiTokens.CollectionAccountDestroyed',
     /**
      * A collection account was destroyed
@@ -749,7 +755,7 @@ export const collectionAccountDestroyed = {
     ),
 }
 
-export const tokenAccountDestroyed = {
+export const tokenAccountDestroyed =  {
     name: 'MultiTokens.TokenAccountDestroyed',
     /**
      * A token account was destroyed
@@ -773,7 +779,7 @@ export const tokenAccountDestroyed = {
     ),
 }
 
-export const reserved = {
+export const reserved =  {
     name: 'MultiTokens.Reserved',
     /**
      * Token units were reserved
@@ -945,7 +951,7 @@ export const reserved = {
     ),
 }
 
-export const unreserved = {
+export const unreserved =  {
     name: 'MultiTokens.Unreserved',
     /**
      * Token units were unreserved
@@ -1117,7 +1123,7 @@ export const unreserved = {
     ),
 }
 
-export const movedReserves = {
+export const movedReserves =  {
     name: 'MultiTokens.MovedReserves',
     /**
      * Reserved token units were moved
@@ -1313,7 +1319,7 @@ export const movedReserves = {
     ),
 }
 
-export const reserveRepatriated = {
+export const reserveRepatriated =  {
     name: 'MultiTokens.ReserveRepatriated',
     /**
      * Reserved token units were transferred
@@ -1509,7 +1515,7 @@ export const reserveRepatriated = {
     ),
 }
 
-export const balanceSet = {
+export const balanceSet =  {
     name: 'MultiTokens.BalanceSet',
     /**
      * The balance of an account was set
@@ -1541,7 +1547,7 @@ export const balanceSet = {
     ),
 }
 
-export const withdraw = {
+export const withdraw =  {
     name: 'MultiTokens.Withdraw',
     /**
      * Token units were withdrawn
@@ -1569,7 +1575,7 @@ export const withdraw = {
     ),
 }
 
-export const deposit = {
+export const deposit =  {
     name: 'MultiTokens.Deposit',
     /**
      * Token units were deposited
@@ -1597,7 +1603,7 @@ export const deposit = {
     ),
 }
 
-export const slashed = {
+export const slashed =  {
     name: 'MultiTokens.Slashed',
     /**
      * An amount of tokens were slashed from account
@@ -1625,7 +1631,7 @@ export const slashed = {
     ),
 }
 
-export const collectionUpdated = {
+export const collectionUpdated =  {
     name: 'MultiTokens.CollectionUpdated',
     /**
      * Collection storage was set to `value`
@@ -1805,7 +1811,7 @@ export const collectionUpdated = {
     ),
 }
 
-export const tokenUpdated = {
+export const tokenUpdated =  {
     name: 'MultiTokens.TokenUpdated',
     /**
      * Token storage was set to `value`
@@ -2069,7 +2075,7 @@ export const tokenUpdated = {
     ),
 }
 
-export const nextCollectionIdUpdated = {
+export const nextCollectionIdUpdated =  {
     name: 'MultiTokens.NextCollectionIdUpdated',
     /**
      * NextCollectionId storage was set to `collection_id`
@@ -2082,7 +2088,7 @@ export const nextCollectionIdUpdated = {
     ),
 }
 
-export const collectionAccountUpdated = {
+export const collectionAccountUpdated =  {
     name: 'MultiTokens.CollectionAccountUpdated',
     /**
      * TokenAccount storage was set to `value`
@@ -2106,7 +2112,7 @@ export const collectionAccountUpdated = {
     ),
 }
 
-export const tokenAccountUpdated = {
+export const tokenAccountUpdated =  {
     name: 'MultiTokens.TokenAccountUpdated',
     /**
      * TokenAccount storage was set to `value`
@@ -2374,7 +2380,7 @@ export const tokenAccountUpdated = {
     ),
 }
 
-export const migrationStatusUpdated = {
+export const migrationStatusUpdated =  {
     name: 'MultiTokens.MigrationStatusUpdated',
     /**
      * Migration stage updated
@@ -2387,7 +2393,7 @@ export const migrationStatusUpdated = {
     ),
 }
 
-export const claimedCollections = {
+export const claimedCollections =  {
     name: 'MultiTokens.ClaimedCollections',
     /**
      * Collections were claimed
@@ -2551,7 +2557,7 @@ export const claimedCollections = {
     ),
 }
 
-export const claimedTokens = {
+export const claimedTokens =  {
     name: 'MultiTokens.ClaimedTokens',
     /**
      * Tokens were claimed
@@ -2579,7 +2585,7 @@ export const claimedTokens = {
     ),
 }
 
-export const claimTokensInitiated = {
+export const claimTokensInitiated =  {
     name: 'MultiTokens.ClaimTokensInitiated',
     /**
      * Claims tokens initiated
@@ -2599,7 +2605,7 @@ export const claimTokensInitiated = {
     ),
 }
 
-export const claimTokensCompleted = {
+export const claimTokensCompleted =  {
     name: 'MultiTokens.ClaimTokensCompleted',
     /**
      * Finished claiming the tokens
@@ -2619,7 +2625,7 @@ export const claimTokensCompleted = {
     ),
 }
 
-export const collectionTransferred = {
+export const collectionTransferred =  {
     name: 'MultiTokens.CollectionTransferred',
     /**
      * Collection ownership was transferred
@@ -2639,7 +2645,7 @@ export const collectionTransferred = {
     ),
 }
 
-export const collectionTransferCancelled = {
+export const collectionTransferCancelled =  {
     name: 'MultiTokens.CollectionTransferCancelled',
     /**
      * A pending collection transfer was cancelled
@@ -2655,7 +2661,7 @@ export const collectionTransferCancelled = {
     ),
 }
 
-export const tokenAccountDepositUpdated = {
+export const tokenAccountDepositUpdated =  {
     name: 'MultiTokens.TokenAccountDepositUpdated',
     /**
      * The deposit for number of accounts supported by a token changed
@@ -2683,7 +2689,7 @@ export const tokenAccountDepositUpdated = {
     ),
 }
 
-export const infused = {
+export const infused =  {
     name: 'MultiTokens.Infused',
     /**
      * The token was infused with ENJ
@@ -2831,7 +2837,7 @@ export const infused = {
     ),
 }
 
-export const migrationStep = {
+export const migrationStep =  {
     name: 'MultiTokens.MigrationStep',
     /**
      * The migration step has completed
@@ -2851,7 +2857,7 @@ export const migrationStep = {
     ),
 }
 
-export const collectionDepositRecalculationInProgress = {
+export const collectionDepositRecalculationInProgress =  {
     name: 'MultiTokens.CollectionDepositRecalculationInProgress',
     /**
      * Collection deposit update in progress
@@ -2875,7 +2881,7 @@ export const collectionDepositRecalculationInProgress = {
     ),
 }
 
-export const collectionDepositUpdateCompleted = {
+export const collectionDepositUpdateCompleted =  {
     name: 'MultiTokens.CollectionDepositUpdateCompleted',
     /**
      * Collection deposit update completed
@@ -2891,7 +2897,7 @@ export const collectionDepositUpdateCompleted = {
     ),
 }
 
-export const tokenAccountUpgraded = {
+export const tokenAccountUpgraded =  {
     name: 'MultiTokens.TokenAccountUpgraded',
     /**
      * A token account was upgraded
@@ -2919,7 +2925,7 @@ export const tokenAccountUpgraded = {
     ),
 }
 
-export const tokenUpgraded = {
+export const tokenUpgraded =  {
     name: 'MultiTokens.TokenUpgraded',
     /**
      * A token was upgraded
@@ -2943,7 +2949,7 @@ export const tokenUpgraded = {
     ),
 }
 
-export const collectionUpgraded = {
+export const collectionUpgraded =  {
     name: 'MultiTokens.CollectionUpgraded',
     /**
      * A collection was upgraded
@@ -2963,7 +2969,7 @@ export const collectionUpgraded = {
     ),
 }
 
-export const collectionAccountApprovalsUpdated = {
+export const collectionAccountApprovalsUpdated =  {
     name: 'MultiTokens.CollectionAccountApprovalsUpdated',
     /**
      * A collection was upgraded
@@ -2987,7 +2993,7 @@ export const collectionAccountApprovalsUpdated = {
     ),
 }
 
-export const collectionAccountApprovalsMismatch = {
+export const collectionAccountApprovalsMismatch =  {
     name: 'MultiTokens.CollectionAccountApprovalsMismatch',
     /**
      * A given collection expiration list doesn't its current approvals
@@ -3007,7 +3013,7 @@ export const collectionAccountApprovalsMismatch = {
     ),
 }
 
-export const tokenGroupCreated = {
+export const tokenGroupCreated =  {
     name: 'MultiTokens.TokenGroupCreated',
     /**
      * A new token group was created
@@ -3027,7 +3033,7 @@ export const tokenGroupCreated = {
     ),
 }
 
-export const tokenGroupDestroyed = {
+export const tokenGroupDestroyed =  {
     name: 'MultiTokens.TokenGroupDestroyed',
     /**
      * A token group was destroyed
@@ -3043,7 +3049,7 @@ export const tokenGroupDestroyed = {
     ),
 }
 
-export const tokenGroupAdded = {
+export const tokenGroupAdded =  {
     name: 'MultiTokens.TokenGroupAdded',
     /**
      * A token was added to a group
@@ -3067,7 +3073,7 @@ export const tokenGroupAdded = {
     ),
 }
 
-export const tokenGroupRemoved = {
+export const tokenGroupRemoved =  {
     name: 'MultiTokens.TokenGroupRemoved',
     /**
      * A token was removed from a group
@@ -3091,7 +3097,7 @@ export const tokenGroupRemoved = {
     ),
 }
 
-export const tokenGroupAttributeSet = {
+export const tokenGroupAttributeSet =  {
     name: 'MultiTokens.TokenGroupAttributeSet',
     /**
      * New attribute has been set on a token group
@@ -3115,7 +3121,7 @@ export const tokenGroupAttributeSet = {
     ),
 }
 
-export const tokenGroupAttributeRemoved = {
+export const tokenGroupAttributeRemoved =  {
     name: 'MultiTokens.TokenGroupAttributeRemoved',
     /**
      * An attribute has been removed from a token group

@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV101 from '../enjinV101'
 
-export const candidateBacked = {
+export const candidateBacked =  {
     name: 'ParaInclusion.CandidateBacked',
     /**
      * A candidate was backed. `[candidate, head_data]`
@@ -13,7 +13,7 @@ export const candidateBacked = {
     ),
 }
 
-export const candidateIncluded = {
+export const candidateIncluded =  {
     name: 'ParaInclusion.CandidateIncluded',
     /**
      * A candidate was included. `[candidate, head_data]`
@@ -24,7 +24,7 @@ export const candidateIncluded = {
     ),
 }
 
-export const candidateTimedOut = {
+export const candidateTimedOut =  {
     name: 'ParaInclusion.CandidateTimedOut',
     /**
      * A candidate timed out. `[candidate, head_data]`
@@ -35,7 +35,7 @@ export const candidateTimedOut = {
     ),
 }
 
-export const upwardMessagesReceived = {
+export const upwardMessagesReceived =  {
     name: 'ParaInclusion.UpwardMessagesReceived',
     /**
      * Some upward messages have been received and will be processed.

@@ -21,7 +21,4 @@ worker.on('completed', (job) => {
     void instance.completed(job)
 })
 
-process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
-process.on('SIGTERM', () => void gracefulShutdown('SIGTERM', worker))
-
 export default worker

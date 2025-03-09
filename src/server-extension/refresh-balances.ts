@@ -1,7 +1,6 @@
 import { Arg, Query, Resolver } from 'type-graphql'
-import { decodeAddress } from '@polkadot/util-crypto'
-import { u8aToHex } from '@polkadot/util'
 import { QueueUtils } from '../worker/queue'
+import { decodeAddress } from '../utils/tools'
 
 @Resolver()
 export class RefreshBalancesResolver {
@@ -12,7 +11,7 @@ export class RefreshBalancesResolver {
         }
 
         const publicKeys = ids.map((id) => {
-            return u8aToHex(decodeAddress(id))
+            return decodeAddress(id)
         })
 
         QueueUtils.dispatchFetchBalances(publicKeys)

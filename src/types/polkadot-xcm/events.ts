@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
@@ -6,14 +6,17 @@ import * as matrixV1004 from '../matrixV1004'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const attempted = {
+export const attempted =  {
     name: 'PolkadotXcm.Attempted',
     /**
      * Execution of an XCM message was attempted.
-     *
+     * 
      * \[ outcome \]
      */
-    matrixEnjinV603: new EventType('PolkadotXcm.Attempted', matrixEnjinV603.V3Outcome),
+    matrixEnjinV603: new EventType(
+        'PolkadotXcm.Attempted',
+        matrixEnjinV603.V3Outcome
+    ),
     /**
      * Execution of an XCM message was attempted.
      */
@@ -34,10 +37,13 @@ export const attempted = {
     ),
     /**
      * Execution of an XCM message was attempted.
-     *
+     * 
      * \[ outcome \]
      */
-    matrixV500: new EventType('PolkadotXcm.Attempted', matrixV500.V3Outcome),
+    matrixV500: new EventType(
+        'PolkadotXcm.Attempted',
+        matrixV500.V3Outcome
+    ),
     /**
      * Execution of an XCM message was attempted.
      */
@@ -58,20 +64,16 @@ export const attempted = {
     ),
 }
 
-export const sent = {
+export const sent =  {
     name: 'PolkadotXcm.Sent',
     /**
      * A XCM message was sent.
-     *
+     * 
      * \[ origin, destination, message \]
      */
     matrixEnjinV603: new EventType(
         'PolkadotXcm.Sent',
-        sts.tuple([
-            matrixEnjinV603.V3MultiLocation,
-            matrixEnjinV603.V3MultiLocation,
-            sts.array(() => matrixEnjinV603.V3Instruction),
-        ])
+        sts.tuple([matrixEnjinV603.V3MultiLocation, matrixEnjinV603.V3MultiLocation, sts.array(() => matrixEnjinV603.V3Instruction)])
     ),
     /**
      * A XCM message was sent.
@@ -99,7 +101,7 @@ export const sent = {
     ),
     /**
      * A XCM message was sent.
-     *
+     * 
      * \[ origin, destination, message \]
      */
     matrixV500: new EventType(
@@ -132,13 +134,13 @@ export const sent = {
     ),
 }
 
-export const unexpectedResponse = {
+export const unexpectedResponse =  {
     name: 'PolkadotXcm.UnexpectedResponse',
     /**
      * Query response received which does not match a registered query. This may be because a
      * matching query was never registered, it may be because it is a duplicate response, or
      * because the query timed out.
-     *
+     * 
      * \[ origin location, id \]
      */
     matrixEnjinV603: new EventType(
@@ -173,10 +175,13 @@ export const unexpectedResponse = {
      * Query response received which does not match a registered query. This may be because a
      * matching query was never registered, it may be because it is a duplicate response, or
      * because the query timed out.
-     *
+     * 
      * \[ origin location, id \]
      */
-    matrixV500: new EventType('PolkadotXcm.UnexpectedResponse', sts.tuple([matrixV500.V3MultiLocation, sts.bigint()])),
+    matrixV500: new EventType(
+        'PolkadotXcm.UnexpectedResponse',
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint()])
+    ),
     /**
      * Query response received which does not match a registered query. This may be because a
      * matching query was never registered, it may be because it is a duplicate response, or
@@ -203,15 +208,18 @@ export const unexpectedResponse = {
     ),
 }
 
-export const responseReady = {
+export const responseReady =  {
     name: 'PolkadotXcm.ResponseReady',
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
-     *
+     * 
      * \[ id, response \]
      */
-    matrixEnjinV603: new EventType('PolkadotXcm.ResponseReady', sts.tuple([sts.bigint(), matrixEnjinV603.V3Response])),
+    matrixEnjinV603: new EventType(
+        'PolkadotXcm.ResponseReady',
+        sts.tuple([sts.bigint(), matrixEnjinV603.V3Response])
+    ),
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
@@ -237,10 +245,13 @@ export const responseReady = {
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
-     *
+     * 
      * \[ id, response \]
      */
-    matrixV500: new EventType('PolkadotXcm.ResponseReady', sts.tuple([sts.bigint(), matrixV500.V3Response])),
+    matrixV500: new EventType(
+        'PolkadotXcm.ResponseReady',
+        sts.tuple([sts.bigint(), matrixV500.V3Response])
+    ),
     /**
      * Query response has been received and is ready for taking with `take_response`. There is
      * no registered notification call.
@@ -265,15 +276,18 @@ export const responseReady = {
     ),
 }
 
-export const notified = {
+export const notified =  {
     name: 'PolkadotXcm.Notified',
     /**
      * Query response has been received and query is removed. The registered notification has
      * been dispatched and executed successfully.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
-    matrixEnjinV603: new EventType('PolkadotXcm.Notified', sts.tuple([sts.bigint(), sts.number(), sts.number()])),
+    matrixEnjinV603: new EventType(
+        'PolkadotXcm.Notified',
+        sts.tuple([sts.bigint(), sts.number(), sts.number()])
+    ),
     /**
      * Query response has been received and query is removed. The registered notification has
      * been dispatched and executed successfully.
@@ -289,10 +303,13 @@ export const notified = {
     /**
      * Query response has been received and query is removed. The registered notification has
      * been dispatched and executed successfully.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
-    matrixV500: new EventType('PolkadotXcm.Notified', sts.tuple([sts.bigint(), sts.number(), sts.number()])),
+    matrixV500: new EventType(
+        'PolkadotXcm.Notified',
+        sts.tuple([sts.bigint(), sts.number(), sts.number()])
+    ),
     /**
      * Query response has been received and query is removed. The registered notification has
      * been dispatched and executed successfully.
@@ -307,13 +324,13 @@ export const notified = {
     ),
 }
 
-export const notifyOverweight = {
+export const notifyOverweight =  {
     name: 'PolkadotXcm.NotifyOverweight',
     /**
      * Query response has been received and query is removed. The registered notification could
      * not be dispatched because the dispatch weight is greater than the maximum weight
      * originally budgeted by this runtime for the query result.
-     *
+     * 
      * \[ id, pallet index, call index, actual weight, max budgeted weight \]
      */
     matrixEnjinV603: new EventType(
@@ -339,7 +356,7 @@ export const notifyOverweight = {
      * Query response has been received and query is removed. The registered notification could
      * not be dispatched because the dispatch weight is greater than the maximum weight
      * originally budgeted by this runtime for the query result.
-     *
+     * 
      * \[ id, pallet index, call index, actual weight, max budgeted weight \]
      */
     matrixV500: new EventType(
@@ -363,12 +380,12 @@ export const notifyOverweight = {
     ),
 }
 
-export const notifyDispatchError = {
+export const notifyDispatchError =  {
     name: 'PolkadotXcm.NotifyDispatchError',
     /**
      * Query response has been received and query is removed. There was a general error with
      * dispatching the notification call.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
     matrixEnjinV603: new EventType(
@@ -390,10 +407,13 @@ export const notifyDispatchError = {
     /**
      * Query response has been received and query is removed. There was a general error with
      * dispatching the notification call.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
-    matrixV500: new EventType('PolkadotXcm.NotifyDispatchError', sts.tuple([sts.bigint(), sts.number(), sts.number()])),
+    matrixV500: new EventType(
+        'PolkadotXcm.NotifyDispatchError',
+        sts.tuple([sts.bigint(), sts.number(), sts.number()])
+    ),
     /**
      * Query response has been received and query is removed. There was a general error with
      * dispatching the notification call.
@@ -408,13 +428,13 @@ export const notifyDispatchError = {
     ),
 }
 
-export const notifyDecodeFailed = {
+export const notifyDecodeFailed =  {
     name: 'PolkadotXcm.NotifyDecodeFailed',
     /**
      * Query response has been received and query is removed. The dispatch was unable to be
      * decoded into a `Call`; this might be due to dispatch function having a signature which
      * is not `(origin, QueryId, Response)`.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
     matrixEnjinV603: new EventType(
@@ -438,10 +458,13 @@ export const notifyDecodeFailed = {
      * Query response has been received and query is removed. The dispatch was unable to be
      * decoded into a `Call`; this might be due to dispatch function having a signature which
      * is not `(origin, QueryId, Response)`.
-     *
+     * 
      * \[ id, pallet index, call index \]
      */
-    matrixV500: new EventType('PolkadotXcm.NotifyDecodeFailed', sts.tuple([sts.bigint(), sts.number(), sts.number()])),
+    matrixV500: new EventType(
+        'PolkadotXcm.NotifyDecodeFailed',
+        sts.tuple([sts.bigint(), sts.number(), sts.number()])
+    ),
     /**
      * Query response has been received and query is removed. The dispatch was unable to be
      * decoded into a `Call`; this might be due to dispatch function having a signature which
@@ -457,13 +480,13 @@ export const notifyDecodeFailed = {
     ),
 }
 
-export const invalidResponder = {
+export const invalidResponder =  {
     name: 'PolkadotXcm.InvalidResponder',
     /**
      * Expected query response has been received but the origin location of the response does
      * not match that expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
-     *
+     * 
      * \[ origin location, id, expected location \]
      */
     matrixEnjinV603: new EventType(
@@ -500,7 +523,7 @@ export const invalidResponder = {
      * Expected query response has been received but the origin location of the response does
      * not match that expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
-     *
+     * 
      * \[ origin location, id, expected location \]
      */
     matrixV500: new EventType(
@@ -535,17 +558,17 @@ export const invalidResponder = {
     ),
 }
 
-export const invalidResponderVersion = {
+export const invalidResponderVersion =  {
     name: 'PolkadotXcm.InvalidResponderVersion',
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
-     *
+     * 
      * \[ origin location, id \]
      */
     matrixEnjinV603: new EventType(
@@ -555,7 +578,7 @@ export const invalidResponderVersion = {
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -571,7 +594,7 @@ export const invalidResponderVersion = {
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -587,12 +610,12 @@ export const invalidResponderVersion = {
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
-     *
+     * 
      * \[ origin location, id \]
      */
     matrixV500: new EventType(
@@ -602,7 +625,7 @@ export const invalidResponderVersion = {
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -618,7 +641,7 @@ export const invalidResponderVersion = {
     /**
      * Expected query response has been received but the expected origin location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -633,14 +656,17 @@ export const invalidResponderVersion = {
     ),
 }
 
-export const responseTaken = {
+export const responseTaken =  {
     name: 'PolkadotXcm.ResponseTaken',
     /**
      * Received query response has been read and removed.
-     *
+     * 
      * \[ id \]
      */
-    matrixEnjinV603: new EventType('PolkadotXcm.ResponseTaken', sts.bigint()),
+    matrixEnjinV603: new EventType(
+        'PolkadotXcm.ResponseTaken',
+        sts.bigint()
+    ),
     /**
      * Received query response has been read and removed.
      */
@@ -652,10 +678,13 @@ export const responseTaken = {
     ),
     /**
      * Received query response has been read and removed.
-     *
+     * 
      * \[ id \]
      */
-    matrixV500: new EventType('PolkadotXcm.ResponseTaken', sts.bigint()),
+    matrixV500: new EventType(
+        'PolkadotXcm.ResponseTaken',
+        sts.bigint()
+    ),
     /**
      * Received query response has been read and removed.
      */
@@ -667,11 +696,11 @@ export const responseTaken = {
     ),
 }
 
-export const assetsTrapped = {
+export const assetsTrapped =  {
     name: 'PolkadotXcm.AssetsTrapped',
     /**
      * Some assets have been placed in an asset trap.
-     *
+     * 
      * \[ hash, origin, assets \]
      */
     matrixEnjinV603: new EventType(
@@ -702,7 +731,7 @@ export const assetsTrapped = {
     ),
     /**
      * Some assets have been placed in an asset trap.
-     *
+     * 
      * \[ hash, origin, assets \]
      */
     matrixV500: new EventType(
@@ -733,13 +762,13 @@ export const assetsTrapped = {
     ),
 }
 
-export const versionChangeNotified = {
+export const versionChangeNotified =  {
     name: 'PolkadotXcm.VersionChangeNotified',
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
-     *
+     * 
      * \[ destination, result, cost \]
      */
     matrixEnjinV603: new EventType(
@@ -748,7 +777,7 @@ export const versionChangeNotified = {
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
      */
     matrixEnjinV1004: new EventType(
@@ -762,7 +791,7 @@ export const versionChangeNotified = {
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
      */
     matrixEnjinV1012: new EventType(
@@ -776,9 +805,9 @@ export const versionChangeNotified = {
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
-     *
+     * 
      * \[ destination, result, cost \]
      */
     matrixV500: new EventType(
@@ -787,7 +816,7 @@ export const versionChangeNotified = {
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
      */
     matrixV1004: new EventType(
@@ -801,7 +830,7 @@ export const versionChangeNotified = {
     ),
     /**
      * An XCM version change notification message has been attempted to be sent.
-     *
+     * 
      * The cost of sending it (borne by the chain) is included.
      */
     matrixV1010: new EventType(
@@ -815,12 +844,12 @@ export const versionChangeNotified = {
     ),
 }
 
-export const supportedVersionChanged = {
+export const supportedVersionChanged =  {
     name: 'PolkadotXcm.SupportedVersionChanged',
     /**
      * The supported version of a location has been changed. This might be through an
      * automatic notification or a manual intervention.
-     *
+     * 
      * \[ location, XCM version \]
      */
     matrixEnjinV603: new EventType(
@@ -852,7 +881,7 @@ export const supportedVersionChanged = {
     /**
      * The supported version of a location has been changed. This might be through an
      * automatic notification or a manual intervention.
-     *
+     * 
      * \[ location, XCM version \]
      */
     matrixV500: new EventType(
@@ -883,12 +912,12 @@ export const supportedVersionChanged = {
     ),
 }
 
-export const notifyTargetSendFail = {
+export const notifyTargetSendFail =  {
     name: 'PolkadotXcm.NotifyTargetSendFail',
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * sending the notification to it.
-     *
+     * 
      * \[ location, query ID, error \]
      */
     matrixEnjinV603: new EventType(
@@ -922,7 +951,7 @@ export const notifyTargetSendFail = {
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * sending the notification to it.
-     *
+     * 
      * \[ location, query ID, error \]
      */
     matrixV500: new EventType(
@@ -955,12 +984,12 @@ export const notifyTargetSendFail = {
     ),
 }
 
-export const notifyTargetMigrationFail = {
+export const notifyTargetMigrationFail =  {
     name: 'PolkadotXcm.NotifyTargetMigrationFail',
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * migrating the location to our new XCM format.
-     *
+     * 
      * \[ location, query ID \]
      */
     matrixEnjinV603: new EventType(
@@ -992,7 +1021,7 @@ export const notifyTargetMigrationFail = {
     /**
      * A given location which had a version change subscription was dropped owing to an error
      * migrating the location to our new XCM format.
-     *
+     * 
      * \[ location, query ID \]
      */
     matrixV500: new EventType(
@@ -1023,17 +1052,17 @@ export const notifyTargetMigrationFail = {
     ),
 }
 
-export const invalidQuerierVersion = {
+export const invalidQuerierVersion =  {
     name: 'PolkadotXcm.InvalidQuerierVersion',
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
-     *
+     * 
      * \[ origin location, id \]
      */
     matrixEnjinV603: new EventType(
@@ -1043,7 +1072,7 @@ export const invalidQuerierVersion = {
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -1059,7 +1088,7 @@ export const invalidQuerierVersion = {
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -1075,12 +1104,12 @@ export const invalidQuerierVersion = {
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
      * needed.
-     *
+     * 
      * \[ origin location, id \]
      */
     matrixV500: new EventType(
@@ -1090,7 +1119,7 @@ export const invalidQuerierVersion = {
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -1106,7 +1135,7 @@ export const invalidQuerierVersion = {
     /**
      * Expected query response has been received but the expected querier location placed in
      * storage by this runtime previously cannot be decoded. The query remains registered.
-     *
+     * 
      * This is unexpected (since a location placed in storage in a previously executing
      * runtime should be readable prior to query timeout) and dangerous since the possibly
      * valid response will be dropped. Manual governance intervention is probably going to be
@@ -1121,23 +1150,18 @@ export const invalidQuerierVersion = {
     ),
 }
 
-export const invalidQuerier = {
+export const invalidQuerier =  {
     name: 'PolkadotXcm.InvalidQuerier',
     /**
      * Expected query response has been received but the querier location of the response does
      * not match the expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
-     *
+     * 
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
     matrixEnjinV603: new EventType(
         'PolkadotXcm.InvalidQuerier',
-        sts.tuple([
-            matrixEnjinV603.V3MultiLocation,
-            sts.bigint(),
-            matrixEnjinV603.V3MultiLocation,
-            sts.option(() => matrixEnjinV603.V3MultiLocation),
-        ])
+        sts.tuple([matrixEnjinV603.V3MultiLocation, sts.bigint(), matrixEnjinV603.V3MultiLocation, sts.option(() => matrixEnjinV603.V3MultiLocation)])
     ),
     /**
      * Expected query response has been received but the querier location of the response does
@@ -1171,17 +1195,12 @@ export const invalidQuerier = {
      * Expected query response has been received but the querier location of the response does
      * not match the expected. The query remains registered for a later, valid, response to
      * be received and acted upon.
-     *
+     * 
      * \[ origin location, id, expected querier, maybe actual querier \]
      */
     matrixV500: new EventType(
         'PolkadotXcm.InvalidQuerier',
-        sts.tuple([
-            matrixV500.V3MultiLocation,
-            sts.bigint(),
-            matrixV500.V3MultiLocation,
-            sts.option(() => matrixV500.V3MultiLocation),
-        ])
+        sts.tuple([matrixV500.V3MultiLocation, sts.bigint(), matrixV500.V3MultiLocation, sts.option(() => matrixV500.V3MultiLocation)])
     ),
     /**
      * Expected query response has been received but the querier location of the response does
@@ -1213,12 +1232,12 @@ export const invalidQuerier = {
     ),
 }
 
-export const versionNotifyStarted = {
+export const versionNotifyStarted =  {
     name: 'PolkadotXcm.VersionNotifyStarted',
     /**
      * A remote has requested XCM version change notification from us and we have honored it.
      * A version information message is sent to them and its cost is included.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixEnjinV603: new EventType(
@@ -1252,7 +1271,7 @@ export const versionNotifyStarted = {
     /**
      * A remote has requested XCM version change notification from us and we have honored it.
      * A version information message is sent to them and its cost is included.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixV500: new EventType(
@@ -1285,11 +1304,11 @@ export const versionNotifyStarted = {
     ),
 }
 
-export const versionNotifyRequested = {
+export const versionNotifyRequested =  {
     name: 'PolkadotXcm.VersionNotifyRequested',
     /**
      * We have requested that a remote chain sends us XCM version change notifications.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixEnjinV603: new EventType(
@@ -1320,7 +1339,7 @@ export const versionNotifyRequested = {
     ),
     /**
      * We have requested that a remote chain sends us XCM version change notifications.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixV500: new EventType(
@@ -1351,11 +1370,11 @@ export const versionNotifyRequested = {
     ),
 }
 
-export const versionNotifyUnrequested = {
+export const versionNotifyUnrequested =  {
     name: 'PolkadotXcm.VersionNotifyUnrequested',
     /**
      * We have requested that a remote chain stops sending us XCM version change notifications.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixEnjinV603: new EventType(
@@ -1387,7 +1406,7 @@ export const versionNotifyUnrequested = {
     ),
     /**
      * We have requested that a remote chain stops sending us XCM version change notifications.
-     *
+     * 
      * \[ destination location, cost \]
      */
     matrixV500: new EventType(
@@ -1419,11 +1438,11 @@ export const versionNotifyUnrequested = {
     ),
 }
 
-export const feesPaid = {
+export const feesPaid =  {
     name: 'PolkadotXcm.FeesPaid',
     /**
      * Fees were paid from a location for an operation (often for using `SendXcm`).
-     *
+     * 
      * \[ paying location, fees \]
      */
     matrixEnjinV603: new EventType(
@@ -1452,7 +1471,7 @@ export const feesPaid = {
     ),
     /**
      * Fees were paid from a location for an operation (often for using `SendXcm`).
-     *
+     * 
      * \[ paying location, fees \]
      */
     matrixV500: new EventType(
@@ -1481,11 +1500,11 @@ export const feesPaid = {
     ),
 }
 
-export const assetsClaimed = {
+export const assetsClaimed =  {
     name: 'PolkadotXcm.AssetsClaimed',
     /**
      * Some assets have been claimed from an asset trap
-     *
+     * 
      * \[ hash, origin, assets \]
      */
     matrixEnjinV603: new EventType(
@@ -1516,7 +1535,7 @@ export const assetsClaimed = {
     ),
     /**
      * Some assets have been claimed from an asset trap
-     *
+     * 
      * \[ hash, origin, assets \]
      */
     matrixV500: new EventType(
@@ -1547,7 +1566,7 @@ export const assetsClaimed = {
     ),
 }
 
-export const versionMigrationFinished = {
+export const versionMigrationFinished =  {
     name: 'PolkadotXcm.VersionMigrationFinished',
     /**
      * A XCM version migration finished.

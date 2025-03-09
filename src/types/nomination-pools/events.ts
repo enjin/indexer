@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v101 from '../v101'
@@ -11,7 +11,7 @@ import * as v110 from '../v110'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 
-export const created = {
+export const created =  {
     name: 'NominationPools.Created',
     /**
      * A pool has been created.
@@ -48,7 +48,7 @@ export const created = {
     ),
 }
 
-export const bonded = {
+export const bonded =  {
     name: 'NominationPools.Bonded',
     /**
      * A member has became bonded in a pool.
@@ -98,7 +98,7 @@ export const bonded = {
     ),
 }
 
-export const paidOut = {
+export const paidOut =  {
     name: 'NominationPools.PaidOut',
     /**
      * A payout has been made to a member.
@@ -113,11 +113,11 @@ export const paidOut = {
     ),
 }
 
-export const unbonded = {
+export const unbonded =  {
     name: 'NominationPools.Unbonded',
     /**
      * A member has unbonded from their pool.
-     *
+     * 
      * - `balance` is the corresponding balance of the number of points that has been
      *   requested to be unbonded (the argument of the `unbond` transaction) from the bonded
      *   pool.
@@ -140,13 +140,13 @@ export const unbonded = {
     ),
 }
 
-export const withdrawn = {
+export const withdrawn =  {
     name: 'NominationPools.Withdrawn',
     /**
      * A member has withdrawn from their pool.
-     *
+     * 
      * The given number of `points` have been dissolved in return of `balance`.
-     *
+     * 
      * Similar to `Unbonded` event, in the absence of slashing, the ratio of point to balance
      * will be 1.
      */
@@ -161,7 +161,7 @@ export const withdrawn = {
     ),
 }
 
-export const destroyed = {
+export const destroyed =  {
     name: 'NominationPools.Destroyed',
     /**
      * A pool has been destroyed.
@@ -174,7 +174,7 @@ export const destroyed = {
     ),
 }
 
-export const stateChanged = {
+export const stateChanged =  {
     name: 'NominationPools.StateChanged',
     /**
      * The state of a pool has changed
@@ -208,7 +208,7 @@ export const stateChanged = {
     ),
 }
 
-export const poolSlashed = {
+export const poolSlashed =  {
     name: 'NominationPools.PoolSlashed',
     /**
      * The active balance of pool `pool_id` has been slashed to `balance`.
@@ -222,7 +222,7 @@ export const poolSlashed = {
     ),
 }
 
-export const unbondingPoolSlashed = {
+export const unbondingPoolSlashed =  {
     name: 'NominationPools.UnbondingPoolSlashed',
     /**
      * The unbond pool at `era` of pool `pool_id` has been slashed to `balance`.
@@ -237,7 +237,7 @@ export const unbondingPoolSlashed = {
     ),
 }
 
-export const commissionUpdated = {
+export const commissionUpdated =  {
     name: 'NominationPools.CommissionUpdated',
     /**
      * A pool's commission rate has been changed.
@@ -251,7 +251,7 @@ export const commissionUpdated = {
     ),
 }
 
-export const eraRewardsProcessed = {
+export const eraRewardsProcessed =  {
     name: 'NominationPools.EraRewardsProcessed',
     /**
      * This event happens once per era on the previous era that rewards are paid out for. It
@@ -379,7 +379,7 @@ export const eraRewardsProcessed = {
     ),
 }
 
-export const rewardPaid = {
+export const rewardPaid =  {
     name: 'NominationPools.RewardPaid',
     /**
      * Rewards were paid to a pool
@@ -411,7 +411,7 @@ export const rewardPaid = {
     ),
 }
 
-export const poolMutated = {
+export const poolMutated =  {
     name: 'NominationPools.PoolMutated',
     /**
      * Pool has been mutated.
@@ -495,7 +495,7 @@ export const poolMutated = {
     ),
 }
 
-export const nominated = {
+export const nominated =  {
     name: 'NominationPools.Nominated',
     /**
      * A nomination took place
@@ -515,7 +515,7 @@ export const nominated = {
     ),
 }
 
-export const earlyBirdBonusQueued = {
+export const earlyBirdBonusQueued =  {
     name: 'NominationPools.EarlyBirdBonusQueued',
     enjinV101: new EventType(
         'NominationPools.EarlyBirdBonusQueued',
@@ -528,7 +528,7 @@ export const earlyBirdBonusQueued = {
     ),
 }
 
-export const earlyBirdBonusDistributed = {
+export const earlyBirdBonusDistributed =  {
     name: 'NominationPools.EarlyBirdBonusDistributed',
     /**
      * The early bird bonus has been distributed
@@ -548,7 +548,7 @@ export const earlyBirdBonusDistributed = {
     ),
 }
 
-export const earlyBirdBonusCalculated = {
+export const earlyBirdBonusCalculated =  {
     name: 'NominationPools.EarlyBirdBonusCalculated',
     enjinV1021: new EventType(
         'NominationPools.EarlyBirdBonusCalculated',
@@ -561,7 +561,7 @@ export const earlyBirdBonusCalculated = {
     ),
 }
 
-export const earlyBirdSharesCaptured = {
+export const earlyBirdSharesCaptured =  {
     name: 'NominationPools.EarlyBirdSharesCaptured',
     /**
      * The shares of pool users have been captured for early bird rewards
@@ -581,7 +581,7 @@ export const earlyBirdSharesCaptured = {
     ),
 }
 
-export const earlyBirdBonusPaymentUnlocked = {
+export const earlyBirdBonusPaymentUnlocked =  {
     name: 'NominationPools.EarlyBirdBonusPaymentUnlocked',
     /**
      * A new share of early bird bonus has been unlocked
@@ -601,7 +601,7 @@ export const earlyBirdBonusPaymentUnlocked = {
     ),
 }
 
-export const earlyBirdBonusPaid = {
+export const earlyBirdBonusPaid =  {
     name: 'NominationPools.EarlyBirdBonusPaid',
     /**
      * The early bird bonus has been paid to the pool
@@ -625,7 +625,7 @@ export const earlyBirdBonusPaid = {
     ),
 }
 
-export const earlyBirdSharesRemoved = {
+export const earlyBirdSharesRemoved =  {
     name: 'NominationPools.EarlyBirdSharesRemoved',
     enjinV1050: new EventType(
         'NominationPools.EarlyBirdSharesRemoved',
@@ -638,7 +638,7 @@ export const earlyBirdSharesRemoved = {
     ),
 }
 
-export const rolesUpdated = {
+export const rolesUpdated =  {
     name: 'NominationPools.RolesUpdated',
     /**
      * The roles of a pool have been updated to the given new roles. Note that the depositor
@@ -653,7 +653,7 @@ export const rolesUpdated = {
     ),
 }
 
-export const poolCommissionUpdated = {
+export const poolCommissionUpdated =  {
     name: 'NominationPools.PoolCommissionUpdated',
     /**
      * A pool's commission setting has been changed.
@@ -667,7 +667,7 @@ export const poolCommissionUpdated = {
     ),
 }
 
-export const poolMaxCommissionUpdated = {
+export const poolMaxCommissionUpdated =  {
     name: 'NominationPools.PoolMaxCommissionUpdated',
     /**
      * A pool's maximum commission setting has been changed.
@@ -681,7 +681,7 @@ export const poolMaxCommissionUpdated = {
     ),
 }
 
-export const poolCommissionChangeRateUpdated = {
+export const poolCommissionChangeRateUpdated =  {
     name: 'NominationPools.PoolCommissionChangeRateUpdated',
     /**
      * A pool's commission `change_rate` has been changed.
@@ -695,7 +695,7 @@ export const poolCommissionChangeRateUpdated = {
     ),
 }
 
-export const poolCommissionClaimed = {
+export const poolCommissionClaimed =  {
     name: 'NominationPools.PoolCommissionClaimed',
     /**
      * Pool commission has been claimed.
@@ -709,7 +709,7 @@ export const poolCommissionClaimed = {
     ),
 }
 
-export const maxCommissionUpdated = {
+export const maxCommissionUpdated =  {
     name: 'NominationPools.MaxCommissionUpdated',
     /**
      * A pool's maximum commission setting has been changed.
@@ -723,7 +723,7 @@ export const maxCommissionUpdated = {
     ),
 }
 
-export const commissionChangeRateUpdated = {
+export const commissionChangeRateUpdated =  {
     name: 'NominationPools.CommissionChangeRateUpdated',
     /**
      * A pool's commission `change_rate` has been changed.
@@ -737,7 +737,7 @@ export const commissionChangeRateUpdated = {
     ),
 }
 
-export const commissionPaid = {
+export const commissionPaid =  {
     name: 'NominationPools.CommissionPaid',
     /**
      * Commission for `pool_id` was paid to `beneficiary`
@@ -752,7 +752,7 @@ export const commissionPaid = {
     ),
 }
 
-export const bonusReceived = {
+export const bonusReceived =  {
     name: 'NominationPools.BonusReceived',
     /**
      * A pool's bonus was transferred to its reward account
@@ -766,7 +766,7 @@ export const bonusReceived = {
     ),
 }
 
-export const rewardReinvested = {
+export const rewardReinvested =  {
     name: 'NominationPools.RewardReinvested',
     /**
      * A pool's reward balance has been bonded

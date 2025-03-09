@@ -3,8 +3,8 @@ import { EventItem } from '../../../contexts'
 import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Event as EventModel, Extrinsic, NominationPoolsPoolMutated } from '../../../model'
-import { hexToString } from '@polkadot/util'
 import { PoolMutated } from './types'
+import { hexToString } from '@polkadot/util'
 
 export function poolMutated(event: EventItem): PoolMutated {
     return match(event)

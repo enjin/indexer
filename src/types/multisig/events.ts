@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 
-export const newMultisig = {
+export const newMultisig =  {
     name: 'Multisig.NewMultisig',
     /**
      * A new multisig operation has begun.
@@ -19,7 +19,7 @@ export const newMultisig = {
     ),
 }
 
-export const multisigApproval = {
+export const multisigApproval =  {
     name: 'Multisig.MultisigApproval',
     /**
      * A multisig operation has been approved by someone.
@@ -35,7 +35,7 @@ export const multisigApproval = {
     ),
 }
 
-export const multisigExecuted = {
+export const multisigExecuted =  {
     name: 'Multisig.MultisigExecuted',
     /**
      * A multisig operation has been executed.
@@ -47,10 +47,7 @@ export const multisigExecuted = {
             timepoint: matrixEnjinV603.Timepoint,
             multisig: matrixEnjinV603.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV603.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV603.DispatchError),
         })
     ),
     /**
@@ -63,10 +60,7 @@ export const multisigExecuted = {
             timepoint: matrixV500.Timepoint,
             multisig: matrixV500.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -79,10 +73,7 @@ export const multisigExecuted = {
             timepoint: matrixV602.Timepoint,
             multisig: matrixV602.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -95,15 +86,12 @@ export const multisigExecuted = {
             timepoint: matrixV604.Timepoint,
             multisig: matrixV604.AccountId32,
             callHash: sts.bytes(),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV604.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
 }
 
-export const multisigCancelled = {
+export const multisigCancelled =  {
     name: 'Multisig.MultisigCancelled',
     /**
      * A multisig operation has been cancelled.

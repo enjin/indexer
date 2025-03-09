@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 
-export const key = {
+export const key =  {
     /**
      *  The `AccountId` of the sudo key.
      */
@@ -11,7 +11,7 @@ export const key = {
 /**
  *  The `AccountId` of the sudo key.
  */
-export interface KeyMatrixV500 {
+export interface KeyMatrixV500  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<matrixV500.AccountId32 | undefined>
+    get(block: Block): Promise<(matrixV500.AccountId32 | undefined)>
 }

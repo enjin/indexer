@@ -1,10 +1,11 @@
-import { BN, bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 import Big from 'big.js'
 import { constants } from '../../types'
 import { BlockHeader, CommonContext } from '../../contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
 import * as mappings from './../../mappings'
+import { BN } from '@polkadot/util'
+import { bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
 
 const EMPTY_H256 = new Uint8Array(15)
 const MOD_PREFIX = stringToU8a('modl')

@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const rootHash = {
+export const rootHash =  {
     /**
      *  Latest MMR Root hash.
      */
@@ -11,13 +11,13 @@ export const rootHash = {
 /**
  *  Latest MMR Root hash.
  */
-export interface RootHashEnjinV100 {
+export interface RootHashEnjinV100  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): enjinV100.H256
-    get(block: Block): Promise<enjinV100.H256 | undefined>
+    get(block: Block): Promise<(enjinV100.H256 | undefined)>
 }
 
-export const numberOfLeaves = {
+export const numberOfLeaves =  {
     /**
      *  Current size of the MMR (number of leaves).
      */
@@ -27,16 +27,16 @@ export const numberOfLeaves = {
 /**
  *  Current size of the MMR (number of leaves).
  */
-export interface NumberOfLeavesEnjinV100 {
+export interface NumberOfLeavesEnjinV100  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
-    get(block: Block): Promise<bigint | undefined>
+    get(block: Block): Promise<(bigint | undefined)>
 }
 
-export const nodes = {
+export const nodes =  {
     /**
      *  Hashes of the nodes in the MMR.
-     *
+     * 
      *  Note this collection only contains MMR peaks, the inner nodes (and leaves)
      *  are pruned and only stored in the Offchain DB.
      */
@@ -45,24 +45,20 @@ export const nodes = {
 
 /**
  *  Hashes of the nodes in the MMR.
- *
+ * 
  *  Note this collection only contains MMR peaks, the inner nodes (and leaves)
  *  are pruned and only stored in the Offchain DB.
  */
-export interface NodesEnjinV100 {
+export interface NodesEnjinV100  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: bigint): Promise<enjinV100.H256 | undefined>
+    get(block: Block, key: bigint): Promise<(enjinV100.H256 | undefined)>
     getMany(block: Block, keys: bigint[]): Promise<(enjinV100.H256 | undefined)[]>
     getKeys(block: Block): Promise<bigint[]>
     getKeys(block: Block, key: bigint): Promise<bigint[]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<bigint[]>
     getKeysPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<bigint[]>
-    getPairs(block: Block): Promise<[k: bigint, v: enjinV100.H256 | undefined][]>
-    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: enjinV100.H256 | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: enjinV100.H256 | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key: bigint
-    ): AsyncIterable<[k: bigint, v: enjinV100.H256 | undefined][]>
+    getPairs(block: Block): Promise<[k: bigint, v: (enjinV100.H256 | undefined)][]>
+    getPairs(block: Block, key: bigint): Promise<[k: bigint, v: (enjinV100.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: bigint, v: (enjinV100.H256 | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: bigint): AsyncIterable<[k: bigint, v: (enjinV100.H256 | undefined)][]>
 }

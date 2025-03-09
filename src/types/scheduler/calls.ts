@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -46,7 +46,7 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const schedule = {
+export const schedule =  {
     name: 'Scheduler.schedule',
     /**
      * Anonymously schedule a task.
@@ -602,7 +602,7 @@ export const schedule = {
     ),
 }
 
-export const cancel = {
+export const cancel =  {
     name: 'Scheduler.cancel',
     /**
      * Cancel an anonymously scheduled task.
@@ -616,7 +616,7 @@ export const cancel = {
     ),
 }
 
-export const scheduleNamed = {
+export const scheduleNamed =  {
     name: 'Scheduler.schedule_named',
     /**
      * Schedule a named task.
@@ -1218,7 +1218,7 @@ export const scheduleNamed = {
     ),
 }
 
-export const cancelNamed = {
+export const cancelNamed =  {
     name: 'Scheduler.cancel_named',
     /**
      * Cancel a named scheduled task.
@@ -1231,7 +1231,7 @@ export const cancelNamed = {
     ),
 }
 
-export const scheduleAfter = {
+export const scheduleAfter =  {
     name: 'Scheduler.schedule_after',
     /**
      * Anonymously schedule a task after a delay.
@@ -1307,7 +1307,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1323,7 +1323,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1339,7 +1339,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1595,7 +1595,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1611,7 +1611,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1627,7 +1627,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1643,7 +1643,7 @@ export const scheduleAfter = {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1815,7 +1815,7 @@ export const scheduleAfter = {
     ),
 }
 
-export const scheduleNamedAfter = {
+export const scheduleNamedAfter =  {
     name: 'Scheduler.schedule_named_after',
     /**
      * Schedule a named task after a delay.
@@ -1897,7 +1897,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -1914,7 +1914,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -1931,7 +1931,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2208,7 +2208,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2225,7 +2225,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2242,7 +2242,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2259,7 +2259,7 @@ export const scheduleNamedAfter = {
     ),
     /**
      * Schedule a named task after a delay.
-     *
+     * 
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2445,17 +2445,17 @@ export const scheduleNamedAfter = {
     ),
 }
 
-export const setRetry = {
+export const setRetry =  {
     name: 'Scheduler.set_retry',
     /**
      * Set a retry configuration for a task so that, in case its scheduled run fails, it will
      * be retried after `period` blocks, for a total amount of `retries` retries or until it
      * succeeds.
-     *
+     * 
      * Tasks which need to be scheduled for a retry are still subject to weight metering and
      * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
      * normally while the task is retrying.
-     *
+     * 
      * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
      * clones of the original task. Their retry configuration will be derived from the
      * original task's configuration, but will have a lower value for `remaining` than the
@@ -2471,17 +2471,17 @@ export const setRetry = {
     ),
 }
 
-export const setRetryNamed = {
+export const setRetryNamed =  {
     name: 'Scheduler.set_retry_named',
     /**
      * Set a retry configuration for a named task so that, in case its scheduled run fails, it
      * will be retried after `period` blocks, for a total amount of `retries` retries or until
      * it succeeds.
-     *
+     * 
      * Tasks which need to be scheduled for a retry are still subject to weight metering and
      * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
      * normally while the task is retrying.
-     *
+     * 
      * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
      * clones of the original task. Their retry configuration will be derived from the
      * original task's configuration, but will have a lower value for `remaining` than the
@@ -2497,7 +2497,7 @@ export const setRetryNamed = {
     ),
 }
 
-export const cancelRetry = {
+export const cancelRetry =  {
     name: 'Scheduler.cancel_retry',
     /**
      * Removes the retry configuration of a task.
@@ -2510,7 +2510,7 @@ export const cancelRetry = {
     ),
 }
 
-export const cancelRetryNamed = {
+export const cancelRetryNamed =  {
     name: 'Scheduler.cancel_retry_named',
     /**
      * Cancel the retry configuration of a named task.

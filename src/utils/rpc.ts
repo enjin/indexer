@@ -1,29 +1,29 @@
-import { ApiPromise, WsProvider } from '@polkadot/api'
+import { createClient, PolkadotClient } from 'polkadot-api'
+import { getWsProvider } from 'polkadot-api/ws-provider/node'
+import { withPolkadotSdkCompat } from 'polkadot-api/polkadot-sdk-compat'
 import config from '../config'
 
 class Rpc {
     private static _instance: Rpc | null = null
 
-    private readonly _api: ApiPromise
+    private readonly _client: PolkadotClient
 
-    private constructor(api: ApiPromise) {
-        this._api = api
+    private constructor(client: PolkadotClient) {
+        this._client = client
     }
 
-    public static async getInstance(): Promise<Rpc> {
+    public static getInstance(): Rpc {
         if (!this._instance) {
-            const api = await ApiPromise.create({
-                provider: new WsProvider(config.dataSource.chain, 2000),
-            })
+            const client = createClient(withPolkadotSdkCompat(getWsProvider(config.dataSource.chain)))
 
-            this._instance = new Rpc(api)
+            this._instance = new Rpc(client)
         }
 
         return this._instance
     }
 
-    public get api(): ApiPromise {
-        return this._api
+    public get client(): PolkadotClient {
+        return this._client
     }
 }
 

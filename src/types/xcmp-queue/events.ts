@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as matrixV1004 from '../matrixV1004'
 
-export const success = {
+export const success =  {
     name: 'XcmpQueue.Success',
     /**
      * Some XCM was executed ok.
@@ -50,7 +50,7 @@ export const success = {
     ),
 }
 
-export const fail = {
+export const fail =  {
     name: 'XcmpQueue.Fail',
     /**
      * Some XCM failed.
@@ -100,7 +100,7 @@ export const fail = {
     ),
 }
 
-export const badVersion = {
+export const badVersion =  {
     name: 'XcmpQueue.BadVersion',
     /**
      * Bad XCM version used.
@@ -140,7 +140,7 @@ export const badVersion = {
     ),
 }
 
-export const badFormat = {
+export const badFormat =  {
     name: 'XcmpQueue.BadFormat',
     /**
      * Bad XCM format used.
@@ -180,7 +180,7 @@ export const badFormat = {
     ),
 }
 
-export const xcmpMessageSent = {
+export const xcmpMessageSent =  {
     name: 'XcmpQueue.XcmpMessageSent',
     /**
      * An HRMP message was sent to a sibling parachain.
@@ -220,7 +220,7 @@ export const xcmpMessageSent = {
     ),
 }
 
-export const overweightEnqueued = {
+export const overweightEnqueued =  {
     name: 'XcmpQueue.OverweightEnqueued',
     /**
      * An XCM exceeded the individual message weight budget.
@@ -236,7 +236,7 @@ export const overweightEnqueued = {
     ),
 }
 
-export const overweightServiced = {
+export const overweightServiced =  {
     name: 'XcmpQueue.OverweightServiced',
     /**
      * An XCM from the overweight queue was executed with the given actual weight used.

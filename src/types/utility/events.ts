@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -9,7 +9,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 
-export const batchInterrupted = {
+export const batchInterrupted =  {
     name: 'Utility.BatchInterrupted',
     /**
      * Batch of dispatches did not complete fully. Index of first failing dispatch given, as
@@ -112,31 +112,40 @@ export const batchInterrupted = {
     ),
 }
 
-export const batchCompleted = {
+export const batchCompleted =  {
     name: 'Utility.BatchCompleted',
     /**
      * Batch of dispatches completed fully with no error.
      */
-    matrixEnjinV603: new EventType('Utility.BatchCompleted', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'Utility.BatchCompleted',
+        sts.unit()
+    ),
 }
 
-export const batchCompletedWithErrors = {
+export const batchCompletedWithErrors =  {
     name: 'Utility.BatchCompletedWithErrors',
     /**
      * Batch of dispatches completed but has errors.
      */
-    matrixEnjinV603: new EventType('Utility.BatchCompletedWithErrors', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'Utility.BatchCompletedWithErrors',
+        sts.unit()
+    ),
 }
 
-export const itemCompleted = {
+export const itemCompleted =  {
     name: 'Utility.ItemCompleted',
     /**
      * A single item within a Batch of dispatches has completed with no error.
      */
-    matrixEnjinV603: new EventType('Utility.ItemCompleted', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'Utility.ItemCompleted',
+        sts.unit()
+    ),
 }
 
-export const itemFailed = {
+export const itemFailed =  {
     name: 'Utility.ItemFailed',
     /**
      * A single item within a Batch of dispatches has completed with error.
@@ -221,7 +230,7 @@ export const itemFailed = {
     ),
 }
 
-export const dispatchedAs = {
+export const dispatchedAs =  {
     name: 'Utility.DispatchedAs',
     /**
      * A call was dispatched.
@@ -229,10 +238,7 @@ export const dispatchedAs = {
     matrixEnjinV603: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV603.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV603.DispatchError),
         })
     ),
     /**
@@ -241,10 +247,7 @@ export const dispatchedAs = {
     matrixV500: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -253,10 +256,7 @@ export const dispatchedAs = {
     matrixV602: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -265,10 +265,7 @@ export const dispatchedAs = {
     matrixV604: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV604.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
     /**
@@ -277,10 +274,7 @@ export const dispatchedAs = {
     enjinV100: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
         })
     ),
     /**
@@ -289,10 +283,7 @@ export const dispatchedAs = {
     enjinV101: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV101.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
         })
     ),
     /**
@@ -301,10 +292,7 @@ export const dispatchedAs = {
     v100: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => v100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v100.DispatchError),
         })
     ),
     /**
@@ -313,10 +301,7 @@ export const dispatchedAs = {
     v104: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => v104.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v104.DispatchError),
         })
     ),
     /**
@@ -325,10 +310,7 @@ export const dispatchedAs = {
     v105: new EventType(
         'Utility.DispatchedAs',
         sts.struct({
-            result: sts.result(
-                () => sts.unit(),
-                () => v105.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }

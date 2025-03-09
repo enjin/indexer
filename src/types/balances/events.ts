@@ -1,11 +1,11 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as v100 from '../v100'
 import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const endowed = {
+export const endowed =  {
     name: 'Balances.Endowed',
     /**
      * An account was created with some free balance.
@@ -19,7 +19,7 @@ export const endowed = {
     ),
 }
 
-export const dustLost = {
+export const dustLost =  {
     name: 'Balances.DustLost',
     /**
      * An account was removed whose balance was non-zero but below ExistentialDeposit,
@@ -34,7 +34,7 @@ export const dustLost = {
     ),
 }
 
-export const transfer = {
+export const transfer =  {
     name: 'Balances.Transfer',
     /**
      * Transfer succeeded.
@@ -49,7 +49,7 @@ export const transfer = {
     ),
 }
 
-export const balanceSet = {
+export const balanceSet =  {
     name: 'Balances.BalanceSet',
     /**
      * A balance was set by root.
@@ -105,7 +105,7 @@ export const balanceSet = {
     ),
 }
 
-export const reserved = {
+export const reserved =  {
     name: 'Balances.Reserved',
     /**
      * Some balance was reserved (moved from free to reserved).
@@ -119,7 +119,7 @@ export const reserved = {
     ),
 }
 
-export const unreserved = {
+export const unreserved =  {
     name: 'Balances.Unreserved',
     /**
      * Some balance was unreserved (moved from reserved to free).
@@ -133,7 +133,7 @@ export const unreserved = {
     ),
 }
 
-export const reserveRepatriated = {
+export const reserveRepatriated =  {
     name: 'Balances.ReserveRepatriated',
     /**
      * Some balance was moved from the reserve of the first account to the second account.
@@ -150,7 +150,7 @@ export const reserveRepatriated = {
     ),
 }
 
-export const deposit = {
+export const deposit =  {
     name: 'Balances.Deposit',
     /**
      * Some amount was deposited (e.g. for transaction fees).
@@ -164,7 +164,7 @@ export const deposit = {
     ),
 }
 
-export const withdraw = {
+export const withdraw =  {
     name: 'Balances.Withdraw',
     /**
      * Some amount was withdrawn from the account (e.g. for transaction fees).
@@ -178,7 +178,7 @@ export const withdraw = {
     ),
 }
 
-export const slashed = {
+export const slashed =  {
     name: 'Balances.Slashed',
     /**
      * Some amount was removed from the account (e.g. for misbehavior).
@@ -192,7 +192,7 @@ export const slashed = {
     ),
 }
 
-export const minted = {
+export const minted =  {
     name: 'Balances.Minted',
     /**
      * Some amount was minted into an account.
@@ -206,7 +206,7 @@ export const minted = {
     ),
 }
 
-export const burned = {
+export const burned =  {
     name: 'Balances.Burned',
     /**
      * Some amount was burned from an account.
@@ -220,7 +220,7 @@ export const burned = {
     ),
 }
 
-export const suspended = {
+export const suspended =  {
     name: 'Balances.Suspended',
     /**
      * Some amount was suspended from an account (it can be restored later).
@@ -234,7 +234,7 @@ export const suspended = {
     ),
 }
 
-export const restored = {
+export const restored =  {
     name: 'Balances.Restored',
     /**
      * Some amount was restored into an account.
@@ -248,7 +248,7 @@ export const restored = {
     ),
 }
 
-export const upgraded = {
+export const upgraded =  {
     name: 'Balances.Upgraded',
     /**
      * An account was upgraded.
@@ -261,7 +261,7 @@ export const upgraded = {
     ),
 }
 
-export const issued = {
+export const issued =  {
     name: 'Balances.Issued',
     /**
      * Total issuance was increased by `amount`, creating a credit to be balanced.
@@ -274,7 +274,7 @@ export const issued = {
     ),
 }
 
-export const rescinded = {
+export const rescinded =  {
     name: 'Balances.Rescinded',
     /**
      * Total issuance was decreased by `amount`, creating a debt to be balanced.
@@ -287,7 +287,7 @@ export const rescinded = {
     ),
 }
 
-export const locked = {
+export const locked =  {
     name: 'Balances.Locked',
     /**
      * Some balance was locked.
@@ -301,7 +301,7 @@ export const locked = {
     ),
 }
 
-export const unlocked = {
+export const unlocked =  {
     name: 'Balances.Unlocked',
     /**
      * Some balance was unlocked.
@@ -315,7 +315,7 @@ export const unlocked = {
     ),
 }
 
-export const frozen = {
+export const frozen =  {
     name: 'Balances.Frozen',
     /**
      * Some balance was frozen.
@@ -329,7 +329,7 @@ export const frozen = {
     ),
 }
 
-export const thawed = {
+export const thawed =  {
     name: 'Balances.Thawed',
     /**
      * Some balance was thawed.
@@ -343,7 +343,7 @@ export const thawed = {
     ),
 }
 
-export const totalIssuanceForced = {
+export const totalIssuanceForced =  {
     name: 'Balances.TotalIssuanceForced',
     /**
      * The `TotalIssuance` was forcefully changed.

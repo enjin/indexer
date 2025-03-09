@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const deposited = {
+export const deposited =  {
     name: 'UnknownTokens.Deposited',
     /**
      * Deposit success.
@@ -48,7 +48,7 @@ export const deposited = {
     ),
 }
 
-export const withdrawn = {
+export const withdrawn =  {
     name: 'UnknownTokens.Withdrawn',
     /**
      * Withdraw success.

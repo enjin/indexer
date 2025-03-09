@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV1026 from '../enjinV1026'
 import * as v1026 from '../v1026'
 
-export const heartbeat = {
+export const heartbeat =  {
     name: 'ImOnline.heartbeat',
     /**
      * ## Complexity:

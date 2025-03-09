@@ -1,9 +1,9 @@
 import { throwError } from '../../utils/errors'
 import { CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '../../model'
-import { encodeId } from '../../utils/tools'
 import { Sns } from '../../utils/sns'
 import { CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
+import { encodeAddress } from '../../utils/tools'
 
 export async function approved(
     ctx: CommonContext,
@@ -32,7 +32,7 @@ export async function approved(
         const approvals = tokenAccount.approvals ?? []
         approvals.push(
             new TokenApproval({
-                accountId: encodeId(data.operator),
+                accountId: encodeAddress(data.operator),
                 amount: data.amount,
                 expiration: data.expiration,
             })
@@ -54,7 +54,7 @@ export async function approved(
         const approvals = collectionAccount.approvals ?? []
         approvals.push(
             new CollectionApproval({
-                accountId: encodeId(data.operator),
+                accountId: encodeAddress(data.operator),
                 expiration: data.expiration,
             })
         )

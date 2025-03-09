@@ -1,6 +1,4 @@
-import '@polkadot/api-augment/substrate'
 import { TypeormDatabase } from '@subsquid/typeorm-store'
-import { hexStripPrefix } from '@polkadot/util'
 import * as Sentry from '@sentry/node'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
@@ -18,6 +16,7 @@ import { processor } from './processor'
 import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
 import { QueueUtils } from './worker/queue'
+import { hexStripPrefix } from '@polkadot/util'
 
 Sentry.init({
     dsn: config.sentryDsn,

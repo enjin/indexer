@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const newLeasePeriod = {
+export const newLeasePeriod =  {
     name: 'Slots.NewLeasePeriod',
     /**
      * A new `[lease_period]` is beginning.
@@ -14,7 +14,7 @@ export const newLeasePeriod = {
     ),
 }
 
-export const leased = {
+export const leased =  {
     name: 'Slots.Leased',
     /**
      * A para has won the right to a continuous set of lease periods as a parachain.

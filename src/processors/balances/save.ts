@@ -1,10 +1,10 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import chunk from 'lodash/chunk'
 import { Account, Balance, Event as EventModel } from '../../model'
-import { encodeId } from '../../utils/tools'
 import { balances } from '../../types/events'
 import { CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
+import { encodeAddress } from '../../utils/tools'
 
 function processBalancesEventItem(event: EventItem) {
     const ids: string[] = []
@@ -134,7 +134,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                 accounts.push(
                     new Account({
                         id,
-                        address: encodeId(id),
+                        address: encodeAddress(id),
                         nonce: 0,
                         verified: false,
                         balance: new Balance({
@@ -157,7 +157,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                 accounts.push(
                     new Account({
                         id,
-                        address: encodeId(id),
+                        address: encodeAddress(id),
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({
@@ -174,7 +174,7 @@ export async function saveAccounts(ctx: CommonContext, block: BlockHeader) {
                 accounts.push(
                     new Account({
                         id,
-                        address: encodeId(id),
+                        address: encodeAddress(id),
                         nonce: accountInfo.nonce,
                         verified: false,
                         balance: new Balance({

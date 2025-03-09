@@ -1,15 +1,18 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const validationFunctionStored = {
+export const validationFunctionStored =  {
     name: 'ParachainSystem.ValidationFunctionStored',
     /**
      * The validation function has been scheduled to apply.
      */
-    matrixEnjinV603: new EventType('ParachainSystem.ValidationFunctionStored', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'ParachainSystem.ValidationFunctionStored',
+        sts.unit()
+    ),
 }
 
-export const validationFunctionApplied = {
+export const validationFunctionApplied =  {
     name: 'ParachainSystem.ValidationFunctionApplied',
     /**
      * The validation function was applied as of the contained relay chain block number.
@@ -22,15 +25,18 @@ export const validationFunctionApplied = {
     ),
 }
 
-export const validationFunctionDiscarded = {
+export const validationFunctionDiscarded =  {
     name: 'ParachainSystem.ValidationFunctionDiscarded',
     /**
      * The relay-chain aborted the upgrade process.
      */
-    matrixEnjinV603: new EventType('ParachainSystem.ValidationFunctionDiscarded', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'ParachainSystem.ValidationFunctionDiscarded',
+        sts.unit()
+    ),
 }
 
-export const upgradeAuthorized = {
+export const upgradeAuthorized =  {
     name: 'ParachainSystem.UpgradeAuthorized',
     /**
      * An upgrade has been authorized.
@@ -43,7 +49,7 @@ export const upgradeAuthorized = {
     ),
 }
 
-export const downwardMessagesReceived = {
+export const downwardMessagesReceived =  {
     name: 'ParachainSystem.DownwardMessagesReceived',
     /**
      * Some downward messages have been received and will be processed.
@@ -56,7 +62,7 @@ export const downwardMessagesReceived = {
     ),
 }
 
-export const downwardMessagesProcessed = {
+export const downwardMessagesProcessed =  {
     name: 'ParachainSystem.DownwardMessagesProcessed',
     /**
      * Downward messages were processed using the given weight.
@@ -70,7 +76,7 @@ export const downwardMessagesProcessed = {
     ),
 }
 
-export const upwardMessageSent = {
+export const upwardMessageSent =  {
     name: 'ParachainSystem.UpwardMessageSent',
     /**
      * An upward message was sent to the relay chain.

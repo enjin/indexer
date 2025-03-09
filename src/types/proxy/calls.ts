@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
@@ -11,14 +11,14 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const proxy = {
+export const proxy =  {
     name: 'Proxy.proxy',
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -35,9 +35,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -54,9 +54,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -73,9 +73,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -92,9 +92,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -111,9 +111,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -130,9 +130,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -149,9 +149,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -168,9 +168,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -187,9 +187,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -206,9 +206,9 @@ export const proxy = {
     /**
      * Dispatch the given `call` from an account that the sender is authorised for through
      * `add_proxy`.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -224,13 +224,13 @@ export const proxy = {
     ),
 }
 
-export const addProxy = {
+export const addProxy =  {
     name: 'Proxy.add_proxy',
     /**
      * Register a proxy account for the sender that is able to make calls on its behalf.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to make a proxy.
      * - `proxy_type`: The permissions allowed for this proxy account.
@@ -247,9 +247,9 @@ export const addProxy = {
     ),
     /**
      * Register a proxy account for the sender that is able to make calls on its behalf.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to make a proxy.
      * - `proxy_type`: The permissions allowed for this proxy account.
@@ -266,9 +266,9 @@ export const addProxy = {
     ),
     /**
      * Register a proxy account for the sender that is able to make calls on its behalf.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to make a proxy.
      * - `proxy_type`: The permissions allowed for this proxy account.
@@ -285,9 +285,9 @@ export const addProxy = {
     ),
     /**
      * Register a proxy account for the sender that is able to make calls on its behalf.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to make a proxy.
      * - `proxy_type`: The permissions allowed for this proxy account.
@@ -304,13 +304,13 @@ export const addProxy = {
     ),
 }
 
-export const removeProxy = {
+export const removeProxy =  {
     name: 'Proxy.remove_proxy',
     /**
      * Unregister a proxy account for the sender.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
@@ -325,9 +325,9 @@ export const removeProxy = {
     ),
     /**
      * Unregister a proxy account for the sender.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
@@ -342,9 +342,9 @@ export const removeProxy = {
     ),
     /**
      * Unregister a proxy account for the sender.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
@@ -359,9 +359,9 @@ export const removeProxy = {
     ),
     /**
      * Unregister a proxy account for the sender.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `proxy`: The account that the `caller` would like to remove as a proxy.
      * - `proxy_type`: The permissions currently enabled for the removed proxy account.
@@ -376,27 +376,30 @@ export const removeProxy = {
     ),
 }
 
-export const removeProxies = {
+export const removeProxies =  {
     name: 'Proxy.remove_proxies',
     /**
      * Unregister all proxy accounts for the sender.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * WARNING: This may be called on accounts created by `pure`, however if done, then
      * the unreserved fees will be inaccessible. **All access to this account will be lost.**
      */
-    matrixEnjinV1012: new CallType('Proxy.remove_proxies', sts.unit()),
+    matrixEnjinV1012: new CallType(
+        'Proxy.remove_proxies',
+        sts.unit()
+    ),
 }
 
-export const createPure = {
+export const createPure =  {
     name: 'Proxy.create_pure',
     /**
      * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
      * initialize it with a proxy of `proxy_type` for `origin` sender.
-     *
+     * 
      * Requires a `Signed` origin.
-     *
+     * 
      * - `proxy_type`: The type of the proxy that the sender will be registered as over the
      * new account. This will almost always be the most permissive `ProxyType` possible to
      * allow for maximum flexibility.
@@ -405,10 +408,10 @@ export const createPure = {
      * want to use `0`.
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
-     *
+     * 
      * Fails with `Duplicate` if this has already been called in this transaction, from the
      * same sender, with the same parameters.
-     *
+     * 
      * Fails if there are insufficient funds to pay for deposit.
      */
     matrixEnjinV1012: new CallType(
@@ -422,9 +425,9 @@ export const createPure = {
     /**
      * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
      * initialize it with a proxy of `proxy_type` for `origin` sender.
-     *
+     * 
      * Requires a `Signed` origin.
-     *
+     * 
      * - `proxy_type`: The type of the proxy that the sender will be registered as over the
      * new account. This will almost always be the most permissive `ProxyType` possible to
      * allow for maximum flexibility.
@@ -433,10 +436,10 @@ export const createPure = {
      * want to use `0`.
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
-     *
+     * 
      * Fails with `Duplicate` if this has already been called in this transaction, from the
      * same sender, with the same parameters.
-     *
+     * 
      * Fails if there are insufficient funds to pay for deposit.
      */
     enjinV1050: new CallType(
@@ -450,9 +453,9 @@ export const createPure = {
     /**
      * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
      * initialize it with a proxy of `proxy_type` for `origin` sender.
-     *
+     * 
      * Requires a `Signed` origin.
-     *
+     * 
      * - `proxy_type`: The type of the proxy that the sender will be registered as over the
      * new account. This will almost always be the most permissive `ProxyType` possible to
      * allow for maximum flexibility.
@@ -461,10 +464,10 @@ export const createPure = {
      * want to use `0`.
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
-     *
+     * 
      * Fails with `Duplicate` if this has already been called in this transaction, from the
      * same sender, with the same parameters.
-     *
+     * 
      * Fails if there are insufficient funds to pay for deposit.
      */
     v1030: new CallType(
@@ -478,9 +481,9 @@ export const createPure = {
     /**
      * Spawn a fresh new account that is guaranteed to be otherwise inaccessible, and
      * initialize it with a proxy of `proxy_type` for `origin` sender.
-     *
+     * 
      * Requires a `Signed` origin.
-     *
+     * 
      * - `proxy_type`: The type of the proxy that the sender will be registered as over the
      * new account. This will almost always be the most permissive `ProxyType` possible to
      * allow for maximum flexibility.
@@ -489,10 +492,10 @@ export const createPure = {
      * want to use `0`.
      * - `delay`: The announcement period required of the initial proxy. Will generally be
      * zero.
-     *
+     * 
      * Fails with `Duplicate` if this has already been called in this transaction, from the
      * same sender, with the same parameters.
-     *
+     * 
      * Fails if there are insufficient funds to pay for deposit.
      */
     v1050: new CallType(
@@ -505,23 +508,23 @@ export const createPure = {
     ),
 }
 
-export const killPure = {
+export const killPure =  {
     name: 'Proxy.kill_pure',
     /**
      * Removes a previously spawned pure proxy.
-     *
+     * 
      * WARNING: **All access to this account will be lost.** Any funds held in it will be
      * inaccessible.
-     *
+     * 
      * Requires a `Signed` origin, and the sender account must have been created by a call to
      * `pure` with corresponding parameters.
-     *
+     * 
      * - `spawner`: The account that originally called `pure` to create this account.
      * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
      * - `proxy_type`: The proxy type originally passed to `pure`.
      * - `height`: The height of the chain when the call to `pure` was processed.
      * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
-     *
+     * 
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
@@ -537,19 +540,19 @@ export const killPure = {
     ),
     /**
      * Removes a previously spawned pure proxy.
-     *
+     * 
      * WARNING: **All access to this account will be lost.** Any funds held in it will be
      * inaccessible.
-     *
+     * 
      * Requires a `Signed` origin, and the sender account must have been created by a call to
      * `pure` with corresponding parameters.
-     *
+     * 
      * - `spawner`: The account that originally called `pure` to create this account.
      * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
      * - `proxy_type`: The proxy type originally passed to `pure`.
      * - `height`: The height of the chain when the call to `pure` was processed.
      * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
-     *
+     * 
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
@@ -565,19 +568,19 @@ export const killPure = {
     ),
     /**
      * Removes a previously spawned pure proxy.
-     *
+     * 
      * WARNING: **All access to this account will be lost.** Any funds held in it will be
      * inaccessible.
-     *
+     * 
      * Requires a `Signed` origin, and the sender account must have been created by a call to
      * `pure` with corresponding parameters.
-     *
+     * 
      * - `spawner`: The account that originally called `pure` to create this account.
      * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
      * - `proxy_type`: The proxy type originally passed to `pure`.
      * - `height`: The height of the chain when the call to `pure` was processed.
      * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
-     *
+     * 
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
@@ -593,19 +596,19 @@ export const killPure = {
     ),
     /**
      * Removes a previously spawned pure proxy.
-     *
+     * 
      * WARNING: **All access to this account will be lost.** Any funds held in it will be
      * inaccessible.
-     *
+     * 
      * Requires a `Signed` origin, and the sender account must have been created by a call to
      * `pure` with corresponding parameters.
-     *
+     * 
      * - `spawner`: The account that originally called `pure` to create this account.
      * - `index`: The disambiguation index originally passed to `pure`. Probably `0`.
      * - `proxy_type`: The proxy type originally passed to `pure`.
      * - `height`: The height of the chain when the call to `pure` was processed.
      * - `ext_index`: The extrinsic index in which the call to `pure` was processed.
-     *
+     * 
      * Fails with `NoPermission` in case the caller is not a previously created pure
      * account whose `pure` call has corresponding parameters.
      */
@@ -621,21 +624,21 @@ export const killPure = {
     ),
 }
 
-export const announce = {
+export const announce =  {
     name: 'Proxy.announce',
     /**
      * Publish the hash of a proxy-call that will be made in the future.
-     *
+     * 
      * This must be called some number of blocks before the corresponding `proxy` is attempted
      * if the delay associated with the proxy relationship is greater than zero.
-     *
+     * 
      * No more than `MaxPending` announcements may be made at any one time.
-     *
+     * 
      * This will take a deposit of `AnnouncementDepositFactor` as well as
      * `AnnouncementDepositBase` if there are no other pending announcements.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_ and a proxy of `real`.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
@@ -649,16 +652,16 @@ export const announce = {
     ),
 }
 
-export const removeAnnouncement = {
+export const removeAnnouncement =  {
     name: 'Proxy.remove_announcement',
     /**
      * Remove a given announcement.
-     *
+     * 
      * May be called by a proxy account to remove a call they previously announced and return
      * the deposit.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `call_hash`: The hash of the call to be made by the `real` account.
@@ -672,16 +675,16 @@ export const removeAnnouncement = {
     ),
 }
 
-export const rejectAnnouncement = {
+export const rejectAnnouncement =  {
     name: 'Proxy.reject_announcement',
     /**
      * Remove the given announcement of a delegate.
-     *
+     * 
      * May be called by a target (proxied) account to remove a call that one of their delegates
      * (`delegate`) has announced they want to execute. The deposit is returned.
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `delegate`: The account that previously announced the call.
      * - `call_hash`: The hash of the call to be made.
@@ -695,16 +698,16 @@ export const rejectAnnouncement = {
     ),
 }
 
-export const proxyAnnounced = {
+export const proxyAnnounced =  {
     name: 'Proxy.proxy_announced',
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -722,11 +725,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -744,11 +747,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -766,11 +769,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -788,11 +791,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -810,11 +813,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -832,11 +835,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -854,11 +857,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -876,11 +879,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -898,11 +901,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
@@ -920,11 +923,11 @@ export const proxyAnnounced = {
     /**
      * Dispatch the given `call` from an account that the sender is authorized for through
      * `add_proxy`.
-     *
+     * 
      * Removes any corresponding announcement(s).
-     *
+     * 
      * The dispatch origin for this call must be _Signed_.
-     *
+     * 
      * Parameters:
      * - `real`: The account that the proxy will make a call on behalf of.
      * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.

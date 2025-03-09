@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const sendAsSovereign = {
+export const sendAsSovereign =  {
     name: 'OrmlXcm.send_as_sovereign',
     /**
      * Send an XCM message as parachain sovereign.

@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const heartbeatReceived = {
+export const heartbeatReceived =  {
     name: 'ImOnline.HeartbeatReceived',
     /**
      * A new heartbeat was received from `AuthorityId`.
@@ -14,15 +14,18 @@ export const heartbeatReceived = {
     ),
 }
 
-export const allGood = {
+export const allGood =  {
     name: 'ImOnline.AllGood',
     /**
      * At the end of the session, no offence was committed.
      */
-    enjinV100: new EventType('ImOnline.AllGood', sts.unit()),
+    enjinV100: new EventType(
+        'ImOnline.AllGood',
+        sts.unit()
+    ),
 }
 
-export const someOffline = {
+export const someOffline =  {
     name: 'ImOnline.SomeOffline',
     /**
      * At the end of the session, at least one validator was found to be offline.

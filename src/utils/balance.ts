@@ -1,29 +1,34 @@
 import Rpc from './rpc'
+import { enjin } from '@polkadot-api/descriptors'
+import { HexString } from 'polkadot-api'
 
 export interface SystemAccount {
     address: string
     nonce: number
     balance: {
-        free: string
-        reserved: string
-        frozen: string
+        free: HexString
+        reserved: HexString
+        frozen: HexString
     }
 }
 
 export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
     const accounts: SystemAccount[] = []
-    const { api } = await Rpc.getInstance()
+    const api = Rpc.getInstance().client.getUnsafeApi<typeof enjin>()
 
     // We could use a multi query but that would be error-prone
     for (const id of ids) {
-        const balance = await api.query.system.account(id)
+        const {
+            nonce,
+            data: { free, reserved, frozen },
+        } = await api.query.System.Account.getValue(id)
         accounts.push({
             address: id,
-            nonce: balance.nonce.toNumber(),
+            nonce: nonce,
             balance: {
-                free: balance.data.free.toHex(),
-                reserved: balance.data.reserved.toHex(),
-                frozen: balance.data.frozen.toHex(),
+                free: `0x${free.toString(16)}`,
+                reserved: `0x${reserved.toString(16)}`,
+                frozen: `0x${frozen.toString(16)}`,
             },
         })
     }

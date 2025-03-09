@@ -1,11 +1,11 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const solutionStored = {
+export const solutionStored =  {
     name: 'ElectionProviderMultiPhase.SolutionStored',
     /**
      * A solution was stored with the given compute.
-     *
+     * 
      * The `origin` indicates the origin of the solution. If `origin` is `Some(AccountId)`,
      * the stored solution was submited in the signed phase by a miner with the `AccountId`.
      * Otherwise, the solution was stored either during the unsigned phase or by
@@ -22,7 +22,7 @@ export const solutionStored = {
     ),
 }
 
-export const electionFinalized = {
+export const electionFinalized =  {
     name: 'ElectionProviderMultiPhase.ElectionFinalized',
     /**
      * The election has been finalized, with the given computation and score.
@@ -36,17 +36,20 @@ export const electionFinalized = {
     ),
 }
 
-export const electionFailed = {
+export const electionFailed =  {
     name: 'ElectionProviderMultiPhase.ElectionFailed',
     /**
      * An election failed.
-     *
+     * 
      * Not much can be said about which computes failed in the process.
      */
-    enjinV100: new EventType('ElectionProviderMultiPhase.ElectionFailed', sts.unit()),
+    enjinV100: new EventType(
+        'ElectionProviderMultiPhase.ElectionFailed',
+        sts.unit()
+    ),
 }
 
-export const rewarded = {
+export const rewarded =  {
     name: 'ElectionProviderMultiPhase.Rewarded',
     /**
      * An account has been rewarded for their signed submission being finalized.
@@ -60,7 +63,7 @@ export const rewarded = {
     ),
 }
 
-export const slashed = {
+export const slashed =  {
     name: 'ElectionProviderMultiPhase.Slashed',
     /**
      * An account has been slashed for submitting an invalid signed submission.
@@ -74,7 +77,7 @@ export const slashed = {
     ),
 }
 
-export const phaseTransitioned = {
+export const phaseTransitioned =  {
     name: 'ElectionProviderMultiPhase.PhaseTransitioned',
     /**
      * There was a phase transition in a given round.

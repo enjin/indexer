@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -10,7 +10,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const extrinsicSuccess = {
+export const extrinsicSuccess =  {
     name: 'System.ExtrinsicSuccess',
     /**
      * An extrinsic completed successfully.
@@ -23,7 +23,7 @@ export const extrinsicSuccess = {
     ),
 }
 
-export const extrinsicFailed = {
+export const extrinsicFailed =  {
     name: 'System.ExtrinsicFailed',
     /**
      * An extrinsic failed.
@@ -117,15 +117,18 @@ export const extrinsicFailed = {
     ),
 }
 
-export const codeUpdated = {
+export const codeUpdated =  {
     name: 'System.CodeUpdated',
     /**
      * `:code` was updated.
      */
-    matrixEnjinV603: new EventType('System.CodeUpdated', sts.unit()),
+    matrixEnjinV603: new EventType(
+        'System.CodeUpdated',
+        sts.unit()
+    ),
 }
 
-export const newAccount = {
+export const newAccount =  {
     name: 'System.NewAccount',
     /**
      * A new account was created.
@@ -138,7 +141,7 @@ export const newAccount = {
     ),
 }
 
-export const killedAccount = {
+export const killedAccount =  {
     name: 'System.KilledAccount',
     /**
      * An account was reaped.
@@ -151,7 +154,7 @@ export const killedAccount = {
     ),
 }
 
-export const remarked = {
+export const remarked =  {
     name: 'System.Remarked',
     /**
      * On on-chain remark happened.
@@ -165,7 +168,7 @@ export const remarked = {
     ),
 }
 
-export const upgradeAuthorized = {
+export const upgradeAuthorized =  {
     name: 'System.UpgradeAuthorized',
     /**
      * An upgrade was authorized.

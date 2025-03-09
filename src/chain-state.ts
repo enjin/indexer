@@ -10,29 +10,36 @@ export async function chainState(
     block: BlockHeader<{ block: { timestamp: true; validator: true } }>
 ) {
     try {
-        const { api } = await Rpc.getInstance()
+        const api = Rpc.getInstance().client.getUnsafeApi()
 
         const state = new ChainInfo({ id: block.hash })
-        const runtime = await api.rpc.state.getRuntimeVersion(block.hash)
+
+        const { transaction_version: transactionVersion } = await api.constants.System.Version()
+        const existentialDeposit = await api.constants.Balances.ExistentialDeposit()
+        const listingActiveDelay: number = await api.constants.Marketplace.ListingActiveDelay()
+        const listingDeposit: bigint = await api.constants.Marketplace.ListingDeposit()
+        const maxRoundingError: bigint = await api.constants.Marketplace.MaxRoundingError()
+        const maxSaltLength: number = await api.constants.Marketplace.MaxSaltLength()
+        const minimumBidIncreasePercentage: number = await api.constants.Marketplace.MinimumBidIncreasePercentage()
 
         state.genesisHash = config.genesisHash
-        state.transactionVersion = runtime.transactionVersion.toNumber()
+        state.transactionVersion = transactionVersion
         state.specVersion = Number(block.specVersion)
         state.blockNumber = block.height
         state.blockHash = block.hash
-        state.existentialDeposit = BigInt(api.consts.balances.existentialDeposit.toString())
+        state.existentialDeposit = existentialDeposit
         state.timestamp = new Date(block.timestamp ?? 0)
         state.validator = block.validator ?? null
         state.marketplace = new Marketplace({
             protocolFee: 25_000000,
-            listingActiveDelay: Number(api.consts.marketplace.listingActiveDelay.toString()),
-            listingDeposit: BigInt(api.consts.marketplace.listingDeposit.toString()),
-            maxRoundingError: BigInt(api.consts.marketplace.maxRoundingError.toString()),
-            maxSaltLength: Number(api.consts.marketplace.maxSaltLength.toString()),
-            minimumBidIncreasePercentage: Number(api.consts.marketplace.minimumBidIncreasePercentage.toString()),
+            listingActiveDelay,
+            listingDeposit,
+            maxRoundingError,
+            maxSaltLength,
+            minimumBidIncreasePercentage,
         })
 
-        await ctx.store.save(state)
+        await ctx.store.save<ChainInfo>(state)
     } catch (error) {
         Sentry.captureException(error)
     }

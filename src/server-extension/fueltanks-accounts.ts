@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
-import { hexToU8a } from '@polkadot/util'
 import Rpc from '../utils/rpc'
+import { hexToU8a } from '@polkadot/util'
 
 const customTypes = {
     UserFuelBudget: {
@@ -65,10 +65,9 @@ export class FuelTanksAccountsResolver {
         })
         account: string
     ): Promise<FuelTanksAccountsResult | null> {
-        const { api } = await Rpc.getInstance()
-        api.registerTypes(customTypes)
+        const api = Rpc.getInstance().client.getUnsafeApi()
 
-        const res = await api.query.fuelTanks.accounts(fuelTank, account)
+        const res = await api.query.FuelTanks.Accounts.getValue(fuelTank, account)
 
         const resJson: any = res.toJSON()
 

@@ -21,8 +21,8 @@ export class ClaimsAccountNonceResolver {
         })
         account: string
     ): Promise<ClaimsAccountNonceResult> {
-        const { api } = await Rpc.getInstance()
-        const res = await api.query.claims.accountNonce(account)
+        const api = Rpc.getInstance().client.getUnsafeApi()
+        const res: number = await api.query.Claims.AccountNonce.getValue(account)
 
         return {
             nonce: res.toString(),

@@ -4,7 +4,7 @@ import { dataHandlerContext } from '../../../../contexts'
 import { fetchBalances, SystemAccount } from '../../../../utils/balance'
 import { Account } from '../../../../model'
 import { getOrCreateAccount } from '../../../../utils/entities'
-import { decodeAddress } from '@polkadot/util-crypto'
+import { decode } from '@subsquid/ss58'
 
 export class FetchBalancesProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
@@ -15,7 +15,7 @@ export class FetchBalancesProcessor implements ProcessorDef {
         const promises: Promise<void>[] = []
 
         for (const systemAccount of data) {
-            const account: Account = await getOrCreateAccount(ctx, decodeAddress(systemAccount.address))
+            const account: Account = await getOrCreateAccount(ctx, decode(systemAccount.address).bytes)
 
             account.nonce = systemAccount.nonce
             account.balance.free = BigInt(systemAccount.balance.free)

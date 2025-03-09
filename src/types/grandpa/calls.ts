@@ -1,9 +1,9 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v104 from '../v104'
 
-export const reportEquivocation = {
+export const reportEquivocation =  {
     name: 'Grandpa.report_equivocation',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
@@ -46,14 +46,14 @@ export const reportEquivocation = {
     ),
 }
 
-export const reportEquivocationUnsigned = {
+export const reportEquivocationUnsigned =  {
     name: 'Grandpa.report_equivocation_unsigned',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
      * equivocation proof and validate the given key ownership proof
      * against the extracted offender. If both are valid, the offence
      * will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
@@ -71,7 +71,7 @@ export const reportEquivocationUnsigned = {
      * equivocation proof and validate the given key ownership proof
      * against the extracted offender. If both are valid, the offence
      * will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
@@ -89,7 +89,7 @@ export const reportEquivocationUnsigned = {
      * equivocation proof and validate the given key ownership proof
      * against the extracted offender. If both are valid, the offence
      * will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
@@ -104,11 +104,11 @@ export const reportEquivocationUnsigned = {
     ),
 }
 
-export const noteStalled = {
+export const noteStalled =  {
     name: 'Grandpa.note_stalled',
     /**
      * Note that the current authority set of the GRANDPA finality gadget has stalled.
-     *
+     * 
      * This will trigger a forced authority set change at the beginning of the next session, to
      * be enacted `delay` blocks after that. The `delay` should be high enough to safely assume
      * that the block signalling the forced change will not be re-orged e.g. 1000 blocks.
@@ -117,7 +117,7 @@ export const noteStalled = {
      * authority will start voting on top of `best_finalized_block_number` for new finalized
      * blocks. `best_finalized_block_number` should be the highest of the latest finalized
      * block of all validators of the new authority set.
-     *
+     * 
      * Only callable by root.
      */
     enjinV100: new CallType(

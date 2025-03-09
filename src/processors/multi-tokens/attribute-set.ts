@@ -13,9 +13,9 @@ import {
 } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
-import { safeString } from '../../utils/tools'
 import * as mappings from './../../mappings'
 import { QueueUtils } from '../../worker/queue'
+import { safeString } from '../../utils/tools'
 
 export async function attributeSet(
     ctx: CommonContext,
