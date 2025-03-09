@@ -40,7 +40,6 @@ services:
       - .env
     depends_on:
       - indexer_db
-      - indexer_worker
 
 #  indexer_hasura:
 #    container_name: indexer_hasura
