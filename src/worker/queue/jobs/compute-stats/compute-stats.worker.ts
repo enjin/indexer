@@ -6,7 +6,7 @@ const instance = new ComputeStatsProcessor()
 
 const { queueName, connection, isSandboxed } = computeStatsConfig
 
-const processor = isSandboxed ? `${__dirname}/compute-traits.slave.js` : instance.handle
+const processor = isSandboxed ? `${__dirname}/compute-stats.slave.js` : instance.handle
 
 const worker = new Worker(queueName, processor, {
     connection,

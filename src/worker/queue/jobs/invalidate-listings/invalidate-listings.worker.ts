@@ -6,7 +6,7 @@ const instance = new InvalidateListingsProcessor()
 
 const { queueName, connection, isSandboxed } = invalidateListingsConfig
 
-const processor = isSandboxed ? `${__dirname}/fetch-listings.slave.js` : instance.handle
+const processor = isSandboxed ? `${__dirname}/invalidate-listings.slave.js` : instance.handle
 
 const worker = new Worker(queueName, processor, {
     connection,

@@ -36,8 +36,8 @@ services:
       context: .
       args:
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    volumes:
-      - .env:/app/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
       - indexer_worker
@@ -70,8 +70,8 @@ services:
     ports:
       - "4000:4000"
       - "8080:8080"
-    volumes:
-      - .env:/app/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
 #      - indexer_processor
@@ -86,19 +86,11 @@ services:
       context: .
     ports:
       - "9090:9090"
-    volumes:
-      - .env:/app/.env
+    env_file:
+      - .env
     depends_on:
       - indexer_db
       - indexer_redis
-
-#  indexer_jaeger:
-#    container_name: indexer_jaeger
-#    image: jaegertracing/all-in-one:latest
-#    restart: unless-stopped
-#    ports:
-#      - '4318:4318'
-#      - '16686:16686'
 
 volumes:
   indexer_db:

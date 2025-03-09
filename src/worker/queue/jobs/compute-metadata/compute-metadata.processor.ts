@@ -1,9 +1,10 @@
 import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
-import { connectionManager } from 'src/contexts'
+import { connectionManager } from '../../../../contexts'
 import { Attribute, Collection, Metadata, Token } from '../../../../model'
 import { EntityManager, IsNull } from 'typeorm'
 import { fetchMetadata, metadataParser } from '../../../../utils/metadata'
+import { QueueUtils } from '../..'
 
 type MetadataType = {
     id: string
@@ -148,15 +149,14 @@ export default class ComputeMetadataProcessor implements ProcessorDef {
 
                 await em.save(resource)
 
-                if (jobData.type === 'collection' && jobData.allTokens === true) {
+                if (jobData.type === 'collection' && jobData.allTokens) {
                     console.log('Processing all tokens in collection', jobData.resourceId)
 
                     const batch = tokensInBatch(em, jobData.resourceId)
 
                     for await (const tokens of batch) {
                         tokens.forEach((token) => {
-                            // Do nothing for now
-                            // processMetadata(token.id, 'token', jobData.force)
+                            QueueUtils.dispatchComputeMetadata(token.id, 'token', jobData.force)
                         })
                     }
                 }

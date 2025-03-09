@@ -1,3 +1,4 @@
+export { default as ComputeCollectionsWorker } from './compute-collections/compute-collections.worker'
 export { default as ComputeMetadataWorker } from './compute-metadata/compute-metadata.worker'
 export { default as ComputeRarityWorker } from './compute-rarity/compute-rarity.worker'
 export { default as ComputeStatsWorker } from './compute-stats/compute-stats.worker'
