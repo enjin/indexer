@@ -11,7 +11,7 @@ import {
     FetchCollectionsWorker,
     InvalidateListingsWorker,
 } from './jobs'
-import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, JobsEnum } from './index'
+import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, JobsEnum, TraitsQueue } from './index'
 
 const WorkerMap = new Map([
     ['ComputeCollections', ComputeCollectionsWorker],
@@ -69,7 +69,7 @@ export function dispatchComputeStats(id: string) {
 }
 
 export function dispatchComputeTraits(id: string) {
-    CollectionsQueue.add(JobsEnum.COMPUTE_TRAITS, { id }).catch(() => {
+    TraitsQueue.add(JobsEnum.COMPUTE_TRAITS, { id }).catch(() => {
         console.log('Failed to dispatch a job on collections queue')
     })
 }

@@ -13,7 +13,7 @@ const hash = (str: string) => {
 
 export class ComputeTraitsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        if (!job.data.collectionId) {
+        if (!job.data.id) {
             throw new Error('Collection ID not provided.')
         }
 
@@ -23,8 +23,7 @@ export class ComputeTraitsProcessor implements ProcessorDef {
         const tokenTraitMap = new Map<string, string[]>()
 
         // const start = new Date()
-
-        const { collectionId } = job.data satisfies JobData
+        const { id: collectionId } = job.data
 
         const tokens = await em
             .getRepository(Token)

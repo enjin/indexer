@@ -7,11 +7,11 @@ const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "l
 
 export class ComputeStatsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
-        if (!job.data.collectionId) {
+        if (!job.data.id) {
             throw new Error('Collection ID not provided.')
         }
 
-        const { collectionId } = job.data
+        const { id: collectionId } = job.data
         const em = connectionManager()
 
         const promises = [
