@@ -1,5 +1,3 @@
-import ComputeTraitsProcessor from './compute-traits.processor'
-
-const instance = new ComputeTraitsProcessor()
+import instance from './compute-traits.processor'
 
 export default instance.handle

@@ -1,5 +1,3 @@
-import ComputeStatsProcessor from './compute-stats.processor'
-
-const instance = new ComputeStatsProcessor()
+import instance from './compute-stats.processor'
 
 export default instance.handle

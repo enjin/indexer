@@ -5,7 +5,7 @@ import { Listing, ListingSale, ListingStatus, Token, Collection, CollectionStats
 
 const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "listing" AS "listing" INNER JOIN "token" "token" ON "token"."id" = "listing"."make_asset_id_id" INNER JOIN "collection" "collection" ON "collection"."id" = "token"."collection_id" WHERE "collection"."id" = $1 AND "listing"."is_active" = TRUE AND "token"."is_frozen" = FALSE AND "token"."listing_forbidden" = FALSE;`
 
-export default class ComputeStatsProcessor implements ProcessorDef {
+export class ComputeStatsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         if (!job.data.collectionId) {
             throw new Error('Collection ID not provided.')
@@ -69,3 +69,5 @@ export default class ComputeStatsProcessor implements ProcessorDef {
         // done(null, { id: collectionId, stats: stats.toJSON() })
     }
 }
+
+export default new ComputeStatsProcessor()

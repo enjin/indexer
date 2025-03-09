@@ -1,8 +1,17 @@
 import express, { Application } from 'express'
 import { createBullBoard } from '@bull-board/api'
 import { ExpressAdapter } from '@bull-board/express'
-import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue } from './queue/index'
+import {
+    BalancesQueue,
+    AccountsQueue,
+    CollectionsQueue,
+    MetadataQueue,
+    TokensQueue,
+    TraitsQueue,
+    ValidatorsQueue,
+} from './queue/index'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
+import { ListingsQueue } from './queue'
 
 const app: Application = express()
 const serverAdapter = new ExpressAdapter()
@@ -11,10 +20,14 @@ serverAdapter.setBasePath('/')
 
 createBullBoard({
     queues: [
-        new BullMQAdapter(MetadataQueue),
-        new BullMQAdapter(CollectionsQueue),
-        new BullMQAdapter(BalancesQueue),
         new BullMQAdapter(AccountsQueue),
+        new BullMQAdapter(BalancesQueue),
+        new BullMQAdapter(CollectionsQueue),
+        new BullMQAdapter(ListingsQueue),
+        new BullMQAdapter(MetadataQueue),
+        new BullMQAdapter(TokensQueue),
+        new BullMQAdapter(TraitsQueue),
+        new BullMQAdapter(ValidatorsQueue),
     ],
     serverAdapter,
     options: {

@@ -1,8 +1,6 @@
 import { Worker } from 'bullmq'
 import computeMetadataConfig from './compute-metadata.config'
-import ComputeMetadataProcessor from './compute-metadata.processor'
-
-const instance = new ComputeMetadataProcessor()
+import instance from './compute-metadata.processor'
 
 const { queueName, connection, isSandboxed } = computeMetadataConfig
 

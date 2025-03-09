@@ -38,7 +38,7 @@ export const informationContentScoring = {
     },
 }
 
-export default class ComputeRarityProcessor implements ProcessorDef {
+export class ComputeRarityProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         if (!job.data.collectionId) {
             throw new Error('Collection ID not provided.')
@@ -120,3 +120,5 @@ export default class ComputeRarityProcessor implements ProcessorDef {
         }
     }
 }
+
+export default new ComputeRarityProcessor()

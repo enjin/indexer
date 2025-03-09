@@ -1,8 +1,6 @@
 import { Worker } from 'bullmq'
 import computeRarityConfig from './compute-rarity.config'
-import ComputeRarityProcessor from './compute-rarity.processor'
-
-const instance = new ComputeRarityProcessor()
+import instance from './compute-rarity.processor'
 
 const { queueName, connection, isSandboxed } = computeRarityConfig
 

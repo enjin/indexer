@@ -12,7 +12,6 @@ import {
     InvalidateListingsWorker,
 } from './jobs'
 import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, JobsEnum } from './index'
-import { JobData } from 'bullmq'
 
 const WorkerMap = new Map([
     ['ComputeCollections', ComputeCollectionsWorker],

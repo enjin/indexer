@@ -1,5 +1,3 @@
-import ComputeMetadataProcessor from './compute-metadata.processor'
-
-const instance = new ComputeMetadataProcessor()
+import instance from './compute-metadata.processor'
 
 export default instance.handle

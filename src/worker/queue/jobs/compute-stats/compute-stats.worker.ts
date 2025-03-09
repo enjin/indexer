@@ -1,8 +1,6 @@
 import { Worker } from 'bullmq'
 import computeStatsConfig from './compute-stats.config'
-import ComputeStatsProcessor from './compute-stats.processor'
-
-const instance = new ComputeStatsProcessor()
+import instance from './compute-stats.processor'
 
 const { queueName, connection, isSandboxed } = computeStatsConfig
 

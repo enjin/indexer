@@ -1,5 +1,3 @@
-import FetchCollectionsProcessor from './fetch-collections.processor'
-
-const instance = new FetchCollectionsProcessor()
+import instance from './fetch-collections.processor'
 
 export default instance.handle

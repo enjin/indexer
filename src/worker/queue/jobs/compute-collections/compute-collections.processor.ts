@@ -4,7 +4,7 @@ import { connectionManager } from '../../../../contexts'
 import { Collection } from '../../../../model'
 import { QueueUtils } from '../..'
 
-export default class ComputeCollectionsProcessor implements ProcessorDef {
+export class ComputeCollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const em = connectionManager()
 
@@ -20,3 +20,5 @@ export default class ComputeCollectionsProcessor implements ProcessorDef {
         await job.log('Finished computing collections')
     }
 }
+
+export default new ComputeCollectionsProcessor()

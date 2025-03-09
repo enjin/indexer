@@ -35,7 +35,7 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
     }
 }
 
-export default class ComputeMetadataProcessor implements ProcessorDef {
+export class ComputeMetadataProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const jobData = job.data
         const con = connectionManager()
@@ -167,3 +167,5 @@ export default class ComputeMetadataProcessor implements ProcessorDef {
         })
     }
 }
+
+export default new ComputeMetadataProcessor()

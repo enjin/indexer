@@ -1,5 +1,3 @@
-import FetchAccountsProcessor from './fetch-accounts.processor'
-
-const instance = new FetchAccountsProcessor()
+import instance from './fetch-accounts.processor'
 
 export default instance.handle

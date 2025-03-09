@@ -8,7 +8,7 @@ function isNotNull<T>(input: null | T): input is T {
     return input != null
 }
 
-export default class FetchCollectionsProcessor implements ProcessorDef {
+export class FetchCollectionsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const ctx = dataHandlerContext()
 
@@ -42,3 +42,5 @@ export default class FetchCollectionsProcessor implements ProcessorDef {
         await Promise.all(collectionsPromise)
     }
 }
+
+export default new FetchCollectionsProcessor()

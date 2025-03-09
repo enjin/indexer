@@ -6,13 +6,12 @@ import { Account } from '../../../../model'
 import { getOrCreateAccount } from '../../../../utils/entities'
 import { decodeAddress } from '@polkadot/util-crypto'
 
-export default class FetchBalancesProcessor implements ProcessorDef {
+export class FetchBalancesProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const ctx = dataHandlerContext()
 
         const { ids } = job.data
         const data: SystemAccount[] = await fetchBalances(ids)
-
         const promises: Promise<void>[] = []
 
         for (const systemAccount of data) {
@@ -29,5 +28,9 @@ export default class FetchBalancesProcessor implements ProcessorDef {
         }
 
         await Promise.all(promises)
+
+        await job.log('Finished fetching balances')
     }
 }
+
+export default new FetchBalancesProcessor()

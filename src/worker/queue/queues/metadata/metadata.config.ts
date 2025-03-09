@@ -6,7 +6,7 @@ import { BullMQOtel } from 'bullmq-otel'
 const config: QueueConfigType = {
     ...rootConfig,
     telemetry: new BullMQOtel('enjin'),
-    queueName: QueuesEnum.TRAITS,
+    queueName: QueuesEnum.METADATA,
     defaultJobOptions: {
         attempts: 5,
         removeOnComplete: 300,

@@ -10,7 +10,7 @@ function isNotNull<T>(input: null | T): input is T {
     return input != null
 }
 
-export default class FetchAccountsProcessor implements ProcessorDef {
+export class FetchAccountsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const ctx = dataHandlerContext()
 
@@ -30,5 +30,9 @@ export default class FetchAccountsProcessor implements ProcessorDef {
         )
 
         await ctx.store.save<Account>(accounts)
+
+        await job.log('Finished fetching accounts')
     }
 }
+
+export default new FetchAccountsProcessor()

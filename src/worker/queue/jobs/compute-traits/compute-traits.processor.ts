@@ -11,7 +11,7 @@ const hash = (str: string) => {
     return createHash('sha1').update(str).digest('hex')
 }
 
-export default class ComputeTraitsProcessor implements ProcessorDef {
+export class ComputeTraitsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         if (!job.data.collectionId) {
             throw new Error('Collection ID not provided.')
@@ -129,3 +129,5 @@ export default class ComputeTraitsProcessor implements ProcessorDef {
         // done(null, { timeElapsed: new Date().getTime() - start.getTime() })
     }
 }
+
+export default new ComputeTraitsProcessor()

@@ -1,5 +1,3 @@
-import ComputeRarityProcessor from './compute-rarity.processor'
-
-const instance = new ComputeRarityProcessor()
+import instance from './compute-rarity.processor'
 
 export default instance.handle

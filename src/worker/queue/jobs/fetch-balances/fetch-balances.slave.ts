@@ -1,5 +1,3 @@
-import FetchBalancesProcessor from './fetch-balances.processor'
-
-const instance = new FetchBalancesProcessor()
+import instance from './fetch-balances.processor'
 
 export default instance.handle

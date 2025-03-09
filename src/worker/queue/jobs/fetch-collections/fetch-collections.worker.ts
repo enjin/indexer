@@ -1,8 +1,6 @@
 import { Worker } from 'bullmq'
 import fetchCollectionsConfig from './fetch-collections.config'
-import FetchCollectionsProcessor from './fetch-collections.processor'
-
-const instance = new FetchCollectionsProcessor()
+import instance from './fetch-collections.processor'
 
 const { queueName, connection, isSandboxed } = fetchCollectionsConfig
 
