@@ -6,6 +6,7 @@ import { BullMQOtel } from 'bullmq-otel'
 const config: QueueConfigType = {
     ...rootConfig,
     connection: {
+        ...rootConfig.connection,
         enableOfflineQueue: false,
     },
     telemetry: new BullMQOtel('enjin'),

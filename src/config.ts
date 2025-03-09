@@ -31,6 +31,12 @@ export interface ProcessorConfig {
     wsReconnectDelay: number
 }
 
+console.log(
+    process.env.REDIS_URL
+        ? process.env.REDIS_URL.replace('redis://', '').split(':')[0]
+        : process.env.REDIS_HOST || 'localhost'
+)
+
 const config: ProcessorConfig = {
     chainName: process.env.CHAIN_NAME || 'enjin-matrix',
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,

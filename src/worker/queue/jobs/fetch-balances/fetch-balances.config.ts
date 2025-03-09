@@ -5,6 +5,7 @@ import { QueuesEnum } from '../../constants'
 const config: WorkerConfigType = {
     ...rootConfig,
     connection: {
+        ...rootConfig.connection,
         enableOfflineQueue: true,
     },
     queueName: QueuesEnum.BALANCES,
