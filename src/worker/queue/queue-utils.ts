@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events'
 import {
     ComputeCollectionsWorker,
     ComputeMetadataWorker,
@@ -12,6 +13,10 @@ import {
     InvalidateListingsWorker,
 } from './jobs'
 import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, JobsEnum, TraitsQueue } from './index'
+
+// Increase max listeners to avoid warnings
+// We have 11 workers, so setting to 15 gives us some headroom
+EventEmitter.defaultMaxListeners = 15
 
 const WorkerMap = new Map([
     ['ComputeCollections', ComputeCollectionsWorker],

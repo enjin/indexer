@@ -15,13 +15,13 @@ const listen = () => {
     })
 }
 
-process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
-process.on('SIGTERM', () => {
-    if (server) {
-        server.close()
-    }
-
-    void gracefulShutdown('SIGTERM', worker)
-})
+// process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
+// process.on('SIGTERM', () => {
+//     if (server) {
+//         server.close()
+//     }
+//
+//     void gracefulShutdown('SIGTERM', worker)
+// })
 
 listen()
