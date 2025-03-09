@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import computeCollectionsConfig from './compute-collections.config'
 import instance from './compute-collections.processor'
-import { gracefulShutdown } from '../../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeCollectionsConfig
 

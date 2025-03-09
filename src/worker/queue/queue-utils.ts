@@ -33,7 +33,7 @@ const WorkerMap = new Map([
 export function initializeJobs() {
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
-            console.error(err)
+            // console.error(err)
         })
     })
 }
