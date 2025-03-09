@@ -39,6 +39,6 @@ jobs:
           [ "$VERSION" == "master" ] && VERSION=latest
           
           export VERSION=$VERSION
-          docker compose build indexer_processor --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+          docker compose --env-file .env.example build indexer_processor --build-arg SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
           docker tag ghcr.io/enjin/indexer:$VERSION $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
