@@ -2,6 +2,7 @@ import * as ss58 from '@subsquid/ss58'
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { hexToU8a, isHex, stringToHex } from '@polkadot/util'
 import config from '../config'
+import { Worker } from 'bullmq'
 
 export function isMainnet(): boolean {
     return ['enjin-relay', 'enjin-matrix'].includes(config.chainName)
@@ -67,4 +68,11 @@ export function safeJson(data: Record<string, unknown>): Record<string, unknown>
 
 export function safeJsonString(data: Record<string, unknown>): string {
     return JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
+}
+
+export const gracefulShutdown = async (signal: string, worker: Worker) => {
+    console.log(`Received ${signal}, closing server...`)
+    await worker.close()
+    // Other asynchronous closings
+    process.exit(0)
 }

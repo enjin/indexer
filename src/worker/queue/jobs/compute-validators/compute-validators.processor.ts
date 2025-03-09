@@ -10,7 +10,7 @@ function getJudgement(identity: Identity | null | undefined): JudgementType {
     return identity.info.currentJudgement
 }
 
-export default class ComputeValidatorsProcessor implements ProcessorDef {
+export class ComputeValidatorsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         // const start = new Date()
         const em = await connectionManager()
@@ -374,3 +374,5 @@ function computeValidatorScore(params: {
 
     return mapToLetterGrade(score)
 }
+
+export default new ComputeValidatorsProcessor()

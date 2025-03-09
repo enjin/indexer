@@ -1,5 +1,3 @@
-import ComputeValidatorsProcessor from './compute-validators.processor'
-
-const instance = new ComputeValidatorsProcessor()
+import instance from './compute-validators.processor'
 
 export default instance.handle

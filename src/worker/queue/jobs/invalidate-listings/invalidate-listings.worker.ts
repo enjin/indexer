@@ -1,8 +1,7 @@
 import { Job, Worker } from 'bullmq'
 import invalidateListingsConfig from './invalidate-listings.config'
-import InvalidateListingsProcessor from './invalidate-listings.processor'
-
-const instance = new InvalidateListingsProcessor()
+import instance from './invalidate-listings.processor'
+import { gracefulShutdown } from '../../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = invalidateListingsConfig
 
@@ -10,6 +9,8 @@ const processor = isSandboxed ? `${__dirname}/invalidate-listings.slave.js` : in
 
 const worker = new Worker(queueName, processor, {
     connection,
+    useWorkerThreads: true,
+    concurrency: 5,
 })
 
 worker.on('failed', (job?: Job) => {
@@ -19,5 +20,8 @@ worker.on('failed', (job?: Job) => {
 worker.on('completed', (job) => {
     void instance.completed(job)
 })
+
+process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
+process.on('SIGTERM', () => void gracefulShutdown('SIGTERM', worker))
 
 export default worker

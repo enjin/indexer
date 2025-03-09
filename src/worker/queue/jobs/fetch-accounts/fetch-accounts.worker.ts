@@ -1,6 +1,7 @@
 import { Job, Worker } from 'bullmq'
 import fetchAccountsConfig from './fetch-accounts.config'
 import instance from './fetch-accounts.processor'
+import { gracefulShutdown } from '../../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = fetchAccountsConfig
 
@@ -8,6 +9,8 @@ const processor = isSandboxed ? `${__dirname}/fetch-accounts.slave.js` : instanc
 
 const worker = new Worker(queueName, processor, {
     connection,
+    useWorkerThreads: true,
+    concurrency: 5,
 })
 
 worker.on('failed', (job?: Job) => {
@@ -17,5 +20,8 @@ worker.on('failed', (job?: Job) => {
 worker.on('completed', (job) => {
     void instance.completed(job)
 })
+
+process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
+process.on('SIGTERM', () => void gracefulShutdown('SIGTERM', worker))
 
 export default worker

@@ -4,6 +4,9 @@ import { QueuesEnum } from '../../constants'
 
 const config: WorkerConfigType = {
     ...rootConfig,
+    connection: {
+        enableOfflineQueue: true,
+    },
     queueName: QueuesEnum.TOKENS,
     isSandboxed: true,
 }

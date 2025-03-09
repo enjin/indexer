@@ -1,5 +1,3 @@
-import InvalidateListingsProcessor from './invalidate-listings.processor'
-
-const instance = new InvalidateListingsProcessor()
+import instance from './invalidate-listings.processor'
 
 export default instance.handle

@@ -9,15 +9,7 @@ export const getDataSource = async (): Promise<DataSource> => {
         const cfg: DataSourceOptions = createOrmConfig() as PostgresConnectionOptions
         dataSource = new DataSource({
             ...cfg,
-            poolSize: 300,
-            pool: { max: 100 },
-            // Enable connection pooling for worker processes
-            extra: {
-                ...cfg.extra,
-                max: 200,
-                keepAlive: true,
-                keepAliveInitialDelayMillis: 10000,
-            },
+            poolSize: 200,
         } as PostgresConnectionOptions)
     }
 

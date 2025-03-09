@@ -1,8 +1,7 @@
 import { Job, Worker } from 'bullmq'
 import computeValidatorsConfig from './compute-validators.config'
-import ComputeValidatorsProcessor from './compute-validators.processor'
-
-const instance = new ComputeValidatorsProcessor()
+import instance from './compute-validators.processor'
+import { gracefulShutdown } from '../../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeValidatorsConfig
 
@@ -10,6 +9,8 @@ const processor = isSandboxed ? `${__dirname}/compute-validators.slave.js` : ins
 
 const worker = new Worker(queueName, processor, {
     connection,
+    useWorkerThreads: true,
+    concurrency: 5,
 })
 
 worker.on('failed', (job?: Job) => {
@@ -19,5 +20,8 @@ worker.on('failed', (job?: Job) => {
 worker.on('completed', (job) => {
     void instance.completed(job)
 })
+
+process.on('SIGINT', () => void gracefulShutdown('SIGINT', worker))
+process.on('SIGTERM', () => void gracefulShutdown('SIGTERM', worker))
 
 export default worker

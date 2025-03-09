@@ -4,7 +4,7 @@ import { connectionManager } from '../../../../contexts'
 import { Listing, ListingType } from '../../../../model'
 import { Brackets } from 'typeorm'
 
-export default class InvalidateListingsProcessor implements ProcessorDef {
+export class InvalidateListingsProcessor implements ProcessorDef {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async handle(job: Job): Promise<void> {
         const con = await connectionManager()
@@ -55,3 +55,5 @@ export default class InvalidateListingsProcessor implements ProcessorDef {
         await job.log('Finished computing collections')
     }
 }
+
+export default new InvalidateListingsProcessor()
