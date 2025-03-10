@@ -56,7 +56,7 @@ function initializeJobs() {
     })
 }
 
-const app: Application = express()
+const index: Application = express()
 const serverAdapter = new ExpressAdapter()
 
 serverAdapter.setBasePath('/')
@@ -85,9 +85,9 @@ createBullBoard({
     },
 })
 
-app.use('/', serverAdapter.getRouter())
+index.use('/', serverAdapter.getRouter())
 
-app.listen(9090, () => {
+index.listen(9090, () => {
     initializeJobs()
     console.log(`Server running at port 9090`)
 })
