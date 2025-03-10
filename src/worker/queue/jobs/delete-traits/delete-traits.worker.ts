@@ -1,7 +1,8 @@
 import { Job, Worker } from 'bullmq'
 import deleteTraitsConfig from './delete-traits.config'
-import instance from './delete-traits.processor'
-import { gracefulShutdown } from '../../../../utils/tools'
+import DeleteTraitsProcessor from './delete-traits.processor'
+
+const instance = new DeleteTraitsProcessor()
 
 const { queueName, connection, isSandboxed } = deleteTraitsConfig
 

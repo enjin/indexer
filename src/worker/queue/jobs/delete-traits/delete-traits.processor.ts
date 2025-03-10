@@ -2,7 +2,7 @@ import { Job } from 'bullmq'
 import { ProcessorDef } from '../processor.def'
 import { connectionManager } from '../../../../contexts'
 
-export class DeleteTraitsProcessor implements ProcessorDef {
+export default class DeleteTraitsProcessor implements ProcessorDef {
     async handle(job: Job): Promise<void> {
         const con = await connectionManager()
         await con.query(`DELETE FROM trait_token WHERE token_id = $1`, [job.data.id])
@@ -21,5 +21,3 @@ export class DeleteTraitsProcessor implements ProcessorDef {
         await job.log('Finished computing collections')
     }
 }
-
-export default new DeleteTraitsProcessor()
