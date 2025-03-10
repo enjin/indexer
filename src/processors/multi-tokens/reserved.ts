@@ -1,7 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 import { throwError } from '../../utils/errors'
 import * as mappings from './../../mappings'
 import { match, P } from 'ts-pattern'

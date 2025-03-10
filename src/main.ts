@@ -15,7 +15,7 @@ import { processor } from './processor'
 // import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
-import { QueueUtils } from './worker/queue'
+import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
 
 Sentry.init({

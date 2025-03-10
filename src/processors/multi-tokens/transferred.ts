@@ -4,7 +4,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 
 export async function transferred(
     ctx: CommonContext,

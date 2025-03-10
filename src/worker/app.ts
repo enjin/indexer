@@ -9,10 +9,52 @@ import {
     TokensQueue,
     TraitsQueue,
     ValidatorsQueue,
-    QueueUtils,
-} from './queue/index'
+    ListingsQueue,
+} from '../queues'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
-import { ListingsQueue } from './queue'
+// import { EventEmitter } from 'events'
+import {
+    ComputeCollectionsWorker,
+    ComputeMetadataWorker,
+    ComputeRarityWorker,
+    ComputeStatsWorker,
+    ComputeValidatorsWorker,
+    ComputeTraitsWorker,
+    DeleteTraitsWorker,
+    FetchAccountsWorker,
+    FetchBalancesWorker,
+    FetchCollectionsWorker,
+    InvalidateListingsWorker,
+} from './jobs'
+
+// Increase max listeners to avoid warnings
+// We have 11 workers, so setting to 15 gives us some headroom
+// EventEmitter.defaultMaxListeners = 60
+
+const WorkerMap = new Map([
+    ['ComputeCollections', ComputeCollectionsWorker],
+    ['ComputeMetadata', ComputeMetadataWorker],
+    ['ComputeRarity', ComputeRarityWorker],
+    ['ComputeStats', ComputeStatsWorker],
+    ['ComputeTraits', ComputeTraitsWorker],
+    ['ComputeValidators', ComputeValidatorsWorker],
+    ['DeleteTraits', DeleteTraitsWorker],
+    ['FetchAccounts', FetchAccountsWorker],
+    ['FetchBalances', FetchBalancesWorker],
+    ['FetchCollections', FetchCollectionsWorker],
+    ['InvalidateListings', InvalidateListingsWorker],
+])
+
+/**
+ * Initialize workers by binding an event listener to it
+ */
+function initializeJobs() {
+    WorkerMap.forEach((worker) => {
+        worker.on('error', (err) => {
+            console.error(err)
+        })
+    })
+}
 
 const app: Application = express()
 const serverAdapter = new ExpressAdapter()
@@ -46,6 +88,6 @@ createBullBoard({
 app.use('/', serverAdapter.getRouter())
 
 app.listen(9090, () => {
-    QueueUtils.initializeJobs()
+    initializeJobs()
     console.log(`Server running at port 9090`)
 })

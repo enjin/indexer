@@ -1,6 +1,6 @@
 import { Query, Resolver } from 'type-graphql'
 import 'reflect-metadata'
-import { QueueUtils } from '../worker/queue'
+import { QueueUtils } from '../queues'
 
 const mins10 = 1000 * 60 * 30
 let rateLimit: number | null = null

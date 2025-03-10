@@ -3,7 +3,7 @@ import { Event as EventModel, NativeTokenMetadata, Token } from '../../model'
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 
 export async function tokenMutated(
     ctx: CommonContext,

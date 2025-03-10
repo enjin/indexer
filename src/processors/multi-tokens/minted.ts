@@ -5,7 +5,7 @@ import { getOrCreateAccount } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 
 export async function minted(
     ctx: CommonContext,

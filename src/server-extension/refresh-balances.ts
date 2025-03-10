@@ -1,5 +1,5 @@
 import { Arg, Query, Resolver } from 'type-graphql'
-import { QueueUtils } from '../worker/queue'
+import { QueueUtils } from '../queues'
 import { decodeAddress } from '../utils/tools'
 
 @Resolver()

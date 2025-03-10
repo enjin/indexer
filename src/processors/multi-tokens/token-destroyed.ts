@@ -14,7 +14,7 @@ import {
 import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 
 export async function tokenDestroyed(
     ctx: CommonContext,

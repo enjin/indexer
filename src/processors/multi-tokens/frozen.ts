@@ -12,7 +12,7 @@ import { BlockHeader, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { match } from 'ts-pattern'
-import { QueueUtils } from '../../worker/queue'
+import { QueueUtils } from '../../queues'
 
 export async function frozen(
     ctx: CommonContext,
