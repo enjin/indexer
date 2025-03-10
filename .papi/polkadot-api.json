@@ -1,0 +1,11 @@
+{
+  "version": 0,
+  "descriptorPath": ".papi/descriptors",
+  "entries": {
+    "enjin": {
+      "wsUrl": "wss://rpc.relay.blockchain.enjin.io",
+      "metadata": ".papi/metadata/enjin.scale",
+      "genesis": "0xd8761d3c88f26dc12875c00d3165f7d67243d56fc85b4cf19937601a7916e5a9"
+    }
+  }
+}

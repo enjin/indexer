@@ -9,4 +9,3 @@
 src/cli
 # Sentry Config File
 .sentryclirc
-.papi
