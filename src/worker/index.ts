@@ -12,7 +12,7 @@ import {
     ListingsQueue,
 } from '../queues'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
-// import { EventEmitter } from 'events'
+import { EventEmitter } from 'events'
 import {
     ComputeCollectionsWorker,
     ComputeMetadataWorker,
@@ -29,7 +29,7 @@ import {
 
 // Increase max listeners to avoid warnings
 // We have 11 workers, so setting to 15 gives us some headroom
-// EventEmitter.defaultMaxListeners = 60
+EventEmitter.defaultMaxListeners = 30
 
 const WorkerMap = new Map([
     ['ComputeCollections', ComputeCollectionsWorker],
