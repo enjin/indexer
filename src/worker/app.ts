@@ -9,6 +9,7 @@ import {
     TokensQueue,
     TraitsQueue,
     ValidatorsQueue,
+    QueueUtils,
 } from './queue/index'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { ListingsQueue } from './queue'
@@ -44,4 +45,7 @@ createBullBoard({
 
 app.use('/', serverAdapter.getRouter())
 
-export default app
+app.listen(9090, () => {
+    QueueUtils.initializeJobs()
+    console.log(`Server running at port 9090`)
+})
