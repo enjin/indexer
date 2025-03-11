@@ -75,6 +75,10 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             callData = data.matrixEnjinV603.decode(call)
         }
 
+        if (data.v1020.is(call)) {
+            callData = data.v1020.decode(call)
+        }
+
         if (data.v1012.is(call)) {
             callData = data.v1012.decode(call)
         }
