@@ -143,6 +143,7 @@ export async function auctionFinalized(
                 royalty: data.royalty,
                 token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

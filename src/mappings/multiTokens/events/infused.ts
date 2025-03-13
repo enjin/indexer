@@ -76,6 +76,7 @@ export async function infused(ctx: CommonContext, block: BlockHeader, item: Even
                 amount: data.amount,
                 accountId: data.accountId,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

@@ -103,6 +103,7 @@ export async function counterOfferRemoved(
                 },
                 account: { id: account.id },
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
                 token: listing.takeAssetId.id,
             },
         })

@@ -138,6 +138,7 @@ export async function minted(
                 recipient: data.recipient,
                 amount: data.amount,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

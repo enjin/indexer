@@ -38,13 +38,14 @@ export async function claimTokensInitiated(
         await ctx.store.save(claim)
 
         if (item.extrinsic) {
-            Sns.getInstance().send({
+            await Sns.getInstance().send({
                 id: item.id,
                 name: item.name,
                 body: {
                     account: data.accountId,
                     ethAccount: data.ethereumAddress,
                     extrinsic: item.extrinsic.id,
+                    hash: item.extrinsic.hash,
                 },
             })
         }

@@ -169,6 +169,7 @@ export async function frozen(
                 tokenId: data.tokenId ?? null,
                 token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

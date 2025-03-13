@@ -65,6 +65,7 @@ export async function collectionDestroyed(
                 collectionId: data.collectionId,
                 caller: data.caller,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

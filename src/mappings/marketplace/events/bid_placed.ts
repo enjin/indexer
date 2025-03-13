@@ -147,6 +147,7 @@ export async function bidPlaced(
                 },
                 token: listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

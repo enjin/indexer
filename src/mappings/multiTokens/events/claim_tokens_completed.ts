@@ -25,13 +25,14 @@ export async function claimTokensCompleted(
 
     await ctx.store.save(claim)
 
-    Sns.getInstance().send({
+    await Sns.getInstance().send({
         id: item.id,
         name: item.name,
         body: {
             account: data.destination,
             ethAccount: data.ethereumAddress,
             extrinsic: item.extrinsic?.id,
+            hash: item.extrinsic?.hash,
         },
     })
 

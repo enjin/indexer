@@ -125,6 +125,7 @@ export async function transferred(
                 to: data.to,
                 amount: data.amount,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

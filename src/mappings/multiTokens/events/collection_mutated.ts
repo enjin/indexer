@@ -125,6 +125,7 @@ export async function collectionMutated(
                         newRoyalty: collection.marketPolicy.royalty.percentage,
                         sellers: listings.map((listing) => listing.seller.address),
                         listings: listings.map((listing) => listing.id),
+                        hash: item.extrinsic?.hash,
                     },
                 })
 

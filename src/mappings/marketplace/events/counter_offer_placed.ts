@@ -132,6 +132,7 @@ export async function counterOfferPlaced(
                 sellerPrice: sellerPrice.toString(),
                 account: { id: account.id },
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
                 token: listing.takeAssetId.id,
             },
         })

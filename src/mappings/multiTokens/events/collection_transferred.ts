@@ -58,6 +58,7 @@ export async function collectionTransferred(
                 collectionId: data.collectionId,
                 owner: data.newOwner,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }
