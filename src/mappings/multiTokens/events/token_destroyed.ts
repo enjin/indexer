@@ -181,6 +181,7 @@ export async function tokenDestroyed(
                 token: `${data.collectionId}-${data.tokenId}`,
                 caller: data.caller,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

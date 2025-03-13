@@ -150,6 +150,7 @@ export async function thawed(
                 tokenId: data.tokenId ?? null,
                 token: data.tokenId ? `${data.collectionId}-${data.tokenId}` : null,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

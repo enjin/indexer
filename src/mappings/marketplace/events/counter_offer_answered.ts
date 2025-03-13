@@ -146,6 +146,7 @@ export async function counterOfferAnswered(
                 response: data.response.__kind,
                 account: { id: account.id },
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
                 token: listing.takeAssetId.id,
             },
         })

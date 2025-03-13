@@ -115,6 +115,7 @@ export async function listingRemovedUnderMinimum(
                 },
                 token: listing.type === ListingType.Offer ? listing.takeAssetId.id : listing.makeAssetId.id,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

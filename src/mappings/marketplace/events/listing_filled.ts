@@ -187,6 +187,7 @@ export async function listingFilled(
                 protocolFee: data.protocolFee,
                 royalty: data.royalty,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

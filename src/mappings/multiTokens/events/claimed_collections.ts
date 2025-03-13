@@ -42,13 +42,14 @@ export async function claimedCollections(
     await Promise.all(savePromises)
 
     if (item.extrinsic) {
-        Sns.getInstance().send({
+        await Sns.getInstance().send({
             id: item.id,
             name: item.name,
             body: {
                 account: data.accountId,
                 ethAccount: data.ethereumAddress,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

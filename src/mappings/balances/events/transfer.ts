@@ -26,6 +26,7 @@ export async function transfer(ctx: CommonContext, block: BlockHeader, item: Eve
                 to: eventData.to,
                 amount: eventData.amount,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

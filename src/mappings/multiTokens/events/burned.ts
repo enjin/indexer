@@ -111,6 +111,7 @@ export async function burned(
                 account: data.accountId,
                 amount: data.amount,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }

@@ -398,6 +398,7 @@ export async function collectionCreated(
                 collectionId: eventData.collectionId,
                 owner: eventData.owner,
                 extrinsic: item.extrinsic.id,
+                hash: item.extrinsic.hash,
             },
         })
     }
