@@ -2,12 +2,12 @@ import { throwError } from '../../utils/errors'
 import { CollectionAccount, Event as EventModel, TokenAccount } from '../../model'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { encodeAddress } from '../../utils/tools'
 
 export async function unapproved(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

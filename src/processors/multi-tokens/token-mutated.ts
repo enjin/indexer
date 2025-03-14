@@ -1,13 +1,13 @@
 import { throwError } from '../../utils/errors'
 import { Event as EventModel, NativeTokenMetadata, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 import { isNonFungible } from './utils/helpers'
 import { QueueUtils } from '../../queues'
 
 export async function tokenMutated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -51,6 +51,7 @@ export async function tokenMutated(
     token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
+    console.log('Dispatching from token mutated')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)

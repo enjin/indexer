@@ -1,9 +1,9 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, Extrinsic, NominationPoolsEarlyBirdBonusPaymentUnlocked } from '../../model'
 import { updateEarlyBirdInfo } from './pool'
 import * as mappings from './../../mappings'
 
-export async function earlyBirdBonusPaymentUnlocked(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function earlyBirdBonusPaymentUnlocked(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.earlyBirdBonusPaymentUnlocked(item)

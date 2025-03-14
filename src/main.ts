@@ -1,4 +1,5 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
+import _ from 'lodash'
 import * as Sentry from '@sentry/node'
 import config from './config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
@@ -8,15 +9,14 @@ import { processors } from './processors'
 import * as mappings from './mappings'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './utils/entities'
 import { events, calls } from './types'
-import { BlockHeader, CallItem, CommonContext, EventItem } from './contexts'
+import { Block, CallItem, CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './processors/claims/common'
-// import { metadataQueue } from './jobs/process-metadata'
 import { processor } from './processor'
-// import { syncAllBalances } from './jobs/fetch-balance'
 import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
 import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
+import { populateBlock } from './state-sync'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -26,7 +26,7 @@ Sentry.init({
 
 async function handleEvents(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave = false
 ): Promise<Event | [Event, AccountTokenEvent] | undefined> {
@@ -163,7 +163,7 @@ async function handleEvents(
         })
 }
 
-async function handleCalls(ctx: CommonContext, block: BlockHeader, item: CallItem) {
+async function handleCalls(ctx: CommonContext, block: Block, item: CallItem) {
     switch (item.name) {
         case calls.identity.setSubs.name:
             return processors.identity.setSubs(ctx, block, item)
@@ -209,10 +209,10 @@ processor.run(
             )
 
             for (const block of ctx.blocks) {
-                // const extrinsics: Extrinsic[] = []
-                // const signers = new Set<string>()
-                // const eventsCollection: Event[] = []
-                // const accountTokenEvents: AccountTokenEvent[] = []
+                const extrinsics: Extrinsic[] = []
+                const signers = new Set<string>()
+                const eventsCollection: Event[] = []
+                const accountTokenEvents: AccountTokenEvent[] = []
 
                 if (block.header.height === 0) {
                     await createDefaultData(ctx, block.header)
@@ -223,7 +223,10 @@ processor.run(
                     }
 
                     // await metadataQueue.pause().catch(() => {})
-                    // await populateBlock(ctx as unknown as CommonContext, config.lastBlockHeight)
+                    console.log('Populating block')
+                    await populateBlock(ctx as unknown as CommonContext)
+
+                    throw new Error('Populate block')
                 }
 
                 if (block.header.height === config.lastBlockHeight) {
@@ -330,43 +333,51 @@ processor.run(
                         }
                     }
 
-                    // signers.add(publicKey)
-                    // extrinsics.push(extrinsicM)
-                    if (block.header.height > config.lastBlockHeight) {
-                        processors.balances.addAccountsToSet([signer.id])
-                        await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
-                    }
-
-                    await ctx.store.insert(extrinsicM)
+                    signers.add(signer.id)
+                    extrinsics.push(extrinsicM)
+                    // if (block.header.height > config.lastBlockHeight) {
+                    //     processors.balances.addAccountsToSet([signer.id])
+                    //     await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
+                    // }
+                    //
+                    // await ctx.store.insert(extrinsicM)
                 }
 
                 for (const call of block.calls) {
                     await handleCalls(ctx as unknown as CommonContext, block.header, call)
                 }
                 for (const eventItem of block.events) {
-                    const event = await handleEvents(ctx as unknown as CommonContext, block.header, eventItem, false)
+                    const event = await handleEvents(
+                        ctx as unknown as CommonContext,
+                        block.header,
+                        eventItem,
+                        block.header.height < config.lastBlockHeight
+                    )
 
                     if (event) {
                         if (Array.isArray(event)) {
-                            // eventsCollection.push(event[0])
-                            // accountTokenEvents.push(event[1])
-                            await ctx.store.insert(event[0])
-                            await ctx.store.insert(event[1])
+                            eventsCollection.push(event[0])
+                            accountTokenEvents.push(event[1])
+                            // await ctx.store.insert(event[0])
+                            // await ctx.store.insert(event[1])
                         } else {
-                            // eventsCollection.push(event)
-                            await ctx.store.insert(event)
+                            eventsCollection.push(event)
+                            // await ctx.store.insert(event)
                         }
                     }
                 }
 
-                // if (block.header.height > config.lastBlockHeight) {
-                //     processors.balances.addAccountsToSet(Array.from(signers))
-                //     await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
-                // }
+                if (block.header.height > config.lastBlockHeight) {
+                    processors.balances.addAccountsToSet(Array.from(signers))
+                    await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
+                }
 
-                // _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                // _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                //  _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
             const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

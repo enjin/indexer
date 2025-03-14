@@ -1,13 +1,13 @@
 import { throwError } from '../../utils/errors'
 import { Collection, Event as EventModel } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
 export async function collectionTransferred(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

@@ -6,7 +6,7 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getBestListing } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
@@ -14,7 +14,7 @@ import * as mappings from './../../mappings'
 
 export async function listingRemovedUnderMinimum(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingRemovedUnderMinimum(item)

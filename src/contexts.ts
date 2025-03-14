@@ -26,7 +26,7 @@ export const dataHandlerContext = async () => {
 type Fields = SubstrateBatchProcessorFields<typeof processor>
 
 export type CommonContext = DataHandlerContext<Store, Fields>
-export type BlockHeader = _BlockHeader<Fields>
+export type Block = _BlockHeader<Fields>
 export type CallItem = Call<Fields>
 export type EventItem = Event<Fields>
 export type ExtrinsicItem = Extrinsic<Fields>

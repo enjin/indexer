@@ -1,47 +1,65 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { multiTokens } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { Collection } from './types'
 
-export async function collections(block: BlockHeader, collectionId: bigint): Promise<Collection | undefined> {
+export async function collections(block: Block, params: { collectionId: bigint }): Promise<Collection | undefined>
+export async function collections(
+    block: Block,
+    params?: { batchSize?: number }
+): Promise<AsyncIterable<[k: bigint, v: Collection | undefined][]> | undefined>
+export async function collections(
+    block: Block,
+    params?: {
+        collectionId?: bigint
+        batchSize?: number
+    }
+): Promise<Collection | AsyncIterable<[k: bigint, v: Collection | undefined][]> | undefined> {
+    const getCollections = async (version: (typeof multiTokens.collections)[keyof typeof multiTokens.collections]) => {
+        if (params?.collectionId) {
+            return version.get(block, params.collectionId)
+        }
+        return version.getPairsPaged(params?.batchSize ?? 1000, block)
+    }
+
     return match(block)
-        .returnType<Promise<Collection | undefined>>()
+        .returnType<Promise<Collection | AsyncIterable<[k: bigint, v: Collection | undefined][]> | undefined>>()
         .when(
             () => multiTokens.collections.matrixEnjinV1012.is(block),
-            () => multiTokens.collections.matrixEnjinV1012.get(block, collectionId)
+            () => getCollections(multiTokens.collections.matrixEnjinV1012)
         )
         .when(
             () => multiTokens.collections.matrixEnjinV603.is(block),
-            () => multiTokens.collections.matrixEnjinV603.get(block, collectionId)
+            () => getCollections(multiTokens.collections.matrixEnjinV603)
         )
         .when(
             () => multiTokens.collections.matrixV1010.is(block),
-            () => multiTokens.collections.matrixV1010.get(block, collectionId)
+            () => getCollections(multiTokens.collections.matrixV1010)
         )
         .when(
             () => multiTokens.collections.matrixV500.is(block),
-            () => multiTokens.collections.matrixV500.get(block, collectionId)
+            () => getCollections(multiTokens.collections.matrixV500)
         )
         .when(
             () => multiTokens.collections.enjinV1032.is(block),
-            () => multiTokens.collections.enjinV1032.get(block, collectionId)
+            () => getCollections(multiTokens.collections.enjinV1032)
         )
         .when(
             () => multiTokens.collections.enjinV100.is(block),
-            () => multiTokens.collections.enjinV100.get(block, collectionId)
+            () => getCollections(multiTokens.collections.enjinV100)
         )
         .when(
             () => multiTokens.collections.v1050.is(block),
-            () => multiTokens.collections.v1050.get(block, collectionId)
+            () => getCollections(multiTokens.collections.v1050)
         )
         .when(
             () => multiTokens.collections.v1030.is(block),
-            () => multiTokens.collections.v1030.get(block, collectionId)
+            () => getCollections(multiTokens.collections.v1030)
         )
         .when(
             () => multiTokens.collections.v100.is(block),
-            () => multiTokens.collections.v100.get(block, collectionId)
+            () => getCollections(multiTokens.collections.v100)
         )
         .otherwise(() => {
             throw new UnsupportedStorageError(collections.name)
@@ -52,7 +70,7 @@ export async function collections(block: BlockHeader, collectionId: bigint): Pro
 //
 // async function getCollectionId(ctx: CommonContext, block: BlockHeader, collectionId: bigint) {
 //     if (storage.multiTokens.collections.v1010.is(block)) {
-//         const data = await storage.multiTokens.collections.v1010.get(block, collectionId)
+//         const data = await storage.multiTokens.collections.v1010)
 //         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
 //
 //         const assets = currencies?.map(([assetId, _]) => assetId)
@@ -70,7 +88,7 @@ export async function collections(block: BlockHeader, collectionId: bigint): Pro
 //     }
 //
 //     if (storage.multiTokens.collections.matrixEnjinV603.is(block)) {
-//         const data = await storage.multiTokens.collections.matrixEnjinV603.get(block, collectionId)
+//         const data = await storage.multiTokens.collections.matrixEnjinV603)
 //         const currencies: [AssetId, any][] | undefined = data?.explicitRoyaltyCurrencies
 //
 //         const assets = currencies?.map(([assetId, _]) => assetId)

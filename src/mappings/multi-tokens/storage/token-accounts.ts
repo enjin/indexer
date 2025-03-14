@@ -1,4 +1,4 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { storage } from '../../../types'
 import { match } from 'ts-pattern'
@@ -6,7 +6,7 @@ import { TokenAccount } from './types'
 import { AccountId32 } from '../../common/types'
 
 export async function tokenAccounts(
-    block: BlockHeader,
+    block: Block,
     collectionId: bigint,
     tokenId: bigint
 ): Promise<[k: [bigint, bigint, AccountId32], v: TokenAccount | undefined][]> {

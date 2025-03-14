@@ -1,6 +1,6 @@
 import { throwError } from '../../utils/errors'
 import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { match } from 'ts-pattern'
@@ -8,7 +8,7 @@ import { QueueUtils } from '../../queues'
 
 export async function thawed(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -97,6 +97,7 @@ export async function thawed(
         })
     }
 
+    console.log('Dispatching from thawed')
     QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.thawedEventModel(item, event)

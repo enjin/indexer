@@ -1,6 +1,6 @@
 import Big from 'big.js'
 import { constants } from '../../types'
-import { BlockHeader, CommonContext } from '../../contexts'
+import { Block, CommonContext } from '../../contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
 import config from '../../config'
 import * as mappings from './../../mappings'
@@ -11,7 +11,7 @@ const EMPTY_H256 = new Uint8Array(15)
 const MOD_PREFIX = stringToU8a('modl')
 const U32_OPTS = { bitLength: 32, isLe: true }
 
-export function createAccount(block: BlockHeader, poolId: string, index: number) {
+export function createAccount(block: Block, poolId: string, index: number) {
     const palletId = constants.nominationPools.palletId.enjinV100.get(block)
     return u8aToHex(
         u8aConcat(
@@ -24,20 +24,20 @@ export function createAccount(block: BlockHeader, poolId: string, index: number)
     )
 }
 
-async function fetchPoolBalance(block: BlockHeader, poolId: string) {
+async function fetchPoolBalance(block: Block, poolId: string) {
     const accounts = [createAccount(block, poolId, 1), createAccount(block, poolId, 2), createAccount(block, poolId, 3)]
     return await mappings.system.storage.account(block, accounts)
 }
 
-async function getPoolPointsStorage(block: BlockHeader, poolId: string) {
+async function getPoolPointsStorage(block: Block, poolId: string) {
     return await mappings.multiTokens.storage.tokens(block, 1n, BigInt(poolId))
 }
 
-async function getActiveStake(block: BlockHeader, poolId: string) {
+async function getActiveStake(block: Block, poolId: string) {
     return await mappings.staking.storage.ledger(block, createAccount(block, poolId, 1))
 }
 
-export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId: string) {
+export async function updatePool(ctx: CommonContext, block: Block, poolId: string) {
     const [pool, poolBalance, poolPoints, activeStake, eraCount] = await Promise.all([
         ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: poolId }),
         fetchPoolBalance(block, poolId),
@@ -82,7 +82,7 @@ export async function updatePool(ctx: CommonContext, block: BlockHeader, poolId:
     return pool
 }
 
-export async function updateEarlyBirdInfo(ctx: CommonContext, block: BlockHeader) {
+export async function updateEarlyBirdInfo(ctx: CommonContext, block: Block) {
     try {
         const earlyBirdBonusDistributionBlock =
             mappings.nominationPools.constants.earlyBirdBonusDistributionBlock(block)

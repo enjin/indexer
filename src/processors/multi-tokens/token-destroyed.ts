@@ -11,14 +11,14 @@ import {
     TokenRarity,
     TraitToken,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { QueueUtils } from '../../queues'
 
 export async function tokenDestroyed(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -140,6 +140,7 @@ export async function tokenDestroyed(
 
     await ctx.store.remove(token)
 
+    console.log('Dispatching from token destroyed')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
 

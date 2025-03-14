@@ -1,10 +1,10 @@
 import { Event as EventModel, FuelTank, FuelTankUserAccounts } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function accountRemoved(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.accountRemoved(item)

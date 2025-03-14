@@ -1,11 +1,11 @@
 import { Event as EventModel, JudgementType, Registration } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 
 export async function judgementUnrequested(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     const event = mappings.identity.events.judgementUnrequested(item)

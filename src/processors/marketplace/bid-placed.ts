@@ -1,5 +1,5 @@
 import { AccountTokenEvent, AuctionState, Bid, Event as EventModel, Listing, ListingType } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { getBestListing, getOrCreateAccount } from '../../utils/entities'
@@ -7,7 +7,7 @@ import { getBestListing, getOrCreateAccount } from '../../utils/entities'
 
 export async function bidPlaced(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.bidPlaced(item)

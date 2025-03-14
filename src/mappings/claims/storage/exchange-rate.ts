@@ -1,10 +1,10 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { claims } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { ExchangeRate } from './types'
 
-export async function exchangeRate(block: BlockHeader): Promise<ExchangeRate | undefined> {
+export async function exchangeRate(block: Block): Promise<ExchangeRate | undefined> {
     return match(block)
         .returnType<Promise<ExchangeRate | undefined>>()
         .when(

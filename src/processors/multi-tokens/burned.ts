@@ -1,6 +1,6 @@
 import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { getOrCreateAccount } from '../../utils/entities'
@@ -8,7 +8,7 @@ import { QueueUtils } from '../../queues'
 
 export async function burned(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | undefined | EventModel> {
@@ -47,6 +47,7 @@ export async function burned(
         }
         await ctx.store.save(token)
 
+        console.log('Dispatching from burned')
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     } else {

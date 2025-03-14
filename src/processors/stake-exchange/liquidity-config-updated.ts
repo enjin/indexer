@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import {
     Event as EventModel,
     Extrinsic,
@@ -41,7 +41,7 @@ export function getFilterFromType(tokenFilter: TokenFilter) {
 
 export async function liquidityConfigUpdated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

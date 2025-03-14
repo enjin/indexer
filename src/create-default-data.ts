@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext } from './contexts'
+import { Block, CommonContext } from './contexts'
 import {
     Collection,
     CollectionFlags,
@@ -15,7 +15,7 @@ import { isMainnet, isRelay } from './utils/tools'
 import * as mappings from './mappings'
 import { match } from 'ts-pattern'
 
-export async function createDefaultData(ctx: CommonContext, block: BlockHeader) {
+export async function createDefaultData(ctx: CommonContext, block: Block) {
     const enjinToken = await ctx.store.findOneBy<Token>(Token, { id: '0-0' })
 
     if (enjinToken === undefined) {
@@ -40,7 +40,7 @@ function defaultEnjinSupply(): bigint {
         .exhaustive()
 }
 
-async function createEnjinCollection(ctx: CommonContext, block: BlockHeader) {
+async function createEnjinCollection(ctx: CommonContext, block: Block) {
     const root = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
 
     const enjinCollection = new Collection({
@@ -91,7 +91,7 @@ async function createEnjinCollection(ctx: CommonContext, block: BlockHeader) {
     await ctx.store.insert(enjinCollection)
 }
 
-async function createEnjinToken(ctx: CommonContext, block: BlockHeader) {
+async function createEnjinToken(ctx: CommonContext, block: Block) {
     const enjinCoinToken = new Token({
         id: `0-0`,
         tokenId: 0n,
@@ -114,7 +114,7 @@ async function createEnjinToken(ctx: CommonContext, block: BlockHeader) {
     await ctx.store.insert(enjinCoinToken)
 }
 
-async function generateRelayData(ctx: CommonContext, block: BlockHeader) {
+async function generateRelayData(ctx: CommonContext, block: Block) {
     const root = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
 
     const stakedEnjinCollection = new Collection({
@@ -163,7 +163,7 @@ async function generateRelayData(ctx: CommonContext, block: BlockHeader) {
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    const degenCollectionData = await mappings.multiTokens.storage.collections(block, 2n)
+    const degenCollectionData = await mappings.multiTokens.storage.collections(block, { collectionId: 2n })
 
     if (!degenCollectionData) {
         throw new Error('Degen collection data not found')

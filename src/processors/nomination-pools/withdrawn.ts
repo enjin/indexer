@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Era, Event as EventModel, PoolMember, PoolMemberRewards } from '../../model'
 import { getOrCreateAccount } from '../../utils/entities'
 import { updatePool } from './pool'
@@ -14,11 +14,7 @@ function getActiveEra(ctx: CommonContext) {
     })
 }
 
-export async function withdrawn(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
+export async function withdrawn(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
     if (!item.extrinsic.call) return undefined
 

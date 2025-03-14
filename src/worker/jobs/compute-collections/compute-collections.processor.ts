@@ -13,6 +13,7 @@ export class ComputeCollectionsProcessor implements ProcessorDef {
         })
 
         collections.forEach((collection) => {
+            console.log('Dispatching compute collections')
             QueueUtils.dispatchComputeStats(collection.id)
             QueueUtils.dispatchComputeTraits(collection.id)
         })

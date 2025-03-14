@@ -9,7 +9,7 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getBestListing } from '../../utils/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../utils/sns'
@@ -17,7 +17,7 @@ import * as mappings from './../../mappings'
 
 export async function listingFilled(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingFilled(item)

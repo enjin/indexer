@@ -8,12 +8,12 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function fuelTankMutated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.fuelTankMutated(item)

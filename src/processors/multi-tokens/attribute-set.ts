@@ -11,7 +11,7 @@ import {
     MintPolicy,
     Token,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 import { QueueUtils } from '../../queues'
@@ -19,7 +19,7 @@ import { safeString } from '../../utils/tools'
 
 export async function attributeSet(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

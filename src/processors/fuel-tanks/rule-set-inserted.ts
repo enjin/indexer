@@ -1,13 +1,13 @@
 import { CallNotDefinedError } from '../../utils/errors'
 import { calls } from '../../types'
 import { Event as EventModel, FuelTank, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 import { rulesToMap } from '../../mappings/fuel-tanks/utils'
 
 export async function ruleSetInserted(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()

@@ -1,4 +1,4 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import {
     Era,
     Event as EventModel,
@@ -23,7 +23,7 @@ function getActiveEra(ctx: CommonContext) {
 
 export async function buyOrderCompleted(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined

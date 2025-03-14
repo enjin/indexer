@@ -1,12 +1,12 @@
 import { throwError } from '../../utils/errors'
 import { Attribute, Collection, Event as EventModel, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 import { QueueUtils } from '../../queues'
 
 export async function attributeRemoved(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

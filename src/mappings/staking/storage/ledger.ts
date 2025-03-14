@@ -1,10 +1,10 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { storage } from '../../../types'
 import { match } from 'ts-pattern'
 import { StakingLedger } from './types'
 
-export async function ledger(block: BlockHeader, account: string): Promise<StakingLedger | undefined> {
+export async function ledger(block: Block, account: string): Promise<StakingLedger | undefined> {
     return match(block)
         .returnType<Promise<StakingLedger | undefined>>()
         .when(

@@ -1,9 +1,9 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { claims } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { UnsupportedStorageError } from '../../../utils/errors'
 
-export async function totalUnclaimedAmount(block: BlockHeader): Promise<bigint | undefined> {
+export async function totalUnclaimedAmount(block: Block): Promise<bigint | undefined> {
     return match(block)
         .returnType<Promise<bigint | undefined>>()
         .when(

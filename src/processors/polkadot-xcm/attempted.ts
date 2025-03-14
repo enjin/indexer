@@ -1,14 +1,10 @@
 import { Event as EventModel, Extrinsic, TeleportBalanceWithdrawn } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount, unwrapSigner } from '../../utils/entities'
 import config from '../../config'
 import * as mappings from './../../mappings'
 
-export async function attempted(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
+export async function attempted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (item.call === undefined || !item.extrinsic) return undefined
 
     const call = mappings.polkadotXcm.utils.anyTeleportAssets(item.call)

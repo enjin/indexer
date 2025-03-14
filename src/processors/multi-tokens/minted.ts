@@ -1,6 +1,6 @@
 import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
@@ -9,7 +9,7 @@ import { QueueUtils } from '../../queues'
 
 export async function minted(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
@@ -63,6 +63,7 @@ export async function minted(
 
     await Promise.all(promises)
 
+    console.log('Dispatching from minted')
     QueueUtils.dispatchComputeMetadata(token.id, 'token')
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     QueueUtils.dispatchComputeStats(data.collectionId.toString())

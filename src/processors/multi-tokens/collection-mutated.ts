@@ -1,6 +1,6 @@
 import { throwError } from '../../utils/errors'
 import { Collection, Event as EventModel, Listing, RoyaltyCurrency, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
@@ -17,7 +17,7 @@ import * as mappings from './../../mappings'
 
 export async function collectionMutated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

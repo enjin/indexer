@@ -49,6 +49,8 @@ const WorkerMap = new Map([
  * Initialize workers by binding an event listener to it
  */
 function initializeJobs() {
+    console.log('Initializing jobs!!!')
+
     WorkerMap.forEach((worker) => {
         worker.on('error', (err) => {
             console.error(err)

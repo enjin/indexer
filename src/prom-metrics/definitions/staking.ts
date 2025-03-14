@@ -2,7 +2,6 @@ import api from 'prom-client'
 import register from '../registry'
 import Rpc from '../../utils/rpc'
 import { connectionManager } from '../../contexts'
-import { enjin } from '@polkadot-api/descriptors'
 import { BN } from '@polkadot/util'
 
 export const indexer_staking_staked_total = new api.Gauge({
@@ -133,7 +132,7 @@ export const indexer_staking_fulfilled_exchange_amount_total = new api.Gauge({
 
 export default async () => {
     const em = await connectionManager()
-    const api = Rpc.getInstance().client.getUnsafeApi<typeof enjin>()
+    const api = Rpc.getInstance().client.getUnsafeApi()
 
     const activeEra = await api.query.Staking.ActiveEra.getValue()
     const [totalIssuance, stakedTotal] = await Promise.all([

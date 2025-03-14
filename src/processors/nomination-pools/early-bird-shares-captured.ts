@@ -1,9 +1,9 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Account, EarlyBirdShares, NominationPool } from '../../model'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
-export async function earlyBirdSharesCaptured(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function earlyBirdSharesCaptured(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
     const eventData = mappings.nominationPools.events.earlyBirdSharesCaptured(item)
 

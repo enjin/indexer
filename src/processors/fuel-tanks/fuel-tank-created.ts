@@ -12,14 +12,14 @@ import {
     RequireToken,
     WhitelistedCallers,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 import { rulesToMap } from '../../mappings/fuel-tanks/utils'
 
 export async function fuelTankCreated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()

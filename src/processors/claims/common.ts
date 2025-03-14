@@ -1,8 +1,8 @@
-import { BlockHeader, CommonContext } from '../../contexts'
+import { Block, CommonContext } from '../../contexts'
 import { ClaimDetails } from '../../model'
 import * as mappings from './../../mappings'
 
-export async function updateClaimDetails(ctx: CommonContext, block: BlockHeader) {
+export async function updateClaimDetails(ctx: CommonContext, block: Block) {
     const exchangeRate = await mappings.claims.storage.exchangeRate(block)
     if (exchangeRate === undefined) return
 
