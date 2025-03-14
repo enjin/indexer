@@ -11,7 +11,7 @@ export const metadataQueue = new Queue<JobData>('metadataQueue', {
             type: 'exponential',
             delay: 5000,
         },
-        removeOnComplete: 100,
+        removeOnComplete: 300,
         removeOnFail: false,
     },
     redis: redisConfig,

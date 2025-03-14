@@ -7,7 +7,11 @@ import { addAccountsToSet, saveAccounts } from '../mappings/balances/processor'
 export type JobData = { ids: `0x${string}`[] }
 
 export const fetchBalanceQueue = new Queue<JobData>('fetchBalanceQueue', {
-    defaultJobOptions: { attempts: 3, removeOnComplete: 100 },
+    defaultJobOptions: {
+        attempts: 3,
+        removeOnComplete: 300,
+        removeOnFail: false,
+    },
     redis: redisConfig,
     settings: {
         maxStalledCount: 2,
