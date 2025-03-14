@@ -149,7 +149,7 @@ export async function listingFilled(
 
     if (listing.data.listingType === ListingType.Offer) {
         await ctx.store.save(listing.takeAssetId)
-        syncCollectionStats(listing.takeAssetId.collection.id)
+        await syncCollectionStats(listing.takeAssetId.collection.id)
     } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && data.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -159,7 +159,8 @@ export async function listingFilled(
             }
         }
         await ctx.store.save(listing.makeAssetId)
-        syncCollectionStats(listing.makeAssetId.collection.id)
+        await syncCollectionStats(listing.makeAssetId.collection.id)
+        ctx.log.warn('synced collection stats for ' + listing.makeAssetId.collection.id)
     }
 
     if (item.extrinsic) {

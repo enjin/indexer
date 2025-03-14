@@ -20,6 +20,8 @@ export const collectionStatsQueue = new Queue<JobData>('collectionStatsQueue', {
 })
 
 export const syncCollectionStats = async (collectionId: string) => {
+    console.log('syncing collection stats for ' + collectionId)
+
     if (!collectionId) {
         throw new Error('Collection ID not provided.')
     }
@@ -33,6 +35,7 @@ export const syncCollectionStats = async (collectionId: string) => {
         console.log('Closing connection as Redis is not available')
         collectionStatsQueue.close(true)
     })
+    console.log('added collection stats job for id ' + collectionId)
 }
 
 export async function syncAllCollections() {
