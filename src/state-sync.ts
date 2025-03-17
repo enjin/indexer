@@ -1,13 +1,25 @@
 import {
     Account,
+    Attribute,
     Balance,
     Collection,
+    CollectionAccount,
+    CollectionApproval,
     CollectionFlags,
     CollectionSocials,
     CollectionStats,
+    FreezeState,
     MarketPolicy,
     MintPolicy,
     Royalty,
+    Token,
+    TokenAccount,
+    TokenApproval,
+    TokenBehaviorHasRoyalty,
+    TokenBehaviorIsCurrency,
+    TokenBehaviorType,
+    TokenLock,
+    TokenNamedReserve,
     TransferPolicy,
 } from './model'
 import { Block, CommonContext } from './contexts'
@@ -17,10 +29,12 @@ import * as fs from 'fs'
 import * as readline from 'readline'
 import * as path from 'path'
 import * as mappings from './mappings'
-import { encodeAddress } from './utils/tools'
+import { encodeAddress, safeString } from './utils/tools'
 import { In } from 'typeorm'
-import config from './config'
 import { ParentBlockHeader } from '@subsquid/substrate-processor'
+import { isNonFungible } from './processors/multi-tokens/utils/helpers'
+import { hexToString } from '@polkadot/util'
+import { addAccountsToSet, saveAccounts } from './processors/balances/save'
 
 function getProjectRoot(): string {
     let currentDir = process.cwd()
@@ -102,6 +116,7 @@ export async function populateBlock(ctx: CommonContext) {
 
 async function populateBlockInternal(ctx: CommonContext, block: Block) {
     console.time('populateGenesis')
+
     ctx.log.info('Syncing collections...')
     await syncCollection(ctx, block)
     ctx.log.info(`Successfully imported ${await ctx.store.count(Collection)} collections`)
@@ -110,19 +125,21 @@ async function populateBlockInternal(ctx: CommonContext, block: Block) {
     await syncToken(ctx, block)
     ctx.log.info(`Successfully imported ${await ctx.store.count(Token)} tokens`)
 
-    //
-    // ctx.log.info('Syncing token accounts...')
-    // await syncTokenAccount(ctx, block)
-    // ctx.log.info(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
-    //
-    // ctx.log.info('Syncing collection accounts...')
-    // await syncCollectionAccount(ctx, block)
-    // ctx.log.info(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
-    //
-    // ctx.log.info('Syncing attributes...')
-    // await Promise.all([syncAttribute(ctx, block), syncBalance(ctx, block)])
-    // ctx.log.info(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
-    // ctx.log.info(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
+    ctx.log.info('Syncing token accounts...')
+    await syncTokenAccount(ctx, block)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(TokenAccount)} token accounts`)
+
+    ctx.log.info('Syncing collection accounts...')
+    await syncCollectionAccount(ctx, block)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(CollectionAccount)} collection accounts`)
+
+    ctx.log.info('Syncing attributes...')
+    await syncAttribute(ctx, block)
+    ctx.log.info(`Successfully imported ${await ctx.store.count(Attribute)} attributes`)
+
+    ctx.log.info('Syncing balances...')
+    await syncBalance(ctx, block)
+    ctx.log.info(`Successfully synced balances of ${await ctx.store.count(Account)} accounts`)
 
     console.timeEnd('populateGenesis')
 }
@@ -160,8 +177,6 @@ async function syncCollection(ctx: CommonContext, block: Block) {
             //         }),
             //     })
             // }
-
-            console.log(data)
 
             return new Collection({
                 id: id.toString(),
@@ -228,9 +243,10 @@ async function syncCollection(ctx: CommonContext, block: Block) {
 async function syncToken(ctx: CommonContext, block: Block) {
     const iterable = (await mappings.multiTokens.storage.tokens(block, { batchSize: BATCH_SIZE })) ?? []
 
-    for await (const collectionPairs of iterable) {
+    for await (const tokenPairs of iterable) {
         const tokens = []
-        for (const [key, data] of collectionPairs) {
+
+        for (const [key, data] of tokenPairs) {
             if (!data) continue
 
             const collectionId = key[0].toString()
@@ -238,53 +254,56 @@ async function syncToken(ctx: CommonContext, block: Block) {
 
             const collection = await ctx.store.findOneOrFail(Collection, { where: { id: collectionId.toString() } })
 
-            let behavior = null
-            if ('marketBehavior' in data && data.marketBehavior) {
-                if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
-                    behavior = new TokenBehaviorIsCurrency({
-                        type: TokenBehaviorType.IsCurrency,
-                    })
-                } else {
-                    behavior = new TokenBehaviorHasRoyalty({
-                        type: TokenBehaviorType.HasRoyalty,
-                        royalty: new Royalty({
-                            beneficiary: data.marketBehavior.value.beneficiary,
-                            percentage: data.marketBehavior.value.percentage,
-                        }),
-                    })
-                }
-            }
+            const behavior = null
+            // if ('marketBehavior' in data && data.marketBehavior) {
+            //     if (data.marketBehavior.__kind === TokenBehaviorType.IsCurrency) {
+            //         behavior = new TokenBehaviorIsCurrency({
+            //             type: TokenBehaviorType.IsCurrency,
+            //         })
+            //     } else {
+            //         behavior = new TokenBehaviorHasRoyalty({
+            //             type: TokenBehaviorType.HasRoyalty,
+            //             royalty: new Royalty({
+            //                 beneficiary: data.marketBehavior.value.beneficiary,
+            //                 percentage: data.marketBehavior.value.percentage,
+            //             }),
+            //         })
+            //     }
+            // }
 
-            const freezeState = data.freezeState ? getFreezeState(data.freezeState) : undefined
-
+            const freezeState = null //data.freezeState ? getFreezeState(data.freezeState) : undefined
             let unitPrice: bigint | null = 10_000_000_000_000_000n
-            let minimumBalance = 1n
+            let minBalance = 1n
 
-            if (data.sufficiency.__kind === 'Insufficient') {
-                unitPrice = data.sufficiency.unitPrice
-                minimumBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
+            if ('sufficiency' in data) {
+                unitPrice = data.sufficiency?.__kind === 'Insufficient' ? data.sufficiency.unitPrice : 1n
+                minBalance = BigInt(Math.max(1, Number(10n ** 16n / unitPrice)))
             }
 
             const token = new Token({
                 id: `${collectionId}-${tokenId}`,
                 tokenId: BigInt(tokenId),
-                collection,
-                attributeCount: data.attributeCount,
                 supply: data.supply,
-                isFrozen: freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary,
-                cap: data.cap ? getCapType(data.cap) : null,
+                cap: null, // data.cap ? getCapType(data.cap) : null,
                 behavior,
-                freezeState,
-                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
-                minimumBalance,
+                isFrozen: false, //freezeState === FreezeState.Permanent || freezeState === FreezeState.Temporary,
+                freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
+                minimumBalance: minBalance,
                 unitPrice,
+                mintDeposit: data.mintDeposit ?? 1n,
+                attributeCount: data.attributeCount,
+                collection,
+                metadata: null,
+                listingForbidden: 'listingForbidden' in data ? data.listingForbidden : false,
+                accountDepositCount: 0,
+                anyoneCanInfuse: false,
+                nativeMetadata: null,
+                infusion: 0n,
                 createdAt: new Date(block.timestamp ?? 0),
-                mintDeposit: data.mintDeposit,
             })
 
             token.nonFungible = isNonFungible(token)
             tokens.push(token)
-
             // processMetadata(token.id, 'token')
         }
 
@@ -293,237 +312,186 @@ async function syncToken(ctx: CommonContext, block: Block) {
 }
 
 //
-// async function syncCollectionAccount(ctx: CommonContext, block: BlockHeader) {
-//     for await (const pairs of getCollectionAccountStorage(block).getPairsPaged(BATCH_SIZE, block)) {
-//         const accountMap = await getAccountMap(
-//             ctx,
-//             pairs.map(([k]) => k[1])
-//         )
-//
-//         const collectionAccounts = pairs.map(([k, data]) => {
-//             if (!data) {
-//                 throw new Error('Collection Account Data not found')
-//             }
-//             const collectionId = k[0].toString()
-//             const accountId = k[1]
-//             const account = accountMap.get(accountId)
-//
-//             // if (!account) throw Errors.accountNotFound()
-//
-//             let approvals = null
-//
-//             if (data.approvals && data.approvals.length > 0) {
-//                 approvals = data.approvals.map((approval) => {
-//                     return new CollectionApproval({
-//                         accountId: approval[0],
-//                         expiration: approval[1],
-//                     })
-//                 })
-//             }
-//
-//             return new CollectionAccount({
-//                 id: `${collectionId}-${accountId}`,
-//                 isFrozen: data.isFrozen,
-//                 approvals,
-//                 accountCount: data.accountCount,
-//                 account,
-//                 collection: new Collection({ id: collectionId }),
-//                 createdAt: new Date(block.timestamp ?? 0),
-//                 updatedAt: new Date(block.timestamp ?? 0),
-//             })
-//         })
-//
-//         await ctx.store.insert(collectionAccounts)
-//     }
-//
-//     return true
-// }
-//
+async function syncCollectionAccount(ctx: CommonContext, block: Block) {
+    const iterable = (await mappings.multiTokens.storage.collectionAccounts(block, { batchSize: BATCH_SIZE })) ?? []
 
-//
-// async function syncTokenAccount(ctx: CommonContext, block: BlockHeader) {
-//     for await (const pairs of getTokenAccountStorage(block).getPairsPaged(BATCH_SIZE, block)) {
-//         const accountMap = await getAccountMap(
-//             ctx,
-//             pairs.map(([k]) => k[2])
-//         )
-//
-//         const tokenAccounts = pairs.map(([k, data]) => {
-//             if (!data) {
-//                 throw new Error('Token Account Data not found')
-//             }
-//             const collectionId = k[0]
-//             const tokenId = k[1]
-//             const accountId = k[2]
-//             const account = accountMap.get(accountId)
-//
-//             // if (!account) throw Errors.accountNotFound()
-//
-//             let namedReserves = null
-//             if (data.namedReserves && data.namedReserves.length > 0) {
-//                 namedReserves = data.namedReserves.map((namedReserve) => {
-//                     return new TokenNamedReserve({
-//                         pallet: namedReserve[0],
-//                         amount: namedReserve[1],
-//                     })
-//                 })
-//             }
-//
-//             let locks = null
-//             if (data.locks && data.locks.length > 0) {
-//                 locks = data.locks.map((lock) => {
-//                     return new TokenLock({
-//                         pallet: lock[0],
-//                         amount: lock[1],
-//                     })
-//                 })
-//             }
-//
-//             let approvals = null
-//             if (data.approvals && data.approvals.length > 0) {
-//                 approvals = data.approvals.map((approval) => {
-//                     return new TokenApproval({
-//                         account: approval[0],
-//                         amount: approval[1].amount,
-//                         expiration: approval[1].expiration,
-//                     })
-//                 })
-//             }
-//
-//             return new TokenAccount({
-//                 id: `${accountId}-${collectionId}-${tokenId}`,
-//                 balance: data.balance,
-//                 reservedBalance: data.reservedBalance,
-//                 totalBalance: data.balance + data.reservedBalance,
-//                 lockedBalance: data.lockedBalance,
-//                 namedReserves,
-//                 locks,
-//                 approvals,
-//                 isFrozen: data.isFrozen,
-//                 account,
-//                 collection: new Collection({ id: collectionId.toString() }),
-//                 token: new Token({ id: `${collectionId}-${tokenId}` }),
-//                 createdAt: new Date(block.timestamp ?? 0),
-//                 updatedAt: new Date(block.timestamp ?? 0),
-//             })
-//         })
-//
-//         await ctx.store.insert(tokenAccounts)
-//     }
-//
-//     return true
-// }
-//
-// async function syncAttribute(ctx: CommonContext, block: BlockHeader) {
-//     for await (const pairs of getAttributeStorage(block).getPairsPaged(BATCH_SIZE, block)) {
-//         const attributePromise = pairs.map(async ([k, data]) => {
-//             if (!data) {
-//                 throw new Error('Attribute Data not found')
-//             }
-//             const collectionId = k[0]
-//             const tokenId = k[1]
-//             const key = safeString(hexToString(k[2]))
-//             const value = safeString(hexToString(data.value))
-//             const id = tokenId !== undefined ? `${collectionId}-${tokenId}` : collectionId.toString()
-//
-//             const attributeId = `${id}-${k[2]}`
-//
-//             if (tokenId !== undefined) {
-//                 return new Attribute({
-//                     id: attributeId,
-//                     token: new Token({ id }),
-//                     key,
-//                     value,
-//                     deposit: data.deposit,
-//                     collection: new Collection({ id: collectionId.toString() }),
-//                     createdAt: new Date(block.timestamp ?? 0),
-//                     updatedAt: new Date(block.timestamp ?? 0),
-//                 })
-//             }
-//
-//             return new Attribute({
-//                 id: attributeId,
-//                 key,
-//                 value,
-//                 deposit: data.deposit,
-//                 collection: new Collection({ id }),
-//                 createdAt: new Date(block.timestamp ?? 0),
-//                 updatedAt: new Date(block.timestamp ?? 0),
-//             })
-//         })
-//
-//         await Promise.all(attributePromise).then((attributes) => ctx.store.insert(attributes))
-//     }
-//
-//     return true
-// }
-//
-// async function syncBalance(ctx: CommonContext, block: BlockHeader) {
-//     const batchSize = 100
-//     for await (const keys of getAccountStorage(block).getKeysPaged(batchSize, block)) {
-//         await getAccountMap(ctx, keys)
-//         addAccountsToSet(keys)
-//         await saveAccounts(ctx, block)
-//     }
-//
-//     return true
-// }
+    for await (const collectionAccountPairs of iterable) {
+        const accountMap = await getAccountMap(
+            ctx,
+            collectionAccountPairs.map(([k]) => k[1])
+        )
 
-// function getTokenStorage(block: BlockHeader) {
-//     if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
-//         return storage.multiTokens.tokens.matrixEnjinV603
-//     }
-//
-//     if (storage.multiTokens.tokens.v600.is(block)) {
-//         return storage.multiTokens.tokens.v600
-//     }
-//
-//     if (storage.multiTokens.tokens.v500.is(block)) {
-//         return storage.multiTokens.tokens.v500
-//     }
-//
-//     throw new UnsupportedStorageError('MultiTokens.Tokens')
-// }
-//
-// function getCollectionAccountStorage(block: BlockHeader) {
-//     if (storage.multiTokens.collectionAccounts.matrixEnjinV603.is(block)) {
-//         return storage.multiTokens.collectionAccounts.matrixEnjinV603
-//     }
-//
-//     throw new UnsupportedStorageError('MultiTokens.CollectionAccounts')
-// }
-//
-// function getTokenAccountStorage(block: BlockHeader) {
-//     if (storage.multiTokens.tokenAccounts.matrixEnjinV603.is(block)) {
-//         return storage.multiTokens.tokenAccounts.matrixEnjinV603
-//     }
-//
-//     throw new UnsupportedStorageError('MultiTokens.TokenAccounts')
-// }
-//
-// function getAttributeStorage(block: BlockHeader) {
-//     if (storage.multiTokens.attributes.matrixEnjinV603.is(block)) {
-//         return storage.multiTokens.attributes.matrixEnjinV603
-//     }
-//
-//     throw new UnsupportedStorageError('MultiTokens.Attributes')
-// }
-//
-// function getAccountStorage(block: BlockHeader) {
-//     if (storage.system.account.matrixEnjinV603.is(block)) {
-//         return storage.system.account.matrixEnjinV603
-//     }
-//
-//     if (storage.system.account.v602.is(block)) {
-//         return storage.system.account.v602
-//     }
-//
-//     if (storage.system.account.v500.is(block)) {
-//         return storage.system.account.v500
-//     }
-//
-//     throw new UnsupportedStorageError('System.Account')
-// }
+        const collectionAccounts = collectionAccountPairs.map(([k, data]) => {
+            if (!data) {
+                throw new Error('Collection Account Data not found')
+            }
+            const collectionId = k[0].toString()
+            const accountId = k[1]
+            const account = accountMap.get(accountId)
+
+            // if (!account) throw Errors.accountNotFound()
+
+            let approvals = null
+
+            if (data.approvals && data.approvals.length > 0) {
+                approvals = data.approvals.map((approval) => {
+                    return new CollectionApproval({
+                        accountId: approval[0],
+                        expiration: approval[1],
+                    })
+                })
+            }
+
+            return new CollectionAccount({
+                id: `${collectionId}-${accountId}`,
+                isFrozen: data.isFrozen,
+                approvals,
+                accountCount: data.accountCount,
+                account,
+                collection: new Collection({ id: collectionId }),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
+            })
+        })
+
+        await ctx.store.insert(collectionAccounts)
+    }
+
+    return true
+}
+
+async function syncTokenAccount(ctx: CommonContext, block: Block) {
+    const iterable = (await mappings.multiTokens.storage.tokenAccounts(block, { batchSize: BATCH_SIZE })) ?? []
+
+    for await (const tokenAccountPairs of iterable) {
+        const accountMap = await getAccountMap(
+            ctx,
+            tokenAccountPairs.map(([k]) => k[2])
+        )
+
+        const tokenAccounts = tokenAccountPairs.map(([k, data]) => {
+            if (!data) {
+                throw new Error('Token Account Data not found')
+            }
+            const collectionId = k[0]
+            const tokenId = k[1]
+            const accountId = k[2]
+            const account = accountMap.get(accountId)
+
+            // if (!account) throw Errors.accountNotFound()
+
+            let namedReserves = null
+            if (data.namedReserves && data.namedReserves.length > 0) {
+                namedReserves = data.namedReserves.map((namedReserve) => {
+                    return new TokenNamedReserve({
+                        pallet: namedReserve[0],
+                        amount: namedReserve[1],
+                    })
+                })
+            }
+
+            let locks = null
+            if (data.locks && data.locks.length > 0) {
+                locks = data.locks.map((lock) => {
+                    return new TokenLock({
+                        pallet: lock[0],
+                        amount: lock[1],
+                    })
+                })
+            }
+
+            let approvals = null
+            if (data.approvals && data.approvals.length > 0) {
+                approvals = data.approvals.map((approval) => {
+                    return new TokenApproval({
+                        accountId: approval[0],
+                        amount: approval[1].amount,
+                        expiration: approval[1].expiration,
+                    })
+                })
+            }
+
+            return new TokenAccount({
+                id: `${accountId}-${collectionId}-${tokenId}`,
+                balance: data.balance,
+                reservedBalance: data.reservedBalance,
+                totalBalance: data.balance + data.reservedBalance,
+                lockedBalance: data.lockedBalance,
+                namedReserves,
+                locks,
+                approvals,
+                isFrozen: data.isFrozen,
+                account,
+                collection: new Collection({ id: collectionId.toString() }),
+                token: new Token({ id: `${collectionId}-${tokenId}` }),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
+            })
+        })
+
+        await ctx.store.insert(tokenAccounts)
+    }
+
+    return true
+}
+
+async function syncAttribute(ctx: CommonContext, block: Block) {
+    const iterable = (await mappings.multiTokens.storage.attributes(block, { batchSize: BATCH_SIZE })) ?? []
+
+    for await (const attributePairs of iterable) {
+        const attributePromise = attributePairs.map(async ([k, data]) => {
+            if (!data) {
+                throw new Error('Attribute Data not found')
+            }
+            const collectionId = k[0]
+            const tokenId = k[1]
+            const key = safeString(hexToString(k[2]))
+            const value = safeString(hexToString(data.value))
+            const id = tokenId !== undefined ? `${collectionId}-${tokenId}` : collectionId.toString()
+
+            const attributeId = `${id}-${k[2]}`
+
+            if (tokenId !== undefined) {
+                return new Attribute({
+                    id: attributeId,
+                    token: new Token({ id }),
+                    key,
+                    value,
+                    deposit: data.deposit,
+                    collection: new Collection({ id: collectionId.toString() }),
+                    createdAt: new Date(block.timestamp ?? 0),
+                    updatedAt: new Date(block.timestamp ?? 0),
+                })
+            }
+
+            return new Attribute({
+                id: attributeId,
+                key,
+                value,
+                deposit: data.deposit,
+                collection: new Collection({ id }),
+                createdAt: new Date(block.timestamp ?? 0),
+                updatedAt: new Date(block.timestamp ?? 0),
+            })
+        })
+
+        await Promise.all(attributePromise).then((attributes) => ctx.store.insert(attributes))
+    }
+
+    return true
+}
+
+async function syncBalance(ctx: CommonContext, block: Block) {
+    const iterable = await mappings.system.storage.accounts(block, { batchSize: BATCH_SIZE })
+
+    for await (const keys of iterable) {
+        await getAccountMap(ctx, keys)
+        addAccountsToSet(keys)
+        await saveAccounts(ctx, block)
+    }
+
+    return true
+}
 
 async function getAccountMap(
     ctx: CommonContext,

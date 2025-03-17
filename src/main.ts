@@ -223,9 +223,7 @@ processor.run(
                     }
 
                     // await metadataQueue.pause().catch(() => {})
-                    console.log('Populating block')
                     await populateBlock(ctx as unknown as CommonContext)
-
                     throw new Error('Populate block')
                 }
 
