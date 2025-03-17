@@ -17,7 +17,7 @@ import config from '../../config'
 import * as mappings from './../../mappings'
 
 async function getMembersBalance(block: Block, poolId: number) {
-    return await mappings.multiTokens.storage.tokenAccounts(block, 1n, BigInt(poolId))
+    return await mappings.multiTokens.storage.tokenAccounts(block, { collectionId: 1n, tokenId: BigInt(poolId) })
 }
 
 export async function eraRewardsProcessed(

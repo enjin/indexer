@@ -108,7 +108,7 @@ function processBalancesEventItem(event: EventItem) {
 }
 
 async function getBalances(block: BlockHeader, accountIds: string[]) {
-    return await mappings.system.storage.account(block, accountIds)
+    return await mappings.system.storage.accounts(block, { accounts: accountIds })
 }
 
 const accountsSet = new Set<string>()

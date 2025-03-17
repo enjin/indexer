@@ -26,11 +26,11 @@ export function createAccount(block: Block, poolId: string, index: number) {
 
 async function fetchPoolBalance(block: Block, poolId: string) {
     const accounts = [createAccount(block, poolId, 1), createAccount(block, poolId, 2), createAccount(block, poolId, 3)]
-    return await mappings.system.storage.account(block, accounts)
+    return await mappings.system.storage.accounts(block, { accounts: accounts })
 }
 
 async function getPoolPointsStorage(block: Block, poolId: string) {
-    return await mappings.multiTokens.storage.tokens(block, 1n, BigInt(poolId))
+    return await mappings.multiTokens.storage.tokens(block, { collectionId: 1n, tokenId: BigInt(poolId) })
 }
 
 async function getActiveStake(block: Block, poolId: string) {

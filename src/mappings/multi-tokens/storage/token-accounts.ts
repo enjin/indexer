@@ -6,9 +6,14 @@ import { TokenAccount } from './types'
 import { AccountId32 } from '../../common/types'
 import { TokenAccountsV100 } from '../../../types/multi-tokens/storage'
 
+// Probably better to refactor this and just use multiple different functions instead of overloading
 export async function tokenAccounts(
     block: Block,
-    params: { collectionId: bigint; tokenId: bigint; accountId?: string }
+    params: { collectionId: bigint; tokenId: bigint }
+): Promise<[k: [bigint, bigint, string], v: TokenAccount | undefined][]>
+export async function tokenAccounts(
+    block: Block,
+    params: { collectionId: bigint; tokenId: bigint; accountId: string }
 ): Promise<TokenAccount | undefined>
 export async function tokenAccounts(
     block: Block,
@@ -19,6 +24,7 @@ export async function tokenAccounts(
     params?: { collectionId?: bigint; tokenId?: bigint; accountId?: string; batchSize?: number }
 ): Promise<
     | TokenAccount
+    | [k: [bigint, bigint, string], v: TokenAccount | undefined][]
     | AsyncIterable<[k: [bigint, bigint, AccountId32] | [string, bigint, bigint], v: TokenAccount | undefined][]>
     | undefined
 > {
@@ -37,6 +43,18 @@ export async function tokenAccounts(
             return storage.get(block, params.collectionId, params.tokenId, params.accountId)
         }
 
+        if (params?.collectionId && params.tokenId) {
+            // The order on v100 storage is different, so we need to check the version
+            if (version === multiTokens.tokenAccounts.v100) {
+                throw new Error('Not possible to retrieve a token account without the AccountId on v100')
+            }
+
+            type TokenAccountExceptV100 = Exclude<typeof version, TokenAccountsV100>
+            const storage = version as TokenAccountExceptV100
+
+            return storage.getPairs(block, params.collectionId, params.tokenId)
+        }
+
         return version.getPairsPaged(params?.batchSize ?? 1000, block)
     }
 
@@ -44,6 +62,7 @@ export async function tokenAccounts(
         .returnType<
             Promise<
                 | TokenAccount
+                | [k: [bigint, bigint, string], v: TokenAccount | undefined][]
                 | AsyncIterable<
                       [k: [bigint, bigint, AccountId32] | [string, bigint, bigint], v: TokenAccount | undefined][]
                   >
