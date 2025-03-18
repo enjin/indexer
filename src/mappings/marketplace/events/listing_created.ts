@@ -33,11 +33,9 @@ function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.marketplace.listingCreated.matrixEnjinV603.is(event)) {
         return events.marketplace.listingCreated.matrixEnjinV603.decode(event)
     }
-
     if (events.marketplace.listingCreated.v1020.is(event)) {
         return events.marketplace.listingCreated.v1020.decode(event)
     }
-
     if (events.marketplace.listingCreated.v1011.is(event)) {
         return events.marketplace.listingCreated.v1011.decode(event)
     }
@@ -110,6 +108,7 @@ export async function listingCreated(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const data = getEventData(ctx, item)
     if (!data) return undefined
+
     const listingId = data.listingId.substring(2)
     const [makeAssetId, takeAssetId, account] = await Promise.all([
         ctx.store.findOne<Token>(Token, {
@@ -127,18 +126,18 @@ export async function listingCreated(
     if (!makeAssetId || !takeAssetId) return undefined
 
     const feeSide = data.listing.feeSide.__kind as FeeSide
-    let listingData
-    let listingState
+    let listingData, listingState, startHeight
 
     switch (data.listing.data.__kind) {
         case ListingType.FixedPrice:
             listingData = new FixedPriceData({ listingType: ListingType.FixedPrice })
             break
         case ListingType.Auction:
+            startHeight = 'startBlock' in data.listing.data.value ? data.listing.data.value.startBlock : null
             listingData = new AuctionData({
                 listingType: ListingType.Auction,
                 // TODO: There is no start block for auctions anymore
-                startHeight: 'startBlock' in data.listing.data.value ? data.listing.data.value.startBlock : 0,
+                startHeight: startHeight ?? 0,
                 endHeight: data.listing.data.value.endBlock,
             })
             break
@@ -185,6 +184,10 @@ export async function listingCreated(
         type: listingData.listingType,
         createdAt: new Date(block.timestamp ?? 0),
         updatedAt: new Date(block.timestamp ?? 0),
+        // New fields for v1020
+        creationBlock: data.listing.creationBlock,
+        startBlock: 'startBlock' in data.listing ? (data.listing.startBlock ?? startHeight) : null,
+        usesWhitelist: 'whitelistedAccountCount' in data.listing ? data.listing.whitelistedAccountCount !== undefined : false,
     })
 
     const listingStatus = new ListingStatus({
