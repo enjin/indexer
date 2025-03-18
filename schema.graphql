@@ -479,7 +479,7 @@ type TransferPolicy {
 
 type MarketPolicy {
   royalty: Royalty @deprecated
-  beneficiaries: [Royalty]!
+  beneficiaries: [Royalty!]!
 }
 
 type RoyaltyCurrency @entity {
