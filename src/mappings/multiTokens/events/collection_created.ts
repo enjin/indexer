@@ -35,18 +35,20 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
                   },
               ]
 
-    const beneficiariesWithAccount = await Promise.all(
-        beneficiaries.map(async (v) => {
-            return new Royalty({
-                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
-                percentage: v.percentage,
+    const withAccounts = []
+    for (const b of beneficiaries) {
+        const account = await getOrCreateAccount(ctx, b.beneficiary)
+        withAccounts.push(
+            new Royalty({
+                beneficiary: account.id,
+                percentage: b.percentage,
             })
-        })
-    )
+        )
+    }
 
     return new MarketPolicy({
-        royalty: beneficiariesWithAccount[0],
-        beneficiaries: beneficiariesWithAccount,
+        royalty: withAccounts[0],
+        beneficiaries: withAccounts,
     })
 }
 
