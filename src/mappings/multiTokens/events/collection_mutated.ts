@@ -98,10 +98,10 @@ export async function collectionMutated(
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
         } else {
-            const currentRoyalty = collection.marketPolicy?.royalty.percentage || 0
+            const currentRoyalty = collection.marketPolicy?.royalty?.percentage || 0
             collection.marketPolicy = await getMarket(ctx, data.mutation.royalty.value)
 
-            if (collection.marketPolicy.royalty.percentage > currentRoyalty) {
+            if (collection.marketPolicy.royalty?.percentage ?? 0 > currentRoyalty) {
                 // royalty has increased
                 // we need to update all active listings
                 const listings = await ctx.store.find(Listing, {
@@ -122,7 +122,7 @@ export async function collectionMutated(
                     body: {
                         collectionId: data.collectionId,
                         previousRoyalty: currentRoyalty,
-                        newRoyalty: collection.marketPolicy.royalty.percentage,
+                        newRoyalty: collection.marketPolicy.royalty?.percentage,
                         sellers: listings.map((listing) => listing.seller.address),
                         listings: listings.map((listing) => listing.id),
                         hash: item.extrinsic?.hash,
