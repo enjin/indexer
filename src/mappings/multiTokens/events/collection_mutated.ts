@@ -8,6 +8,7 @@ import {
     MarketPolicy,
     MultiTokensCollectionMutated,
     Royalty,
+    RoyaltyBeneficiary,
     RoyaltyCurrency,
     Token,
 } from '../../../model'
@@ -32,15 +33,18 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 
     const beneficiariesWithAccount = await Promise.all(
         beneficiaries.map(async (v) => {
-            return new Royalty({
-                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+            return new RoyaltyBeneficiary({
+                accountId: (await getOrCreateAccount(ctx, v.beneficiary)).id,
                 percentage: v.percentage,
             })
         })
     )
 
     return new MarketPolicy({
-        royalty: beneficiariesWithAccount[0],
+        royalty: new Royalty({
+            beneficiary: beneficiariesWithAccount[0].accountId,
+            percentage: beneficiariesWithAccount[0].percentage,
+        }),
         beneficiaries: beneficiariesWithAccount,
     })
 }

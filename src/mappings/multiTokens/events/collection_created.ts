@@ -11,6 +11,7 @@ import {
     MintPolicy,
     MultiTokensCollectionCreated,
     Royalty,
+    RoyaltyBeneficiary,
     RoyaltyCurrency,
     Token,
     TransferPolicy,
@@ -39,15 +40,15 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
     for (const b of beneficiaries) {
         const account = await getOrCreateAccount(ctx, b.beneficiary)
         withAccounts.push(
-            new Royalty({
-                beneficiary: account.id,
+            new RoyaltyBeneficiary({
+                accountId: account.id,
                 percentage: b.percentage,
             })
         )
     }
 
     return new MarketPolicy({
-        royalty: withAccounts[0],
+        royalty: new Royalty({ beneficiary: withAccounts[0].accountId, percentage: withAccounts[0].percentage }),
         beneficiaries: withAccounts,
     })
 }

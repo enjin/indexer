@@ -477,9 +477,14 @@ type TransferPolicy {
   isFrozen: Boolean
 }
 
+type RoyaltyBeneficiary {
+  accountId: String!
+  percentage: Float!
+}
+
 type MarketPolicy {
   royalty: Royalty @deprecated
-  beneficiaries: [Royalty!]!
+  beneficiaries: [RoyaltyBeneficiary!]
 }
 
 type RoyaltyCurrency @entity {
