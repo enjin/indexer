@@ -24,6 +24,7 @@ WORKDIR /squid
 COPY --from=prod-deps /app/package.json /squid/package.json
 COPY --from=prod-deps /app/node_modules /squid/node_modules
 COPY --from=build /app/lib /squid/lib
+COPY --from=build /app/typegen /squid/typegen
 
 ADD db db
 ADD schema.graphql .
