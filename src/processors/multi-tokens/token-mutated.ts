@@ -51,7 +51,7 @@ export async function tokenMutated(
     token.updatedAt = new Date(block.timestamp ?? 0)
     await ctx.store.save(token)
 
-    console.log('Dispatching from token mutated')
+    // console.log('Dispatching from token mutated')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     return mappings.multiTokens.events.tokenMutatedEventModel(item, data)

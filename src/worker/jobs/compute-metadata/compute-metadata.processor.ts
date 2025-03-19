@@ -161,7 +161,7 @@ export class ComputeMetadataProcessor implements ProcessorDef {
                 await em.save(resource)
 
                 if (jobData.type === 'collection' && jobData.allTokens) {
-                    console.log('Processing all tokens in collection', jobData.resourceId)
+                    // console.log('Processing all tokens in collection', jobData.resourceId)
 
                     const batch = tokensInBatch(em, jobData.resourceId)
 

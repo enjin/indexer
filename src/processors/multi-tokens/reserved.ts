@@ -45,6 +45,6 @@ export async function reserved(ctx: CommonContext, block: Block, item: EventItem
         )
     }
 
-    console.log('Dispatching from reserved')
+    // console.log('Dispatching from reserved')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 }

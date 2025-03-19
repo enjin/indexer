@@ -22,7 +22,7 @@ export async function listingFilled(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingFilled(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -35,6 +35,8 @@ export async function listingFilled(
             },
         },
     })
+
+    if (!listing) return undefined
 
     if (listing.state.listingType === ListingType.FixedPrice) {
         listing.state = new FixedPriceState({

@@ -47,7 +47,7 @@ export async function burned(
         }
         await ctx.store.save(token)
 
-        console.log('Dispatching from burned')
+        // console.log('Dispatching from burned')
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     } else {

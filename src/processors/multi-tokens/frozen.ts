@@ -122,7 +122,7 @@ export async function frozen(
         })
     }
 
-    console.log('Dispatching from frozen')
+    // console.log('Dispatching from frozen')
     QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.frozenEventModel(item, event)

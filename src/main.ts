@@ -224,7 +224,6 @@ processor.run(
 
                     // await metadataQueue.pause().catch(() => {})
                     await populateBlock(ctx as unknown as CommonContext)
-                    throw new Error('Populate block')
                 }
 
                 if (block.header.height === config.lastBlockHeight) {

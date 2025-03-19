@@ -65,7 +65,7 @@ export async function transferred(
         )
     }
 
-    console.log('Dispatching from transferred')
+    // console.log('Dispatching from transferred')
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {

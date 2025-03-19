@@ -20,7 +20,7 @@ export async function auctionFinalized(
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.auctionFinalized(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -30,6 +30,8 @@ export async function auctionFinalized(
             },
         },
     })
+
+    if (!listing) return undefined
 
     if (event.winningBid) {
         const sale = new ListingSale({

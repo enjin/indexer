@@ -28,17 +28,19 @@ export async function listingCreated(
     const event = mappings.marketplace.events.listingCreated(item)
     const listingId = event.listingId.substring(2)
     const [makeAssetId, takeAssetId, creatorOrSeller] = await Promise.all([
-        ctx.store.findOneOrFail<Token>(Token, {
+        ctx.store.findOne<Token>(Token, {
             where: { id: `${event.listing.makeAssetId.collectionId}-${event.listing.makeAssetId.tokenId}` },
             relations: {
                 bestListing: true,
             },
         }),
-        ctx.store.findOneOrFail<Token>(Token, {
+        ctx.store.findOne<Token>(Token, {
             where: { id: `${event.listing.takeAssetId.collectionId}-${event.listing.takeAssetId.tokenId}` },
         }),
         getOrCreateAccount(ctx, 'creator' in event.listing ? event.listing.creator : event.listing.seller),
     ])
+
+    if (!makeAssetId || !takeAssetId) return undefined
 
     const feeSide = event.listing.feeSide.__kind as FeeSide
     let listingData

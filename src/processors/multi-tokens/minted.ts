@@ -63,7 +63,7 @@ export async function minted(
 
     await Promise.all(promises)
 
-    console.log('Dispatching from minted')
+    // console.log('Dispatching from minted')
     QueueUtils.dispatchComputeMetadata(token.id, 'token')
     QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     QueueUtils.dispatchComputeStats(data.collectionId.toString())
