@@ -1899,3 +1899,27 @@ export const tokenGroupAttributeRemoved =  {
         })
     ),
 }
+
+export const tokenGroupsUpdated =  {
+    name: 'MultiTokens.TokenGroupsUpdated',
+    /**
+     * A token's group list was set
+     */
+    v1022: new EventType(
+        'MultiTokens.TokenGroupsUpdated',
+        sts.struct({
+            /**
+             * collection id of the group
+             */
+            collectionId: sts.bigint(),
+            /**
+             * token id of the groups
+             */
+            tokenId: sts.bigint(),
+            /**
+             * ids of the token groups
+             */
+            tokenGroups: sts.array(() => sts.bigint()),
+        })
+    ),
+}

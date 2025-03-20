@@ -7,6 +7,7 @@ import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1014 from '../matrixEnjinV1014'
 import * as v1020 from '../v1020'
+import * as v1022 from '../v1022'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -537,6 +538,46 @@ export const listingUpgraded =  {
         'Marketplace.ListingUpgraded',
         sts.struct({
             listingId: v1020.H256,
+        })
+    ),
+}
+
+export const whitelistedAccountsAdded =  {
+    name: 'Marketplace.WhitelistedAccountsAdded',
+    /**
+     * Whitelisted accounts were added to a listing
+     */
+    v1022: new EventType(
+        'Marketplace.WhitelistedAccountsAdded',
+        sts.struct({
+            /**
+             * The listing id
+             */
+            listingId: v1022.H256,
+            /**
+             * The accounts that were added
+             */
+            accounts: sts.array(() => v1022.WhitelistAddAccount),
+        })
+    ),
+}
+
+export const whitelistedAccountsRemoved =  {
+    name: 'Marketplace.WhitelistedAccountsRemoved',
+    /**
+     * Whitelisted accounts were removed from a listing
+     */
+    v1022: new EventType(
+        'Marketplace.WhitelistedAccountsRemoved',
+        sts.struct({
+            /**
+             * The listing id
+             */
+            listingId: v1022.H256,
+            /**
+             * The account ids that were removed
+             */
+            accountIds: sts.array(() => v1022.AccountId32),
         })
     ),
 }

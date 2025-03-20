@@ -53,6 +53,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
             return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV603.decode(call)
         }
 
+        if (calls.fuelTanks.forceCreateFuelTank.v1022.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.v1022.decode(call)
+        }
+
         if (calls.fuelTanks.forceCreateFuelTank.v1020.is(call)) {
             return calls.fuelTanks.forceCreateFuelTank.v1020.decode(call)
         }
@@ -114,6 +118,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV603.is(call)) {
         return calls.fuelTanks.createFuelTank.matrixEnjinV603.decode(call)
+    }
+
+    if (calls.fuelTanks.createFuelTank.v1022.is(call)) {
+        return calls.fuelTanks.createFuelTank.v1022.decode(call)
     }
 
     if (calls.fuelTanks.createFuelTank.v1020.is(call)) {

@@ -2570,3 +2570,27 @@ export const updateCollectionAccountApprovals =  {
         })
     ),
 }
+
+export const setTokenGroups =  {
+    name: 'MultiTokens.set_token_groups',
+    /**
+     * Set the list of [`TokenGroup`] that a token is part of
+     * 
+     * # Errors
+     * 
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if Token does not exist
+     * - [`Error::TokenGroupNotFound`] if any token group does not exist.
+     * - [`Error::IncompatibleTokenGroup`] if any group is from a different collection than the
+     *   token.
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+     */
+    v1022: new CallType(
+        'MultiTokens.set_token_groups',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroups: sts.array(() => sts.bigint()),
+        })
+    ),
+}

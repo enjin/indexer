@@ -8,6 +8,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1020 from '../v1020'
+import * as v1021 from '../v1021'
 
 export const tokenAccounts =  {
     /**
@@ -1063,11 +1064,17 @@ export interface TokenGroupAttributesV1020  {
 
 export const collectionDepositRecalculationStatus =  {
     v1020: new StorageType('MultiTokens.CollectionDepositRecalculationStatus', 'Optional', [], v1020.CollectionDepositUpdateStatus) as CollectionDepositRecalculationStatusV1020,
+    v1021: new StorageType('MultiTokens.CollectionDepositRecalculationStatus', 'Optional', [], v1021.CollectionDepositUpdateStatus) as CollectionDepositRecalculationStatusV1021,
 }
 
 export interface CollectionDepositRecalculationStatusV1020  {
     is(block: RuntimeCtx): boolean
     get(block: Block): Promise<(v1020.CollectionDepositUpdateStatus | undefined)>
+}
+
+export interface CollectionDepositRecalculationStatusV1021  {
+    is(block: RuntimeCtx): boolean
+    get(block: Block): Promise<(v1021.CollectionDepositUpdateStatus | undefined)>
 }
 
 export const upgradeBlockNumber =  {
