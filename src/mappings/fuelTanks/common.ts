@@ -10,6 +10,7 @@ import { DispatchRuleDescriptor as DispatchRuleDescriptorv1010 } from '../../typ
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1011 } from '../../types/generated/v1011'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1012 } from '../../types/generated/v1012'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorv1020 } from '../../types/generated/v1020'
+import { DispatchRuleDescriptor as DispatchRuleDescriptorv1022 } from '../../types/generated/v1022'
 import { DispatchRuleDescriptor as DispatchRuleDescriptorvMatrix1012 } from '../../types/generated/matrixEnjinV1012'
 
 import {
@@ -39,6 +40,7 @@ export function rulesToMap(
         | DispatchRuleDescriptorv1011[]
         | DispatchRuleDescriptorv1012[]
         | DispatchRuleDescriptorv1020[]
+        | DispatchRuleDescriptorv1022[]
         | DispatchRuleDescriptorvMatrix1012[]
 ) {
     let whitelistedCallers: string[] | undefined
