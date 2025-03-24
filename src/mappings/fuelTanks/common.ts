@@ -198,8 +198,8 @@ export function getTankDataFromCall(ctx: CommonContext, call: CallItem) {
         throw new UnsupportedEventError(fuelTanks.dispatch.name)
     }
 
-    if (fuelTanks.dispatch.matrixEnjinV1022.is(call)) {
-        return fuelTanks.dispatch.matrixEnjinV1022.decode(call)
+    if (fuelTanks.dispatchAndTouch.matrixEnjinV1022.is(call)) {
+        return fuelTanks.dispatchAndTouch.matrixEnjinV1022.decode(call)
     }
 
     if (fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call)) {
