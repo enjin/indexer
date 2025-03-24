@@ -13,6 +13,10 @@ function getEventData(event: EventItem) {
 }
 
 function getCallData(call: CallItem) {
+    if (calls.fuelTanks.insertRuleSet.matrixEnjinV1022.is(call)) {
+        return calls.fuelTanks.insertRuleSet.matrixEnjinV1022.decode(call)
+    }
+
     if (calls.fuelTanks.insertRuleSet.matrixEnjinV1012.is(call)) {
         return calls.fuelTanks.insertRuleSet.matrixEnjinV1012.decode(call)
     }

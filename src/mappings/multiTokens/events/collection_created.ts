@@ -65,6 +65,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.force_create_collection') {
+        if (calls.multiTokens.forceCreateCollection.matrixEnjinV1022.is(call)) {
+            const data = calls.multiTokens.forceCreateCollection.matrixEnjinV1022.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.forceCreateCollection.matrixEnjinV1012.is(call)) {
             const data = calls.multiTokens.forceCreateCollection.matrixEnjinV1012.decode(call)
             const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
@@ -117,6 +133,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.create_collection') {
+        if (calls.multiTokens.createCollection.matrixEnjinV1022.is(call)) {
+            const data = calls.multiTokens.createCollection.matrixEnjinV1022.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.createCollection.matrixEnjinV1012.is(call)) {
             const data = calls.multiTokens.createCollection.matrixEnjinV1012.decode(call)
             const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
@@ -185,6 +217,22 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
     }
 
     if (call.name === 'MultiTokens.force_create_ethereum_collection') {
+        if (calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1022.is(call)) {
+            const data = calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1022.decode(call)
+            const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint
+            const royalty = data.descriptor.policy.market?.royalty
+            const market = royalty ? await getMarket(ctx, royalty) : null
+            const { explicitRoyaltyCurrencies } = data.descriptor
+
+            return {
+                maxTokenCount,
+                maxTokenSupply,
+                forceSingleMint,
+                market,
+                explicitRoyaltyCurrencies,
+            }
+        }
+
         if (calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.is(call)) {
             const data = calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.decode(call)
             const { maxTokenCount, maxTokenSupply, forceCollapsingSupply: forceSingleMint } = data.descriptor.policy.mint

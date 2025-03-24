@@ -6,6 +6,10 @@ import { UnsupportedEventError } from '../../../common/errors'
 import { u8aToHex } from '@polkadot/util'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.infused.matrixEnjinV1022.is(event)) {
+        return events.multiTokens.infused.matrixEnjinV1022.decode(event)
+    }
+
     if (events.multiTokens.infused.matrixEnjinV1012.is(event)) {
         return events.multiTokens.infused.matrixEnjinV1012.decode(event)
     }

@@ -4,6 +4,7 @@ import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as v1022 from '../v1022'
 
 export const proxy =  {
@@ -25,6 +26,25 @@ export const proxy =  {
             real: matrixEnjinV1012.MultiAddress,
             forceProxyType: sts.option(() => matrixEnjinV1012.ProxyType),
             call: matrixEnjinV1012.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorised for through
+     * `add_proxy`.
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    matrixEnjinV1022: new CallType(
+        'Proxy.proxy',
+        sts.struct({
+            real: matrixEnjinV1022.MultiAddress,
+            forceProxyType: sts.option(() => matrixEnjinV1022.ProxyType),
+            call: matrixEnjinV1022.Call,
         })
     ),
     /**
@@ -344,6 +364,28 @@ export const proxyAnnounced =  {
             real: matrixEnjinV1012.MultiAddress,
             forceProxyType: sts.option(() => matrixEnjinV1012.ProxyType),
             call: matrixEnjinV1012.Call,
+        })
+    ),
+    /**
+     * Dispatch the given `call` from an account that the sender is authorized for through
+     * `add_proxy`.
+     * 
+     * Removes any corresponding announcement(s).
+     * 
+     * The dispatch origin for this call must be _Signed_.
+     * 
+     * Parameters:
+     * - `real`: The account that the proxy will make a call on behalf of.
+     * - `force_proxy_type`: Specify the exact proxy type to be used and checked for this call.
+     * - `call`: The call to be made by the `real` account.
+     */
+    matrixEnjinV1022: new CallType(
+        'Proxy.proxy_announced',
+        sts.struct({
+            delegate: matrixEnjinV1022.MultiAddress,
+            real: matrixEnjinV1022.MultiAddress,
+            forceProxyType: sts.option(() => matrixEnjinV1022.ProxyType),
+            call: matrixEnjinV1022.Call,
         })
     ),
     /**

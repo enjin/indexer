@@ -35,6 +35,19 @@ function getEventData(event: EventItem) {
         }
     }
 
+    if (events.multiTokens.tokenMutated.matrixEnjinV1022.is(event)) {
+        const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV1022.decode(event)
+
+        return {
+            collectionId,
+            tokenId,
+            behavior: mutation.behavior,
+            name: mutation.name,
+            anyoneCanInfuse: mutation.anyoneCanInfuse,
+            listingForbidden: mutation.listingForbidden,
+        }
+    }
+
     if (events.multiTokens.tokenMutated.matrixEnjinV1012.is(event)) {
         const { collectionId, tokenId, mutation } = events.multiTokens.tokenMutated.matrixEnjinV1012.decode(event)
 

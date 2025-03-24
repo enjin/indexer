@@ -9,6 +9,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 
 export const collectionCreated =  {
     name: 'MultiTokens.CollectionCreated',
@@ -67,6 +68,39 @@ export const collectionMutated =  {
              * The mutation that was applied to the collection
              */
             mutation: matrixEnjinV603.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * A collection was mutated
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.CollectionMutated',
+        sts.struct({
+            /**
+             * collection id of the Collection
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The mutation that was applied to the collection
+             */
+            mutation: matrixEnjinV1022.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * A [`Collection`](ep_multi_tokens::Collection) was mutated
+     */
+    v500: new EventType(
+        'MultiTokens.CollectionMutated',
+        sts.struct({
+            /**
+             * [`CollectionId`](Config::CollectionId) of the
+             * [`Collection`](ep_multi_tokens::Collection)
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The mutation that was applied to the collection
+             */
+            mutation: v500.DefaultCollectionMutation,
         })
     ),
     /**
@@ -189,6 +223,26 @@ export const tokenMutated =  {
              * mutation that was applied to the [`Token`](ep_multi_tokens::Token)
              */
             mutation: matrixEnjinV1012.DefaultTokenMutation,
+        })
+    ),
+    /**
+     * A token was mutated
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.TokenMutated',
+        sts.struct({
+            /**
+             * The collection id where the Token belongs
+             */
+            collectionId: sts.bigint(),
+            /**
+             * Id of the Token mutated
+             */
+            tokenId: sts.bigint(),
+            /**
+             * mutation that was applied to the Token
+             */
+            mutation: matrixEnjinV1022.DefaultTokenMutation,
         })
     ),
     /**
@@ -607,6 +661,62 @@ export const reserved =  {
     /**
      * Token units were reserved
      */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: matrixEnjinV1022.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: matrixEnjinV1022.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were reserved
+     */
+    v500: new EventType(
+        'MultiTokens.Reserved',
+        sts.struct({
+            /**
+             * The collection in which token was reserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was reserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserved the tokens
+             */
+            accountId: v500.AccountId32,
+            /**
+             * The amount that was reserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the reserves
+             */
+            reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Token units were reserved
+     */
     v1020: new EventType(
         'MultiTokens.Reserved',
         sts.struct({
@@ -654,6 +764,62 @@ export const unreserved =  {
              * The account that unreserved the tokens
              */
             accountId: matrixEnjinV603.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The collection id in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: matrixEnjinV1022.AccountId32,
+            /**
+             * The amount that was unreserved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the unreserved tokens
+             */
+            reserveId: matrixEnjinV1022.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Token units were unreserved
+     */
+    v500: new EventType(
+        'MultiTokens.Unreserved',
+        sts.struct({
+            /**
+             * The [`CollectionId`](Config::CollectionId) in which token was unreserved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The [`TokenId`](Config::TokenId) that was unreserved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that unreserved the tokens
+             */
+            accountId: v500.AccountId32,
             /**
              * The amount that was unreserved
              */
@@ -731,6 +897,70 @@ export const movedReserves =  {
     /**
      * Reserved token units were moved
      */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixEnjinV1022.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixEnjinV1022.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixEnjinV1022.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were moved
+     */
+    v500: new EventType(
+        'MultiTokens.MovedReserves',
+        sts.struct({
+            /**
+             * The [`CollectionId`](Config::CollectionId) in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The [`TokenId`](Config::TokenId) that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v500.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v500.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Reserved token units were moved
+     */
     v1020: new EventType(
         'MultiTokens.MovedReserves',
         sts.struct({
@@ -786,6 +1016,70 @@ export const reserveRepatriated =  {
              * The account that received the moved reserves
              */
             destination: matrixEnjinV603.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: sts.option(() => sts.bytes()),
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The collection id in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: matrixEnjinV1022.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: matrixEnjinV1022.AccountId32,
+            /**
+             * The amount that was moved
+             */
+            amount: sts.bigint(),
+            /**
+             * The identifier of the moved reserves
+             */
+            reserveId: matrixEnjinV1022.RuntimeHoldReason,
+        })
+    ),
+    /**
+     * Reserved token units were transferred
+     */
+    v500: new EventType(
+        'MultiTokens.ReserveRepatriated',
+        sts.struct({
+            /**
+             * The [`CollectionId`](Config::CollectionId) in which token was moved
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The [`TokenId`](Config::TokenId) that was moved
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that reserves were moved from
+             */
+            source: v500.AccountId32,
+            /**
+             * The account that received the moved reserves
+             */
+            destination: v500.AccountId32,
             /**
              * The amount that was moved
              */
@@ -983,6 +1277,22 @@ export const collectionUpdated =  {
     /**
      * Collection storage was set to `value`
      */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.CollectionUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * new value of Collection storage
+             */
+            value: sts.option(() => matrixEnjinV1022.Collection),
+        })
+    ),
+    /**
+     * Collection storage was set to `value`
+     */
     v500: new EventType(
         'MultiTokens.CollectionUpdated',
         sts.struct({
@@ -1070,6 +1380,26 @@ export const tokenUpdated =  {
              * new value of Token storage
              */
             value: sts.option(() => matrixEnjinV1012.Token),
+        })
+    ),
+    /**
+     * Token storage was set to `value`
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.TokenUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id for which the value is set
+             */
+            tokenId: sts.bigint(),
+            /**
+             * new value of Token storage
+             */
+            value: sts.option(() => matrixEnjinV1022.Token),
         })
     ),
     /**
@@ -1239,6 +1569,30 @@ export const tokenAccountUpdated =  {
              * new value of TokenAccount storage
              */
             value: sts.option(() => matrixEnjinV1012.TokenAccount),
+        })
+    ),
+    /**
+     * TokenAccount storage was set to `value`
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.TokenAccountUpdated',
+        sts.struct({
+            /**
+             * The collection id for which the value is set
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token id of the updated account
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account id that owned the token account
+             */
+            accountId: matrixEnjinV1022.AccountId32,
+            /**
+             * new value of TokenAccount storage
+             */
+            value: sts.option(() => matrixEnjinV1022.TokenAccount),
         })
     ),
     /**
@@ -1573,6 +1927,54 @@ export const infused =  {
     /**
      * The token was infused with ENJ
      */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.Infused',
+        sts.struct({
+            /**
+             * The collection that was infused
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was infused
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that infused the token
+             */
+            accountId: matrixEnjinV1022.RootOrSigned,
+            /**
+             * The amount that was infused
+             */
+            amount: sts.bigint(),
+        })
+    ),
+    /**
+     * The token was infused with ENJ
+     */
+    v1010: new EventType(
+        'MultiTokens.Infused',
+        sts.struct({
+            /**
+             * The collection that was infused
+             */
+            collectionId: sts.bigint(),
+            /**
+             * The token that was infused
+             */
+            tokenId: sts.bigint(),
+            /**
+             * The account that infused the token
+             */
+            accountId: v1010.AccountId32,
+            /**
+             * The amount that was infused
+             */
+            amount: sts.bigint(),
+        })
+    ),
+    /**
+     * The token was infused with ENJ
+     */
     v1020: new EventType(
         'MultiTokens.Infused',
         sts.struct({
@@ -1621,7 +2023,7 @@ export const collectionDepositRecalculationInProgress =  {
     /**
      * Collection deposit update in progress
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.CollectionDepositRecalculationInProgress',
         sts.struct({
             /**
@@ -1645,7 +2047,7 @@ export const collectionDepositUpdateCompleted =  {
     /**
      * Collection deposit update completed
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.CollectionDepositUpdateCompleted',
         sts.struct({
             /**
@@ -1661,7 +2063,7 @@ export const tokenAccountUpgraded =  {
     /**
      * A token account was upgraded
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenAccountUpgraded',
         sts.struct({
             /**
@@ -1675,7 +2077,7 @@ export const tokenAccountUpgraded =  {
             /**
              * The holder of the account
              */
-            accountId: v1020.AccountId32,
+            accountId: matrixEnjinV1022.AccountId32,
             /**
              * The version of the storage this element was migrated to
              */
@@ -1689,7 +2091,7 @@ export const tokenUpgraded =  {
     /**
      * A token was upgraded
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenUpgraded',
         sts.struct({
             /**
@@ -1713,7 +2115,7 @@ export const collectionUpgraded =  {
     /**
      * A collection was upgraded
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.CollectionUpgraded',
         sts.struct({
             /**
@@ -1733,7 +2135,7 @@ export const collectionAccountApprovalsUpdated =  {
     /**
      * A collection was upgraded
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.CollectionAccountApprovalsUpdated',
         sts.struct({
             /**
@@ -1743,11 +2145,11 @@ export const collectionAccountApprovalsUpdated =  {
             /**
              * The account that owns the collection
              */
-            accountId: v1020.AccountId32,
+            accountId: matrixEnjinV1022.AccountId32,
             /**
              * Approval expirations before the update call
              */
-            oldApprovals: sts.array(() => sts.tuple(() => [v1020.AccountId32, sts.option(() => sts.number())])),
+            oldApprovals: sts.array(() => sts.tuple(() => [matrixEnjinV1022.AccountId32, sts.option(() => sts.number())])),
         })
     ),
 }
@@ -1757,7 +2159,7 @@ export const collectionAccountApprovalsMismatch =  {
     /**
      * A given collection expiration list doesn't its current approvals
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.CollectionAccountApprovalsMismatch',
         sts.struct({
             /**
@@ -1767,7 +2169,7 @@ export const collectionAccountApprovalsMismatch =  {
             /**
              * The account that owns the collection
              */
-            accountId: v1020.AccountId32,
+            accountId: matrixEnjinV1022.AccountId32,
         })
     ),
 }
@@ -1777,7 +2179,7 @@ export const tokenGroupCreated =  {
     /**
      * A new token group was created
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupCreated',
         sts.struct({
             /**
@@ -1797,7 +2199,7 @@ export const tokenGroupDestroyed =  {
     /**
      * A token group was destroyed
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupDestroyed',
         sts.struct({
             /**
@@ -1813,7 +2215,7 @@ export const tokenGroupAdded =  {
     /**
      * A token was added to a group
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupAdded',
         sts.struct({
             /**
@@ -1837,7 +2239,7 @@ export const tokenGroupRemoved =  {
     /**
      * A token was removed from a group
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupRemoved',
         sts.struct({
             /**
@@ -1856,12 +2258,36 @@ export const tokenGroupRemoved =  {
     ),
 }
 
+export const tokenGroupsUpdated =  {
+    name: 'MultiTokens.TokenGroupsUpdated',
+    /**
+     * A token's group list was set
+     */
+    matrixEnjinV1022: new EventType(
+        'MultiTokens.TokenGroupsUpdated',
+        sts.struct({
+            /**
+             * collection id of the group
+             */
+            collectionId: sts.bigint(),
+            /**
+             * token id of the groups
+             */
+            tokenId: sts.bigint(),
+            /**
+             * ids of the token groups
+             */
+            tokenGroups: sts.array(() => sts.bigint()),
+        })
+    ),
+}
+
 export const tokenGroupAttributeSet =  {
     name: 'MultiTokens.TokenGroupAttributeSet',
     /**
      * New attribute has been set on a token group
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupAttributeSet',
         sts.struct({
             /**
@@ -1885,7 +2311,7 @@ export const tokenGroupAttributeRemoved =  {
     /**
      * An attribute has been removed from a token group
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'MultiTokens.TokenGroupAttributeRemoved',
         sts.struct({
             /**
@@ -1896,30 +2322,6 @@ export const tokenGroupAttributeRemoved =  {
              * key of attribute cleared
              */
             key: sts.bytes(),
-        })
-    ),
-}
-
-export const tokenGroupsUpdated =  {
-    name: 'MultiTokens.TokenGroupsUpdated',
-    /**
-     * A token's group list was set
-     */
-    v1022: new EventType(
-        'MultiTokens.TokenGroupsUpdated',
-        sts.struct({
-            /**
-             * collection id of the group
-             */
-            collectionId: sts.bigint(),
-            /**
-             * token id of the groups
-             */
-            tokenId: sts.bigint(),
-            /**
-             * ids of the token groups
-             */
-            tokenGroups: sts.array(() => sts.bigint()),
         })
     ),
 }

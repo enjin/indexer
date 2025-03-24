@@ -5,7 +5,7 @@ import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as v1004 from '../v1004'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 
 export const send =  {
     name: 'PolkadotXcm.send',
@@ -990,16 +990,16 @@ export const transferAssetsUsingTypeAndThen =  {
      *   transfer, which also determines what happens to the assets on the destination chain.
      * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'PolkadotXcm.transfer_assets_using_type_and_then',
         sts.struct({
-            dest: v1020.VersionedLocation,
-            assets: v1020.VersionedAssets,
-            assetsTransferType: v1020.TransferType,
-            remoteFeesId: v1020.VersionedAssetId,
-            feesTransferType: v1020.TransferType,
-            customXcmOnDest: v1020.VersionedXcm,
-            weightLimit: v1020.V3WeightLimit,
+            dest: matrixEnjinV1022.VersionedLocation,
+            assets: matrixEnjinV1022.VersionedAssets,
+            assetsTransferType: matrixEnjinV1022.TransferType,
+            remoteFeesId: matrixEnjinV1022.VersionedAssetId,
+            feesTransferType: matrixEnjinV1022.TransferType,
+            customXcmOnDest: matrixEnjinV1022.VersionedXcm,
+            weightLimit: matrixEnjinV1022.V3WeightLimit,
         })
     ),
 }

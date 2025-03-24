@@ -4,7 +4,7 @@ import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as v604 from '../v604'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
-import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 
 export const queryCounter =  {
     /**
@@ -821,7 +821,7 @@ export const shouldRecordXcm =  {
      *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
      *  implementation in the XCM executor configuration.
      */
-    v1020: new StorageType('PolkadotXcm.ShouldRecordXcm', 'Default', [], sts.boolean()) as ShouldRecordXcmV1020,
+    matrixEnjinV1022: new StorageType('PolkadotXcm.ShouldRecordXcm', 'Default', [], sts.boolean()) as ShouldRecordXcmMatrixEnjinV1022,
 }
 
 /**
@@ -833,7 +833,7 @@ export const shouldRecordXcm =  {
  *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
  *  implementation in the XCM executor configuration.
  */
-export interface ShouldRecordXcmV1020  {
+export interface ShouldRecordXcmMatrixEnjinV1022  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
     get(block: Block): Promise<(boolean | undefined)>
@@ -848,7 +848,7 @@ export const recordedXcm =  {
      *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
      *  implementation in the XCM executor configuration.
      */
-    v1020: new StorageType('PolkadotXcm.RecordedXcm', 'Optional', [], sts.array(() => v1020.V4Instruction)) as RecordedXcmV1020,
+    matrixEnjinV1022: new StorageType('PolkadotXcm.RecordedXcm', 'Optional', [], sts.array(() => matrixEnjinV1022.V4Instruction)) as RecordedXcmMatrixEnjinV1022,
 }
 
 /**
@@ -859,7 +859,7 @@ export const recordedXcm =  {
  *  Only relevant if this pallet is being used as the [`xcm_executor::traits::RecordXcm`]
  *  implementation in the XCM executor configuration.
  */
-export interface RecordedXcmV1020  {
+export interface RecordedXcmMatrixEnjinV1022  {
     is(block: RuntimeCtx): boolean
-    get(block: Block): Promise<(v1020.V4Instruction[] | undefined)>
+    get(block: Block): Promise<(matrixEnjinV1022.V4Instruction[] | undefined)>
 }

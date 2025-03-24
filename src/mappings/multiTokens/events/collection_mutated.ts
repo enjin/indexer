@@ -50,6 +50,10 @@ async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 }
 
 function getEventData(ctx: CommonContext, event: EventItem) {
+    if (events.multiTokens.collectionMutated.matrixEnjinV1022.is(event)) {
+        return events.multiTokens.collectionMutated.matrixEnjinV1022.decode(event)
+    }
+
     if (events.multiTokens.collectionMutated.matrixEnjinV603.is(event)) {
         return events.multiTokens.collectionMutated.matrixEnjinV603.decode(event)
     }

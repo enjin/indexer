@@ -7,7 +7,7 @@ import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1014 from '../matrixEnjinV1014'
 import * as v1020 from '../v1020'
-import * as v1022 from '../v1022'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 
 export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
@@ -41,6 +41,22 @@ export const listingCreated =  {
              * The listing
              */
             listing: matrixEnjinV1012.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    matrixEnjinV1022: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixEnjinV1022.H256,
+            /**
+             * The listing
+             */
+            listing: matrixEnjinV1022.Listing,
         })
     ),
     /**
@@ -534,10 +550,10 @@ export const listingUpgraded =  {
     /**
      * A listing has been upgraded
      */
-    v1020: new EventType(
+    matrixEnjinV1022: new EventType(
         'Marketplace.ListingUpgraded',
         sts.struct({
-            listingId: v1020.H256,
+            listingId: matrixEnjinV1022.H256,
         })
     ),
 }
@@ -547,17 +563,17 @@ export const whitelistedAccountsAdded =  {
     /**
      * Whitelisted accounts were added to a listing
      */
-    v1022: new EventType(
+    matrixEnjinV1022: new EventType(
         'Marketplace.WhitelistedAccountsAdded',
         sts.struct({
             /**
              * The listing id
              */
-            listingId: v1022.H256,
+            listingId: matrixEnjinV1022.H256,
             /**
              * The accounts that were added
              */
-            accounts: sts.array(() => v1022.WhitelistAddAccount),
+            accounts: sts.array(() => matrixEnjinV1022.WhitelistAddAccount),
         })
     ),
 }
@@ -567,17 +583,17 @@ export const whitelistedAccountsRemoved =  {
     /**
      * Whitelisted accounts were removed from a listing
      */
-    v1022: new EventType(
+    matrixEnjinV1022: new EventType(
         'Marketplace.WhitelistedAccountsRemoved',
         sts.struct({
             /**
              * The listing id
              */
-            listingId: v1022.H256,
+            listingId: matrixEnjinV1022.H256,
             /**
              * The account ids that were removed
              */
-            accountIds: sts.array(() => v1022.AccountId32),
+            accountIds: sts.array(() => matrixEnjinV1022.AccountId32),
         })
     ),
 }

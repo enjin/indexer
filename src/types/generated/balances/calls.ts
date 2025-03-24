@@ -192,6 +192,26 @@ export const forceAdjustTotalIssuance =  {
     ),
 }
 
+export const burn =  {
+    name: 'Balances.burn',
+    /**
+     * Burn the specified liquid free balance from the origin account.
+     * 
+     * If the origin's account ends up below the existential deposit as a result
+     * of the burn and `keep_alive` is false, the account will be reaped.
+     * 
+     * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
+     * this `burn` operation will reduce total issuance by the amount _burned_.
+     */
+    matrixEnjinV1022: new CallType(
+        'Balances.burn',
+        sts.struct({
+            value: sts.bigint(),
+            keepAlive: sts.boolean(),
+        })
+    ),
+}
+
 export const setBalance =  {
     name: 'Balances.set_balance',
     /**
@@ -210,26 +230,6 @@ export const setBalance =  {
             who: v500.MultiAddress,
             newFree: sts.bigint(),
             newReserved: sts.bigint(),
-        })
-    ),
-}
-
-export const burn =  {
-    name: 'Balances.burn',
-    /**
-     * Burn the specified liquid free balance from the origin account.
-     * 
-     * If the origin's account ends up below the existential deposit as a result
-     * of the burn and `keep_alive` is false, the account will be reaped.
-     * 
-     * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
-     * this `burn` operation will reduce total issuance by the amount _burned_.
-     */
-    v1020: new CallType(
-        'Balances.burn',
-        sts.struct({
-            value: sts.bigint(),
-            keepAlive: sts.boolean(),
         })
     ),
 }

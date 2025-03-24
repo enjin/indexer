@@ -29,6 +29,10 @@ function getEventData(event: EventItem) {
 
 function getCallData(ctx: CommonContext, call: CallItem) {
     if (call.name === 'FuelTanks.force_create_fuel_tank') {
+        if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1022.is(call)) {
+            return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1022.decode(call)
+        }
+
         if (calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.is(call)) {
             return calls.fuelTanks.forceCreateFuelTank.matrixEnjinV1012.decode(call)
         }
@@ -94,6 +98,10 @@ function getCallData(ctx: CommonContext, call: CallItem) {
         }
 
         throw new UnsupportedEventError(calls.fuelTanks.forceCreateFuelTank.name)
+    }
+
+    if (calls.fuelTanks.createFuelTank.matrixEnjinV1022.is(call)) {
+        return calls.fuelTanks.createFuelTank.matrixEnjinV1022.decode(call)
     }
 
     if (calls.fuelTanks.createFuelTank.matrixEnjinV1012.is(call)) {

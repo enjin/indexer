@@ -15473,24 +15473,6 @@ export const MessageQueueEvent: sts.Type<MessageQueueEvent> = sts.closedEnum(() 
     }
 })
 
-export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
-    return  {
-        BadFormat: sts.unit(),
-        Corrupt: sts.unit(),
-        Overweight: Weight,
-        Unsupported: sts.unit(),
-        Yield: sts.unit(),
-    }
-})
-
-export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
-    return  {
-        Here: sts.unit(),
-        Parent: sts.unit(),
-        Sibling: Id,
-    }
-})
-
 /**
  * The `Event` enum of this pallet
  */
@@ -18952,6 +18934,24 @@ export const AdjustmentDirection: sts.Type<AdjustmentDirection> = sts.closedEnum
     return  {
         Decrease: sts.unit(),
         Increase: sts.unit(),
+    }
+})
+
+export const ProcessMessageError: sts.Type<ProcessMessageError> = sts.closedEnum(() => {
+    return  {
+        BadFormat: sts.unit(),
+        Corrupt: sts.unit(),
+        Overweight: Weight,
+        Unsupported: sts.unit(),
+        Yield: sts.unit(),
+    }
+})
+
+export const AggregateMessageOrigin: sts.Type<AggregateMessageOrigin> = sts.closedEnum(() => {
+    return  {
+        Here: sts.unit(),
+        Parent: sts.unit(),
+        Sibling: Id,
     }
 })
 

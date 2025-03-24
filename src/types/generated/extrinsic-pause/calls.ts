@@ -18,6 +18,7 @@ import * as v1011 from '../v1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1012 from '../v1012'
 import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as v1022 from '../v1022'
 
 export const pauseExtrinsic =  {
@@ -119,6 +120,26 @@ export const pauseExtrinsic =  {
         'ExtrinsicPause.pause_extrinsic',
         sts.struct({
             call: matrixEnjinV1012.Call,
+            pauseOnlyExtrinsic: sts.boolean(),
+        })
+    ),
+    /**
+     * Pause execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To pause the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is paused, else the entire pallet is paused.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     * - [`Error::CannotPauseSelf`] if the pallet name is the same as the name of this pallet.
+     */
+    matrixEnjinV1022: new CallType(
+        'ExtrinsicPause.pause_extrinsic',
+        sts.struct({
+            call: matrixEnjinV1022.Call,
             pauseOnlyExtrinsic: sts.boolean(),
         })
     ),
@@ -479,6 +500,25 @@ export const resumeExtrinsic =  {
         'ExtrinsicPause.resume_extrinsic',
         sts.struct({
             call: matrixEnjinV1012.Call,
+            resumeOnlyExtrinsic: sts.boolean(),
+        })
+    ),
+    /**
+     * Resume execution of extrinsic(s)
+     * 
+     * The values of pallet_name and extrinsic_name are extracted from the `call` parameter.
+     * Ex : To resume the multi_tokens pallet, the `call` parameter should be of the type
+     * `pallet_multi_tokens::Call` If `pause_only_extrinsic` is true, then only the extrinsic
+     * is resumed, else the entire pallet is resumed.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CannotProcessInput`] if the pallet name or extrinsic name is faulty.
+     */
+    matrixEnjinV1022: new CallType(
+        'ExtrinsicPause.resume_extrinsic',
+        sts.struct({
+            call: matrixEnjinV1022.Call,
             resumeOnlyExtrinsic: sts.boolean(),
         })
     ),

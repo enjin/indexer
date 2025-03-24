@@ -10,6 +10,7 @@ import * as v1003 from '../v1003'
 import * as v1010 from '../v1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as v1020 from '../v1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 
 export const createCollection =  {
     name: 'MultiTokens.create_collection',
@@ -61,6 +62,43 @@ export const createCollection =  {
         'MultiTokens.create_collection',
         sts.struct({
             descriptor: matrixEnjinV1012.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
+     * 
+     * See [`CollectionDescriptor`](ep_multi_tokens::DefaultCollectionDescriptor) and
+     * [`CollectionPolicyDescriptor`](ep_multi_tokens::DefaultCollectionPolicyDescriptor)
+     * for more info about specific parameters. The [Mint
+     * Policy](ep_multi_tokens::DefaultMintPolicyDescriptor) has the most parameters.
+     * 
+     * **Minting Policy**
+     * 
+     * - Max token count (optional)
+     * - Max token supply (optional)
+     * - Force Single Mint
+     *   - If Yes, each token minted in the collection MUST be an NFT with a cap of 1.
+     * 
+     * **Royalty (optional)**
+     * 
+     *   - Beneficiary address
+     *   - The percentage of marketplace sale royalty that will be sent to the beneficiary.
+     * 
+     * **Explicit Royalty Currencies (optional)**
+     * 
+     *   Optionally provide a list of tokens (must be currencies).
+     *   - If no currencies are provided here, then ALL currencies are allowed for royalties.
+     *   - If one or more currencies are provided here, they will be whitelisted for use as a
+     *     royalty currency and ONLY this list of currencies will be allowed for royalties.
+     * 
+     * # Errors
+     * 
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.create_collection',
+        sts.struct({
+            descriptor: matrixEnjinV1022.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -184,6 +222,41 @@ export const mutateCollection =  {
      * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
      */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.mutate_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            mutation: matrixEnjinV1022.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`
+     * 
+     * # Errors
+     * 
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+     */
+    v500: new CallType(
+        'MultiTokens.mutate_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            mutation: v500.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * Modify [`Collection`](ep_multi_tokens::Collection) with `id` by applying `mutation`. See
+     * ['CollectionMutation'] for more info.
+     * 
+     * A new owner of the collection can be assigned. (optional)
+     * Explicit Royalty Currencies can be set for the entire collection (see the Explicit
+     * Royalty Currencies section for a detailed description)
+     * 
+     * # Errors
+     * 
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+     */
     v1020: new CallType(
         'MultiTokens.mutate_collection',
         sts.struct({
@@ -243,6 +316,36 @@ export const mutateToken =  {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             mutation: matrixEnjinV1012.DefaultTokenMutation,
+        })
+    ),
+    /**
+     * Modify [`Token`](ep_multi_tokens::Token) with `token_id`  from
+     * [`Collection`](ep_multi_tokens::Collection) with `collection_id` by applying `mutation`
+     * 
+     * The collection creator/owner can mutate the settings of a token.
+     * See [DefaultTokenMutation](ep_multi_tokens::DefaultTokenMutation) for specific fields
+     * and descriptions.
+     * 
+     * Note that `behavior` is a nested option of type
+     * [TokenMarketBehavior](ep_multi_tokens::TokenMarketBehavior). This can either be set to
+     * `None`, a `Currency`, or a royalty.
+     * 
+     * All fields are `Optional`, so only set the specific fields you want to change to `Some`.
+     * 
+     * # Errors
+     * 
+     * - [`Error::CurrencyIncompatibleWithCollectionRoyalty`] if token has already been
+     *   assigned a royalty
+     * - [`Error::NoPermission`] if not the collection owner
+     * - [`Error::TokenNotFound`] if Token does not exist
+     * - [`Error::ConflictingLocation`] if the new location is already occupied
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.mutate_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            mutation: matrixEnjinV1022.DefaultTokenMutation,
         })
     ),
     /**
@@ -385,6 +488,48 @@ export const mint =  {
             recipient: matrixEnjinV1012.MultiAddress,
             collectionId: sts.bigint(),
             params: matrixEnjinV1012.DefaultMintParams,
+        })
+    ),
+    /**
+     * `origin` mints to `recipient` for `collection_id` with `params` using the pallet's
+     * [`MintPolicy`](traits::CollectionPolicy::Mint).
+     * 
+     * Tokens are minted using [`MintParams`], and it may only be done by the collection's
+     * owner. There are two types of mint operations:
+     * 
+     * **Create**
+     * 
+     * This must be called the first time a token is being created. Any token id can be chosen
+     * when creating a token. They do not have to be sequential.
+     * 
+     * You can specify additional parameters that can apply constraints to the token or give it
+     * a royalty. Some of these values can be changed later using the
+     * [`mutateToken`](Self::mutate_token) extrinsic.
+     * 
+     * **Mint**
+     * 
+     * After a token is created, you can mint additional balance using this variant.
+     * 
+     * # Errors
+     * 
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `Collection` does not exist.
+     * - [`Error::TokenNotFound`] if `Token` does not exist.
+     * - [`Error::TokenAlreadyExists`] if attempting to create a token that already exists
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - `MaxTokenCountExceeded` if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     * - [`Error::ConflictingLocation`] if the token is foreign and the location is already
+     *   mapped to another asset in `AssetIdsByLocation`
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.mint',
+        sts.struct({
+            recipient: matrixEnjinV1022.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixEnjinV1022.DefaultMintParams,
         })
     ),
     /**
@@ -629,6 +774,28 @@ export const transfer =  {
             recipient: matrixEnjinV1012.MultiAddress,
             collectionId: sts.bigint(),
             params: matrixEnjinV1012.DefaultTransferParams,
+        })
+    ),
+    /**
+     * `operator` transfers to `recipient` for `collection_id` with `params`
+     * 
+     * Can accept [`DefaultTransferParams`](ep_multi_tokens::DefaultTransferParams):
+     * 
+     * - The `Simple` transfer is a regular transfer
+     * - The `Operator` transfer is the same as `transfer_from` and requires approval. See
+     *   [Operator](crate#operator) in the pallet's documentation for more info.
+     * 
+     * # Errors
+     * 
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.transfer',
+        sts.struct({
+            recipient: matrixEnjinV1022.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixEnjinV1022.DefaultTransferParams,
         })
     ),
     /**
@@ -894,6 +1061,25 @@ export const batchTransfer =  {
      * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
      * account. A single failure will fail all transfers.
      * 
+     * Performs multiple transfers in a single call. Can optionally continue if any calls fail,
+     * depending on the `continueOnFailure` parameter.
+     * 
+     * # Errors
+     * 
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::BalanceLow`] if `source` does not own enough amount of `collection`.
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.batch_transfer',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => matrixEnjinV1022.Recipient),
+        })
+    ),
+    /**
+     * Transfers the specific amount of tokens of `collection` to `recipients` from `origin`
+     * account. A single failure will fail all transfers.
+     * 
      * # Errors
      * 
      * - [`Error::AmountZero`] if `amount == 0`.
@@ -988,6 +1174,30 @@ export const batchMint =  {
         sts.struct({
             collectionId: sts.bigint(),
             recipients: sts.array(() => matrixEnjinV1012.Type_472),
+        })
+    ),
+    /**
+     * Collection owner mints tokens of `collection_id` to `recipients` consisting of an
+     * [`AccountId`](frame_system::Config::AccountId) and [`MintParams`]. A single mint failure
+     * will fail all of them in the batch.
+     * 
+     * Batch minting is slightly less expensive than performing the same number of mint calls
+     * sequentially.
+     * 
+     * # Errors
+     * - [`Error::AmountZero`] if `amount == 0`.
+     * - [`Error::CollectionNotFound`] if `collection` does **not** exist.
+     * - [`Error::NoPermission`] if `caller` is not allowed to mint the `collection`.
+     * - [`Error::TokenMintCapExceeded`] if the mint policy TokenCap does not allow minting
+     * - [`Error::MaxTokenCountExceeded`] if the mint policy max_token_count is exceeded
+     * - [`Error::DepositReserveFailed`] if the issuer does not have sufficient balance for
+     *   token deposit
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.batch_mint',
+        sts.struct({
+            collectionId: sts.bigint(),
+            recipients: sts.array(() => matrixEnjinV1022.Type_489),
         })
     ),
     /**
@@ -1463,6 +1673,36 @@ export const forceMutateCollection =  {
      * 
      * Same as [`mutate_collection`](Self::mutate_collection)
      */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_mutate_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            mutation: matrixEnjinV1022.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * Exactly as [`mutate_collection`](Self::mutate_collection), except the origin must be
+     * root and the `caller` account should be specified.
+     * 
+     * # Errors
+     * 
+     * Same as [`mutate_collection`](Self::mutate_collection)
+     */
+    v500: new CallType(
+        'MultiTokens.force_mutate_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            mutation: v500.DefaultCollectionMutation,
+        })
+    ),
+    /**
+     * Exactly as [`mutate_collection`](Self::mutate_collection), except the origin must be
+     * root and the `caller` account should be specified.
+     * 
+     * # Errors
+     * 
+     * Same as [`mutate_collection`](Self::mutate_collection)
+     */
     v1020: new CallType(
         'MultiTokens.force_mutate_collection',
         sts.struct({
@@ -1506,6 +1746,23 @@ export const forceTransfer =  {
             destination: matrixEnjinV1012.MultiAddress,
             collectionId: sts.bigint(),
             params: matrixEnjinV1012.DefaultTransferParams,
+        })
+    ),
+    /**
+     * Exactly as [`transfer`](Self::transfer), except the origin must be root and the source
+     * account should be specified.
+     * 
+     * # Errors
+     * 
+     * Same as [`transfer`](Self::transfer)
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_transfer',
+        sts.struct({
+            source: matrixEnjinV1022.MultiAddress,
+            destination: matrixEnjinV1022.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixEnjinV1022.DefaultTransferParams,
         })
     ),
     /**
@@ -1586,6 +1843,16 @@ export const forceSetCollection =  {
     /**
      * Set the Collections storage to the given `value`, origin must be root
      */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_set_collection',
+        sts.struct({
+            collectionId: sts.bigint(),
+            value: sts.option(() => matrixEnjinV1022.Collection),
+        })
+    ),
+    /**
+     * Set the Collections storage to the given `value`, origin must be root
+     */
     v500: new CallType(
         'MultiTokens.force_set_collection',
         sts.struct({
@@ -1637,6 +1904,17 @@ export const forceSetToken =  {
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             value: sts.option(() => matrixEnjinV1012.Token),
+        })
+    ),
+    /**
+     * Set the Tokens storage to the given `value`, origin must be root
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_set_token',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            value: sts.option(() => matrixEnjinV1022.Token),
         })
     ),
     /**
@@ -1781,6 +2059,18 @@ export const forceSetTokenAccount =  {
     /**
      * Set the TokenAccounts storage to the given `value`, origin must be root
      */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_set_token_account',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            accountId: matrixEnjinV1022.MultiAddress,
+            value: sts.option(() => matrixEnjinV1022.TokenAccount),
+        })
+    ),
+    /**
+     * Set the TokenAccounts storage to the given `value`, origin must be root
+     */
     v500: new CallType(
         'MultiTokens.force_set_token_account',
         sts.struct({
@@ -1846,6 +2136,21 @@ export const forceCreateCollection =  {
             owner: matrixEnjinV1012.AccountId32,
             collectionId: sts.bigint(),
             descriptor: matrixEnjinV1012.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be root
+     * 
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_create_collection',
+        sts.struct({
+            owner: matrixEnjinV1022.AccountId32,
+            collectionId: sts.bigint(),
+            descriptor: matrixEnjinV1022.DefaultCollectionDescriptor,
         })
     ),
     /**
@@ -1939,6 +2244,21 @@ export const forceMint =  {
             collectionId: sts.bigint(),
             params: matrixEnjinV1012.FlexibleMintParams,
             depositor: sts.option(() => matrixEnjinV1012.MultiAddress),
+        })
+    ),
+    /**
+     * Same as [`mint`](Self::mint), but it is callable by
+     * [`Config::EthereumMigrationOrigin`]. If `caller` is None, it will use the collection
+     * owner. If `depositor` is `Some`, they will pay the deposit for minting.
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_mint',
+        sts.struct({
+            caller: sts.option(() => matrixEnjinV1022.MultiAddress),
+            recipient: matrixEnjinV1022.MultiAddress,
+            collectionId: sts.bigint(),
+            params: matrixEnjinV1022.FlexibleMintParams,
+            depositor: sts.option(() => matrixEnjinV1022.MultiAddress),
         })
     ),
     /**
@@ -2219,6 +2539,29 @@ export const forceCreateEthereumCollection =  {
      * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
      * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
      */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.force_create_ethereum_collection',
+        sts.struct({
+            owner: matrixEnjinV1022.AccountId32,
+            claimer: matrixEnjinV1022.H160,
+            ethereumCollectionId: sts.bigint(),
+            descriptor: matrixEnjinV1022.DefaultCollectionDescriptor,
+        })
+    ),
+    /**
+     * Creates a new collection from `descriptor` at `collection_id`, origin must be
+     * [`Config::EthereumMigrationOrigin`]. It differs from `force_create_collection`
+     * since it writes to `NativeCollectionIds` and `ClaimableCollectionIds`.
+     * 
+     * # Params
+     * - `owner` - the account that will own the new collection
+     * - `claimer` - the ethereum address that will be able to claim the collection
+     * - `ethereum_collection_id` - the collection id on ethereum
+     * 
+     * # Errors
+     * - [`Error::DepositReserveFailed`] if the deposit cannot be reserved
+     * - [`Error::CollectionIdAlreadyInUse`] if the collection id is already in use
+     */
     v1000: new CallType(
         'MultiTokens.force_create_ethereum_collection',
         sts.struct({
@@ -2369,11 +2712,11 @@ export const createTokenGroup =  {
      * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.create_token_group',
         sts.struct({
             collectionId: sts.bigint(),
-            depositor: sts.option(() => v1020.MultiAddress),
+            depositor: sts.option(() => matrixEnjinV1022.MultiAddress),
         })
     ),
 }
@@ -2390,7 +2733,7 @@ export const destroyTokenGroup =  {
      * - [`Error::DestroyForbiddenByRemainingTokens`] if there are still tokens in the group
      * - [`Error::DestroyForbiddenByAttributeCount`] if there are still attributes in the group
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.destroy_token_group',
         sts.struct({
             tokenGroupId: sts.bigint(),
@@ -2413,10 +2756,9 @@ export const addTokenToGroup =  {
      * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
      * - [`Error::MaxTokenGroupsExceeded`] if the token already belongs to its maximum number
      *   of groups.
-     * - [`Error::TokenAlreadyInGroup`] if the token already belongs to its maximum number of
-     *   groups.
+     * - [`Error::TokenAlreadyInGroup`] if the token already belongs to the group.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.add_token_to_group',
         sts.struct({
             collectionId: sts.bigint(),
@@ -2439,12 +2781,36 @@ export const removeTokenFromGroup =  {
      *   part of it.
      * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.remove_token_from_group',
         sts.struct({
             collectionId: sts.bigint(),
             tokenId: sts.bigint(),
             tokenGroupId: sts.bigint(),
+        })
+    ),
+}
+
+export const setTokenGroups =  {
+    name: 'MultiTokens.set_token_groups',
+    /**
+     * Set the list of [`TokenGroup`] that a token is part of
+     * 
+     * # Errors
+     * 
+     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+     * - [`Error::TokenNotFound`] if Token does not exist
+     * - [`Error::TokenGroupNotFound`] if any token group does not exist.
+     * - [`Error::IncompatibleTokenGroup`] if any group is from a different collection than the
+     *   token.
+     * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+     */
+    matrixEnjinV1022: new CallType(
+        'MultiTokens.set_token_groups',
+        sts.struct({
+            collectionId: sts.bigint(),
+            tokenId: sts.bigint(),
+            tokenGroups: sts.array(() => sts.bigint()),
         })
     ),
 }
@@ -2462,13 +2828,13 @@ export const setTokenGroupAttribute =  {
      * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
      *   storage.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.set_token_group_attribute',
         sts.struct({
             tokenGroupId: sts.bigint(),
             key: sts.bytes(),
             value: sts.bytes(),
-            depositor: sts.option(() => v1020.MultiAddress),
+            depositor: sts.option(() => matrixEnjinV1022.MultiAddress),
         })
     ),
 }
@@ -2484,7 +2850,7 @@ export const removeTokenGroupAttribute =  {
      * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
      * - [`Error::NoPermission`] if `caller` is not the owner of the collection.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.remove_token_group_attribute',
         sts.struct({
             tokenGroupId: sts.bigint(),
@@ -2509,7 +2875,7 @@ export const recalculateCollectionDeposit =  {
      * # Returns
      * * `DispatchResult` - Success if the recalculation was performed without errors
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.recalculate_collection_deposit',
         sts.struct({
             collectionId: sts.bigint(),
@@ -2524,10 +2890,10 @@ export const upgradeTokenAccounts =  {
     /**
      * Upgrade a collection of listings in storage.
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.upgrade_token_accounts',
         sts.struct({
-            tokenAccountKeys: sts.array(() => sts.tuple(() => [sts.bigint(), sts.bigint(), v1020.AccountId32])),
+            tokenAccountKeys: sts.array(() => sts.tuple(() => [sts.bigint(), sts.bigint(), matrixEnjinV1022.AccountId32])),
         })
     ),
 }
@@ -2537,7 +2903,7 @@ export const upgradeTokens =  {
     /**
      * Upgrade a list of tokens in storage
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.upgrade_tokens',
         sts.struct({
             tokenKeys: sts.array(() => sts.tuple(() => [sts.bigint(), sts.bigint()])),
@@ -2550,7 +2916,7 @@ export const upgradeCollections =  {
     /**
      * Upgrade a list of collections in storage
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.upgrade_collections',
         sts.struct({
             collectionKeys: sts.array(() => sts.bigint()),
@@ -2563,34 +2929,10 @@ export const updateCollectionAccountApprovals =  {
     /**
      * Upgrades approvals expiration block numbers on a list of collections in storage
      */
-    v1020: new CallType(
+    matrixEnjinV1022: new CallType(
         'MultiTokens.update_collection_account_approvals',
         sts.struct({
-            collectionAccountParameters: sts.array(() => sts.tuple(() => [sts.bigint(), v1020.AccountId32, sts.array(() => sts.tuple(() => [v1020.AccountId32, sts.option(() => sts.number())]))])),
-        })
-    ),
-}
-
-export const setTokenGroups =  {
-    name: 'MultiTokens.set_token_groups',
-    /**
-     * Set the list of [`TokenGroup`] that a token is part of
-     * 
-     * # Errors
-     * 
-     * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
-     * - [`Error::TokenNotFound`] if Token does not exist
-     * - [`Error::TokenGroupNotFound`] if any token group does not exist.
-     * - [`Error::IncompatibleTokenGroup`] if any group is from a different collection than the
-     *   token.
-     * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
-     */
-    v1022: new CallType(
-        'MultiTokens.set_token_groups',
-        sts.struct({
-            collectionId: sts.bigint(),
-            tokenId: sts.bigint(),
-            tokenGroups: sts.array(() => sts.bigint()),
+            collectionAccountParameters: sts.array(() => sts.tuple(() => [sts.bigint(), matrixEnjinV1022.AccountId32, sts.array(() => sts.tuple(() => [matrixEnjinV1022.AccountId32, sts.option(() => sts.number())]))])),
         })
     ),
 }

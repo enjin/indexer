@@ -11336,28 +11336,6 @@ export const FreezeState: sts.Type<FreezeState> = sts.closedEnum(() => {
     }
 })
 
-export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = sts.struct(() => {
-    return  {
-        owner: sts.option(() => AccountId32),
-        royalty: ShouldMutate,
-        explicitRoyaltyCurrencies: sts.option(() => sts.array(() => AssetId)),
-    }
-})
-
-export const ShouldMutate: sts.Type<ShouldMutate> = sts.closedEnum(() => {
-    return  {
-        NoMutation: sts.unit(),
-        SomeMutation: sts.option(() => DefaultRoyalty),
-    }
-})
-
-export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
-    return  {
-        beneficiary: AccountId32,
-        percentage: sts.number(),
-    }
-})
-
 export const CollectionAccount: sts.Type<CollectionAccount> = sts.struct(() => {
     return  {
         isFrozen: sts.boolean(),
@@ -12132,6 +12110,13 @@ export const TokenMarketBehavior: sts.Type<TokenMarketBehavior> = sts.closedEnum
     return  {
         HasRoyalty: DefaultRoyalty,
         IsCurrency: sts.unit(),
+    }
+})
+
+export const DefaultRoyalty: sts.Type<DefaultRoyalty> = sts.struct(() => {
+    return  {
+        beneficiary: AccountId32,
+        percentage: sts.number(),
     }
 })
 
@@ -14160,6 +14145,21 @@ export const Type_142: sts.Type<Type_142> = sts.closedEnum(() => {
     return  {
         NoMutation: sts.unit(),
         SomeMutation: sts.option(() => TokenMarketBehavior),
+    }
+})
+
+export const DefaultCollectionMutation: sts.Type<DefaultCollectionMutation> = sts.struct(() => {
+    return  {
+        owner: sts.option(() => AccountId32),
+        royalty: ShouldMutate,
+        explicitRoyaltyCurrencies: sts.option(() => sts.array(() => AssetId)),
+    }
+})
+
+export const ShouldMutate: sts.Type<ShouldMutate> = sts.closedEnum(() => {
+    return  {
+        NoMutation: sts.unit(),
+        SomeMutation: sts.option(() => DefaultRoyalty),
     }
 })
 

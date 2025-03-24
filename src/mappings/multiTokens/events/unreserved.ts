@@ -5,6 +5,10 @@ import { UnsupportedEventError, throwError } from '../../../common/errors'
 import { getReserveId } from './reserved'
 
 function getEventData(eventItem: EventItem) {
+    if (events.multiTokens.unreserved.matrixEnjinV1022.is(eventItem)) {
+        return events.multiTokens.unreserved.matrixEnjinV1022.decode(eventItem)
+    }
+
     if (events.multiTokens.unreserved.matrixEnjinV603.is(eventItem)) {
         return events.multiTokens.unreserved.matrixEnjinV603.decode(eventItem)
     }
