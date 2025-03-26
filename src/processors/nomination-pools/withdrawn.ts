@@ -21,10 +21,12 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     const eventData = mappings.nominationPools.events.withdrawn(item)
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
     const account = await getOrCreateAccount(ctx, eventData.member)
-    const poolMember = await ctx.store.findOneOrFail<PoolMember>(PoolMember, {
+    const poolMember = await ctx.store.findOne<PoolMember>(PoolMember, {
         where: { id: `${eventData.poolId}-${account.id}` },
         relations: { tokenAccount: true },
     })
+
+    if (!poolMember) return undefined
 
     const activeEra = await getActiveEra(ctx)
 
