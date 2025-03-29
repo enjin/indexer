@@ -59,7 +59,6 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
         if (data.matrixEnjinV1022.is(call)) {
             callData = data.matrixEnjinV1022.decode(call)
         }
-
         if (data.matrixEnjinV1012.is(call)) {
             callData = data.matrixEnjinV1012.decode(call)
         }
@@ -79,10 +78,12 @@ async function getCallData(ctx: CommonContext, call: CallItem) {
             callData = data.matrixEnjinV603.decode(call)
         }
 
+        if (data.v1022.is(call)) {
+            callData = data.v1022.decode(call)
+        }
         if (data.v1020.is(call)) {
             callData = data.v1020.decode(call)
         }
-
         if (data.v1012.is(call)) {
             callData = data.v1012.decode(call)
         }
