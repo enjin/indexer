@@ -974,7 +974,7 @@ export async function tokenCreated(
             accountDepositCount: callData.accountDepositCount ?? 0,
             anyoneCanInfuse: callData.anyoneCanInfuse ?? false,
             nativeMetadata: callData.nativeMetadata,
-            infusion: callData.infusion ?? 0n,
+            infusion: 0n, // Infusion is applied in the event
             createdAt: new Date(block.timestamp ?? 0),
         })
 
