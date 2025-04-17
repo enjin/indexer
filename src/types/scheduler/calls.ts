@@ -1,4 +1,4 @@
-import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -33,6 +33,8 @@ import * as matrixV1012 from '../matrixV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1022 from '../matrixV1022'
 import * as enjinV1022 from '../enjinV1022'
 import * as v1022 from '../v1022'
 import * as enjinV1023 from '../enjinV1023'
@@ -46,7 +48,7 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const schedule =  {
+export const schedule = {
     name: 'Scheduler.schedule',
     /**
      * Anonymously schedule a task.
@@ -118,6 +120,18 @@ export const schedule =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixEnjinV1012.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    matrixEnjinV1022: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1022.Call,
         })
     ),
     /**
@@ -274,6 +288,18 @@ export const schedule =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixV1020.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task.
+     */
+    matrixV1022: new CallType(
+        'Scheduler.schedule',
+        sts.struct({
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixV1022.Call,
         })
     ),
     /**
@@ -602,7 +628,7 @@ export const schedule =  {
     ),
 }
 
-export const cancel =  {
+export const cancel = {
     name: 'Scheduler.cancel',
     /**
      * Cancel an anonymously scheduled task.
@@ -616,7 +642,7 @@ export const cancel =  {
     ),
 }
 
-export const scheduleNamed =  {
+export const scheduleNamed = {
     name: 'Scheduler.schedule_named',
     /**
      * Schedule a named task.
@@ -699,6 +725,19 @@ export const scheduleNamed =  {
     /**
      * Schedule a named task.
      */
+    matrixEnjinV1022: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1022.Call,
+        })
+    ),
+    /**
+     * Schedule a named task.
+     */
     matrixV500: new CallType(
         'Scheduler.schedule_named',
         sts.struct({
@@ -863,6 +902,19 @@ export const scheduleNamed =  {
             maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
             priority: sts.number(),
             call: matrixV1020.Call,
+        })
+    ),
+    /**
+     * Schedule a named task.
+     */
+    matrixV1022: new CallType(
+        'Scheduler.schedule_named',
+        sts.struct({
+            id: sts.bytes(),
+            when: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixV1022.Call,
         })
     ),
     /**
@@ -1218,7 +1270,7 @@ export const scheduleNamed =  {
     ),
 }
 
-export const cancelNamed =  {
+export const cancelNamed = {
     name: 'Scheduler.cancel_named',
     /**
      * Cancel a named scheduled task.
@@ -1231,7 +1283,7 @@ export const cancelNamed =  {
     ),
 }
 
-export const scheduleAfter =  {
+export const scheduleAfter = {
     name: 'Scheduler.schedule_after',
     /**
      * Anonymously schedule a task after a delay.
@@ -1307,7 +1359,19 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     */
+    matrixEnjinV1022: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1022.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1323,7 +1387,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1339,7 +1403,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1476,6 +1540,18 @@ export const scheduleAfter =  {
     /**
      * Anonymously schedule a task after a delay.
      */
+    matrixV1022: new CallType(
+        'Scheduler.schedule_after',
+        sts.struct({
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Anonymously schedule a task after a delay.
+     */
     enjinV100: new CallType(
         'Scheduler.schedule_after',
         sts.struct({
@@ -1595,7 +1671,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1611,7 +1687,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1627,7 +1703,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1643,7 +1719,7 @@ export const scheduleAfter =  {
     ),
     /**
      * Anonymously schedule a task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule`].
      * # </weight>
@@ -1815,7 +1891,7 @@ export const scheduleAfter =  {
     ),
 }
 
-export const scheduleNamedAfter =  {
+export const scheduleNamedAfter = {
     name: 'Scheduler.schedule_named_after',
     /**
      * Schedule a named task after a delay.
@@ -1897,7 +1973,20 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     */
+    matrixEnjinV1022: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixEnjinV1022.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -1914,7 +2003,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -1931,7 +2020,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2079,6 +2168,19 @@ export const scheduleNamedAfter =  {
     /**
      * Schedule a named task after a delay.
      */
+    matrixV1022: new CallType(
+        'Scheduler.schedule_named_after',
+        sts.struct({
+            id: sts.bytes(),
+            after: sts.number(),
+            maybePeriodic: sts.option(() => sts.tuple(() => [sts.number(), sts.number()])),
+            priority: sts.number(),
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Schedule a named task after a delay.
+     */
     enjinV100: new CallType(
         'Scheduler.schedule_named_after',
         sts.struct({
@@ -2208,7 +2310,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2225,7 +2327,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2242,7 +2344,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2259,7 +2361,7 @@ export const scheduleNamedAfter =  {
     ),
     /**
      * Schedule a named task after a delay.
-     * 
+     *
      * # <weight>
      * Same as [`schedule_named`](Self::schedule_named).
      * # </weight>
@@ -2445,17 +2547,17 @@ export const scheduleNamedAfter =  {
     ),
 }
 
-export const setRetry =  {
+export const setRetry = {
     name: 'Scheduler.set_retry',
     /**
      * Set a retry configuration for a task so that, in case its scheduled run fails, it will
      * be retried after `period` blocks, for a total amount of `retries` retries or until it
      * succeeds.
-     * 
+     *
      * Tasks which need to be scheduled for a retry are still subject to weight metering and
      * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
      * normally while the task is retrying.
-     * 
+     *
      * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
      * clones of the original task. Their retry configuration will be derived from the
      * original task's configuration, but will have a lower value for `remaining` than the
@@ -2471,17 +2573,17 @@ export const setRetry =  {
     ),
 }
 
-export const setRetryNamed =  {
+export const setRetryNamed = {
     name: 'Scheduler.set_retry_named',
     /**
      * Set a retry configuration for a named task so that, in case its scheduled run fails, it
      * will be retried after `period` blocks, for a total amount of `retries` retries or until
      * it succeeds.
-     * 
+     *
      * Tasks which need to be scheduled for a retry are still subject to weight metering and
      * agenda space, same as a regular task. If a periodic task fails, it will be scheduled
      * normally while the task is retrying.
-     * 
+     *
      * Tasks scheduled as a result of a retry for a periodic task are unnamed, non-periodic
      * clones of the original task. Their retry configuration will be derived from the
      * original task's configuration, but will have a lower value for `remaining` than the
@@ -2497,7 +2599,7 @@ export const setRetryNamed =  {
     ),
 }
 
-export const cancelRetry =  {
+export const cancelRetry = {
     name: 'Scheduler.cancel_retry',
     /**
      * Removes the retry configuration of a task.
@@ -2510,7 +2612,7 @@ export const cancelRetry =  {
     ),
 }
 
-export const cancelRetryNamed =  {
+export const cancelRetryNamed = {
     name: 'Scheduler.cancel_retry_named',
     /**
      * Cancel the retry configuration of a named task.

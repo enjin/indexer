@@ -1,12 +1,14 @@
-import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
 import * as enjinV101 from '../enjinV101'
 import * as v105 from '../v105'
+import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1020 from '../matrixV1020'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const processingFailed =  {
+export const processingFailed = {
     name: 'MessageQueue.ProcessingFailed',
     /**
      * Message discarded due to an error in the `MessageProcessor` (usually a format error).
@@ -24,11 +26,57 @@ export const processingFailed =  {
             origin: matrixEnjinV1012.AggregateMessageOrigin,
             /**
              * The error that occurred.
-             * 
+             *
              * This error is pretty opaque. More fine-grained errors need to be emitted as events
              * by the `MessageProcessor`.
              */
             error: matrixEnjinV1012.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    matrixEnjinV1022: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: matrixEnjinV1022.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: matrixEnjinV1022.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             *
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: matrixEnjinV1022.ProcessMessageError,
+        })
+    ),
+    /**
+     * Message discarded due to an error in the `MessageProcessor` (usually a format error).
+     */
+    matrixV1010: new EventType(
+        'MessageQueue.ProcessingFailed',
+        sts.struct({
+            /**
+             * The `blake2_256` hash of the message.
+             */
+            id: matrixV1010.H256,
+            /**
+             * The queue of the message.
+             */
+            origin: matrixV1010.AggregateMessageOrigin,
+            /**
+             * The error that occurred.
+             *
+             * This error is pretty opaque. More fine-grained errors need to be emitted as events
+             * by the `MessageProcessor`.
+             */
+            error: matrixV1010.ProcessMessageError,
         })
     ),
     /**
@@ -47,7 +95,7 @@ export const processingFailed =  {
             origin: matrixV1020.AggregateMessageOrigin,
             /**
              * The error that occurred.
-             * 
+             *
              * This error is pretty opaque. More fine-grained errors need to be emitted as events
              * by the `MessageProcessor`.
              */
@@ -81,7 +129,7 @@ export const processingFailed =  {
             origin: enjinV1050.AggregateMessageOrigin,
             /**
              * The error that occurred.
-             * 
+             *
              * This error is pretty opaque. More fine-grained errors need to be emitted as events
              * by the `MessageProcessor`.
              */
@@ -115,7 +163,7 @@ export const processingFailed =  {
             origin: v1050.AggregateMessageOrigin,
             /**
              * The error that occurred.
-             * 
+             *
              * This error is pretty opaque. More fine-grained errors need to be emitted as events
              * by the `MessageProcessor`.
              */
@@ -124,7 +172,7 @@ export const processingFailed =  {
     ),
 }
 
-export const processed =  {
+export const processed = {
     name: 'MessageQueue.Processed',
     /**
      * Message is processed.
@@ -146,7 +194,7 @@ export const processed =  {
             weightUsed: matrixEnjinV1012.Weight,
             /**
              * Whether the message was processed.
-             * 
+             *
              * Note that this does not mean that the underlying `MessageProcessor` was internally
              * successful. It *solely* means that the MQ pallet will treat this as a success
              * condition and discard the message. Any internal error needs to be emitted as events
@@ -169,7 +217,7 @@ export const processed =  {
     ),
 }
 
-export const overweightEnqueued =  {
+export const overweightEnqueued = {
     name: 'MessageQueue.OverweightEnqueued',
     /**
      * Message placed in overweight queue.
@@ -209,7 +257,7 @@ export const overweightEnqueued =  {
     ),
 }
 
-export const pageReaped =  {
+export const pageReaped = {
     name: 'MessageQueue.PageReaped',
     /**
      * This page was reaped.
