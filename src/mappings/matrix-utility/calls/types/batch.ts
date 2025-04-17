@@ -14,6 +14,7 @@ import { Call as CallMatrixEnjinV1003 } from 'src/types/matrixEnjinV1003'
 import { Call as CallMatrixEnjinV1004 } from 'src/types/matrixEnjinV1004'
 import { Call as CallMatrixEnjinV1005 } from 'src/types/matrixEnjinV1005'
 import { Call as CallMatrixEnjinV1012 } from 'src/types/matrixEnjinV1012'
+import { Call as CallMatrixEnjinV1022 } from 'src/types/matrixEnjinV1022'
 import { Call as CallMatrixV500 } from 'src/types/matrixV500'
 import { Call as CallMatrixV600 } from 'src/types/matrixV600'
 import { Call as CallMatrixV601 } from 'src/types/matrixV601'
@@ -26,6 +27,7 @@ import { Call as CallMatrixV1010 } from 'src/types/matrixV1010'
 import { Call as CallMatrixV1011 } from 'src/types/matrixV1011'
 import { Call as CallMatrixV1012 } from 'src/types/matrixV1012'
 import { Call as CallMatrixV1020 } from 'src/types/matrixV1020'
+import { Call as CallMatrixV1022 } from 'src/types/matrixV1022'
 import { Call as CallV100 } from 'src/types/v100'
 import { Call as CallV101 } from 'src/types/v101'
 import { Call as CallV102 } from 'src/types/v102'
@@ -61,6 +63,7 @@ type Call =
     | CallMatrixEnjinV1004
     | CallMatrixEnjinV1005
     | CallMatrixEnjinV1012
+    | CallMatrixEnjinV1022
     | CallMatrixV500
     | CallMatrixV600
     | CallMatrixV601
@@ -73,6 +76,7 @@ type Call =
     | CallMatrixV1011
     | CallMatrixV1012
     | CallMatrixV1020
+    | CallMatrixV1022
     | CallV100
     | CallV101
     | CallV102
