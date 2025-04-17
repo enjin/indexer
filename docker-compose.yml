@@ -51,8 +51,8 @@ services:
       context: .
       args:
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
 
@@ -84,8 +84,8 @@ services:
     ports:
       - "4000:4000"
       - "8080:8080"
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
 
@@ -99,8 +99,8 @@ services:
       context: .
     ports:
       - "9090:9090"
-    env_file:
-      - .env
+    volumes:
+      - .env:/app/.env
     depends_on:
       - indexer_db
       - indexer_redis
