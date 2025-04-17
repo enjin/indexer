@@ -1,6 +1,6 @@
-import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 
-export const now = {
+export const now =  {
     /**
      *  Current time for the current block.
      */
@@ -10,13 +10,13 @@ export const now = {
 /**
  *  Current time for the current block.
  */
-export interface NowMatrixEnjinV603 {
+export interface NowMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
-    get(block: Block): Promise<bigint | undefined>
+    get(block: Block): Promise<(bigint | undefined)>
 }
 
-export const didUpdate = {
+export const didUpdate =  {
     /**
      *  Did the timestamp get updated in this block?
      */
@@ -26,8 +26,8 @@ export const didUpdate = {
 /**
  *  Did the timestamp get updated in this block?
  */
-export interface DidUpdateMatrixEnjinV603 {
+export interface DidUpdateMatrixEnjinV603  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): boolean
-    get(block: Block): Promise<boolean | undefined>
+    get(block: Block): Promise<(boolean | undefined)>
 }

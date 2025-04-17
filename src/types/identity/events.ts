@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const identitySet = {
+export const identitySet =  {
     name: 'Identity.IdentitySet',
     /**
      * A name was set or reset (which will remove all judgements).
@@ -15,7 +15,7 @@ export const identitySet = {
     ),
 }
 
-export const identityCleared = {
+export const identityCleared =  {
     name: 'Identity.IdentityCleared',
     /**
      * A name was cleared, and the given balance returned.
@@ -29,7 +29,7 @@ export const identityCleared = {
     ),
 }
 
-export const identityKilled = {
+export const identityKilled =  {
     name: 'Identity.IdentityKilled',
     /**
      * A name was removed and the given balance slashed.
@@ -43,7 +43,7 @@ export const identityKilled = {
     ),
 }
 
-export const judgementRequested = {
+export const judgementRequested =  {
     name: 'Identity.JudgementRequested',
     /**
      * A judgement was asked from a registrar.
@@ -57,7 +57,7 @@ export const judgementRequested = {
     ),
 }
 
-export const judgementUnrequested = {
+export const judgementUnrequested =  {
     name: 'Identity.JudgementUnrequested',
     /**
      * A judgement request was retracted.
@@ -71,7 +71,7 @@ export const judgementUnrequested = {
     ),
 }
 
-export const judgementGiven = {
+export const judgementGiven =  {
     name: 'Identity.JudgementGiven',
     /**
      * A judgement was given by a registrar.
@@ -85,7 +85,7 @@ export const judgementGiven = {
     ),
 }
 
-export const registrarAdded = {
+export const registrarAdded =  {
     name: 'Identity.RegistrarAdded',
     /**
      * A registrar was added.
@@ -98,7 +98,7 @@ export const registrarAdded = {
     ),
 }
 
-export const subIdentityAdded = {
+export const subIdentityAdded =  {
     name: 'Identity.SubIdentityAdded',
     /**
      * A sub-identity was added to an identity and the deposit paid.
@@ -113,7 +113,7 @@ export const subIdentityAdded = {
     ),
 }
 
-export const subIdentityRemoved = {
+export const subIdentityRemoved =  {
     name: 'Identity.SubIdentityRemoved',
     /**
      * A sub-identity was removed from an identity and the deposit freed.
@@ -128,7 +128,7 @@ export const subIdentityRemoved = {
     ),
 }
 
-export const subIdentityRevoked = {
+export const subIdentityRevoked =  {
     name: 'Identity.SubIdentityRevoked',
     /**
      * A sub-identity was cleared, and the given deposit repatriated from the
@@ -144,7 +144,7 @@ export const subIdentityRevoked = {
     ),
 }
 
-export const authorityAdded = {
+export const authorityAdded =  {
     name: 'Identity.AuthorityAdded',
     /**
      * A username authority was added.
@@ -157,7 +157,7 @@ export const authorityAdded = {
     ),
 }
 
-export const authorityRemoved = {
+export const authorityRemoved =  {
     name: 'Identity.AuthorityRemoved',
     /**
      * A username authority was removed.
@@ -170,7 +170,7 @@ export const authorityRemoved = {
     ),
 }
 
-export const usernameSet = {
+export const usernameSet =  {
     name: 'Identity.UsernameSet',
     /**
      * A username was set for `who`.
@@ -184,7 +184,7 @@ export const usernameSet = {
     ),
 }
 
-export const usernameQueued = {
+export const usernameQueued =  {
     name: 'Identity.UsernameQueued',
     /**
      * A username was queued, but `who` must accept it prior to `expiration`.
@@ -199,7 +199,7 @@ export const usernameQueued = {
     ),
 }
 
-export const preapprovalExpired = {
+export const preapprovalExpired =  {
     name: 'Identity.PreapprovalExpired',
     /**
      * A queued username passed its expiration without being claimed and was removed.
@@ -212,7 +212,7 @@ export const preapprovalExpired = {
     ),
 }
 
-export const primaryUsernameSet = {
+export const primaryUsernameSet =  {
     name: 'Identity.PrimaryUsernameSet',
     /**
      * A username was set as a primary and can be looked up from `who`.
@@ -226,7 +226,7 @@ export const primaryUsernameSet = {
     ),
 }
 
-export const danglingUsernameRemoved = {
+export const danglingUsernameRemoved =  {
     name: 'Identity.DanglingUsernameRemoved',
     /**
      * A dangling username (as in, a username corresponding to an account that has removed its

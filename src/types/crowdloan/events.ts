@@ -1,11 +1,11 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
 import * as v104 from '../v104'
 import * as v105 from '../v105'
 
-export const created = {
+export const created =  {
     name: 'Crowdloan.Created',
     /**
      * Create a new crowdloaning campaign.
@@ -18,7 +18,7 @@ export const created = {
     ),
 }
 
-export const contributed = {
+export const contributed =  {
     name: 'Crowdloan.Contributed',
     /**
      * Contributed to a crowd sale.
@@ -33,7 +33,7 @@ export const contributed = {
     ),
 }
 
-export const withdrew = {
+export const withdrew =  {
     name: 'Crowdloan.Withdrew',
     /**
      * Withdrew full balance of a contributor.
@@ -48,7 +48,7 @@ export const withdrew = {
     ),
 }
 
-export const partiallyRefunded = {
+export const partiallyRefunded =  {
     name: 'Crowdloan.PartiallyRefunded',
     /**
      * The loans in a fund have been partially dissolved, i.e. there are some left
@@ -62,7 +62,7 @@ export const partiallyRefunded = {
     ),
 }
 
-export const allRefunded = {
+export const allRefunded =  {
     name: 'Crowdloan.AllRefunded',
     /**
      * All loans in a fund have been refunded.
@@ -75,7 +75,7 @@ export const allRefunded = {
     ),
 }
 
-export const dissolved = {
+export const dissolved =  {
     name: 'Crowdloan.Dissolved',
     /**
      * Fund is dissolved.
@@ -88,7 +88,7 @@ export const dissolved = {
     ),
 }
 
-export const handleBidResult = {
+export const handleBidResult =  {
     name: 'Crowdloan.HandleBidResult',
     /**
      * The result of trying to submit a new bid to the Slots pallet.
@@ -97,10 +97,7 @@ export const handleBidResult = {
         'Crowdloan.HandleBidResult',
         sts.struct({
             paraId: enjinV100.Id,
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
         })
     ),
     /**
@@ -110,10 +107,7 @@ export const handleBidResult = {
         'Crowdloan.HandleBidResult',
         sts.struct({
             paraId: enjinV101.Id,
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV101.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
         })
     ),
     /**
@@ -123,10 +117,7 @@ export const handleBidResult = {
         'Crowdloan.HandleBidResult',
         sts.struct({
             paraId: v100.Id,
-            result: sts.result(
-                () => sts.unit(),
-                () => v100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v100.DispatchError),
         })
     ),
     /**
@@ -136,10 +127,7 @@ export const handleBidResult = {
         'Crowdloan.HandleBidResult',
         sts.struct({
             paraId: v104.Id,
-            result: sts.result(
-                () => sts.unit(),
-                () => v104.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v104.DispatchError),
         })
     ),
     /**
@@ -149,15 +137,12 @@ export const handleBidResult = {
         'Crowdloan.HandleBidResult',
         sts.struct({
             paraId: v105.Id,
-            result: sts.result(
-                () => sts.unit(),
-                () => v105.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }
 
-export const edited = {
+export const edited =  {
     name: 'Crowdloan.Edited',
     /**
      * The configuration to a crowdloan has been edited.
@@ -170,7 +155,7 @@ export const edited = {
     ),
 }
 
-export const memoUpdated = {
+export const memoUpdated =  {
     name: 'Crowdloan.MemoUpdated',
     /**
      * A memo has been updated.
@@ -185,7 +170,7 @@ export const memoUpdated = {
     ),
 }
 
-export const addedToNewRaise = {
+export const addedToNewRaise =  {
     name: 'Crowdloan.AddedToNewRaise',
     /**
      * A parachain has been moved to `NewRaise`

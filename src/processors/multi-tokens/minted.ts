@@ -1,17 +1,15 @@
 import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
-// import { computeTraits } from '../../jobs/compute-traits'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-// import { processMetadata } from '../../jobs/process-metadata'
 import { isNonFungible } from './utils/helpers'
+import { QueueUtils } from '../../queues'
 
 export async function minted(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
@@ -65,9 +63,10 @@ export async function minted(
 
     await Promise.all(promises)
 
-    // await processMetadata(token.id, 'token')
-    // computeTraits(data.collectionId.toString())
-    // syncCollectionStats(data.collectionId.toString())
+    // console.log('Dispatching from minted')
+    QueueUtils.dispatchComputeMetadata(token.id, 'token')
+    QueueUtils.dispatchComputeTraits(data.collectionId.toString())
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

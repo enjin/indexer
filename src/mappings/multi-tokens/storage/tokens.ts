@@ -1,35 +1,53 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
-import { storage } from '../../../types'
+import { multiTokens } from '../../../types/storage'
 import { match } from 'ts-pattern'
-import { Token } from './types/tokens'
+import { Token } from './types'
 
-export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: bigint): Promise<Token | undefined> {
+export async function tokens(
+    block: Block,
+    params: { collectionId: bigint; tokenId: bigint }
+): Promise<Token | undefined>
+export async function tokens(
+    block: Block,
+    params?: { batchSize?: number }
+): Promise<AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>
+export async function tokens(
+    block: Block,
+    params?: { collectionId?: bigint; tokenId?: bigint; batchSize?: number }
+): Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined> {
+    const getTokens = async (version: (typeof multiTokens.tokens)[keyof typeof multiTokens.tokens]) => {
+        if (params?.collectionId && params.tokenId) {
+            return version.get(block, params.collectionId, params.tokenId)
+        }
+        return version.getPairsPaged(params?.batchSize ?? 1000, block)
+    }
+
     return match(block)
-        .returnType<Promise<Token | undefined>>()
+        .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
         .when(
-            () => storage.multiTokens.tokens.enjinV1032.is(block),
-            () => storage.multiTokens.tokens.enjinV1032.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.enjinV1032.is(block),
+            () => getTokens(multiTokens.tokens.enjinV1032)
         )
         .when(
-            () => storage.multiTokens.tokens.enjinV100.is(block),
-            () => storage.multiTokens.tokens.enjinV100.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.enjinV100.is(block),
+            () => getTokens(multiTokens.tokens.enjinV100)
         )
         .when(
-            () => storage.multiTokens.tokens.v1050.is(block),
-            () => storage.multiTokens.tokens.v1050.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.v1050.is(block),
+            () => getTokens(multiTokens.tokens.v1050)
         )
         .when(
-            () => storage.multiTokens.tokens.v1030.is(block),
-            () => storage.multiTokens.tokens.v1030.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.v1030.is(block),
+            () => getTokens(multiTokens.tokens.v1030)
         )
         .when(
-            () => storage.multiTokens.tokens.v102.is(block),
-            () => storage.multiTokens.tokens.v102.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.v102.is(block),
+            () => getTokens(multiTokens.tokens.v102)
         )
         .when(
-            () => storage.multiTokens.tokens.v100.is(block),
-            () => storage.multiTokens.tokens.v100.get(block, collectionId, tokenId)
+            () => multiTokens.tokens.v100.is(block),
+            () => getTokens(multiTokens.tokens.v100)
         )
         .otherwise(() => {
             throw new UnsupportedStorageError(tokens.name)
@@ -37,8 +55,8 @@ export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: 
 }
 
 // export async function token(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
-//     if (storage.multiTokens.tokens.matrixEnjinV1012.is(block)) {
-//         const data = await storage.multiTokens.tokens.matrixEnjinV1012.get(block, collectionId, tokenId)
+//     if (multiTokens.tokens.matrixEnjinV1012.is(block)) {
+//         const data = await multiTokens.tokens.matrixEnjinV1012)
 //
 //         if (data) {
 //             const cap = data.cap ? getCapType(data.cap) : null
@@ -68,8 +86,8 @@ export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: 
 //         }
 //     }
 //
-//     if (storage.multiTokens.tokens.matrixEnjinV603.is(block)) {
-//         const data = await storage.multiTokens.tokens.matrixEnjinV603.get(block, collectionId, tokenId)
+//     if (multiTokens.tokens.matrixEnjinV603.is(block)) {
+//         const data = await multiTokens.tokens.matrixEnjinV603)
 //
 //         if (data) {
 //             const cap = data.cap ? getCapType(data.cap) : null
@@ -93,5 +111,5 @@ export async function tokens(block: BlockHeader, collectionId: bigint, tokenId: 
 //         }
 //     }
 //
-//     throw new UnsupportedStorageError('storage.multi-tokens.token')
+//     throw new UnsupportedStorageError('multi-tokens.token')
 // }

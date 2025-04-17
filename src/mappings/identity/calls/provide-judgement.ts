@@ -2,9 +2,10 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { ProvideJudgement } from '../../../mappings/identity/calls/types'
+import { ProvideJudgement } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function provideJudgement(call: CallItem): ProvideJudgement {
+export const provideJudgement = withDispatchCheck((call: CallItem): ProvideJudgement => {
     return match(call)
         .returnType<ProvideJudgement>()
         .when(
@@ -14,4 +15,4 @@ export function provideJudgement(call: CallItem): ProvideJudgement {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

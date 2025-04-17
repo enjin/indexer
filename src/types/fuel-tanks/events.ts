@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV101 from '../enjinV101'
 import * as v102 from '../v102'
@@ -19,7 +19,7 @@ import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
 
-export const fuelTankCreated = {
+export const fuelTankCreated =  {
     name: 'FuelTanks.FuelTankCreated',
     /**
      * A new [`FuelTank`] was created.
@@ -43,7 +43,7 @@ export const fuelTankCreated = {
     ),
 }
 
-export const fuelTankMutated = {
+export const fuelTankMutated =  {
     name: 'FuelTanks.FuelTankMutated',
     /**
      * A [`FuelTank`] was mutated
@@ -175,7 +175,7 @@ export const fuelTankMutated = {
     ),
 }
 
-export const fuelTankDestroyed = {
+export const fuelTankDestroyed =  {
     name: 'FuelTanks.FuelTankDestroyed',
     /**
      * A [`FuelTank`] was destroyed
@@ -191,7 +191,7 @@ export const fuelTankDestroyed = {
     ),
 }
 
-export const callDispatched = {
+export const callDispatched =  {
     name: 'FuelTanks.CallDispatched',
     /**
      * A call was dispatched through a [`FuelTank`].
@@ -211,7 +211,7 @@ export const callDispatched = {
     ),
 }
 
-export const accountAdded = {
+export const accountAdded =  {
     name: 'FuelTanks.AccountAdded',
     /**
      * An account was added to a [`FuelTank`]
@@ -423,7 +423,7 @@ export const accountAdded = {
     ),
 }
 
-export const accountRemoved = {
+export const accountRemoved =  {
     name: 'FuelTanks.AccountRemoved',
     /**
      * An account was removed from a [`FuelTank`]
@@ -443,7 +443,7 @@ export const accountRemoved = {
     ),
 }
 
-export const accountRuleDataRemoved = {
+export const accountRuleDataRemoved =  {
     name: 'FuelTanks.AccountRuleDataRemoved',
     /**
      * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
@@ -797,7 +797,7 @@ export const accountRuleDataRemoved = {
     ),
 }
 
-export const ruleSetInserted = {
+export const ruleSetInserted =  {
     name: 'FuelTanks.RuleSetInserted',
     /**
      * A new rule set was added to [`FuelTank`]
@@ -817,7 +817,7 @@ export const ruleSetInserted = {
     ),
 }
 
-export const ruleSetRemoved = {
+export const ruleSetRemoved =  {
     name: 'FuelTanks.RuleSetRemoved',
     /**
      * A rule set was removed from [`FuelTank`]
@@ -837,7 +837,7 @@ export const ruleSetRemoved = {
     ),
 }
 
-export const mutateFreezeStateScheduled = {
+export const mutateFreezeStateScheduled =  {
     name: 'FuelTanks.MutateFreezeStateScheduled',
     /**
      * The freeze state mutation for fuel tank or its rule set was scheduled
@@ -861,7 +861,7 @@ export const mutateFreezeStateScheduled = {
     ),
 }
 
-export const freezeStateMutated = {
+export const freezeStateMutated =  {
     name: 'FuelTanks.FreezeStateMutated',
     /**
      * The freeze state change for fuel tank or its rule set was executed in `on_finalize`
@@ -885,7 +885,7 @@ export const freezeStateMutated = {
     ),
 }
 
-export const scheduleMutateFreezeStateFailed = {
+export const scheduleMutateFreezeStateFailed =  {
     name: 'FuelTanks.ScheduleMutateFreezeStateFailed',
     /**
      * The freeze state change for fuel tank or its rule set failed in `on_finalize`
@@ -1105,7 +1105,7 @@ export const scheduleMutateFreezeStateFailed = {
     ),
 }
 
-export const dispatchFailed = {
+export const dispatchFailed =  {
     name: 'FuelTanks.DispatchFailed',
     /**
      * The dispatch of a call has failed
@@ -1289,7 +1289,7 @@ export const dispatchFailed = {
     ),
 }
 
-export const consumptionSet = {
+export const consumptionSet =  {
     name: 'FuelTanks.ConsumptionSet',
     /**
      * The consumption for an account was set for a rule set on a [`FuelTank`]
@@ -1318,7 +1318,7 @@ export const consumptionSet = {
     ),
 }
 
-export const migrationStep = {
+export const migrationStep =  {
     name: 'FuelTanks.MigrationStep',
     /**
      * The migration step has completed

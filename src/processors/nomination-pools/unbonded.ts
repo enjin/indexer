@@ -1,15 +1,11 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, PoolMember, UnbondingEras } from '../../model'
 import { getOrCreateAccount } from '../../utils/entities'
 import { updatePool } from './pool'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 
-export async function unbonded(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
+export async function unbonded(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined
     if (!item.extrinsic.call) return undefined
 

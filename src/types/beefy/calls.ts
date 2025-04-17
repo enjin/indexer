@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
-import * as v1050 from '../v1050'
+import * as enjinV1050 from '../enjinV1050'
 
-export const reportEquivocation = {
+export const reportEquivocation =  {
     name: 'Beefy.report_equivocation',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
@@ -19,14 +19,14 @@ export const reportEquivocation = {
     ),
 }
 
-export const reportEquivocationUnsigned = {
+export const reportEquivocationUnsigned =  {
     name: 'Beefy.report_equivocation_unsigned',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
      * equivocation proof and validate the given key ownership proof
      * against the extracted offender. If both are valid, the offence
      * will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
@@ -41,12 +41,12 @@ export const reportEquivocationUnsigned = {
     ),
 }
 
-export const setNewGenesis = {
+export const setNewGenesis =  {
     name: 'Beefy.set_new_genesis',
     /**
      * Reset BEEFY consensus by setting a new BEEFY genesis at `delay_in_blocks` blocks in the
      * future.
-     *
+     * 
      * Note: `delay_in_blocks` has to be at least 1.
      */
     enjinV1032: new CallType(
@@ -57,7 +57,7 @@ export const setNewGenesis = {
     ),
 }
 
-export const reportDoubleVoting = {
+export const reportDoubleVoting =  {
     name: 'Beefy.report_double_voting',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
@@ -65,107 +65,107 @@ export const reportDoubleVoting = {
      * against the extracted offender. If both are valid, the offence
      * will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_double_voting',
         sts.struct({
-            equivocationProof: v1050.DoubleVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.DoubleVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
 
-export const reportDoubleVotingUnsigned = {
+export const reportDoubleVotingUnsigned =  {
     name: 'Beefy.report_double_voting_unsigned',
     /**
      * Report voter equivocation/misbehavior. This method will verify the
      * equivocation proof and validate the given key ownership proof
      * against the extracted offender. If both are valid, the offence
      * will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_double_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.DoubleVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.DoubleVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
 
-export const reportForkVoting = {
+export const reportForkVoting =  {
     name: 'Beefy.report_fork_voting',
     /**
      * Report fork voting equivocation. This method will verify the equivocation proof
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_fork_voting',
         sts.struct({
-            equivocationProof: v1050.ForkVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.ForkVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
 
-export const reportForkVotingUnsigned = {
+export const reportForkVotingUnsigned =  {
     name: 'Beefy.report_fork_voting_unsigned',
     /**
      * Report fork voting equivocation. This method will verify the equivocation proof
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_fork_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.ForkVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.ForkVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
 
-export const reportFutureBlockVoting = {
+export const reportFutureBlockVoting =  {
     name: 'Beefy.report_future_block_voting',
     /**
      * Report future block voting equivocation. This method will verify the equivocation proof
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_future_block_voting',
         sts.struct({
-            equivocationProof: v1050.FutureBlockVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.FutureBlockVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }
 
-export const reportFutureBlockVotingUnsigned = {
+export const reportFutureBlockVotingUnsigned =  {
     name: 'Beefy.report_future_block_voting_unsigned',
     /**
      * Report future block voting equivocation. This method will verify the equivocation proof
      * and validate the given key ownership proof against the extracted offender.
      * If both are valid, the offence will be reported.
-     *
+     * 
      * This extrinsic must be called unsigned and it is expected that only
      * block authors will call it (validated in `ValidateUnsigned`), as such
      * if the block author is defined it will be defined as the equivocation
      * reporter.
      */
-    v1050: new CallType(
+    enjinV1050: new CallType(
         'Beefy.report_future_block_voting_unsigned',
         sts.struct({
-            equivocationProof: v1050.FutureBlockVotingProof,
-            keyOwnerProof: v1050.MembershipProof,
+            equivocationProof: enjinV1050.FutureBlockVotingProof,
+            keyOwnerProof: enjinV1050.MembershipProof,
         })
     ),
 }

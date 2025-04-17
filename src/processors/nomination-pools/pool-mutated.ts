@@ -1,10 +1,10 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { CommissionChangeRate, NominationPool } from '../../model'
 import { Sns } from '../../utils/sns'
 import { hexToString } from '@polkadot/util'
 import * as mappings from './../../mappings'
 
-export async function poolMutated(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function poolMutated(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.poolMutated(item)

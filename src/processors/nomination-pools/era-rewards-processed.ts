@@ -11,18 +11,18 @@ import {
     PoolMemberRewards,
 } from '../../model'
 import { updatePool } from './pool'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import config from '../../config'
 import * as mappings from './../../mappings'
 
-async function getMembersBalance(block: BlockHeader, poolId: number) {
-    return await mappings.multiTokens.storage.tokenAccounts(block, 1n, BigInt(poolId))
+async function getMembersBalance(block: Block, poolId: number) {
+    return await mappings.multiTokens.storage.tokenAccounts(block, { collectionId: 1n, tokenId: BigInt(poolId) })
 }
 
 export async function eraRewardsProcessed(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

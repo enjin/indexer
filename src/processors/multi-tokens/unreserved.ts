@@ -1,11 +1,11 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { throwError } from '../../utils/errors'
 import * as mappings from './../../mappings'
 import { match, P } from 'ts-pattern'
 
-export async function unreserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
+export async function unreserved(ctx: CommonContext, block: Block, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.unreserved(item)
 
     if (skipSave) return undefined

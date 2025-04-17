@@ -1,23 +1,89 @@
-import { Server } from 'http'
+import express, { Application } from 'express'
+import { createBullBoard } from '@bull-board/api'
+import { ExpressAdapter } from '@bull-board/express'
+import {
+    BalancesQueue,
+    AccountsQueue,
+    CollectionsQueue,
+    MetadataQueue,
+    TokensQueue,
+    TraitsQueue,
+    ValidatorsQueue,
+    ListingsQueue,
+} from '../queues'
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
+import { EventEmitter } from 'events'
+import {
+    AccountsWorker,
+    BalancesWorker,
+    CollectionsWorker,
+    ListingsWorker,
+    MetadataWorker,
+    TokensWorker,
+    TraitsWorker,
+    ValidatorsWorker,
+} from './processors'
 
-import app from './app'
-import { QueueUtils } from './queue'
+// We have 11 workers, so setting to 15 gives us some headroom
+// Increase max listeners to avoid warnings
+EventEmitter.defaultMaxListeners = 30
 
-const PORT = process.env.PORT || 9090
-let server: Server | undefined
+const WorkerMap = new Map([
+    ['Accounts', AccountsWorker],
+    ['Balances', BalancesWorker],
+    ['Collections', CollectionsWorker],
+    ['Listings', ListingsWorker],
+    ['Metadata', MetadataWorker],
+    ['Tokens', TokensWorker],
+    ['Traits', TraitsWorker],
+    ['Validators', ValidatorsWorker],
+])
 
-const listen = () => {
-    server = app.listen(PORT, () => {
-        QueueUtils.initializeJobs()
-        console.log(`Server running at port ${PORT}`)
+/**
+ * Initialize workers by binding an event listener to it
+ */
+function initializeJobs() {
+    console.log('Initializing jobs!!!')
+
+    WorkerMap.forEach((worker) => {
+        worker.on('error', (err) => {
+            console.error(err)
+        })
     })
 }
 
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received')
-    if (server) {
-        server.close()
-    }
+const index: Application = express()
+const serverAdapter = new ExpressAdapter()
+
+serverAdapter.setBasePath('/')
+
+createBullBoard({
+    queues: [
+        new BullMQAdapter(AccountsQueue),
+        new BullMQAdapter(BalancesQueue),
+        new BullMQAdapter(CollectionsQueue),
+        new BullMQAdapter(ListingsQueue),
+        new BullMQAdapter(MetadataQueue),
+        new BullMQAdapter(TokensQueue),
+        new BullMQAdapter(TraitsQueue),
+        new BullMQAdapter(ValidatorsQueue),
+    ],
+    serverAdapter,
+    options: {
+        uiConfig: {
+            boardTitle: 'Enjin Indexer',
+            boardLogo: {
+                path: 'https://cdn.nft.io/branding/enjin.svg',
+                width: '45px',
+                height: 45,
+            },
+        },
+    },
 })
 
-listen()
+index.use('/', serverAdapter.getRouter())
+
+index.listen(9090, () => {
+    initializeJobs()
+    console.log(`Server running at port 9090`)
+})

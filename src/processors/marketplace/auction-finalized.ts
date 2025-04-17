@@ -7,7 +7,7 @@ import {
     ListingStatus,
     ListingStatusType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getBestListing } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
@@ -15,12 +15,12 @@ import * as mappings from './../../mappings'
 
 export async function auctionFinalized(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.auctionFinalized(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -30,6 +30,8 @@ export async function auctionFinalized(
             },
         },
     })
+
+    if (!listing) return undefined
 
     if (event.winningBid) {
         const sale = new ListingSale({

@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const noted = {
+export const noted =  {
     name: 'Preimage.Noted',
     /**
      * A preimage has been noted.
@@ -14,7 +14,7 @@ export const noted = {
     ),
 }
 
-export const requested = {
+export const requested =  {
     name: 'Preimage.Requested',
     /**
      * A preimage has been requested.
@@ -27,7 +27,7 @@ export const requested = {
     ),
 }
 
-export const cleared = {
+export const cleared =  {
     name: 'Preimage.Cleared',
     /**
      * A preimage has ben cleared.

@@ -1,7 +1,7 @@
 import { hexToString } from '@polkadot/util'
 import { CallNotDefinedError } from '../../utils/errors'
 import { Event as EventModel, Identity, JudgementType, Registration } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from './../../mappings'
 import { Data } from '../../mappings/common/types'
@@ -14,11 +14,7 @@ const dataToValue = (raw: Data) => {
     return null
 }
 
-export async function identitySet(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
+export async function identitySet(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     if (!item.call) throw new CallNotDefinedError()
 
     const event = mappings.identity.events.identitySet(item)

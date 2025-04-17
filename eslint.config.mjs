@@ -1,4 +1,4 @@
-    import eslint from '@eslint/js'
+import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import prettierConfig from 'eslint-config-prettier'
 
@@ -11,6 +11,7 @@ export default tseslint.config(
             '.github/',
             '.vscode/',
             '.idea/',
+            '.papi/',
             'node_modules/',
             'lib/',
             'db/',

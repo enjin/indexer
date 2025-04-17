@@ -1,9 +1,9 @@
-import { isU8a, u8aToHex } from '@polkadot/util'
 import { Account, Balance, Listing } from '../model'
 import { CommonContext, ExtrinsicItem } from '../contexts'
-import { encodeId } from './tools'
+import { isU8a, u8aToHex } from '@polkadot/util'
 import { AccountNotParsableError } from './errors'
 import { RootOrSigned, MultiAddress } from '../mappings/common/types'
+import { encodeAddress } from './tools'
 
 interface AddressWithKind {
     __kind: 'Id' | 'AccountId'
@@ -53,7 +53,7 @@ export async function getOrCreateAccount(
     if (!account) {
         account = new Account({
             id: publicKey,
-            address: encodeId(publicKey),
+            address: encodeAddress(publicKey),
             balance: new Balance({
                 transferable: 0n,
                 free: 0n,

@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const reportEquivocation = {
+export const reportEquivocation =  {
     name: 'Babe.report_equivocation',
     /**
      * Report authority equivocation/misbehavior. This method will verify
@@ -18,7 +18,7 @@ export const reportEquivocation = {
     ),
 }
 
-export const reportEquivocationUnsigned = {
+export const reportEquivocationUnsigned =  {
     name: 'Babe.report_equivocation_unsigned',
     /**
      * Report authority equivocation/misbehavior. This method will verify
@@ -39,7 +39,7 @@ export const reportEquivocationUnsigned = {
     ),
 }
 
-export const planConfigChange = {
+export const planConfigChange =  {
     name: 'Babe.plan_config_change',
     /**
      * Plan an epoch config change. The epoch config change is recorded and will be enacted on

@@ -1,6 +1,6 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 
-export const palletPaused = {
+export const palletPaused =  {
     name: 'ExtrinsicPause.PalletPaused',
     /**
      * All pallet extrinsics are paused.
@@ -13,7 +13,7 @@ export const palletPaused = {
     ),
 }
 
-export const palletResumed = {
+export const palletResumed =  {
     name: 'ExtrinsicPause.PalletResumed',
     /**
      * All pallet extrinsics are resumed.
@@ -26,7 +26,7 @@ export const palletResumed = {
     ),
 }
 
-export const extrinsicPaused = {
+export const extrinsicPaused =  {
     name: 'ExtrinsicPause.ExtrinsicPaused',
     /**
      * Extrinsic is paused.
@@ -40,7 +40,7 @@ export const extrinsicPaused = {
     ),
 }
 
-export const extrinsicResumed = {
+export const extrinsicResumed =  {
     name: 'ExtrinsicPause.ExtrinsicResumed',
     /**
      * Extrinsic is resumed

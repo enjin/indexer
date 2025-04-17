@@ -553,7 +553,7 @@ type Collection @entity {
 }
 
 type CollectionApproval {
-  account: String!
+  accountId: String!
   expiration: Int
 }
 
@@ -675,7 +675,7 @@ type TokenRarity @entity {
 }
 
 type TokenApproval {
-  account: String!
+  accountId: String!
   amount: BigInt!
   expiration: Int
 }
@@ -1253,11 +1253,28 @@ type PoolMemberRewards @entity {
   points: BigInt!
 }
 
+enum ScoreGrade {
+  A,
+  B,
+  C,
+  D,
+  E,
+  F,
+}
+
 type Validator @entity {
   id: ID!
   account: Account!
   commission: Int
   blocked: Boolean
+
+  # Computed by job
+  nodeCount28d: [Int!]
+  commission28d: [Int!]
+  blockProduction28d: [Int!]
+  slashes84d: [Boolean!]
+  peerCommission28d: [Int!]
+  grade: ScoreGrade
 
   # Relationships
   pools: [PoolValidator]! @derivedFrom(field: "validator")
@@ -1334,6 +1351,9 @@ type Era @entity {
   startBlock: Int!
   endAt: DateTime
   endBlock: Int
+
+  # Extras
+  nodeCount: Int!
 }
 
 type CommissionPayment {

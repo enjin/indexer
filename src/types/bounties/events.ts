@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const bountyProposed = {
+export const bountyProposed =  {
     name: 'Bounties.BountyProposed',
     /**
      * New bounty proposal.
@@ -15,7 +15,7 @@ export const bountyProposed = {
     ),
 }
 
-export const bountyRejected = {
+export const bountyRejected =  {
     name: 'Bounties.BountyRejected',
     /**
      * A bounty proposal was rejected; funds were slashed.
@@ -29,7 +29,7 @@ export const bountyRejected = {
     ),
 }
 
-export const bountyBecameActive = {
+export const bountyBecameActive =  {
     name: 'Bounties.BountyBecameActive',
     /**
      * A bounty proposal is funded and became active.
@@ -42,7 +42,7 @@ export const bountyBecameActive = {
     ),
 }
 
-export const bountyAwarded = {
+export const bountyAwarded =  {
     name: 'Bounties.BountyAwarded',
     /**
      * A bounty is awarded to a beneficiary.
@@ -56,7 +56,7 @@ export const bountyAwarded = {
     ),
 }
 
-export const bountyClaimed = {
+export const bountyClaimed =  {
     name: 'Bounties.BountyClaimed',
     /**
      * A bounty is claimed by beneficiary.
@@ -71,7 +71,7 @@ export const bountyClaimed = {
     ),
 }
 
-export const bountyCanceled = {
+export const bountyCanceled =  {
     name: 'Bounties.BountyCanceled',
     /**
      * A bounty is cancelled.
@@ -84,7 +84,7 @@ export const bountyCanceled = {
     ),
 }
 
-export const bountyExtended = {
+export const bountyExtended =  {
     name: 'Bounties.BountyExtended',
     /**
      * A bounty expiry is extended.
@@ -97,7 +97,7 @@ export const bountyExtended = {
     ),
 }
 
-export const bountyApproved = {
+export const bountyApproved =  {
     name: 'Bounties.BountyApproved',
     /**
      * A bounty is approved.
@@ -110,7 +110,7 @@ export const bountyApproved = {
     ),
 }
 
-export const curatorProposed = {
+export const curatorProposed =  {
     name: 'Bounties.CuratorProposed',
     /**
      * A bounty curator is proposed.
@@ -124,7 +124,7 @@ export const curatorProposed = {
     ),
 }
 
-export const curatorUnassigned = {
+export const curatorUnassigned =  {
     name: 'Bounties.CuratorUnassigned',
     /**
      * A bounty curator is unassigned.
@@ -137,7 +137,7 @@ export const curatorUnassigned = {
     ),
 }
 
-export const curatorAccepted = {
+export const curatorAccepted =  {
     name: 'Bounties.CuratorAccepted',
     /**
      * A bounty curator is accepted.

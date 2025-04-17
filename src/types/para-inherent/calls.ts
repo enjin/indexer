@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 
-export const enter = {
+export const enter =  {
     name: 'ParaInherent.enter',
     /**
      * Enter the paras inherent. This will process bitfields and backed candidates.

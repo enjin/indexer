@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV101 from '../enjinV101'
 import * as v102 from '../v102'
@@ -28,6 +28,7 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1012 from '../matrixV1012'
+import * as matrixV1020 from '../matrixV1020'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
 import * as enjinV1022 from '../enjinV1022'
@@ -40,15 +41,16 @@ import * as v1030 from '../v1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
 import * as v1032 from '../v1032'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const createFuelTank = {
+export const createFuelTank =  {
     name: 'FuelTanks.create_fuel_tank',
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -60,9 +62,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -74,9 +76,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -106,12 +108,12 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a `descriptor`.
-     *
+     * 
      * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
      * takes a storage deposit and emits `FuelTankCreated` event in the success case.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -123,9 +125,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -137,9 +139,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -151,9 +153,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -165,9 +167,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -179,9 +181,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -193,9 +195,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -207,9 +209,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -239,9 +241,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -253,9 +255,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -267,12 +269,12 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a `descriptor`.
-     *
+     * 
      * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
      * takes a storage deposit and emits `FuelTankCreated` event in the success case.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -283,10 +285,27 @@ export const createFuelTank = {
         })
     ),
     /**
-     * Creates a fuel tank, given a descriptor
-     *
+     * Creates a fuel tank, given a `descriptor`.
+     * 
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     * 
      * # Errors
-     *
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    matrixV1020: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: matrixV1020.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -298,9 +317,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -312,9 +331,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -326,9 +345,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -340,9 +359,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -354,9 +373,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -368,9 +387,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -391,12 +410,12 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a `descriptor`.
-     *
+     * 
      * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
      * takes a storage deposit and emits `FuelTankCreated` event in the success case.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -407,10 +426,27 @@ export const createFuelTank = {
         })
     ),
     /**
-     * Creates a fuel tank, given a descriptor
-     *
+     * Creates a fuel tank, given a `descriptor`.
+     * 
+     * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
+     * takes a storage deposit and emits `FuelTankCreated` event in the success case.
+     * 
      * # Errors
-     *
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
+     */
+    enjinV1050: new CallType(
+        'FuelTanks.create_fuel_tank',
+        sts.struct({
+            descriptor: enjinV1050.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Creates a fuel tank, given a descriptor
+     * 
+     * # Errors
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -422,9 +458,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -436,9 +472,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -450,9 +486,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -464,9 +500,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -478,9 +514,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -492,9 +528,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -506,9 +542,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -520,9 +556,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -534,9 +570,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -557,9 +593,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -571,9 +607,9 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a descriptor
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -585,12 +621,12 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a `descriptor`.
-     *
+     * 
      * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
      * takes a storage deposit and emits `FuelTankCreated` event in the success case.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -602,12 +638,12 @@ export const createFuelTank = {
     ),
     /**
      * Creates a fuel tank, given a `descriptor`.
-     *
+     * 
      * Generates a discrete `AccountId` for the fuel tank based on passed in parameters, it
      * takes a storage deposit and emits `FuelTankCreated` event in the success case.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      * - [`Error::DuplicateRuleKinds`] if a rule set has multiple rules of the same kind
      */
@@ -619,13 +655,13 @@ export const createFuelTank = {
     ),
 }
 
-export const mutateFuelTank = {
+export const mutateFuelTank =  {
     name: 'FuelTanks.mutate_fuel_tank',
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -638,11 +674,11 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * Caller must be the owner of the fuel tank, and the tank must be frozen.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank is not frozen
@@ -656,9 +692,9 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -671,9 +707,9 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -686,9 +722,9 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -701,11 +737,11 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * Caller must be the owner of the fuel tank, and the tank must be frozen.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank is not frozen
@@ -719,9 +755,9 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -734,9 +770,9 @@ export const mutateFuelTank = {
     ),
     /**
      * Apply `mutation` to fuel tank with `tank_id`.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
      */
@@ -749,15 +785,15 @@ export const mutateFuelTank = {
     ),
 }
 
-export const addAccount = {
+export const addAccount =  {
     name: 'FuelTanks.add_account',
     /**
      * Adds new account for `user_id` to fuel tank at `tank_id`. An account is
      * required to dispatch calls. A deposit is required, and may be paid by
      * the user or the fuel tank, depending on the settings.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank at `tank_id` does not exist
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountAlreadyExists`] if account at `user_id` already exists
@@ -771,14 +807,14 @@ export const addAccount = {
     ),
 }
 
-export const removeAccount = {
+export const removeAccount =  {
     name: 'FuelTanks.remove_account',
     /**
      * Removes account for `user_id` from fuel tank at `tank_id`. Any deposits
      * are returned.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank at `tank_id` does not exist
      * - [`Error::NoPermission`] if `origin` does not have permission to add an account
      * - [`Error::AccountNotFound`] if account at `user_id` does not exist
@@ -792,14 +828,14 @@ export const removeAccount = {
     ),
 }
 
-export const removeAccountRuleData = {
+export const removeAccountRuleData =  {
     name: 'FuelTanks.remove_account_rule_data',
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -819,9 +855,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -841,9 +877,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -863,9 +899,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -885,9 +921,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -907,9 +943,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -929,9 +965,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -951,9 +987,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -973,9 +1009,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -995,9 +1031,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -1017,9 +1053,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -1039,9 +1075,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -1061,9 +1097,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -1083,9 +1119,9 @@ export const removeAccountRuleData = {
     /**
      * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
      * the fuel tank or the rule set to be frozen.
-     *
+     * 
      * ### Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if fuel tank for `tank_id` doesn't exist
      * - [`Error::NoPermission`] if called by non-owner
      * - [`Error::AccountNotFound`] if account does not exist for `user_id`
@@ -1104,11 +1140,11 @@ export const removeAccountRuleData = {
     ),
 }
 
-export const dispatch = {
+export const dispatch =  {
     name: 'FuelTanks.dispatch',
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1127,7 +1163,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1146,7 +1182,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1189,7 +1225,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1208,7 +1244,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1227,7 +1263,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1246,7 +1282,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1265,7 +1301,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1284,7 +1320,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1303,7 +1339,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1322,7 +1358,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1365,7 +1401,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1384,7 +1420,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1403,7 +1439,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1422,7 +1458,26 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    matrixV1020: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: matrixV1020.MultiAddress,
+            ruleSetId: sts.number(),
+            call: matrixV1020.Call,
+            settings: sts.option(() => matrixV1020.DispatchSettings),
+        })
+    ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1441,7 +1496,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1460,7 +1515,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1479,7 +1534,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1498,7 +1553,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1517,7 +1572,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1536,7 +1591,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1567,7 +1622,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1586,7 +1641,26 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
+     * # Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
+     * - [`Error::CallerDoesNotHaveRuleSetTokenBalance`] if caller does not own the tokens to
+     *   use the ruleset for remaining_fee when `pays_remaining_fee` is true
+     * - [`Error::FuelTankOutOfFunds`] if the fuel tank account cannot pay fees
+     */
+    enjinV1050: new CallType(
+        'FuelTanks.dispatch',
+        sts.struct({
+            tankId: enjinV1050.MultiAddress,
+            ruleSetId: sts.number(),
+            call: enjinV1050.Call,
+            settings: sts.option(() => enjinV1050.DispatchSettings),
+        })
+    ),
+    /**
+     * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1605,7 +1679,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1624,7 +1698,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1643,7 +1717,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1662,7 +1736,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1681,7 +1755,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1700,7 +1774,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1719,7 +1793,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1738,7 +1812,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1757,7 +1831,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1788,7 +1862,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1807,7 +1881,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1826,7 +1900,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1845,7 +1919,7 @@ export const dispatch = {
     ),
     /**
      * Dispatch a call using the `tank_id` subject to the rules of `rule_set_id`
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::UsageRestricted`] if caller is not part of ruleset whitelist
@@ -1864,14 +1938,14 @@ export const dispatch = {
     ),
 }
 
-export const dispatchAndTouch = {
+export const dispatchAndTouch =  {
     name: 'FuelTanks.dispatch_and_touch',
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -1887,9 +1961,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -1905,9 +1979,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -1947,9 +2021,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -1965,9 +2039,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -1983,9 +2057,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2001,9 +2075,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2019,9 +2093,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2037,9 +2111,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2055,9 +2129,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2073,9 +2147,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2115,9 +2189,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2133,9 +2207,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2151,9 +2225,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2169,9 +2243,27 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    matrixV1020: new CallType(
+        'FuelTanks.dispatch_and_touch',
+        sts.struct({
+            tankId: matrixV1020.MultiAddress,
+            ruleSetId: sts.number(),
+            call: matrixV1020.Call,
+            settings: sts.option(() => matrixV1020.DispatchSettings),
+        })
+    ),
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2187,9 +2279,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2205,9 +2297,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2223,9 +2315,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2241,9 +2333,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2259,9 +2351,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2277,9 +2369,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2307,9 +2399,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2325,9 +2417,27 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
+     * Returns the same errors as [dispatch](Self::dispatch) and
+     * [add_account](Self::add_account)
+     */
+    enjinV1050: new CallType(
+        'FuelTanks.dispatch_and_touch',
+        sts.struct({
+            tankId: enjinV1050.MultiAddress,
+            ruleSetId: sts.number(),
+            call: enjinV1050.Call,
+            settings: sts.option(() => enjinV1050.DispatchSettings),
+        })
+    ),
+    /**
+     * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
+     * exist and is allowed by the fuel tank's `user_account_management` settings.
+     * 
+     * # Errors
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2343,9 +2453,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2361,9 +2471,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2379,9 +2489,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2397,9 +2507,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2415,9 +2525,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2433,9 +2543,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2451,9 +2561,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2469,9 +2579,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2487,9 +2597,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2517,9 +2627,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2535,9 +2645,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2553,9 +2663,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2571,9 +2681,9 @@ export const dispatchAndTouch = {
     /**
      * Same as [dispatch](Self::dispatch), but creates an account for `origin` if it does not
      * exist and is allowed by the fuel tank's `user_account_management` settings.
-     *
+     * 
      * # Errors
-     *
+     * 
      * Returns the same errors as [dispatch](Self::dispatch) and
      * [add_account](Self::add_account)
      */
@@ -2588,14 +2698,14 @@ export const dispatchAndTouch = {
     ),
 }
 
-export const scheduleMutateFreezeState = {
+export const scheduleMutateFreezeState =  {
     name: 'FuelTanks.schedule_mutate_freeze_state',
     /**
      * Schedule mutating of `is_frozen` state that determines if fuel tank or rule set can be
      * used
-     *
+     * 
      * Additional 1 read and 1 write are added to account for `on_finalize` storage operations
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if caller is not a fuel tank owner
@@ -2611,7 +2721,7 @@ export const scheduleMutateFreezeState = {
     ),
 }
 
-export const insertRuleSet = {
+export const insertRuleSet =  {
     name: 'FuelTanks.insert_rule_set',
     /**
      * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
@@ -2619,7 +2729,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2645,7 +2755,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2671,7 +2781,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2719,7 +2829,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2745,7 +2855,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2771,7 +2881,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2797,7 +2907,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2823,7 +2933,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2849,7 +2959,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2875,7 +2985,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2901,7 +3011,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2949,7 +3059,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -2975,7 +3085,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3001,7 +3111,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3027,7 +3137,32 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    matrixV1020: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: matrixV1020.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: matrixV1020.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3053,7 +3188,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3079,7 +3214,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3105,7 +3240,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3131,7 +3266,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3157,7 +3292,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3183,7 +3318,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3220,7 +3355,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3246,7 +3381,32 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
+     * This is only callable by the fuel tank's owner.
+     * ### Errors
+     * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
+     * - [`Error::NoPermission`] if caller is not the fuel tank owner
+     * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
+     *   account data
+     * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
+     * - [`Error::DuplicateRuleKinds`] if adding a rule set with multiple rules of the same
+     *   kind
+     */
+    enjinV1050: new CallType(
+        'FuelTanks.insert_rule_set',
+        sts.struct({
+            tankId: enjinV1050.MultiAddress,
+            ruleSetId: sts.number(),
+            ruleSet: enjinV1050.RuleSetDescriptor,
+        })
+    ),
+    /**
+     * Insert a new rule set for `tank_id` and `rule_set_id`. It can be a new rule set
+     * or it can replace an existing one. If it is replacing a rule set, a rule that is storing
+     * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
+     * the data first. If a rule is being replaced, it will be mutated with the new parameters,
+     * and it will maintain any persistent data it already has.
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3272,7 +3432,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3298,7 +3458,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3324,7 +3484,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3350,7 +3510,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3376,7 +3536,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3402,7 +3562,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3428,7 +3588,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3454,7 +3614,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3480,7 +3640,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3517,7 +3677,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3543,7 +3703,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3569,7 +3729,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3595,7 +3755,7 @@ export const insertRuleSet = {
      * data on any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove
      * the data first. If a rule is being replaced, it will be mutated with the new parameters,
      * and it will maintain any persistent data it already has.
-     *
+     * 
      * This is only callable by the fuel tank's owner.
      * ### Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
@@ -3616,14 +3776,14 @@ export const insertRuleSet = {
     ),
 }
 
-export const removeRuleSet = {
+export const removeRuleSet =  {
     name: 'FuelTanks.remove_rule_set',
     /**
      * Remove rule set for `tank_id` and `rule_set_id`. A rule that is storing data on
      * any accounts cannot be removed. Use [Self::remove_account_rule_data] to remove the
      * data first. This is only callable by the fuel tank's owner.
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if caller is not the fuel tank owner
      * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
@@ -3639,7 +3799,7 @@ export const removeRuleSet = {
     ),
 }
 
-export const batchAddAccount = {
+export const batchAddAccount =  {
     name: 'FuelTanks.batch_add_account',
     /**
      * Similar to add_account but takes a list of
@@ -3658,7 +3818,7 @@ export const batchAddAccount = {
     ),
 }
 
-export const batchRemoveAccount = {
+export const batchRemoveAccount =  {
     name: 'FuelTanks.batch_remove_account',
     /**
      * Similar to remove_account but takes a list of
@@ -3677,15 +3837,15 @@ export const batchRemoveAccount = {
     ),
 }
 
-export const forceSetConsumption = {
+export const forceSetConsumption =  {
     name: 'FuelTanks.force_set_consumption',
     /**
      * Force set the fuel tank consumption
      * If `user_id` is [`Some`], it sets the consumption for that account.
      * If it is [`None`], it sets the consumption on the fuel tank directly.
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::AccountNotFound`] if `user_id` is `Some` and account does not exist
      * - [`Error::FuelTankNotFound`] if tank_id does not exist
      * - [`Error::NoPermission`] if caller is not ForceOrigin or fuel tank owner
@@ -3703,16 +3863,16 @@ export const forceSetConsumption = {
     ),
 }
 
-export const destroyFuelTank = {
+export const destroyFuelTank =  {
     name: 'FuelTanks.destroy_fuel_tank',
     /**
      * Destroy the fuel tank by scheduling the deletion for `on_finalize` to execute
      * Only callable by owner
      * The fuel tank must be frozen
      * Can only be destroyed if all accounts are removed
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankNotFound`] if tank_id does not exist
      * - [`Error::NoPermission`] if caller is not owner
      * - [`Error::DestroyUnfrozenTank`] if tank is not frozen
@@ -3726,13 +3886,13 @@ export const destroyFuelTank = {
     ),
 }
 
-export const forceCreateFuelTank = {
+export const forceCreateFuelTank =  {
     name: 'FuelTanks.force_create_fuel_tank',
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixEnjinV603: new CallType(
@@ -3744,9 +3904,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixEnjinV1000: new CallType(
@@ -3758,9 +3918,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixEnjinV1003: new CallType(
@@ -3792,9 +3952,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixEnjinV1012: new CallType(
@@ -3806,9 +3966,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV604: new CallType(
@@ -3820,9 +3980,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV1000: new CallType(
@@ -3834,9 +3994,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV1003: new CallType(
@@ -3868,9 +4028,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV1010: new CallType(
@@ -3882,9 +4042,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV1011: new CallType(
@@ -3896,9 +4056,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     matrixV1012: new CallType(
@@ -3910,9 +4070,23 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    matrixV1020: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: matrixV1020.MultiAddress,
+            descriptor: matrixV1020.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV101: new CallType(
@@ -3924,9 +4098,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV110: new CallType(
@@ -3938,9 +4112,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV120: new CallType(
@@ -3952,9 +4126,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV1021: new CallType(
@@ -3966,9 +4140,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV1022: new CallType(
@@ -3980,9 +4154,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV1023: new CallType(
@@ -4004,9 +4178,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     enjinV1032: new CallType(
@@ -4018,9 +4192,23 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
+     * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
+     */
+    enjinV1050: new CallType(
+        'FuelTanks.force_create_fuel_tank',
+        sts.struct({
+            owner: enjinV1050.MultiAddress,
+            descriptor: enjinV1050.FuelTankDescriptor,
+        })
+    ),
+    /**
+     * Force creates a fuel tank
+     * 
+     * # Errors
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v105: new CallType(
@@ -4032,9 +4220,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v106: new CallType(
@@ -4046,9 +4234,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v110: new CallType(
@@ -4060,9 +4248,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v120: new CallType(
@@ -4074,9 +4262,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1021: new CallType(
@@ -4088,9 +4276,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1022: new CallType(
@@ -4102,9 +4290,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1023: new CallType(
@@ -4126,9 +4314,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1030: new CallType(
@@ -4140,9 +4328,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1031: new CallType(
@@ -4154,9 +4342,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1032: new CallType(
@@ -4168,9 +4356,9 @@ export const forceCreateFuelTank = {
     ),
     /**
      * Force creates a fuel tank
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::FuelTankAlreadyExists`] if `tank_id` already exists
      */
     v1050: new CallType(
@@ -4182,7 +4370,7 @@ export const forceCreateFuelTank = {
     ),
 }
 
-export const forceBatchAddAccount = {
+export const forceBatchAddAccount =  {
     name: 'FuelTanks.force_batch_add_account',
     /**
      * Sets the account storage for give tank_id and account
@@ -4197,11 +4385,11 @@ export const forceBatchAddAccount = {
     ),
 }
 
-export const mutateFreezeState = {
+export const mutateFreezeState =  {
     name: 'FuelTanks.mutate_freeze_state',
     /**
      * Mutate `is_frozen` state that determines if fuel tank or rule set can be used
-     *
+     * 
      * # Errors
      * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
      * - [`Error::NoPermission`] if caller is not a fuel tank owner

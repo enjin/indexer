@@ -1,12 +1,12 @@
 import { AccountClaimType, ClaimRequest, ClaimsClaimRequested, Event as EventModel, Extrinsic } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { unwrapAccount } from '../../utils/entities'
 
 export async function claimRequested(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic) return undefined

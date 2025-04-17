@@ -1,13 +1,13 @@
 import assert from 'assert'
 import { AccountTokenEvent, CounterOffer, Event as EventModel, Listing, OfferState } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { getOrCreateAccount } from '../../utils/entities'
 
 export async function counterOfferRemoved(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.counterOfferRemoved(item)

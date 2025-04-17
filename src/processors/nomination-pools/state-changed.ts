@@ -1,8 +1,8 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { NominationPool, PoolState } from '../../model'
 import * as mappings from './../../mappings'
 
-export async function stateChanged(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function stateChanged(ctx: CommonContext, block: Block, item: EventItem) {
     if (!item.extrinsic) return undefined
 
     const eventData = mappings.nominationPools.events.stateChanged(item)

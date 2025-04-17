@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v104 from '../v104'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const claimRequested = {
+export const claimRequested =  {
     name: 'Claims.ClaimRequested',
     /**
      * Claim has been requested by an account through the Relayer. `[who, amount,
@@ -66,7 +66,7 @@ export const claimRequested = {
     ),
 }
 
-export const claimed = {
+export const claimed =  {
     name: 'Claims.Claimed',
     /**
      * Someone claimed some ENJ2 from EFI. `[who, ethereum_address, amount]`
@@ -90,7 +90,7 @@ export const claimed = {
     ),
 }
 
-export const ethereumBlocksProcessed = {
+export const ethereumBlocksProcessed =  {
     name: 'Claims.EthereumBlocksProcessed',
     /**
      * Claims have been processed for the Ethereum block by the Relayer.
@@ -107,7 +107,7 @@ export const ethereumBlocksProcessed = {
     ),
 }
 
-export const claimMinted = {
+export const claimMinted =  {
     name: 'Claims.ClaimMinted',
     /**
      * Claim has been minted for someone by the root. `[who, amount]`
@@ -127,7 +127,7 @@ export const claimMinted = {
     ),
 }
 
-export const claimMoved = {
+export const claimMoved =  {
     name: 'Claims.ClaimMoved',
     /**
      * Someone's claim has been moved to another address. `[old, new]`
@@ -147,7 +147,7 @@ export const claimMoved = {
     ),
 }
 
-export const exchangeRateSet = {
+export const exchangeRateSet =  {
     name: 'Claims.ExchangeRateSet',
     /**
      * Exchange rate is set. `[exchange_rate]`
@@ -163,7 +163,7 @@ export const exchangeRateSet = {
     ),
 }
 
-export const delayTimeForClaimSet = {
+export const delayTimeForClaimSet =  {
     name: 'Claims.DelayTimeForClaimSet',
     /**
      * Delay time for claim is set. `[delay_time]`
@@ -180,7 +180,7 @@ export const delayTimeForClaimSet = {
     ),
 }
 
-export const claimRejected = {
+export const claimRejected =  {
     name: 'Claims.ClaimRejected',
     /**
      * Someone's claim has been rejected. `[account, transaction_hash]`
@@ -200,7 +200,7 @@ export const claimRejected = {
     ),
 }
 
-export const claimedEnj = {
+export const claimedEnj =  {
     name: 'Claims.ClaimedEnj',
     /**
      * A user burned EFI in order to begin a claim of ENJ.
@@ -214,7 +214,7 @@ export const claimedEnj = {
     ),
 }
 
-export const earlyBirdRewardCreated = {
+export const earlyBirdRewardCreated =  {
     name: 'Claims.EarlyBirdRewardCreated',
     /**
      * Someone got an early bird reward based on ENJ2 Staked in nomination pool `[who,
@@ -235,7 +235,7 @@ export const earlyBirdRewardCreated = {
     ),
 }
 
-export const claimedEarlyBirdReward = {
+export const claimedEarlyBirdReward =  {
     name: 'Claims.ClaimedEarlyBirdReward',
     /**
      * Someone got an early bird reward `[who,

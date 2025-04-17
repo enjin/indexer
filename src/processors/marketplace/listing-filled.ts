@@ -9,7 +9,7 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getBestListing } from '../../utils/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../utils/sns'
@@ -17,12 +17,12 @@ import * as mappings from './../../mappings'
 
 export async function listingFilled(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingFilled(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -35,6 +35,8 @@ export async function listingFilled(
             },
         },
     })
+
+    if (!listing) return undefined
 
     if (listing.state.listingType === ListingType.FixedPrice) {
         listing.state = new FixedPriceState({

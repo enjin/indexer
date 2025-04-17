@@ -1,7 +1,7 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 
-export const newAuthorities = {
+export const newAuthorities =  {
     name: 'Grandpa.NewAuthorities',
     /**
      * New authority set has been applied.
@@ -14,18 +14,24 @@ export const newAuthorities = {
     ),
 }
 
-export const paused = {
+export const paused =  {
     name: 'Grandpa.Paused',
     /**
      * Current authority set has been paused.
      */
-    enjinV100: new EventType('Grandpa.Paused', sts.unit()),
+    enjinV100: new EventType(
+        'Grandpa.Paused',
+        sts.unit()
+    ),
 }
 
-export const resumed = {
+export const resumed =  {
     name: 'Grandpa.Resumed',
     /**
      * Current authority set has been resumed.
      */
-    enjinV100: new EventType('Grandpa.Resumed', sts.unit()),
+    enjinV100: new EventType(
+        'Grandpa.Resumed',
+        sts.unit()
+    ),
 }

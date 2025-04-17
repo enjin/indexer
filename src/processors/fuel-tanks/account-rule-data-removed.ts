@@ -1,10 +1,10 @@
 import { Event as EventModel, FuelTankRuleSet, PermittedExtrinsics } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 
 export async function accountRuleDataRemoved(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     const eventData = mappings.fuelTanks.events.accountRuleDataRemoved(item)
@@ -22,8 +22,10 @@ export async function accountRuleDataRemoved(
             permittedExtrinsics.map((x) => x.id)
         )
     } else {
-        // TODO: Fix this
-        // ruleSet[uc(kind)] = undefined
+        const ruleKind = kind.charAt(0).toLowerCase() + kind.slice(1)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        ruleSet[ruleKind] = undefined
     }
 
     await ctx.store.save(ruleSet)

@@ -1,12 +1,13 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as matrixV1004 from '../matrixV1004'
 import * as matrixV1010 from '../matrixV1010'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
+import * as matrixV1020 from '../matrixV1020'
 
-export const send = {
+export const send =  {
     name: 'PolkadotXcm.send',
     matrixEnjinV603: new CallType(
         'PolkadotXcm.send',
@@ -38,15 +39,15 @@ export const send = {
     ),
 }
 
-export const teleportAssets = {
+export const teleportAssets =  {
     name: 'PolkadotXcm.teleport_assets',
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -68,13 +69,13 @@ export const teleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * **This function is deprecated: Use `limited_teleport_assets` instead.**
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -97,11 +98,11 @@ export const teleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -123,13 +124,13 @@ export const teleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * **This function is deprecated: Use `limited_teleport_assets` instead.**
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -152,16 +153,16 @@ export const teleportAssets = {
     ),
 }
 
-export const reserveTransferAssets = {
+export const reserveTransferAssets =  {
     name: 'PolkadotXcm.reserve_transfer_assets',
     /**
      * Transfer some assets from the local chain to the sovereign account of a destination
      * chain and forward a notification XCM.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -184,7 +185,7 @@ export const reserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the destination chain through their local,
      * destination or remote reserve.
-     *
+     * 
      * `assets` must have same reserve location and may not be teleportable to `dest`.
      *  - `assets` have local reserve: transfer assets to sovereign account of destination
      *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
@@ -195,13 +196,13 @@ export const reserveTransferAssets = {
      *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
      *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
      *    to mint and deposit reserve-based assets to `beneficiary`.
-     *
+     * 
      * **This function is deprecated: Use `limited_reserve_transfer_assets` instead.**
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -225,11 +226,11 @@ export const reserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the sovereign account of a destination
      * chain and forward a notification XCM.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -252,7 +253,7 @@ export const reserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the destination chain through their local,
      * destination or remote reserve.
-     *
+     * 
      * `assets` must have same reserve location and may not be teleportable to `dest`.
      *  - `assets` have local reserve: transfer assets to sovereign account of destination
      *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
@@ -263,13 +264,13 @@ export const reserveTransferAssets = {
      *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
      *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
      *    to mint and deposit reserve-based assets to `beneficiary`.
-     *
+     * 
      * **This function is deprecated: Use `limited_reserve_transfer_assets` instead.**
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,
      * with all fees taken as needed from the asset.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -292,18 +293,18 @@ export const reserveTransferAssets = {
     ),
 }
 
-export const execute = {
+export const execute =  {
     name: 'PolkadotXcm.execute',
     /**
      * Execute an XCM message from a local, signed, origin.
-     *
+     * 
      * An event is deposited indicating whether `msg` could be executed completely or only
      * partially.
-     *
+     * 
      * No more than `max_weight` will be used in its attempted execution. If this is less than the
      * maximum amount of weight that the message could take to be executed, then no execution
      * attempt will be made.
-     *
+     * 
      * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
      * to completion; only that *some* of it was executed.
      */
@@ -316,10 +317,10 @@ export const execute = {
     ),
     /**
      * Execute an XCM message from a local, signed, origin.
-     *
+     * 
      * An event is deposited indicating whether `msg` could be executed completely or only
      * partially.
-     *
+     * 
      * No more than `max_weight` will be used in its attempted execution. If this is less than
      * the maximum amount of weight that the message could take to be executed, then no
      * execution attempt will be made.
@@ -333,14 +334,14 @@ export const execute = {
     ),
     /**
      * Execute an XCM message from a local, signed, origin.
-     *
+     * 
      * An event is deposited indicating whether `msg` could be executed completely or only
      * partially.
-     *
+     * 
      * No more than `max_weight` will be used in its attempted execution. If this is less than the
      * maximum amount of weight that the message could take to be executed, then no execution
      * attempt will be made.
-     *
+     * 
      * NOTE: A successful return to this does *not* imply that the `msg` was executed successfully
      * to completion; only that *some* of it was executed.
      */
@@ -353,10 +354,10 @@ export const execute = {
     ),
     /**
      * Execute an XCM message from a local, signed, origin.
-     *
+     * 
      * An event is deposited indicating whether `msg` could be executed completely or only
      * partially.
-     *
+     * 
      * No more than `max_weight` will be used in its attempted execution. If this is less than
      * the maximum amount of weight that the message could take to be executed, then no
      * execution attempt will be made.
@@ -370,12 +371,12 @@ export const execute = {
     ),
 }
 
-export const forceXcmVersion = {
+export const forceXcmVersion =  {
     name: 'PolkadotXcm.force_xcm_version',
     /**
      * Extoll that a particular destination can be communicated with through a particular
      * version of XCM.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
@@ -400,7 +401,7 @@ export const forceXcmVersion = {
     /**
      * Extoll that a particular destination can be communicated with through a particular
      * version of XCM.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
@@ -415,7 +416,7 @@ export const forceXcmVersion = {
     /**
      * Extoll that a particular destination can be communicated with through a particular
      * version of XCM.
-     *
+     * 
      * - `origin`: Must be Root.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
@@ -440,7 +441,7 @@ export const forceXcmVersion = {
     /**
      * Extoll that a particular destination can be communicated with through a particular
      * version of XCM.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The destination that is being described.
      * - `xcm_version`: The latest version of XCM that `location` supports.
@@ -454,12 +455,12 @@ export const forceXcmVersion = {
     ),
 }
 
-export const forceDefaultXcmVersion = {
+export const forceDefaultXcmVersion =  {
     name: 'PolkadotXcm.force_default_xcm_version',
     /**
      * Set a safe XCM version (the version that XCM should be encoded with if the most recent
      * version a destination can accept is unknown).
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `maybe_xcm_version`: The default XCM encoding version, or `None` to disable.
      */
@@ -471,11 +472,11 @@ export const forceDefaultXcmVersion = {
     ),
 }
 
-export const forceSubscribeVersionNotify = {
+export const forceSubscribeVersionNotify =  {
     name: 'PolkadotXcm.force_subscribe_version_notify',
     /**
      * Ask a location to notify us regarding their XCM version and any changes to it.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
@@ -487,7 +488,7 @@ export const forceSubscribeVersionNotify = {
     ),
     /**
      * Ask a location to notify us regarding their XCM version and any changes to it.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
@@ -499,7 +500,7 @@ export const forceSubscribeVersionNotify = {
     ),
     /**
      * Ask a location to notify us regarding their XCM version and any changes to it.
-     *
+     * 
      * - `origin`: Must be Root.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
@@ -511,7 +512,7 @@ export const forceSubscribeVersionNotify = {
     ),
     /**
      * Ask a location to notify us regarding their XCM version and any changes to it.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we should subscribe for XCM version notifications.
      */
@@ -523,12 +524,12 @@ export const forceSubscribeVersionNotify = {
     ),
 }
 
-export const forceUnsubscribeVersionNotify = {
+export const forceUnsubscribeVersionNotify =  {
     name: 'PolkadotXcm.force_unsubscribe_version_notify',
     /**
      * Require that a particular destination should no longer notify us regarding any XCM
      * version changes.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
@@ -542,7 +543,7 @@ export const forceUnsubscribeVersionNotify = {
     /**
      * Require that a particular destination should no longer notify us regarding any XCM
      * version changes.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
@@ -556,7 +557,7 @@ export const forceUnsubscribeVersionNotify = {
     /**
      * Require that a particular destination should no longer notify us regarding any XCM
      * version changes.
-     *
+     * 
      * - `origin`: Must be Root.
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
@@ -570,7 +571,7 @@ export const forceUnsubscribeVersionNotify = {
     /**
      * Require that a particular destination should no longer notify us regarding any XCM
      * version changes.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `location`: The location to which we are currently subscribed for XCM version
      *   notifications which we no longer desire.
@@ -583,17 +584,17 @@ export const forceUnsubscribeVersionNotify = {
     ),
 }
 
-export const limitedReserveTransferAssets = {
+export const limitedReserveTransferAssets =  {
     name: 'PolkadotXcm.limited_reserve_transfer_assets',
     /**
      * Transfer some assets from the local chain to the sovereign account of a destination
      * chain and forward a notification XCM.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -618,7 +619,7 @@ export const limitedReserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the destination chain through their local,
      * destination or remote reserve.
-     *
+     * 
      * `assets` must have same reserve location and may not be teleportable to `dest`.
      *  - `assets` have local reserve: transfer assets to sovereign account of destination
      *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
@@ -629,12 +630,12 @@ export const limitedReserveTransferAssets = {
      *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
      *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
      *    to mint and deposit reserve-based assets to `beneficiary`.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -660,12 +661,12 @@ export const limitedReserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the sovereign account of a destination
      * chain and forward a notification XCM.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -690,7 +691,7 @@ export const limitedReserveTransferAssets = {
     /**
      * Transfer some assets from the local chain to the destination chain through their local,
      * destination or remote reserve.
-     *
+     * 
      * `assets` must have same reserve location and may not be teleportable to `dest`.
      *  - `assets` have local reserve: transfer assets to sovereign account of destination
      *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
@@ -701,12 +702,12 @@ export const limitedReserveTransferAssets = {
      *  - `assets` have remote reserve: burn local assets, forward XCM to reserve chain to move
      *    reserves from this chain's SA to `dest` chain's SA, and forward another XCM to `dest`
      *    to mint and deposit reserve-based assets to `beneficiary`.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -731,16 +732,16 @@ export const limitedReserveTransferAssets = {
     ),
 }
 
-export const limitedTeleportAssets = {
+export const limitedTeleportAssets =  {
     name: 'PolkadotXcm.limited_teleport_assets',
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -764,12 +765,12 @@ export const limitedTeleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -794,12 +795,12 @@ export const limitedTeleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send
      *   from parachain to parachain, or `X1(Parachain(..))` to send from relay to parachain.
@@ -823,12 +824,12 @@ export const limitedTeleportAssets = {
     ),
     /**
      * Teleport some assets from the local chain to some destination chain.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
      * is needed than `weight_limit`, then the operation will fail and the assets send may be
      * at risk.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `[Parent,
      *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
@@ -853,11 +854,11 @@ export const limitedTeleportAssets = {
     ),
 }
 
-export const forceSuspension = {
+export const forceSuspension =  {
     name: 'PolkadotXcm.force_suspension',
     /**
      * Set or unset the global suspension state of the XCM executor.
-     *
+     * 
      * - `origin`: Must be an origin specified by AdminOrigin.
      * - `suspended`: `true` to suspend, `false` to resume.
      */
@@ -869,17 +870,17 @@ export const forceSuspension = {
     ),
 }
 
-export const transferAssets = {
+export const transferAssets =  {
     name: 'PolkadotXcm.transfer_assets',
     /**
      * Transfer some assets from the local chain to the destination chain through their local,
      * destination or remote reserve, or through teleports.
-     *
+     * 
      * Fee payment on the destination side is made from the asset in the `assets` vector of
      * index `fee_asset_item` (hence referred to as `fees`), up to enough to pay for
      * `weight_limit` of weight. If more weight is needed than `weight_limit`, then the
      * operation will fail and the assets sent may be at risk.
-     *
+     * 
      * `assets` (excluding `fees`) must have same reserve location or otherwise be teleportable
      * to `dest`, no limitations imposed on `fees`.
      *  - for local reserve: transfer assets to sovereign account of destination chain and
@@ -893,7 +894,7 @@ export const transferAssets = {
      *    and deposit reserve-based assets to `beneficiary`.
      *  - for teleports: burn local assets and forward XCM to `dest` chain to mint/teleport
      *    assets and deposit them to `beneficiary`.
-     *
+     * 
      * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
      * - `dest`: Destination context for the assets. Will typically be `X2(Parent,
      *   Parachain(..))` to send from parachain to parachain, or `X1(Parachain(..))` to send
@@ -918,11 +919,11 @@ export const transferAssets = {
     ),
 }
 
-export const claimAssets = {
+export const claimAssets =  {
     name: 'PolkadotXcm.claim_assets',
     /**
      * Claims assets trapped on this pallet because of leftover assets during XCM execution.
-     *
+     * 
      * - `origin`: Anyone can call this extrinsic.
      * - `assets`: The exact assets that were trapped. Use the version to specify what version
      * was the latest when they were trapped.
@@ -933,6 +934,72 @@ export const claimAssets = {
         sts.struct({
             assets: matrixEnjinV1012.VersionedAssets,
             beneficiary: matrixEnjinV1012.VersionedLocation,
+        })
+    ),
+}
+
+export const transferAssetsUsingTypeAndThen =  {
+    name: 'PolkadotXcm.transfer_assets_using_type_and_then',
+    /**
+     * Transfer assets from the local chain to the destination chain using explicit transfer
+     * types for assets and fees.
+     * 
+     * `assets` must have same reserve location or may be teleportable to `dest`. Caller must
+     * provide the `assets_transfer_type` to be used for `assets`:
+     *  - `TransferType::LocalReserve`: transfer assets to sovereign account of destination
+     *    chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+     *    assets to `beneficiary`.
+     *  - `TransferType::DestinationReserve`: burn local assets and forward a notification to
+     *    `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+     *    deposit them to `beneficiary`.
+     *  - `TransferType::RemoteReserve(reserve)`: burn local assets, forward XCM to `reserve`
+     *    chain to move reserves from this chain's SA to `dest` chain's SA, and forward another
+     *    XCM to `dest` to mint and deposit reserve-based assets to `beneficiary`. Typically
+     *    the remote `reserve` is Asset Hub.
+     *  - `TransferType::Teleport`: burn local assets and forward XCM to `dest` chain to
+     *    mint/teleport assets and deposit them to `beneficiary`.
+     * 
+     * On the destination chain, as well as any intermediary hops, `BuyExecution` is used to
+     * buy execution using transferred `assets` identified by `remote_fees_id`.
+     * Make sure enough of the specified `remote_fees_id` asset is included in the given list
+     * of `assets`. `remote_fees_id` should be enough to pay for `weight_limit`. If more weight
+     * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+     * at risk.
+     * 
+     * `remote_fees_id` may use different transfer type than rest of `assets` and can be
+     * specified through `fees_transfer_type`.
+     * 
+     * The caller needs to specify what should happen to the transferred assets once they reach
+     * the `dest` chain. This is done through the `custom_xcm_on_dest` parameter, which
+     * contains the instructions to execute on `dest` as a final step.
+     *   This is usually as simple as:
+     *   `Xcm(vec![DepositAsset { assets: Wild(AllCounted(assets.len())), beneficiary }])`,
+     *   but could be something more exotic like sending the `assets` even further.
+     * 
+     * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+     * - `dest`: Destination context for the assets. Will typically be `[Parent,
+     *   Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+     *   relay to parachain, or `(parents: 2, (GlobalConsensus(..), ..))` to send from
+     *   parachain across a bridge to another ecosystem destination.
+     * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+     *   fee on the `dest` (and possibly reserve) chains.
+     * - `assets_transfer_type`: The XCM `TransferType` used to transfer the `assets`.
+     * - `remote_fees_id`: One of the included `assets` to be used to pay fees.
+     * - `fees_transfer_type`: The XCM `TransferType` used to transfer the `fees` assets.
+     * - `custom_xcm_on_dest`: The XCM to be executed on `dest` chain as the last step of the
+     *   transfer, which also determines what happens to the assets on the destination chain.
+     * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+     */
+    matrixV1020: new CallType(
+        'PolkadotXcm.transfer_assets_using_type_and_then',
+        sts.struct({
+            dest: matrixV1020.VersionedLocation,
+            assets: matrixV1020.VersionedAssets,
+            assetsTransferType: matrixV1020.TransferType,
+            remoteFeesId: matrixV1020.VersionedAssetId,
+            feesTransferType: matrixV1020.TransferType,
+            customXcmOnDest: matrixV1020.VersionedXcm,
+            weightLimit: matrixV1020.V3WeightLimit,
         })
     ),
 }

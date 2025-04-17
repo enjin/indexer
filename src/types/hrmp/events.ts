@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 
-export const openChannelRequested = {
+export const openChannelRequested =  {
     name: 'Hrmp.OpenChannelRequested',
     /**
      * Open HRMP channel requested.
@@ -30,7 +30,10 @@ export const openChannelRequested = {
      * Open HRMP channel requested.
      * `[sender, recipient, proposed_max_capacity, proposed_max_message_size]`
      */
-    v100: new EventType('Hrmp.OpenChannelRequested', sts.tuple([v100.Id, v100.Id, sts.number(), sts.number()])),
+    v100: new EventType(
+        'Hrmp.OpenChannelRequested',
+        sts.tuple([v100.Id, v100.Id, sts.number(), sts.number()])
+    ),
     /**
      * Open HRMP channel requested.
      */
@@ -45,13 +48,16 @@ export const openChannelRequested = {
     ),
 }
 
-export const openChannelCanceled = {
+export const openChannelCanceled =  {
     name: 'Hrmp.OpenChannelCanceled',
     /**
      * An HRMP channel request sent by the receiver was canceled by either party.
      * `[by_parachain, channel_id]`
      */
-    enjinV100: new EventType('Hrmp.OpenChannelCanceled', sts.tuple([enjinV100.Id, enjinV100.HrmpChannelId])),
+    enjinV100: new EventType(
+        'Hrmp.OpenChannelCanceled',
+        sts.tuple([enjinV100.Id, enjinV100.HrmpChannelId])
+    ),
     /**
      * An HRMP channel request sent by the receiver was canceled by either party.
      */
@@ -66,7 +72,10 @@ export const openChannelCanceled = {
      * An HRMP channel request sent by the receiver was canceled by either party.
      * `[by_parachain, channel_id]`
      */
-    v100: new EventType('Hrmp.OpenChannelCanceled', sts.tuple([v100.Id, v100.HrmpChannelId])),
+    v100: new EventType(
+        'Hrmp.OpenChannelCanceled',
+        sts.tuple([v100.Id, v100.HrmpChannelId])
+    ),
     /**
      * An HRMP channel request sent by the receiver was canceled by either party.
      */
@@ -79,12 +88,15 @@ export const openChannelCanceled = {
     ),
 }
 
-export const openChannelAccepted = {
+export const openChannelAccepted =  {
     name: 'Hrmp.OpenChannelAccepted',
     /**
      * Open HRMP channel accepted. `[sender, recipient]`
      */
-    enjinV100: new EventType('Hrmp.OpenChannelAccepted', sts.tuple([enjinV100.Id, enjinV100.Id])),
+    enjinV100: new EventType(
+        'Hrmp.OpenChannelAccepted',
+        sts.tuple([enjinV100.Id, enjinV100.Id])
+    ),
     /**
      * Open HRMP channel accepted.
      */
@@ -98,7 +110,10 @@ export const openChannelAccepted = {
     /**
      * Open HRMP channel accepted. `[sender, recipient]`
      */
-    v100: new EventType('Hrmp.OpenChannelAccepted', sts.tuple([v100.Id, v100.Id])),
+    v100: new EventType(
+        'Hrmp.OpenChannelAccepted',
+        sts.tuple([v100.Id, v100.Id])
+    ),
     /**
      * Open HRMP channel accepted.
      */
@@ -111,12 +126,15 @@ export const openChannelAccepted = {
     ),
 }
 
-export const channelClosed = {
+export const channelClosed =  {
     name: 'Hrmp.ChannelClosed',
     /**
      * HRMP channel closed. `[by_parachain, channel_id]`
      */
-    enjinV100: new EventType('Hrmp.ChannelClosed', sts.tuple([enjinV100.Id, enjinV100.HrmpChannelId])),
+    enjinV100: new EventType(
+        'Hrmp.ChannelClosed',
+        sts.tuple([enjinV100.Id, enjinV100.HrmpChannelId])
+    ),
     /**
      * HRMP channel closed.
      */
@@ -130,7 +148,10 @@ export const channelClosed = {
     /**
      * HRMP channel closed. `[by_parachain, channel_id]`
      */
-    v100: new EventType('Hrmp.ChannelClosed', sts.tuple([v100.Id, v100.HrmpChannelId])),
+    v100: new EventType(
+        'Hrmp.ChannelClosed',
+        sts.tuple([v100.Id, v100.HrmpChannelId])
+    ),
     /**
      * HRMP channel closed.
      */
@@ -143,7 +164,7 @@ export const channelClosed = {
     ),
 }
 
-export const hrmpChannelForceOpened = {
+export const hrmpChannelForceOpened =  {
     name: 'Hrmp.HrmpChannelForceOpened',
     /**
      * An HRMP channel was opened via Root origin.
@@ -169,7 +190,10 @@ export const hrmpChannelForceOpened = {
      * An HRMP channel was opened via Root origin.
      * `[sender, recipient, proposed_max_capacity, proposed_max_message_size]`
      */
-    v100: new EventType('Hrmp.HrmpChannelForceOpened', sts.tuple([v100.Id, v100.Id, sts.number(), sts.number()])),
+    v100: new EventType(
+        'Hrmp.HrmpChannelForceOpened',
+        sts.tuple([v100.Id, v100.Id, sts.number(), sts.number()])
+    ),
     /**
      * An HRMP channel was opened via Root origin.
      */
@@ -184,7 +208,7 @@ export const hrmpChannelForceOpened = {
     ),
 }
 
-export const hrmpSystemChannelOpened = {
+export const hrmpSystemChannelOpened =  {
     name: 'Hrmp.HrmpSystemChannelOpened',
     /**
      * An HRMP channel was opened between two system chains.
@@ -200,7 +224,7 @@ export const hrmpSystemChannelOpened = {
     ),
 }
 
-export const openChannelDepositsUpdated = {
+export const openChannelDepositsUpdated =  {
     name: 'Hrmp.OpenChannelDepositsUpdated',
     /**
      * An HRMP channel's deposits were updated.

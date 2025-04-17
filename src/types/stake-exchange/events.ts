@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v101 from '../v101'
@@ -13,7 +13,7 @@ import * as v1026 from '../v1026'
 import * as enjinV1033 from '../enjinV1033'
 import * as v1033 from '../v1033'
 
-export const offerCreated = {
+export const offerCreated =  {
     name: 'StakeExchange.OfferCreated',
     /**
      * A offer was placed
@@ -161,7 +161,7 @@ export const offerCreated = {
     ),
 }
 
-export const offerCancelled = {
+export const offerCancelled =  {
     name: 'StakeExchange.OfferCancelled',
     /**
      * A offer was cancelled
@@ -177,7 +177,7 @@ export const offerCancelled = {
     ),
 }
 
-export const liquidityConfigUpdated = {
+export const liquidityConfigUpdated =  {
     name: 'StakeExchange.LiquidityConfigUpdated',
     /**
      * Liquidity config was set for account
@@ -197,7 +197,7 @@ export const liquidityConfigUpdated = {
     ),
 }
 
-export const liquidityWithdrawn = {
+export const liquidityWithdrawn =  {
     name: 'StakeExchange.LiquidityWithdrawn',
     /**
      * Liquidity was withdrawn from a offer
@@ -217,7 +217,7 @@ export const liquidityWithdrawn = {
     ),
 }
 
-export const liquidityAdded = {
+export const liquidityAdded =  {
     name: 'StakeExchange.LiquidityAdded',
     /**
      * Liquidity was added to a offer
@@ -237,7 +237,7 @@ export const liquidityAdded = {
     ),
 }
 
-export const buyOrderCompleted = {
+export const buyOrderCompleted =  {
     name: 'StakeExchange.BuyOrderCompleted',
     /**
      * Buy order was completed
@@ -457,7 +457,7 @@ export const buyOrderCompleted = {
     ),
 }
 
-export const offerCompleted = {
+export const offerCompleted =  {
     name: 'StakeExchange.OfferCompleted',
     /**
      * A offer was completed and removed

@@ -11,6 +11,7 @@ services:
       - indexer_db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    shm_size: 1gb
     command: [
       "postgres",
       "-c", "max_connections=200"
@@ -18,12 +19,27 @@ services:
 
   indexer_redis:
     container_name: indexer_redis
-    image: redis:7.0
-    restart: on-failure
-    volumes:
-      - redis_db:/data
+    restart: unless-stopped
+    image: redis:7
+    ulimits:
+      memlock: -1
     ports:
       - "6379:6379"
+    volumes:
+      - redis_db:/data
+    command:
+      [
+        "redis-server",
+        "--maxmemory-policy",
+        "noeviction",
+      ]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "redis-cli -a ping"
+      interval: 5s
+      timeout: 20s
+      retries: 10
 
   indexer_processor:
     container_name: indexer_processor
@@ -39,25 +55,23 @@ services:
       - .env:/app/.env
     depends_on:
       - indexer_db
-      - indexer_worker
 
-#  indexer_hasura:
-#    container_name: indexer_hasura
-#    restart: unless-stopped
-#    image: hasura/graphql-engine:latest
-#    env_file:
-#      - .env
-#    environment:
-#      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}"
-#      HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: true
-#      HASURA_GRAPHQL_ENABLE_CONSOLE: true
-#      HASURA_GRAPHQL_DEV_MODE: true
-#      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - indexer_db
-#      - indexer_processor
+  indexer_hasura:
+    container_name: indexer_hasura
+    restart: unless-stopped
+    image: hasura/graphql-engine:latest
+    env_file:
+      - .env
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}"
+      HASURA_GRAPHQL_ENABLE_SUBSCRIPTIONS: true
+      HASURA_GRAPHQL_ENABLE_CONSOLE: true
+      HASURA_GRAPHQL_DEV_MODE: true
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup,http-log,webhook-log,websocket-log,query-log
+    ports:
+      - "8085:8080"
+    depends_on:
+      - indexer_db
 
   indexer_graphql:
     container_name: indexer_graphql
@@ -74,7 +88,6 @@ services:
       - .env:/app/.env
     depends_on:
       - indexer_db
-#      - indexer_processor
 
   indexer_worker:
     container_name: indexer_worker
@@ -91,14 +104,6 @@ services:
     depends_on:
       - indexer_db
       - indexer_redis
-
-#  indexer_jaeger:
-#    container_name: indexer_jaeger
-#    image: jaegertracing/all-in-one:latest
-#    restart: unless-stopped
-#    ports:
-#      - '4318:4318'
-#      - '16686:16686'
 
 volumes:
   indexer_db:

@@ -9,7 +9,7 @@ import {
     CollectionFlags,
     CollectionStats,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
 import * as mappings from '../../mappings'
 import { Sns } from '../../utils/sns'
@@ -26,7 +26,7 @@ import { Sns } from '../../utils/sns'
 
 export async function collectionCreated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -46,7 +46,11 @@ export async function collectionCreated(
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    const callData = mappings.multiTokens.calls.createOrForceCreateCollection(item.call)
+    const callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
+    const forceSingleMint =
+        'forceSingleMint' in callData.descriptor.policy.mint
+            ? callData.descriptor.policy.mint.forceSingleMint
+            : callData.descriptor.policy.mint.forceCollapsingSupply
 
     const account = await getOrCreateAccount(ctx, eventData.owner)
     const collection = new Collection({
@@ -56,8 +60,7 @@ export async function collectionCreated(
         mintPolicy: new MintPolicy({
             maxTokenCount: callData.descriptor.policy.mint.maxTokenCount,
             maxTokenSupply: callData.descriptor.policy.mint.maxTokenSupply,
-            // TODO: Check forceCollapsingSupply too
-            forceSingleMint: callData.descriptor.policy.mint.forceSingleMint,
+            forceSingleMint: forceSingleMint,
         }),
         // TODO: Fix this
         // marketPolicy: callData.descriptor.policy.market,

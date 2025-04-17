@@ -1,12 +1,11 @@
 import { throwError } from '../../utils/errors'
 import { Collection, Event as EventModel, NativeTokenMetadata, Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
-import { DefaultMintParams_CreateToken } from '../../mappings/common/types'
 
 export async function tokenCreated(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -35,10 +34,42 @@ export async function tokenCreated(
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
 
-        const call = mappings.multiTokens.calls.mintOrForceMint(item.call, event.tokenId)
-        const params = call.params as DefaultMintParams_CreateToken
-        const minBalance = params.sufficiency?.__kind === 'Sufficient' ? params.sufficiency.minimumBalance : 1n
-        const unitPrice = params.sufficiency?.__kind === 'Insufficient' ? (params.sufficiency.unitPrice ?? 1n) : 1n
+        const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
+
+        // TODO: This needs to be refactored
+        let minBalance = 1n
+        let unitPrice = 1n
+        let listingForbidden = false
+        let accountDepositCount = 0
+        let anyoneCanInfuse = false
+        let nativeMetadata = null
+        let infusion = 0n
+
+        if ('sufficiency' in call.params) {
+            minBalance = call.params.sufficiency?.__kind === 'Sufficient' ? call.params.sufficiency.minimumBalance : 1n
+            unitPrice =
+                call.params.sufficiency?.__kind === 'Insufficient' ? (call.params.sufficiency.unitPrice ?? 1n) : 1n
+        }
+
+        if ('listingForbidden' in call.params) {
+            listingForbidden = call.params.listingForbidden
+        }
+
+        if ('accountDepositCount' in call.params) {
+            accountDepositCount = call.params.accountDepositCount ?? 0
+        }
+
+        if ('anyoneCanInfuse' in call.params) {
+            anyoneCanInfuse = call.params.anyoneCanInfuse === undefined ? false : call.params.anyoneCanInfuse
+        }
+
+        if ('metadata' in call.params) {
+            nativeMetadata = call.params.metadata !== undefined ? new NativeTokenMetadata(call.params.metadata) : null
+        }
+
+        if ('infusion' in call.params) {
+            infusion = call.params.infusion ?? 0n
+        }
 
         const token = new Token({
             id: `${event.collectionId}-${event.tokenId}`,
@@ -50,17 +81,17 @@ export async function tokenCreated(
             // TODO: Fix this
             freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
             minimumBalance: minBalance,
-            unitPrice: unitPrice,
+            unitPrice,
             mintDeposit: 0n, // TODO: Fixed for now
             attributeCount: 0,
             collection,
             metadata: null,
             nonFungible: false,
-            listingForbidden: params.listingForbidden,
-            accountDepositCount: params.accountDepositCount ?? 0,
-            anyoneCanInfuse: params.anyoneCanInfuse ?? false,
-            nativeMetadata: params.metadata !== undefined ? new NativeTokenMetadata(params.metadata) : null,
-            infusion: params.infusion ?? 0n,
+            listingForbidden,
+            accountDepositCount,
+            anyoneCanInfuse,
+            nativeMetadata,
+            infusion,
             createdAt: new Date(block.timestamp ?? 0),
         })
 

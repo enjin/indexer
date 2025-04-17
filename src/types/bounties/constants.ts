@@ -1,38 +1,50 @@
-import { sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, ConstantType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 
-export const bountyDepositBase = {
+export const bountyDepositBase =  {
     /**
      *  The amount held on deposit for placing a bounty proposal.
      */
-    matrixEnjinV603: new ConstantType('Bounties.BountyDepositBase', sts.bigint()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.BountyDepositBase',
+        sts.bigint()
+    ),
 }
 
-export const bountyDepositPayoutDelay = {
+export const bountyDepositPayoutDelay =  {
     /**
      *  The delay period for which a bounty beneficiary need to wait before claim the payout.
      */
-    matrixEnjinV603: new ConstantType('Bounties.BountyDepositPayoutDelay', sts.number()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.BountyDepositPayoutDelay',
+        sts.number()
+    ),
 }
 
-export const bountyUpdatePeriod = {
+export const bountyUpdatePeriod =  {
     /**
      *  Bounty duration in blocks.
      */
-    matrixEnjinV603: new ConstantType('Bounties.BountyUpdatePeriod', sts.number()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.BountyUpdatePeriod',
+        sts.number()
+    ),
 }
 
-export const curatorDepositMultiplier = {
+export const curatorDepositMultiplier =  {
     /**
      *  The curator deposit is calculated as a percentage of the curator fee.
-     *
+     * 
      *  This deposit has optional upper and lower bounds with `CuratorDepositMax` and
      *  `CuratorDepositMin`.
      */
-    matrixEnjinV603: new ConstantType('Bounties.CuratorDepositMultiplier', matrixEnjinV603.Permill),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.CuratorDepositMultiplier',
+        matrixEnjinV603.Permill
+    ),
 }
 
-export const curatorDepositMax = {
+export const curatorDepositMax =  {
     /**
      *  Maximum amount of funds that should be placed in a deposit for making a proposal.
      */
@@ -42,7 +54,7 @@ export const curatorDepositMax = {
     ),
 }
 
-export const curatorDepositMin = {
+export const curatorDepositMin =  {
     /**
      *  Minimum amount of funds that should be placed in a deposit for making a proposal.
      */
@@ -52,25 +64,34 @@ export const curatorDepositMin = {
     ),
 }
 
-export const bountyValueMinimum = {
+export const bountyValueMinimum =  {
     /**
      *  Minimum value for a bounty.
      */
-    matrixEnjinV603: new ConstantType('Bounties.BountyValueMinimum', sts.bigint()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.BountyValueMinimum',
+        sts.bigint()
+    ),
 }
 
-export const dataDepositPerByte = {
+export const dataDepositPerByte =  {
     /**
      *  The amount held on deposit per byte within the tip report reason or bounty description.
      */
-    matrixEnjinV603: new ConstantType('Bounties.DataDepositPerByte', sts.bigint()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.DataDepositPerByte',
+        sts.bigint()
+    ),
 }
 
-export const maximumReasonLength = {
+export const maximumReasonLength =  {
     /**
      *  Maximum acceptable reason length.
-     *
+     * 
      *  Benchmarks depend on this value, be sure to update weights file when changing this value
      */
-    matrixEnjinV603: new ConstantType('Bounties.MaximumReasonLength', sts.number()),
+    matrixEnjinV603: new ConstantType(
+        'Bounties.MaximumReasonLength',
+        sts.number()
+    ),
 }

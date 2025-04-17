@@ -3,8 +3,9 @@ import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
 import { CreateFuelTank } from './types'
+import { withDispatchCheck } from '../utils'
 
-export function createFuelTank(call: CallItem): CreateFuelTank {
+export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank => {
     return match(call)
         .returnType<CreateFuelTank>()
         .when(
@@ -178,4 +179,4 @@ export function createFuelTank(call: CallItem): CreateFuelTank {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

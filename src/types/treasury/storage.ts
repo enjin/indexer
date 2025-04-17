@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, StorageType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV1032 from '../enjinV1032'
 
-export const proposalCount = {
+export const proposalCount =  {
     /**
      *  Number of proposals that have been made.
      */
@@ -12,46 +12,37 @@ export const proposalCount = {
 /**
  *  Number of proposals that have been made.
  */
-export interface ProposalCountEnjinV100 {
+export interface ProposalCountEnjinV100  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
-    get(block: Block): Promise<number | undefined>
+    get(block: Block): Promise<(number | undefined)>
 }
 
-export const proposals = {
+export const proposals =  {
     /**
      *  Proposals that have been made.
      */
-    enjinV100: new StorageType(
-        'Treasury.Proposals',
-        'Optional',
-        [sts.number()],
-        enjinV100.Proposal
-    ) as ProposalsEnjinV100,
+    enjinV100: new StorageType('Treasury.Proposals', 'Optional', [sts.number()], enjinV100.Proposal) as ProposalsEnjinV100,
 }
 
 /**
  *  Proposals that have been made.
  */
-export interface ProposalsEnjinV100 {
+export interface ProposalsEnjinV100  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: number): Promise<enjinV100.Proposal | undefined>
+    get(block: Block, key: number): Promise<(enjinV100.Proposal | undefined)>
     getMany(block: Block, keys: number[]): Promise<(enjinV100.Proposal | undefined)[]>
     getKeys(block: Block): Promise<number[]>
     getKeys(block: Block, key: number): Promise<number[]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
-    getPairs(block: Block): Promise<[k: number, v: enjinV100.Proposal | undefined][]>
-    getPairs(block: Block, key: number): Promise<[k: number, v: enjinV100.Proposal | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: enjinV100.Proposal | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key: number
-    ): AsyncIterable<[k: number, v: enjinV100.Proposal | undefined][]>
+    getPairs(block: Block): Promise<[k: number, v: (enjinV100.Proposal | undefined)][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (enjinV100.Proposal | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: (enjinV100.Proposal | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: number): AsyncIterable<[k: number, v: (enjinV100.Proposal | undefined)][]>
 }
 
-export const deactivated = {
+export const deactivated =  {
     /**
      *  The amount which has been reported as inactive to Currency.
      */
@@ -61,34 +52,29 @@ export const deactivated = {
 /**
  *  The amount which has been reported as inactive to Currency.
  */
-export interface DeactivatedEnjinV100 {
+export interface DeactivatedEnjinV100  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): bigint
-    get(block: Block): Promise<bigint | undefined>
+    get(block: Block): Promise<(bigint | undefined)>
 }
 
-export const approvals = {
+export const approvals =  {
     /**
      *  Proposal indices that have been approved but not yet awarded.
      */
-    enjinV100: new StorageType(
-        'Treasury.Approvals',
-        'Default',
-        [],
-        sts.array(() => sts.number())
-    ) as ApprovalsEnjinV100,
+    enjinV100: new StorageType('Treasury.Approvals', 'Default', [], sts.array(() => sts.number())) as ApprovalsEnjinV100,
 }
 
 /**
  *  Proposal indices that have been approved but not yet awarded.
  */
-export interface ApprovalsEnjinV100 {
+export interface ApprovalsEnjinV100  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number[]
-    get(block: Block): Promise<number[] | undefined>
+    get(block: Block): Promise<(number[] | undefined)>
 }
 
-export const spendCount = {
+export const spendCount =  {
     /**
      *  The count of spends that have been made.
      */
@@ -98,41 +84,32 @@ export const spendCount = {
 /**
  *  The count of spends that have been made.
  */
-export interface SpendCountEnjinV1032 {
+export interface SpendCountEnjinV1032  {
     is(block: RuntimeCtx): boolean
     getDefault(block: Block): number
-    get(block: Block): Promise<number | undefined>
+    get(block: Block): Promise<(number | undefined)>
 }
 
-export const spends = {
+export const spends =  {
     /**
      *  Spends that have been approved and being processed.
      */
-    enjinV1032: new StorageType(
-        'Treasury.Spends',
-        'Optional',
-        [sts.number()],
-        enjinV1032.SpendStatus
-    ) as SpendsEnjinV1032,
+    enjinV1032: new StorageType('Treasury.Spends', 'Optional', [sts.number()], enjinV1032.SpendStatus) as SpendsEnjinV1032,
 }
 
 /**
  *  Spends that have been approved and being processed.
  */
-export interface SpendsEnjinV1032 {
+export interface SpendsEnjinV1032  {
     is(block: RuntimeCtx): boolean
-    get(block: Block, key: number): Promise<enjinV1032.SpendStatus | undefined>
+    get(block: Block, key: number): Promise<(enjinV1032.SpendStatus | undefined)>
     getMany(block: Block, keys: number[]): Promise<(enjinV1032.SpendStatus | undefined)[]>
     getKeys(block: Block): Promise<number[]>
     getKeys(block: Block, key: number): Promise<number[]>
     getKeysPaged(pageSize: number, block: Block): AsyncIterable<number[]>
     getKeysPaged(pageSize: number, block: Block, key: number): AsyncIterable<number[]>
-    getPairs(block: Block): Promise<[k: number, v: enjinV1032.SpendStatus | undefined][]>
-    getPairs(block: Block, key: number): Promise<[k: number, v: enjinV1032.SpendStatus | undefined][]>
-    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: enjinV1032.SpendStatus | undefined][]>
-    getPairsPaged(
-        pageSize: number,
-        block: Block,
-        key: number
-    ): AsyncIterable<[k: number, v: enjinV1032.SpendStatus | undefined][]>
+    getPairs(block: Block): Promise<[k: number, v: (enjinV1032.SpendStatus | undefined)][]>
+    getPairs(block: Block, key: number): Promise<[k: number, v: (enjinV1032.SpendStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block): AsyncIterable<[k: number, v: (enjinV1032.SpendStatus | undefined)][]>
+    getPairsPaged(pageSize: number, block: Block, key: number): AsyncIterable<[k: number, v: (enjinV1032.SpendStatus | undefined)][]>
 }

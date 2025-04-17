@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 import * as matrixEnjinV1000 from '../matrixEnjinV1000'
@@ -13,22 +13,23 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixV1012 from '../matrixV1012'
+import * as matrixV1020 from '../matrixV1020'
 
-export const batch = {
+export const batch =  {
     name: 'MatrixUtility.batch',
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixEnjinV603: new CallType(
@@ -40,17 +41,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixEnjinV1000: new CallType(
@@ -62,17 +63,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixEnjinV1003: new CallType(
@@ -104,17 +105,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixEnjinV1012: new CallType(
@@ -126,17 +127,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV604: new CallType(
@@ -148,17 +149,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV1000: new CallType(
@@ -170,17 +171,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV1003: new CallType(
@@ -212,17 +213,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV1010: new CallType(
@@ -234,17 +235,17 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV1011: new CallType(
@@ -256,23 +257,45 @@ export const batch = {
     ),
     /**
      * Dispatch a batch of calls.
-     *
+     * 
      * May be called from any origin except [`None`].
-     *
+     * 
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     *
+     * 
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing [`frame_system::Config::BaseCallFilter`]).
-     *
+     * 
      * # Errors
-     *
+     * 
      * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
      */
     matrixV1012: new CallType(
         'MatrixUtility.batch',
         sts.struct({
             calls: sts.array(() => matrixV1012.Call),
+            continueOnFailure: sts.boolean(),
+        })
+    ),
+    /**
+     * Dispatch a batch of calls.
+     * 
+     * May be called from any origin except [`None`].
+     * 
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     * 
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing [`frame_system::Config::BaseCallFilter`]).
+     * 
+     * # Errors
+     * 
+     * - [`Error::TooManyCalls`]: If the number of calls exceeds the limit.
+     */
+    matrixV1020: new CallType(
+        'MatrixUtility.batch',
+        sts.struct({
+            calls: sts.array(() => matrixV1020.Call),
             continueOnFailure: sts.boolean(),
         })
     ),

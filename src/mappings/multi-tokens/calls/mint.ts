@@ -3,8 +3,9 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { match } from 'ts-pattern'
 import { Mint } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function mint(call: CallItem): Mint {
+export const mint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)
         .returnType<Mint>()
         .when(
@@ -54,4 +55,4 @@ export function mint(call: CallItem): Mint {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

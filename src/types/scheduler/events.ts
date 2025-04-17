@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -9,7 +9,7 @@ import * as matrixV602 from '../matrixV602'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixV604 from '../matrixV604'
 
-export const scheduled = {
+export const scheduled =  {
     name: 'Scheduler.Scheduled',
     /**
      * Scheduled some task.
@@ -23,7 +23,7 @@ export const scheduled = {
     ),
 }
 
-export const canceled = {
+export const canceled =  {
     name: 'Scheduler.Canceled',
     /**
      * Canceled some task.
@@ -37,7 +37,7 @@ export const canceled = {
     ),
 }
 
-export const dispatched = {
+export const dispatched =  {
     name: 'Scheduler.Dispatched',
     /**
      * Dispatched some task.
@@ -47,10 +47,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixEnjinV603.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixEnjinV603.DispatchError),
         })
     ),
     /**
@@ -61,10 +58,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV500.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV500.DispatchError),
         })
     ),
     /**
@@ -75,10 +69,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV602.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV602.DispatchError),
         })
     ),
     /**
@@ -89,10 +80,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => matrixV604.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => matrixV604.DispatchError),
         })
     ),
     /**
@@ -103,10 +91,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV100.DispatchError),
         })
     ),
     /**
@@ -117,10 +102,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => enjinV101.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => enjinV101.DispatchError),
         })
     ),
     /**
@@ -131,10 +113,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => v100.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v100.DispatchError),
         })
     ),
     /**
@@ -145,10 +124,7 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => v104.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v104.DispatchError),
         })
     ),
     /**
@@ -159,15 +135,12 @@ export const dispatched = {
         sts.struct({
             task: sts.tuple(() => [sts.number(), sts.number()]),
             id: sts.option(() => sts.bytes()),
-            result: sts.result(
-                () => sts.unit(),
-                () => v105.DispatchError
-            ),
+            result: sts.result(() => sts.unit(), () => v105.DispatchError),
         })
     ),
 }
 
-export const callUnavailable = {
+export const callUnavailable =  {
     name: 'Scheduler.CallUnavailable',
     /**
      * The call for the provided hash was not found so the task has been aborted.
@@ -181,7 +154,7 @@ export const callUnavailable = {
     ),
 }
 
-export const periodicFailed = {
+export const periodicFailed =  {
     name: 'Scheduler.PeriodicFailed',
     /**
      * The given task was unable to be renewed since the agenda is full at that block.
@@ -195,7 +168,7 @@ export const periodicFailed = {
     ),
 }
 
-export const permanentlyOverweight = {
+export const permanentlyOverweight =  {
     name: 'Scheduler.PermanentlyOverweight',
     /**
      * The given task can never be executed since it is overweight.
@@ -209,7 +182,7 @@ export const permanentlyOverweight = {
     ),
 }
 
-export const retrySet = {
+export const retrySet =  {
     name: 'Scheduler.RetrySet',
     /**
      * Set a retry configuration for some task.
@@ -225,7 +198,7 @@ export const retrySet = {
     ),
 }
 
-export const retryCancelled = {
+export const retryCancelled =  {
     name: 'Scheduler.RetryCancelled',
     /**
      * Cancel a retry configuration for some task.
@@ -239,7 +212,7 @@ export const retryCancelled = {
     ),
 }
 
-export const retryFailed = {
+export const retryFailed =  {
     name: 'Scheduler.RetryFailed',
     /**
      * The given task was unable to be retried since the agenda is full at that block or there

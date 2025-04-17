@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 
-export const newAuction = {
+export const newAuction =  {
     name: 'Auctions.new_auction',
     /**
      * Create a new auction.
-     *
+     * 
      * This can only happen when there isn't already an auction in progress and may only be
      * called by the root origin. Accepts the `duration` of this auction and the
      * `lease_period_index` of the initial lease period of the four that are to be auctioned.
@@ -18,15 +18,15 @@ export const newAuction = {
     ),
 }
 
-export const bid = {
+export const bid =  {
     name: 'Auctions.bid',
     /**
      * Make a new bid from an account (including a parachain account) for deploying a new
      * parachain.
-     *
+     * 
      * Multiple simultaneous bids from the same bidder are allowed only as long as all active
      * bids overlap each other (i.e. are mutually exclusive). Bids cannot be redacted.
-     *
+     * 
      * - `sub` is the sub-bidder ID, allowing for multiple competing bids to be made by (and
      * funded by) the same account.
      * - `auction_index` is the index of the auction to bid on. Should just be the present
@@ -50,12 +50,15 @@ export const bid = {
     ),
 }
 
-export const cancelAuction = {
+export const cancelAuction =  {
     name: 'Auctions.cancel_auction',
     /**
      * Cancel an in-progress auction.
-     *
+     * 
      * Can only be called by Root origin.
      */
-    enjinV100: new CallType('Auctions.cancel_auction', sts.unit()),
+    enjinV100: new CallType(
+        'Auctions.cancel_auction',
+        sts.unit()
+    ),
 }

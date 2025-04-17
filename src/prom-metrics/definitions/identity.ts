@@ -1,6 +1,6 @@
 import client from 'prom-client'
 import register from '../registry'
-import connection from '../../contexts'
+import { connectionManager } from '../../contexts'
 
 export const indexer_identity_registrars_total = new client.Gauge({
     name: 'indexer_identity_registrars_total',
@@ -38,13 +38,7 @@ export const indexer_identity_indeitities_sub_avg = new client.Gauge({
 })
 
 export default async () => {
-    if (!connection.isInitialized) {
-        await connection.initialize().catch(() => {
-            throw Error('Failed to initialize connection')
-        })
-    }
-
-    const em = connection.manager
+    const em = await connectionManager()
 
     const [registrars, mainIdentities, subIdentities, identities, subAvg] = await Promise.all([
         em.query('SELECT COUNT(*) FROM identity_registrar'),

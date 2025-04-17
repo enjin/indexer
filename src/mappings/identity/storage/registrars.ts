@@ -1,10 +1,10 @@
-import { BlockHeader } from '../../../contexts'
+import { Block } from '../../../contexts'
 import { UnsupportedStorageError } from '../../../utils/errors'
 import { identity } from '../../../types/storage'
 import { match } from 'ts-pattern'
 import { RegistrarInfo } from '../../../mappings/identity/storage/types'
 
-export function registrars(block: BlockHeader): Promise<(RegistrarInfo | undefined)[] | undefined> {
+export function registrars(block: Block): Promise<(RegistrarInfo | undefined)[] | undefined> {
     return match(block)
         .returnType<Promise<(RegistrarInfo | undefined)[] | undefined>>()
         .when(

@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV101 from '../enjinV101'
 
-export const registered = {
+export const registered =  {
     name: 'Registrar.Registered',
     enjinV100: new EventType(
         'Registrar.Registered',
@@ -13,7 +13,7 @@ export const registered = {
     ),
 }
 
-export const deregistered = {
+export const deregistered =  {
     name: 'Registrar.Deregistered',
     enjinV100: new EventType(
         'Registrar.Deregistered',
@@ -23,7 +23,7 @@ export const deregistered = {
     ),
 }
 
-export const reserved = {
+export const reserved =  {
     name: 'Registrar.Reserved',
     enjinV100: new EventType(
         'Registrar.Reserved',
@@ -34,7 +34,7 @@ export const reserved = {
     ),
 }
 
-export const swapped = {
+export const swapped =  {
     name: 'Registrar.Swapped',
     enjinV101: new EventType(
         'Registrar.Swapped',

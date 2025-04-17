@@ -6,10 +6,12 @@ import multiTokens from './multi-tokens'
 import marketplace from './marketplace'
 import staking from './staking'
 import stakeExchange from './stake-exchange'
-import xcm from './xcm'
+import xcmPallet from './xcm-pallet'
 import fuelTanks from './fuel-tanks'
 import imOnline from './im-online'
 import system from './system'
+import polkadotXcm from './polkadot-xcm'
+import matrixUtility from './matrix-utility'
 
 export {
     multiTokens,
@@ -18,10 +20,12 @@ export {
     nominationPools,
     staking,
     stakeExchange,
-    xcm,
+    xcmPallet,
     fuelTanks,
     identity,
     imOnline,
     claims,
     system,
+    polkadotXcm,
+    matrixUtility,
 }

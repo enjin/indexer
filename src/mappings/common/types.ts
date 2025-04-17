@@ -13,7 +13,10 @@ export type ExtraFlags = bigint
 export type BoundedVec = Bytes
 export type Call = {
     __kind: string
-    // value: Bytes - We don't need this
+    value: {
+        __kind: string
+        value?: unknown
+    }
 }
 
 export type Account_EVM = {
@@ -447,6 +450,10 @@ type HoldReason_StakeExchange = {
     __kind: 'StakeExchange'
 }
 
+type HoldReason_CollatorStaking = {
+    __kind: 'CollatorStaking'
+}
+
 export type RuntimeHoldReason =
     | HoldReason_FuelTanks
     | HoldReason_Marketplace
@@ -454,6 +461,7 @@ export type RuntimeHoldReason =
     | HoldReason_Preimage
     | HoldReason_SafeMode
     | HoldReason_StakeExchange
+    | HoldReason_CollatorStaking
 
 type Root = {
     __kind: 'Root'

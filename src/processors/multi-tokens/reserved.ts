@@ -1,12 +1,12 @@
 import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
+import { Block, CommonContext, EventItem } from '../../contexts'
+import { QueueUtils } from '../../queues'
 import { throwError } from '../../utils/errors'
 import * as mappings from './../../mappings'
 import { match, P } from 'ts-pattern'
 
-export async function reserved(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
+export async function reserved(ctx: CommonContext, block: Block, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.reserved(item)
     if (skipSave) return undefined
 
@@ -45,5 +45,6 @@ export async function reserved(ctx: CommonContext, block: BlockHeader, item: Eve
         )
     }
 
-    // syncCollectionStats(data.collectionId.toString())
+    // console.log('Dispatching from reserved')
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 }

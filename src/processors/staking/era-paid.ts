@@ -1,8 +1,8 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Era, Event as EventModel, Extrinsic, StakingEraPaid } from '../../model'
 import * as mappings from '../../mappings'
 
-export async function eraPaid(ctx: CommonContext, block: BlockHeader, item: EventItem) {
+export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem) {
     const event = mappings.staking.events.eraPaid(item)
 
     const lastEra = await ctx.store.find<Era>(Era, {

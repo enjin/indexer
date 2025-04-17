@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const proposed = {
+export const proposed =  {
     name: 'CommunityPool.Proposed',
     /**
      * New proposal.
@@ -15,7 +15,7 @@ export const proposed = {
     ),
 }
 
-export const spending = {
+export const spending =  {
     name: 'CommunityPool.Spending',
     /**
      * We have ended a spend period and will now allocate funds.
@@ -28,7 +28,7 @@ export const spending = {
     ),
 }
 
-export const awarded = {
+export const awarded =  {
     name: 'CommunityPool.Awarded',
     /**
      * Some funds have been allocated.
@@ -43,7 +43,7 @@ export const awarded = {
     ),
 }
 
-export const rejected = {
+export const rejected =  {
     name: 'CommunityPool.Rejected',
     /**
      * A proposal was rejected; funds were slashed.
@@ -57,7 +57,7 @@ export const rejected = {
     ),
 }
 
-export const burnt = {
+export const burnt =  {
     name: 'CommunityPool.Burnt',
     /**
      * Some of our funds have been burnt.
@@ -70,7 +70,7 @@ export const burnt = {
     ),
 }
 
-export const rollover = {
+export const rollover =  {
     name: 'CommunityPool.Rollover',
     /**
      * Spending has finished; this is the amount that rolls over until next spend.
@@ -83,7 +83,7 @@ export const rollover = {
     ),
 }
 
-export const deposit = {
+export const deposit =  {
     name: 'CommunityPool.Deposit',
     /**
      * Some funds have been deposited.
@@ -96,7 +96,7 @@ export const deposit = {
     ),
 }
 
-export const spendApproved = {
+export const spendApproved =  {
     name: 'CommunityPool.SpendApproved',
     /**
      * A new spend proposal has been approved.
@@ -111,7 +111,7 @@ export const spendApproved = {
     ),
 }
 
-export const updatedInactive = {
+export const updatedInactive =  {
     name: 'CommunityPool.UpdatedInactive',
     /**
      * The inactive funds of the pallet have been updated.
@@ -125,7 +125,7 @@ export const updatedInactive = {
     ),
 }
 
-export const assetSpendApproved = {
+export const assetSpendApproved =  {
     name: 'CommunityPool.AssetSpendApproved',
     /**
      * A new asset spend proposal has been approved.
@@ -142,7 +142,7 @@ export const assetSpendApproved = {
     ),
 }
 
-export const assetSpendVoided = {
+export const assetSpendVoided =  {
     name: 'CommunityPool.AssetSpendVoided',
     /**
      * An approved spend was voided.
@@ -155,7 +155,7 @@ export const assetSpendVoided = {
     ),
 }
 
-export const paid = {
+export const paid =  {
     name: 'CommunityPool.Paid',
     /**
      * A payment happened.
@@ -168,7 +168,7 @@ export const paid = {
     ),
 }
 
-export const paymentFailed = {
+export const paymentFailed =  {
     name: 'CommunityPool.PaymentFailed',
     /**
      * A payment failed and can be retried.
@@ -181,7 +181,7 @@ export const paymentFailed = {
     ),
 }
 
-export const spendProcessed = {
+export const spendProcessed =  {
     name: 'CommunityPool.SpendProcessed',
     /**
      * A spend was processed and removed from the storage. It might have been successfully

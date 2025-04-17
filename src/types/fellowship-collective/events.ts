@@ -1,8 +1,8 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as enjinV1032 from '../enjinV1032'
 
-export const memberAdded = {
+export const memberAdded =  {
     name: 'FellowshipCollective.MemberAdded',
     /**
      * A member `who` has been added.
@@ -15,7 +15,7 @@ export const memberAdded = {
     ),
 }
 
-export const rankChanged = {
+export const rankChanged =  {
     name: 'FellowshipCollective.RankChanged',
     /**
      * The member `who`se rank has been changed to the given `rank`.
@@ -29,7 +29,7 @@ export const rankChanged = {
     ),
 }
 
-export const memberRemoved = {
+export const memberRemoved =  {
     name: 'FellowshipCollective.MemberRemoved',
     /**
      * The member `who` of given `rank` has been removed from the collective.
@@ -43,7 +43,7 @@ export const memberRemoved = {
     ),
 }
 
-export const voted = {
+export const voted =  {
     name: 'FellowshipCollective.Voted',
     /**
      * The member `who` has voted for the `poll` with the given `vote` leading to an updated
@@ -60,7 +60,7 @@ export const voted = {
     ),
 }
 
-export const memberExchanged = {
+export const memberExchanged =  {
     name: 'FellowshipCollective.MemberExchanged',
     /**
      * The member `who` had their `AccountId` changed to `new_who`.

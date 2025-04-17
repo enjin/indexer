@@ -1,11 +1,11 @@
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Event as EventModel, StakeExchangeOffer } from '../../model'
 import { Sns } from '../../utils/sns'
 import * as mappings from '../../mappings'
 
 export async function liquidityAdded(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<EventModel | undefined> {
     if (!item.extrinsic || !item.extrinsic.call) return undefined

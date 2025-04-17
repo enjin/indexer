@@ -1,6 +1,3 @@
-import { DataSource, DataSourceOptions } from 'typeorm'
-import { createOrmConfig } from '@subsquid/typeorm-config'
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Store } from '@subsquid/typeorm-store'
 import {
     BlockHeader as _BlockHeader,
@@ -11,18 +8,16 @@ import {
     SubstrateBatchProcessorFields,
 } from '@subsquid/substrate-processor'
 import { processor } from './processor'
+import { getDataSource } from './connection'
 
-const cfg: DataSourceOptions = createOrmConfig() as PostgresConnectionOptions
-const con: DataSource = new DataSource({ ...cfg, poolSize: 200, pool: { max: 100 } } as PostgresConnectionOptions)
+export const connectionManager = async () => {
+    const con = await getDataSource()
 
-export default con
+    return con.manager
+}
 
-export const dataHandlerContext = () => {
-    if (!con.isInitialized) {
-        con.initialize().catch((err: unknown) => {
-            throw err
-        })
-    }
+export const dataHandlerContext = async () => {
+    const con = await getDataSource()
 
     const store = new Store(() => con.manager)
     return { store } as DataHandlerContext<Store, never>
@@ -31,7 +26,7 @@ export const dataHandlerContext = () => {
 type Fields = SubstrateBatchProcessorFields<typeof processor>
 
 export type CommonContext = DataHandlerContext<Store, Fields>
-export type BlockHeader = _BlockHeader<Fields>
+export type Block = _BlockHeader<Fields>
 export type CallItem = Call<Fields>
 export type EventItem = Event<Fields>
 export type ExtrinsicItem = Extrinsic<Fields>

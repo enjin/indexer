@@ -8,15 +8,15 @@ import {
     TokenAccount,
     TransferPolicy,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { match } from 'ts-pattern'
+import { QueueUtils } from '../../queues'
 
 export async function frozen(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {
@@ -122,7 +122,8 @@ export async function frozen(
         })
     }
 
-    // syncCollectionStats(event.collectionId.toString())
+    // console.log('Dispatching from frozen')
+    QueueUtils.dispatchComputeStats(event.collectionId.toString())
 
     return mappings.multiTokens.events.frozenEventModel(item, event)
 }

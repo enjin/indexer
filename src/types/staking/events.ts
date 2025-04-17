@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v1030 from '../v1030'
 import * as enjinV1032 from '../enjinV1032'
 
-export const eraPaid = {
+export const eraPaid =  {
     name: 'Staking.EraPaid',
     /**
      * The era payout has been set; the first balance is the validator-payout; the second is
@@ -20,7 +20,7 @@ export const eraPaid = {
     ),
 }
 
-export const rewarded = {
+export const rewarded =  {
     name: 'Staking.Rewarded',
     /**
      * The nominator has been rewarded by this amount.
@@ -66,7 +66,7 @@ export const rewarded = {
     ),
 }
 
-export const slashed = {
+export const slashed =  {
     name: 'Staking.Slashed',
     /**
      * A staker (validator or nominator) has been slashed by the given amount.
@@ -80,7 +80,7 @@ export const slashed = {
     ),
 }
 
-export const slashReported = {
+export const slashReported =  {
     name: 'Staking.SlashReported',
     /**
      * A slash for the given validator, for the given percentage of their stake, at the given
@@ -96,7 +96,7 @@ export const slashReported = {
     ),
 }
 
-export const oldSlashingReportDiscarded = {
+export const oldSlashingReportDiscarded =  {
     name: 'Staking.OldSlashingReportDiscarded',
     /**
      * An old slashing report from a prior era was discarded because it could
@@ -110,19 +110,22 @@ export const oldSlashingReportDiscarded = {
     ),
 }
 
-export const stakersElected = {
+export const stakersElected =  {
     name: 'Staking.StakersElected',
     /**
      * A new set of stakers was elected.
      */
-    enjinV100: new EventType('Staking.StakersElected', sts.unit()),
+    enjinV100: new EventType(
+        'Staking.StakersElected',
+        sts.unit()
+    ),
 }
 
-export const bonded = {
+export const bonded =  {
     name: 'Staking.Bonded',
     /**
      * An account has bonded this amount. \[stash, amount\]
-     *
+     * 
      * NOTE: This event is only emitted when funds are bonded via a dispatchable. Notably,
      * it will not be emitted for staking rewards when they are added to stake.
      */
@@ -135,7 +138,7 @@ export const bonded = {
     ),
 }
 
-export const unbonded = {
+export const unbonded =  {
     name: 'Staking.Unbonded',
     /**
      * An account has unbonded this amount.
@@ -149,7 +152,7 @@ export const unbonded = {
     ),
 }
 
-export const withdrawn = {
+export const withdrawn =  {
     name: 'Staking.Withdrawn',
     /**
      * An account has called `withdraw_unbonded` and removed unbonding chunks worth `Balance`
@@ -164,7 +167,7 @@ export const withdrawn = {
     ),
 }
 
-export const kicked = {
+export const kicked =  {
     name: 'Staking.Kicked',
     /**
      * A nominator has been kicked from a validator.
@@ -178,15 +181,18 @@ export const kicked = {
     ),
 }
 
-export const stakingElectionFailed = {
+export const stakingElectionFailed =  {
     name: 'Staking.StakingElectionFailed',
     /**
      * The election failed. No new era is planned.
      */
-    enjinV100: new EventType('Staking.StakingElectionFailed', sts.unit()),
+    enjinV100: new EventType(
+        'Staking.StakingElectionFailed',
+        sts.unit()
+    ),
 }
 
-export const chilled = {
+export const chilled =  {
     name: 'Staking.Chilled',
     /**
      * An account has stopped participating as either a validator or nominator.
@@ -199,7 +205,7 @@ export const chilled = {
     ),
 }
 
-export const payoutStarted = {
+export const payoutStarted =  {
     name: 'Staking.PayoutStarted',
     /**
      * The stakers' rewards are getting paid.
@@ -213,7 +219,7 @@ export const payoutStarted = {
     ),
 }
 
-export const validatorPrefsSet = {
+export const validatorPrefsSet =  {
     name: 'Staking.ValidatorPrefsSet',
     /**
      * A validator has set their preferences.
@@ -227,7 +233,7 @@ export const validatorPrefsSet = {
     ),
 }
 
-export const forceEra = {
+export const forceEra =  {
     name: 'Staking.ForceEra',
     /**
      * A new force era mode was set.
@@ -240,7 +246,7 @@ export const forceEra = {
     ),
 }
 
-export const snapshotVotersSizeExceeded = {
+export const snapshotVotersSizeExceeded =  {
     name: 'Staking.SnapshotVotersSizeExceeded',
     /**
      * Voters size limit reached.
@@ -253,7 +259,7 @@ export const snapshotVotersSizeExceeded = {
     ),
 }
 
-export const snapshotTargetsSizeExceeded = {
+export const snapshotTargetsSizeExceeded =  {
     name: 'Staking.SnapshotTargetsSizeExceeded',
     /**
      * Targets size limit reached.
@@ -266,7 +272,7 @@ export const snapshotTargetsSizeExceeded = {
     ),
 }
 
-export const controllerBatchDeprecated = {
+export const controllerBatchDeprecated =  {
     name: 'Staking.ControllerBatchDeprecated',
     /**
      * Report of a controller batch deprecation.

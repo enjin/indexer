@@ -6,7 +6,7 @@ import {
     ListingStatusType,
     ListingType,
 } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getBestListing } from '../../utils/entities'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
@@ -14,12 +14,12 @@ import * as mappings from './../../mappings'
 
 export async function listingCancelled(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem
 ): Promise<[EventModel, AccountTokenEvent] | undefined> {
     const event = mappings.marketplace.events.listingCancelled(item)
     const listingId = event.listingId.substring(2)
-    const listing = await ctx.store.findOneOrFail<Listing>(Listing, {
+    const listing = await ctx.store.findOne<Listing>(Listing, {
         where: { id: listingId },
         relations: {
             seller: true,
@@ -32,6 +32,8 @@ export async function listingCancelled(
             },
         },
     })
+
+    if (!listing) return undefined
 
     listing.isActive = false
     listing.updatedAt = new Date(block.timestamp ?? 0)

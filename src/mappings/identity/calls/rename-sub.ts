@@ -2,9 +2,10 @@ import { UnsupportedCallError } from '../../../utils/errors'
 import { calls } from '../../../types'
 import { CallItem } from '../../../contexts'
 import { match } from 'ts-pattern'
-import { RenameSub } from '../../../mappings/identity/calls/types'
+import { RenameSub } from './types'
+import { withDispatchCheck } from '../../fuel-tanks/utils'
 
-export function renameSub(call: CallItem): RenameSub {
+export const renameSub = withDispatchCheck((call: CallItem): RenameSub => {
     return match(call)
         .returnType<RenameSub>()
         .when(
@@ -14,4 +15,4 @@ export function renameSub(call: CallItem): RenameSub {
         .otherwise(() => {
             throw new UnsupportedCallError(call)
         })
-}
+})

@@ -1,18 +1,17 @@
 import { Arg, Query, Resolver } from 'type-graphql'
-import { decodeAddress } from '@polkadot/util-crypto'
-import { u8aToHex } from '@polkadot/util'
-import { QueueUtils } from '../worker/queue'
+import { QueueUtils } from '../queues'
+import { decodeAddress } from '../utils/tools'
 
 @Resolver()
 export class RefreshBalancesResolver {
     @Query(() => Boolean, { nullable: false })
     refreshBalances(@Arg('ids', () => [String], { defaultValue: [] }) ids: string[]): boolean {
         if (ids.length > 100) {
-            throw new Error('Too many accounts to refresh')
+            throw new Error('Too many accounts to refresh, limit is 100')
         }
 
         const publicKeys = ids.map((id) => {
-            return u8aToHex(decodeAddress(id))
+            return decodeAddress(id)
         })
 
         QueueUtils.dispatchFetchBalances(publicKeys)

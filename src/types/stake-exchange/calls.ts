@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as v101 from '../v101'
@@ -9,11 +9,11 @@ import * as v1021 from '../v1021'
 import * as enjinV1023 from '../enjinV1023'
 import * as v1023 from '../v1023'
 
-export const createOffer = {
+export const createOffer =  {
     name: 'StakeExchange.create_offer',
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -28,7 +28,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -43,7 +43,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -58,7 +58,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -73,7 +73,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -88,7 +88,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -103,7 +103,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -118,7 +118,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -133,7 +133,7 @@ export const createOffer = {
     ),
     /**
      * Place a new offer with the given parameters
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::ZeroOffer`] if offer amount is zero.
@@ -148,11 +148,11 @@ export const createOffer = {
     ),
 }
 
-export const cancelOffer = {
+export const cancelOffer =  {
     name: 'StakeExchange.cancel_offer',
     /**
      * Cancel an existing offer with `offer_id`
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::OfferNotFound`] if the `offer_id` does not exist
@@ -165,7 +165,7 @@ export const cancelOffer = {
     ),
 }
 
-export const configureLiquidityAccount = {
+export const configureLiquidityAccount =  {
     name: 'StakeExchange.configure_liquidity_account',
     /**
      * Set the liquidity config for the caller account
@@ -178,11 +178,11 @@ export const configureLiquidityAccount = {
     ),
 }
 
-export const withdrawLiquidity = {
+export const withdrawLiquidity =  {
     name: 'StakeExchange.withdraw_liquidity',
     /**
      * Withdraw liquidity from a current active offer
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match offer account.
      * - [`Error::OfferNotFound`] if the offerId does not exist
@@ -196,11 +196,11 @@ export const withdrawLiquidity = {
     ),
 }
 
-export const addLiquidity = {
+export const addLiquidity =  {
     name: 'StakeExchange.add_liquidity',
     /**
      * Add liquidity to a current active offer
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match bidding account.
      * - [`Error::OfferNotFound`] if the offerId does not exist
@@ -214,12 +214,12 @@ export const addLiquidity = {
     ),
 }
 
-export const buy = {
+export const buy =  {
     name: 'StakeExchange.buy',
     /**
      * Buy from a current active offer, returning the native currency by exchanging the staked
      * tokens
-     *
+     * 
      * # Errors
      * - [`Error::CallerNotOfferCreator`] if the caller account does not match bidding account.
      * - [`Error::TokenRestriction`] if the tokenId is restricted by the LP

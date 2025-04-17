@@ -1,4 +1,4 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as enjinV110 from '../enjinV110'
 import * as v110 from '../v110'
 import * as matrixV500 from '../matrixV500'
@@ -8,12 +8,14 @@ import * as matrixV1010 from '../matrixV1010'
 import * as matrixV1011 from '../matrixV1011'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 import * as matrixEnjinV1014 from '../matrixEnjinV1014'
+import * as matrixV1020 from '../matrixV1020'
 import * as v1030 from '../v1030'
 import * as v1031 from '../v1031'
 import * as enjinV1032 from '../enjinV1032'
+import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const listingCreated = {
+export const listingCreated =  {
     name: 'Marketplace.ListingCreated',
     /**
      * A listing was created
@@ -98,6 +100,22 @@ export const listingCreated = {
     /**
      * A listing was created
      */
+    matrixV1020: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: matrixV1020.H256,
+            /**
+             * The listing
+             */
+            listing: matrixV1020.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
     enjinV110: new EventType(
         'Marketplace.ListingCreated',
         sts.struct({
@@ -125,6 +143,22 @@ export const listingCreated = {
              * The listing
              */
             listing: enjinV1032.Listing,
+        })
+    ),
+    /**
+     * A listing was created
+     */
+    enjinV1050: new EventType(
+        'Marketplace.ListingCreated',
+        sts.struct({
+            /**
+             * Id for the listing
+             */
+            listingId: enjinV1050.H256,
+            /**
+             * The listing
+             */
+            listing: enjinV1050.Listing,
         })
     ),
     /**
@@ -193,7 +227,7 @@ export const listingCreated = {
     ),
 }
 
-export const listingCancelled = {
+export const listingCancelled =  {
     name: 'Marketplace.ListingCancelled',
     /**
      * A listing was cancelled
@@ -209,7 +243,7 @@ export const listingCancelled = {
     ),
 }
 
-export const listingFilled = {
+export const listingFilled =  {
     name: 'Marketplace.ListingFilled',
     /**
      * A listing was filled or partially filled
@@ -485,7 +519,7 @@ export const listingFilled = {
     ),
 }
 
-export const bidPlaced = {
+export const bidPlaced =  {
     name: 'Marketplace.BidPlaced',
     /**
      * A bid was placed
@@ -505,7 +539,7 @@ export const bidPlaced = {
     ),
 }
 
-export const auctionFinalized = {
+export const auctionFinalized =  {
     name: 'Marketplace.AuctionFinalized',
     /**
      * An auction was finalized
@@ -533,7 +567,7 @@ export const auctionFinalized = {
     ),
 }
 
-export const protocolFeeSet = {
+export const protocolFeeSet =  {
     name: 'Marketplace.ProtocolFeeSet',
     /**
      * Protocol fee was set
@@ -549,7 +583,7 @@ export const protocolFeeSet = {
     ),
 }
 
-export const listingConverted = {
+export const listingConverted =  {
     name: 'Marketplace.ListingConverted',
     /**
      * A listing was converted to the correct format
@@ -565,7 +599,7 @@ export const listingConverted = {
     ),
 }
 
-export const expiredListingRemoved = {
+export const expiredListingRemoved =  {
     name: 'Marketplace.ExpiredListingRemoved',
     /**
      * An expired listing was removed
@@ -581,7 +615,7 @@ export const expiredListingRemoved = {
     ),
 }
 
-export const counterOfferPlaced = {
+export const counterOfferPlaced =  {
     name: 'Marketplace.CounterOfferPlaced',
     /**
      * A counter offer was placed on a listing
@@ -665,7 +699,7 @@ export const counterOfferPlaced = {
     ),
 }
 
-export const counterOfferAnswered = {
+export const counterOfferAnswered =  {
     name: 'Marketplace.CounterOfferAnswered',
     /**
      * A response was issued for a counter offer
@@ -761,7 +795,7 @@ export const counterOfferAnswered = {
     ),
 }
 
-export const counterOfferRemoved = {
+export const counterOfferRemoved =  {
     name: 'Marketplace.CounterOfferRemoved',
     /**
      * A counter offer was removed
@@ -781,7 +815,7 @@ export const counterOfferRemoved = {
     ),
 }
 
-export const migrationStep = {
+export const migrationStep =  {
     name: 'Marketplace.MigrationStep',
     /**
      * The migration step has completed
@@ -801,7 +835,7 @@ export const migrationStep = {
     ),
 }
 
-export const listingRemovedUnderMinimum = {
+export const listingRemovedUnderMinimum =  {
     name: 'Marketplace.ListingRemovedUnderMinimum',
     /**
      * Tried to settle a listing with take value under the minimum requirement
@@ -817,15 +851,15 @@ export const listingRemovedUnderMinimum = {
     ),
 }
 
-export const listingUpgraded = {
+export const listingUpgraded =  {
     name: 'Marketplace.ListingUpgraded',
     /**
      * A listing has been upgraded
      */
-    v1050: new EventType(
+    matrixV1020: new EventType(
         'Marketplace.ListingUpgraded',
         sts.struct({
-            listingId: v1050.H256,
+            listingId: matrixV1020.H256,
         })
     ),
 }

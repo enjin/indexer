@@ -1,10 +1,10 @@
 import { hexToString } from '@polkadot/util'
 import { Event as EventModel, Identity, Registration } from '../../model'
-import { BlockHeader, CallItem, CommonContext } from '../../contexts'
+import { Block, CallItem, CommonContext } from '../../contexts'
 import { getOrCreateAccount, unwrapSigner } from '../../utils/entities'
 import * as mappings from '../../mappings'
 
-export async function setSubs(ctx: CommonContext, block: BlockHeader, item: CallItem): Promise<EventModel | undefined> {
+export async function setSubs(ctx: CommonContext, block: Block, item: CallItem): Promise<EventModel | undefined> {
     if (!item.extrinsic?.signature) {
         throw new Error('No signature')
     }

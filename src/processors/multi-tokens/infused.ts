@@ -1,9 +1,9 @@
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
 import { Token } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 
-export async function infused(ctx: CommonContext, block: BlockHeader, item: EventItem, skipSave: boolean) {
+export async function infused(ctx: CommonContext, block: Block, item: EventItem, skipSave: boolean) {
     const data = mappings.multiTokens.events.infused(item)
     if (skipSave) return undefined
 

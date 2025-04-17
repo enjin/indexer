@@ -1,11 +1,11 @@
 import { Attribute, Collection, Event as EventModel, RoyaltyCurrency, Trait } from '../../model'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 
 export async function collectionDestroyed(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<EventModel | undefined> {

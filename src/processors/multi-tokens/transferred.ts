@@ -1,14 +1,14 @@
 import { throwError } from '../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import { getOrCreateAccount } from '../../utils/entities'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../utils/sns'
 import * as mappings from './../../mappings'
+import { QueueUtils } from '../../queues'
 
 export async function transferred(
     ctx: CommonContext,
-    block: BlockHeader,
+    block: Block,
     item: EventItem,
     skipSave: boolean
 ): Promise<[EventModel, AccountTokenEvent] | EventModel | undefined> {
@@ -65,7 +65,8 @@ export async function transferred(
         )
     }
 
-    // syncCollectionStats(data.collectionId.toString())
+    // console.log('Dispatching from transferred')
+    QueueUtils.dispatchComputeStats(data.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

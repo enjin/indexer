@@ -1,10 +1,10 @@
-import { sts, Block, Bytes, Option, Result, EventType, RuntimeCtx } from '../support'
+import {sts, Block, Bytes, Option, Result, EventType, RuntimeCtx} from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1004 from '../matrixEnjinV1004'
 import * as matrixV1004 from '../matrixV1004'
 
-export const invalidFormat = {
+export const invalidFormat =  {
     name: 'DmpQueue.InvalidFormat',
     /**
      * Downward message is invalid XCM.
@@ -44,7 +44,7 @@ export const invalidFormat = {
     ),
 }
 
-export const unsupportedVersion = {
+export const unsupportedVersion =  {
     name: 'DmpQueue.UnsupportedVersion',
     /**
      * Downward message is unsupported version of XCM.
@@ -84,7 +84,7 @@ export const unsupportedVersion = {
     ),
 }
 
-export const executedDownward = {
+export const executedDownward =  {
     name: 'DmpQueue.ExecutedDownward',
     /**
      * Downward message executed with the given outcome.
@@ -130,7 +130,7 @@ export const executedDownward = {
     ),
 }
 
-export const weightExhausted = {
+export const weightExhausted =  {
     name: 'DmpQueue.WeightExhausted',
     /**
      * The weight limit for handling downward messages was reached.
@@ -180,7 +180,7 @@ export const weightExhausted = {
     ),
 }
 
-export const overweightEnqueued = {
+export const overweightEnqueued =  {
     name: 'DmpQueue.OverweightEnqueued',
     /**
      * Downward message is overweight and was placed in the overweight queue.
@@ -230,7 +230,7 @@ export const overweightEnqueued = {
     ),
 }
 
-export const overweightServiced = {
+export const overweightServiced =  {
     name: 'DmpQueue.OverweightServiced',
     /**
      * Downward message from the overweight queue was executed.
@@ -244,7 +244,7 @@ export const overweightServiced = {
     ),
 }
 
-export const maxMessagesExhausted = {
+export const maxMessagesExhausted =  {
     name: 'DmpQueue.MaxMessagesExhausted',
     /**
      * The maximum number of downward messages was.
@@ -284,15 +284,18 @@ export const maxMessagesExhausted = {
     ),
 }
 
-export const startedExport = {
+export const startedExport =  {
     name: 'DmpQueue.StartedExport',
     /**
      * The export of pages started.
      */
-    matrixEnjinV1012: new EventType('DmpQueue.StartedExport', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'DmpQueue.StartedExport',
+        sts.unit()
+    ),
 }
 
-export const exported = {
+export const exported =  {
     name: 'DmpQueue.Exported',
     /**
      * The export of a page completed.
@@ -305,11 +308,11 @@ export const exported = {
     ),
 }
 
-export const exportFailed = {
+export const exportFailed =  {
     name: 'DmpQueue.ExportFailed',
     /**
      * The export of a page failed.
-     *
+     * 
      * This should never be emitted.
      */
     matrixEnjinV1012: new EventType(
@@ -320,23 +323,29 @@ export const exportFailed = {
     ),
 }
 
-export const completedExport = {
+export const completedExport =  {
     name: 'DmpQueue.CompletedExport',
     /**
      * The export of pages completed.
      */
-    matrixEnjinV1012: new EventType('DmpQueue.CompletedExport', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'DmpQueue.CompletedExport',
+        sts.unit()
+    ),
 }
 
-export const startedOverweightExport = {
+export const startedOverweightExport =  {
     name: 'DmpQueue.StartedOverweightExport',
     /**
      * The export of overweight messages started.
      */
-    matrixEnjinV1012: new EventType('DmpQueue.StartedOverweightExport', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'DmpQueue.StartedOverweightExport',
+        sts.unit()
+    ),
 }
 
-export const exportedOverweight = {
+export const exportedOverweight =  {
     name: 'DmpQueue.ExportedOverweight',
     /**
      * The export of an overweight message completed.
@@ -349,11 +358,11 @@ export const exportedOverweight = {
     ),
 }
 
-export const exportOverweightFailed = {
+export const exportOverweightFailed =  {
     name: 'DmpQueue.ExportOverweightFailed',
     /**
      * The export of an overweight message failed.
-     *
+     * 
      * This should never be emitted.
      */
     matrixEnjinV1012: new EventType(
@@ -364,23 +373,29 @@ export const exportOverweightFailed = {
     ),
 }
 
-export const completedOverweightExport = {
+export const completedOverweightExport =  {
     name: 'DmpQueue.CompletedOverweightExport',
     /**
      * The export of overweight messages completed.
      */
-    matrixEnjinV1012: new EventType('DmpQueue.CompletedOverweightExport', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'DmpQueue.CompletedOverweightExport',
+        sts.unit()
+    ),
 }
 
-export const startedCleanup = {
+export const startedCleanup =  {
     name: 'DmpQueue.StartedCleanup',
     /**
      * The cleanup of remaining pallet storage started.
      */
-    matrixEnjinV1012: new EventType('DmpQueue.StartedCleanup', sts.unit()),
+    matrixEnjinV1012: new EventType(
+        'DmpQueue.StartedCleanup',
+        sts.unit()
+    ),
 }
 
-export const cleanedSome = {
+export const cleanedSome =  {
     name: 'DmpQueue.CleanedSome',
     /**
      * Some debris was cleaned up.
@@ -393,7 +408,7 @@ export const cleanedSome = {
     ),
 }
 
-export const completed = {
+export const completed =  {
     name: 'DmpQueue.Completed',
     /**
      * The cleanup of remaining pallet storage completed.

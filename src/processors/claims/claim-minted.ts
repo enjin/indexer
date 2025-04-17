@@ -1,13 +1,9 @@
 import { AccountClaimType, ClaimDetails, ClaimRequest, Event as EventModel } from '../../model'
-import { BlockHeader, CommonContext, EventItem } from '../../contexts'
+import { Block, CommonContext, EventItem } from '../../contexts'
 import * as mappings from './../../mappings'
 import { unwrapAccount } from '../../utils/entities'
 
-export async function claimMinted(
-    ctx: CommonContext,
-    block: BlockHeader,
-    item: EventItem
-): Promise<EventModel | undefined> {
+export async function claimMinted(ctx: CommonContext, block: Block, item: EventItem): Promise<EventModel | undefined> {
     const event = mappings.claims.events.claimMinted(item)
     const who = unwrapAccount(event.who)
     const claim = new ClaimRequest({
