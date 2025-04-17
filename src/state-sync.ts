@@ -8,16 +8,10 @@ import {
     CollectionFlags,
     CollectionSocials,
     CollectionStats,
-    FreezeState,
-    MarketPolicy,
     MintPolicy,
-    Royalty,
     Token,
     TokenAccount,
     TokenApproval,
-    TokenBehaviorHasRoyalty,
-    TokenBehaviorIsCurrency,
-    TokenBehaviorType,
     TokenLock,
     TokenNamedReserve,
     TransferPolicy,
@@ -76,6 +70,7 @@ async function getSpecMetadata(network: string, specVersion: number): Promise<By
 const BATCH_SIZE = 1000
 
 function isNotNull<T>(input: null | undefined | T): input is T {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return input != null && input !== undefined
 }
 
@@ -272,7 +267,7 @@ async function syncToken(ctx: CommonContext, block: Block) {
             //     }
             // }
 
-            const freezeState = null //data.freezeState ? getFreezeState(data.freezeState) : undefined
+            // const freezeState = null //data.freezeState ? getFreezeState(data.freezeState) : undefined
             let unitPrice: bigint | null = 10_000_000_000_000_000n
             let minBalance = 1n
 
@@ -334,7 +329,7 @@ async function syncCollectionAccount(ctx: CommonContext, block: Block) {
 
             let approvals = null
 
-            if (data.approvals && data.approvals.length > 0) {
+            if (data.approvals.length > 0) {
                 approvals = data.approvals.map((approval) => {
                     return new CollectionApproval({
                         accountId: approval[0],
@@ -392,7 +387,7 @@ async function syncTokenAccount(ctx: CommonContext, block: Block) {
             }
 
             let locks = null
-            if (data.locks && data.locks.length > 0) {
+            if (data.locks.length > 0) {
                 locks = data.locks.map((lock) => {
                     return new TokenLock({
                         pallet: lock[0],
@@ -402,7 +397,7 @@ async function syncTokenAccount(ctx: CommonContext, block: Block) {
             }
 
             let approvals = null
-            if (data.approvals && data.approvals.length > 0) {
+            if (data.approvals.length > 0) {
                 approvals = data.approvals.map((approval) => {
                     return new TokenApproval({
                         accountId: approval[0],
@@ -440,7 +435,7 @@ async function syncAttribute(ctx: CommonContext, block: Block) {
     const iterable = (await mappings.multiTokens.storage.attributes(block, { batchSize: BATCH_SIZE })) ?? []
 
     for await (const attributePairs of iterable) {
-        const attributePromise = attributePairs.map(async ([k, data]) => {
+        const attributePromise = attributePairs.map(([k, data]) => {
             if (!data) {
                 throw new Error('Attribute Data not found')
             }

@@ -48,7 +48,7 @@
     "dev:processor": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "dev:worker": "pnpm exec ts-node -r dotenv/config src/worker/index.ts",
     "ci:lint": "eslint .",
-    "ci:build": "rm -rf lib && tsc && pnpm run sentry:sourcemaps",
+    "ci:build": "pnpm run papi:generate && tsc && pnpm run ci:sourcemaps",
     "ci:sourcemaps": "sentry-cli sourcemaps inject --org enjin --project enjin-indexer ./lib && sentry-cli sourcemaps upload --org enjin --project enjin-indexer ./lib"
   },
   "dependencies": {

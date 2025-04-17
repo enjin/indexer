@@ -1,7 +1,6 @@
 import * as ss58 from '@subsquid/ss58'
 import config from '../config'
 import { Worker } from 'bullmq'
-import assert from 'assert'
 import { decode } from '@subsquid/ss58'
 import { HexString } from 'polkadot-api'
 import { stringToHex } from '@polkadot/util'

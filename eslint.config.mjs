@@ -18,6 +18,7 @@ export default tseslint.config(
             'typegen/',
             'src/types/',
             'src/model/',
+            'src/worker/jobs/',
             'eslint.config.mjs',
             'src/server-extension/',
         ],

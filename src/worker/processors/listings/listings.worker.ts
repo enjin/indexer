@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import invalidateListingsConfig from './listings.config'
 import instance from './listings.processor'
-import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = invalidateListingsConfig
 
