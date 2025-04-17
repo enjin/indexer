@@ -10,7 +10,7 @@ export class MetadataProcessor implements ProcessorDef {
                 await computeMetadata(job)
                 break
             default:
-                break
+                throw new Error(`${job.name} is not a valid job for this processor`)
         }
     }
 

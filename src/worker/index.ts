@@ -14,35 +14,29 @@ import {
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
 import {
-    ComputeCollectionsWorker,
-    ComputeMetadataWorker,
-    ComputeRarityWorker,
-    ComputeStatsWorker,
-    ComputeValidatorsWorker,
-    ComputeTraitsWorker,
-    DeleteTraitsWorker,
-    FetchAccountsWorker,
-    FetchBalancesWorker,
-    FetchCollectionsWorker,
-    InvalidateListingsWorker,
-} from './jobs'
+    AccountsWorker,
+    BalancesWorker,
+    CollectionsWorker,
+    ListingsWorker,
+    MetadataWorker,
+    TokensWorker,
+    TraitsWorker,
+    ValidatorsWorker,
+} from './processors'
 
-// Increase max listeners to avoid warnings
 // We have 11 workers, so setting to 15 gives us some headroom
+// Increase max listeners to avoid warnings
 EventEmitter.defaultMaxListeners = 30
 
 const WorkerMap = new Map([
-    ['ComputeCollections', ComputeCollectionsWorker],
-    ['ComputeMetadata', ComputeMetadataWorker],
-    ['ComputeRarity', ComputeRarityWorker],
-    ['ComputeStats', ComputeStatsWorker],
-    ['ComputeTraits', ComputeTraitsWorker],
-    ['ComputeValidators', ComputeValidatorsWorker],
-    ['DeleteTraits', DeleteTraitsWorker],
-    ['FetchAccounts', FetchAccountsWorker],
-    ['FetchBalances', FetchBalancesWorker],
-    ['FetchCollections', FetchCollectionsWorker],
-    ['InvalidateListings', InvalidateListingsWorker],
+    ['Accounts', AccountsWorker],
+    ['Balances', BalancesWorker],
+    ['Collections', CollectionsWorker],
+    ['Listings', ListingsWorker],
+    ['Metadata', MetadataWorker],
+    ['Tokens', TokensWorker],
+    ['Traits', TraitsWorker],
+    ['Validators', ValidatorsWorker],
 ])
 
 /**

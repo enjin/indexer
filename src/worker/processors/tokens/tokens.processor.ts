@@ -10,7 +10,7 @@ export class TokensProcessor implements ProcessorDef {
                 await computeRarity(job.data.collectionId)
                 break
             default:
-                throw new Error('Invalid job name')
+                throw new Error(`${job.name} is not a valid job for this processor`)
         }
     }
 

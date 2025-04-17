@@ -3,7 +3,7 @@ import { Attribute, Collection, Metadata, Token } from '../../model'
 import { connectionManager } from '../../contexts'
 import { fetchMetadata, metadataParser } from '../../utils/metadata'
 import { Job } from 'bullmq'
-import { QueueUtils } from 'src/queues'
+import { QueueUtils } from '../../queues'
 
 type MetadataType = {
     id: string

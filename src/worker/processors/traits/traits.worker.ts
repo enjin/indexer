@@ -5,7 +5,7 @@ import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeTraitsConfig
 
-const processor = isSandboxed ? `${__dirname}/compute-traits.slave.js` : instance.handle
+const processor = isSandboxed ? `${__dirname}/traits.slave.js` : instance.handle
 
 const worker = new Worker(queueName, processor, {
     connection,

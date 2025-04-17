@@ -14,7 +14,7 @@ export class TraitsProcessor implements ProcessorDef {
                 await deleteTraits(job.data.id)
                 break
             default:
-                throw new Error('Unknown job')
+                throw new Error(`${job.name} is not a valid job for this processor`)
         }
     }
 

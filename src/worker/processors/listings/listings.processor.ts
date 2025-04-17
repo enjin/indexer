@@ -10,7 +10,7 @@ export class ListingsProcessor implements ProcessorDef {
                 await invalidateListings()
                 break
             default:
-                break
+                throw new Error(`${job.name} is not a valid job for this processor`)
         }
     }
 
