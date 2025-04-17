@@ -19,7 +19,7 @@ export class SyncCollectionsResolver {
 
         rateLimit = Date.now()
 
-        // QueueUtils.dispatchComputeCollections()
+        QueueUtils.dispatchComputeCollections()
 
         return true
     }
