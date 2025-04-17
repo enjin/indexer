@@ -49,6 +49,7 @@ function getProjectRoot(): string {
     return process.cwd()
 }
 
+// TODO: If the file is not found, we should try to fetch from the RPC node
 async function getSpecMetadata(network: string, specVersion: number): Promise<Bytes> {
     const path = getProjectRoot()
     const fileStream = fs.createReadStream(`${path}/typegen/${network}.jsonl`)

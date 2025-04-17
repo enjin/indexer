@@ -229,6 +229,7 @@ processor.run(
                 if (block.header.height === config.lastBlockHeight) {
                     // await syncAllBalances(ctx, block.header)
                     // metadataQueue.resume().catch(() => {})
+                    ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
                     QueueUtils.dispatchComputeCollections()
                 }
 

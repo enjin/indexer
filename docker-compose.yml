@@ -19,12 +19,27 @@ services:
 
   indexer_redis:
     container_name: indexer_redis
-    image: redis:7.0
-    restart: on-failure
-    volumes:
-      - redis_db:/data
+    restart: unless-stopped
+    image: redis:7
+    ulimits:
+      memlock: -1
     ports:
       - "6379:6379"
+    volumes:
+      - redis_db:/data
+    command:
+      [
+        "redis-server",
+        "--maxmemory-policy",
+        "noeviction",
+      ]
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "redis-cli -a ping"
+      interval: 5s
+      timeout: 20s
+      retries: 10
 
   indexer_processor:
     container_name: indexer_processor
