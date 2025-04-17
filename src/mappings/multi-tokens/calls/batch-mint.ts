@@ -9,12 +9,20 @@ export const batchMint = withDispatchCheck((call: CallItem): BatchMint => {
     return match(call)
         .returnType<BatchMint>()
         .when(
+            () => calls.multiTokens.batchMint.matrixEnjinV1022.is(call),
+            () => calls.multiTokens.batchMint.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.multiTokens.batchMint.matrixEnjinV1012.is(call),
             () => calls.multiTokens.batchMint.matrixEnjinV1012.decode(call)
         )
         .when(
             () => calls.multiTokens.batchMint.matrixEnjinV603.is(call),
             () => calls.multiTokens.batchMint.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.batchMint.matrixV1020.is(call),
+            () => calls.multiTokens.batchMint.matrixV1020.decode(call)
         )
         .when(
             () => calls.multiTokens.batchMint.matrixV1010.is(call),

@@ -9,8 +9,16 @@ export function collectionMutated(event: EventItem): CollectionMutated {
     return match(event)
         .returnType<CollectionMutated>()
         .when(
+            () => multiTokens.collectionMutated.matrixEnjinV1022.is(event),
+            () => multiTokens.collectionMutated.matrixEnjinV1022.decode(event)
+        )
+        .when(
             () => multiTokens.collectionMutated.matrixEnjinV603.is(event),
             () => multiTokens.collectionMutated.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.collectionMutated.matrixV1020.is(event),
+            () => multiTokens.collectionMutated.matrixV1020.decode(event)
         )
         .when(
             () => multiTokens.collectionMutated.v1050.is(event),

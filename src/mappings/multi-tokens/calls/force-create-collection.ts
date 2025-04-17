@@ -9,12 +9,20 @@ export const forceCreateCollection = withDispatchCheck((call: CallItem): ForceCr
     return match(call)
         .returnType<ForceCreateCollection>()
         .when(
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1022.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.multiTokens.forceCreateCollection.matrixEnjinV1012.is(call),
             () => calls.multiTokens.forceCreateCollection.matrixEnjinV1012.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateCollection.matrixEnjinV603.is(call),
             () => calls.multiTokens.forceCreateCollection.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateCollection.matrixV1020.is(call),
+            () => calls.multiTokens.forceCreateCollection.matrixV1020.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateCollection.matrixV1010.is(call),

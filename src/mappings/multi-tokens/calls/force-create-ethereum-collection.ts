@@ -9,12 +9,20 @@ export const forceCreateEthereumCollection = withDispatchCheck((call: CallItem):
     return match(call)
         .returnType<ForceCreateEthereumCollection>()
         .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1022.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.is(call),
             () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1012.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1000.is(call),
             () => calls.multiTokens.forceCreateEthereumCollection.matrixEnjinV1000.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1020.is(call),
+            () => calls.multiTokens.forceCreateEthereumCollection.matrixV1020.decode(call)
         )
         .when(
             () => calls.multiTokens.forceCreateEthereumCollection.matrixV1010.is(call),

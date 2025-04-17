@@ -4,13 +4,26 @@ import { UnsupportedEventError } from '../../../utils/errors'
 import { match } from 'ts-pattern'
 import { Account, AccountTokenEvent, Event as EventModel, Extrinsic, MultiTokensInfused, Token } from '../../../model'
 import { Infused } from './types/infused'
+import { unwrapAccount } from '../../../utils/entities'
 
 export function infused(event: EventItem): Infused {
     return match(event)
         .returnType<Infused>()
         .when(
+            () => multiTokens.infused.matrixEnjinV1022.is(event),
+            () => multiTokens.infused.matrixEnjinV1022.decode(event)
+        )
+        .when(
             () => multiTokens.infused.matrixEnjinV1012.is(event),
             () => multiTokens.infused.matrixEnjinV1012.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.matrixV1020.is(event),
+            () => multiTokens.infused.matrixV1020.decode(event)
+        )
+        .when(
+            () => multiTokens.infused.matrixV1010.is(event),
+            () => multiTokens.infused.matrixV1010.decode(event)
         )
         .otherwise(() => {
             throw new UnsupportedEventError(event)
@@ -32,7 +45,7 @@ export function infusedEventModel(
             collectionId: data.collectionId,
             tokenId: data.tokenId,
             amount: data.amount,
-            accountId: data.accountId,
+            accountId: unwrapAccount(data.accountId),
         }),
     })
 
@@ -41,7 +54,7 @@ export function infusedEventModel(
         new AccountTokenEvent({
             id: item.id,
             token,
-            from: new Account({ id: data.accountId }),
+            from: new Account({ id: unwrapAccount(data.accountId) }),
             event,
         }),
     ]
