@@ -70,6 +70,10 @@ export async function tokenAccounts(
             >
         >()
         .when(
+            () => multiTokens.tokenAccounts.matrixEnjinV1022.is(block),
+            () => getTokenAccounts(multiTokens.tokenAccounts.matrixEnjinV1022)
+        )
+        .when(
             () => multiTokens.tokenAccounts.matrixEnjinV1012.is(block),
             () => getTokenAccounts(multiTokens.tokenAccounts.matrixEnjinV1012)
         )

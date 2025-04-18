@@ -1,4 +1,4 @@
-import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, OneToMany as OneToMany_, BooleanColumn as BooleanColumn_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
+import {Entity as Entity_, Column as Column_, PrimaryColumn as PrimaryColumn_, ManyToOne as ManyToOne_, Index as Index_, BigIntColumn as BigIntColumn_, IntColumn as IntColumn_, StringColumn as StringColumn_, BooleanColumn as BooleanColumn_, OneToMany as OneToMany_, DateTimeColumn as DateTimeColumn_} from "@subsquid/typeorm-store"
 import * as marshal from "./marshal"
 import {Account} from "./account.model"
 import {Token} from "./token.model"
@@ -9,6 +9,7 @@ import {Bid} from "./bid.model"
 import {ListingStatus} from "./listingStatus.model"
 import {ListingSale} from "./listingSale.model"
 import {CounterOffer} from "./counterOffer.model"
+import {WhitelistedAccount} from "./whitelistedAccount.model"
 import {ListingType} from "./_listingType"
 
 @Entity_()
@@ -59,6 +60,15 @@ export class Listing {
     @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : fromJsonListingState(obj)}, nullable: false})
     state!: ListingState
 
+    @IntColumn_({nullable: true})
+    startBlock!: number | undefined | null
+
+    @IntColumn_({nullable: false})
+    creationBlock!: number
+
+    @BooleanColumn_({nullable: false})
+    usesWhitelist!: boolean
+
     @OneToMany_(() => Bid, e => e.listing)
     bids!: Bid[]
 
@@ -70,6 +80,9 @@ export class Listing {
 
     @OneToMany_(() => CounterOffer, e => e.listing)
     counterOffers!: CounterOffer[]
+
+    @OneToMany_(() => WhitelistedAccount, e => e.listing)
+    whitelistedAccounts!: WhitelistedAccount[]
 
     @Index_()
     @BigIntColumn_({nullable: false})

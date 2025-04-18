@@ -8,6 +8,10 @@ export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
     return match(call)
         .returnType<DispatchAndTouch>()
         .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1022.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.is(call),
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV1012.decode(call)
         )
@@ -30,6 +34,14 @@ export function dispatchAndTouch(call: CallItem): DispatchAndTouch {
         .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV603.is(call),
             () => calls.fuelTanks.dispatchAndTouch.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1022.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1022.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1020.is(call),
+            () => calls.fuelTanks.dispatchAndTouch.matrixV1020.decode(call)
         )
         .when(
             () => calls.fuelTanks.dispatchAndTouch.matrixV1012.is(call),

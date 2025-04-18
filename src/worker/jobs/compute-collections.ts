@@ -1,4 +1,4 @@
-import { QueueUtils } from 'src/queues'
+import { QueueUtils } from '../../queues'
 import { Collection } from '../../model'
 import { connectionManager } from '../../contexts'
 

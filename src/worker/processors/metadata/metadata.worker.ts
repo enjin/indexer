@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import computeMetadataConfig from './metadata.config'
 import instance from './metadata.processor'
-import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeMetadataConfig
 

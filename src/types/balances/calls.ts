@@ -1,17 +1,17 @@
-import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as matrixV500 from '../matrixV500'
 import * as matrixEnjinV603 from '../matrixEnjinV603'
 import * as matrixEnjinV1012 from '../matrixEnjinV1012'
 
-export const transferAllowDeath =  {
+export const transferAllowDeath = {
     name: 'Balances.transfer_allow_death',
     /**
      * Transfer some liquid free balance to another account.
-     * 
+     *
      * `transfer_allow_death` will set the `FreeBalance` of the sender and receiver.
      * If the sender's account is below the existential deposit as a result
      * of the transfer, the account will be reaped.
-     * 
+     *
      * The dispatch origin for this call must be `Signed` by the transactor.
      */
     matrixEnjinV603: new CallType(
@@ -23,14 +23,14 @@ export const transferAllowDeath =  {
     ),
 }
 
-export const setBalanceDeprecated =  {
+export const setBalanceDeprecated = {
     name: 'Balances.set_balance_deprecated',
     /**
      * Set the regular balance of a given account; it also takes a reserved balance but this
      * must be the same as the account's current reserved balance.
-     * 
+     *
      * The dispatch origin for this call is `root`.
-     * 
+     *
      * WARNING: This call is DEPRECATED! Use `force_set_balance` instead.
      */
     matrixEnjinV603: new CallType(
@@ -43,7 +43,7 @@ export const setBalanceDeprecated =  {
     ),
 }
 
-export const forceTransfer =  {
+export const forceTransfer = {
     name: 'Balances.force_transfer',
     /**
      * Exactly as `transfer_allow_death`, except the origin must be root and the source account
@@ -59,14 +59,14 @@ export const forceTransfer =  {
     ),
 }
 
-export const transferKeepAlive =  {
+export const transferKeepAlive = {
     name: 'Balances.transfer_keep_alive',
     /**
      * Same as the [`transfer_allow_death`] call, but with a check that the transfer will not
      * kill the origin account.
-     * 
+     *
      * 99% of the time you want [`transfer_allow_death`] instead.
-     * 
+     *
      * [`transfer_allow_death`]: struct.Pallet.html#method.transfer
      */
     matrixEnjinV603: new CallType(
@@ -78,19 +78,19 @@ export const transferKeepAlive =  {
     ),
 }
 
-export const transferAll =  {
+export const transferAll = {
     name: 'Balances.transfer_all',
     /**
      * Transfer the entire transferable balance from the caller account.
-     * 
+     *
      * NOTE: This function only attempts to transfer _transferable_ balances. This means that
      * any locked, reserved, or existential deposits (when `keep_alive` is `true`), will not be
      * transferred by this function. To ensure that this function results in a killed account,
      * you might need to prepare the account by removing any reference counters, storage
      * deposits, etc...
-     * 
+     *
      * The dispatch origin of this call must be Signed.
-     * 
+     *
      * - `dest`: The recipient of the transfer.
      * - `keep_alive`: A boolean to determine if the `transfer_all` operation should send all
      *   of the funds the account has, causing the sender account to be killed (false), or
@@ -106,11 +106,11 @@ export const transferAll =  {
     ),
 }
 
-export const forceUnreserve =  {
+export const forceUnreserve = {
     name: 'Balances.force_unreserve',
     /**
      * Unreserve some balance from a user by force.
-     * 
+     *
      * Can only be called by ROOT.
      */
     matrixEnjinV603: new CallType(
@@ -122,14 +122,14 @@ export const forceUnreserve =  {
     ),
 }
 
-export const upgradeAccounts =  {
+export const upgradeAccounts = {
     name: 'Balances.upgrade_accounts',
     /**
      * Upgrade a specified account.
-     * 
+     *
      * - `origin`: Must be `Signed`.
      * - `who`: The account to be upgraded.
-     * 
+     *
      * This will waive the transaction fee if at least all but 10% of the accounts needed to
      * be upgraded. (We let some not have to be upgraded just in order to allow for the
      * possibililty of churn).
@@ -142,11 +142,11 @@ export const upgradeAccounts =  {
     ),
 }
 
-export const transfer =  {
+export const transfer = {
     name: 'Balances.transfer',
     /**
      * Alias for `transfer_allow_death`, provided only for name-wise compatibility.
-     * 
+     *
      * WARNING: DEPRECATED! Will be released in approximately 3 months.
      */
     matrixEnjinV603: new CallType(
@@ -158,11 +158,11 @@ export const transfer =  {
     ),
 }
 
-export const forceSetBalance =  {
+export const forceSetBalance = {
     name: 'Balances.force_set_balance',
     /**
      * Set the regular balance of a given account.
-     * 
+     *
      * The dispatch origin for this call is `root`.
      */
     matrixEnjinV603: new CallType(
@@ -174,13 +174,13 @@ export const forceSetBalance =  {
     ),
 }
 
-export const forceAdjustTotalIssuance =  {
+export const forceAdjustTotalIssuance = {
     name: 'Balances.force_adjust_total_issuance',
     /**
      * Adjust the total issuance in a saturating way.
-     * 
+     *
      * Can only be called by root and always needs a positive `delta`.
-     * 
+     *
      * # Example
      */
     matrixEnjinV1012: new CallType(
@@ -192,16 +192,36 @@ export const forceAdjustTotalIssuance =  {
     ),
 }
 
-export const setBalance =  {
+export const burn = {
+    name: 'Balances.burn',
+    /**
+     * Burn the specified liquid free balance from the origin account.
+     *
+     * If the origin's account ends up below the existential deposit as a result
+     * of the burn and `keep_alive` is false, the account will be reaped.
+     *
+     * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
+     * this `burn` operation will reduce total issuance by the amount _burned_.
+     */
+    matrixEnjinV1022: new CallType(
+        'Balances.burn',
+        sts.struct({
+            value: sts.bigint(),
+            keepAlive: sts.boolean(),
+        })
+    ),
+}
+
+export const setBalance = {
     name: 'Balances.set_balance',
     /**
      * Set the balances of a given account.
-     * 
+     *
      * This will alter `FreeBalance` and `ReservedBalance` in storage. it will
      * also alter the total issuance of the system (`TotalIssuance`) appropriately.
      * If the new free or reserved balance is below the existential deposit,
      * it will reset the account nonce (`frame_system::AccountNonce`).
-     * 
+     *
      * The dispatch origin for this call is `root`.
      */
     matrixV500: new CallType(
@@ -210,26 +230,6 @@ export const setBalance =  {
             who: matrixV500.MultiAddress,
             newFree: sts.bigint(),
             newReserved: sts.bigint(),
-        })
-    ),
-}
-
-export const burn =  {
-    name: 'Balances.burn',
-    /**
-     * Burn the specified liquid free balance from the origin account.
-     * 
-     * If the origin's account ends up below the existential deposit as a result
-     * of the burn and `keep_alive` is false, the account will be reaped.
-     * 
-     * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
-     * this `burn` operation will reduce total issuance by the amount _burned_.
-     */
-    matrixV1020: new CallType(
-        'Balances.burn',
-        sts.struct({
-            value: sts.bigint(),
-            keepAlive: sts.boolean(),
         })
     ),
 }

@@ -73,10 +73,10 @@ export async function fetchAccountsDetail(ids: string[]) {
         )
 
         if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        if (data.data.result === undefined) {
-            //     console.error('No data returned', data)
-            throw new Error('No data returned')
-        }
+        // if (data.data.result === undefined) {
+        //     console.error('No data returned', data)
+        // throw new Error('No data returned')
+        // }
 
         return ids.map((id) => {
             const account = data.data.result.find((i) => i.publicKey === id)
@@ -115,9 +115,9 @@ export async function fetchCollectionsExtra(ids: string[]) {
         )
 
         if ('errors' in data) throw new Error(JSON.stringify(data.errors[0]))
-        if (data.data === undefined) {
-            throw new Error('No data returned')
-        }
+        // if (data.data === undefined) {
+        //     throw new Error('No data returned')
+        // }
 
         return data.data.result
     } catch (error) {

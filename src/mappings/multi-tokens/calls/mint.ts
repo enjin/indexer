@@ -9,12 +9,20 @@ export const mint = withDispatchCheck((call: CallItem): Mint => {
     return match(call)
         .returnType<Mint>()
         .when(
+            () => calls.multiTokens.mint.matrixEnjinV1022.is(call),
+            () => calls.multiTokens.mint.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.multiTokens.mint.matrixEnjinV1012.is(call),
             () => calls.multiTokens.mint.matrixEnjinV1012.decode(call)
         )
         .when(
             () => calls.multiTokens.mint.matrixEnjinV603.is(call),
             () => calls.multiTokens.mint.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.multiTokens.mint.matrixV1020.is(call),
+            () => calls.multiTokens.mint.matrixV1020.decode(call)
         )
         .when(
             () => calls.multiTokens.mint.matrixV1010.is(call),

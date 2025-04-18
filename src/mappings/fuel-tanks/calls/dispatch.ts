@@ -8,6 +8,10 @@ export function dispatch(call: CallItem): Dispatch {
     return match(call)
         .returnType<Dispatch>()
         .when(
+            () => calls.fuelTanks.dispatch.matrixEnjinV1022.is(call),
+            () => calls.fuelTanks.dispatch.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.dispatch.matrixEnjinV1012.is(call),
             () => calls.fuelTanks.dispatch.matrixEnjinV1012.decode(call)
         )
@@ -30,6 +34,14 @@ export function dispatch(call: CallItem): Dispatch {
         .when(
             () => calls.fuelTanks.dispatch.matrixEnjinV603.is(call),
             () => calls.fuelTanks.dispatch.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatch.matrixV1022.is(call),
+            () => calls.fuelTanks.dispatch.matrixV1022.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.dispatch.matrixV1020.is(call),
+            () => calls.fuelTanks.dispatch.matrixV1020.decode(call)
         )
         .when(
             () => calls.fuelTanks.dispatch.matrixV1012.is(call),

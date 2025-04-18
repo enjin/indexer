@@ -41,7 +41,7 @@ export async function collectionMutated(
         if (data.mutation.royalty.value === undefined) {
             collection.marketPolicy = null
         } else {
-            const previousPercentage = collection.marketPolicy?.royalty.percentage || 0
+            const previousPercentage = collection.marketPolicy?.royalty?.percentage || 0
             const currentPercentage =
                 'percentage' in data.mutation.royalty.value ? data.mutation.royalty.value.percentage || 0 : 0
 

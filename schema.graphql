@@ -466,7 +466,8 @@ type TransferPolicy {
 }
 
 type MarketPolicy {
-  royalty: Royalty!
+  royalty: Royalty @deprecated
+  beneficiaries: [RoyaltyBeneficiary!]
 }
 
 type RoyaltyCurrency @entity {
@@ -605,7 +606,8 @@ type Royalty {
 
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
-  royalty: Royalty!
+  royalty: Royalty @deprecated
+  beneficiaries: [Royalty]
 }
 
 type TokenBehaviorIsCurrency {
@@ -781,7 +783,7 @@ type FixedPriceData {
 
 type AuctionData {
   listingType: ListingType!
-  startHeight: Int!
+  startHeight: Int! @deprecated
   endHeight: Int!
 }
 
@@ -872,17 +874,23 @@ type Listing @entity {
   price: BigInt!
   minTakeValue: BigInt!
   feeSide: FeeSide!
-  height: Int!
+  height: Int! @deprecated
   deposit: BigInt!
   salt: String!
   data: ListingData!
   state: ListingState!
+
+  # New fields from v1020
+  startBlock: Int
+  creationBlock: Int!
+  usesWhitelist: Boolean!
 
   # Relations
   bids: [Bid] @derivedFrom(field: "listing")
   status: [ListingStatus] @derivedFrom(field: "listing")
   sales: [ListingSale] @derivedFrom(field: "listing")
   counterOffers: [CounterOffer] @derivedFrom(field: "listing")
+  whitelistedAccounts: [WhitelistedAccount] @derivedFrom(field: "listing")
 
   # Extras
   highestPrice: BigInt! @index
@@ -892,6 +900,28 @@ type Listing @entity {
   hasRoyaltyIncreased: Boolean @index
 
   createdAt: DateTime! @index
+  updatedAt: DateTime!
+}
+
+type RoyaltyBeneficiary {
+  accountId: String!
+  percentage: Float!
+}
+
+type WhitelistedAccount @entity {
+  id: ID!
+
+  # Storage defaults
+  allowance: Int!
+  amountUsed: Int!
+  deposit: BigInt!
+
+  # Relations
+  account: Account! @index
+  listing: Listing! @index
+
+  # Extras
+  createdAt: DateTime!
   updatedAt: DateTime!
 }
 

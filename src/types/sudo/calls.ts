@@ -1,4 +1,4 @@
-import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -26,6 +26,7 @@ import * as matrixV1012 from '../matrixV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
+import * as matrixV1022 from '../matrixV1022'
 import * as enjinV1022 from '../enjinV1022'
 import * as v1022 from '../v1022'
 import * as enjinV1023 from '../enjinV1023'
@@ -39,13 +40,13 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const sudo =  {
+export const sudo = {
     name: 'Sudo.sudo',
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -61,9 +62,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -79,9 +80,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -97,9 +98,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -111,9 +112,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -125,9 +126,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -193,9 +194,18 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     */
+    matrixV1022: new CallType(
+        'Sudo.sudo',
+        sts.struct({
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -207,9 +217,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -221,9 +231,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -235,9 +245,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -249,9 +259,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -263,9 +273,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -277,9 +287,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -318,9 +328,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -336,9 +346,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -354,9 +364,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -372,9 +382,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -390,9 +400,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -404,9 +414,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -418,9 +428,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -432,9 +442,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -446,9 +456,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -460,9 +470,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -474,9 +484,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -488,9 +498,9 @@ export const sudo =  {
     ),
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -547,15 +557,15 @@ export const sudo =  {
     ),
 }
 
-export const sudoUncheckedWeight =  {
+export const sudoUncheckedWeight = {
     name: 'Sudo.sudo_unchecked_weight',
     /**
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -572,9 +582,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -591,9 +601,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -610,9 +620,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -627,9 +637,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -644,9 +654,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -681,7 +691,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1010: new CallType(
@@ -695,7 +705,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1011: new CallType(
@@ -709,7 +719,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1012: new CallType(
@@ -723,7 +733,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1020: new CallType(
@@ -737,9 +747,23 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     */
+    matrixV1022: new CallType(
+        'Sudo.sudo_unchecked_weight',
+        sts.struct({
+            call: matrixV1022.Call,
+            weight: matrixV1022.Weight,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Root` origin.
+     * This function does not check the weight of the call, and instead allows the
+     * Sudo user to specify the weight of the call.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
      * ## Complexity
      * - O(1).
      */
@@ -754,9 +778,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -771,9 +795,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -788,9 +812,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -805,9 +829,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -822,9 +846,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -839,9 +863,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -866,7 +890,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1032: new CallType(
@@ -880,7 +904,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1050: new CallType(
@@ -894,9 +918,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -913,9 +937,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -932,9 +956,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -951,9 +975,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - The weight of this call is defined by the caller.
@@ -970,9 +994,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -987,9 +1011,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1004,9 +1028,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1021,9 +1045,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1038,9 +1062,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1055,9 +1079,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1072,9 +1096,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1089,9 +1113,9 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1116,7 +1140,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1030: new CallType(
@@ -1130,7 +1154,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1031: new CallType(
@@ -1144,7 +1168,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1032: new CallType(
@@ -1158,7 +1182,7 @@ export const sudoUncheckedWeight =  {
      * Authenticates the sudo key and dispatches a function call with `Root` origin.
      * This function does not check the weight of the call, and instead allows the
      * Sudo user to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1050: new CallType(
@@ -1170,14 +1194,14 @@ export const sudoUncheckedWeight =  {
     ),
 }
 
-export const setKey =  {
+export const setKey = {
     name: 'Sudo.set_key',
     /**
      * Authenticates the current sudo key and sets the given AccountId (`new`) as the new sudo
      * key.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1192,14 +1216,14 @@ export const setKey =  {
     ),
 }
 
-export const sudoAs =  {
+export const sudoAs = {
     name: 'Sudo.sudo_as',
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1217,9 +1241,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1237,9 +1261,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1257,9 +1281,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1273,9 +1297,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1289,9 +1313,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1325,7 +1349,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1010: new CallType(
@@ -1338,7 +1362,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1011: new CallType(
@@ -1351,7 +1375,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1012: new CallType(
@@ -1364,7 +1388,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1020: new CallType(
@@ -1377,9 +1401,22 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     */
+    matrixV1022: new CallType(
+        'Sudo.sudo_as',
+        sts.struct({
+            who: matrixV1022.MultiAddress,
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Authenticates the sudo key and dispatches a function call with `Signed` origin from
+     * a given account.
+     *
+     * The dispatch origin for this call must be _Signed_.
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1393,9 +1430,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1409,9 +1446,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1425,9 +1462,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1441,9 +1478,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1457,9 +1494,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1473,9 +1510,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1499,7 +1536,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1032: new CallType(
@@ -1512,7 +1549,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1050: new CallType(
@@ -1525,9 +1562,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1545,9 +1582,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1565,9 +1602,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1585,9 +1622,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -1605,9 +1642,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1621,9 +1658,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1637,9 +1674,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1653,9 +1690,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1669,9 +1706,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1685,9 +1722,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1701,9 +1738,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1717,9 +1754,9 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -1743,7 +1780,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1030: new CallType(
@@ -1756,7 +1793,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1031: new CallType(
@@ -1769,7 +1806,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1032: new CallType(
@@ -1782,7 +1819,7 @@ export const sudoAs =  {
     /**
      * Authenticates the sudo key and dispatches a function call with `Signed` origin from
      * a given account.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1050: new CallType(
@@ -1794,15 +1831,12 @@ export const sudoAs =  {
     ),
 }
 
-export const removeKey =  {
+export const removeKey = {
     name: 'Sudo.remove_key',
     /**
      * Permanently removes the sudo key.
-     * 
+     *
      * **This cannot be un-done.**
      */
-    matrixV1010: new CallType(
-        'Sudo.remove_key',
-        sts.unit()
-    ),
+    matrixV1010: new CallType('Sudo.remove_key', sts.unit()),
 }

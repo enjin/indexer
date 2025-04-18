@@ -9,6 +9,10 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
     return match(call)
         .returnType<CreateFuelTank>()
         .when(
+            () => calls.fuelTanks.createFuelTank.matrixEnjinV1022.is(call),
+            () => calls.fuelTanks.createFuelTank.matrixEnjinV1022.decode(call)
+        )
+        .when(
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1012.is(call),
             () => calls.fuelTanks.createFuelTank.matrixEnjinV1012.decode(call)
         )
@@ -31,6 +35,14 @@ export const createFuelTank = withDispatchCheck((call: CallItem): CreateFuelTank
         .when(
             () => calls.fuelTanks.createFuelTank.matrixEnjinV603.is(call),
             () => calls.fuelTanks.createFuelTank.matrixEnjinV603.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.createFuelTank.matrixV1022.is(call),
+            () => calls.fuelTanks.createFuelTank.matrixV1022.decode(call)
+        )
+        .when(
+            () => calls.fuelTanks.createFuelTank.matrixV1020.is(call),
+            () => calls.fuelTanks.createFuelTank.matrixV1020.decode(call)
         )
         .when(
             () => calls.fuelTanks.createFuelTank.matrixV1012.is(call),

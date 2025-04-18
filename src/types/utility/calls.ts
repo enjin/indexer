@@ -1,4 +1,4 @@
-import {sts, Block, Bytes, Option, Result, CallType, RuntimeCtx} from '../support'
+import { sts, Block, Bytes, Option, Result, CallType, RuntimeCtx } from '../support'
 import * as enjinV100 from '../enjinV100'
 import * as v100 from '../v100'
 import * as enjinV101 from '../enjinV101'
@@ -33,6 +33,8 @@ import * as matrixV1012 from '../matrixV1012'
 import * as matrixV1020 from '../matrixV1020'
 import * as enjinV1021 from '../enjinV1021'
 import * as v1021 from '../v1021'
+import * as matrixEnjinV1022 from '../matrixEnjinV1022'
+import * as matrixV1022 from '../matrixV1022'
 import * as enjinV1022 from '../enjinV1022'
 import * as v1022 from '../v1022'
 import * as enjinV1023 from '../enjinV1023'
@@ -46,22 +48,22 @@ import * as v1032 from '../v1032'
 import * as enjinV1050 from '../enjinV1050'
 import * as v1050 from '../v1050'
 
-export const batch =  {
+export const batch = {
     name: 'Utility.batch',
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -76,18 +78,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -102,18 +104,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -146,18 +148,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -172,19 +174,45 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     *
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.batch',
+        sts.struct({
+            calls: sts.array(() => matrixEnjinV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -199,19 +227,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -226,19 +254,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -253,18 +281,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -279,18 +307,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -305,18 +333,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -331,18 +359,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -375,18 +403,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -401,18 +429,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -427,18 +455,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -453,18 +481,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -479,18 +507,44 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
+     * This will return `Ok` in all circumstances. To determine the success of the batch, an
+     * event is deposited. If a call failed and the batch was interrupted, then the
+     * `BatchInterrupted` event is deposited, along with the number of successful calls made
+     * and the error of the failed call. If all were successful, then the `BatchCompleted`
+     * event is deposited.
+     */
+    matrixV1022: new CallType(
+        'Utility.batch',
+        sts.struct({
+            calls: sts.array(() => matrixV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -505,18 +559,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -531,18 +585,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -557,18 +611,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -583,18 +637,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -609,18 +663,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -635,18 +689,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -670,18 +724,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -696,18 +750,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -722,19 +776,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -749,19 +803,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -776,19 +830,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -803,19 +857,19 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -830,18 +884,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -856,18 +910,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -882,18 +936,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -908,18 +962,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -934,18 +988,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -960,18 +1014,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -986,18 +1040,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1012,18 +1066,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1047,18 +1101,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1073,18 +1127,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1099,18 +1153,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1125,18 +1179,18 @@ export const batch =  {
     ),
     /**
      * Send a batch of dispatch calls.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
-     * 
+     *
      * This will return `Ok` in all circumstances. To determine the success of the batch, an
      * event is deposited. If a call failed and the batch was interrupted, then the
      * `BatchInterrupted` event is deposited, along with the number of successful calls made
@@ -1151,21 +1205,21 @@ export const batch =  {
     ),
 }
 
-export const asDerivative =  {
+export const asDerivative = {
     name: 'Utility.as_derivative',
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixEnjinV603: new CallType(
@@ -1177,17 +1231,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixEnjinV1000: new CallType(
@@ -1199,17 +1253,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixEnjinV1003: new CallType(
@@ -1241,17 +1295,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixEnjinV1012: new CallType(
@@ -1263,17 +1317,39 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
+     * The dispatch origin for this call must be _Signed_.
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.as_derivative',
+        sts.struct({
+            index: sts.number(),
+            call: matrixEnjinV1022.Call,
+        })
+    ),
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     *
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     *
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     *
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV500: new CallType(
@@ -1285,17 +1361,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV600: new CallType(
@@ -1307,17 +1383,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV601: new CallType(
@@ -1329,17 +1405,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV602: new CallType(
@@ -1351,17 +1427,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV604: new CallType(
@@ -1373,17 +1449,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1000: new CallType(
@@ -1395,17 +1471,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1003: new CallType(
@@ -1437,17 +1513,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1010: new CallType(
@@ -1459,17 +1535,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1011: new CallType(
@@ -1481,17 +1557,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1012: new CallType(
@@ -1503,17 +1579,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     matrixV1020: new CallType(
@@ -1525,17 +1601,39 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
+     * The dispatch origin for this call must be _Signed_.
+     */
+    matrixV1022: new CallType(
+        'Utility.as_derivative',
+        sts.struct({
+            index: sts.number(),
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Send a call through an indexed pseudonym of the sender.
+     *
+     * Filter from origin are passed along. The call will be dispatched with an origin which
+     * use the same filter as the origin of this call.
+     *
+     * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
+     * because you expect `proxy` to have been used prior in the call stack and you do not want
+     * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
+     * in the Multisig pallet instead.
+     *
+     * NOTE: Prior to version *12, this was called `as_limited_sub`.
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV100: new CallType(
@@ -1547,17 +1645,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV101: new CallType(
@@ -1569,17 +1667,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV110: new CallType(
@@ -1591,17 +1689,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV120: new CallType(
@@ -1613,17 +1711,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1021: new CallType(
@@ -1635,17 +1733,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1022: new CallType(
@@ -1657,17 +1755,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1023: new CallType(
@@ -1689,17 +1787,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1032: new CallType(
@@ -1711,17 +1809,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     enjinV1050: new CallType(
@@ -1733,17 +1831,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v100: new CallType(
@@ -1755,17 +1853,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v101: new CallType(
@@ -1777,17 +1875,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v102: new CallType(
@@ -1799,17 +1897,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v103: new CallType(
@@ -1821,17 +1919,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v104: new CallType(
@@ -1843,17 +1941,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v105: new CallType(
@@ -1865,17 +1963,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v106: new CallType(
@@ -1887,17 +1985,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v110: new CallType(
@@ -1909,17 +2007,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v120: new CallType(
@@ -1931,17 +2029,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1021: new CallType(
@@ -1953,17 +2051,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1022: new CallType(
@@ -1975,17 +2073,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1023: new CallType(
@@ -2007,17 +2105,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1030: new CallType(
@@ -2029,17 +2127,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1031: new CallType(
@@ -2051,17 +2149,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1032: new CallType(
@@ -2073,17 +2171,17 @@ export const asDerivative =  {
     ),
     /**
      * Send a call through an indexed pseudonym of the sender.
-     * 
+     *
      * Filter from origin are passed along. The call will be dispatched with an origin which
      * use the same filter as the origin of this call.
-     * 
+     *
      * NOTE: If you need to ensure that any account-based filtering is not honored (i.e.
      * because you expect `proxy` to have been used prior in the call stack and you do not want
      * the call restrictions to apply to any sub-accounts), then use `as_multi_threshold_1`
      * in the Multisig pallet instead.
-     * 
+     *
      * NOTE: Prior to version *12, this was called `as_limited_sub`.
-     * 
+     *
      * The dispatch origin for this call must be _Signed_.
      */
     v1050: new CallType(
@@ -2095,20 +2193,20 @@ export const asDerivative =  {
     ),
 }
 
-export const batchAll =  {
+export const batchAll = {
     name: 'Utility.batch_all',
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2121,15 +2219,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2142,15 +2240,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2181,15 +2279,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2202,15 +2300,36 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.batch_all',
+        sts.struct({
+            calls: sts.array(() => matrixEnjinV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2224,15 +2343,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2246,15 +2365,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2268,15 +2387,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2289,15 +2408,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2310,15 +2429,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2331,15 +2450,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2370,15 +2489,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2391,15 +2510,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2412,15 +2531,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2433,15 +2552,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2454,15 +2573,36 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    matrixV1022: new CallType(
+        'Utility.batch_all',
+        sts.struct({
+            calls: sts.array(() => matrixV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls and atomically execute them.
+     * The whole transaction will rollback and fail if any of the calls failed.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatched without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2475,15 +2615,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2496,15 +2636,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2517,15 +2657,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2538,15 +2678,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2559,15 +2699,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2580,15 +2720,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2610,15 +2750,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2631,15 +2771,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2652,15 +2792,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2674,15 +2814,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2696,15 +2836,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2718,15 +2858,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -2740,15 +2880,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2761,15 +2901,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2782,15 +2922,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2803,15 +2943,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2824,15 +2964,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2845,15 +2985,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2866,15 +3006,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2887,15 +3027,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2917,15 +3057,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2938,15 +3078,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2959,15 +3099,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -2980,15 +3120,15 @@ export const batchAll =  {
     /**
      * Send a batch of dispatch calls and atomically execute them.
      * The whole transaction will rollback and fail if any of the calls failed.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatched without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3000,13 +3140,13 @@ export const batchAll =  {
     ),
 }
 
-export const dispatchAs =  {
+export const dispatchAs = {
     name: 'Utility.dispatch_as',
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3019,9 +3159,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3034,9 +3174,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3069,9 +3209,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3084,9 +3224,24 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
+     * ## Complexity
+     * - O(1).
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.dispatch_as',
+        sts.struct({
+            asOrigin: matrixEnjinV1022.OriginCaller,
+            call: matrixEnjinV1022.Call,
+        })
+    ),
+    /**
+     * Dispatches a function call with a provided origin.
+     *
+     * The dispatch origin for this call must be _Root_.
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3103,9 +3258,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3122,9 +3277,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3141,9 +3296,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3156,9 +3311,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3171,9 +3326,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3186,9 +3341,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3221,9 +3376,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3236,9 +3391,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3251,9 +3406,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3266,9 +3421,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3281,9 +3436,24 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
+     * ## Complexity
+     * - O(1).
+     */
+    matrixV1022: new CallType(
+        'Utility.dispatch_as',
+        sts.struct({
+            asOrigin: matrixV1022.OriginCaller,
+            call: matrixV1022.Call,
+        })
+    ),
+    /**
+     * Dispatches a function call with a provided origin.
+     *
+     * The dispatch origin for this call must be _Root_.
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3296,9 +3466,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3311,9 +3481,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3326,9 +3496,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3341,9 +3511,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3356,9 +3526,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3371,9 +3541,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3396,9 +3566,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3411,9 +3581,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3426,9 +3596,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3445,9 +3615,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3464,9 +3634,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3483,9 +3653,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * # <weight>
      * - O(1).
      * - Limited storage reads.
@@ -3502,9 +3672,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3517,9 +3687,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3532,9 +3702,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3547,9 +3717,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3562,9 +3732,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3577,9 +3747,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3592,9 +3762,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3607,9 +3777,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3632,9 +3802,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3647,9 +3817,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3662,9 +3832,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3677,9 +3847,9 @@ export const dispatchAs =  {
     ),
     /**
      * Dispatches a function call with a provided origin.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
-     * 
+     *
      * ## Complexity
      * - O(1).
      */
@@ -3692,20 +3862,20 @@ export const dispatchAs =  {
     ),
 }
 
-export const forceBatch =  {
+export const forceBatch = {
     name: 'Utility.force_batch',
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3718,15 +3888,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3739,15 +3909,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3778,15 +3948,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3799,15 +3969,36 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.force_batch',
+        sts.struct({
+            calls: sts.array(() => matrixEnjinV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -3821,15 +4012,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -3843,15 +4034,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -3865,15 +4056,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3886,15 +4077,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3907,15 +4098,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3928,15 +4119,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3967,15 +4158,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -3988,15 +4179,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4009,15 +4200,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4030,15 +4221,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4051,15 +4242,36 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
+     * ## Complexity
+     * - O(C) where C is the number of calls to be batched.
+     */
+    matrixV1022: new CallType(
+        'Utility.force_batch',
+        sts.struct({
+            calls: sts.array(() => matrixV1022.Call),
+        })
+    ),
+    /**
+     * Send a batch of dispatch calls.
+     * Unlike `batch`, it allows errors and won't interrupt.
+     *
+     * May be called from any origin except `None`.
+     *
+     * - `calls`: The calls to be dispatched from the same origin. The number of call must not
+     *   exceed the constant: `batched_calls_limit` (available in constant metadata).
+     *
+     * If origin is root then the calls are dispatch without checking origin filter. (This
+     * includes bypassing `frame_system::Config::BaseCallFilter`).
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4072,15 +4284,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4093,15 +4305,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4114,15 +4326,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4135,15 +4347,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4156,15 +4368,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4177,15 +4389,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4207,15 +4419,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4228,15 +4440,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4249,15 +4461,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -4271,15 +4483,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -4293,15 +4505,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -4315,15 +4527,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * # <weight>
      * - Complexity: O(C) where C is the number of calls to be batched.
      * # </weight>
@@ -4337,15 +4549,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4358,15 +4570,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4379,15 +4591,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4400,15 +4612,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4421,15 +4633,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4442,15 +4654,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4463,15 +4675,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4484,15 +4696,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4514,15 +4726,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4535,15 +4747,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4556,15 +4768,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4577,15 +4789,15 @@ export const forceBatch =  {
     /**
      * Send a batch of dispatch calls.
      * Unlike `batch`, it allows errors and won't interrupt.
-     * 
+     *
      * May be called from any origin except `None`.
-     * 
+     *
      * - `calls`: The calls to be dispatched from the same origin. The number of call must not
      *   exceed the constant: `batched_calls_limit` (available in constant metadata).
-     * 
+     *
      * If origin is root then the calls are dispatch without checking origin filter. (This
      * includes bypassing `frame_system::Config::BaseCallFilter`).
-     * 
+     *
      * ## Complexity
      * - O(C) where C is the number of calls to be batched.
      */
@@ -4597,14 +4809,14 @@ export const forceBatch =  {
     ),
 }
 
-export const withWeight =  {
+export const withWeight = {
     name: 'Utility.with_weight',
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixEnjinV603: new CallType(
@@ -4616,10 +4828,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixEnjinV1000: new CallType(
@@ -4631,10 +4843,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixEnjinV1003: new CallType(
@@ -4666,10 +4878,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixEnjinV1012: new CallType(
@@ -4681,10 +4893,25 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
+     * The dispatch origin for this call must be _Root_.
+     */
+    matrixEnjinV1022: new CallType(
+        'Utility.with_weight',
+        sts.struct({
+            call: matrixEnjinV1022.Call,
+            weight: matrixEnjinV1022.Weight,
+        })
+    ),
+    /**
+     * Dispatch a function call with a specified weight.
+     *
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV500: new CallType(
@@ -4696,10 +4923,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV600: new CallType(
@@ -4711,10 +4938,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV601: new CallType(
@@ -4726,10 +4953,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV602: new CallType(
@@ -4741,10 +4968,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV604: new CallType(
@@ -4756,10 +4983,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1000: new CallType(
@@ -4771,10 +4998,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1003: new CallType(
@@ -4806,10 +5033,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1010: new CallType(
@@ -4821,10 +5048,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1011: new CallType(
@@ -4836,10 +5063,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1012: new CallType(
@@ -4851,10 +5078,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     matrixV1020: new CallType(
@@ -4866,10 +5093,25 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
+     * The dispatch origin for this call must be _Root_.
+     */
+    matrixV1022: new CallType(
+        'Utility.with_weight',
+        sts.struct({
+            call: matrixV1022.Call,
+            weight: matrixV1022.Weight,
+        })
+    ),
+    /**
+     * Dispatch a function call with a specified weight.
+     *
+     * This function does not check the weight of the call, and instead allows the
+     * Root origin to specify the weight of the call.
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV100: new CallType(
@@ -4881,10 +5123,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV101: new CallType(
@@ -4896,10 +5138,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV110: new CallType(
@@ -4911,10 +5153,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV120: new CallType(
@@ -4926,10 +5168,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV1021: new CallType(
@@ -4941,10 +5183,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV1022: new CallType(
@@ -4956,10 +5198,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV1023: new CallType(
@@ -4981,10 +5223,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV1032: new CallType(
@@ -4996,10 +5238,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     enjinV1050: new CallType(
@@ -5011,10 +5253,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v100: new CallType(
@@ -5026,10 +5268,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v101: new CallType(
@@ -5041,10 +5283,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v102: new CallType(
@@ -5056,10 +5298,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v103: new CallType(
@@ -5071,10 +5313,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v104: new CallType(
@@ -5086,10 +5328,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v105: new CallType(
@@ -5101,10 +5343,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v106: new CallType(
@@ -5116,10 +5358,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v110: new CallType(
@@ -5131,10 +5373,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v120: new CallType(
@@ -5146,10 +5388,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1021: new CallType(
@@ -5161,10 +5403,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1022: new CallType(
@@ -5176,10 +5418,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1023: new CallType(
@@ -5201,10 +5443,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1030: new CallType(
@@ -5216,10 +5458,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1031: new CallType(
@@ -5231,10 +5473,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1032: new CallType(
@@ -5246,10 +5488,10 @@ export const withWeight =  {
     ),
     /**
      * Dispatch a function call with a specified weight.
-     * 
+     *
      * This function does not check the weight of the call, and instead allows the
      * Root origin to specify the weight of the call.
-     * 
+     *
      * The dispatch origin for this call must be _Root_.
      */
     v1050: new CallType(

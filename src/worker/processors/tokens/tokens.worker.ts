@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import computeRarityConfig from './tokens.config'
 import instance from './tokens.processor'
-import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeRarityConfig
 

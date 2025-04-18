@@ -8,8 +8,20 @@ export function unreserved(event: EventItem): Unreserved {
     return match(event)
         .returnType<Unreserved>()
         .when(
+            () => multiTokens.unreserved.matrixEnjinV1022.is(event),
+            () => multiTokens.unreserved.matrixEnjinV1022.decode(event)
+        )
+        .when(
             () => multiTokens.unreserved.matrixEnjinV603.is(event),
             () => multiTokens.unreserved.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => multiTokens.unreserved.matrixV1020.is(event),
+            () => multiTokens.unreserved.matrixV1020.decode(event)
+        )
+        .when(
+            () => multiTokens.unreserved.matrixV500.is(event),
+            () => multiTokens.unreserved.matrixV500.decode(event)
         )
         .when(
             () => multiTokens.unreserved.v1050.is(event),
