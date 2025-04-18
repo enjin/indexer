@@ -1,6 +1,5 @@
 import Rpc from './rpc'
-import { enjinRelay } from '@polkadot-api/descriptors'
-import { HexString } from 'polkadot-api'
+import { HexString } from '@polkadot/util/types'
 
 export interface SystemAccount {
     address: string
@@ -14,7 +13,7 @@ export interface SystemAccount {
 
 export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
     const accounts: SystemAccount[] = []
-    const api = Rpc.getInstance().client.getUnsafeApi<typeof enjinRelay>()
+    const api = Rpc.getInstance().client.getUnsafeApi()
 
     // We could use a multi query but that would be error-prone
     for (const id of ids) {

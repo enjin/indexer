@@ -40,11 +40,6 @@
     "metadata:merge": "rm -rf typegen/chain-specs.jsonl && cat typegen/enjin-matrix.jsonl typegen/canary-matrix.jsonl typegen/enjin-relay.jsonl typegen/canary-relay.jsonl > typegen/chain-specs.jsonl",
     "metadata:typegen": "pnpm exec squid-substrate-typegen typegen/typegen.json",
     "metadata:init": "pnpm run metadata:all && pnpm run metadata:merge && pnpm run metadata:typegen",
-    "papi:generate": "pnpm run papi:enjin-relay && pnpm run papi:enjin-matrix && pnpm run papi:canary-relay && pnpm run papi:canary-matrix && pnpm exec papi",
-    "papi:enjin-relay": "pnpm exec papi add enjinRelay --wsUrl wss://rpc.relay.blockchain.enjin.io --skip-codegen",
-    "papi:enjin-matrix": "pnpm exec papi add enjinMatrix --wsUrl wss://rpc.matrix.blockchain.enjin.io --skip-codegen",
-    "papi:canary-relay": "pnpm exec papi add canaryRelay --wsUrl wss://rpc.relay.canary.enjin.io --skip-codegen",
-    "papi:canary-matrix": "pnpm exec papi add canaryMatrix --wsUrl wss://rpc.matrix.canary.enjin.io --skip-codegen",
     "dev:processor": "pnpm exec ts-node -r dotenv/config src/main.ts",
     "dev:worker": "pnpm exec ts-node -r dotenv/config src/worker/index.ts",
     "ci:lint": "eslint .",
@@ -55,7 +50,6 @@
     "@aws-sdk/client-sns": "^3.787.0",
     "@bull-board/api": "^6.9.1",
     "@bull-board/express": "^6.9.1",
-    "@polkadot-api/descriptors": "file:.papi/descriptors",
     "@polkadot/util": "^13.4.4",
     "@polkadot/util-crypto": "^13.4.4",
     "@sentry/node": "^9.13.0",
@@ -114,9 +108,6 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  },
-  "volta": {
-    "node": "20.18.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

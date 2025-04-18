@@ -1,9 +1,8 @@
 import * as ss58 from '@subsquid/ss58'
 import config from '../config'
-import { Worker } from 'bullmq'
 import { decode } from '@subsquid/ss58'
-import { HexString } from 'polkadot-api'
 import { stringToHex } from '@polkadot/util'
+import { HexString } from '@polkadot/util/types'
 
 export function isMainnet(): boolean {
     return ['enjin-relay', 'enjin-matrix'].includes(config.chainName)
@@ -29,7 +28,7 @@ export function encodeAddress(id: Uint8Array | string) {
 }
 
 export function decodeAddress(id: string): HexString {
-    return decode(id).bytes
+    return <`0x${string}`>decode(id).bytes
 }
 
 const regex = /\/\/u0000/ // null string unicode
@@ -44,17 +43,10 @@ export function safeString(s: string): string {
     return s
 }
 
-export function safeJson(data: Record<string, unknown>): Record<string, unknown> {
+export function safeJsonObject(data: Record<string, unknown>): Record<string, unknown> {
     return JSON.parse(JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value)))
 }
 
 export function safeJsonString(data: Record<string, unknown>): string {
     return JSON.stringify(data, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-}
-
-export const gracefulShutdown = async (signal: string, worker: Worker) => {
-    console.log(`Received ${signal}, closing server...`)
-    await worker.close()
-    // Other asynchronous closings
-    process.exit(0)
 }
