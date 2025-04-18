@@ -26,6 +26,38 @@ export async function tokens(
     return match(block)
         .returnType<Promise<Token | AsyncIterable<[k: [bigint, bigint], v: Token | undefined][]> | undefined>>()
         .when(
+            () => multiTokens.tokens.matrixEnjinV1022.is(block),
+            () => getTokens(multiTokens.tokens.matrixEnjinV1022)
+        )
+        .when(
+            () => multiTokens.tokens.matrixEnjinV1012.is(block),
+            () => getTokens(multiTokens.tokens.matrixEnjinV1012)
+        )
+        .when(
+            () => multiTokens.tokens.matrixEnjinV603.is(block),
+            () => getTokens(multiTokens.tokens.matrixEnjinV603)
+        )
+        .when(
+            () => multiTokens.tokens.matrixV1020.is(block),
+            () => getTokens(multiTokens.tokens.matrixV1020)
+        )
+        .when(
+            () => multiTokens.tokens.matrixV1010.is(block),
+            () => getTokens(multiTokens.tokens.matrixV1010)
+        )
+        .when(
+            () => multiTokens.tokens.matrixV600.is(block),
+            () => getTokens(multiTokens.tokens.matrixV600)
+        )
+        .when(
+            () => multiTokens.tokens.matrixV500.is(block),
+            () => getTokens(multiTokens.tokens.matrixV500)
+        )
+        .when(
+            () => multiTokens.tokens.enjinV1050.is(block),
+            () => getTokens(multiTokens.tokens.enjinV1050)
+        )
+        .when(
             () => multiTokens.tokens.enjinV1032.is(block),
             () => getTokens(multiTokens.tokens.enjinV1032)
         )

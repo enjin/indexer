@@ -26,12 +26,20 @@ export async function collections(
     return match(block)
         .returnType<Promise<Collection | AsyncIterable<[k: bigint, v: Collection | undefined][]> | undefined>>()
         .when(
+            () => multiTokens.collections.matrixEnjinV1022.is(block),
+            () => getCollections(multiTokens.collections.matrixEnjinV1022)
+        )
+        .when(
             () => multiTokens.collections.matrixEnjinV1012.is(block),
             () => getCollections(multiTokens.collections.matrixEnjinV1012)
         )
         .when(
             () => multiTokens.collections.matrixEnjinV603.is(block),
             () => getCollections(multiTokens.collections.matrixEnjinV603)
+        )
+        .when(
+            () => multiTokens.collections.matrixV1020.is(block),
+            () => getCollections(multiTokens.collections.matrixV1020)
         )
         .when(
             () => multiTokens.collections.matrixV1010.is(block),

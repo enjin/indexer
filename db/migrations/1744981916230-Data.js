@@ -1,5 +1,5 @@
-module.exports = class Data1740171152479 {
-    name = 'Data1740171152479'
+module.exports = class Data1744981916230 {
+    name = 'Data1744981916230'
 
     async up(db) {
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "validator" text, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
@@ -26,7 +26,10 @@ module.exports = class Data1740171152479 {
         await db.query(`CREATE INDEX "IDX_9df1e36fa119ce844b219a1fd2" ON "counter_offer" ("account_id") `)
         await db.query(`CREATE INDEX "IDX_ad80cb472652e78956eaa5e367" ON "counter_offer" ("listing_id") `)
         await db.query(`CREATE INDEX "IDX_58e629ae6cc7de61f48b151846" ON "counter_offer" ("last_action_id") `)
-        await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "highest_price" numeric NOT NULL, "dead_listing" boolean, "is_active" boolean NOT NULL, "type" character varying(10) NOT NULL, "has_royalty_increased" boolean, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE TABLE "whitelisted_account" ("id" character varying NOT NULL, "allowance" integer NOT NULL, "amount_used" integer NOT NULL, "deposit" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "account_id" character varying, "listing_id" character varying, CONSTRAINT "PK_e50c2ce75b1a2aaa84296caa11f" PRIMARY KEY ("id"))`)
+        await db.query(`CREATE INDEX "IDX_08fcb547f04afff252aae6ed4d" ON "whitelisted_account" ("account_id") `)
+        await db.query(`CREATE INDEX "IDX_2e16c26d1dbedada68a1784d7f" ON "whitelisted_account" ("listing_id") `)
+        await db.query(`CREATE TABLE "listing" ("id" character varying NOT NULL, "amount" numeric NOT NULL, "price" numeric NOT NULL, "min_take_value" numeric NOT NULL, "fee_side" character varying(5) NOT NULL, "height" integer NOT NULL, "deposit" numeric NOT NULL, "salt" text NOT NULL, "data" jsonb NOT NULL, "state" jsonb NOT NULL, "start_block" integer, "creation_block" integer NOT NULL, "uses_whitelist" boolean NOT NULL, "highest_price" numeric NOT NULL, "dead_listing" boolean, "is_active" boolean NOT NULL, "type" character varying(10) NOT NULL, "has_royalty_increased" boolean, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL, "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL, "seller_id" character varying, "make_asset_id_id" character varying, "take_asset_id_id" character varying, CONSTRAINT "PK_381d45ebb8692362c156d6b87d7" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_00e1e709436862a20ae074f111" ON "listing" ("seller_id") `)
         await db.query(`CREATE INDEX "IDX_9d1cea2a04a169d58f13cea7e8" ON "listing" ("make_asset_id_id") `)
         await db.query(`CREATE INDEX "IDX_00656ee0f326da82878ddc91be" ON "listing" ("take_asset_id_id") `)
@@ -146,6 +149,8 @@ module.exports = class Data1740171152479 {
         await db.query(`ALTER TABLE "counter_offer" ADD CONSTRAINT "FK_9df1e36fa119ce844b219a1fd23" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "counter_offer" ADD CONSTRAINT "FK_ad80cb472652e78956eaa5e3672" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "counter_offer" ADD CONSTRAINT "FK_58e629ae6cc7de61f48b1518464" FOREIGN KEY ("last_action_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "whitelisted_account" ADD CONSTRAINT "FK_08fcb547f04afff252aae6ed4d9" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
+        await db.query(`ALTER TABLE "whitelisted_account" ADD CONSTRAINT "FK_2e16c26d1dbedada68a1784d7f4" FOREIGN KEY ("listing_id") REFERENCES "listing"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00e1e709436862a20ae074f111b" FOREIGN KEY ("seller_id") REFERENCES "account"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b" FOREIGN KEY ("make_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "listing" ADD CONSTRAINT "FK_00656ee0f326da82878ddc91be8" FOREIGN KEY ("take_asset_id_id") REFERENCES "token"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -228,6 +233,9 @@ module.exports = class Data1740171152479 {
         await db.query(`DROP INDEX "public"."IDX_9df1e36fa119ce844b219a1fd2"`)
         await db.query(`DROP INDEX "public"."IDX_ad80cb472652e78956eaa5e367"`)
         await db.query(`DROP INDEX "public"."IDX_58e629ae6cc7de61f48b151846"`)
+        await db.query(`DROP TABLE "whitelisted_account"`)
+        await db.query(`DROP INDEX "public"."IDX_08fcb547f04afff252aae6ed4d"`)
+        await db.query(`DROP INDEX "public"."IDX_2e16c26d1dbedada68a1784d7f"`)
         await db.query(`DROP TABLE "listing"`)
         await db.query(`DROP INDEX "public"."IDX_00e1e709436862a20ae074f111"`)
         await db.query(`DROP INDEX "public"."IDX_9d1cea2a04a169d58f13cea7e8"`)
@@ -348,6 +356,8 @@ module.exports = class Data1740171152479 {
         await db.query(`ALTER TABLE "counter_offer" DROP CONSTRAINT "FK_9df1e36fa119ce844b219a1fd23"`)
         await db.query(`ALTER TABLE "counter_offer" DROP CONSTRAINT "FK_ad80cb472652e78956eaa5e3672"`)
         await db.query(`ALTER TABLE "counter_offer" DROP CONSTRAINT "FK_58e629ae6cc7de61f48b1518464"`)
+        await db.query(`ALTER TABLE "whitelisted_account" DROP CONSTRAINT "FK_08fcb547f04afff252aae6ed4d9"`)
+        await db.query(`ALTER TABLE "whitelisted_account" DROP CONSTRAINT "FK_2e16c26d1dbedada68a1784d7f4"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00e1e709436862a20ae074f111b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_9d1cea2a04a169d58f13cea7e8b"`)
         await db.query(`ALTER TABLE "listing" DROP CONSTRAINT "FK_00656ee0f326da82878ddc91be8"`)

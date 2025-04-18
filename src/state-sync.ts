@@ -80,12 +80,12 @@ export async function populateBlock(ctx: CommonContext) {
 
     const runtimeVersion = {
         specName: 'matrix-enjin',
-        specVersion: 1014,
+        specVersion: 1022,
         implName: 'matrix-enjin',
         implVersion: 1,
     }
 
-    const metadata = await getSpecMetadata('enjin-matrix', 1014)
+    const metadata = await getSpecMetadata('enjin-matrix', 1022)
     const runtime = new Runtime(runtimeVersion, metadata, undefined, ctx._chain.rpc)
 
     const block: Block = {
