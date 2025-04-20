@@ -110,7 +110,7 @@ export async function tokenDestroyed(
                 },
             },
         }),
-        ctx.store.find(ListingSale, {
+        ctx.store.find(ListingStatus, {
             where: {
                 listing: {
                     takeAssetId: {
