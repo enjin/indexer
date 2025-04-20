@@ -1,7 +1,6 @@
 .github
 .husky
 .idea
-.papi
 db
 lib
 node_modules

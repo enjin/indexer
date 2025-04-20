@@ -1,5 +1,5 @@
 import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/client-sns'
-import processorConfig from './config'
+import config from './config'
 import { safeJsonString } from './tools'
 
 export class Sns {
@@ -10,18 +10,18 @@ export class Sns {
     static SNS_GROUP_ID: string = ''
 
     private constructor() {
-        if (!processorConfig.amazonSns.topicArn) {
+        if (!config.amazonSns.topicArn) {
             return
         }
 
-        Sns.SNS_TOPIC_ARN = processorConfig.amazonSns.topicArn
-        Sns.SNS_GROUP_ID = processorConfig.chainName
+        Sns.SNS_TOPIC_ARN = config.amazonSns.topicArn
+        Sns.SNS_GROUP_ID = config.chainName
 
         Sns.client = new SNSClient({
-            region: processorConfig.amazonSns.region,
+            region: config.amazonSns.region,
             credentials: {
-                accessKeyId: processorConfig.amazonSns.credentials.accessKeyId,
-                secretAccessKey: processorConfig.amazonSns.credentials.secretAccessKey,
+                accessKeyId: config.amazonSns.credentials.accessKeyId,
+                secretAccessKey: config.amazonSns.credentials.secretAccessKey,
             },
         })
     }
@@ -46,9 +46,9 @@ export class Sns {
         }
 
         const messageBlockHeight = parseInt(message.id.split('-')[0], 10)
-        if (messageBlockHeight < processorConfig.lastBlockHeight) {
-            return
-        }
+        // if (messageBlockHeight < processorConfig.lastBlockHeight) {
+        //     return
+        // }
 
         const toString = (value: unknown): string => {
             if (typeof value === 'string') {

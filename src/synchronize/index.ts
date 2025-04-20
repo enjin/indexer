@@ -7,25 +7,27 @@ import * as path from 'path'
 import { ParentBlockHeader } from '@subsquid/substrate-processor'
 import * as multiTokens from './multi-tokens'
 import * as system from './system'
+import { chainState } from '../chain-state'
 
-export async function populateBlock(ctx: CommonContext) {
+export async function syncState(ctx: CommonContext): Promise<void> {
     const api = Rpc.getInstance().client
-    const finalizedBlock = await api.getFinalizedBlock()
+    const header = await api.getFinalizedBlock()
+    const specData = await api.getChainSpecData()
     const runtimeVersion = {
-        specName: 'matrix-enjin',
-        specVersion: 1022,
-        implName: 'matrix-enjin',
-        implVersion: 1,
+        specName: specData.properties.specName,
+        specVersion: specData.properties.specVersion,
+        implName: specData.properties.implName,
+        implVersion: specData.properties.implVersion,
     }
 
-    const metadata = await getSpecMetadata('enjin-matrix', 1022)
+    const metadata = await getSpecMetadata('enjin-matrix', runtimeVersion.specVersion)
     const runtime = new Runtime(runtimeVersion, metadata, undefined, ctx._chain.rpc)
 
     const block: Block = {
-        id: finalizedBlock.hash,
-        height: finalizedBlock.number,
-        hash: finalizedBlock.hash,
-        parentHash: finalizedBlock.parent,
+        id: header.hash,
+        height: header.number,
+        hash: header.hash,
+        parentHash: header.parent,
         ...runtimeVersion,
         _runtime: runtime,
         _runtimeOfPrevBlock: runtime,
@@ -38,16 +40,17 @@ export async function populateBlock(ctx: CommonContext) {
         },
     }
 
-    ctx.log.info(`Syncing block ${finalizedBlock.number} with hash ${finalizedBlock.hash}`)
+    ctx.log.info(`Syncing block ${header.number} with hash ${header.hash}`)
 
-    console.time('populateGenesis')
+    console.time('syncHeaderChainState')
     await multiTokens.collections(ctx, block)
     await multiTokens.tokens(ctx, block)
     await multiTokens.tokenAccounts(ctx, block)
     await multiTokens.collectionAccounts(ctx, block)
     await multiTokens.attributes(ctx, block)
     await system.balances(ctx, block)
-    console.timeEnd('populateGenesis')
+    await chainState(ctx as unknown as CommonContext, block)
+    console.timeEnd('syncHeaderChainState')
 }
 
 function getProjectRoot(): string {

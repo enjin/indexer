@@ -11,9 +11,8 @@ import { CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './pallets/claims/processors/common'
 import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
-import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
-import { populateBlock } from './synchronize'
+import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 
 Sentry.init({
@@ -47,15 +46,15 @@ processorConfig.run(
                     }
 
                     // await metadataQueue.pause().catch(() => {})
-                    await populateBlock(ctx as unknown as CommonContext)
+                    await syncState(ctx as unknown as CommonContext)
                 }
 
-                if (block.header.height === config.lastBlockHeight) {
-                    // await syncAllBalances(ctx, block.header)
-                    // metadataQueue.resume().catch(() => {})
-                    ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
-                    QueueUtils.dispatchComputeCollections()
-                }
+                // if (block.header.height === config.lastBlockHeight) {
+                //     // await syncAllBalances(ctx, block.header)
+                //     // metadataQueue.resume().catch(() => {})
+                //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
+                //     QueueUtils.dispatchComputeCollections()
+                // }
 
                 ctx.log.info(
                     `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
@@ -173,7 +172,7 @@ processorConfig.run(
                         ctx as unknown as CommonContext,
                         block.header,
                         eventItem,
-                        block.header.height < config.lastBlockHeight
+                        true //block.header.height < config.lastBlockHeight
                     )
 
                     if (event) {
@@ -189,10 +188,10 @@ processorConfig.run(
                     }
                 }
 
-                if (block.header.height > config.lastBlockHeight) {
-                    p.balances.processors.addAccountsToSet(Array.from(signers))
-                    await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
-                }
+                // if (block.header.height > config.lastBlockHeight) {
+                //     p.balances.processors.addAccountsToSet(Array.from(signers))
+                //     await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
+                // }
 
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
@@ -202,10 +201,10 @@ processorConfig.run(
                 _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
             }
 
-            const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-            if (lastBlock.height > config.lastBlockHeight - 200) {
-                await chainState(ctx as unknown as CommonContext, lastBlock)
-            }
+            // const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+            // if (lastBlock.height > config.lastBlockHeight - 200) {
+            //     await chainState(ctx as unknown as CommonContext, lastBlock)
+            // }
         } catch (error) {
             // await metadataQueue.resume()
             Sentry.captureException(error)

@@ -1,15 +1,24 @@
 import * as ss58 from '@subsquid/ss58'
-import processorConfig from './config'
 import { decode } from '@subsquid/ss58'
 import { stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
+import config from './config'
+
+export function specToChain(specName: string): string {
+    switch (specName) {
+        case 'matrix-enjin':
+            return 'matrix-enjin'
+        default:
+            return 'enjin'
+    }
+}
 
 export function isMainnet(): boolean {
-    return ['enjin-relay', 'enjin-matrix'].includes(processorConfig.chainName)
+    return ['enjin-relay', 'enjin-matrix'].includes(config.chainName)
 }
 
 export function isRelay(): boolean {
-    return ['enjin-relay', 'canary-relay'].includes(processorConfig.chainName)
+    return ['enjin-relay', 'canary-relay'].includes(config.chainName)
 }
 
 export function isValidAddress(address: string): boolean {
@@ -24,7 +33,7 @@ export function isValidAddress(address: string): boolean {
 }
 
 export function encodeAddress(id: Uint8Array | string) {
-    return ss58.codec(processorConfig.prefix).encode(id)
+    return ss58.codec(config.prefix).encode(id)
 }
 
 export function decodeAddress(id: string): HexString {
