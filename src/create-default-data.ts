@@ -12,7 +12,7 @@ import {
 } from './model'
 import { getOrCreateAccount } from './utils/entities'
 import { isMainnet, isRelay } from './utils/tools'
-import * as mappings from './pallets'
+import * as p from './pallets'
 import { match } from 'ts-pattern'
 
 export async function createDefaultData(ctx: CommonContext, block: Block) {
@@ -163,7 +163,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
         createdAt: new Date(block.timestamp ?? 0),
     })
 
-    const degenCollectionData = await mappings.multiTokens.storage.collections(block, { collectionId: 2n })
+    const degenCollectionData = await p.multiTokens.storage.collections(block, { collectionId: 2n })
 
     if (!degenCollectionData) {
         throw new Error('Degen collection data not found')

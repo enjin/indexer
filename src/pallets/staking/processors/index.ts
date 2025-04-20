@@ -1,9 +1,2 @@
-import { eraPaid } from './era-paid'
-import { validatorPrefsSet } from './validator-prefs-set'
-
-export const staking = {
-    eraPaid,
-    validatorPrefsSet,
-}
-
-export default staking
+export * from './era-paid'
+export * from './validator-prefs-set'

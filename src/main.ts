@@ -5,7 +5,7 @@ import config from './utils/config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createDefaultData } from './create-default-data'
 import { chainState } from './chain-state'
-import * as mappings from './pallets'
+import * as p from './pallets'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './utils/entities'
 import { CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './pallets/claims/processors/common'
@@ -15,7 +15,6 @@ import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
 import { populateBlock } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
-import processors from './processors'
 
 Sentry.init({
     dsn: config.sentryDsn,
@@ -74,7 +73,7 @@ processorConfig.run(
                     }
 
                     if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
-                        const tankData = mappings.fuelTanks.utils.anyDispatch(call)
+                        const tankData = p.fuelTanks.utils.anyDispatch(call)
                         const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
                             id: unwrapAccount(tankData.tankId),
                         })
@@ -99,7 +98,7 @@ processorConfig.run(
                                 continue
                             }
 
-                            const transfer = mappings.balances.events.withdraw(eventItem)
+                            const transfer = p.balances.events.withdraw(eventItem)
 
                             if (transfer.who === tank.id) {
                                 fuelTank.feePaid = transfer.amount
@@ -191,8 +190,8 @@ processorConfig.run(
                 }
 
                 if (block.header.height > config.lastBlockHeight) {
-                    processors.balances.addAccountsToSet(Array.from(signers))
-                    await processors.balances.saveAccounts(ctx as unknown as CommonContext, block.header)
+                    p.balances.processors.addAccountsToSet(Array.from(signers))
+                    await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
                 }
 
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
