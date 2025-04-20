@@ -13,7 +13,7 @@ import {
 import { updatePool } from './pool'
 import { Block, CommonContext, EventItem } from '../../contexts'
 import { Sns } from '../../utils/sns'
-import config from '../../config'
+import processorConfig from '../../utils/config'
 import * as mappings from './../../mappings'
 
 async function getMembersBalance(block: Block, poolId: number) {
@@ -110,14 +110,14 @@ export async function eraRewardsProcessed(
         const rate = Big(eraRewards[0].rate.toString())
         const decimals = Big(10).pow(18)
         const changeInRate = rate.minus(decimals)
-        apy = rate.div(decimals).pow(config.erasPerYear).sub(1).mul(100)
+        apy = rate.div(decimals).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.changeInRate = BigInt(changeInRate.toString())
         reward.apy = apy.toNumber()
     } else {
         const previousBalance = Big(eraRewards[1].active.toString())
         const newBalance = Big(reward.reinvested.toString()).plus(previousBalance)
 
-        const currentApy = newBalance.div(previousBalance).pow(config.erasPerYear).sub(1).mul(100)
+        const currentApy = newBalance.div(previousBalance).pow(processorConfig.erasPerYear).sub(1).mul(100)
         reward.apy = currentApy.toNumber()
 
         const lastRewards = Big(eraRewards[0].rate.toString())
@@ -137,7 +137,7 @@ export async function eraRewardsProcessed(
         (apy.toNumber() < 0 ||
             apy.toNumber() > 200 ||
             (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))) &&
-        block.height > config.lastBlockHeight
+        block.height > processorConfig.lastBlockHeight
     ) {
         Sentry.captureMessage(`Pool ${pool.id} has apy: ${apy.toNumber()}%, previous: ${pool.apy}%`, 'warning')
     }

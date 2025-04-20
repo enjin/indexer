@@ -3,7 +3,7 @@ import * as mappings from '../../mappings'
 import { safeString } from '../../utils/tools'
 import { hexToString } from '@polkadot/util'
 import { Attribute, Collection, Token } from '../../model'
-import { BATCH_SIZE } from './common'
+import { BATCH_SIZE } from '../common/common'
 
 export async function attributes(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing attributes...')

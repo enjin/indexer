@@ -4,10 +4,11 @@ interface DataSource {
     fromBlock: number
 }
 
-export interface ProcessorConfig {
+export interface Config {
     chainName: string
     prefix: number | string
     lastBlockHeight: number
+
     genesisHash: string
     erasPerYear: number
     batchSize?: number
@@ -31,7 +32,7 @@ export interface ProcessorConfig {
     wsReconnectDelay: number
 }
 
-const config: ProcessorConfig = {
+const config: Config = {
     chainName: process.env.CHAIN_NAME || 'enjin-matrix',
     prefix: process.env.CHAIN_PREFIX ? parseInt(process.env.CHAIN_PREFIX, 10) : 1110,
     lastBlockHeight: process.env.LAST_BLOCK_HEIGHT ? parseInt(process.env.LAST_BLOCK_HEIGHT, 10) : 0,

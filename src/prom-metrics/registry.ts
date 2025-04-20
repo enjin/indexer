@@ -1,10 +1,10 @@
 import client from 'prom-client'
-import config from '../config'
+import processorConfig from '../utils/config'
 
 const registry = new client.Registry()
 
 registry.setDefaultLabels({
-    name: `${config.chainName}-indexer`,
+    name: `${processorConfig.chainName}-indexer`,
 })
 
 export default registry

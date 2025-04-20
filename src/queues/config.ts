@@ -1,10 +1,10 @@
 import { ConnectionOptions } from 'bullmq'
-import config from '../config'
+import processorConfig from '../utils/config'
 
 export const connection: ConnectionOptions = {
-    host: config.redis.host,
-    port: config.redis.port,
-    db: config.redis.db,
+    host: processorConfig.redis.host,
+    port: processorConfig.redis.port,
+    db: processorConfig.redis.db,
 }
 
 export default {

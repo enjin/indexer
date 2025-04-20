@@ -1,5 +1,5 @@
 import axios from 'axios'
-import config from '../config'
+import processorConfig from './config'
 import { isMainnet } from './tools'
 
 const addressesQuery = `query AddressesQuery($ids: [String!]) {
@@ -55,7 +55,7 @@ type CollectionExtra = {
 export async function fetchAccountsDetail(ids: string[]) {
     try {
         const { data } = await axios.post<{ data: { result: AddressVerification[] } } | { errors: string }>(
-            `${config.marketplaceUrl}/graphql/internal`,
+            `${processorConfig.marketplaceUrl}/graphql/internal`,
             {
                 query: addressesQuery,
                 variables: {
@@ -97,7 +97,7 @@ export async function fetchAccountsDetail(ids: string[]) {
 export async function fetchCollectionsExtra(ids: string[]) {
     try {
         const { data } = await axios.post<{ data: { result: CollectionExtra[] } } | { errors: string }>(
-            `${config.marketplaceUrl}/graphql/internal`,
+            `${processorConfig.marketplaceUrl}/graphql/internal`,
             {
                 query: collectionsQuery,
                 variables: {

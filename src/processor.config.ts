@@ -1,5 +1,5 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
-import config from './config'
+import config from './utils/config'
 import { calls, events } from './types'
 import { isRelay } from './utils/tools'
 
@@ -43,7 +43,7 @@ const eventItems: string[] = [
     ),
 ]
 
-export const processor = new SubstrateBatchProcessor()
+export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
     .addCall({
@@ -81,5 +81,5 @@ export const processor = new SubstrateBatchProcessor()
     })
 
 if (config.dataSource.archive) {
-    processor.setGateway(config.dataSource.archive)
+    processorConfig.setGateway(config.dataSource.archive)
 }

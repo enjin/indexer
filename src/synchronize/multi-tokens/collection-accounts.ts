@@ -1,7 +1,7 @@
 import { Block, CommonContext } from '../../contexts'
 import * as mappings from '../../mappings'
 import { Collection, CollectionAccount, CollectionApproval } from '../../model'
-import { BATCH_SIZE, getAccountMap } from './common'
+import { BATCH_SIZE, getAccountMap } from '../common/common'
 
 export async function collectionAccounts(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing collection accounts...')

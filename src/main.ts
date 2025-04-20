@@ -1,203 +1,28 @@
 import { TypeormDatabase } from '@subsquid/typeorm-store'
 import _ from 'lodash'
 import * as Sentry from '@sentry/node'
-import config from './config'
+import config from './utils/config'
 import { AccountTokenEvent, Event, Extrinsic, Fee, FuelTank, FuelTankData, Listing } from './model'
 import { createDefaultData } from './create-default-data'
 import { chainState } from './chain-state'
-import { processors } from './processors'
 import * as mappings from './mappings'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './utils/entities'
-import { events, calls } from './types'
-import { Block, CallItem, CommonContext, EventItem } from './contexts'
+import { CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './processors/claims/common'
-import { processor } from './processor'
+import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
-import { match } from 'ts-pattern'
 import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
 import { populateBlock } from './synchronize'
+import { callHandler, eventHandler } from './processor.handler'
+import processors from './processors'
 
 Sentry.init({
     dsn: config.sentryDsn,
     tracesSampleRate: 1.0,
-    profilesSampleRate: 1.0,
 })
 
-async function handleEvents(
-    ctx: CommonContext,
-    block: Block,
-    item: EventItem,
-    skipSave = false
-): Promise<Event | [Event, AccountTokenEvent] | undefined> {
-    return match(item.name)
-        .with(events.multiTokens.approved.name, () => processors.multiTokens.approved(ctx, item, skipSave))
-        .with(events.multiTokens.attributeRemoved.name, () =>
-            processors.multiTokens.attributeRemoved(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.attributeSet.name, () =>
-            processors.multiTokens.attributeSet(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.burned.name, () => processors.multiTokens.burned(ctx, block, item, skipSave))
-        .with(events.multiTokens.collectionAccountCreated.name, () =>
-            processors.multiTokens.collectionAccountCreated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.collectionAccountDestroyed.name, () =>
-            processors.multiTokens.collectionAccountDestroyed(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.collectionCreated.name, () =>
-            processors.multiTokens.collectionCreated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.collectionDestroyed.name, () =>
-            processors.multiTokens.collectionDestroyed(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.collectionMutated.name, () =>
-            processors.multiTokens.collectionMutated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.collectionTransferred.name, () =>
-            processors.multiTokens.collectionTransferred(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.frozen.name, () => processors.multiTokens.frozen(ctx, block, item, skipSave))
-        .with(events.multiTokens.minted.name, () => processors.multiTokens.minted(ctx, block, item, skipSave))
-        .with(events.multiTokens.infused.name, () => processors.multiTokens.infused(ctx, block, item, skipSave))
-        .with(events.multiTokens.reserved.name, () => processors.multiTokens.reserved(ctx, block, item, skipSave))
-        .with(events.multiTokens.thawed.name, () => processors.multiTokens.thawed(ctx, block, item, skipSave))
-        .with(events.multiTokens.tokenAccountCreated.name, () =>
-            processors.multiTokens.tokenAccountCreated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.tokenAccountDestroyed.name, () =>
-            processors.multiTokens.tokenAccountDestroyed(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.tokenCreated.name, () =>
-            processors.multiTokens.tokenCreated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.tokenDestroyed.name, () =>
-            processors.multiTokens.tokenDestroyed(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.tokenMutated.name, () =>
-            processors.multiTokens.tokenMutated(ctx, block, item, skipSave)
-        )
-        .with(events.multiTokens.transferred.name, () => processors.multiTokens.transferred(ctx, block, item, skipSave))
-        .with(events.multiTokens.unapproved.name, () => processors.multiTokens.unapproved(ctx, block, item, skipSave))
-        .with(events.multiTokens.unreserved.name, () => processors.multiTokens.unreserved(ctx, block, item, skipSave))
-        .with(events.multiTokens.claimedCollections.name, () =>
-            processors.multiTokens.claimedCollections(ctx, block, item)
-        )
-        .with(events.multiTokens.claimTokensInitiated.name, () =>
-            processors.multiTokens.claimTokensInitiated(ctx, block, item)
-        )
-        .with(events.multiTokens.claimTokensCompleted.name, () =>
-            processors.multiTokens.claimTokensCompleted(ctx, block, item)
-        )
-        .with(
-            events.balances.balanceSet.name,
-            events.balances.burned.name,
-            events.balances.deposit.name,
-            events.balances.dustLost.name,
-            events.balances.endowed.name,
-            events.balances.frozen.name,
-            events.balances.locked.name,
-            events.balances.minted.name,
-            events.balances.reserveRepatriated.name,
-            events.balances.reserved.name,
-            events.balances.restored.name,
-            events.balances.slashed.name,
-            events.balances.suspended.name,
-            events.balances.thawed.name,
-            events.balances.unlocked.name,
-            events.balances.unreserved.name,
-            events.balances.transfer.name,
-            events.balances.withdraw.name,
-            () => processors.balances.save(item)
-        )
-        .with(events.claims.claimRequested.name, () => processors.claims.claimRequested(ctx, block, item))
-        .with(events.claims.claimRejected.name, () => processors.claims.claimRejected(ctx, block, item))
-        .with(events.claims.claimMinted.name, () => processors.claims.claimMinted(ctx, block, item))
-        .with(events.claims.claimed.name, () => processors.claims.claimed(ctx, block, item))
-        .with(events.claims.exchangeRateSet.name, () => processors.claims.exchangeRateSet(ctx, block, item))
-        .with(events.claims.delayTimeForClaimSet.name, () => processors.claims.delayTimeForClaimSet(ctx, block, item))
-        .with(events.marketplace.listingCreated.name, () => processors.marketplace.listingCreated(ctx, block, item))
-        .with(events.marketplace.listingCancelled.name, () => processors.marketplace.listingCancelled(ctx, block, item))
-        .with(events.marketplace.listingFilled.name, () => processors.marketplace.listingFilled(ctx, block, item))
-        .with(events.marketplace.bidPlaced.name, () => processors.marketplace.bidPlaced(ctx, block, item))
-        .with(events.marketplace.auctionFinalized.name, () => processors.marketplace.auctionFinalized(ctx, block, item))
-        .with(events.marketplace.counterOfferPlaced.name, () =>
-            processors.marketplace.counterOfferPlaced(ctx, block, item)
-        )
-        .with(events.marketplace.counterOfferAnswered.name, () =>
-            processors.marketplace.counterOfferAnswered(ctx, block, item)
-        )
-        .with(events.marketplace.counterOfferRemoved.name, () =>
-            processors.marketplace.counterOfferRemoved(ctx, block, item)
-        )
-        .with(events.marketplace.listingRemovedUnderMinimum.name, () =>
-            processors.marketplace.listingRemovedUnderMinimum(ctx, block, item)
-        )
-        .with(events.polkadotXcm.attempted.name, () => processors.polkadotXcm.attempted(ctx, block, item))
-        .with(events.fuelTanks.accountAdded.name, () => processors.fuelTanks.accountAdded(ctx, block, item))
-        .with(events.fuelTanks.accountRemoved.name, () => processors.fuelTanks.accountRemoved(ctx, block, item))
-        .with(events.fuelTanks.accountRuleDataRemoved.name, () =>
-            processors.fuelTanks.accountRuleDataRemoved(ctx, block, item)
-        )
-        .with(events.fuelTanks.freezeStateMutated.name, () => processors.fuelTanks.freezeStateMutated(ctx, block, item))
-        .with(events.fuelTanks.fuelTankCreated.name, () => processors.fuelTanks.fuelTankCreated(ctx, block, item))
-        .with(events.fuelTanks.fuelTankDestroyed.name, () => processors.fuelTanks.fuelTankDestroyed(ctx, block, item))
-        .with(events.fuelTanks.fuelTankMutated.name, () => processors.fuelTanks.fuelTankMutated(ctx, block, item))
-        .with(events.fuelTanks.ruleSetInserted.name, () => processors.fuelTanks.ruleSetInserted(ctx, block, item))
-        .with(events.fuelTanks.ruleSetRemoved.name, () => processors.fuelTanks.ruleSetRemoved(ctx, block, item))
-        .with(events.identity.identityCleared.name, () => processors.identity.identityCleared(ctx, block, item))
-        .with(events.identity.identityKilled.name, () => processors.identity.identityKilled(ctx, block, item))
-        .with(events.identity.identitySet.name, () => processors.identity.identitySet(ctx, block, item))
-        .with(events.identity.judgementGiven.name, () => processors.identity.judgementGiven(ctx, block, item))
-        .with(events.identity.judgementRequested.name, () => processors.identity.judgementRequested(ctx, block, item))
-        .with(events.identity.judgementUnrequested.name, () =>
-            processors.identity.judgementUnrequested(ctx, block, item)
-        )
-        .with(events.identity.registrarAdded.name, () => processors.identity.registrarAdded(ctx, block, item))
-        .with(events.identity.subIdentityAdded.name, () => processors.identity.subIdentityAdded(ctx, block, item))
-        .with(events.identity.subIdentityRemoved.name, () => processors.identity.subIdentityRemoved(ctx, block, item))
-        .with(events.identity.subIdentityRevoked.name, () => processors.identity.subIdentityRevoked(ctx, block, item))
-        .otherwise(() => {
-            ctx.log.error(`Unsupported event on handle event: ${item.name}`)
-            return undefined
-        })
-}
-
-async function handleCalls(ctx: CommonContext, block: Block, item: CallItem) {
-    switch (item.name) {
-        case calls.identity.setSubs.name:
-            return processors.identity.setSubs(ctx, block, item)
-        case calls.identity.renameSub.name:
-            return processors.identity.renameSub(ctx, block, item)
-        default: {
-            return undefined
-        }
-    }
-}
-
-function getParticipants(args: Json, _events: EventItem[], signer: string): string[] {
-    const accounts = new Set<string>([signer])
-    if (args) {
-        const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
-        if (accountsFromArgs) {
-            accountsFromArgs.forEach(accounts.add, accounts)
-        }
-    }
-
-    if (_events.length > 0) {
-        for (const eventItem of _events) {
-            if (!eventItem.args) continue
-            const accountsFromEventArgs = JSON.stringify(eventItem.args).match(/\b0x[0-9a-fA-F]{64}\b/g)
-            if (accountsFromEventArgs && accountsFromEventArgs.length > 0) {
-                accountsFromEventArgs.forEach(accounts.add, accounts)
-            }
-        }
-    }
-
-    return Array.from(accounts)
-}
-
-processor.run(
+processorConfig.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
         supportHotBlocks: true,
@@ -342,10 +167,10 @@ processor.run(
                 }
 
                 for (const call of block.calls) {
-                    await handleCalls(ctx as unknown as CommonContext, block.header, call)
+                    await callHandler(ctx as unknown as CommonContext, block.header, call)
                 }
                 for (const eventItem of block.events) {
-                    const event = await handleEvents(
+                    const event = await eventHandler(
                         ctx as unknown as CommonContext,
                         block.header,
                         eventItem,
@@ -389,3 +214,25 @@ processor.run(
         }
     }
 )
+
+function getParticipants(args: Json, _events: EventItem[], signer: string): string[] {
+    const accounts = new Set<string>([signer])
+    if (args) {
+        const accountsFromArgs = JSON.stringify(args).match(/\b0x[0-9a-fA-F]{64}\b/g)
+        if (accountsFromArgs) {
+            accountsFromArgs.forEach(accounts.add, accounts)
+        }
+    }
+
+    if (_events.length > 0) {
+        for (const eventItem of _events) {
+            if (!eventItem.args) continue
+            const accountsFromEventArgs = JSON.stringify(eventItem.args).match(/\b0x[0-9a-fA-F]{64}\b/g)
+            if (accountsFromEventArgs && accountsFromEventArgs.length > 0) {
+                accountsFromEventArgs.forEach(accounts.add, accounts)
+            }
+        }
+    }
+
+    return Array.from(accounts)
+}

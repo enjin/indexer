@@ -10,7 +10,7 @@ import {
     TokenBehaviorType,
 } from '../../model'
 import { isNonFungible } from '../../processors/multi-tokens/utils/helpers'
-import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from './common'
+import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common/common'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')

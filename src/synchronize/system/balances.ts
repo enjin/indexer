@@ -1,7 +1,7 @@
 import { Block, CommonContext } from '../../contexts'
 import * as mappings from '../../mappings'
 import { addAccountsToSet, saveAccounts } from '../../processors/balances/save'
-import { BATCH_SIZE, getAccountMap } from './common'
+import { BATCH_SIZE, getAccountMap } from '../common/common'
 import { Account } from '../../model'
 
 export async function balances(ctx: CommonContext, block: Block) {

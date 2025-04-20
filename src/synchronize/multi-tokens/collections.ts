@@ -11,7 +11,7 @@ import {
     RoyaltyBeneficiary,
     TransferPolicy,
 } from '../../model'
-import { BATCH_SIZE, getAccountMap } from './common'
+import { BATCH_SIZE, getAccountMap } from '../common/common'
 
 export async function collections(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing collections...')

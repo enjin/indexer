@@ -2,7 +2,7 @@ import Big from 'big.js'
 import { constants } from '../../types'
 import { Block, CommonContext } from '../../contexts'
 import { EarlyBirdDetails, EraReward, NominationPool, PoolBalance } from '../../model'
-import config from '../../config'
+import processorConfig from '../../utils/config'
 import * as mappings from './../../mappings'
 import { BN } from '@polkadot/util'
 import { bnToU8a, hexToU8a, stringToU8a, u8aConcat, u8aToHex } from '@polkadot/util'
@@ -71,7 +71,7 @@ export async function updatePool(ctx: CommonContext, block: Block, poolId: strin
     if (pool.rate && eraCount > 0) {
         pool.historicalApy = Big(pool.rate.toString())
             .div(1e18)
-            .pow(Big(config.erasPerYear).div(eraCount).round(0, Big.roundUp).toNumber())
+            .pow(Big(processorConfig.erasPerYear).div(eraCount).round(0, Big.roundUp).toNumber())
             .sub(1)
             .mul(100)
             .toNumber()

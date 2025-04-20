@@ -1,7 +1,7 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
-import config from './config'
+import processorConfig from './utils/config'
 import { CommonContext } from './contexts'
 import Rpc from './utils/rpc'
 
@@ -22,7 +22,7 @@ export async function chainState(
         const maxSaltLength: number = await api.constants.Marketplace.MaxSaltLength()
         const minimumBidIncreasePercentage: number = await api.constants.Marketplace.MinimumBidIncreasePercentage()
 
-        state.genesisHash = config.genesisHash
+        state.genesisHash = processorConfig.genesisHash
         state.transactionVersion = transactionVersion
         state.specVersion = Number(block.specVersion)
         state.blockNumber = block.height
