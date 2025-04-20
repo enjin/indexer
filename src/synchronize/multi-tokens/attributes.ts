@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../mappings'
+import * as mappings from '../../pallets'
 import { safeString } from '../../utils/tools'
 import { hexToString } from '@polkadot/util'
 import { Attribute, Collection, Token } from '../../model'

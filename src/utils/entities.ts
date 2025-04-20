@@ -2,7 +2,7 @@ import { Account, Balance, Listing } from '../model'
 import { CommonContext, ExtrinsicItem } from '../contexts'
 import { isU8a, u8aToHex } from '@polkadot/util'
 import { AccountNotParsableError } from './errors'
-import { RootOrSigned, MultiAddress } from '../mappings/common/types'
+import { RootOrSigned, MultiAddress } from '../pallets/common/types'
 import { encodeAddress } from './tools'
 
 interface AddressWithKind {

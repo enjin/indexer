@@ -12,7 +12,7 @@ import {
 } from './model'
 import { getOrCreateAccount } from './utils/entities'
 import { isMainnet, isRelay } from './utils/tools'
-import * as mappings from './mappings'
+import * as mappings from './pallets'
 import { match } from 'ts-pattern'
 
 export async function createDefaultData(ctx: CommonContext, block: Block) {

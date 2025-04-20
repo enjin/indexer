@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../mappings'
+import * as mappings from '../../pallets'
 import { Collection, CollectionAccount, CollectionApproval } from '../../model'
 import { BATCH_SIZE, getAccountMap } from '../common/common'
 

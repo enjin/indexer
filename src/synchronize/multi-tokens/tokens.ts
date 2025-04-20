@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../mappings'
+import * as mappings from '../../pallets'
 import {
     Collection,
     FreezeState,
@@ -9,7 +9,7 @@ import {
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '../../model'
-import { isNonFungible } from '../../processors/multi-tokens/utils/helpers'
+import { isNonFungible } from '../../pallets/multi-tokens/processors/utils/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common/common'
 
 export async function tokens(ctx: CommonContext, block: Block) {

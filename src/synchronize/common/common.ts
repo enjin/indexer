@@ -1,4 +1,4 @@
-import { FreezeState as FreezeStateType, TokenCap } from '../../mappings/common/types'
+import { FreezeState as FreezeStateType, TokenCap } from '../../pallets/common/types'
 import { Account, Balance, CapType, FreezeState, TokenCapSingleMint, TokenCapSupply } from '../../model'
 import { CommonContext } from '../../contexts'
 import { In } from 'typeorm'
