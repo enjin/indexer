@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../pallets'
+import { multiTokens } from '../../pallets'
 import {
     Collection,
     FreezeState,
@@ -10,12 +10,12 @@ import {
     TokenBehaviorType,
 } from '../../model'
 import { isNonFungible } from '../../pallets/multi-tokens/processors/utils/helpers'
-import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common/common'
+import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common'
 
 export async function tokens(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing tokens...')
 
-    const iterable = (await mappings.multiTokens.storage.tokens(block, { batchSize: BATCH_SIZE })) ?? []
+    const iterable = (await multiTokens.storage.tokens(block, { batchSize: BATCH_SIZE })) ?? []
 
     for await (const tokenPairs of iterable) {
         const tokens = []

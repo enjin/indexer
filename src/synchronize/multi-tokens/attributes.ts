@@ -1,14 +1,14 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../pallets'
+import { multiTokens } from '../../pallets'
 import { safeString } from '../../utils/tools'
 import { hexToString } from '@polkadot/util'
 import { Attribute, Collection, Token } from '../../model'
-import { BATCH_SIZE } from '../common/common'
+import { BATCH_SIZE } from '../common'
 
 export async function attributes(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing attributes...')
 
-    const iterable = (await mappings.multiTokens.storage.attributes(block, { batchSize: BATCH_SIZE })) ?? []
+    const iterable = (await multiTokens.storage.attributes(block, { batchSize: BATCH_SIZE })) ?? []
 
     for await (const attributePairs of iterable) {
         const attributePromise = attributePairs.map(([k, data]) => {

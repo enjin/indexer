@@ -1,12 +1,12 @@
 import { Block, CommonContext } from '../../contexts'
-import * as mappings from '../../pallets'
+import { multiTokens } from '../../pallets'
 import { Collection, Token, TokenAccount, TokenApproval, TokenLock, TokenNamedReserve } from '../../model'
-import { BATCH_SIZE, getAccountMap } from '../common/common'
+import { BATCH_SIZE, getAccountMap } from '../common'
 
 export async function tokenAccounts(ctx: CommonContext, block: Block) {
     ctx.log.info('Syncing token accounts...')
 
-    const iterable = (await mappings.multiTokens.storage.tokenAccounts(block, { batchSize: BATCH_SIZE })) ?? []
+    const iterable = (await multiTokens.storage.tokenAccounts(block, { batchSize: BATCH_SIZE })) ?? []
 
     for await (const tokenAccountPairs of iterable) {
         const accountMap = await getAccountMap(
