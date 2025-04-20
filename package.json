@@ -2,7 +2,7 @@
   "name": "@enjin/indexer",
   "version": "5.0.0",
   "author": "Enjin <contact@enjin.io>",
-  "description": "Indexer for the Matrix Chain",
+  "description": "A fully featured indexer for enjin blockchains",
   "homepage": "https://enjin.io",
   "license": "GPL-3.0",
   "repository": {

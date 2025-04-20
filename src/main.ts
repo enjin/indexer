@@ -16,7 +16,7 @@ import { Json } from '@subsquid/substrate-processor'
 import { match } from 'ts-pattern'
 import { QueueUtils } from './queues'
 import { hexStripPrefix } from '@polkadot/util'
-import { populateBlock } from './state-sync'
+import { populateBlock } from './synchronize'
 
 Sentry.init({
     dsn: config.sentryDsn,
