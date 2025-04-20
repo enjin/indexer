@@ -73,6 +73,8 @@ export async function tokenDestroyed(
     const [
         listingSales,
         listingStatus,
+        listingSalesTake,
+        listingStatusTake,
         listingsMake,
         listingTake,
         royaltyCurrencies,
@@ -95,6 +97,24 @@ export async function tokenDestroyed(
                 listing: {
                     makeAssetId: {
                         id: token.id,
+                    },
+                },
+            },
+        }),
+        ctx.store.find(ListingSale, {
+            where: {
+                listing: {
+                    takeAssetId: {
+                        id: token.id,
+                    },
+                },
+            },
+        }),
+        ctx.store.find(ListingSale, {
+            where: {
+                listing: {
+                    takeAssetId: {
+                        id: token.id
                     },
                 },
             },
@@ -158,6 +178,8 @@ export async function tokenDestroyed(
     await Promise.all([
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
+        ctx.store.remove(listingSalesTake),
+        ctx.store.remove(listingStatusTake),
         ctx.store.remove(listingsMake),
         ctx.store.remove(listingTake),
         ctx.store.remove(royaltyCurrencies),
