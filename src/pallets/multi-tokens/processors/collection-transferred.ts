@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Collection, Event as EventModel } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
@@ -19,7 +19,7 @@ export async function collectionTransferred(
     })
 
     if (!collection) {
-        throwError(`[CollectionTransferred] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+        throwFatalError(`[CollectionTransferred] We have not found collection ${data.collectionId.toString()}`)
         return mappings.multiTokens.events.collectionTransferredEventModel(item, data)
     }
 

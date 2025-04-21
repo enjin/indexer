@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
@@ -34,7 +34,7 @@ export async function minted(
     }
 
     if (!token) {
-        throwError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwFatalError(`[Minted] We have not found token ${data.collectionId}-${data.tokenId}.`)
         return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
@@ -47,9 +47,8 @@ export async function minted(
     })
 
     if (!tokenAccount) {
-        throwError(
-            `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
+        throwFatalError(
+            `[Minted] We have not found token account ${data.recipient}-${data.collectionId}-${data.tokenId}.`
         )
 
         await Promise.all(promises)

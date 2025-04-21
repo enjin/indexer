@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
@@ -22,7 +22,7 @@ export async function tokenMutated(
     })
 
     if (!token) {
-        throwError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwFatalError(`[TokenMutated] We have not found token ${data.collectionId}-${data.tokenId}.`)
         return mappings.multiTokens.events.tokenMutatedEventModel(item, data)
     }
 

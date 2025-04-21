@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
@@ -25,7 +25,7 @@ export async function transferred(
     }
 
     if (!token) {
-        throwError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwFatalError(`[Transferred] We have not found token ${data.collectionId}-${data.tokenId}.`)
         return mappings.multiTokens.events.transferredEventModel(item, data, token)
     }
 
@@ -47,9 +47,8 @@ export async function transferred(
         fromTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(fromTokenAccount)
     } else {
-        throwError(
-            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
+        throwFatalError(
+            `[Transferred] We have not found token account ${fromAddress}-${data.collectionId}-${data.tokenId}.`
         )
     }
 
@@ -59,9 +58,8 @@ export async function transferred(
         toTokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(toTokenAccount)
     } else {
-        throwError(
-            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
+        throwFatalError(
+            `[Transferred] We have not found token account ${toAddress}-${data.collectionId}-${data.tokenId}.`
         )
     }
 

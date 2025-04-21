@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { CollectionAccount, Event as EventModel, TokenAccount } from '../../../model'
 import { Sns } from '../../../utils/sns'
 import * as mappings from '../../index'
@@ -30,9 +30,8 @@ export async function unapproved(
 
             await ctx.store.save(tokenAccount)
         } else {
-            throwError(
-                `[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-                'fatal'
+            throwFatalError(
+                `[Unapproved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`
             )
         }
     } else {
@@ -48,7 +47,7 @@ export async function unapproved(
 
             await ctx.store.save(collectionAccount)
         } else {
-            throwError(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            throwFatalError(`[Unapproved] We have not found collection account ${data.collectionId}-${address}.`)
         }
     }
 

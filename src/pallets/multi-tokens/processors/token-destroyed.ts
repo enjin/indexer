@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import {
     AccountTokenEvent,
     Attribute,
@@ -31,7 +31,7 @@ export async function tokenDestroyed(
     })
 
     if (!token) {
-        throwError(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwFatalError(`[TokenDestroyed] We have not found token ${data.collectionId}-${data.tokenId}.`)
         return mappings.multiTokens.events.tokenDestroyedEventModel(item, data)
     }
 

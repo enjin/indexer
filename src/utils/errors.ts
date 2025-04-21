@@ -43,6 +43,6 @@ export function throwFatalError(message: string): void {
     if (process.env.NODE_ENV === 'development') {
         throw new Error(message)
     } else {
-        Sentry.captureMessage(message, 'fatal')
+        Sentry.captureMessage(message)
     }
 }

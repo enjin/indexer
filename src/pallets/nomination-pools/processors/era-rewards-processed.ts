@@ -134,10 +134,10 @@ export async function eraRewardsProcessed(
     }
 
     if (
-        (apy.toNumber() < 0 ||
-            apy.toNumber() > 200 ||
-            (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))) &&
-        block.height > processorConfig.lastBlockHeight
+        apy.toNumber() < 0 ||
+        apy.toNumber() > 200 ||
+        (pool.apy > 1 && Big(apy).minus(pool.apy).times(2).div(Big(apy).plus(pool.apy)).times(100).abs().gt(50))
+        // && block.height > processorConfig.lastBlockHeight
     ) {
         Sentry.captureMessage(`Pool ${pool.id} has apy: ${apy.toNumber()}%, previous: ${pool.apy}%`, 'warning')
     }

@@ -1,5 +1,5 @@
 import { hexToString } from '@polkadot/util'
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import {
     Attribute,
     Collection,
@@ -86,7 +86,7 @@ export async function attributeSet(
         })
 
         if (!token) {
-            throwError(`[AttributeSet] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+            throwFatalError(`[AttributeSet] We have not found token ${data.collectionId}-${data.tokenId}.`)
             return mappings.multiTokens.events.attributeSetEventModel(item, data)
         }
     }

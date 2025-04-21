@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Collection, Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
@@ -30,7 +30,7 @@ export async function tokenCreated(
         })
 
         if (!collection) {
-            throwError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`, 'fatal')
+            throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
             return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
         }
 

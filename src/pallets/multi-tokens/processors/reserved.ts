@@ -2,7 +2,7 @@ import { hexToString } from '@polkadot/util'
 import { TokenAccount, TokenNamedReserve } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { QueueUtils } from '../../../queues'
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import * as mappings from '../../index'
 import { match, P } from 'ts-pattern'
 
@@ -39,9 +39,8 @@ export async function reserved(ctx: CommonContext, block: Block, item: EventItem
 
         await ctx.store.save(tokenAccount)
     } else {
-        throwError(
-            `[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`,
-            'fatal'
+        throwFatalError(
+            `[Reserved] We have not found token account ${data.accountId}-${data.collectionId}-${data.tokenId}.`
         )
     }
 

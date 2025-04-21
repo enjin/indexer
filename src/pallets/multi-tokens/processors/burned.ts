@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../utils/sns'
@@ -37,7 +37,7 @@ export async function burned(
         tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
         await ctx.store.save(tokenAccount)
     } else {
-        throwError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`, 'log')
+        throwFatalError(`[Burned] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`)
     }
 
     if (token) {
@@ -51,7 +51,7 @@ export async function burned(
         QueueUtils.dispatchComputeStats(data.collectionId.toString())
         QueueUtils.dispatchComputeTraits(data.collectionId.toString())
     } else {
-        throwError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`, 'log')
+        throwFatalError(`[Burned] We have not found token ${data.collectionId}-${data.tokenId}.`)
     }
 
     if (item.extrinsic) {

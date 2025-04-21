@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Collection, Event as EventModel, Listing, RoyaltyCurrency, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
@@ -29,7 +29,7 @@ export async function collectionMutated(
     })
 
     if (!collection) {
-        throwError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`, 'fatal')
+        throwFatalError(`[CollectionMutated] We have not found collection ${data.collectionId.toString()}`)
         return mappings.multiTokens.events.collectionMutatedEventModel(item, data)
     }
 
@@ -100,9 +100,8 @@ export async function collectionMutated(
                 })
 
                 if (!token) {
-                    throwError(
-                        `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`,
-                        'fatal'
+                    throwFatalError(
+                        `[CollectionMutated] We have not found token ${currency.collectionId}-${currency.tokenId}`
                     )
                 } else {
                     const royaltyCurrency = new RoyaltyCurrency({

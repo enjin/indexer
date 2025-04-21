@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import {
     Collection,
     CollectionAccount,
@@ -30,9 +30,8 @@ export async function frozen(
         })
 
         if (!tokenAccount) {
-            throwError(
-                `[Frozen] We have not found collection ${address}-${event.collectionId}-${event.freezeType.tokenId}`,
-                'fatal'
+            throwFatalError(
+                `[Frozen] We have not found collection ${address}-${event.collectionId}-${event.freezeType.tokenId}`
             )
             return mappings.multiTokens.events.frozenEventModel(item, event)
         }
@@ -47,7 +46,7 @@ export async function frozen(
         })
 
         if (!collectionAccount) {
-            throwError(`[Frozen] We have not found collection ${event.collectionId}-${address}`, 'fatal')
+            throwFatalError(`[Frozen] We have not found collection ${event.collectionId}-${address}`)
             return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
@@ -60,10 +59,7 @@ export async function frozen(
         })
 
         if (!token) {
-            throwError(
-                `[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`,
-                'fatal'
-            )
+            throwFatalError(`[Frozen] We have not found collection ${event.collectionId}-${event.freezeType.tokenId}`)
             return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 
@@ -92,7 +88,7 @@ export async function frozen(
         })
 
         if (!collection) {
-            throwError(`[Frozen] We have not found collection ${event.collectionId.toString()}`, 'fatal')
+            throwFatalError(`[Frozen] We have not found collection ${event.collectionId.toString()}`)
             return mappings.multiTokens.events.frozenEventModel(item, event)
         }
 

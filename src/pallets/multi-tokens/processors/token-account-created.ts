@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
@@ -30,7 +30,7 @@ export async function tokenAccountCreated(
     const token = await ctx.store.findOneBy(Token, { id: `${data.collectionId}-${data.tokenId}` })
 
     if (!token) {
-        throwError(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`, 'fatal')
+        throwFatalError(`[TokenAccountCreated] We have not found token ${data.collectionId}-${data.tokenId}.`)
         return undefined
     }
 

@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { Collection, CollectionAccount, Event as EventModel, Token, TokenAccount, TransferPolicy } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../utils/sns'
@@ -22,9 +22,8 @@ export async function thawed(
         })
 
         if (!tokenAccount) {
-            throwError(
-                `[Thawed] We have not found token account ${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}.`,
-                'fatal'
+            throwFatalError(
+                `[Thawed] We have not found token account ${event.freezeType.accountId}-${event.collectionId}-${event.freezeType.tokenId}.`
             )
             return mappings.multiTokens.events.thawedEventModel(item, event)
         }
@@ -39,7 +38,7 @@ export async function thawed(
         })
 
         if (!collectionAccount) {
-            throwError(`[Thawed] We have not found collection account ${event.collectionId}-${address}.`, 'fatal')
+            throwFatalError(`[Thawed] We have not found collection account ${event.collectionId}-${address}.`)
             return mappings.multiTokens.events.thawedEventModel(item, event)
         }
 
@@ -52,9 +51,8 @@ export async function thawed(
         })
 
         if (!token) {
-            throwError(
-                `[Thawed] We have not found collection account ${event.collectionId}-${event.freezeType.tokenId}.`,
-                'fatal'
+            throwFatalError(
+                `[Thawed] We have not found collection account ${event.collectionId}-${event.freezeType.tokenId}.`
             )
             return mappings.multiTokens.events.thawedEventModel(item, event)
         }
@@ -67,7 +65,7 @@ export async function thawed(
         })
 
         if (!collection) {
-            throwError(`[Thawed] We have not found collection ${event.collectionId.toString()}.`, 'fatal')
+            throwFatalError(`[Thawed] We have not found collection ${event.collectionId.toString()}.`)
             return mappings.multiTokens.events.thawedEventModel(item, event)
         }
 
