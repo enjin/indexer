@@ -43,7 +43,7 @@ const eventItems: string[] = [
     ),
 ]
 
-export const processorConfig = new SubstrateBatchProcessor()
+export const batchProcessor = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
     .addCall({
@@ -81,5 +81,5 @@ export const processorConfig = new SubstrateBatchProcessor()
     })
 
 if (config.dataSource.archive) {
-    processorConfig.setGateway(config.dataSource.archive)
+    batchProcessor.setGateway(config.dataSource.archive)
 }

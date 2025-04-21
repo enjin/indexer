@@ -2,7 +2,7 @@ import { throwError } from '../../../utils/errors'
 import { Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
-import { isNonFungible } from './utils/helpers'
+import { isNonFungible } from '../../../utils/helpers'
 import { QueueUtils } from '../../../queues'
 
 export async function tokenMutated(

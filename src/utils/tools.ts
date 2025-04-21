@@ -40,10 +40,9 @@ export function decodeAddress(id: string): HexString {
     return <`0x${string}`>decode(id).bytes
 }
 
-const regex = /\/\/u0000/ // null string unicode
-
 // eslint-disable-next-line no-control-regex
 const regex2 = /\u0000/ // null byte unicode
+const regex = /\/\/u0000/ // null string unicode
 
 export function safeString(s: string): string {
     if (regex.test(s) || regex2.test(s)) {

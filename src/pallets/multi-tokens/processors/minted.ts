@@ -4,7 +4,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../utils/entities'
 import { Sns } from '../../../utils/sns'
 import * as mappings from '../../index'
-import { isNonFungible } from './utils/helpers'
+import { isNonFungible } from '../../../utils/helpers'
 import { QueueUtils } from '../../../queues'
 
 export async function minted(

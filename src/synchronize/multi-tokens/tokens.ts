@@ -9,7 +9,7 @@ import {
     TokenBehaviorIsCurrency,
     TokenBehaviorType,
 } from '../../model'
-import { isNonFungible } from '../../pallets/multi-tokens/processors/utils/helpers'
+import { isNonFungible } from '../../utils/helpers'
 import { BATCH_SIZE, getCapType, getFreezeState, isTokenFrozen } from '../common'
 
 export async function tokens(ctx: CommonContext, block: Block) {

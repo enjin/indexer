@@ -1,4 +1,4 @@
-import { throwError } from '../../../utils/errors'
+import { throwFatalError } from '../../../utils/errors'
 import { CollectionAccount, CollectionApproval, Event as EventModel, TokenAccount, TokenApproval } from '../../../model'
 import { Sns } from '../../../utils/sns'
 import { CommonContext, EventItem } from '../../../contexts'
@@ -22,9 +22,8 @@ export async function approved(
         })
 
         if (!tokenAccount) {
-            throwError(
-                `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`,
-                'fatal'
+            throwFatalError(
+                `[Approved] We have not found token account ${address}-${data.collectionId}-${data.tokenId}.`
             )
             return mappings.multiTokens.events.approvedEventModel(item, data)
         }
@@ -47,7 +46,7 @@ export async function approved(
         })
 
         if (!collectionAccount) {
-            throwError(`[Approved] We have not found collection account ${data.collectionId}-${address}.`, 'fatal')
+            throwFatalError(`[Approved] We have not found collection account ${data.collectionId}-${address}.`)
             return mappings.multiTokens.events.approvedEventModel(item, data)
         }
 

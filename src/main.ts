@@ -9,7 +9,7 @@ import * as p from './pallets'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './utils/entities'
 import { CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './pallets/claims/processors/common'
-import { processorConfig } from './processor.config'
+import { batchProcessor } from './batchProcessor'
 import { Json } from '@subsquid/substrate-processor'
 import { hexStripPrefix } from '@polkadot/util'
 import { syncState } from './synchronize'
@@ -20,7 +20,7 @@ Sentry.init({
     tracesSampleRate: 1.0,
 })
 
-processorConfig.run(
+batchProcessor.run(
     new TypeormDatabase({
         isolationLevel: 'READ COMMITTED',
         supportHotBlocks: true,
