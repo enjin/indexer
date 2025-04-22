@@ -5,7 +5,7 @@ db
 lib
 node_modules
 src/model/generated
-src/types/generated
+src/type/generated
 **/*.sh
 **/*.json
 **/*.jsonl

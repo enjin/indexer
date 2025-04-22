@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import { multiTokens } from '../../pallets'
+import { multiTokens } from '../../pallet'
 import { Collection, CollectionAccount, CollectionApproval } from '../../model'
 import { BATCH_SIZE, getAccountMap } from '../common'
 

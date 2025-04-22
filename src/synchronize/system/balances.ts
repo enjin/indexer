@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../../contexts'
-import { system, balances as balance } from '../../pallets'
+import { system, balances as balance } from '../../pallet'
 import { BATCH_SIZE, getAccountMap } from '../common'
 import { Account } from '../../model'
 

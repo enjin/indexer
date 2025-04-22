@@ -1,7 +1,7 @@
 import { Query, Resolver, Arg, ObjectType, Field } from 'type-graphql'
 import 'reflect-metadata'
 import { isAddress } from 'web3-validator'
-import Rpc from '../utils/rpc'
+import Rpc from '../util/rpc'
 
 @ObjectType()
 export class ClaimableCollectionsResult {

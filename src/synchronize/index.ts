@@ -1,5 +1,5 @@
 import { Block, CommonContext } from '../contexts'
-import Rpc from '../utils/rpc'
+import Rpc from '../util/rpc'
 import { Bytes, Runtime } from '@subsquid/substrate-runtime'
 import * as fs from 'fs'
 import * as readline from 'readline'
@@ -9,15 +9,31 @@ import * as multiTokens from './multi-tokens'
 import * as system from './system'
 import { chainState } from '../chain-state'
 
+// blockchain => correct
+// matrix-enjin => enjin-matrix
+//
+
+interface RuntimeVersion {
+    spec_name: string
+    impl_name: string
+    authoring_version: number
+    spec_version: number
+    impl_version: number
+    apis: never
+    transaction_version: number
+    state_version: number
+}
+
 export async function syncState(ctx: CommonContext): Promise<void> {
     const api = Rpc.getInstance().client
     const header = await api.getFinalizedBlock()
-    const specData = await api.getChainSpecData()
+
+    const version: RuntimeVersion = await api.getUnsafeApi().constants.System.Version()
     const runtimeVersion = {
-        specName: specData.properties.specName,
-        specVersion: specData.properties.specVersion,
-        implName: specData.properties.implName,
-        implVersion: specData.properties.implVersion,
+        specName: version.spec_name,
+        specVersion: version.spec_version,
+        implName: version.impl_name,
+        implVersion: version.impl_version,
     }
 
     const metadata = await getSpecMetadata('enjin-matrix', runtimeVersion.specVersion)

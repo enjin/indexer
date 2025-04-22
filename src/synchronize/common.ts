@@ -1,8 +1,8 @@
-import { FreezeState as FreezeStateType, TokenCap } from '../pallets/common/types'
+import { FreezeState as FreezeStateType, TokenCap } from '../pallet/common/types'
 import { Account, Balance, CapType, FreezeState, TokenCapSingleMint, TokenCapSupply } from '../model'
 import { CommonContext } from '../contexts'
 import { In } from 'typeorm'
-import { encodeAddress } from '../utils/tools'
+import { encodeAddress } from '../util/tools'
 
 export const BATCH_SIZE = 1000
 

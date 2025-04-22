@@ -1,6 +1,6 @@
 import { Block, CommonContext } from '../../contexts'
-import { multiTokens } from '../../pallets'
-import { safeString } from '../../utils/tools'
+import { multiTokens } from '../../pallet'
+import { safeString } from '../../util/tools'
 import { hexToString } from '@polkadot/util'
 import { Attribute, Collection, Token } from '../../model'
 import { BATCH_SIZE } from '../common'

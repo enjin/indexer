@@ -1,5 +1,5 @@
 import { dataHandlerContext } from '../../contexts'
-import { fetchCollectionsExtra } from '../../utils/marketplace'
+import { fetchCollectionsExtra } from '../../util/marketplace'
 import { Collection, CollectionFlags, CollectionSocials } from '../../model'
 
 function isNotNull<T>(input: null | T): input is T {

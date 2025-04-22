@@ -1,9 +1,10 @@
 import { BlockHeader } from '@subsquid/substrate-processor'
 import * as Sentry from '@sentry/node'
 import { ChainInfo, Marketplace } from './model'
-import processorConfig from './utils/config'
+import processorConfig from './util/config'
 import { CommonContext } from './contexts'
-import Rpc from './utils/rpc'
+import Rpc from './util/rpc'
+import { DataService } from './util/data'
 
 export async function chainState(
     ctx: CommonContext,
@@ -40,6 +41,9 @@ export async function chainState(
         })
 
         await ctx.store.save<ChainInfo>(state)
+
+        const data = DataService.getInstance()
+        data.chainInfo = state
     } catch (error) {
         Sentry.captureException(error)
     }

@@ -4,7 +4,7 @@ import { type EntityManager } from 'typeorm'
 import NodeCache from 'node-cache'
 import { BigInteger } from '@subsquid/graphql-server'
 import { Collection, Token } from '../model'
-import { QueueUtils } from '../queues'
+import { QueueUtils } from '../queue'
 
 enum RefreshMetadataResponseStatus {
     SUCCESS = 'SUCCESS',
