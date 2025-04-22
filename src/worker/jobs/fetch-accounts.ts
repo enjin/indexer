@@ -1,6 +1,6 @@
 import { dataHandlerContext } from '../../contexts'
-import { fetchAccountsDetail } from '../../utils/marketplace'
-import { getOrCreateAccount } from '../../utils/entities'
+import { fetchAccountsDetail } from '../../util/marketplace'
+import { getOrCreateAccount } from '../../util/entities'
 import { decode } from '@subsquid/ss58'
 import { Account } from '../../model'
 

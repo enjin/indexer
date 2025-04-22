@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import computeValidatorsConfig from './validators.config'
 import instance from './validators.processor'
-import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeValidatorsConfig
 

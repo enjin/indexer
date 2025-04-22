@@ -28,4 +28,4 @@ jobs:
         pnpm install
 
     - name: Run ESLint
-      run: pnpm run lint:ci
+      run: pnpm run ci:lint

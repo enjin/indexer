@@ -1,6 +1,6 @@
 import api from 'prom-client'
 import register from '../registry'
-import Rpc from '../../utils/rpc'
+import Rpc from '../../util/rpc'
 import { connectionManager } from '../../contexts'
 import { BN } from '@polkadot/util'
 

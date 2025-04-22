@@ -1,6 +1,6 @@
 import { Query, Resolver, Arg } from 'type-graphql'
 import 'reflect-metadata'
-import { QueueUtils } from '../queues'
+import { QueueUtils } from '../queue'
 
 @Resolver()
 export class RefreshCollectionsResolver {

@@ -10,7 +10,7 @@ import {
     TraitsQueue,
     ValidatorsQueue,
     ListingsQueue,
-} from '../queues'
+} from '../queue'
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
 import { EventEmitter } from 'events'
 import {

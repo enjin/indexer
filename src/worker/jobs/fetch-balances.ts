@@ -1,9 +1,9 @@
 import { dataHandlerContext } from '../../contexts'
-import { SystemAccount } from '../../utils/balance'
+import { SystemAccount } from '../../util/balance'
 import { Account } from '../../model'
-import { getOrCreateAccount } from '../../utils/entities'
+import { getOrCreateAccount } from '../../util/entities'
 import { decode } from '@subsquid/ss58'
-import { fetchBalances as utilsFetchBalances } from '../../utils/balance'
+import { fetchBalances as utilsFetchBalances } from '../../util/balance'
 
 export async function fetchBalances(ids: string[]) {
     const ctx = await dataHandlerContext()

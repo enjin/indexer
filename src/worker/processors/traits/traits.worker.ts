@@ -1,7 +1,6 @@
 import { Job, Worker } from 'bullmq'
 import computeTraitsConfig from './traits.config'
 import instance from './traits.processor'
-import { gracefulShutdown } from '../../../utils/tools'
 
 const { queueName, connection, isSandboxed } = computeTraitsConfig
 

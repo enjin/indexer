@@ -7,7 +7,7 @@ import {
     Extrinsic,
     SubstrateBatchProcessorFields,
 } from '@subsquid/substrate-processor'
-import { processor } from './processor'
+import { processorConfig } from './processor.config'
 import { getDataSource } from './connection'
 
 export const connectionManager = async () => {
@@ -23,7 +23,7 @@ export const dataHandlerContext = async () => {
     return { store } as DataHandlerContext<Store, never>
 }
 
-type Fields = SubstrateBatchProcessorFields<typeof processor>
+type Fields = SubstrateBatchProcessorFields<typeof processorConfig>
 
 export type CommonContext = DataHandlerContext<Store, Fields>
 export type Block = _BlockHeader<Fields>
