@@ -212,10 +212,10 @@ async function bootstrap() {
                     _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
                 }
 
-                // const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
-                // if (lastBlock.height > config.lastBlockHeight - 200) {
-                //     await chainState(ctx as unknown as CommonContext, lastBlock)
-                // }
+                const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
+                if (lastBlock.height > dataService.lastBlockNumber) {
+                    await chainState(ctx as unknown as CommonContext, lastBlock)
+                }
             } catch (error) {
                 // await metadataQueue.resume()
                 Sentry.captureException(error)
