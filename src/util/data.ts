@@ -2,7 +2,7 @@ import { connectionManager } from '../contexts'
 import { ChainInfo } from '../model'
 
 export class DataService {
-    private static instance: DataService
+    private static instance: DataService | undefined
     private _chainInfo: ChainInfo | undefined | null
     private _isInitialized = false
 
@@ -12,6 +12,7 @@ export class DataService {
         if (!DataService.instance) {
             DataService.instance = new DataService()
         }
+
         return DataService.instance
     }
 

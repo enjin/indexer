@@ -1,6 +1,7 @@
 import { MessageAttributeValue, PublishCommand, SNSClient } from '@aws-sdk/client-sns'
 import config from './config'
 import { safeJsonString } from './tools'
+import { DataService } from './data'
 
 export class Sns {
     private static instance: Sns | undefined = undefined
@@ -46,9 +47,9 @@ export class Sns {
         }
 
         const messageBlockHeight = parseInt(message.id.split('-')[0], 10)
-        // if (messageBlockHeight < processorConfig.lastBlockHeight) {
-        //     return
-        // }
+        if (messageBlockHeight < DataService.getInstance().lastBlockNumber) {
+            return
+        }
 
         const toString = (value: unknown): string => {
             if (typeof value === 'string') {
