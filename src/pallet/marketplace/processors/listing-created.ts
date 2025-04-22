@@ -97,6 +97,8 @@ export async function listingCreated(
             throw new Error('Unknown listing type')
     }
 
+    const usesWhitelist = typeof event.listing.whitelistedAccountCount === 'number'
+
     const listing = new Listing({
         id: listingId,
         seller: creatorOrSeller,
@@ -114,6 +116,8 @@ export async function listingCreated(
         state: listingState,
         isActive: true,
         type: listingData.listingType,
+        usesWhitelist,
+        creationBlock: block.height,
         createdAt: new Date(block.timestamp ?? 0),
         updatedAt: new Date(block.timestamp ?? 0),
     })

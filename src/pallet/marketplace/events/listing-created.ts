@@ -17,12 +17,20 @@ export function listingCreated(event: EventItem): ListingCreated {
     return match(event)
         .returnType<ListingCreated>()
         .when(
+            () => marketplace.listingCreated.matrixEnjinV1022.is(event),
+            () => marketplace.listingCreated.matrixEnjinV1022.decode(event)
+        )
+        .when(
             () => marketplace.listingCreated.matrixEnjinV1012.is(event),
             () => marketplace.listingCreated.matrixEnjinV1012.decode(event)
         )
         .when(
             () => marketplace.listingCreated.matrixEnjinV603.is(event),
             () => marketplace.listingCreated.matrixEnjinV603.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.matrixV1020.is(event),
+            () => marketplace.listingCreated.matrixV1020.decode(event)
         )
         .when(
             () => marketplace.listingCreated.matrixV1011.is(event),
@@ -35,6 +43,10 @@ export function listingCreated(event: EventItem): ListingCreated {
         .when(
             () => marketplace.listingCreated.matrixV500.is(event),
             () => marketplace.listingCreated.matrixV500.decode(event)
+        )
+        .when(
+            () => marketplace.listingCreated.enjinV1050.is(event),
+            () => marketplace.listingCreated.enjinV1050.decode(event)
         )
         .when(
             () => marketplace.listingCreated.enjinV1032.is(event),

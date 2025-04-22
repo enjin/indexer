@@ -58,12 +58,14 @@ async function bootstrap() {
                         await syncState(ctx as unknown as CommonContext)
                     }
 
-                    // if (block.header.height === config.lastBlockHeight) {
-                    //     // await syncAllBalances(ctx, block.header)
-                    //     // metadataQueue.resume().catch(() => {})
-                    //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
-                    //     QueueUtils.dispatchComputeCollections()
-                    // }
+                    if (block.header.height === dataService.lastBlockNumber) {
+                        ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
+
+                        //     // await syncAllBalances(ctx, block.header)
+                        //     // metadataQueue.resume().catch(() => {})
+                        //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
+                        //     QueueUtils.dispatchComputeCollections()
+                    }
 
                     ctx.log.info(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
