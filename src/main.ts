@@ -7,7 +7,7 @@ import { genesisData } from './genesis-data'
 import { chainState } from './chain-state'
 import * as p from './pallet'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './util/entities'
-import { CommonContext, connectionManager, EventItem } from './contexts'
+import { CommonContext, EventItem } from './contexts'
 import { updateClaimDetails } from './pallet/claims/processors/common'
 import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
@@ -15,43 +15,7 @@ import { hexStripPrefix } from '@polkadot/util'
 import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
-
-// Drop all tables from all schemas in PostgreSQL
-const dropAllTables = async () => {
-    const con = await connectionManager()
-
-    // Get all tables from all schemas (excluding system schemas)
-    const tablesQuery = `
-    SELECT schemaname, tablename 
-    FROM pg_tables 
-    WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
-    ORDER BY schemaname, tablename
-  `
-
-    const tables = await con.query(tablesQuery)
-
-    if (tables.length === 0) {
-        console.log('No tables found to drop')
-        return
-    }
-
-    // Disable foreign key checks temporarily
-    await con.query('SET session_replication_role = replica;')
-
-    try {
-        // Create and execute DROP TABLE statements
-        for (const table of tables) {
-            const dropStatement = `DROP TABLE IF EXISTS "${table.schemaname}"."${table.tablename}" CASCADE`
-            await con.query(dropStatement)
-            console.log(`Dropped table: ${table.schemaname}.${table.tablename}`)
-        }
-
-        console.log(`Successfully dropped ${tables.length} tables`)
-    } finally {
-        // Re-enable foreign key checks
-        await con.query('SET session_replication_role = DEFAULT;')
-    }
-}
+import { calls, events } from './type'
 
 async function bootstrap() {
     Sentry.init({
@@ -65,9 +29,8 @@ async function bootstrap() {
     await dataService.initialize()
 
     if (dataService.lastBlockNumber > 0 && (process.env.TRUNCATE_DATABASE ?? false)) {
-        // Check if we have any chainState that means we have data, if we do we drop
-        // If we don't have data, we just continue to the next step
-        await dropAllTables()
+        await dataService.dropAllTables()
+        throw new Error('Database has been truncated, restart application...')
     }
 
     processorConfig.run(
@@ -121,11 +84,16 @@ async function bootstrap() {
                         if (!call) {
                             continue
                         }
-                        if (['ParachainSystem.set_validation_data', 'Timestamp.set'].includes(call.name)) {
+                        if (
+                            [calls.parachainSystem.setValidationData.name, calls.timestamp.set.name].includes(call.name)
+                        ) {
                             continue
                         }
 
-                        if (call.name === 'FuelTanks.dispatch' || call.name === 'FuelTanks.dispatch_and_touch') {
+                        if (
+                            call.name === calls.fuelTanks.dispatch.name ||
+                            call.name === calls.fuelTanks.dispatchAndTouch.name
+                        ) {
                             const tankData = p.fuelTanks.utils.anyDispatch(call)
                             const tank = await ctx.store.findOneByOrFail<FuelTank>(FuelTank, {
                                 id: unwrapAccount(tankData.tankId),
@@ -147,7 +115,10 @@ async function bootstrap() {
                             })
 
                             for (const eventItem of block.events) {
-                                if (eventItem.name !== 'Balances.Withdraw' || eventItem.extrinsic?.id !== id) {
+                                if (
+                                    eventItem.name !== events.balances.withdraw.name ||
+                                    eventItem.extrinsic?.id !== id
+                                ) {
                                     continue
                                 }
 
@@ -188,8 +159,8 @@ async function bootstrap() {
 
                         // Hotfix for adding listing seller to participant
                         if (
-                            call.name === 'Marketplace.fill_listing' ||
-                            call.name === 'Marketplace.finalize_auction' ||
+                            call.name === calls.marketplace.fillListing.name ||
+                            call.name === calls.marketplace.finalizeAuction.name ||
                             (fuelTank &&
                                 call.args.call?.__kind === 'Marketplace' &&
                                 call.args.call?.value?.__kind === 'fill_listing') ||
