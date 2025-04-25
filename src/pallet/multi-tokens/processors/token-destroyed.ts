@@ -53,22 +53,40 @@ export async function tokenDestroyed(
         attributes,
     ] = await Promise.all([
         ctx.store.find(ListingSale, {
-            where: {
-                listing: {
-                    makeAssetId: {
-                        id: token.id,
+            where: [
+                {
+                    listing: {
+                        makeAssetId: {
+                            id: token.id,
+                        },
                     },
                 },
-            },
+                {
+                    listing: {
+                        takeAssetId: {
+                            id: token.id,
+                        },
+                    },
+                },
+            ],
         }),
         ctx.store.find(ListingStatus, {
-            where: {
-                listing: {
-                    makeAssetId: {
-                        id: token.id,
+            where: [
+                {
+                    listing: {
+                        makeAssetId: {
+                            id: token.id,
+                        },
                     },
                 },
-            },
+                {
+                    listing: {
+                        takeAssetId: {
+                            id: token.id,
+                        },
+                    },
+                },
+            ],
         }),
         ctx.store.find(Listing, {
             where: {

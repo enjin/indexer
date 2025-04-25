@@ -43,7 +43,6 @@ export async function tokenCreated(
         let accountDepositCount = 0
         let anyoneCanInfuse = false
         let nativeMetadata = null
-        let infusion = 0n
 
         if ('sufficiency' in call.params) {
             minBalance = call.params.sufficiency?.__kind === 'Sufficient' ? call.params.sufficiency.minimumBalance : 1n
@@ -67,10 +66,6 @@ export async function tokenCreated(
             nativeMetadata = call.params.metadata !== undefined ? new NativeTokenMetadata(call.params.metadata) : null
         }
 
-        if ('infusion' in call.params) {
-            infusion = call.params.infusion ?? 0n
-        }
-
         const token = new Token({
             id: `${event.collectionId}-${event.tokenId}`,
             tokenId: event.tokenId,
@@ -91,7 +86,7 @@ export async function tokenCreated(
             accountDepositCount,
             anyoneCanInfuse,
             nativeMetadata,
-            infusion,
+            infusion: 0n, // Infusion is updated on Infused event
             createdAt: new Date(block.timestamp ?? 0),
         })
 
