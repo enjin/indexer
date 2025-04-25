@@ -262,4 +262,7 @@ function getParticipants(args: Json, _events: EventItem[], signer: string): stri
     return Array.from(accounts)
 }
 
-bootstrap().catch(console.error)
+bootstrap().catch((error: unknown) => {
+    Sentry.captureException(error)
+    console.error(error)
+})
