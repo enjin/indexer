@@ -22,18 +22,18 @@ async function bootstrap() {
         tracesSampleRate: 1.0,
     })
 
-    if (process.env.TRUNCATE_DATABASE ?? false) {
-        const em = await connectionManager()
-        const entities = em.connection.entityMetadatas
-
-        await em.connection.dropDatabase()
-        await em.connection.synchronize()
-
-        for (const entity of entities) {
-            const repository = em.connection.getRepository(entity.name)
-            await repository.delete({})
-        }
-    }
+    // if (process.env.TRUNCATE_DATABASE ?? false) {
+    //     const em = await connectionManager()
+    //     const entities = em.connection.entityMetadatas
+    //
+    //     await em.connection.dropDatabase()
+    //     await em.connection.synchronize()
+    //
+    //     for (const entity of entities) {
+    //         const repository = em.connection.getRepository(entity.name)
+    //         await repository.delete({})
+    //     }
+    // }
 
     // I'm using a singleton here because we might need this information in other parts
     // If we do not need it, it would be better to just remove that
