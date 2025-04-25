@@ -59,14 +59,16 @@ async function bootstrap() {
         tracesSampleRate: 1.0,
     })
 
-    if (process.env.TRUNCATE_DATABASE ?? false) {
-        await dropAllTables()
-    }
-
-    // I'm ung a singleton here because we might need this information in other parts
+    // I'm using a singleton here because we might need this information in other parts
     // If we do not need it, it would be better to just remove that
     const dataService = DataService.getInstance()
     await dataService.initialize()
+
+    if (dataService.lastBlockNumber > 0 && (process.env.TRUNCATE_DATABASE ?? false)) {
+        // Check if we have any chainState that means we have data, if we do we drop
+        // If we don't have data, we just continue to the next step
+        await dropAllTables()
+    }
 
     processorConfig.run(
         new TypeormDatabase({
