@@ -20,7 +20,6 @@ export class DataService {
         if (this._isInitialized) return
 
         const em = await connectionManager()
-
         try {
             this._chainInfo = await em
                 .getRepository(ChainInfo)
