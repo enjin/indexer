@@ -7,12 +7,19 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
     const data = mappings.multiTokens.events.infused(item)
     if (skipSave) return undefined
 
+    const storage = await mappings.multiTokens.storage.tokens(block, {
+        collectionId: data.collectionId,
+        tokenId: data.tokenId,
+    })
+
     const token = await ctx.store.findOneByOrFail<Token>(Token, {
         id: `${data.collectionId}-${data.tokenId}`,
     })
-    token.infusion += data.amount
 
-    await ctx.store.save(token)
+    if (storage) {
+        token.infusion = storage.infusion ?? 0n
+        await ctx.store.save(token)
+    }
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
