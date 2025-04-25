@@ -16,6 +16,7 @@ import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
 import { calls, events } from './type'
+import * as process from 'node:process'
 
 async function bootstrap() {
     Sentry.init({
@@ -30,7 +31,7 @@ async function bootstrap() {
 
     if (dataService.lastBlockNumber > 0 && (process.env.TRUNCATE_DATABASE ?? false)) {
         await dataService.dropAllTables()
-        throw new Error('Database has been truncated, restart application...')
+        process.exit(1)
     }
 
     processorConfig.run(

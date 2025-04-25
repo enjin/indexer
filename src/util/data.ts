@@ -20,11 +20,16 @@ export class DataService {
         if (this._isInitialized) return
 
         const em = await connectionManager()
-        this._chainInfo = await em
-            .getRepository(ChainInfo)
-            .createQueryBuilder('chainInfo')
-            .orderBy('chainInfo.blockNumber', 'DESC')
-            .getOne()
+
+        try {
+            this._chainInfo = await em
+                .getRepository(ChainInfo)
+                .createQueryBuilder('chainInfo')
+                .orderBy('chainInfo.blockNumber', 'DESC')
+                .getOne()
+        } catch {
+            this._chainInfo = null
+        }
 
         this._isInitialized = true
     }
