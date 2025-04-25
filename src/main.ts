@@ -7,7 +7,7 @@ import { genesisData } from './genesis-data'
 import { chainState } from './chain-state'
 import * as p from './pallet'
 import { getOrCreateAccount, unwrapAccount, unwrapSigner } from './util/entities'
-import { CommonContext, EventItem } from './contexts'
+import { CommonContext, connectionManager, EventItem } from './contexts'
 import { updateClaimDetails } from './pallet/claims/processors/common'
 import { processorConfig } from './processor.config'
 import { Json } from '@subsquid/substrate-processor'
@@ -21,6 +21,16 @@ async function bootstrap() {
         dsn: config.sentryDsn,
         tracesSampleRate: 1.0,
     })
+
+    if (process.env.TRUNCATE_DATABASE ?? false) {
+        const em = await connectionManager()
+        const entities = em.connection.entityMetadatas
+
+        for (const entity of entities) {
+            const repository = em.connection.getRepository(entity.name)
+            await repository.clear()
+        }
+    }
 
     // I'm using a singleton here because we might need this information in other parts
     // If we do not need it, it would be better to just remove that
