@@ -24,12 +24,15 @@ async function bootstrap() {
 
     if (process.env.TRUNCATE_DATABASE ?? false) {
         const em = await connectionManager()
-        const entities = em.connection.entityMetadatas
+        // const entities = em.connection.entityMetadatas
 
-        for (const entity of entities) {
-            const repository = em.connection.getRepository(entity.name)
-            await repository.clear()
-        }
+        await em.connection.dropDatabase()
+        await em.connection.synchronize()
+
+        // for (const entity of entities) {
+        //     const repository = em.connection.getRepository(entity.name)
+        //     await repository.clear()
+        // }
     }
 
     // I'm using a singleton here because we might need this information in other parts
