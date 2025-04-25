@@ -11,6 +11,8 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
 
     if (skipSave) return mappings.multiTokens.events.infusedEventModel(item, data, token)
 
+    // This is far from ideal as it will query the node for the storage which will slow down our processor,
+    // But we need to do this as the `value` returned by the blockchain might be incorrect
     const storage = await mappings.multiTokens.storage.tokens(block, {
         collectionId: data.collectionId,
         tokenId: data.tokenId,
