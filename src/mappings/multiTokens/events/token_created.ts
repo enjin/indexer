@@ -795,7 +795,7 @@ function getEvent(item: EventItem, data: ReturnType<typeof getEventData>) {
     })
 }
 
-async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
+export async function getTokenId(ctx: CommonContext, block: BlockHeader, collectionId: bigint, tokenId: bigint) {
     if (storage.multiTokens.tokens.v1020.is(block)) {
         const data = await storage.multiTokens.tokens.v1020.get(block, collectionId, tokenId)
 

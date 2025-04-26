@@ -4,6 +4,7 @@ import { events } from '../../../types/generated'
 import { CommonContext, BlockHeader, EventItem } from '../../types/contexts'
 import { UnsupportedEventError } from '../../../common/errors'
 import { u8aToHex } from '@polkadot/util'
+import { getTokenId } from './token_created'
 
 function getEventData(ctx: CommonContext, event: EventItem) {
     if (events.multiTokens.infused.matrixEnjinV1022.is(event)) {
@@ -62,10 +63,11 @@ export async function infused(ctx: CommonContext, block: BlockHeader, item: Even
     const data = getEventData(ctx, item)
     if (skipSave) return undefined
 
+    const storage = await getTokenId(ctx, block, data.collectionId, data.tokenId)
     const token = await ctx.store.findOneByOrFail(Token, {
         id: `${data.collectionId}-${data.tokenId}`,
     })
-    token.infusion += data.amount
+    token.infusion = storage.infusion ?? 0n
 
     await ctx.store.save(token)
 
