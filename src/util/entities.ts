@@ -10,11 +10,15 @@ interface AddressWithKind {
     value: string
 }
 
-export function unwrapSigner(extrinsic: ExtrinsicItem): string | undefined {
+export function unwrapSigner(extrinsic: ExtrinsicItem): string {
     const { signature } = extrinsic
 
     if (signature === undefined) {
-        return extrinsic.call?.args.dest ?? extrinsic.call?.args.destination
+        return (
+            extrinsic.call?.args.dest ??
+            extrinsic.call?.args.destination ??
+            '0x0000000000000000000000000000000000000000000000000000000000000000'
+        )
     }
 
     const address = signature.address as AddressWithKind
