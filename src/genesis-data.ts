@@ -30,6 +30,15 @@ export async function genesisData(ctx: CommonContext, block: Block) {
     }
 }
 
+// {"level":5,"time":1745678728924,"ns":"sqd:processor","err":{"stack":"AssertionError [ERR_ASSERTION]: mass saving allowed only for entities of the same class\n
+// at Store.insert (/squid/node_modules/.pnpm/@subsquid+typeorm-store@1.5.1_@subsquid+big-decimal@1.0.0_typeorm@0.3.22_ioredis@
+// 5.6.1__05e165d546535f6c23d32d54ce194d8a/node_modules/@subsquid/typeorm-store/lib/store.js:84:38)\n
+// at generateRelayData (/squid/lib/genesis-data.js:234:21)\n
+// at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n
+// at async genesisData (/squid/lib/genesis-data.js:48:13)\n    at async /squid/lib/main.js:82:21\n
+// at async TypeormDatabase.performUpdates (/squid/node_modules/.pnpm/@subsquid+typeorm-store@1.5.1_@subsquid+big-decimal@1.0.0_typeorm@0.3.22_ioredis@5.6.1__05e165d546535f6c23d32d54ce194d8a/node_modules/@subsquid/typeorm-store/lib/database.js:152:13)\n    at async /squid/node_modules/.pnpm/@subsquid+typeorm-store@1.5.1_@subsquid+big-decimal@1.0.0_typeorm@0.3.22_ioredis@5.6.1__05e165d546535f6c23d32d54ce194d8a/node_modules/@subsquid/typeorm-store/lib/database.js:84:13\n    at async EntityManager.transaction (/squid/node_modules/.pnpm/typeorm@0.3.22_ioredis@5.6.1_pg@8.15.6_reflect-metadata@0.2.2_ts-node@10.9.2_@types+node@22.15.2_typescript@5.8.3_/node_modules/typeorm/entity-manager/EntityManager.js:73:28)\n    at async TypeormDatabase.submit (/squid/node_modules/.pnpm/@subsquid+typeorm-store@1.5.1_@subsquid+big-decimal@1.0.0_typeorm@0.3.22_ioredis@5.6.1__05e165d546535f6c23d32d54ce194d8a/node_modules/@subsquid/typeorm-store/lib/database.js:164:24)\n    at async Runner.withProgressMetrics (/squid/node_modules/.pnpm/@subsquid+util-internal-processor-tools@4.2.1/node_modules/@subsquid/util-internal-processor-tools/lib/runner.js:217:22)","generatedMessage":false,"code":"ERR_ASSERTION","actual":false,"expected":true,"operator":"=="}}
+//  ELIFECYCLE  Command failed with exit code 1.
+
 function defaultEnjinSupply(): bigint {
     return match([isRelay(), isMainnet()])
         .returnType<bigint>()
@@ -224,5 +233,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
         endBlock: block.height,
     })
 
-    await ctx.store.insert([stakedEnjinCollection, degenCollection, genesisEra])
+    await ctx.store.insert(stakedEnjinCollection)
+    await ctx.store.insert(degenCollection)
+    await ctx.store.insert(genesisEra)
 }
