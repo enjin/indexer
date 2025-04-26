@@ -46,10 +46,10 @@ const eventItems: string[] = [
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
-    .addCall({
-        name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
-        stack: true,
-    })
+    // .addCall({
+    //     name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
+    //     stack: true,
+    // })
     .addEvent({
         name: eventItems,
         extrinsic: true,

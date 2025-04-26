@@ -1,4 +1,4 @@
-import { hexToString } from '@polkadot/util'
+import { hexToString, isAscii } from '@polkadot/util'
 import { Event as EventModel, Identity } from '../../../model'
 import { Block, CallItem, CommonContext } from '../../../contexts'
 import * as mappings from '../../index'
@@ -13,8 +13,17 @@ export async function renameSub(ctx: CommonContext, block: Block, item: CallItem
     const sub = await ctx.store.findOneByOrFail<Identity>(Identity, {
         id,
     })
-    sub.name = call.data.__kind !== 'None' ? hexToString(call.data.value) : null
 
+    let name = null
+
+    if (call.data.__kind !== 'None') {
+        name = hexToString(call.data.value)
+        if (!isAscii(name)) {
+            name = call.data.value
+        }
+    }
+
+    sub.name = name
     await ctx.store.save(sub)
 
     return undefined
