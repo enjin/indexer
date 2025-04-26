@@ -21,20 +21,6 @@ interface RuntimeVersion {
     state_version: number
 }
 
-function getSpecName(network: string): string {
-    if (network.startsWith('canary-matrix')) {
-        return 'matrix'
-    }
-    if (network.startsWith('enjin-relay')) {
-        return 'enjin'
-    }
-    if (network.startsWith('canary-relay')) {
-        return 'canary'
-    }
-
-    return 'matrix-enjin'
-}
-
 export async function syncState(ctx: CommonContext): Promise<void> {
     const api = Rpc.getInstance().client
     const header = await api.getFinalizedBlock()
@@ -47,7 +33,7 @@ export async function syncState(ctx: CommonContext): Promise<void> {
         implVersion: version.impl_version,
     }
 
-    const metadata = await getSpecMetadata(getSpecName(config.chainName), runtimeVersion.specVersion)
+    const metadata = await getSpecMetadata(config.chainName, runtimeVersion.specVersion)
     const runtime = new Runtime(runtimeVersion, metadata, undefined, ctx._chain.rpc)
 
     const block: Block = {
