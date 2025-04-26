@@ -231,6 +231,7 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
         endAt: new Date(block.timestamp ?? 0),
         startBlock: block.height,
         endBlock: block.height,
+        nodeCount: 0, // TODO: Check this
     })
 
     await ctx.store.insert(stakedEnjinCollection)
