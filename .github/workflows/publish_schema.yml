@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Check application builds
+    name: Apollo
     runs-on: ubuntu-latest
     environment: apollo
     env:
@@ -37,10 +37,10 @@ jobs:
           version: latest
           run_install: false
 
-      - name: Install Node ${{ matrix.node-version }}
+      - name: Install Node 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'pnpm'
 
       - name: Install packages
@@ -67,20 +67,24 @@ jobs:
       - uses: apollographql-gh-actions/rover-subgraph-check@v1
         with:
           apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          graph-ref: enjin-indexer@current
           name: enjin-indexer
           schema: ./apollo.graphql
 
       - uses: apollographql-gh-actions/rover-subgraph-lint@v1
         with:
           apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          graph-ref: enjin-indexer@current
           name: enjin-indexer
           schema: ./apollo.graphql
+
+      - name: Run check against prod
+        run: |
+          rover graph check enjin-indexer@current --schema ./apollo.graphql
 
       - uses: apollographql-gh-actions/rover-subgraph-publish@v1
         with:
           apollo-key: ${{ secrets.APOLLO_KEY }}
-          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          graph-ref: enjin-indexer@current
           name: enjin-indexer
           schema: ./apollo.graphql
