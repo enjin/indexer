@@ -1,4 +1,4 @@
-name: Publish schema to Apollo
+name: Publish Schema
 
 on:
   push:
@@ -16,6 +16,8 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
         image: redis:7
@@ -51,6 +53,9 @@ jobs:
         run: |
           curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
           echo "$HOME/.rover/bin" >> $GITHUB_PATH
+
+      - name: Migrate database
+        run: pnpm run db:migrate
 
       - name: Start GraphQL
         run: pnpm run graphql
