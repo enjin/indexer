@@ -1,10 +1,9 @@
 name: Publish Schema
-
 on:
+  workflow_dispatch:
   push:
-#  workflow_dispatch:
-#  release:
-#    types: [created]
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -83,6 +82,7 @@ jobs:
           rover graph check enjin-indexer@current --schema ./apollo.graphql
 
       - uses: apollographql-gh-actions/rover-subgraph-publish@v1
+        if: github.event_name == 'release'
         with:
           apollo-key: ${{ secrets.APOLLO_KEY }}
           graph-ref: enjin-indexer@current
