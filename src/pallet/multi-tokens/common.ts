@@ -14,6 +14,7 @@ import {
 import { DefaultMintParams_CreateToken } from '../common/types'
 import { withDispatchCheck } from '../fuel-tanks/utils'
 import { Batch } from '../matrix-utility/calls'
+import { CreatePool } from '../nomination-pools/calls'
 
 export function anyCreateCollection(
     call: CallItem
@@ -38,11 +39,11 @@ export function anyCreateCollection(
     return processCall(call)
 }
 
-export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): Mint | ForceMint {
-    const processCall = withDispatchCheck((call: CallItem): Mint | ForceMint => {
+export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): Mint | ForceMint | CreatePool {
+    const processCall = withDispatchCheck((call: CallItem): Mint | ForceMint | CreatePool => {
         return (
             match(call.name)
-                .returnType<Mint | ForceMint>()
+                .returnType<Mint | ForceMint | CreatePool>()
                 .with(calls.multiTokens.mint.name, () => mappings.multiTokens.calls.mint(call))
                 .with(calls.multiTokens.forceMint.name, () => mappings.multiTokens.calls.forceMint(call))
                 .with(calls.multiTokens.batchMint.name, () =>
@@ -52,6 +53,7 @@ export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): 
                 .with(calls.matrixUtility.batch.name, () =>
                     filterBatchCall(mappings.matrixUtility.calls.batch(call), collectionId, tokenId)
                 )
+                .with(calls.nominationPools.create.name, () => mappings.nominationPools.calls.create(call))
                 .otherwise(() => {
                     throw new UnsupportedCallError(call)
                 })

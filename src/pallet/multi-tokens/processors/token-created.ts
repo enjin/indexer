@@ -2,6 +2,90 @@ import { throwFatalError } from '../../../util/errors'
 import { Collection, Event as EventModel, NativeTokenMetadata, Token } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
+import { CreatePool } from '../../nomination-pools/calls'
+import { ForceMint, Mint } from '../calls'
+import { TokenCreated } from '../events'
+
+async function tokenFromCall(
+    ctx: CommonContext,
+    block: Block,
+    event: TokenCreated,
+    call: Mint | ForceMint | CreatePool
+): Promise<Token> {
+    const collection = await ctx.store.findOne<Collection>(Collection, {
+        where: { id: event.collectionId.toString() },
+    })
+
+    if (!collection) {
+        throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
+    }
+
+    const token = new Token({
+        id: `${event.collectionId}-${event.tokenId}`,
+        tokenId: event.tokenId,
+        supply: 0n, // Updated on `Minted`
+        cap: null, //params.cap,
+        behavior: null, //params.behavior,
+        isFrozen: false, // isTokenFrozen(params.freezeState),
+        freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
+        minimumBalance: 1n,
+        unitPrice: 1n,
+        mintDeposit: 0n, // TODO: Fixed for now
+        attributeCount: 0,
+        collection,
+        metadata: null,
+        nonFungible: false,
+        listingForbidden: false,
+        accountDepositCount: 0,
+        anyoneCanInfuse: false,
+        nativeMetadata: null,
+        infusion: 0n, // Updated on `Infused`
+        createdAt: new Date(block.timestamp ?? 0),
+    })
+
+    let tokenParams = null
+
+    if ('capacity' in call) {
+        const data = await mappings.multiTokens.storage.tokens(block, {
+            collectionId: event.collectionId,
+            tokenId: event.tokenId,
+        })
+
+        if (data) {
+            tokenParams = data
+        }
+    }
+
+    if ('params' in call) {
+        tokenParams = call.params
+
+        if ('sufficiency' in tokenParams) {
+            token.minimumBalance =
+                tokenParams.sufficiency?.__kind === 'Sufficient' ? tokenParams.sufficiency.minimumBalance : 1n
+            token.unitPrice =
+                tokenParams.sufficiency?.__kind === 'Insufficient' ? (tokenParams.sufficiency.unitPrice ?? 1n) : 1n
+        }
+
+        if ('listingForbidden' in tokenParams) {
+            token.listingForbidden = tokenParams.listingForbidden
+        }
+
+        if ('accountDepositCount' in tokenParams) {
+            token.accountDepositCount = tokenParams.accountDepositCount ?? 0
+        }
+
+        if ('anyoneCanInfuse' in tokenParams) {
+            token.anyoneCanInfuse = tokenParams.anyoneCanInfuse === undefined ? false : tokenParams.anyoneCanInfuse
+        }
+
+        if ('metadata' in tokenParams) {
+            token.nativeMetadata =
+                tokenParams.metadata !== undefined ? new NativeTokenMetadata(tokenParams.metadata) : null
+        }
+    }
+
+    return token
+}
 
 export async function tokenCreated(
     ctx: CommonContext,
@@ -25,71 +109,8 @@ export async function tokenCreated(
     }
 
     if (item.call) {
-        const collection = await ctx.store.findOne<Collection>(Collection, {
-            where: { id: event.collectionId.toString() },
-        })
-
-        if (!collection) {
-            throwFatalError(`[TokenCreated] We have not found collection ${event.collectionId.toString()}.`)
-            return mappings.multiTokens.events.tokenCreatedEventModel(item, event)
-        }
-
         const call = mappings.multiTokens.utils.anyMint(item.call, event.collectionId, event.tokenId)
-
-        // TODO: This needs to be refactored
-        let minBalance = 1n
-        let unitPrice = 1n
-        let listingForbidden = false
-        let accountDepositCount = 0
-        let anyoneCanInfuse = false
-        let nativeMetadata = null
-
-        if ('sufficiency' in call.params) {
-            minBalance = call.params.sufficiency?.__kind === 'Sufficient' ? call.params.sufficiency.minimumBalance : 1n
-            unitPrice =
-                call.params.sufficiency?.__kind === 'Insufficient' ? (call.params.sufficiency.unitPrice ?? 1n) : 1n
-        }
-
-        if ('listingForbidden' in call.params) {
-            listingForbidden = call.params.listingForbidden
-        }
-
-        if ('accountDepositCount' in call.params) {
-            accountDepositCount = call.params.accountDepositCount ?? 0
-        }
-
-        if ('anyoneCanInfuse' in call.params) {
-            anyoneCanInfuse = call.params.anyoneCanInfuse === undefined ? false : call.params.anyoneCanInfuse
-        }
-
-        if ('metadata' in call.params) {
-            nativeMetadata = call.params.metadata !== undefined ? new NativeTokenMetadata(call.params.metadata) : null
-        }
-
-        const token = new Token({
-            id: `${event.collectionId}-${event.tokenId}`,
-            tokenId: event.tokenId,
-            supply: 0n, // Supply is updated on Mint/Burn events
-            cap: null, //params.cap,
-            behavior: null, //params.behavior,
-            isFrozen: false, // isTokenFrozen(params.freezeState),
-            // TODO: Fix this
-            freezeState: null, // params.freezeState != undefined ? FreezeState[params.freezeState.__kind] : null,
-            minimumBalance: minBalance,
-            unitPrice,
-            mintDeposit: 0n, // TODO: Fixed for now
-            attributeCount: 0,
-            collection,
-            metadata: null,
-            nonFungible: false,
-            listingForbidden,
-            accountDepositCount,
-            anyoneCanInfuse,
-            nativeMetadata,
-            infusion: 0n, // Infusion is updated on Infused event
-            createdAt: new Date(block.timestamp ?? 0),
-        })
-
+        const token = await tokenFromCall(ctx, block, event, call)
         await ctx.store.save(token)
     }
 
