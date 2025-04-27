@@ -11,6 +11,9 @@ jobs:
     name: Check application builds
     runs-on: ubuntu-latest
     environment: apollo
+    env:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
     services:
       postgres:
         image: postgres
@@ -24,9 +27,6 @@ jobs:
         ports:
           - 6379:6379
         options: --entrypoint redis-server
-    env:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
-      APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
 
     steps:
       - uses: actions/checkout@v4
@@ -49,17 +49,38 @@ jobs:
       - name: Build application
         run: pnpm run build
 
-      - name: Install Rover
-        run: |
-          curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
-          echo "$HOME/.rover/bin" >> $GITHUB_PATH
-
       - name: Migrate database
         run: pnpm run db:migrate
 
       - name: Start GraphQL
         run: pnpm run graphql
 
-#      - name: Run check against prod
-#        run: |
-#          rover graph check my-graph@prod --schema ./test.graphql --background
+      - name: Install Rover
+        run: |
+          curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
+          echo "$HOME/.rover/bin" >> $GITHUB_PATH
+
+      - name: Introspect schema from client
+        run: |
+          rover graph introspect -o apollo.graphql http://localhost:4000/graphql 
+
+      - uses: apollographql-gh-actions/rover-subgraph-check@v1
+        with:
+          apollo-key: ${{ secrets.APOLLO_KEY }}
+          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          name: enjin-indexer
+          schema: ./apollo.graphql
+
+      - uses: apollographql-gh-actions/rover-subgraph-lint@v1
+        with:
+          apollo-key: ${{ secrets.APOLLO_KEY }}
+          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          name: enjin-indexer
+          schema: ./apollo.graphql
+
+      - uses: apollographql-gh-actions/rover-subgraph-publish@v1
+        with:
+          apollo-key: ${{ secrets.APOLLO_KEY }}
+          graph-ref: ${{ secrets.APOLLO_GRAPH_REF }}
+          name: enjin-indexer
+          schema: ./apollo.graphql
