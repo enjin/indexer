@@ -12,7 +12,6 @@ import {
 } from './model'
 import { getOrCreateAccount } from './util/entities'
 import { isMainnet, isRelay } from './util/tools'
-import * as p from './pallet'
 import { match } from 'ts-pattern'
 
 export async function genesisData(ctx: CommonContext, block: Block) {

@@ -1,6 +1,6 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import config from './util/config'
-import { calls, events } from './type'
+import { events } from './type'
 import { isRelay } from './util/tools'
 
 const getEventNames = (pallet: object): string[] => Object.values(pallet).map((event) => event.name)
