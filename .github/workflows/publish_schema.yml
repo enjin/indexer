@@ -1,0 +1,60 @@
+name: Publish schema to Apollo
+
+on:
+  push:
+#  workflow_dispatch:
+#  release:
+#    types: [created]
+
+jobs:
+  build:
+    name: Check application builds
+    runs-on: ubuntu-latest
+    environment: apollo
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+    env:
+      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Install Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build application
+        run: pnpm run build
+
+      - name: Install Rover
+        run: |
+          curl -sSL https://rover.apollo.dev/nix/v0.29.1 | sh
+          echo "$HOME/.rover/bin" >> $GITHUB_PATH
+
+      - name: Start GraphQL
+        run: pnpm run graphql
+
+#      - name: Run check against prod
+#        run: |
+#          rover graph check my-graph@prod --schema ./test.graphql --background
