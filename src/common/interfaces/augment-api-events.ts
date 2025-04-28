@@ -9,7 +9,7 @@ import type { ApiTypes, AugmentedEvent } from '@polkadot/api-base/types';
 import type { Bytes, Null, Option, Result, U8aFixed, Vec, bool, i32, u128, u16, u32, u64, u8 } from '@polkadot/types-codec';
 import type { ITuple } from '@polkadot/types-codec/types';
 import type { AccountId32, H160, H256, Perbill } from '@polkadot/types/interfaces/runtime';
-import type { CumulusPrimitivesCoreAggregateMessageOrigin, EpMultiTokensCollection, EpMultiTokensCollectionDefaultCollectionMutation, EpMultiTokensFreeze, EpMultiTokensRootOrSigned, EpMultiTokensToken, EpMultiTokensTokenDefaultTokenMutation, FrameSupportDispatchDispatchInfo, FrameSupportMessagesProcessMessageError, FrameSupportTokensMiscBalanceStatus, MatrixPalletXcmMinimumWeightFeePair, PalletDemocracyMetadataOwner, PalletDemocracyVoteAccountVote, PalletDemocracyVoteThreshold, PalletFuelTanksConsumption, PalletFuelTanksImplsDefaultTankMutation, PalletFuelTanksRulesDispatchRuleKind, PalletMarketplaceFeaturesAuctionBid, PalletMarketplaceFeaturesListing, PalletMarketplaceFeaturesOfferCounterOffer, PalletMarketplaceFeaturesOfferCounterOfferResponse, PalletMultiTokensFeaturesClaimAssetIdWithEth, PalletMultiTokensFeaturesCollectionTypesCollectionAccount, PalletMultiTokensFeaturesTokenTypesTokenAccount, PalletMultisigTimepoint, PalletPoolsPoolsMutation, PalletSafeModeExitReason, RuntimeCommonImplsProxyProxyType, SpRuntimeDispatchError, SpWeightsWeightV2Weight, StagingXcmV4Asset, StagingXcmV4AssetAssets, StagingXcmV4Location, StagingXcmV4Response, StagingXcmV4TraitsOutcome, StagingXcmV4Xcm, XcmV3TraitsError, XcmVersionedAssets, XcmVersionedLocation } from '@polkadot/types/lookup';
+import type { CumulusPrimitivesCoreAggregateMessageOrigin, EnjinMatrixRuntimeRuntimeHoldReason, EpMultiTokensCollection, EpMultiTokensCollectionDefaultCollectionMutation, EpMultiTokensFreeze, EpMultiTokensRootOrSigned, EpMultiTokensToken, EpMultiTokensTokenDefaultTokenMutation, FrameSupportDispatchDispatchInfo, FrameSupportMessagesProcessMessageError, FrameSupportTokensMiscBalanceStatus, MatrixPalletXcmMinimumWeightFeePair, PalletDemocracyMetadataOwner, PalletDemocracyVoteAccountVote, PalletDemocracyVoteThreshold, PalletFuelTanksConsumption, PalletFuelTanksImplsDefaultTankMutation, PalletFuelTanksRulesDispatchRuleKind, PalletMarketplaceFeaturesAuctionBid, PalletMarketplaceFeaturesListing, PalletMarketplaceFeaturesOfferCounterOffer, PalletMarketplaceFeaturesOfferCounterOfferResponse, PalletMarketplaceFeaturesWhitelistWhitelistAddAccount, PalletMultiTokensFeaturesClaimAssetIdWithEth, PalletMultiTokensFeaturesCollectionTypesCollectionAccount, PalletMultiTokensFeaturesTokenTypesTokenAccount, PalletMultisigTimepoint, PalletPoolsPoolsMutation, PalletSafeModeExitReason, RuntimeCommonImplsProxyProxyType, SpRuntimeDispatchError, SpWeightsWeightV2Weight, StagingXcmV4Asset, StagingXcmV4AssetAssets, StagingXcmV4Location, StagingXcmV4Response, StagingXcmV4TraitsOutcome, StagingXcmV4Xcm, XcmV3TraitsError, XcmVersionedAssets, XcmVersionedLocation } from '@polkadot/types/lookup';
 
 export type __AugmentedEvent<ApiType extends ApiTypes> = AugmentedEvent<ApiType>;
 
@@ -264,14 +264,6 @@ declare module '@polkadot/api-base/types/events' {
        **/
       PaymentFailed: AugmentedEvent<ApiType, [index: u32, paymentId: Null], { index: u32, paymentId: Null }>;
       /**
-       * New proposal.
-       **/
-      Proposed: AugmentedEvent<ApiType, [proposalIndex: u32], { proposalIndex: u32 }>;
-      /**
-       * A proposal was rejected; funds were slashed.
-       **/
-      Rejected: AugmentedEvent<ApiType, [proposalIndex: u32, slashed: u128], { proposalIndex: u32, slashed: u128 }>;
-      /**
        * Spending has finished; this is the amount that rolls over until next spend.
        **/
       Rollover: AugmentedEvent<ApiType, [rolloverBalance: u128], { rolloverBalance: u128 }>;
@@ -400,7 +392,7 @@ declare module '@polkadot/api-base/types/events' {
        **/
       Proposed: AugmentedEvent<ApiType, [proposalIndex: u32, deposit: u128], { proposalIndex: u32, deposit: u128 }>;
       /**
-       * An account has secconded a proposal
+       * An account has seconded a proposal
        **/
       Seconded: AugmentedEvent<ApiType, [seconder: AccountId32, propIndex: u32], { seconder: AccountId32, propIndex: u32 }>;
       /**
@@ -506,24 +498,23 @@ declare module '@polkadot/api-base/types/events' {
     };
     fuelTanks: {
       /**
-       * An account was added to a [`FuelTank`]
+       * An account was added to a fuel tank
        **/
       AccountAdded: AugmentedEvent<ApiType, [tankId: AccountId32, userId: AccountId32, tankDeposit: u128, userDeposit: u128, totalReceived: u128], { tankId: AccountId32, userId: AccountId32, tankDeposit: u128, userDeposit: u128, totalReceived: u128 }>;
       /**
-       * An account was removed from a [`FuelTank`]
+       * An account was removed from a fuel tank
        **/
       AccountRemoved: AugmentedEvent<ApiType, [tankId: AccountId32, userId: AccountId32], { tankId: AccountId32, userId: AccountId32 }>;
       /**
-       * Account data of [`AccountId`](frame_system::Config::AccountId) was removed from
-       * [`RuleSetId`](Config::RuleSetId)
+       * Account data of account id was removed from a rule set
        **/
       AccountRuleDataRemoved: AugmentedEvent<ApiType, [tankId: AccountId32, userId: AccountId32, ruleSetId: u32, ruleKind: PalletFuelTanksRulesDispatchRuleKind], { tankId: AccountId32, userId: AccountId32, ruleSetId: u32, ruleKind: PalletFuelTanksRulesDispatchRuleKind }>;
       /**
-       * A call was dispatched through a [`FuelTank`].
+       * A call was dispatched through a fuel tank
        **/
       CallDispatched: AugmentedEvent<ApiType, [caller: AccountId32, tankId: AccountId32], { caller: AccountId32, tankId: AccountId32 }>;
       /**
-       * The consumption for an account was set for a rule set on a [`FuelTank`]
+       * The consumption for an account was set for a rule set on a fuel tank
        **/
       ConsumptionSet: AugmentedEvent<ApiType, [tankId: AccountId32, userId: Option<AccountId32>, ruleSetId: u32, consumption: PalletFuelTanksConsumption], { tankId: AccountId32, userId: Option<AccountId32>, ruleSetId: u32, consumption: PalletFuelTanksConsumption }>;
       /**
@@ -535,15 +526,15 @@ declare module '@polkadot/api-base/types/events' {
        **/
       FreezeStateMutated: AugmentedEvent<ApiType, [tankId: AccountId32, ruleSetId: Option<u32>, isFrozen: bool], { tankId: AccountId32, ruleSetId: Option<u32>, isFrozen: bool }>;
       /**
-       * A new [`FuelTank`] was created.
+       * A new fuel tank was created.
        **/
       FuelTankCreated: AugmentedEvent<ApiType, [owner: AccountId32, name: Bytes, tankId: AccountId32], { owner: AccountId32, name: Bytes, tankId: AccountId32 }>;
       /**
-       * A [`FuelTank`] was destroyed
+       * A fuel tank was destroyed
        **/
       FuelTankDestroyed: AugmentedEvent<ApiType, [tankId: AccountId32], { tankId: AccountId32 }>;
       /**
-       * A [`FuelTank`] was mutated
+       * A fuel tank was mutated
        **/
       FuelTankMutated: AugmentedEvent<ApiType, [tankId: AccountId32, mutation: PalletFuelTanksImplsDefaultTankMutation], { tankId: AccountId32, mutation: PalletFuelTanksImplsDefaultTankMutation }>;
       /**
@@ -551,11 +542,11 @@ declare module '@polkadot/api-base/types/events' {
        **/
       MigrationStep: AugmentedEvent<ApiType, [itemsProcessed: u32, phase: u8], { itemsProcessed: u32, phase: u8 }>;
       /**
-       * A new rule set was added to [`FuelTank`]
+       * A new rule set was added to fuel tank
        **/
       RuleSetInserted: AugmentedEvent<ApiType, [tankId: AccountId32, ruleSetId: u32], { tankId: AccountId32, ruleSetId: u32 }>;
       /**
-       * A rule set was removed from [`FuelTank`]
+       * A rule set was removed from fuel tank
        **/
       RuleSetRemoved: AugmentedEvent<ApiType, [tankId: AccountId32, ruleSetId: u32], { tankId: AccountId32, ruleSetId: u32 }>;
       /**
@@ -681,6 +672,10 @@ declare module '@polkadot/api-base/types/events' {
        **/
       ListingRemovedUnderMinimum: AugmentedEvent<ApiType, [listingId: H256], { listingId: H256 }>;
       /**
+       * A listing has been upgraded
+       **/
+      ListingUpgraded: AugmentedEvent<ApiType, [listingId: H256], { listingId: H256 }>;
+      /**
        * The migration step has completed
        **/
       MigrationStep: AugmentedEvent<ApiType, [itemsProcessed: u32, phase: u8], { itemsProcessed: u32, phase: u8 }>;
@@ -688,6 +683,14 @@ declare module '@polkadot/api-base/types/events' {
        * Protocol fee was set
        **/
       ProtocolFeeSet: AugmentedEvent<ApiType, [protocolFee: Perbill], { protocolFee: Perbill }>;
+      /**
+       * Whitelisted accounts were added to a listing
+       **/
+      WhitelistedAccountsAdded: AugmentedEvent<ApiType, [listingId: H256, accounts: Vec<PalletMarketplaceFeaturesWhitelistWhitelistAddAccount>], { listingId: H256, accounts: Vec<PalletMarketplaceFeaturesWhitelistWhitelistAddAccount> }>;
+      /**
+       * Whitelisted accounts were removed from a listing
+       **/
+      WhitelistedAccountsRemoved: AugmentedEvent<ApiType, [listingId: H256, accountIds: Vec<AccountId32>], { listingId: H256, accountIds: Vec<AccountId32> }>;
       /**
        * Generic event
        **/
@@ -855,6 +858,14 @@ declare module '@polkadot/api-base/types/events' {
        **/
       ClaimTokensInitiated: AugmentedEvent<ApiType, [accountId: AccountId32, ethereumAddress: H160], { accountId: AccountId32, ethereumAddress: H160 }>;
       /**
+       * A given collection expiration list doesn't its current approvals
+       **/
+      CollectionAccountApprovalsMismatch: AugmentedEvent<ApiType, [collectionId: u128, accountId: AccountId32], { collectionId: u128, accountId: AccountId32 }>;
+      /**
+       * A collection was upgraded
+       **/
+      CollectionAccountApprovalsUpdated: AugmentedEvent<ApiType, [collectionId: u128, accountId: AccountId32, oldApprovals: Vec<ITuple<[AccountId32, Option<u32>]>>], { collectionId: u128, accountId: AccountId32, oldApprovals: Vec<ITuple<[AccountId32, Option<u32>]>> }>;
+      /**
        * A new collection account was created
        **/
       CollectionAccountCreated: AugmentedEvent<ApiType, [collectionId: u128, accountId: AccountId32], { collectionId: u128, accountId: AccountId32 }>;
@@ -863,13 +874,21 @@ declare module '@polkadot/api-base/types/events' {
        **/
       CollectionAccountDestroyed: AugmentedEvent<ApiType, [collectionId: u128, accountId: AccountId32], { collectionId: u128, accountId: AccountId32 }>;
       /**
-       * TokenAccount storage was set to `value`
+       * CollectionAccount storage was set to `value`
        **/
       CollectionAccountUpdated: AugmentedEvent<ApiType, [collectionId: u128, accountId: AccountId32, value: Option<PalletMultiTokensFeaturesCollectionTypesCollectionAccount>], { collectionId: u128, accountId: AccountId32, value: Option<PalletMultiTokensFeaturesCollectionTypesCollectionAccount> }>;
       /**
        * A new collection was created
        **/
       CollectionCreated: AugmentedEvent<ApiType, [collectionId: u128, owner: AccountId32], { collectionId: u128, owner: AccountId32 }>;
+      /**
+       * Collection deposit update in progress
+       **/
+      CollectionDepositRecalculationInProgress: AugmentedEvent<ApiType, [collectionId: u128, processedTokens: u32, processedAttributes: u32], { collectionId: u128, processedTokens: u32, processedAttributes: u32 }>;
+      /**
+       * Collection deposit update completed
+       **/
+      CollectionDepositUpdateCompleted: AugmentedEvent<ApiType, [collectionId: u128], { collectionId: u128 }>;
       /**
        * A collection was destroyed.
        **/
@@ -891,6 +910,10 @@ declare module '@polkadot/api-base/types/events' {
        **/
       CollectionUpdated: AugmentedEvent<ApiType, [collectionId: u128, value: Option<EpMultiTokensCollection>], { collectionId: u128, value: Option<EpMultiTokensCollection> }>;
       /**
+       * A collection was upgraded
+       **/
+      CollectionUpgraded: AugmentedEvent<ApiType, [collectionId: u128, storageVersion: u8], { collectionId: u128, storageVersion: u8 }>;
+      /**
        * Token units were deposited
        **/
       Deposit: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128 }>;
@@ -901,7 +924,7 @@ declare module '@polkadot/api-base/types/events' {
       /**
        * The token was infused with ENJ
        **/
-      Infused: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128 }>;
+      Infused: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: EpMultiTokensRootOrSigned, amount: u128], { collectionId: u128, tokenId: u128, accountId: EpMultiTokensRootOrSigned, amount: u128 }>;
       /**
        * The migration step has completed
        **/
@@ -913,7 +936,7 @@ declare module '@polkadot/api-base/types/events' {
       /**
        * Reserved token units were moved
        **/
-      MovedReserves: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: Option<U8aFixed>], { collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: Option<U8aFixed> }>;
+      MovedReserves: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason], { collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason }>;
       /**
        * NextCollectionId storage was set to `collection_id`
        **/
@@ -921,11 +944,11 @@ declare module '@polkadot/api-base/types/events' {
       /**
        * Token units were reserved
        **/
-      Reserved: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: Option<U8aFixed>], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: Option<U8aFixed> }>;
+      Reserved: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason }>;
       /**
        * Reserved token units were transferred
        **/
-      ReserveRepatriated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: Option<U8aFixed>], { collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: Option<U8aFixed> }>;
+      ReserveRepatriated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason], { collectionId: u128, tokenId: u128, source: AccountId32, destination: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason }>;
       /**
        * An amount of tokens were slashed from account
        **/
@@ -951,6 +974,10 @@ declare module '@polkadot/api-base/types/events' {
        **/
       TokenAccountUpdated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, value: Option<PalletMultiTokensFeaturesTokenTypesTokenAccount>], { collectionId: u128, tokenId: u128, accountId: AccountId32, value: Option<PalletMultiTokensFeaturesTokenTypesTokenAccount> }>;
       /**
+       * A token account was upgraded
+       **/
+      TokenAccountUpgraded: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, storageVersion: u8], { collectionId: u128, tokenId: u128, accountId: AccountId32, storageVersion: u8 }>;
+      /**
        * A token was created
        **/
       TokenCreated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, issuer: EpMultiTokensRootOrSigned, initialSupply: u128], { collectionId: u128, tokenId: u128, issuer: EpMultiTokensRootOrSigned, initialSupply: u128 }>;
@@ -959,6 +986,34 @@ declare module '@polkadot/api-base/types/events' {
        **/
       TokenDestroyed: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, caller: AccountId32], { collectionId: u128, tokenId: u128, caller: AccountId32 }>;
       /**
+       * A token was added to a group
+       **/
+      TokenGroupAdded: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, tokenGroupId: u128], { collectionId: u128, tokenId: u128, tokenGroupId: u128 }>;
+      /**
+       * An attribute has been removed from a token group
+       **/
+      TokenGroupAttributeRemoved: AugmentedEvent<ApiType, [tokenGroupId: u128, key: Bytes], { tokenGroupId: u128, key: Bytes }>;
+      /**
+       * New attribute has been set on a token group
+       **/
+      TokenGroupAttributeSet: AugmentedEvent<ApiType, [tokenGroupId: u128, key: Bytes, value: Bytes], { tokenGroupId: u128, key: Bytes, value: Bytes }>;
+      /**
+       * A new token group was created
+       **/
+      TokenGroupCreated: AugmentedEvent<ApiType, [collectionId: u128, tokenGroupId: u128], { collectionId: u128, tokenGroupId: u128 }>;
+      /**
+       * A token group was destroyed
+       **/
+      TokenGroupDestroyed: AugmentedEvent<ApiType, [tokenGroupId: u128], { tokenGroupId: u128 }>;
+      /**
+       * A token was removed from a group
+       **/
+      TokenGroupRemoved: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, tokenGroupId: u128], { collectionId: u128, tokenId: u128, tokenGroupId: u128 }>;
+      /**
+       * A token's group list was set
+       **/
+      TokenGroupsUpdated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, tokenGroups: Vec<u128>], { collectionId: u128, tokenId: u128, tokenGroups: Vec<u128> }>;
+      /**
        * A token was mutated
        **/
       TokenMutated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, mutation: EpMultiTokensTokenDefaultTokenMutation], { collectionId: u128, tokenId: u128, mutation: EpMultiTokensTokenDefaultTokenMutation }>;
@@ -966,6 +1021,10 @@ declare module '@polkadot/api-base/types/events' {
        * Token storage was set to `value`
        **/
       TokenUpdated: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, value: Option<EpMultiTokensToken>], { collectionId: u128, tokenId: u128, value: Option<EpMultiTokensToken> }>;
+      /**
+       * A token was upgraded
+       **/
+      TokenUpgraded: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, storageVersion: u8], { collectionId: u128, tokenId: u128, storageVersion: u8 }>;
       /**
        * Units of a token were transferred
        **/
@@ -977,7 +1036,7 @@ declare module '@polkadot/api-base/types/events' {
       /**
        * Token units were unreserved
        **/
-      Unreserved: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: Option<U8aFixed>], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: Option<U8aFixed> }>;
+      Unreserved: AugmentedEvent<ApiType, [collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason], { collectionId: u128, tokenId: u128, accountId: AccountId32, amount: u128, reserveId: EnjinMatrixRuntimeRuntimeHoldReason }>;
       /**
        * Token units were withdrawn
        **/

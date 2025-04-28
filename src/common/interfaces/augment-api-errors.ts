@@ -255,10 +255,6 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InsufficientPermission: AugmentedError<ApiType>;
       /**
-       * Proposer's balance is too low.
-       **/
-      InsufficientProposersBalance: AugmentedError<ApiType>;
-      /**
        * No proposal, bounty or spend at that index.
        **/
       InvalidIndex: AugmentedError<ApiType>;
@@ -484,10 +480,6 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       DepositCalculationError: AugmentedError<ApiType>;
       /**
-       * Destroying fuel tank is not possible while it is not frozen
-       **/
-      DestroyUnfrozenTank: AugmentedError<ApiType>;
-      /**
        * Destroying fuel tank is not possible while it has existing accounts attached
        **/
       DestroyWithExistingAccounts: AugmentedError<ApiType>;
@@ -499,10 +491,6 @@ declare module '@polkadot/api-base/types/errors' {
        * Fuel Tank already exists
        **/
       FuelTankAlreadyExists: AugmentedError<ApiType>;
-      /**
-       * The fuel tank is frozen
-       **/
-      FuelTankFrozen: AugmentedError<ApiType>;
       /**
        * Fuel Tank not found
        **/
@@ -539,14 +527,6 @@ declare module '@polkadot/api-base/types/errors' {
        * User does not have permission to perform operation
        **/
       NoPermission: AugmentedError<ApiType>;
-      /**
-       * The fuel tank must be frozen for this operation
-       **/
-      RequiresFrozenTank: AugmentedError<ApiType>;
-      /**
-       * Either the tank or ruleset must be frozen for this operation
-       **/
-      RequiresFrozenTankOrRuleset: AugmentedError<ApiType>;
       /**
        * The rule is missing
        **/
@@ -684,6 +664,10 @@ declare module '@polkadot/api-base/types/errors' {
     };
     marketplace: {
       /**
+       * The buyer is not whitelisted in this listing
+       **/
+      AccountNotWhitelisted: AugmentedError<ApiType>;
+      /**
        * Cannot finalize an auction that is not over
        **/
       AuctionNotOver: AugmentedError<ApiType>;
@@ -720,6 +704,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InactiveAuction: AugmentedError<ApiType>;
       /**
+       * Incorrect number of beneficiaries was passed
+       **/
+      IncorrectRoyaltyBeneficiaryCount: AugmentedError<ApiType>;
+      /**
        * The amount is invalid
        **/
       InvalidAmount: AugmentedError<ApiType>;
@@ -727,11 +715,6 @@ declare module '@polkadot/api-base/types/errors' {
        * The end time of the auction must be after the start
        **/
       InvalidAuctionEnd: AugmentedError<ApiType>;
-      /**
-       * The start time of the auction must be greater than the current block plus the
-       * minimum requirement
-       **/
-      InvalidAuctionStart: AugmentedError<ApiType>;
       /**
        * The expiration block must be in the future
        **/
@@ -741,6 +724,11 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       InvalidFeeSide: AugmentedError<ApiType>;
       /**
+       * The start time of the listing must be greater than the current block plus the
+       * listing active delay
+       **/
+      InvalidListingStart: AugmentedError<ApiType>;
+      /**
        * The price is invalid
        **/
       InvalidPrice: AugmentedError<ApiType>;
@@ -748,6 +736,10 @@ declare module '@polkadot/api-base/types/errors' {
        * A listing with this id already exists
        **/
       ListingAlreadyExists: AugmentedError<ApiType>;
+      /**
+       * A whitelist operation was attempted on a lsiting that doesn't use it
+       **/
+      ListingDoesNotUseWhitelist: AugmentedError<ApiType>;
       /**
        * The listing is expired and cannot be filled
        **/
@@ -781,9 +773,9 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       MakeAssetFrozen: AugmentedError<ApiType>;
       /**
-       * Max number of pending listing ids has been exceeded
+       * Max number of pending actions has been exceeded
        **/
-      MaxPendingListingIdsExceeded: AugmentedError<ApiType>;
+      MaxPendingActionsExceeded: AugmentedError<ApiType>;
       /**
        * The max rounding error was exceeded
        **/
@@ -824,6 +816,10 @@ declare module '@polkadot/api-base/types/errors' {
        * the order cannot be filled
        **/
       UnableToFill: AugmentedError<ApiType>;
+      /**
+       * Tried to fill a listing beyond what the whitelist allows for the buyer
+       **/
+      WhitelistAmountAllowedExceeded: AugmentedError<ApiType>;
       /**
        * The passed `current_price` does not match the actual current price
        **/
@@ -1000,6 +996,10 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       BalanceLow: AugmentedError<ApiType>;
       /**
+       * Batch limit exceeded
+       **/
+      BatchLimitExceeded: AugmentedError<ApiType>;
+      /**
        * An account cannot approve itself as an operator
        **/
       CannotApproveSelf: AugmentedError<ApiType>;
@@ -1020,6 +1020,10 @@ declare module '@polkadot/api-base/types/errors' {
        * The number of collections has exceeded the bound
        **/
       CollectionCountExceeded: AugmentedError<ApiType>;
+      /**
+       * Collection deposit update in progress
+       **/
+      CollectionDepositRecalculationStatus: AugmentedError<ApiType>;
       /**
        * Collection ID is already in use
        **/
@@ -1062,6 +1066,14 @@ declare module '@polkadot/api-base/types/errors' {
        **/
       DestroyForbiddenByRemainingTokens: AugmentedError<ApiType>;
       /**
+       * The collection or token cannot be destroyed because it has token groups
+       **/
+      DestroyForbiddenByTokenGroupCount: AugmentedError<ApiType>;
+      /**
+       * Exceeded max key length
+       **/
+      ExceededMaxKeyLength: AugmentedError<ApiType>;
+      /**
        * Freeze state is required when freezing a token
        **/
       FreezeStateRequired: AugmentedError<ApiType>;
@@ -1082,6 +1094,7 @@ declare module '@polkadot/api-base/types/errors' {
        * The token is not compatible with this operation
        **/
       IncompatibleToken: AugmentedError<ApiType>;
+      IncompatibleTokenGroup: AugmentedError<ApiType>;
       /**
        * Not enough allowance to perform the operation
        **/
@@ -1134,6 +1147,7 @@ declare module '@polkadot/api-base/types/errors' {
        * Tried to mint more tokens than allowed
        **/
       MaxTokenCountExceeded: AugmentedError<ApiType>;
+      MaxTokenGroupsExceeded: AugmentedError<ApiType>;
       /**
        * The minting did not meet the requirements set by the mint policy
        **/
@@ -1178,6 +1192,8 @@ declare module '@polkadot/api-base/types/errors' {
        * Tried to create Token that already exists
        **/
       TokenAlreadyExists: AugmentedError<ApiType>;
+      TokenAlreadyInGroup: AugmentedError<ApiType>;
+      TokenGroupNotFound: AugmentedError<ApiType>;
       /**
        * The token id cannot be minted because it's reserved for claiming
        **/
@@ -1206,6 +1222,10 @@ declare module '@polkadot/api-base/types/errors' {
        * Transfer params could not be created
        **/
       TransferParamCreationFailed: AugmentedError<ApiType>;
+      /**
+       * The operator cannot pay the deposit if the fuel tank is paying it
+       **/
+      TwoDepositors: AugmentedError<ApiType>;
       /**
        * The passed count does not reflect the amount in storage
        **/
@@ -1325,10 +1345,6 @@ declare module '@polkadot/api-base/types/errors' {
        * The unlock operation cannot succeed because there are still consumers of the lock.
        **/
       InUse: AugmentedError<ApiType>;
-      /**
-       * Invalid non-concrete asset.
-       **/
-      InvalidAssetNotConcrete: AugmentedError<ApiType>;
       /**
        * Invalid asset, reserve chain could not be determined for it.
        **/
@@ -1719,6 +1735,14 @@ declare module '@polkadot/api-base/types/errors' {
        * Setting the queue config failed since one of its values was invalid.
        **/
       BadQueueConfig: AugmentedError<ApiType>;
+      /**
+       * The message is too big.
+       **/
+      TooBig: AugmentedError<ApiType>;
+      /**
+       * There are too many active outbound channels.
+       **/
+      TooManyActiveOutboundChannels: AugmentedError<ApiType>;
       /**
        * Generic error
        **/

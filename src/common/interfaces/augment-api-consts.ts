@@ -15,6 +15,19 @@ export type __AugmentedConst<ApiType extends ApiTypes> = AugmentedConst<ApiType>
 
 declare module '@polkadot/api-base/types/consts' {
   interface AugmentedConsts<ApiType extends ApiTypes> {
+    aura: {
+      /**
+       * The slot duration Aura should run with, expressed in milliseconds.
+       * The effective value of this type should not change while the chain is running.
+       * 
+       * For backwards compatibility either use [`MinimumPeriodTimesTwo`] or a const.
+       **/
+      slotDuration: u64 & AugmentedConst<ApiType>;
+      /**
+       * Generic const
+       **/
+      [key: string]: Codec;
+    };
     balances: {
       /**
        * The minimum amount required to keep an account open. MUST BE GREATER THAN ZERO!
@@ -34,10 +47,14 @@ declare module '@polkadot/api-base/types/consts' {
       /**
        * The maximum number of locks that should exist on an account.
        * Not strictly enforced, but used for weight estimation.
+       * 
+       * Use of locks is deprecated in favour of freezes. See `https://github.com/paritytech/substrate/pull/12951/`
        **/
       maxLocks: u32 & AugmentedConst<ApiType>;
       /**
        * The maximum number of named reserves that can exist on an account.
+       * 
+       * Use of reserves is deprecated in favour of holds. See `https://github.com/paritytech/substrate/pull/12951/`
        **/
       maxReserves: u32 & AugmentedConst<ApiType>;
       /**
@@ -181,19 +198,6 @@ declare module '@polkadot/api-base/types/consts' {
        * The period during which an approved treasury spend has to be claimed.
        **/
       payoutPeriod: u32 & AugmentedConst<ApiType>;
-      /**
-       * Fraction of a proposal's value that should be bonded in order to place the proposal.
-       * An accepted proposal gets these back. A rejected proposal does not.
-       **/
-      proposalBond: Permill & AugmentedConst<ApiType>;
-      /**
-       * Maximum amount of funds that should be placed in a deposit for making a proposal.
-       **/
-      proposalBondMaximum: Option<u128> & AugmentedConst<ApiType>;
-      /**
-       * Minimum amount of funds that should be placed in a deposit for making a proposal.
-       **/
-      proposalBondMinimum: u128 & AugmentedConst<ApiType>;
       /**
        * Period between successive spends.
        **/
@@ -352,10 +356,6 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       maxWhitelistedCollections: u32 & AugmentedConst<ApiType>;
       /**
-       * The identifier used for currency reserves
-       **/
-      reserveIdentifier: U8aFixed & AugmentedConst<ApiType>;
-      /**
        * The salt used for address generation
        **/
       salt: U8aFixed & AugmentedConst<ApiType>;
@@ -378,7 +378,7 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       byteDeposit: u128 & AugmentedConst<ApiType>;
       /**
-       * Maxmimum number of registrars allowed in the system. Needed to bound the complexity
+       * Maximum number of registrars allowed in the system. Needed to bound the complexity
        * of, e.g., updating judgements.
        **/
       maxRegistrars: u32 & AugmentedConst<ApiType>;
@@ -419,13 +419,13 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       listingActiveDelay: u32 & AugmentedConst<ApiType>;
       /**
-       * The deposit for creating a listing
+       * ID used by the pallet for making reservations
        **/
       listingDeposit: u128 & AugmentedConst<ApiType>;
       /**
-       * Max number of listing ids in [`PendingListingIds`]
+       * Max number of actions in [`PendingActions`]
        **/
-      maxPendingListingIds: u32 & AugmentedConst<ApiType>;
+      maxPendingActions: u32 & AugmentedConst<ApiType>;
       /**
        * The max amount that can be lost due to rounding before failing
        **/
@@ -435,13 +435,22 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       maxSaltLength: u32 & AugmentedConst<ApiType>;
       /**
+       * Max number of listings that can be migrated in a single call of
+       * [`upgrade_listings`](Pallet::upgrade_listings)
+       **/
+      maxUpgradeBatchSize: u32 & AugmentedConst<ApiType>;
+      /**
+       * Max number of accounts parameters accepted by whitelist related extrinsics
+       **/
+      maxWhitelistedAccountsPerExtrinsic: u32 & AugmentedConst<ApiType>;
+      /**
        * The percentage the minimum bid in an auction must increase by
        **/
       minimumBidIncreasePercentage: Perbill & AugmentedConst<ApiType>;
       /**
-       * ID used by the pallet for making reservations
+       * The deposit for each whitelisted account in a listing
        **/
-      reserveIdentifier: U8aFixed & AugmentedConst<ApiType>;
+      whitelistedAccountDeposit: u128 & AugmentedConst<ApiType>;
       /**
        * Generic const
        **/
@@ -477,6 +486,14 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       heapSize: u32 & AugmentedConst<ApiType>;
       /**
+       * The maximum amount of weight (if any) to be used from remaining weight `on_idle` which
+       * should be provided to the message queue for servicing enqueued items `on_idle`.
+       * Useful for parachains to process messages at the same block they are received.
+       * 
+       * If `None`, it will not call `ServiceQueues::service_queues` in `on_idle`.
+       **/
+      idleMaxServiceWeight: Option<SpWeightsWeightV2Weight> & AugmentedConst<ApiType>;
+      /**
        * The maximum number of stale pages (i.e. of overweight messages) allowed before culling
        * can happen. Once there are more stale pages than this, then historical pages may be
        * dropped, even if they contain unprocessed overweight messages.
@@ -484,10 +501,11 @@ declare module '@polkadot/api-base/types/consts' {
       maxStale: u32 & AugmentedConst<ApiType>;
       /**
        * The amount of weight (if any) which should be provided to the message queue for
-       * servicing enqueued items.
+       * servicing enqueued items `on_initialize`.
        * 
        * This may be legitimately `None` in the case that you will call
-       * `ServiceQueues::service_queues` manually.
+       * `ServiceQueues::service_queues` manually or set [`Self::IdleMaxServiceWeight`] to have
+       * it run in `on_idle`.
        **/
       serviceWeight: Option<SpWeightsWeightV2Weight> & AugmentedConst<ApiType>;
       /**
@@ -566,6 +584,10 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       ethereumMigrationAccountId: AccountId32 & AugmentedConst<ApiType>;
       /**
+       * The maximum number of attributes to read in a single call
+       **/
+      maxAttributesToRead: u32 & AugmentedConst<ApiType>;
+      /**
        * The max number of attributes to set in one call
        **/
       maxBatchAttributesPerCall: u32 & AugmentedConst<ApiType>;
@@ -573,6 +595,11 @@ declare module '@polkadot/api-base/types/consts' {
        * Max number of collections that can be claimed by an account
        **/
       maxClaimableCollectionsPerAccount: u32 & AugmentedConst<ApiType>;
+      /**
+       * Max number of elements that can be processed in a single call of
+       * [`update_collection_account_approvals`](Pallet::update_collection_account_approvals)
+       **/
+      maxCollectionAccountUpdateCount: u32 & AugmentedConst<ApiType>;
       /**
        * Max number of decimals allowed for a token
        **/
@@ -589,6 +616,10 @@ declare module '@polkadot/api-base/types/consts' {
        * The maximum weight of the idle operation queue
        **/
       maxIdleOperationQueueWeight: SpWeightsWeightV2Weight & AugmentedConst<ApiType>;
+      /**
+       * The maximum length of the key
+       **/
+      maxKeyLength: u32 & AugmentedConst<ApiType>;
       /**
        * The maximum number of locks that can exist on a token account
        **/
@@ -610,6 +641,10 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       maxReserves: u32 & AugmentedConst<ApiType>;
       /**
+       * The maximum number of beneficiaries for a royalty
+       **/
+      maxRoyaltyBeneficiaries: u32 & AugmentedConst<ApiType>;
+      /**
        * The max number of token groups allowed per token
        **/
       maxTokenGroupsPerToken: u32 & AugmentedConst<ApiType>;
@@ -617,6 +652,14 @@ declare module '@polkadot/api-base/types/consts' {
        * The max number of tokens allowed in a batch transfer
        **/
       maxTokensPerBatchTransfer: u32 & AugmentedConst<ApiType>;
+      /**
+       * The maximum number of tokens to read in a single call
+       **/
+      maxTokensToRead: u32 & AugmentedConst<ApiType>;
+      /**
+       * Max number of elements that can be migrated in a single lazy migration call
+       **/
+      maxUpgradeBatchSize: u32 & AugmentedConst<ApiType>;
       /**
        * The account that will reimburse reserves for accounts that have a higher deposit during
        * the migration
@@ -627,14 +670,15 @@ declare module '@polkadot/api-base/types/consts' {
        **/
       nativeAssetInfo: EpMultiTokensNativeAssetInfo & AugmentedConst<ApiType>;
       /**
-       * The id used for making reservations with this pallet
-       **/
-      reserveIdentifier: U8aFixed & AugmentedConst<ApiType>;
-      /**
        * The amount of [`Balance`](BalanceOf) that must be reserved for a token account to be
        * maintained
        **/
       tokenAccountDeposit: u128 & AugmentedConst<ApiType>;
+      /**
+       * The amount of [`Balance`](BalanceOf) that must be reserved for a token group to be
+       * maintained
+       **/
+      tokenGroupDeposit: u128 & AugmentedConst<ApiType>;
       /**
        * Max length of name stored in [`TokenMetadata`]
        **/
@@ -878,6 +922,17 @@ declare module '@polkadot/api-base/types/consts' {
     };
     xcmpQueue: {
       /**
+       * Maximal number of outbound XCMP channels that can have messages queued at the same time.
+       * 
+       * If this is reached, then no further messages can be sent to channels that do not yet
+       * have a message queued. This should be set to the expected maximum of outbound channels
+       * which is determined by [`Self::ChannelInfo`]. It is important to set this large enough,
+       * since otherwise the congestion control protocol will not work as intended and messages
+       * may be dropped. This value increases the PoV and should therefore not be picked too
+       * high. Governance needs to pay attention to not open more channels than this value.
+       **/
+      maxActiveOutboundChannels: u32 & AugmentedConst<ApiType>;
+      /**
        * The maximum number of inbound XCMP channels that can be suspended simultaneously.
        * 
        * Any further channel suspensions will fail and messages may get dropped without further
@@ -885,6 +940,14 @@ declare module '@polkadot/api-base/types/consts' {
        * [`InboundXcmpSuspended`] still applies at that scale.
        **/
       maxInboundSuspended: u32 & AugmentedConst<ApiType>;
+      /**
+       * The maximal page size for HRMP message pages.
+       * 
+       * A lower limit can be set dynamically, but this is the hard-limit for the PoV worst case
+       * benchmarking. The limit for the size of a message is slightly below this, since some
+       * overhead is incurred for encoding the format.
+       **/
+      maxPageSize: u32 & AugmentedConst<ApiType>;
       /**
        * Generic const
        **/

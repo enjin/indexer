@@ -10,7 +10,7 @@ import type { Data } from '@polkadot/types';
 import type { Bytes, Compact, Null, Option, U8aFixed, Vec, bool, i32, u128, u16, u32, u64, u8 } from '@polkadot/types-codec';
 import type { AnyNumber, IMethod, ITuple } from '@polkadot/types-codec/types';
 import type { AccountId32, Call, H160, H256, MultiAddress, Perbill } from '@polkadot/types/interfaces/runtime';
-import type { CumulusPrimitivesCoreAggregateMessageOrigin, CumulusPrimitivesParachainInherentParachainInherentData, EnjinMatrixRuntimeOriginCaller, EnjinMatrixRuntimeSessionKeys, EpCoreFrameTypesAccount, EpMultiTokensAttribute, EpMultiTokensBatchAttributeKeyValuePair, EpMultiTokensBatchRecipientDefaultMintParams, EpMultiTokensBatchRecipientDefaultTransferParams, EpMultiTokensCollection, EpMultiTokensCollectionDefaultCollectionDescriptor, EpMultiTokensCollectionDefaultCollectionMutation, EpMultiTokensFreeze, EpMultiTokensPolicyBurnDefaultBurnParams, EpMultiTokensPolicyMintDefaultMintParams, EpMultiTokensPolicyMintFlexibleMintParams, EpMultiTokensPolicyTransferDefaultTransferParams, EpMultiTokensToken, EpMultiTokensTokenAssetId, EpMultiTokensTokenDefaultTokenMutation, FrameSupportPreimagesBounded, MatrixPalletXcmCurrencyIdAmountPair, MatrixPalletXcmImplsParachainId, MatrixPalletXcmMinimumWeightFeePair, MatrixPalletXcmXcmOperation, PalletBalancesAdjustmentDirection, PalletClaimsClaim, PalletClaimsRejectData, PalletDemocracyConviction, PalletDemocracyMetadataOwner, PalletDemocracyVoteAccountVote, PalletFuelTanksConsumption, PalletFuelTanksDispatchSettings, PalletFuelTanksFuelTankDescriptor, PalletFuelTanksImplsDefaultTankMutation, PalletFuelTanksRulesDispatchRuleKind, PalletFuelTanksRulesRuleSetDescriptor, PalletIdentityJudgement, PalletIdentityLegacyIdentityInfo, PalletMarketplaceFeaturesListingListingData, PalletMarketplaceFeaturesOfferCounterOfferResponse, PalletMigrationsHistoricCleanupSelector, PalletMigrationsMigrationCursor, PalletMultiTokensFeaturesCollectionTypesCollectionAccount, PalletMultiTokensFeaturesTokenTypesTokenAccount, PalletMultisigTimepoint, PalletPoolsPoolsMutation, RuntimeCommonImplsProxyProxyType, SpCoreEcdsaSignature, SpRuntimeMultiSignature, SpWeightsWeightV2Weight, StagingXcmV4Location, XcmV3WeightLimit, XcmVersionedAsset, XcmVersionedAssets, XcmVersionedLocation, XcmVersionedXcm } from '@polkadot/types/lookup';
+import type { CumulusPrimitivesCoreAggregateMessageOrigin, CumulusPrimitivesParachainInherentParachainInherentData, EnjinMatrixRuntimeOriginCaller, EnjinMatrixRuntimeSessionKeys, EpCoreFrameTypesAccount, EpMultiTokensAttribute, EpMultiTokensBatchAttributeKeyValuePair, EpMultiTokensBatchRecipientDefaultMintParams, EpMultiTokensBatchRecipientDefaultTransferParams, EpMultiTokensCollection, EpMultiTokensCollectionDefaultCollectionDescriptor, EpMultiTokensCollectionDefaultCollectionMutation, EpMultiTokensFreeze, EpMultiTokensPolicyBurnDefaultBurnParams, EpMultiTokensPolicyMintDefaultMintParams, EpMultiTokensPolicyMintFlexibleMintParams, EpMultiTokensPolicyTransferDefaultTransferParams, EpMultiTokensToken, EpMultiTokensTokenAssetId, EpMultiTokensTokenDefaultTokenMutation, FrameSupportPreimagesBounded, MatrixPalletXcmCurrencyIdAmountPair, MatrixPalletXcmImplsParachainId, MatrixPalletXcmMinimumWeightFeePair, MatrixPalletXcmXcmOperation, PalletBalancesAdjustmentDirection, PalletClaimsClaim, PalletClaimsRejectData, PalletDemocracyConviction, PalletDemocracyMetadataOwner, PalletDemocracyVoteAccountVote, PalletFuelTanksConsumption, PalletFuelTanksDispatchSettings, PalletFuelTanksFuelTankDescriptor, PalletFuelTanksImplsDefaultTankMutation, PalletFuelTanksRulesDispatchRuleKind, PalletFuelTanksRulesRuleSetDescriptor, PalletIdentityJudgement, PalletIdentityLegacyIdentityInfo, PalletMarketplaceFeaturesListingListingDescriptor, PalletMarketplaceFeaturesOfferCounterOfferResponse, PalletMarketplaceFeaturesWhitelistWhitelistAddAccount, PalletMigrationsHistoricCleanupSelector, PalletMigrationsMigrationCursor, PalletMultiTokensFeaturesCollectionTypesCollectionAccount, PalletMultiTokensFeaturesTokenTypesTokenAccount, PalletMultisigTimepoint, PalletPoolsPoolsMutation, RuntimeCommonImplsProxyProxyType, SpRuntimeMultiSignature, SpWeightsWeightV2Weight, StagingXcmExecutorAssetTransferTransferType, StagingXcmV4Location, XcmV3WeightLimit, XcmVersionedAsset, XcmVersionedAssetId, XcmVersionedAssets, XcmVersionedLocation, XcmVersionedXcm } from '@polkadot/types/lookup';
 
 export type __AugmentedSubmittable = AugmentedSubmittable<() => unknown>;
 export type __SubmittableExtrinsic<ApiType extends ApiTypes> = SubmittableExtrinsic<ApiType>;
@@ -19,6 +19,16 @@ export type __SubmittableExtrinsicFunction<ApiType extends ApiTypes> = Submittab
 declare module '@polkadot/api-base/types/submittable' {
   interface AugmentedSubmittables<ApiType extends ApiTypes> {
     balances: {
+      /**
+       * Burn the specified liquid free balance from the origin account.
+       * 
+       * If the origin's account ends up below the existential deposit as a result
+       * of the burn and `keep_alive` is false, the account will be reaped.
+       * 
+       * Unlike sending funds to a _burn_ address, which merely makes the funds inaccessible,
+       * this `burn` operation will reduce total issuance by the amount _burned_.
+       **/
+      burn: AugmentedSubmittable<(value: Compact<u128> | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, bool]>;
       /**
        * Adjust the total issuance in a saturating way.
        * 
@@ -89,7 +99,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * This will waive the transaction fee if at least all but 10% of the accounts needed to
        * be upgraded. (We let some not have to be upgraded just in order to allow for the
-       * possibililty of churn).
+       * possibility of churn).
        **/
       upgradeAccounts: AugmentedSubmittable<(who: Vec<AccountId32> | (AccountId32 | string | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [Vec<AccountId32>]>;
       /**
@@ -243,7 +253,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * Total Complexity: O(1)
        * </weight>
        **/
-      claim: AugmentedSubmittable<(dest: AccountId32 | string | Uint8Array, ethereumSignature: SpCoreEcdsaSignature | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, SpCoreEcdsaSignature, H160]>;
+      claim: AugmentedSubmittable<(dest: AccountId32 | string | Uint8Array, ethereumSignature: U8aFixed | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, U8aFixed, H160]>;
       /**
        * Mint a new claim for an Ethereum address to collect EFIs. The dispatch origin for this
        * call must be _Root_. This extrinsic is in the pallet in case an event was somehow missed
@@ -441,26 +451,6 @@ declare module '@polkadot/api-base/types/submittable' {
     };
     communityPool: {
       /**
-       * Approve a proposal.
-       * 
-       * ## Dispatch Origin
-       * 
-       * Must be [`Config::ApproveOrigin`].
-       * 
-       * ## Details
-       * 
-       * At a later time, the proposal will be allocated to the beneficiary and the original
-       * deposit will be returned.
-       * 
-       * ### Complexity
-       * - O(1).
-       * 
-       * ## Events
-       * 
-       * No events are emitted from this dispatch.
-       **/
-      approveProposal: AugmentedSubmittable<(proposalId: Compact<u32> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u32>]>;
-      /**
        * Check the status of the spend and remove it from the storage if processed.
        * 
        * ## Dispatch Origin
@@ -487,7 +477,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * ## Dispatch Origin
        * 
-       * Must be signed.
+       * Must be signed
        * 
        * ## Details
        * 
@@ -504,43 +494,6 @@ declare module '@polkadot/api-base/types/submittable' {
        * Emits [`Event::Paid`] if successful.
        **/
       payout: AugmentedSubmittable<(index: u32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [u32]>;
-      /**
-       * Put forward a suggestion for spending.
-       * 
-       * ## Dispatch Origin
-       * 
-       * Must be signed.
-       * 
-       * ## Details
-       * A deposit proportional to the value is reserved and slashed if the proposal is rejected.
-       * It is returned once the proposal is awarded.
-       * 
-       * ### Complexity
-       * - O(1)
-       * 
-       * ## Events
-       * 
-       * Emits [`Event::Proposed`] if successful.
-       **/
-      proposeSpend: AugmentedSubmittable<(value: Compact<u128> | AnyNumber | Uint8Array, beneficiary: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, MultiAddress]>;
-      /**
-       * Reject a proposed spend.
-       * 
-       * ## Dispatch Origin
-       * 
-       * Must be [`Config::RejectOrigin`].
-       * 
-       * ## Details
-       * The original deposit will be slashed.
-       * 
-       * ### Complexity
-       * - O(1)
-       * 
-       * ## Events
-       * 
-       * Emits [`Event::Rejected`] if successful.
-       **/
-      rejectProposal: AugmentedSubmittable<(proposalId: Compact<u32> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u32>]>;
       /**
        * Force a previously approved proposal to be removed from the approval queue.
        * 
@@ -1119,16 +1072,13 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       createFuelTank: AugmentedSubmittable<(descriptor: PalletFuelTanksFuelTankDescriptor | { name?: any; userAccountManagement?: any; ruleSets?: any; coveragePolicy?: any; accountRules?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [PalletFuelTanksFuelTankDescriptor]>;
       /**
-       * Destroy the fuel tank by scheduling the deletion for `on_finalize` to execute
-       * Only callable by owner
-       * The fuel tank must be frozen
-       * Can only be destroyed if all accounts are removed
+       * Destroy the fuel tank. Only callable by owner. Can only be destroyed if all accounts are
+       * removed.
        * 
        * # Errors
        * 
        * - [`Error::FuelTankNotFound`] if tank_id does not exist
        * - [`Error::NoPermission`] if caller is not owner
-       * - [`Error::DestroyUnfrozenTank`] if tank is not frozen
        * - [`Error::DestroyWithExistingAccounts`] if there are still accounts on the tank
        **/
       destroyFuelTank: AugmentedSubmittable<(tankId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [MultiAddress]>;
@@ -1190,7 +1140,6 @@ declare module '@polkadot/api-base/types/submittable' {
        * ### Errors
        * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
        * - [`Error::NoPermission`] if caller is not the fuel tank owner
-       * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
        * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
        * account data
        * - [`Error::MaxRuleSetsExceeded`] if max number of rule sets was exceeded
@@ -1209,13 +1158,12 @@ declare module '@polkadot/api-base/types/submittable' {
       /**
        * Apply `mutation` to fuel tank with `tank_id`.
        * 
-       * Caller must be the owner of the fuel tank, and the tank must be frozen.
+       * Caller must be the owner of the fuel tank.
        * 
        * # Errors
        * 
        * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
        * - [`Error::NoPermission`] if `origin` is not the fuel tank owner
-       * - [`Error::RequiresFrozenTankOrRuleset`] if tank is not frozen
        **/
       mutateFuelTank: AugmentedSubmittable<(tankId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, mutation: PalletFuelTanksImplsDefaultTankMutation | { userAccountManagement?: any; coveragePolicy?: any; accountRules?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [MultiAddress, PalletFuelTanksImplsDefaultTankMutation]>;
       /**
@@ -1230,8 +1178,7 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       removeAccount: AugmentedSubmittable<(tankId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, userId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [MultiAddress, MultiAddress]>;
       /**
-       * Remove account rule data if it exists. Only callable by the fuel tank's owner. Requires
-       * the fuel tank or the rule set to be frozen.
+       * Remove account rule data if it exists. Only callable by the fuel tank's owner.
        * 
        * ### Errors
        * 
@@ -1239,7 +1186,6 @@ declare module '@polkadot/api-base/types/submittable' {
        * - [`Error::NoPermission`] if called by non-owner
        * - [`Error::AccountNotFound`] if account does not exist for `user_id`
        * - [`Error::RuleSetNotFound`] if rule set does not exist for `rule_set_id`
-       * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
        * - [`Error::RuleNotFound`] if rule does not exist for `rule_kind`
        **/
       removeAccountRuleData: AugmentedSubmittable<(tankId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, userId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, ruleSetId: u32 | AnyNumber | Uint8Array, ruleKind: PalletFuelTanksRulesDispatchRuleKind | 'WhitelistedCallers' | 'WhitelistedCollections' | 'MaxFuelBurnPerTransaction' | 'UserFuelBudget' | 'TankFuelBudget' | 'RequireToken' | 'PermittedCalls' | 'PermittedExtrinsics' | 'WhitelistedPallets' | 'RequireSignature' | 'MinimumInfusion' | number | Uint8Array) => SubmittableExtrinsic<ApiType>, [MultiAddress, MultiAddress, u32, PalletFuelTanksRulesDispatchRuleKind]>;
@@ -1251,7 +1197,6 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * - [`Error::FuelTankNotFound`] if `tank_id` does not exist.
        * - [`Error::NoPermission`] if caller is not the fuel tank owner
-       * - [`Error::RequiresFrozenTankOrRuleset`] if tank or rule set is not frozen
        * - [`Error::CannotRemoveRuleThatIsStoringAccountData`] if removing a rule that is storing
        * account data
        **/
@@ -1409,7 +1354,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * - `max_fee`: The maximum fee that may be paid. This should just be auto-populated as:
        * 
        * ```nocompile
-       * Self::registrars().get(reg_index).unwrap().fee
+       * Registrars::<T>::get().get(reg_index).unwrap().fee
        * ```
        * 
        * Emits `JudgementRequested` if successful.
@@ -1493,6 +1438,10 @@ declare module '@polkadot/api-base/types/submittable' {
     };
     marketplace: {
       /**
+       * Whitelist accounts in a listing
+       **/
+      addWhitelistedAccounts: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, accounts: Vec<PalletMarketplaceFeaturesWhitelistWhitelistAddAccount> | (PalletMarketplaceFeaturesWhitelistWhitelistAddAccount | { accountId?: any; allowance?: any } | string | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [H256, Vec<PalletMarketplaceFeaturesWhitelistWhitelistAddAccount>]>;
+      /**
        * Responds to a counter offer on a listing. If the counter offer is accepted, the listing
        * will be filled. If it's rejected, the counter offer is deleted. It can also be updated
        * with a `Counter` response. Only the buyer and seller may call this extrinsic.
@@ -1503,7 +1452,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * - `response` - whether the counter is accepted, rejected, or countered
        * - `current_price` - must match the price being countered
        **/
-      answerCounterOffer: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, creator: AccountId32 | string | Uint8Array, response: PalletMarketplaceFeaturesOfferCounterOfferResponse | { Accept: any } | { Reject: any } | { Counter: any } | string | Uint8Array, currentPrice: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, AccountId32, PalletMarketplaceFeaturesOfferCounterOfferResponse, Compact<u128>]>;
+      answerCounterOffer: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, creator: AccountId32 | string | Uint8Array, response: PalletMarketplaceFeaturesOfferCounterOfferResponse | { Accept: any } | { Reject: any } | { Counter: any } | string | Uint8Array, currentPrice: Compact<u128> | AnyNumber | Uint8Array, royaltyBeneficiaryCount: u32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, AccountId32, PalletMarketplaceFeaturesOfferCounterOfferResponse, Compact<u128>, u32]>;
       /**
        * Cancels the listing with `listing_id`. Only callable by the seller.
        * 
@@ -1541,7 +1490,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * # Errors
        * 
-       * - [`Error::InvalidAuctionStart`] if the start is less than the current block +
+       * - [`Error::InvalidListingStart`] if the start is less than the current block +
        * `T::ListingActiveDelay`
        * - [`Error::NoCurrency`] Neither the make or take side is considered a currency
        * - [`Error::ListingForbidden`] if make or take side tokens are not allowed to be listed
@@ -1550,7 +1499,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * - [`Error::LowTokenBalance`] token balance is too low for reserve
        * - [`Error::ListingAlreadyExists`] if a listing with the same ID already exists
        **/
-      createListing: AugmentedSubmittable<(makeAssetId: EpMultiTokensTokenAssetId | { collectionId?: any; tokenId?: any } | string | Uint8Array, takeAssetId: EpMultiTokensTokenAssetId | { collectionId?: any; tokenId?: any } | string | Uint8Array, amount: Compact<u128> | AnyNumber | Uint8Array, price: Compact<u128> | AnyNumber | Uint8Array, salt: Bytes | string | Uint8Array, listingData: PalletMarketplaceFeaturesListingListingData | { FixedPrice: any } | { Auction: any } | { Offer: any } | string | Uint8Array, depositor: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [EpMultiTokensTokenAssetId, EpMultiTokensTokenAssetId, Compact<u128>, Compact<u128>, Bytes, PalletMarketplaceFeaturesListingListingData, Option<MultiAddress>]>;
+      createListing: AugmentedSubmittable<(descriptor: PalletMarketplaceFeaturesListingListingDescriptor | { makeAssetId?: any; takeAssetId?: any; amount?: any; price?: any; startBlock?: any; salt?: any; usesWhitelist?: any; data?: any } | string | Uint8Array, depositor: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [PalletMarketplaceFeaturesListingListingDescriptor, Option<MultiAddress>]>;
       /**
        * Fills a fixed price listing. This will execute immediately.
        * # Parameters
@@ -1570,7 +1519,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * required
        * - [`Error::LowTokenBalance`] if the buyer does not have enough tokens for reserve
        **/
-      fillListing: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, amount: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, Compact<u128>]>;
+      fillListing: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, amount: Compact<u128> | AnyNumber | Uint8Array, royaltyBeneficiaryCount: u32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, Compact<u128>, u32]>;
       /**
        * Finalize the auction with id: `listing_id`. This will end the auction and transfer
        * funds. It fails if the auction is not over. It can be called by anyone.
@@ -1587,7 +1536,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * - [`Error::ReceivedValueUnderMinimum`] if the take value is less than the minimum
        * required
        **/
-      finalizeAuction: AugmentedSubmittable<(listingId: H256 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256]>;
+      finalizeAuction: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, royaltyBeneficiaryCount: u32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, u32]>;
       /**
        * Force cancel a listing. This is only callable by the [`Config::ForceOrigin`].
        **/
@@ -1605,7 +1554,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * Same as [`Self::create_listing`], except `BadOrigin` if the origin is not
        * [`Config::ForceOrigin`]
        **/
-      forceCreateListing: AugmentedSubmittable<(seller: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, makeAssetId: EpMultiTokensTokenAssetId | { collectionId?: any; tokenId?: any } | string | Uint8Array, takeAssetId: EpMultiTokensTokenAssetId | { collectionId?: any; tokenId?: any } | string | Uint8Array, amount: Compact<u128> | AnyNumber | Uint8Array, price: Compact<u128> | AnyNumber | Uint8Array, salt: Bytes | string | Uint8Array, listingData: PalletMarketplaceFeaturesListingListingData | { FixedPrice: any } | { Auction: any } | { Offer: any } | string | Uint8Array, depositBacker: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [MultiAddress, EpMultiTokensTokenAssetId, EpMultiTokensTokenAssetId, Compact<u128>, Compact<u128>, Bytes, PalletMarketplaceFeaturesListingListingData, Option<MultiAddress>]>;
+      forceCreateListing: AugmentedSubmittable<(seller: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, descriptor: PalletMarketplaceFeaturesListingListingDescriptor | { makeAssetId?: any; takeAssetId?: any; amount?: any; price?: any; startBlock?: any; salt?: any; usesWhitelist?: any; data?: any } | string | Uint8Array, depositBacker: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [MultiAddress, PalletMarketplaceFeaturesListingListingDescriptor, Option<MultiAddress>]>;
       /**
        * Same as [create_listing](Self::place_bid), but allows specifying the `bidder` and can
        * place a bid in an inactive auction. Only callable by [`Config::ForceOrigin`]. If
@@ -1651,6 +1600,10 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       removeExpiredListing: AugmentedSubmittable<(listingId: H256 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256]>;
       /**
+       * Remove accounts from a listing's whitelist
+       **/
+      removeWhitelistedAccounts: AugmentedSubmittable<(listingId: H256 | string | Uint8Array, accountIds: Vec<AccountId32> | (AccountId32 | string | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [H256, Vec<AccountId32>]>;
+      /**
        * Change the protocol fee to `protocol_fee`. Can only be called by `ForceOrigin`.
        * 
        * #Parameters
@@ -1658,6 +1611,10 @@ declare module '@polkadot/api-base/types/submittable' {
        * - `protocol_fee`: Percentage of fee to set
        **/
       setProtocolFee: AugmentedSubmittable<(protocolFee: Perbill | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Perbill]>;
+      /**
+       * Upgrade a collection of listings in storage.
+       **/
+      upgradeListings: AugmentedSubmittable<(listingIds: Vec<H256> | (H256 | string | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [Vec<H256>]>;
       /**
        * Generic tx
        **/
@@ -1718,8 +1675,8 @@ declare module '@polkadot/api-base/types/submittable' {
       transferAssetToParachain: AugmentedSubmittable<(paraId: MatrixPalletXcmImplsParachainId | 'Acala' | 'Moonbeam' | 'Statemint' | number | Uint8Array, beneficiary: EpCoreFrameTypesAccount | { Substrate: any } | { EVM: any } | string | Uint8Array, currencyId: EpMultiTokensTokenAssetId | { collectionId?: any; tokenId?: any } | string | Uint8Array, amount: u128 | AnyNumber | Uint8Array, destWeight: Option<u64> | null | Uint8Array | u64 | AnyNumber) => SubmittableExtrinsic<ApiType>, [MatrixPalletXcmImplsParachainId, EpCoreFrameTypesAccount, EpMultiTokensTokenAssetId, u128, Option<u64>]>;
       /**
        * `origin` transfers `asset` to `beneficiary` at `parachain` using `fee_asset` for
-       * the fee. This allows the transfer of custom assets like a non-fungible which
-       * cannot be used to pay fees.
+       * the fee. This allows the transfer of custom assets like NFTs which cannot be used to
+       * pay fees.
        * 
        * Note: each [`Asset`] must be registered as a foreign asset at the destination
        * parachain.
@@ -1952,6 +1909,22 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       acceptCollectionTransfer: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>]>;
       /**
+       * Adds the token to a token group.
+       * 
+       * # Errors
+       * 
+       * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+       * - [`Error::TokenNotFound`] if Token does not exist
+       * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+       * - [`Error::IncompatibleTokenGroup`] if the token and the group are not in the same
+       * collection.
+       * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+       * - [`Error::MaxTokenGroupsExceeded`] if the token already belongs to its maximum number
+       * of groups.
+       * - [`Error::TokenAlreadyInGroup`] if the token already belongs to the group.
+       **/
+      addTokenToGroup: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, tokenGroupId: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, Compact<u128>]>;
+      /**
        * Allow `operator` to manage all of `origin`'s tokens belonging to `collection_id`.
        * If an `expiration` is provided, the approval will end when it expires.
        * 
@@ -1971,6 +1944,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * or `0` if there's none.
        * 
        * # Errors
+       * 
        * - [`Error::CannotApproveSelf`] if `origin == operator`
        * - [`Error::CollectionAlreadyApproved`] if `collection_id` is already approved
        * - [`Error::AlreadyExpired`] if `expiration` is earlier than now
@@ -2039,6 +2013,8 @@ declare module '@polkadot/api-base/types/submittable' {
        * unreserve
        * - [`Error::DestroyForbiddenByAttributeCount`] if removing token from storage but the
        * attribute count is greater than zero
+       * - [`Error::DestroyForbiddenByTokenGroupCount`] if removing token from storage but it is
+       * still in a group
        **/
       burn: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, params: EpMultiTokensPolicyBurnDefaultBurnParams | { tokenId?: any; amount?: any; removeTokenStorage?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, EpMultiTokensPolicyBurnDefaultBurnParams]>;
       /**
@@ -2072,7 +2048,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * - `collection_count`: The number of collections that will be claimed. It can also be
        * higher than the actual number, but if it's lower it will fail.
        **/
-      claimCollections: AugmentedSubmittable<(destination: AccountId32 | string | Uint8Array, ethereumSignature: SpCoreEcdsaSignature | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array, collectionCount: Compact<u32> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, SpCoreEcdsaSignature, H160, Compact<u32>]>;
+      claimCollections: AugmentedSubmittable<(destination: AccountId32 | string | Uint8Array, ethereumSignature: U8aFixed | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array, collectionCount: Compact<u32> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, U8aFixed, H160, Compact<u32>]>;
       /**
        * Sends [`Event::ClaimTokensInitiated`] event if validation of the params succeeds.
        * 
@@ -2093,7 +2069,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * described above.
        * - `ethereum_address` : The Ethereum address from which the message is signed.
        **/
-      claimTokens: AugmentedSubmittable<(destination: AccountId32 | string | Uint8Array, ethereumSignature: SpCoreEcdsaSignature | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, SpCoreEcdsaSignature, H160]>;
+      claimTokens: AugmentedSubmittable<(destination: AccountId32 | string | Uint8Array, ethereumSignature: U8aFixed | string | Uint8Array, ethereumAddress: H160 | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, U8aFixed, H160]>;
       /**
        * Creates a new [`Collection`](ep_multi_tokens::Collection) from `descriptor`
        * 
@@ -2127,6 +2103,15 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       createCollection: AugmentedSubmittable<(descriptor: EpMultiTokensCollectionDefaultCollectionDescriptor | { policy?: any; depositor?: any; explicitRoyaltyCurrencies?: any; attributes?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [EpMultiTokensCollectionDefaultCollectionDescriptor]>;
       /**
+       * Creates a [`TokenGroup`] belonging to `collection_id`
+       * 
+       * # Errors
+       * 
+       * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+       * - [`Error::NoPermission`] if `origin` is not the owner of `collection`.
+       **/
+      createTokenGroup: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, depositor: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Option<MultiAddress>]>;
+      /**
        * Destroys [`Collection`](ep_multi_tokens::Collection) with `id`. `origin` must be the
        * owner of the [`Collection`](ep_multi_tokens::Collection).
        * 
@@ -2140,9 +2125,20 @@ declare module '@polkadot/api-base/types/submittable' {
        * destroying
        * - [`Error::DestroyForbiddenByAttributeCount`] if collection still has attributes when
        * destroying
-       * current number of collection attributes.
+       * - [`Error::DestroyForbiddenByTokenGroupCount`] if collection still has token groups
        **/
       destroyCollection: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>]>;
+      /**
+       * Destroys a [`TokenGroup`]
+       * 
+       * # Errors
+       * 
+       * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+       * - [`Error::NoPermission`] if `origin` is not the owner of the token group's collection.
+       * - [`Error::DestroyForbiddenByRemainingTokens`] if there are still tokens in the group
+       * - [`Error::DestroyForbiddenByAttributeCount`] if there are still attributes in the group
+       **/
+      destroyTokenGroup: AugmentedSubmittable<(tokenGroupId: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>]>;
       /**
        * Sends an event that signifies claiming the tokens was completed. Only callable by
        * [`Config::EthereumMigrationOrigin`].
@@ -2207,7 +2203,7 @@ declare module '@polkadot/api-base/types/submittable' {
       /**
        * Set the Collections storage to the given `value`, origin must be root
        **/
-      forceSetCollection: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, value: Option<EpMultiTokensCollection> | null | Uint8Array | EpMultiTokensCollection | { owner?: any; policy?: any; tokenCount?: any; attributeCount?: any; creationDeposit?: any; totalDeposit?: any; explicitRoyaltyCurrencies?: any; totalInfusion?: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Option<EpMultiTokensCollection>]>;
+      forceSetCollection: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, value: Option<EpMultiTokensCollection> | null | Uint8Array | EpMultiTokensCollection | { owner?: any; policy?: any; tokenCount?: any; attributeCount?: any; creationDeposit?: any; totalDeposit?: any; explicitRoyaltyCurrencies?: any; totalInfusion?: any; tokenGroupCount?: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Option<EpMultiTokensCollection>]>;
       /**
        * Set the CollectionAccounts storage to the given `value`, origin must be root
        **/
@@ -2237,7 +2233,7 @@ declare module '@polkadot/api-base/types/submittable' {
       /**
        * Set the TokenAccounts storage to the given `value`, origin must be root
        **/
-      forceSetTokenAccount: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, accountId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, value: Option<PalletMultiTokensFeaturesTokenTypesTokenAccount> | null | Uint8Array | PalletMultiTokensFeaturesTokenTypesTokenAccount | { balance?: any; reservedBalance?: any; lockedBalance?: any; namedReserves?: any; locks?: any; approvals?: any; isFrozen?: any; deposit?: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, MultiAddress, Option<PalletMultiTokensFeaturesTokenTypesTokenAccount>]>;
+      forceSetTokenAccount: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, accountId: MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string | Uint8Array, value: Option<PalletMultiTokensFeaturesTokenTypesTokenAccount> | null | Uint8Array | PalletMultiTokensFeaturesTokenTypesTokenAccount | { balance?: any; reservedBalance?: any; lockedBalance?: any; holds?: any; locks?: any; approvals?: any; isFrozen?: any; deposit?: any; storageVersion?: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, MultiAddress, Option<PalletMultiTokensFeaturesTokenTypesTokenAccount>]>;
       /**
        * Sets [`UnmintableTokenIds`] storage. Only callable by
        * [`Config::ForceOrigin`].
@@ -2342,6 +2338,21 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       mutateToken: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, mutation: EpMultiTokensTokenDefaultTokenMutation | { behavior?: any; listingForbidden?: any; anyoneCanInfuse?: any; name?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, EpMultiTokensTokenDefaultTokenMutation]>;
       /**
+       * Recalculates the deposit for a collection by processing tokens and attributes in
+       * batches. This function can be called multiple times to process all items if they
+       * exceed the batch limits.
+       * 
+       * # Arguments
+       * * `origin` - The origin of the call
+       * * `collection_id` - The ID of the collection to recalculate deposits for
+       * * `token_count` - The number of tokens to process
+       * * `attribute_count` - The number of attributes to process
+       * 
+       * # Returns
+       * * `DispatchResult` - Success if the recalculation was performed without errors
+       **/
+      recalculateCollectionDeposit: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenCount: u32 | AnyNumber | Uint8Array, attributeCount: u32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, u32, u32]>;
+      /**
        * Removes all attributes from the given `collection_id` or `token_id`.
        * 
        * # Errors
@@ -2366,6 +2377,28 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       removeAttribute: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Option<u128> | null | Uint8Array | u128 | AnyNumber, key: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Option<u128>, Bytes]>;
       /**
+       * Removes the token from a token group.
+       * 
+       * # Errors
+       * 
+       * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+       * - [`Error::TokenNotFound`] if Token does not exist
+       * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist or the token is not
+       * part of it.
+       * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+       **/
+      removeTokenFromGroup: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, tokenGroupId: Compact<u128> | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, Compact<u128>]>;
+      /**
+       * Removes the `key` attribute from the given `token_group_id`.
+       * Only callable by the collection owner.
+       * 
+       * # Errors
+       * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+       * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+       * - [`Error::NoPermission`] if `caller` is not the owner of the collection.
+       **/
+      removeTokenGroupAttribute: AugmentedSubmittable<(tokenGroupId: Compact<u128> | AnyNumber | Uint8Array, key: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Bytes]>;
+      /**
        * Sets the attribute `key` to `value` for `collection_id`.
        * If `token_id` is [`None`], the attribute is added to the collection. If it is [`Some`],
        * the attribute is added to the token.
@@ -2380,6 +2413,31 @@ declare module '@polkadot/api-base/types/submittable' {
        * storage.
        **/
       setAttribute: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Option<u128> | null | Uint8Array | u128 | AnyNumber, key: Bytes | string | Uint8Array, value: Bytes | string | Uint8Array, depositor: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Option<u128>, Bytes, Bytes, Option<MultiAddress>]>;
+      /**
+       * Sets the attribute `key` to `value` for `token_group_id`.
+       * Only callable by the collection's owner.
+       * 
+       * # Errors
+       * - [`Error::InvalidAttributeKey`] if `key.len() == 0`
+       * - [`Error::TokenGroupNotFound`] if `token_group_id` does not exist.
+       * - [`Error::NoPermission`] if `source` account is not the owner of the collection.
+       * - [`Error::DepositReserveFailed`] if unable to reserve the deposit for the attribute
+       * storage.
+       **/
+      setTokenGroupAttribute: AugmentedSubmittable<(tokenGroupId: Compact<u128> | AnyNumber | Uint8Array, key: Bytes | string | Uint8Array, value: Bytes | string | Uint8Array, depositor: Option<MultiAddress> | null | Uint8Array | MultiAddress | { Id: any } | { Index: any } | { Raw: any } | { Address32: any } | { Address20: any } | string) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Bytes, Bytes, Option<MultiAddress>]>;
+      /**
+       * Set the list of [`TokenGroup`] that a token is part of
+       * 
+       * # Errors
+       * 
+       * - [`Error::CollectionNotFound`] if `collection_id` does not exist.
+       * - [`Error::TokenNotFound`] if Token does not exist
+       * - [`Error::TokenGroupNotFound`] if any token group does not exist.
+       * - [`Error::IncompatibleTokenGroup`] if any group is from a different collection than the
+       * token.
+       * - [`Error::NoPermission`] if `origin` is not the owner of the collection.
+       **/
+      setTokenGroups: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, tokenGroups: Vec<u128> | (u128 | AnyNumber | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, Vec<u128>]>;
       /**
        * Thaw collection, token or account
        **/
@@ -2425,6 +2483,22 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       updateAccountDeposit: AugmentedSubmittable<(collectionId: Compact<u128> | AnyNumber | Uint8Array, tokenId: Compact<u128> | AnyNumber | Uint8Array, deltaAccountCount: i32 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [Compact<u128>, Compact<u128>, i32]>;
       /**
+       * Upgrades approvals expiration block numbers on a list of collections in storage
+       **/
+      updateCollectionAccountApprovals: AugmentedSubmittable<(collectionAccountParameters: Vec<ITuple<[u128, AccountId32, Vec<ITuple<[AccountId32, Option<u32>]>>]>> | ([u128 | AnyNumber | Uint8Array, AccountId32 | string | Uint8Array, Vec<ITuple<[AccountId32, Option<u32>]>> | ([AccountId32 | string | Uint8Array, Option<u32> | null | Uint8Array | u32 | AnyNumber])[]])[]) => SubmittableExtrinsic<ApiType>, [Vec<ITuple<[u128, AccountId32, Vec<ITuple<[AccountId32, Option<u32>]>>]>>]>;
+      /**
+       * Upgrade a list of collections in storage
+       **/
+      upgradeCollections: AugmentedSubmittable<(collectionKeys: Vec<u128> | (u128 | AnyNumber | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [Vec<u128>]>;
+      /**
+       * Upgrade a collection of listings in storage.
+       **/
+      upgradeTokenAccounts: AugmentedSubmittable<(tokenAccountKeys: Vec<ITuple<[u128, u128, AccountId32]>> | ([u128 | AnyNumber | Uint8Array, u128 | AnyNumber | Uint8Array, AccountId32 | string | Uint8Array])[]) => SubmittableExtrinsic<ApiType>, [Vec<ITuple<[u128, u128, AccountId32]>>]>;
+      /**
+       * Upgrade a list of tokens in storage
+       **/
+      upgradeTokens: AugmentedSubmittable<(tokenKeys: Vec<ITuple<[u128, u128]>> | ([u128 | AnyNumber | Uint8Array, u128 | AnyNumber | Uint8Array])[]) => SubmittableExtrinsic<ApiType>, [Vec<ITuple<[u128, u128]>>]>;
+      /**
        * Generic tx
        **/
       [key: string]: SubmittableExtrinsicFunction<ApiType>;
@@ -2446,29 +2520,6 @@ declare module '@polkadot/api-base/types/submittable' {
       [key: string]: SubmittableExtrinsicFunction<ApiType>;
     };
     parachainSystem: {
-      /**
-       * Authorize an upgrade to a given `code_hash` for the runtime. The runtime can be supplied
-       * later.
-       * 
-       * The `check_version` parameter sets a boolean flag for whether or not the runtime's spec
-       * version and name should be verified on upgrade. Since the authorization only has a hash,
-       * it cannot actually perform the verification.
-       * 
-       * This call requires Root origin.
-       **/
-      authorizeUpgrade: AugmentedSubmittable<(codeHash: H256 | string | Uint8Array, checkVersion: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [H256, bool]>;
-      /**
-       * Provide the preimage (runtime binary) `code` for an upgrade that has been authorized.
-       * 
-       * If the authorization required a version check, this call will ensure the spec name
-       * remains unchanged and that the spec version has increased.
-       * 
-       * Note that this function will not apply the new `code`, but only attempt to schedule the
-       * upgrade with the Relay Chain.
-       * 
-       * All origins are allowed.
-       **/
-      enactAuthorizedUpgrade: AugmentedSubmittable<(code: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [Bytes]>;
       /**
        * Set the current validation data.
        * 
@@ -2565,7 +2616,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Fee payment on the destination side is made from the asset in the `assets` vector of
        * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-       * is needed than `weight_limit`, then the operation will fail and the assets send may be
+       * is needed than `weight_limit`, then the operation will fail and the sent assets may be
        * at risk.
        * 
        * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
@@ -2586,7 +2637,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Fee payment on the destination side is made from the asset in the `assets` vector of
        * index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight
-       * is needed than `weight_limit`, then the operation will fail and the assets send may be
+       * is needed than `weight_limit`, then the operation will fail and the sent assets may be
        * at risk.
        * 
        * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
@@ -2664,7 +2715,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * Fee payment on the destination side is made from the asset in the `assets` vector of
        * index `fee_asset_item` (hence referred to as `fees`), up to enough to pay for
        * `weight_limit` of weight. If more weight is needed than `weight_limit`, then the
-       * operation will fail and the assets sent may be at risk.
+       * operation will fail and the sent assets may be at risk.
        * 
        * `assets` (excluding `fees`) must have same reserve location or otherwise be teleportable
        * to `dest`, no limitations imposed on `fees`.
@@ -2693,6 +2744,57 @@ declare module '@polkadot/api-base/types/submittable' {
        * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
        **/
       transferAssets: AugmentedSubmittable<(dest: XcmVersionedLocation | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, beneficiary: XcmVersionedLocation | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, assets: XcmVersionedAssets | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, feeAssetItem: u32 | AnyNumber | Uint8Array, weightLimit: XcmV3WeightLimit | { Unlimited: any } | { Limited: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [XcmVersionedLocation, XcmVersionedLocation, XcmVersionedAssets, u32, XcmV3WeightLimit]>;
+      /**
+       * Transfer assets from the local chain to the destination chain using explicit transfer
+       * types for assets and fees.
+       * 
+       * `assets` must have same reserve location or may be teleportable to `dest`. Caller must
+       * provide the `assets_transfer_type` to be used for `assets`:
+       * - `TransferType::LocalReserve`: transfer assets to sovereign account of destination
+       * chain and forward a notification XCM to `dest` to mint and deposit reserve-based
+       * assets to `beneficiary`.
+       * - `TransferType::DestinationReserve`: burn local assets and forward a notification to
+       * `dest` chain to withdraw the reserve assets from this chain's sovereign account and
+       * deposit them to `beneficiary`.
+       * - `TransferType::RemoteReserve(reserve)`: burn local assets, forward XCM to `reserve`
+       * chain to move reserves from this chain's SA to `dest` chain's SA, and forward another
+       * XCM to `dest` to mint and deposit reserve-based assets to `beneficiary`. Typically
+       * the remote `reserve` is Asset Hub.
+       * - `TransferType::Teleport`: burn local assets and forward XCM to `dest` chain to
+       * mint/teleport assets and deposit them to `beneficiary`.
+       * 
+       * On the destination chain, as well as any intermediary hops, `BuyExecution` is used to
+       * buy execution using transferred `assets` identified by `remote_fees_id`.
+       * Make sure enough of the specified `remote_fees_id` asset is included in the given list
+       * of `assets`. `remote_fees_id` should be enough to pay for `weight_limit`. If more weight
+       * is needed than `weight_limit`, then the operation will fail and the sent assets may be
+       * at risk.
+       * 
+       * `remote_fees_id` may use different transfer type than rest of `assets` and can be
+       * specified through `fees_transfer_type`.
+       * 
+       * The caller needs to specify what should happen to the transferred assets once they reach
+       * the `dest` chain. This is done through the `custom_xcm_on_dest` parameter, which
+       * contains the instructions to execute on `dest` as a final step.
+       * This is usually as simple as:
+       * `Xcm(vec![DepositAsset { assets: Wild(AllCounted(assets.len())), beneficiary }])`,
+       * but could be something more exotic like sending the `assets` even further.
+       * 
+       * - `origin`: Must be capable of withdrawing the `assets` and executing XCM.
+       * - `dest`: Destination context for the assets. Will typically be `[Parent,
+       * Parachain(..)]` to send from parachain to parachain, or `[Parachain(..)]` to send from
+       * relay to parachain, or `(parents: 2, (GlobalConsensus(..), ..))` to send from
+       * parachain across a bridge to another ecosystem destination.
+       * - `assets`: The assets to be withdrawn. This should include the assets used to pay the
+       * fee on the `dest` (and possibly reserve) chains.
+       * - `assets_transfer_type`: The XCM `TransferType` used to transfer the `assets`.
+       * - `remote_fees_id`: One of the included `assets` to be used to pay fees.
+       * - `fees_transfer_type`: The XCM `TransferType` used to transfer the `fees` assets.
+       * - `custom_xcm_on_dest`: The XCM to be executed on `dest` chain as the last step of the
+       * transfer, which also determines what happens to the assets on the destination chain.
+       * - `weight_limit`: The remote-side weight limit, if any, for the XCM fee purchase.
+       **/
+      transferAssetsUsingTypeAndThen: AugmentedSubmittable<(dest: XcmVersionedLocation | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, assets: XcmVersionedAssets | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, assetsTransferType: StagingXcmExecutorAssetTransferTransferType | { Teleport: any } | { LocalReserve: any } | { DestinationReserve: any } | { RemoteReserve: any } | string | Uint8Array, remoteFeesId: XcmVersionedAssetId | { V3: any } | { V4: any } | string | Uint8Array, feesTransferType: StagingXcmExecutorAssetTransferTransferType | { Teleport: any } | { LocalReserve: any } | { DestinationReserve: any } | { RemoteReserve: any } | string | Uint8Array, customXcmOnDest: XcmVersionedXcm | { V2: any } | { V3: any } | { V4: any } | string | Uint8Array, weightLimit: XcmV3WeightLimit | { Unlimited: any } | { Limited: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [XcmVersionedLocation, XcmVersionedAssets, StagingXcmExecutorAssetTransferTransferType, XcmVersionedAssetId, StagingXcmExecutorAssetTransferTransferType, XcmVersionedXcm, XcmV3WeightLimit]>;
       /**
        * Generic tx
        **/
