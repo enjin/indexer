@@ -7,6 +7,7 @@ import connection from '../connection'
 import { collectionStatsQueue } from '../jobs/collection-stats'
 import { metadataQueue } from '../jobs/process-metadata'
 import { fetchAccountQueue } from '../jobs/fetch-account'
+import { fetchInfusionQueue } from '../jobs/fetch-infusion'
 import { fetchBalanceQueue } from '../jobs/fetch-balance'
 import { traitsQueue } from '../jobs/compute-traits'
 import { fetchCollectionExtraQueue } from '../jobs/fetch-collection-extra'
@@ -33,6 +34,7 @@ async function main() {
     collectionStatsQueue.process(3, `${__dirname}/collection-stats.js`)
 
     fetchAccountQueue.process(5, `${__dirname}/fetch-account.js`)
+    fetchInfusionQueue.process(1, `${__dirname}/fetch-infusion.js`)
     fetchBalanceQueue.process(5, `${__dirname}/fetch-balance.js`)
     fetchCollectionExtraQueue.process(5, `${__dirname}/fetch-collection-extra.js`)
     invalidateExpiredListings.process(1, `${__dirname}/invalidate-expired-listings.js`)
@@ -62,6 +64,11 @@ async function main() {
         throwError(`fetchAccountQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
     })
 
+    fetchInfusionQueue.on('global:failed', (job, err) => {
+        console.log(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+        throwError(`fetchInfusionQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
+    })
+
     fetchBalanceQueue.on('global:failed', (job, err) => {
         console.log(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
         throwError(`fetchBalanceQueue:Job ${job.id} failed with error: ${err.message}`, 'warning')
@@ -85,6 +92,7 @@ async function main() {
             new BullAdapter(metadataQueue),
             new BullAdapter(collectionStatsQueue),
             new BullAdapter(fetchAccountQueue),
+            new BullAdapter(fetchInfusionQueue),
             new BullAdapter(fetchBalanceQueue),
             new BullAdapter(traitsQueue),
             new BullAdapter(rarityQueue),
