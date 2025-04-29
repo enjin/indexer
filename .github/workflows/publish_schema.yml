@@ -9,7 +9,6 @@ jobs:
   build:
     name: Apollo
     runs-on: ubuntu-latest
-    environment: apollo
     env:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
