@@ -5,10 +5,11 @@ import * as mappings from '../../index'
 export async function delayTimeForClaimSet(ctx: CommonContext, block: Block, item: EventItem): Promise<undefined> {
     const event = mappings.claims.events.delayTimeForClaimSet(item)
 
+    const totalUnclaimedAmount = await mappings.claims.storage.totalUnclaimedAmount(block)
     const claimDetails = new ClaimDetails({
         id: '0',
         delayClaimsPeriod: event.delayTime,
-        totalUnclaimedAmount: await mappings.claims.storage.totalUnclaimedAmount(block),
+        totalUnclaimedAmount: totalUnclaimedAmount ?? 0n,
     })
 
     await ctx.store.save(claimDetails)
