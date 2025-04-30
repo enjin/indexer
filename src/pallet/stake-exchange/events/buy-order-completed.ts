@@ -46,6 +46,10 @@ export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
 }
 
 export function buyOrderCompletedEventModel(item: EventItem, data: BuyOrderCompleted): EventModel | undefined {
+    console.log(`OfferID: ${data.offerId}`)
+    console.log(`Account: ${data.who}`)
+    console.log(`TokenID: ${data.tokenId}`)
+
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,
