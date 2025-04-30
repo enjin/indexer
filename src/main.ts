@@ -219,12 +219,15 @@ async function bootstrap() {
                     //     await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
                     // }
 
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                    for (const chunk of _.chunk(extrinsics, 1000)) {
+                        await ctx.store.insert(chunk)
+                    }
+                    for (const chunk of _.chunk(eventsCollection, 1000)) {
+                        await ctx.store.insert(chunk)
+                    }
+                    for (const chunk of _.chunk(accountTokenEvents, 1000)) {
+                        await ctx.store.insert(chunk)
+                    }
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header
