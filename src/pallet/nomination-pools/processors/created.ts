@@ -33,6 +33,13 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         throw new Error('Active era info is not provided')
     }
 
+    // TODO: Check if the destroyed event was never emitted before
+    const poolId = await ctx.store.findOneBy(NominationPool, { degenToken: { id: `2-${callData.tokenId}` } })
+    if (poolId) {
+        await ctx.store.remove(poolId)
+    }
+    ///////////
+
     const pool = new NominationPool({
         id: eventData.poolId.toString(),
         points: 0n, // update at bonded event
