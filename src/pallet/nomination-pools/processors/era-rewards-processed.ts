@@ -156,13 +156,19 @@ export async function eraRewardsProcessed(
         }),
         'id'
     )
+
     const rewardPromise = members.map((member) => {
+        let points = 0n
+        if (memberBalanceMap[member.account.id]) {
+            points = memberBalanceMap[member.account.id].at(0)?.balance ?? 0n
+        }
+
         return new PoolMemberRewards({
             id: `${member.id}-${reward.id}`,
             member,
             reward,
             pool,
-            points: memberBalanceMap[member.account.id].at(0)?.balance ?? 0n,
+            points,
         })
     })
 
