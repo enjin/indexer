@@ -45,12 +45,6 @@ export function transferredEventModel(
         }),
     })
 
-    console.log(`ID: ${item.id}`)
-    console.log(`FROM: ${data.from}`)
-    console.log(`TO: ${data.to}`)
-    console.log(`EVENT: ${event.id}`)
-    console.log(`TOKEN: ${token?.id}`)
-
     return [
         event,
         new AccountTokenEvent({
