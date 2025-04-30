@@ -23,6 +23,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
         index: event.eraIndex + 1,
         startAt: new Date(block.timestamp ?? 0),
         startBlock: block.height,
+        nodeCount: 0,
     })
 
     await ctx.store.save(era)
