@@ -72,6 +72,7 @@ export async function eraRewardsProcessed(
                 index: eventData.era,
                 startAt: new Date(block.timestamp ?? 0),
                 startBlock: block.height,
+                nodeCount: 0,
             })
         )
     }
