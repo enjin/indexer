@@ -21,7 +21,7 @@ export async function attempted(ctx: CommonContext, block: Block, item: EventIte
     const assetInterior = call.assets.value.at(0)
 
     if (destInterior.__kind === 'Here') {
-        destination = processorConfig.chainName.startsWith('canary') ? 'canary-relay' : 'enjin-relay'
+        destination = processorConfig.chainName.startsWith('canary') ? 'canary-relaychain' : 'enjin-relaychain'
     }
 
     if (

@@ -47,6 +47,7 @@ services:
     image: ghcr.io/enjin/indexer:${VERSION:-latest}
     environment:
       CONTAINER_ROLE: processor
+      TRUNCATE_DATABASE: ${TRUNCATE_DATABASE}
     build:
       context: .
       args:

@@ -9,6 +9,7 @@ export async function setSubs(ctx: CommonContext, block: Block, item: CallItem):
         throw new Error('No signature')
     }
 
+    // This is set on sub-identity set
     const call = mappings.identity.calls.setSubs(item)
     const pk = unwrapSigner(item.extrinsic)
     const signer = await getOrCreateAccount(ctx, pk)

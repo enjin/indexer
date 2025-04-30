@@ -1,6 +1,6 @@
 import { SubstrateBatchProcessor } from '@subsquid/substrate-processor'
 import config from './util/config'
-import { calls, events } from './type'
+import { events } from './type'
 import { isRelay } from './util/tools'
 
 const getEventNames = (pallet: object): string[] => Object.values(pallet).map((event) => event.name)
@@ -46,10 +46,10 @@ const eventItems: string[] = [
 export const processorConfig = new SubstrateBatchProcessor()
     .setRpcEndpoint(config.dataSource.chain)
     .setBlockRange({ from: config.dataSource.fromBlock })
-    .addCall({
-        name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
-        stack: true,
-    })
+    // .addCall({
+    //     name: [calls.identity.setSubs.name, calls.identity.renameSub.name],
+    //     stack: true,
+    // })
     .addEvent({
         name: eventItems,
         extrinsic: true,

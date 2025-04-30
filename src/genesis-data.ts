@@ -12,7 +12,6 @@ import {
 } from './model'
 import { getOrCreateAccount } from './util/entities'
 import { isMainnet, isRelay } from './util/tools'
-import * as p from './pallet'
 import { match } from 'ts-pattern'
 
 export async function genesisData(ctx: CommonContext, block: Block) {
@@ -115,105 +114,105 @@ async function createEnjinToken(ctx: CommonContext, block: Block) {
 }
 
 async function generateRelayData(ctx: CommonContext, block: Block) {
-    const root = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
-
-    const stakedEnjinCollection = new Collection({
-        id: '1',
-        collectionId: 1n,
-        owner: root,
-        mintPolicy: new MintPolicy({
-            maxTokenCount: null,
-            maxTokenSupply: null,
-            forceSingleMint: false,
-        }),
-        metadata: new Metadata({
-            name: 'Staked Enjin Token (sENJ)',
-        }),
-        transferPolicy: new TransferPolicy({
-            isFrozen: false,
-        }),
-        stats: new CollectionStats({
-            lastSale: null,
-            floorPrice: null,
-            highestSale: null,
-            tokenCount: 0,
-            salesCount: 0,
-            supply: 0n,
-            marketCap: 0n,
-            volume: 0n,
-        }),
-        flags: new CollectionFlags({
-            featured: false,
-            hiddenForLegalReasons: false,
-        }),
-        verifiedAt: null,
-        socials: new CollectionSocials({
-            discord: null,
-            twitter: null,
-            instagram: null,
-            medium: null,
-            tiktok: null,
-            website: null,
-        }),
-        hidden: false,
-        burnPolicy: null,
-        attributePolicy: null,
-        attributeCount: 0,
-        totalDeposit: 0n,
-        createdAt: new Date(block.timestamp ?? 0),
-    })
-
-    const degenCollectionData = await p.multiTokens.storage.collections(block, { collectionId: 2n })
-
-    if (!degenCollectionData) {
-        throw new Error('Degen collection data not found')
-    }
-
-    const degenCollection = new Collection({
-        id: '2',
-        collectionId: 2n,
-        owner: await getOrCreateAccount(ctx, degenCollectionData.owner),
-        mintPolicy: new MintPolicy({
-            maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
-            maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
-            forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
-        }),
-        metadata: new Metadata({
-            name: 'Degen',
-        }),
-        transferPolicy: new TransferPolicy({
-            isFrozen: false,
-        }),
-        stats: new CollectionStats({
-            lastSale: null,
-            floorPrice: null,
-            highestSale: null,
-            tokenCount: 1,
-            salesCount: 0,
-            supply: degenCollectionData.tokenCount,
-            marketCap: 0n,
-            volume: 0n,
-        }),
-        flags: new CollectionFlags({
-            featured: false,
-            hiddenForLegalReasons: false,
-        }),
-        verifiedAt: null,
-        socials: new CollectionSocials({
-            discord: null,
-            twitter: null,
-            instagram: null,
-            medium: null,
-            tiktok: null,
-            website: null,
-        }),
-        hidden: false,
-        burnPolicy: null,
-        attributePolicy: null,
-        attributeCount: 0,
-        totalDeposit: 0n,
-        createdAt: new Date(block.timestamp ?? 0),
-    })
+    // const root = await getOrCreateAccount(ctx, new Uint8Array(32).fill(0))
+    //
+    // const stakedEnjinCollection = new Collection({
+    //     id: '1',
+    //     collectionId: 1n,
+    //     owner: root,
+    //     mintPolicy: new MintPolicy({
+    //         maxTokenCount: null,
+    //         maxTokenSupply: null,
+    //         forceSingleMint: false,
+    //     }),
+    //     metadata: new Metadata({
+    //         name: 'Staked Enjin Token (sENJ)',
+    //     }),
+    //     transferPolicy: new TransferPolicy({
+    //         isFrozen: false,
+    //     }),
+    //     stats: new CollectionStats({
+    //         lastSale: null,
+    //         floorPrice: null,
+    //         highestSale: null,
+    //         tokenCount: 0,
+    //         salesCount: 0,
+    //         supply: 0n,
+    //         marketCap: 0n,
+    //         volume: 0n,
+    //     }),
+    //     flags: new CollectionFlags({
+    //         featured: false,
+    //         hiddenForLegalReasons: false,
+    //     }),
+    //     verifiedAt: null,
+    //     socials: new CollectionSocials({
+    //         discord: null,
+    //         twitter: null,
+    //         instagram: null,
+    //         medium: null,
+    //         tiktok: null,
+    //         website: null,
+    //     }),
+    //     hidden: false,
+    //     burnPolicy: null,
+    //     attributePolicy: null,
+    //     attributeCount: 0,
+    //     totalDeposit: 0n,
+    //     createdAt: new Date(block.timestamp ?? 0),
+    // })
+    //
+    // const degenCollectionData = await p.multiTokens.storage.collections(block, { collectionId: 2n })
+    //
+    // if (!degenCollectionData) {
+    //     throw new Error('Degen collection data not found')
+    // }
+    //
+    // const degenCollection = new Collection({
+    //     id: '2',
+    //     collectionId: 2n,
+    //     owner: await getOrCreateAccount(ctx, degenCollectionData.owner),
+    //     mintPolicy: new MintPolicy({
+    //         maxTokenCount: degenCollectionData.policy.mint.maxTokenCount,
+    //         maxTokenSupply: degenCollectionData.policy.mint.maxTokenSupply,
+    //         forceSingleMint: degenCollectionData.policy.mint.forceSingleMint,
+    //     }),
+    //     metadata: new Metadata({
+    //         name: 'Degen',
+    //     }),
+    //     transferPolicy: new TransferPolicy({
+    //         isFrozen: false,
+    //     }),
+    //     stats: new CollectionStats({
+    //         lastSale: null,
+    //         floorPrice: null,
+    //         highestSale: null,
+    //         tokenCount: 1,
+    //         salesCount: 0,
+    //         supply: degenCollectionData.tokenCount,
+    //         marketCap: 0n,
+    //         volume: 0n,
+    //     }),
+    //     flags: new CollectionFlags({
+    //         featured: false,
+    //         hiddenForLegalReasons: false,
+    //     }),
+    //     verifiedAt: null,
+    //     socials: new CollectionSocials({
+    //         discord: null,
+    //         twitter: null,
+    //         instagram: null,
+    //         medium: null,
+    //         tiktok: null,
+    //         website: null,
+    //     }),
+    //     hidden: false,
+    //     burnPolicy: null,
+    //     attributePolicy: null,
+    //     attributeCount: 0,
+    //     totalDeposit: 0n,
+    //     createdAt: new Date(block.timestamp ?? 0),
+    // })
 
     const genesisEra = new Era({
         id: `0`,
@@ -222,7 +221,10 @@ async function generateRelayData(ctx: CommonContext, block: Block) {
         endAt: new Date(block.timestamp ?? 0),
         startBlock: block.height,
         endBlock: block.height,
+        nodeCount: 0, // TODO: Check this
     })
 
-    await ctx.store.insert([stakedEnjinCollection, degenCollection, genesisEra])
+    // await ctx.store.insert(stakedEnjinCollection)
+    // await ctx.store.insert(degenCollection)
+    await ctx.store.insert(genesisEra)
 }

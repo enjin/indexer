@@ -14,6 +14,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 
 FROM base
+ENV PROCESSOR_PROMETHEUS_PORT=3000
 LABEL org.opencontainers.image.source=https://github.com/enjin/indexer
 LABEL org.opencontainers.image.description="Enjin Blockchain Indexer"
 LABEL org.opencontainers.image.licenses=GPLv3
@@ -27,7 +28,7 @@ COPY --from=build /app/typegen /squid/typegen
 
 ADD db db
 ADD schema.graphql .
-ENV PROCESSOR_PROMETHEUS_PORT 3000
+
 EXPOSE 3000
 EXPOSE 4000
 EXPOSE 9090

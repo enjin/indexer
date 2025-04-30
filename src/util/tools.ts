@@ -4,21 +4,12 @@ import { stringToHex } from '@polkadot/util'
 import { HexString } from '@polkadot/util/types'
 import config from './config'
 
-export function specToChain(specName: string): string {
-    switch (specName) {
-        case 'matrix-enjin':
-            return 'matrix-enjin'
-        default:
-            return 'enjin'
-    }
-}
-
 export function isMainnet(): boolean {
-    return ['enjin-relay', 'enjin-matrix'].includes(config.chainName)
+    return ['enjin-relaychain', 'enjin-matrixchain'].includes(config.chainName)
 }
 
 export function isRelay(): boolean {
-    return ['enjin-relay', 'canary-relay'].includes(config.chainName)
+    return ['enjin-relaychain', 'canary-relaychain'].includes(config.chainName)
 }
 
 export function isValidAddress(address: string): boolean {

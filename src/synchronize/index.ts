@@ -8,10 +8,7 @@ import { ParentBlockHeader } from '@subsquid/substrate-processor'
 import * as multiTokens from './multi-tokens'
 import * as system from './system'
 import { chainState } from '../chain-state'
-
-// blockchain => correct
-// matrix-enjin => enjin-matrix
-//
+import config from '../util/config'
 
 interface RuntimeVersion {
     spec_name: string
@@ -36,7 +33,7 @@ export async function syncState(ctx: CommonContext): Promise<void> {
         implVersion: version.impl_version,
     }
 
-    const metadata = await getSpecMetadata('enjin-matrix', runtimeVersion.specVersion)
+    const metadata = await getSpecMetadata(config.chainName, runtimeVersion.specVersion)
     const runtime = new Runtime(runtimeVersion, metadata, undefined, ctx._chain.rpc)
 
     const block: Block = {

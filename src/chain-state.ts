@@ -12,32 +12,42 @@ export async function chainState(
 ) {
     try {
         const api = Rpc.getInstance().client.getUnsafeApi()
-
-        const state = new ChainInfo({ id: block.hash })
-
-        const { transaction_version: transactionVersion } = await api.constants.System.Version()
-        const existentialDeposit = await api.constants.Balances.ExistentialDeposit()
-        const listingActiveDelay: number = await api.constants.Marketplace.ListingActiveDelay()
-        const listingDeposit: bigint = await api.constants.Marketplace.ListingDeposit()
-        const maxRoundingError: bigint = await api.constants.Marketplace.MaxRoundingError()
-        const maxSaltLength: number = await api.constants.Marketplace.MaxSaltLength()
-        const minimumBidIncreasePercentage: number = await api.constants.Marketplace.MinimumBidIncreasePercentage()
-
-        state.genesisHash = processorConfig.genesisHash
-        state.transactionVersion = transactionVersion
-        state.specVersion = Number(block.specVersion)
-        state.blockNumber = block.height
-        state.blockHash = block.hash
-        state.existentialDeposit = existentialDeposit
-        state.timestamp = new Date(block.timestamp ?? 0)
-        state.validator = block.validator ?? null
-        state.marketplace = new Marketplace({
-            protocolFee: 25_000000,
+        const [
+            { transaction_version: transactionVersion },
+            existentialDeposit,
             listingActiveDelay,
             listingDeposit,
             maxRoundingError,
             maxSaltLength,
             minimumBidIncreasePercentage,
+        ] = await Promise.all([
+            api.constants.System.Version(),
+            api.constants.Balances.ExistentialDeposit(),
+            api.constants.Marketplace.ListingActiveDelay(),
+            api.constants.Marketplace.ListingDeposit(),
+            api.constants.Marketplace.MaxRoundingError(),
+            api.constants.Marketplace.MaxSaltLength(),
+            api.constants.Marketplace.MinimumBidIncreasePercentage(),
+        ])
+
+        const state = new ChainInfo({
+            id: block.hash,
+            genesisHash: processorConfig.genesisHash,
+            transactionVersion,
+            specVersion: Number(block.specVersion),
+            blockNumber: block.height,
+            blockHash: block.hash,
+            existentialDeposit,
+            timestamp: new Date(block.timestamp ?? 0),
+            validator: block.validator ?? null,
+            marketplace: new Marketplace({
+                protocolFee: 25_000000,
+                listingActiveDelay,
+                listingDeposit,
+                maxRoundingError,
+                maxSaltLength,
+                minimumBidIncreasePercentage,
+            }),
         })
 
         await ctx.store.save<ChainInfo>(state)
