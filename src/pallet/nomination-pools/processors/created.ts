@@ -87,6 +87,7 @@ export async function created(ctx: CommonContext, block: Block, item: EventItem)
         totalMembers: 0,
         createdAt: new Date(block.timestamp ?? 0),
         createdBlock: block.height,
+        nodeCount: 0,
     })
 
     await ctx.store.insert(pool)
