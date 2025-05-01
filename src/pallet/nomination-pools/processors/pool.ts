@@ -46,10 +46,6 @@ export async function updatePool(ctx: CommonContext, block: Block, poolId: strin
         ctx.store.countBy(EraReward, { pool: { id: poolId } }),
     ])
 
-    ctx.log.error(pool)
-    ctx.log.error(poolBalance)
-    ctx.log.error(poolPoints)
-
     pool.points = poolPoints?.supply ?? 0n
     pool.historicalApy = 0
 
@@ -64,6 +60,7 @@ export async function updatePool(ctx: CommonContext, block: Block, poolId: strin
         pool.rate = (activeStake.active * 1000_000_000_000_000_000n) / pool.points
     }
     if (poolPoints) {
+        // TODO: Check this!
         pool.availableStakePoints = pool.capacity - pool.points
         pool.availableStakeAmount = (pool.availableStakePoints * pool.rate) / 1000_000_000_000_000_000n
         pool.saturation = pool.points > 0n ? (poolPoints.supply * 100n) / pool.capacity : 0n

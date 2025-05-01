@@ -16,8 +16,18 @@ import { Sns } from '../../../util/sns'
 import processorConfig from '../../../util/config'
 import * as mappings from '../../index'
 
-async function getMembersBalance(block: Block, poolId: number) {
-    return await mappings.multiTokens.storage.tokenAccounts(block, { collectionId: 1n, tokenId: BigInt(poolId) })
+async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
+    const iterable = await mappings.multiTokens.storage.tokenAccounts(block, {
+        collectionId: 1n,
+        tokenId: BigInt(poolId),
+    })
+
+    const accountMap: Record<string, bigint> = {}
+    for (const [key, value] of iterable) {
+        accountMap[key[2]] = value?.balance ?? 0n
+    }
+
+    return accountMap
 }
 
 export async function eraRewardsProcessed(
@@ -144,25 +154,15 @@ export async function eraRewardsProcessed(
     }
 
     pool.apy = Math.max(apy.toNumber(), 0)
-
     reward.averageApy = apy.toNumber()
 
     const members = await ctx.store.find(PoolMember, { relations: { account: true }, where: { pool: { id: pool.id } } })
-    const memberBalanceMap = groupBy(
-        memberBalances.map((m) => {
-            return {
-                id: typeof m[0][2] === 'bigint' ? '' : m[0][2],
-                balance: m[1]?.balance ?? 0n,
-            }
-        }),
-        'id'
-    )
 
     const rewardPromise = members.map((member) => {
         let points = 0n
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (memberBalanceMap[member.account.id] !== undefined) {
-            points = memberBalanceMap[member.account.id].at(0)?.balance ?? 0n
+        if (memberBalances[member.account.id] !== undefined) {
+            points = memberBalances[member.account.id]
         }
 
         return new PoolMemberRewards({
