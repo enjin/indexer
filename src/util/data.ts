@@ -1,9 +1,9 @@
 import { connectionManager } from '../contexts'
-import { ChainInfo } from '../model'
+import { Config } from '../model'
 
 export class DataService {
     private static instance: DataService | undefined
-    private _chainInfo: ChainInfo | undefined | null
+    private _stateBlock: number | undefined
     private _isInitialized = false
 
     private constructor() {}
@@ -20,15 +20,8 @@ export class DataService {
         if (this._isInitialized) return
 
         const em = await connectionManager()
-        try {
-            this._chainInfo = await em
-                .getRepository(ChainInfo)
-                .createQueryBuilder('chainInfo')
-                .orderBy('chainInfo.blockNumber', 'DESC')
-                .getOne()
-        } catch {
-            this._chainInfo = null
-        }
+        const config = await em.getRepository(Config).createQueryBuilder('config').where({ id: '0' }).getOne()
+        this._stateBlock = config?.stateBlock ?? 0
 
         this._isInitialized = true
     }
@@ -69,23 +62,23 @@ export class DataService {
         }
     }
 
+    async setLastBlockNumber(blockNumber: number): Promise<void> {
+        const em = await connectionManager()
+        await em
+            .getRepository(Config)
+            .createQueryBuilder('config')
+            .insert()
+            .values({ id: '0', stateBlock: blockNumber })
+            .execute()
+
+        this._stateBlock = blockNumber
+    }
+
     get lastBlockNumber(): number {
         if (!this._isInitialized) {
             throw new Error('DataService not initialized')
         }
 
-        return this._chainInfo?.blockNumber ?? 0
-    }
-
-    get chainInfo(): ChainInfo {
-        if (!this._isInitialized || !this._chainInfo) {
-            throw new Error('DataService not initialized')
-        }
-
-        return this._chainInfo
-    }
-
-    set chainInfo(value: ChainInfo) {
-        this._chainInfo = value
+        return this._stateBlock ?? 0
     }
 }

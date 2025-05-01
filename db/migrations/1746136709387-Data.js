@@ -1,7 +1,8 @@
-module.exports = class Data1746109980561 {
-    name = 'Data1746109980561'
+module.exports = class Data1746136709387 {
+    name = 'Data1746136709387'
 
     async up(db) {
+        await db.query(`CREATE TABLE "config" ("id" character varying NOT NULL, "state_block" integer NOT NULL, CONSTRAINT "PK_d0ee79a681413d50b0a4f98cf7b" PRIMARY KEY ("id"))`)
         await db.query(`CREATE TABLE "chain_info" ("id" character varying NOT NULL, "spec_version" integer NOT NULL, "transaction_version" integer NOT NULL, "genesis_hash" text NOT NULL, "block_hash" text NOT NULL, "block_number" integer NOT NULL, "existential_deposit" numeric NOT NULL, "timestamp" TIMESTAMP WITH TIME ZONE NOT NULL, "validator" text, "marketplace" jsonb, CONSTRAINT "PK_1b82ce2acbc16bfc7f84bfdc8ff" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_22cb998efc624a5d40f74361d9" ON "chain_info" ("block_number") `)
         await db.query(`CREATE INDEX "IDX_b183ef768fae584489aba400c6" ON "chain_info" ("validator") `)
@@ -209,6 +210,7 @@ module.exports = class Data1746109980561 {
     }
 
     async down(db) {
+        await db.query(`DROP TABLE "config"`)
         await db.query(`DROP TABLE "chain_info"`)
         await db.query(`DROP INDEX "public"."IDX_22cb998efc624a5d40f74361d9"`)
         await db.query(`DROP INDEX "public"."IDX_b183ef768fae584489aba400c6"`)

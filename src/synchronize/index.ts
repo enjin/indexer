@@ -9,6 +9,7 @@ import * as multiTokens from './multi-tokens'
 import * as system from './system'
 import { chainState } from '../chain-state'
 import config from '../util/config'
+import { DataService } from '../util/data'
 
 interface RuntimeVersion {
     spec_name: string
@@ -62,8 +63,10 @@ export async function syncState(ctx: CommonContext): Promise<void> {
     await multiTokens.collectionAccounts(ctx, block)
     await multiTokens.attributes(ctx, block)
     await system.balances(ctx, block)
-    await chainState(ctx as unknown as CommonContext, block)
     console.timeEnd('syncHeaderChainState')
+
+    const dataService = DataService.getInstance()
+    await dataService.setLastBlockNumber(header.number)
 }
 
 function getProjectRoot(): string {

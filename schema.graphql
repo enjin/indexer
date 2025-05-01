@@ -1,3 +1,9 @@
+type Config @entity {
+  id: ID!
+
+  stateBlock: Int!
+}
+
 type ChainInfo @entity {
   id: ID!
   specVersion: Int!

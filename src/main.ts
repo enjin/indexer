@@ -51,7 +51,7 @@ async function bootstrap() {
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
 
-                    if (block.header.height === 0 && dataService.lastBlockNumber === 0) {
+                    if (block.header.height === 0) {
                         ctx.log.warn(`Starting chain-state sync`)
 
                         await genesisData(ctx, block.header)
@@ -65,14 +65,14 @@ async function bootstrap() {
                         await syncState(ctx as unknown as CommonContext)
                     }
 
-                    if (block.header.height === dataService.lastBlockNumber) {
-                        ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
-
-                        //     // await syncAllBalances(ctx, block.header)
-                        //     // metadataQueue.resume().catch(() => {})
-                        //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
-                        //     QueueUtils.dispatchComputeCollections()
-                    }
+                    // if (block.header.height === dataService.lastBlockNumber) {
+                    //     ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
+                    //
+                    //     // await syncAllBalances(ctx, block.header)
+                    //     // metadataQueue.resume().catch(() => {})
+                    //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
+                    //     QueueUtils.dispatchComputeCollections()
+                    // }
 
                     ctx.log.info(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`

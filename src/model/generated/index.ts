@@ -1,3 +1,4 @@
+export * from "./config.model"
 export * from "./chainInfo.model"
 export * from "./_marketplace"
 export * from "./extrinsic.model"

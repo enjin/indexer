@@ -51,9 +51,6 @@ export async function chainState(
         })
 
         await ctx.store.save<ChainInfo>(state)
-
-        const data = DataService.getInstance()
-        data.chainInfo = state
     } catch (error) {
         Sentry.captureException(error)
     }
