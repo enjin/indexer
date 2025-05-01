@@ -27,6 +27,7 @@ export async function eraPaid(ctx: CommonContext, block: Block, item: EventItem)
     })
 
     await ctx.store.save(era)
+    //  await computeValidators()
 
     return new EventModel({
         id: item.id,
