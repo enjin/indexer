@@ -23,7 +23,10 @@ async function getMembersBalance(block: Block, poolId: number): Promise<Record<s
     })
 
     const accountMap: Record<string, bigint> = {}
-    for (const [key, value] of iterable) {
+    for (const pair of iterable) {
+        const key = pair[0]
+        const value = pair[1]
+
         accountMap[key[2]] = value?.balance ?? 0n
     }
 
