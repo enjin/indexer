@@ -17,17 +17,22 @@ import processorConfig from '../../../util/config'
 import * as mappings from '../../index'
 
 async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
-    const iterable = await mappings.multiTokens.storage.tokenAccounts(block, {
+    const result = await mappings.multiTokens.storage.tokenAccounts(block, {
         collectionId: 1n,
         tokenId: BigInt(poolId),
     })
 
     const accountMap: Record<string, bigint> = {}
-    for (const pair of iterable) {
-        const key = pair[0]
-        const value = pair[1]
 
-        accountMap[key[2]] = value?.balance ?? 0n
+    // Check if result exists and is an array or iterable
+    if (result && typeof result[Symbol.iterator] === 'function') {
+        for (const pair of result) {
+            if (Array.isArray(pair) && pair.length >= 2 && pair[0] && pair[0][2]) {
+                const key = pair[0]
+                const value = pair[1]
+                accountMap[key[2]] = value?.balance ?? 0n
+            }
+        }
     }
 
     return accountMap
