@@ -442,6 +442,9 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
+  joinedPools: [PoolMember] @derivedFrom(field: "account")
+  earlyBirdShares: [EarlyBirdShares] @derivedFrom(field: "account")
+  tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "account")
   identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
 
