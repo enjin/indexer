@@ -1287,15 +1287,6 @@ type PoolMemberRewards @entity {
   points: BigInt!
 }
 
-enum ScoreGrade {
-  A,
-  B,
-  C,
-  D,
-  E,
-  F,
-}
-
 type Validator @entity {
   id: ID!
   account: Account!
@@ -1303,11 +1294,11 @@ type Validator @entity {
   blocked: Boolean
 
   # Computed by job
-  nodeCount28d: [Int!]
-  commission28d: [Int!]
-  blockProduction28d: [Int!]
-  slashes84d: [Boolean!]
-  peerCommission28d: [Int!]
+  nodeCount28d: [Int!]!
+  commission28d: [Int!]!
+  blockProduction28d: [Int!]!
+  slashes84d: [Boolean!]!
+  peerCommission28d: [Int!]!
   grade: ScoreGrade
 
   # Relationships
@@ -1332,6 +1323,15 @@ type EarlyBirdBonus {
   shareCaptureBlock: Int
   lastPaymentId: Int
   totalPaid: BigInt
+}
+
+enum ScoreGrade {
+  A,
+  B,
+  C,
+  D,
+  E,
+  F,
 }
 
 type NominationPool @entity {
@@ -1363,10 +1363,16 @@ type NominationPool @entity {
   validators: [PoolValidator]! @derivedFrom(field: "pool")
   degenToken: Token! @unique
 
+  # Computed by job
+  score: ScoreGrade
+
   # Extras
   totalMembers: Int!
   createdAt: DateTime!
   createdBlock: Int!
+
+  # Extras
+  nodeCount: Int!
 }
 
 type EarlyBirdShares @entity {

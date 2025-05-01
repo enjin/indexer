@@ -60,7 +60,7 @@ export async function updatePool(ctx: CommonContext, block: Block, poolId: strin
         pool.rate = (activeStake.active * 1000_000_000_000_000_000n) / pool.points
     }
     if (poolPoints) {
-        pool.availableStakePoints = pool.capacity - poolPoints.supply
+        pool.availableStakePoints = BigInt(pool.capacity) - BigInt(poolPoints.supply)
         pool.availableStakeAmount = (pool.availableStakePoints * pool.rate) / 1000_000_000_000_000_000n
     }
 

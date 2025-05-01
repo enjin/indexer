@@ -10,6 +10,7 @@ import {EraReward} from "./eraReward.model"
 import {PoolSlash} from "./_poolSlash"
 import {PoolValidator} from "./poolValidator.model"
 import {Token} from "./token.model"
+import {ScoreGrade} from "./_scoreGrade"
 
 @Entity_()
 export class NominationPool {
@@ -85,6 +86,9 @@ export class NominationPool {
     @JoinColumn_()
     degenToken!: Token
 
+    @Column_("varchar", {length: 1, nullable: true})
+    score!: ScoreGrade | undefined | null
+
     @IntColumn_({nullable: false})
     totalMembers!: number
 
@@ -93,4 +97,7 @@ export class NominationPool {
 
     @IntColumn_({nullable: false})
     createdBlock!: number
+
+    @IntColumn_({nullable: false})
+    nodeCount!: number
 }
