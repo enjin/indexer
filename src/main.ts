@@ -26,6 +26,8 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
+    console.log(`Last block on config: ${dataService.lastBlockNumber}`)
+
     processorConfig.run(
         new TypeormDatabase({
             isolationLevel: 'READ COMMITTED',
@@ -212,13 +214,13 @@ async function bootstrap() {
                     // }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                 }
 
