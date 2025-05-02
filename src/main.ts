@@ -16,7 +16,6 @@ import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
 import { calls, events } from './type'
-import * as process from 'node:process'
 
 async function bootstrap() {
     Sentry.init({
@@ -24,15 +23,8 @@ async function bootstrap() {
         tracesSampleRate: 1.0,
     })
 
-    // I'm using a singleton here because we might need this information in other parts
-    // If we do not need it, it would be better to just remove that
     const dataService = DataService.getInstance()
     await dataService.initialize()
-
-    if (process.env.TRUNCATE_DATABASE ?? false) {
-        await dataService.dropAllTables()
-        process.exit(1)
-    }
 
     processorConfig.run(
         new TypeormDatabase({

@@ -24,6 +24,7 @@
     "worker": "node -r dotenv/config lib/worker/index.js",
     "db:migrate": "pnpm exec squid-typeorm-migration apply",
     "db:generate": "pnpm exec squid-typeorm-migration generate",
+    "db:clear": "node -r dotenv/config lib/synchronize/clear.js",
     "schema:all": "pnpm run schema:generate && pnpm run build && pnpm run hasura:regenerate",
     "schema:generate": "pnpm exec squid-typeorm-codegen",
     "hasura:generate": "pnpm exec squid-hasura-configuration apply",

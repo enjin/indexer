@@ -8,12 +8,11 @@ if [ "$ROLE" = "processor" ]; then
     if [ "$TRUNCATE_DATABASE" != "true" ]; then
         echo "Running database migration..."
         pnpm run db:migrate || { echo "Database migration failed"; exit 1; }
+        echo "Starting processor..."
+        pnpm run processor
     else
-        echo "Skipping migration as truncate database is enabled"
+        pnpm run db:clear || exit
     fi
-
-    echo "Starting processor..."
-    pnpm run processor
 elif [ "$ROLE" = "graphql" ]; then
     pnpm run metrics &
     P1=$!
