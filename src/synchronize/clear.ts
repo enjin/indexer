@@ -1,21 +1,22 @@
 import { DataService } from '../util/data'
-import process from 'node:process'
+;(async function clearDatabase() {
+    try {
+        const dataService = DataService.getInstance()
+        await dataService.initialize()
 
-async function main(): Promise<void> {
-    const dataService = DataService.getInstance()
-    await dataService.initialize()
-
-    if (process.env.TRUNCATE_DATABASE ?? false) {
-        await dataService.dropAllTables()
+        if (process.env.TRUNCATE_DATABASE === 'true') {
+            console.log('Truncating database...')
+            await dataService.dropAllTables()
+            process.exit(0)
+        } else {
+            console.log('Database truncation skipped - TRUNCATE_DATABASE flag not set')
+            process.exit(1)
+        }
+    } catch (error) {
+        console.error('Error during database truncation:', error)
         process.exit(1)
     }
-}
-
-void main()
-    .catch((e: unknown) => {
-        console.log(e)
-    })
-    .then(() => {
-        console.log('Finished cleaning the database.')
-    })
-    .finally(() => process.exit(0))
+})().catch((err: unknown) => {
+    console.error('Unhandled error in clear script:', err)
+    process.exit(1)
+})

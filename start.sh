@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-ROLE=${CONTAINER_ROLE:-app}
+ROLE=${CONTAINER_ROLE:-processor}
 TRUNCATE_DATABASE=${TRUNCATE_DATABASE:-false}
 
 if [ "$ROLE" = "processor" ]; then

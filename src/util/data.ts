@@ -20,8 +20,12 @@ export class DataService {
         if (this._isInitialized) return
 
         const em = await connectionManager()
-        const config = await em.getRepository(Config).createQueryBuilder('config').where({ id: '0' }).getOne()
-        this._stateBlock = config?.stateBlock ?? 0
+        try {
+            const config = await em.getRepository(Config).createQueryBuilder('config').where({ id: '0' }).getOne()
+            this._stateBlock = config?.stateBlock ?? 0
+        } catch {
+            this._stateBlock = 0
+        }
 
         this._isInitialized = true
     }
