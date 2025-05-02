@@ -1,5 +1,5 @@
 import { connectionManager } from '../contexts'
-import { Config } from '../model'
+import { Config, ChainInfo } from '../model'
 
 export class DataService {
     private static instance: DataService | undefined
@@ -24,6 +24,17 @@ export class DataService {
             const config = await em.getRepository(Config).createQueryBuilder('config').where({ id: '0' }).getOne()
             this._stateBlock = config?.stateBlock ?? 0
         } catch {
+            const chainInfo = await em
+                .getRepository(ChainInfo)
+                .createQueryBuilder('chainInfo')
+                .orderBy('chainInfo.blockNumber', 'DESC')
+                .getOne()
+                .catch(() => null)
+
+            if (chainInfo) {
+                this._stateBlock = chainInfo.blockNumber
+            }
+
             this._stateBlock = 0
         }
 
