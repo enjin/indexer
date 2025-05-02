@@ -29,7 +29,7 @@ async function bootstrap() {
     const dataService = DataService.getInstance()
     await dataService.initialize()
 
-    if (dataService.lastBlockNumber > 0 && (process.env.TRUNCATE_DATABASE ?? false)) {
+    if (process.env.TRUNCATE_DATABASE ?? false) {
         await dataService.dropAllTables()
         process.exit(1)
     }
