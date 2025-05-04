@@ -80,7 +80,6 @@ export class RefreshMetadataResolver {
         QueueUtils.dispatchComputeMetadata(resource.id, isToken ? 'token' : 'collection', true, allTokens)
 
         if (!isToken) {
-            // console.log('Dispatching refresh metadata')
             QueueUtils.dispatchComputeStats(collectionId)
         }
 

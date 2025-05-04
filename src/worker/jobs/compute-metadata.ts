@@ -37,23 +37,14 @@ async function* tokensInBatch(em: EntityManager, collectionId: string) {
 export async function computeMetadata(job: Job) {
     const con = await connectionManager()
 
-    const result = await con.query(
-        `
-        SELECT count(*) as active_connections 
-        FROM pg_stat_activity 
-        WHERE datname = $1
-      `,
-        [con.connection.options.database]
-    )
-
-    // await job.log(`Active connections: ${parseInt(result[0].active_connections)}`)
-
-    const jobData = job.data
     await con.transaction('READ UNCOMMITTED', async (em) => {
-        let resource: Collection | Token | null
-        let attributes: Attribute[] = []
-        let collectionUriAttribute: Attribute | null = null
         try {
+            const jobData = job.data
+
+            let resource: Collection | Token | null
+            let attributes: Attribute[] = []
+            let collectionUriAttribute: Attribute | null = null
+
             if (jobData.type === 'collection') {
                 ;[resource, attributes] = await Promise.all([
                     em.findOne(Collection, {
@@ -85,7 +76,7 @@ export async function computeMetadata(job: Job) {
             }
 
             if (!resource) {
-                // return done(new Error('Resource not found'), null)
+                await job.log(`Resource ${jobData.resourceId} not found`)
                 return
             }
 
@@ -171,7 +162,7 @@ export async function computeMetadata(job: Job) {
             }
             // done(null, { id: jobData.resourceId })
         } catch (e: any) {
-            // done('message' in e ? e.message : e, null)
+            await job.log(`An error happened while computing the metadata: ${e}`)
         }
     })
 }

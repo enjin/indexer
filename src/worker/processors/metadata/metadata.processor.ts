@@ -23,7 +23,7 @@ export class MetadataProcessor implements ProcessorDef {
     }
 
     async completed(job: Job) {
-        await job.log('Finished computing collections')
+        await job.log('Finished computing metadata')
     }
 }
 
