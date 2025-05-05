@@ -1,10 +1,11 @@
 import { DataService } from '../util/data'
+import config from '../util/config'
 ;(async function clearDatabase() {
     try {
         const dataService = DataService.getInstance()
         await dataService.initialize()
 
-        if (process.env.TRUNCATE_DATABASE === 'true') {
+        if (config.truncateDatabase) {
             console.log('Truncating database...')
             await dataService.dropAllTables()
             process.exit(0)

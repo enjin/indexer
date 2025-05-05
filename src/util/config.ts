@@ -28,6 +28,8 @@ export interface Config {
         }
     }
     wsReconnectDelay: number
+    truncateDatabase: boolean
+    skipSync: boolean
 }
 
 const config: Config = {
@@ -63,6 +65,8 @@ const config: Config = {
         },
     },
     wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
+    truncateDatabase: !!process.env.TRUNCATE_DATABASE,
+    skipSync: !!process.env.SKIP_SYNC,
 }
 
 export default config

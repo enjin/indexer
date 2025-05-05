@@ -7,7 +7,6 @@ import * as path from 'path'
 import { ParentBlockHeader } from '@subsquid/substrate-processor'
 import * as multiTokens from './multi-tokens'
 import * as system from './system'
-import { chainState } from '../chain-state'
 import config from '../util/config'
 import { DataService } from '../util/data'
 
@@ -23,6 +22,11 @@ interface RuntimeVersion {
 }
 
 export async function syncState(ctx: CommonContext): Promise<void> {
+    if (config.skipSync) {
+        ctx.log.info('Skipping initial sync as SKIP_SYNC is set to true')
+        return
+    }
+
     const api = Rpc.getInstance().client
     const header = await api.getFinalizedBlock()
 
