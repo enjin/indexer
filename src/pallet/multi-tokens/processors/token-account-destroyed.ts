@@ -33,11 +33,14 @@ export async function tokenAccountDestroyed(
     })
 
     if (tokenAccount) {
-        const poolMember = await ctx.store.find(PoolMember, {
+        const poolMembers = await ctx.store.find(PoolMember, {
             where: { tokenAccount: { id: tokenAccount.id } },
         })
+        for (const member of poolMembers) {
+            member.tokenAccount = null
+        }
 
-        await ctx.store.remove(poolMember)
+        await ctx.store.save(poolMembers)
         await ctx.store.remove(tokenAccount)
     } else {
         throwFatalError(
