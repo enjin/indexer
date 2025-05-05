@@ -34,8 +34,8 @@ export class RefreshMetadataResolver {
     @Query(() => RefreshMetadataResponse, { nullable: false })
     async refreshMetadata(
         @Arg('collectionId') collectionId: string,
-        @Arg('tokenId', () => BigInteger, { nullable: true }) tokenId: bigint,
-        @Arg('allTokens') allTokens: boolean
+        @Arg('tokenId', () => String, { nullable: true }) tokenId: string,
+        @Arg('allTokens', () => Boolean, { defaultValue: false }) allTokens: boolean
     ): Promise<RefreshMetadataResponse> {
         const manager = await this.tx()
         let resource!: Collection | Token | null
@@ -60,12 +60,7 @@ export class RefreshMetadataResolver {
 
         if (isToken) {
             resource = await manager.findOne(Token, {
-                where: {
-                    tokenId,
-                    collection: {
-                        id: collectionId,
-                    },
-                },
+                where: { id: `${collectionId}-${tokenId}` },
             })
         } else {
             resource = await manager.findOne(Collection, {

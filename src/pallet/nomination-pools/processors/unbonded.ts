@@ -10,6 +10,7 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
     if (!item.extrinsic.call) return undefined
 
     const eventData = mappings.nominationPools.events.unbonded(item)
+
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
     const account = await getOrCreateAccount(ctx, eventData.member)
     const poolMember = await ctx.store.findOneOrFail(PoolMember, {
