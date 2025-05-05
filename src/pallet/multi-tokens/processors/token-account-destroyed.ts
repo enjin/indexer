@@ -1,5 +1,5 @@
 import { throwFatalError } from '../../../util/errors'
-import { CollectionAccount, Event as EventModel, TokenAccount } from '../../../model'
+import { CollectionAccount, Event as EventModel, PoolMember, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import * as mappings from '../../index'
 
@@ -33,6 +33,11 @@ export async function tokenAccountDestroyed(
     })
 
     if (tokenAccount) {
+        const poolMember = await ctx.store.find(PoolMember, {
+            where: { tokenAccount: { id: tokenAccount.id } },
+        })
+
+        await ctx.store.remove(poolMember)
         await ctx.store.remove(tokenAccount)
     } else {
         throwFatalError(

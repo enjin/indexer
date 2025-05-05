@@ -28,8 +28,9 @@ export async function minted(
         return undefined
     }
 
+    await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
+
     if (skipSave) {
-        await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
         return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
