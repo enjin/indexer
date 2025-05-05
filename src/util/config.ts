@@ -43,7 +43,12 @@ const config: Config = {
     },
     erasPerYear: process.env.ERAS_PER_YEAR ? parseInt(process.env.ERAS_PER_YEAR, 10) : 365,
     redis: {
-        db: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
+        db:
+            process.env.REDIS_URL && !isNaN(parseInt(process.env.REDIS_URL.replace('redis://', '').split('/')[1], 10))
+                ? parseInt(process.env.REDIS_URL.replace('redis://', '').split('/')[1], 10)
+                : process.env.REDIS_DB
+                  ? parseInt(process.env.REDIS_DB, 10)
+                  : 0,
         host: process.env.REDIS_URL
             ? process.env.REDIS_URL.replace('redis://', '').split(':')[0]
             : process.env.REDIS_HOST || 'localhost',
