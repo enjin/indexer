@@ -66,13 +66,13 @@ export async function computeMetadata(job: Job) {
 
                 await job.log(`Found resource ${resource?.id}`)
 
-                // collectionUriAttribute = await em.find(Attribute, {
-                //     where: {
-                //         collection: { id: jobData.resourceId.split('-')[0] },
-                //         key: 'uri',
-                //         token: IsNull(),
-                //     },
-                // })
+                collectionUriAttribute = await em.findOne(Attribute, {
+                    where: {
+                        collection: { id: jobData.resourceId.split('-')[0] },
+                        key: 'uri',
+                        token: IsNull(),
+                    },
+                })
 
                 attributes = resource?.attributes ?? []
             }
