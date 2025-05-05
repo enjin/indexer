@@ -55,23 +55,25 @@ export async function computeMetadata(job: Job) {
                     }),
                 ])
             } else {
-                ;[resource, [collectionUriAttribute]] = await Promise.all([
-                    em.findOne(Token, {
-                        where: {
-                            id: jobData.resourceId,
-                        },
-                        relations: {
-                            attributes: true,
-                        },
-                    }),
-                    em.find(Attribute, {
-                        where: {
-                            collection: { id: jobData.resourceId.split('-')[0] },
-                            key: 'uri',
-                            token: IsNull(),
-                        },
-                    }),
-                ])
+                resource = await em.findOne(Token, {
+                    where: {
+                        id: jobData.resourceId,
+                    },
+                    relations: {
+                        attributes: true,
+                    },
+                })
+
+                await job.log(`Found resource ${resource?.id}`)
+
+                // collectionUriAttribute = await em.find(Attribute, {
+                //     where: {
+                //         collection: { id: jobData.resourceId.split('-')[0] },
+                //         key: 'uri',
+                //         token: IsNull(),
+                //     },
+                // })
+
                 attributes = resource?.attributes ?? []
             }
 
