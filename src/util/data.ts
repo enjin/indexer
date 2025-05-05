@@ -41,6 +41,15 @@ export class DataService {
         this._isInitialized = true
     }
 
+    async createMetadataSchema(): Promise<void> {
+        const con = await connectionManager()
+        await con.query('CREATE SCHEMA IF NOT EXISTS metadata;')
+        await con.query(
+            'CREATE TABLE IF NOT EXISTS "metadata"."metadata" (id TEXT PRIMARY KEY, metadata JSONB, uri TEXT, last_updated_at TIMESTAMP);'
+        )
+        await con.query('CREATE INDEX IF NOT EXISTS metadata_uri ON "metadata"."metadata" (uri);')
+    }
+
     async dropAllTables(): Promise<void> {
         const con = await connectionManager()
 

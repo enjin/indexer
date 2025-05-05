@@ -25,6 +25,7 @@ async function bootstrap() {
 
     const dataService = DataService.getInstance()
     await dataService.initialize()
+    await dataService.createMetadataSchema()
 
     console.log(`Last block on config: ${dataService.lastBlockNumber}`)
 
