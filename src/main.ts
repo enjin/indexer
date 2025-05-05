@@ -46,14 +46,6 @@ async function bootstrap() {
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
 
-                    // {"level":2,"time":1746466829556,"ns":"sqd:processor:mapping","msg":"Processing block 1654141, 3 events, 1 calls to process"}
-                    // QueryFailedError: insert or update on table "account_token_event" violates foreign key constraint "FK_98871cac0c6c4e3d02e9dba2197"
-                    // {"level":5,"time":1746466829581,"ns":"sqd:processor","err":{"stack":"QueryFailedError: current transaction is aborted,
-                    // commands ignored until end of transaction block\n
-                    // y-builder/SelectQueryBuilder.js:711:25)\n    at async Object.nominated (/squid/lib/pallet/nomination-pools/processors/nominated.js:44:18)\n
-                    // at async /squid/lib/main.js:187:35\n    at async TypeormDatabase.performUpdates
-                    // "SELECT \"NominationPool\".\"id\" AS \"NominationPool_id\", \"NominationPool\".\"name\" AS \"NominationPool_name\", \"NominationPool\".\"points\" AS \"NominationPool_points\", \"NominationPool\".\"state\" AS \"NominationPool_state\", \"NominationPool\".\"commission\" AS \"NominationPool_commission\", \"NominationPool\".\"capacity\" AS \"NominationPool_capacity\", \"NominationPool\".\"deposit\" AS \"NominationPool_deposit\", \"NominationPool\".\"bonus_cycle\" AS \"NominationPool_bonus_cycle\", \"NominationPool\".\"token_id\" AS \"NominationPool_token_id\", \"NominationPool\".\"balance\" AS \"NominationPool_balance\", \"NominationPool\".\"rate\" AS \"NominationPool_rate\", \"NominationPool\".\"apy\" AS \"NominationPool_apy\", \"NominationPool\".\"historical_apy\" AS \"NominationPool_historical_apy\", \"NominationPool\".\"saturation\" AS \"NominationPool_saturation\", \"NominationPool\".\"available_stake_amount\" AS \"NominationPool_available_stake_amount\", \"NominationPool\".\"available_stake_points\" AS \"NominationPool_available_stake_points\", \"NominationPool\".\"early_bird_bonus\" AS \"NominationPool_early_bird_bonus\", \"NominationPool\".\"slashes\" AS \"NominationPool_slashes\", \"NominationPool\".\"score\" AS \"NominationPool_score\", \"NominationPool\".\"total_members\" AS \"NominationPool_total_members\", \"NominationPool\".\"created_at\" AS \"NominationPool_created_at\", \"NominationPool\".\"created_block\" AS \"NominationPool_created_block\", \"NominationPool\".\"node_count\" AS \"NominationPool_node_count\", \"NominationPool\".\"degen_token_id\" AS \"NominationPool_degen_token_id\" FROM \"nomination_pool\" \"NominationPool\" WHERE ((\"NominationPool\".\"id\" = $1)) LIMIT 1","parameters":["0"],
-
                     if (block.header.height === 0) {
                         ctx.log.warn(`Starting chain-state sync`)
 

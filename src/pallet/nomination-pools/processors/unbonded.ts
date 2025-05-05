@@ -11,6 +11,11 @@ export async function unbonded(ctx: CommonContext, block: Block, item: EventItem
 
     const eventData = mappings.nominationPools.events.unbonded(item)
 
+    // This event should never be emitted but since it is, we are just going to ignore events with balance 0
+    if (eventData.balance === 0n) {
+        return mappings.nominationPools.events.unbondedEventModel(item, eventData)
+    }
+
     const pool = await updatePool(ctx, block, eventData.poolId.toString())
     const account = await getOrCreateAccount(ctx, eventData.member)
     const poolMember = await ctx.store.findOneOrFail(PoolMember, {
