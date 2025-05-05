@@ -11,13 +11,13 @@ export async function nominated(ctx: CommonContext, block: Block, item: EventIte
     const pool = await ctx.store.findOneByOrFail<NominationPool>(NominationPool, { id: eventData.poolId.toString() })
     const accounts = await Promise.all(eventData.validators.map((v) => getOrCreateAccount(ctx, v)))
 
-    accounts.forEach((account) => {
-        const validator = ctx.store.findOne(Validator, {
+    for (const account of accounts) {
+        const validator = await ctx.store.findOne(Validator, {
             where: { account: { id: account.id } },
         })
 
         if (!validator) {
-            ctx.store.insert(
+            await ctx.store.insert(
                 new Validator({
                     id: account.id,
                     account,
@@ -30,7 +30,7 @@ export async function nominated(ctx: CommonContext, block: Block, item: EventIte
                 })
             )
         }
-    })
+    }
 
     // remove existing pool validators
     const existingPoolValidators = await ctx.store.findBy<PoolValidator>(PoolValidator, { pool: { id: pool.id } })
