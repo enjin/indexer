@@ -9,7 +9,6 @@ export async function computeCollections() {
     })
 
     for (const collection of collections) {
-        // await job.log(`Dispatching compute stats and traits for collection #${collection.id}`)
         QueueUtils.dispatchComputeStats(collection.id, 'compute-collections')
         QueueUtils.dispatchComputeTraits(collection.id)
     }
