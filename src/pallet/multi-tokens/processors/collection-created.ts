@@ -48,13 +48,15 @@ export async function collectionCreated(
     }
 
     // TODO: Refactor this later
-    const callData =
-        item.call.name == matrixUtility.batch.name
-            ? await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
-            : mappings.multiTokens.utils.anyCreateCollection(item.call)
-
-    ctx.log.warn(item.call)
-    ctx.log.warn(callData)
+    let callData = undefined
+    if (item.call.name !== matrixUtility.batch.name) {
+        callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
+        ctx.log.warn(item.call)
+        ctx.log.warn(callData)
+    }
+    if (callData === undefined) {
+        callData = await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
+    }
 
     const forceSingleMint =
         'forceSingleMint' in callData.descriptor.policy.mint
