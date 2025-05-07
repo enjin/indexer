@@ -63,6 +63,22 @@ export function anyMint(call: CallItem, collectionId: bigint, tokenId: bigint): 
     return processCall(call)
 }
 
+export async function getCollectionAsCall(call: CallItem, collectionId: bigint): Promise<CreateCollection> {
+    const collection = await mappings.multiTokens.storage.collections(call.block, { collectionId: collectionId })
+    if (!collection) {
+        throw new UnsupportedCallError(call)
+    }
+
+    return {
+        descriptor: {
+            policy: collection.policy,
+            depositor: collection.creationDeposit?.depositor, // Added on v1030
+            explicitRoyaltyCurrencies: [], //collection.explicitRoyaltyCurrencies,
+            attributes: [],
+        },
+    }
+}
+
 function filterBatchCall(call: Batch, collectionId: bigint, tokenId: bigint): Mint | ForceMint {
     for (const c of call.calls) {
         if (c.__kind !== 'MultiTokens') {
