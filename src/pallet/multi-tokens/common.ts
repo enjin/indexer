@@ -69,11 +69,22 @@ export async function getCollectionAsCall(call: CallItem, collectionId: bigint):
         throw new UnsupportedCallError(call)
     }
 
+    const royaltyCurrencies = collection.explicitRoyaltyCurrencies.map((tuple) => {
+        const assetId = tuple[0]
+        return {
+            collectionId: assetId.collectionId,
+            tokenId: assetId.tokenId,
+        }
+    })
+
     return {
         descriptor: {
-            policy: collection.policy,
-            depositor: collection.creationDeposit?.depositor, // Added on v1030
-            explicitRoyaltyCurrencies: [], //collection.explicitRoyaltyCurrencies,
+            policy: {
+                market: collection.policy.market,
+                mint: collection.policy.mint,
+            },
+            depositor: collection.creationDeposit?.depositor,
+            explicitRoyaltyCurrencies: royaltyCurrencies,
             attributes: [],
         },
     }
