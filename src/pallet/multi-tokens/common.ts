@@ -77,6 +77,8 @@ export async function getCollectionAsCall(call: CallItem, collectionId: bigint):
         }
     })
 
+    console.warn(collection)
+
     return {
         descriptor: {
             policy: {

@@ -48,6 +48,9 @@ export async function collectionCreated(
     }
 
     // TODO: Refactor this later
+    ctx.log.warn(item.call.name)
+    ctx.log.warn(item.call)
+
     const callData =
         item.call.name == matrixUtility.batch.name
             ? await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
