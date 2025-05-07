@@ -4,6 +4,7 @@ import {
     Collection,
     FreezeState,
     Royalty,
+    RoyaltyBeneficiary,
     Token,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
@@ -43,8 +44,8 @@ export async function tokens(ctx: CommonContext, block: Block) {
                             }),
                             beneficiaries: data.marketBehavior.value.beneficiaries.map(
                                 (b) =>
-                                    new Royalty({
-                                        beneficiary: b.beneficiary,
+                                    new RoyaltyBeneficiary({
+                                        accountId: b.beneficiary,
                                         percentage: b.percentage,
                                     })
                             ),

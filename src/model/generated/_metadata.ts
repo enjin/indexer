@@ -3,7 +3,6 @@ import * as marshal from "./marshal"
 import {MetadataMedia} from "./_metadataMedia"
 import {MetadataMeta} from "./_metadataMeta"
 import {MetadataOriginType} from "./_metadataOriginType"
-import { createLogger } from '@subsquid/logger'
 
 export class Metadata {
     private _name!: string | undefined | null
@@ -19,9 +18,6 @@ export class Metadata {
     private _attributes!: unknown | undefined | null
 
     constructor(props?: Partial<Omit<Metadata, 'toJSON'>>, json?: any) {
-        const log = createLogger('sqd:graphql')
-        log.info(json)
-
         Object.assign(this, props)
         if (json != null) {
             this._name = json.name == null ? undefined : marshal.string.fromJSON(json.name)

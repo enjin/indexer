@@ -616,7 +616,7 @@ type Royalty {
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
   royalty: Royalty @deprecated
-  beneficiaries: [Royalty]
+  beneficiaries: [RoyaltyBeneficiary]
 }
 
 type TokenBehaviorIsCurrency {
