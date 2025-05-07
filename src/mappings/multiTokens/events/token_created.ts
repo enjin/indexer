@@ -10,6 +10,7 @@ import {
     MultiTokensTokenCreated,
     NativeTokenMetadata,
     Royalty,
+    RoyaltyBeneficiary,
     Token,
     TokenBehaviorHasRoyalty,
     TokenBehaviorIsCurrency,
@@ -88,16 +89,24 @@ async function getBehavior(
 
     const beneficiariesWithAccount = await Promise.all(
         beneficiaries.map(async (v) => {
-            return new Royalty({
-                beneficiary: (await getOrCreateAccount(ctx, v.beneficiary)).id,
+            return new RoyaltyBeneficiary({
+                accountId: (await getOrCreateAccount(ctx, v.beneficiary)).id,
                 percentage: v.percentage,
             })
         })
     )
 
+    let firstBeneficiary: Royalty | null = null
+    if (beneficiariesWithAccount.length > 0) {
+        firstBeneficiary = new Royalty({
+            beneficiary: beneficiariesWithAccount[0].accountId,
+            percentage: beneficiariesWithAccount[0].percentage,
+        })
+    }
+
     return new TokenBehaviorHasRoyalty({
         type: TokenBehaviorType.HasRoyalty,
-        royalty: beneficiariesWithAccount[0],
+        royalty: firstBeneficiary,
         beneficiaries: beneficiariesWithAccount,
     })
 }
