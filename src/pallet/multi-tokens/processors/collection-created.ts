@@ -54,7 +54,7 @@ export async function collectionCreated(
         ctx.log.warn(item.call)
         ctx.log.warn(callData)
     }
-    if (callData === undefined) {
+    if (callData === undefined || !('descriptor' in callData)) {
         callData = await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
     }
 
