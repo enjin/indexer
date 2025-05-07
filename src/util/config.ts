@@ -57,7 +57,7 @@ const config: Config = {
             : process.env.REDIS_PORT
               ? parseInt(process.env.REDIS_PORT, 10)
               : 6379,
-        tls: !!process.env.REDIS_SUPPORTS_TLS,
+        tls: process.env.REDIS_SUPPORTS_TLS === 'true',
     },
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
@@ -70,8 +70,8 @@ const config: Config = {
         },
     },
     wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
-    truncateDatabase: !!process.env.TRUNCATE_DATABASE,
-    skipSync: !!process.env.SKIP_SYNC,
+    truncateDatabase: process.env.TRUNCATE_DATABASE === 'true',
+    skipSync: process.env.SKIP_SYNC === 'true',
 }
 
 export default config

@@ -16,6 +16,7 @@ import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
 import { calls, events } from './type'
+import { createLogger } from '@subsquid/logger'
 
 async function bootstrap() {
     Sentry.init({
@@ -27,7 +28,8 @@ async function bootstrap() {
     await dataService.initialize()
     await dataService.createMetadataSchema()
 
-    console.log(`Last block on config: ${dataService.lastBlockNumber}`)
+    const log = createLogger('sqd:processor')
+    log.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
@@ -47,7 +49,7 @@ async function bootstrap() {
                     const accountTokenEvents: AccountTokenEvent[] = []
 
                     if (block.header.height === 0) {
-                        ctx.log.warn(`Starting chain-state sync`)
+                        ctx.log.info(`Starting chain-state sync`)
 
                         await genesisData(ctx, block.header)
                         await chainState(ctx, block.header)
@@ -215,13 +217,13 @@ async function bootstrap() {
                     // }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        void ctx.store.insert(chunk)
+                        await ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        void ctx.store.insert(chunk)
+                        await ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        void ctx.store.insert(chunk)
+                        await ctx.store.insert(chunk)
                     }
                 }
 
