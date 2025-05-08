@@ -122,7 +122,8 @@ export function listingCreatedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}` }),
+            collectionId: data.listing.makeAssetId.collectionId.toString(),
+            tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             to,
             event,

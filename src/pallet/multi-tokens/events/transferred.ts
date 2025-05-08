@@ -52,7 +52,8 @@ export function transferredEventModel(
             from: new Account({ id: data.from }),
             to: new Account({ id: data.to }),
             event,
-            token,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
         }),
     ]
 }

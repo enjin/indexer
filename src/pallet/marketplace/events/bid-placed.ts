@@ -47,7 +47,8 @@ export function bidPlacedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            collectionId: listing.makeAssetId.collection.id,
+            tokenId: listing.makeAssetId.id,
             from: account,
             event,
         }),

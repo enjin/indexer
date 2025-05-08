@@ -99,7 +99,8 @@ export function listingFilledEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            collectionId: listing.makeAssetId.collection.id,
+            tokenId: listing.makeAssetId.id,
             from: listing.seller,
             to: new Account({ id: data.buyer }),
             event,

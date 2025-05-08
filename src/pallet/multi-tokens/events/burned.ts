@@ -41,7 +41,8 @@ export function burnedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
             from: new Account({ id: data.accountId }),
             event,
         }),

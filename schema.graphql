@@ -78,10 +78,11 @@ type Event @entity {
 
 type AccountTokenEvent @entity {
   id: ID!
-  from: Account!
-  to: Account
+  from: Account! @index
+  to: Account @index
   event: Event!
-  token: Token
+  collectionId: String! @index
+  tokenId: String! @index
 }
 
 type BalancesTransfer {
