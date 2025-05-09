@@ -12,6 +12,7 @@ import { ClaimableCollectionsResolver } from '../claimable-colllections'
 import { SyncCollectionsResolver } from '../sync-collections'
 import { TokenListingsResolver } from '../token-listings'
 import { RefreshTokenInfusionResolver } from '../refresh-token-infusion'
+import { SyncBalancesResolver } from '../sync-balances'
 
 export {
     TokenSalesHistoryResolver,
@@ -28,4 +29,5 @@ export {
     SyncCollectionsResolver,
     TokenListingsResolver,
     RefreshTokenInfusionResolver,
+    SyncBalancesResolver,
 }
