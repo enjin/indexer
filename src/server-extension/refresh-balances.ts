@@ -6,8 +6,6 @@ import { decodeAddress } from '../util/tools'
 export class RefreshBalancesResolver {
     @Query(() => Boolean, { nullable: false })
     async refreshBalances(@Arg('ids', () => [String], { defaultValue: [] }) ids: string[]): Promise<boolean> {
-        console.log(ids)
-
         if (ids.length > 100) {
             throw new Error('Too many accounts to refresh, limit is 100')
         }

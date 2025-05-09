@@ -1,6 +1,13 @@
 import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, TraitsQueue } from './index'
 import { JobsEnum } from './constants'
 
+export function dispatchFetchAllBalances() {
+    console.log('Dispatching fetch all balances job')
+    BalancesQueue.add(JobsEnum.FETCH_BALANCES, { ids: null }).catch(() => {
+        console.log('Failed to dispatch a job on balances queue')
+    })
+}
+
 export function dispatchFetchBalances(ids: string[]) {
     console.log('Dispatching fetch balances job')
     BalancesQueue.add(JobsEnum.FETCH_BALANCES, { ids }).catch(() => {
