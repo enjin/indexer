@@ -16,8 +16,26 @@ import { Sns } from '../../../util/sns'
 import processorConfig from '../../../util/config'
 import * as mappings from '../../index'
 
-async function getMembersBalance(block: Block, poolId: number) {
-    return await mappings.multiTokens.storage.tokenAccounts(block, { collectionId: 1n, tokenId: BigInt(poolId) })
+async function getMembersBalance(block: Block, poolId: number): Promise<Record<string, bigint>> {
+    const result = await mappings.multiTokens.storage.tokenAccounts(block, {
+        collectionId: 1n,
+        tokenId: BigInt(poolId),
+    })
+
+    const accountMap: Record<string, bigint> = {}
+
+    // Check if result exists and is an array or iterable
+    if (result && typeof result[Symbol.iterator] === 'function') {
+        for (const pair of result) {
+            if (Array.isArray(pair) && pair.length >= 2 && pair[0] && pair[0][2]) {
+                const key = pair[0]
+                const value = pair[1]
+                accountMap[key[2]] = value?.balance ?? 0n
+            }
+        }
+    }
+
+    return accountMap
 }
 
 export async function eraRewardsProcessed(
@@ -72,6 +90,7 @@ export async function eraRewardsProcessed(
                 index: eventData.era,
                 startAt: new Date(block.timestamp ?? 0),
                 startBlock: block.height,
+                nodeCount: 0,
             })
         )
     }
@@ -143,26 +162,23 @@ export async function eraRewardsProcessed(
     }
 
     pool.apy = Math.max(apy.toNumber(), 0)
-
     reward.averageApy = apy.toNumber()
 
     const members = await ctx.store.find(PoolMember, { relations: { account: true }, where: { pool: { id: pool.id } } })
-    const memberBalanceMap = groupBy(
-        memberBalances.map((m) => {
-            return {
-                id: typeof m[0][2] === 'bigint' ? '' : m[0][2],
-                balance: m[1]?.balance ?? 0n,
-            }
-        }),
-        'id'
-    )
+
     const rewardPromise = members.map((member) => {
+        let points = 0n
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (memberBalances[member.account.id] !== undefined) {
+            points = memberBalances[member.account.id]
+        }
+
         return new PoolMemberRewards({
             id: `${member.id}-${reward.id}`,
             member,
             reward,
             pool,
-            points: memberBalanceMap[member.account.id].at(0)?.balance ?? 0n,
+            points,
         })
     })
 

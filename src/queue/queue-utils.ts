@@ -1,6 +1,13 @@
 import { BalancesQueue, AccountsQueue, CollectionsQueue, MetadataQueue, TraitsQueue } from './index'
 import { JobsEnum } from './constants'
 
+export function dispatchFetchAllBalances() {
+    console.log('Dispatching fetch all balances job')
+    BalancesQueue.add(JobsEnum.FETCH_BALANCES, { ids: null }).catch(() => {
+        console.log('Failed to dispatch a job on balances queue')
+    })
+}
+
 export function dispatchFetchBalances(ids: string[]) {
     console.log('Dispatching fetch balances job')
     BalancesQueue.add(JobsEnum.FETCH_BALANCES, { ids }).catch(() => {
@@ -40,8 +47,6 @@ export function dispatchComputeCollections() {
 }
 
 export function dispatchComputeStats(id: string, traceId?: string) {
-    console.log(`Dispatching compute stats job for collection ${id} - called by ${traceId}`)
-
     CollectionsQueue.add(
         JobsEnum.COMPUTE_STATS,
         { id },
@@ -55,7 +60,6 @@ export function dispatchComputeStats(id: string, traceId?: string) {
 }
 
 export function dispatchComputeTraits(id: string) {
-    console.log(`Dispatching compute traits job for id ${id}`)
     TraitsQueue.add(
         JobsEnum.COMPUTE_TRAITS,
         { id },
@@ -74,7 +78,6 @@ export function dispatchComputeMetadata(
     force = false,
     allTokens = false
 ) {
-    console.log(`Dispatching compute metadata job for resource ${resourceId}`)
     MetadataQueue.add(
         JobsEnum.COMPUTE_METADATA,
         { resourceId, type, force, allTokens },

@@ -132,12 +132,13 @@ export const indexer_staking_fulfilled_exchange_amount_total = new api.Gauge({
 
 export default async () => {
     const em = await connectionManager()
-    const api = Rpc.getInstance().client.getUnsafeApi()
+    const { api } = await Rpc.getInstance()
 
-    const activeEra = await api.query.Staking.ActiveEra.getValue()
+    const activeEra = await api.query.staking.activeEra()
+
     const [totalIssuance, stakedTotal] = await Promise.all([
-        api.query.Balances.TotalIssuance.getValue(),
-        api.query.Staking.ErasTotalStake.getValue(activeEra?.index ?? 0),
+        api.query.balances.totalIssuance(),
+        api.query.staking.erasTotalStake(activeEra.unwrapOrDefault().index),
     ])
 
     const stakedPct =
@@ -172,8 +173,8 @@ export default async () => {
         ),
         em.query(`SELECT COALESCE(AVG(bonded),0) / POW(10,18) as avg FROM pool_member`),
         //
-        api.query.Staking.CounterForValidators.getValue(),
-        api.query.Staking.ValidatorCount.getValue(),
+        api.query.staking.counterForValidators(),
+        api.query.staking.validatorCount(),
         em.query(`SELECT COUNT(*) as count FROM pool_member WHERE unbonding_eras IS NOT NULL`),
 
         em.query(
@@ -193,8 +194,8 @@ export default async () => {
     indexer_staking_account_pools_avg.set(Number(accountPoolsAvg[0].avg))
     indexer_staking_pool_accounts_avg.set(Number(poolAccountsAvg[0].avg))
     indexer_staking_account_stake_avg.set(Number(accountStakeAvg[0].avg))
-    indexer_staking_validators_total.set(validatorsTotal)
-    indexer_staking_active_validators_total.set(activeValidatorsTotal)
+    indexer_staking_validators_total.set(validatorsTotal.toNumber())
+    indexer_staking_active_validators_total.set(activeValidatorsTotal.toNumber())
     indexer_staking_unbonding_accounts_total.set(Number(unbondingAccountsTotal[0].count))
     indexer_staking_unbonding_amount_total.set(Number(unbondingAmountTotal[0].sum))
     indexer_staking_exchange_offers_total.set(Number(exchangeOffersTotal[0].count))

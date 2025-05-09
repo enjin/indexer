@@ -11,8 +11,8 @@ export class RefreshTokenInfusionResolver {
         })
         tokenId: string
     ): Promise<boolean> {
-        const api = Rpc.getInstance().client.getUnsafeApi()
-        const res: number = await api.query.MultiTokens.Tokens.getValue(['', ''])
+        const { api } = await Rpc.getInstance()
+        const res = await api.query.multiTokens.tokens(['', ''])
         console.log(res)
 
         return true

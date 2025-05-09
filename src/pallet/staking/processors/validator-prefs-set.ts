@@ -15,6 +15,12 @@ export async function validatorPrefsSet(ctx: CommonContext, block: Block, item: 
             account: stash,
             commission: event.prefs.commission,
             blocked: event.prefs.blocked,
+            nodeCount28d: [],
+            commission28d: [],
+            blockProduction28d: [],
+            peerCommission28d: [],
+            slashes84d: [],
+            grade: null,
         })
 
         await ctx.store.insert(newValidator)

@@ -28,6 +28,8 @@ export interface Config {
         }
     }
     wsReconnectDelay: number
+    truncateDatabase: boolean
+    skipSync: boolean
 }
 
 const config: Config = {
@@ -41,7 +43,12 @@ const config: Config = {
     },
     erasPerYear: process.env.ERAS_PER_YEAR ? parseInt(process.env.ERAS_PER_YEAR, 10) : 365,
     redis: {
-        db: process.env.REDIS_DB ? parseInt(process.env.REDIS_DB, 10) : 0,
+        db:
+            process.env.REDIS_URL && !isNaN(parseInt(process.env.REDIS_URL.replace('redis://', '').split('/')[1], 10))
+                ? parseInt(process.env.REDIS_URL.replace('redis://', '').split('/')[1], 10)
+                : process.env.REDIS_DB
+                  ? parseInt(process.env.REDIS_DB, 10)
+                  : 0,
         host: process.env.REDIS_URL
             ? process.env.REDIS_URL.replace('redis://', '').split(':')[0]
             : process.env.REDIS_HOST || 'localhost',
@@ -50,7 +57,7 @@ const config: Config = {
             : process.env.REDIS_PORT
               ? parseInt(process.env.REDIS_PORT, 10)
               : 6379,
-        tls: !!process.env.REDIS_SUPPORTS_TLS,
+        tls: process.env.REDIS_SUPPORTS_TLS === 'true',
     },
     marketplaceUrl: process.env.MARKETPLACE_URL || 'https://nft.io',
     sentryDsn: process.env.SENTRY_DSN,
@@ -63,6 +70,8 @@ const config: Config = {
         },
     },
     wsReconnectDelay: process.env.WS_RECONNECT_DELAY ? parseInt(process.env.WS_RECONNECT_DELAY, 10) : 1000,
+    truncateDatabase: process.env.TRUNCATE_DATABASE === 'true',
+    skipSync: process.env.SKIP_SYNC === 'true',
 }
 
 export default config

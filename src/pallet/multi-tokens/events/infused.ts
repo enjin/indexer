@@ -53,7 +53,8 @@ export function infusedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
             from: new Account({ id: unwrapAccount(data.accountId) }),
             event,
         }),

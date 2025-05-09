@@ -60,11 +60,9 @@ export async function updatePool(ctx: CommonContext, block: Block, poolId: strin
         pool.rate = (activeStake.active * 1000_000_000_000_000_000n) / pool.points
     }
     if (poolPoints) {
-        pool.availableStakePoints = pool.capacity - poolPoints.supply
+        // TODO: Check this!
+        pool.availableStakePoints = pool.capacity - pool.points
         pool.availableStakeAmount = (pool.availableStakePoints * pool.rate) / 1000_000_000_000_000_000n
-    }
-
-    if (poolPoints) {
         pool.saturation = pool.points > 0n ? (poolPoints.supply * 100n) / pool.capacity : 0n
     }
 

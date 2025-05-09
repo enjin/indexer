@@ -65,9 +65,9 @@ export class FuelTanksAccountsResolver {
         })
         account: string
     ): Promise<FuelTanksAccountsResult | null> {
-        const api = Rpc.getInstance().client.getUnsafeApi()
+        const { api } = await Rpc.getInstance()
 
-        const res = await api.query.FuelTanks.Accounts.getValue(fuelTank, account)
+        const res = await api.query.fuelTanks.accounts(fuelTank, account)
 
         const resJson: any = res.toJSON()
 

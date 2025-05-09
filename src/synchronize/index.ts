@@ -7,40 +7,34 @@ import * as path from 'path'
 import { ParentBlockHeader } from '@subsquid/substrate-processor'
 import * as multiTokens from './multi-tokens'
 import * as system from './system'
-import { chainState } from '../chain-state'
 import config from '../util/config'
-
-interface RuntimeVersion {
-    spec_name: string
-    impl_name: string
-    authoring_version: number
-    spec_version: number
-    impl_version: number
-    apis: never
-    transaction_version: number
-    state_version: number
-}
+import { DataService } from '../util/data'
 
 export async function syncState(ctx: CommonContext): Promise<void> {
-    const api = Rpc.getInstance().client
-    const header = await api.getFinalizedBlock()
+    if (config.skipSync) {
+        ctx.log.info('Skipping initial sync as SKIP_SYNC is set to true')
+        return
+    }
 
-    const version: RuntimeVersion = await api.getUnsafeApi().constants.System.Version()
+    const { api } = await Rpc.getInstance()
+    const head = await api.rpc.chain.getFinalizedHead()
+    const headBlock = await api.rpc.chain.getBlock(head)
+    const version = await api.rpc.state.getRuntimeVersion(head)
     const runtimeVersion = {
-        specName: version.spec_name,
-        specVersion: version.spec_version,
-        implName: version.impl_name,
-        implVersion: version.impl_version,
+        specName: version.specName.toString(),
+        specVersion: version.specVersion.toNumber(),
+        implName: version.implName.toString(),
+        implVersion: version.implVersion.toNumber(),
     }
 
     const metadata = await getSpecMetadata(config.chainName, runtimeVersion.specVersion)
     const runtime = new Runtime(runtimeVersion, metadata, undefined, ctx._chain.rpc)
 
     const block: Block = {
-        id: header.hash,
-        height: header.number,
-        hash: header.hash,
-        parentHash: header.parent,
+        id: headBlock.block.hash.toString(),
+        height: headBlock.block.header.number.toNumber(),
+        hash: headBlock.block.hash.toString(),
+        parentHash: headBlock.block.header.parentHash.toString(),
         ...runtimeVersion,
         _runtime: runtime,
         _runtimeOfPrevBlock: runtime,
@@ -53,17 +47,21 @@ export async function syncState(ctx: CommonContext): Promise<void> {
         },
     }
 
-    ctx.log.info(`Syncing block ${header.number} with hash ${header.hash}`)
+    ctx.log.info(
+        `Syncing block ${headBlock.block.header.number.toNumber()} with hash ${headBlock.block.hash.toString()}`
+    )
 
     console.time('syncHeaderChainState')
     await multiTokens.collections(ctx, block)
     await multiTokens.tokens(ctx, block)
-    await multiTokens.tokenAccounts(ctx, block)
     await multiTokens.collectionAccounts(ctx, block)
+    await multiTokens.tokenAccounts(ctx, block)
     await multiTokens.attributes(ctx, block)
     await system.balances(ctx, block)
-    await chainState(ctx as unknown as CommonContext, block)
     console.timeEnd('syncHeaderChainState')
+
+    const dataService = DataService.getInstance()
+    await dataService.setLastBlockNumber(headBlock.block.header.number.toNumber())
 }
 
 function getProjectRoot(): string {

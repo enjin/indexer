@@ -45,13 +45,17 @@ export function buyOrderCompleted(event: EventItem): BuyOrderCompleted {
         })
 }
 
-export function buyOrderCompletedEventModel(item: EventItem, data: BuyOrderCompleted): EventModel | undefined {
+export function buyOrderCompletedEventModel(
+    item: EventItem,
+    data: BuyOrderCompleted,
+    offerId: bigint
+): EventModel | undefined {
     return new EventModel({
         id: item.id,
         name: StakeExchangeBuyOrderCompleted.name,
         extrinsic: item.extrinsic?.id ? new Extrinsic({ id: item.extrinsic.id }) : null,
         data: new StakeExchangeBuyOrderCompleted({
-            offerId: data.offerId,
+            offerId,
             account: data.who,
             tokenId: data.tokenId,
             amount: 0n, // data.amount

@@ -22,20 +22,20 @@ export class Validator {
     @BooleanColumn_({nullable: true})
     blocked!: boolean | undefined | null
 
-    @IntColumn_({array: true, nullable: true})
-    nodeCount28d!: (number)[] | undefined | null
+    @IntColumn_({array: true, nullable: false})
+    nodeCount28d!: (number)[]
 
-    @IntColumn_({array: true, nullable: true})
-    commission28d!: (number)[] | undefined | null
+    @IntColumn_({array: true, nullable: false})
+    commission28d!: (number)[]
 
-    @IntColumn_({array: true, nullable: true})
-    blockProduction28d!: (number)[] | undefined | null
+    @IntColumn_({array: true, nullable: false})
+    blockProduction28d!: (number)[]
 
-    @BooleanColumn_({array: true, nullable: true})
-    slashes84d!: (boolean)[] | undefined | null
+    @BooleanColumn_({array: true, nullable: false})
+    slashes84d!: (boolean)[]
 
-    @IntColumn_({array: true, nullable: true})
-    peerCommission28d!: (number)[] | undefined | null
+    @IntColumn_({array: true, nullable: false})
+    peerCommission28d!: (number)[]
 
     @Column_("varchar", {length: 1, nullable: true})
     grade!: ScoreGrade | undefined | null

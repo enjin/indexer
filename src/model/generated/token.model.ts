@@ -10,6 +10,7 @@ import {Attribute} from "./attribute.model"
 import {Listing} from "./listing.model"
 import {TraitToken} from "./traitToken.model"
 import {TokenRarity} from "./tokenRarity.model"
+import {NominationPool} from "./nominationPool.model"
 import {ListingSale} from "./listingSale.model"
 import {Metadata} from "./_metadata"
 
@@ -89,6 +90,9 @@ export class Token {
 
     @OneToOne_(() => TokenRarity, e => e.token)
     rarity!: TokenRarity | undefined | null
+
+    @OneToOne_(() => NominationPool, e => e.degenToken)
+    nominationPool!: NominationPool | undefined | null
 
     @Index_()
     @ManyToOne_(() => Listing, {nullable: true})

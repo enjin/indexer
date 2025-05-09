@@ -13,6 +13,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import * as mappings from '../../index'
 import { Sns } from '../../../util/sns'
+import { matrixUtility } from '../../../type/calls'
 
 // async function getMarket(ctx: CommonContext, royalty: DefaultRoyalty) {
 //     const account = await getOrCreateAccount(ctx, royalty.beneficiary)
@@ -46,7 +47,15 @@ export async function collectionCreated(
         return mappings.multiTokens.events.collectionCreatedEventModel(item, eventData)
     }
 
-    const callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
+    // TODO: Refactor this later
+    let callData = undefined
+    if (item.call.name !== matrixUtility.batch.name) {
+        callData = mappings.multiTokens.utils.anyCreateCollection(item.call)
+    }
+    if (callData === undefined || !('descriptor' in callData)) {
+        callData = await mappings.multiTokens.utils.getCollectionAsCall(item.call, eventData.collectionId)
+    }
+
     const forceSingleMint =
         'forceSingleMint' in callData.descriptor.policy.mint
             ? callData.descriptor.policy.mint.forceSingleMint

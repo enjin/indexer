@@ -42,6 +42,7 @@ export async function withdrawn(ctx: CommonContext, block: Block, item: EventIte
     await ctx.store.save(poolMember)
 
     if (poolMember.unbondingEras === null && (!poolMember.tokenAccount || poolMember.tokenAccount.balance <= 0n)) {
+        ctx.log.warn(`Deleting pool member ${poolMember.id}`)
         const poolMemberRewards = await ctx.store.findBy<PoolMemberRewards>(PoolMemberRewards, {
             member: { id: poolMember.id },
         })

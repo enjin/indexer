@@ -6,7 +6,7 @@ import { TokenAccount } from './types'
 import { AccountId32 } from '../../common/types'
 import { TokenAccountsV100 } from '../../../type/multi-tokens/storage'
 
-// Probably better to refactor this and just use multiple different functions instead of overloading
+// Probably better to refactor this and use multiple different functions instead of overloading
 export async function tokenAccounts(
     block: Block,
     params: { collectionId: bigint; tokenId: bigint }

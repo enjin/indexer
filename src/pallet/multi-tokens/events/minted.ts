@@ -43,7 +43,8 @@ export function mintedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token,
+            collectionId: data.collectionId.toString(),
+            tokenId: data.tokenId.toString(),
             from: new Account({ id: unwrapAccount(data.issuer) }),
             to: new Account({ id: data.recipient }),
             event,
