@@ -33,6 +33,6 @@ export class AccountTokenEvent {
     @StringColumn_({nullable: false})
     tokenId!: string
 
-    @Column_("jsonb", {transformer: {to: obj => obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventMeta(undefined, obj)}, nullable: false})
-    meta!: AccountTokenEventMeta
+    @Column_("jsonb", {transformer: {to: obj => obj == null ? undefined : obj.toJSON(), from: obj => obj == null ? undefined : new AccountTokenEventMeta(undefined, obj)}, nullable: true})
+    meta!: AccountTokenEventMeta | undefined | null
 }

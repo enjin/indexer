@@ -1,8 +1,8 @@
-module.exports = class Data1747056163516 {
-    name = 'Data1747056163516'
+module.exports = class Data1747058746225 {
+    name = 'Data1747058746225'
 
     async up(db) {
-        await db.query(`ALTER TABLE "account_token_event" ADD "meta" jsonb NOT NULL`)
+        await db.query(`ALTER TABLE "account_token_event" ADD "meta" jsonb`)
         await db.query(`ALTER TABLE "account_token_event" ALTER COLUMN "collection_id" DROP DEFAULT`)
         await db.query(`DROP INDEX "public"."IDX_87fb00cfed5217b47de01f5856"`)
         await db.query(`ALTER TABLE "account_token_event" DROP COLUMN "token_id"`)

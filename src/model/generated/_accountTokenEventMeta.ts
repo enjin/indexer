@@ -4,39 +4,37 @@ import {AccountTokenEventMetaCollection} from "./_accountTokenEventMetaCollectio
 import {AccountTokenEventMetaToken} from "./_accountTokenEventMetaToken"
 
 export class AccountTokenEventMeta {
-    private _collection!: AccountTokenEventMetaCollection
-    private _token!: AccountTokenEventMetaToken
+    private _collection!: AccountTokenEventMetaCollection | undefined | null
+    private _token!: AccountTokenEventMetaToken | undefined | null
 
     constructor(props?: Partial<Omit<AccountTokenEventMeta, 'toJSON'>>, json?: any) {
         Object.assign(this, props)
         if (json != null) {
-            this._collection = new AccountTokenEventMetaCollection(undefined, marshal.nonNull(json.collection))
-            this._token = new AccountTokenEventMetaToken(undefined, marshal.nonNull(json.token))
+            this._collection = json.collection == null ? undefined : new AccountTokenEventMetaCollection(undefined, json.collection)
+            this._token = json.token == null ? undefined : new AccountTokenEventMetaToken(undefined, json.token)
         }
     }
 
-    get collection(): AccountTokenEventMetaCollection {
-        assert(this._collection != null, 'uninitialized access')
+    get collection(): AccountTokenEventMetaCollection | undefined | null {
         return this._collection
     }
 
-    set collection(value: AccountTokenEventMetaCollection) {
+    set collection(value: AccountTokenEventMetaCollection | undefined | null) {
         this._collection = value
     }
 
-    get token(): AccountTokenEventMetaToken {
-        assert(this._token != null, 'uninitialized access')
+    get token(): AccountTokenEventMetaToken | undefined | null {
         return this._token
     }
 
-    set token(value: AccountTokenEventMetaToken) {
+    set token(value: AccountTokenEventMetaToken | undefined | null) {
         this._token = value
     }
 
     toJSON(): object {
         return {
-            collection: this.collection.toJSON(),
-            token: this.token.toJSON(),
+            collection: this.collection == null ? undefined : this.collection.toJSON(),
+            token: this.token == null ? undefined : this.token.toJSON(),
         }
     }
 }
