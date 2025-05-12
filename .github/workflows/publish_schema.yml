@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      APOLLO_VCS_BRANCH: ${{ github.head_ref }}
       APOLLO_VCS_COMMIT: ${{ github.event.pull_request.head.sha }}
     services:
       postgres:
