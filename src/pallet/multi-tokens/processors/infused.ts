@@ -38,5 +38,5 @@ export async function infused(ctx: CommonContext, block: Block, item: EventItem,
         })
     }
 
-    return mappings.multiTokens.events.infusedEventModel(item, data, token)
+    return mappings.multiTokens.events.infusedEventModel(item, data, token.collection, token)
 }

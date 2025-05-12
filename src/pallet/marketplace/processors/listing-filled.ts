@@ -14,6 +14,7 @@ import { getBestListing } from '../../../util/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
+import { QueueUtils } from 'src/queue'
 
 export async function listingFilled(
     ctx: CommonContext,
@@ -78,7 +79,7 @@ export async function listingFilled(
 
     if (listing.data.listingType === ListingType.Offer) {
         await ctx.store.save(listing.takeAssetId)
-        // syncCollectionStats(listing.takeAssetId.collection.id)
+        QueueUtils.dispatchComputeStats(listing.takeAssetId.collection.id)
     } else {
         if (listing.makeAssetId.bestListing?.id === listing.id && event.amountRemaining === 0n) {
             const bestListing = await getBestListing(ctx, listing.makeAssetId.id)
@@ -88,7 +89,7 @@ export async function listingFilled(
             }
         }
         await ctx.store.save(listing.makeAssetId)
-        // syncCollectionStats(listing.makeAssetId.collection.id)
+        QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
     }
 
     if (item.extrinsic) {
@@ -120,5 +121,11 @@ export async function listingFilled(
         })
     }
 
-    return mappings.marketplace.events.listingFilledEventModel(item, event, listing)
+    return mappings.marketplace.events.listingFilledEventModel(
+        item,
+        event,
+        listing,
+        listing.makeAssetId.collection,
+        listing.makeAssetId
+    )
 }

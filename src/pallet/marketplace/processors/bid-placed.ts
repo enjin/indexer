@@ -3,6 +3,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { getBestListing, getOrCreateAccount } from '../../../util/entities'
+import { QueueUtils } from 'src/queue'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function bidPlaced(
@@ -60,7 +61,7 @@ export async function bidPlaced(
         }
     }
 
-    // syncCollectionStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -99,5 +100,12 @@ export async function bidPlaced(
         })
     }
 
-    return mappings.marketplace.events.bidPlacedEventModel(item, event, listing, bidder)
+    return mappings.marketplace.events.bidPlacedEventModel(
+        item,
+        event,
+        listing,
+        bidder,
+        listing.makeAssetId.collection,
+        listing.makeAssetId
+    )
 }

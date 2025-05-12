@@ -10,6 +10,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
+import { QueueUtils } from 'src/queue'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function listingCancelled(
@@ -57,7 +58,7 @@ export async function listingCancelled(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    // syncCollectionStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -82,5 +83,10 @@ export async function listingCancelled(
         })
     }
 
-    return mappings.marketplace.events.listingCancelledEventModel(item, listing)
+    return mappings.marketplace.events.listingCancelledEventModel(
+        item,
+        listing,
+        listing.makeAssetId.collection,
+        listing.makeAssetId
+    )
 }

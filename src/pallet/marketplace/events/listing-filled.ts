@@ -5,6 +5,10 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
     Event as EventModel,
     Extrinsic,
     Listing,
@@ -58,7 +62,9 @@ export function listingFilled(event: EventItem): ListingFilled {
 export function listingFilledEventModel(
     item: EventItem,
     data: ListingFilled,
-    listing: Listing
+    listing: Listing,
+    collection?: Collection,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
@@ -99,11 +105,26 @@ export function listingFilledEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: listing.makeAssetId.collection.id,
-            tokenId: listing.makeAssetId.id,
             from: listing.seller,
             to: new Account({ id: data.buyer }),
             event,
+            collectionId: listing.makeAssetId.collection.id,
+            tokenId: listing.makeAssetId.id,
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }
