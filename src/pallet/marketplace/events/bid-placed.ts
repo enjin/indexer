@@ -5,6 +5,10 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
     Event as EventModel,
     Extrinsic,
     Listing,
@@ -29,7 +33,9 @@ export function bidPlacedEventModel(
     item: EventItem,
     data: BidPlaced,
     listing: Listing,
-    account: Account
+    account: Account,
+    collection?: Collection,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     const event = new EventModel({
         id: item.id,
@@ -47,10 +53,25 @@ export function bidPlacedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: listing.makeAssetId.collection.id,
-            tokenId: listing.makeAssetId.id,
             from: account,
             event,
+            collectionId: listing.makeAssetId.collection.id,
+            tokenId: listing.makeAssetId.id,
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }

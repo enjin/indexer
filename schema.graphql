@@ -76,6 +76,22 @@ type Event @entity {
   tokenId: String @index
 }
 
+type AccountTokenEventMetaToken {
+  nonFungible: Boolean!
+  metadata: Metadata
+  createdAt: DateTime!
+}
+
+type AccountTokenEventMetaCollection {
+  metadata: Metadata
+  createdAt: DateTime!
+}
+
+type AccountTokenEventMeta {
+  collection: AccountTokenEventMetaCollection
+  token: AccountTokenEventMetaToken
+}
+
 type AccountTokenEvent @entity {
   id: ID!
   from: Account! @index
@@ -83,6 +99,7 @@ type AccountTokenEvent @entity {
   event: Event!
   collectionId: String! @index
   tokenId: String! @index
+  meta: AccountTokenEventMeta!
 }
 
 type BalancesTransfer {

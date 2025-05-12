@@ -5,6 +5,10 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
     CounterOfferResponse,
     CounterOfferResponseAccept,
     CounterOfferResponseCounter,
@@ -50,7 +54,9 @@ export function counterOfferAnsweredEventModel(
     item: EventItem,
     data: CounterOfferAnswered,
     listing: Listing,
-    account: Account
+    account: Account,
+    collection?: Collection,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     let response: CounterOfferResponse
 
@@ -88,10 +94,25 @@ export function counterOfferAnsweredEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: listing.takeAssetId.collection.id,
-            tokenId: listing.takeAssetId.id,
             from: account,
             event,
+            collectionId: listing.takeAssetId.collection.id,
+            tokenId: listing.takeAssetId.id,
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }

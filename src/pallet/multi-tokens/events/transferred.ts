@@ -5,6 +5,10 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
     Event as EventModel,
     Extrinsic,
     MultiTokensTransferred,
@@ -26,6 +30,7 @@ export function transferred(event: EventItem): Transferred {
 export function transferredEventModel(
     item: EventItem,
     data: Transferred,
+    collection?: Collection,
     token?: Token
 ): [EventModel, AccountTokenEvent] | EventModel | undefined {
     const event = new EventModel({
@@ -54,6 +59,21 @@ export function transferredEventModel(
             event,
             collectionId: data.collectionId.toString(),
             tokenId: data.tokenId.toString(),
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }

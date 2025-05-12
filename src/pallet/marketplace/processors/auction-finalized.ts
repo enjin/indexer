@@ -11,6 +11,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
+import { QueueUtils } from 'src/queue'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 
 export async function auctionFinalized(
@@ -68,7 +69,7 @@ export async function auctionFinalized(
     }
     await ctx.store.save(listing.makeAssetId)
 
-    // syncCollectionStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
@@ -101,5 +102,11 @@ export async function auctionFinalized(
         })
     }
 
-    return mappings.marketplace.events.auctionFinalizedEventModel(item, event, listing)
+    return mappings.marketplace.events.auctionFinalizedEventModel(
+        item,
+        event,
+        listing,
+        listing.makeAssetId.collection,
+        listing.makeAssetId
+    )
 }

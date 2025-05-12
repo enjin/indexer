@@ -5,6 +5,10 @@ import { match } from 'ts-pattern'
 import {
     Account,
     AccountTokenEvent,
+    AccountTokenEventMeta,
+    AccountTokenEventMetaCollection,
+    AccountTokenEventMetaToken,
+    Collection,
     Event as EventModel,
     Extrinsic,
     MarketplaceListingCreated,
@@ -79,7 +83,9 @@ export function listingCreated(event: EventItem): ListingCreated {
 
 export function listingCreatedEventModel(
     item: EventItem,
-    data: ListingCreated
+    data: ListingCreated,
+    collection?: Collection,
+    token?: Token
 ): [EventModel, AccountTokenEvent] | undefined {
     let event: EventModel
 
@@ -122,11 +128,26 @@ export function listingCreatedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            collectionId: data.listing.makeAssetId.collectionId.toString(),
-            tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
             from: new Account({ id: 'creator' in data.listing ? data.listing.creator : data.listing.seller }),
             to,
             event,
+            collectionId: data.listing.makeAssetId.collectionId.toString(),
+            tokenId: `${data.listing.makeAssetId.collectionId}-${data.listing.makeAssetId.tokenId}`,
+            meta: new AccountTokenEventMeta({
+                collection: !collection
+                    ? undefined
+                    : new AccountTokenEventMetaCollection({
+                          metadata: collection.metadata,
+                          createdAt: collection.createdAt,
+                      }),
+                token: !token
+                    ? undefined
+                    : new AccountTokenEventMetaToken({
+                          nonFungible: token.nonFungible,
+                          metadata: token.metadata,
+                          createdAt: token.createdAt,
+                      }),
+            }),
         }),
     ]
 }
