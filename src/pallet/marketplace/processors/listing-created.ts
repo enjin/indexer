@@ -142,7 +142,7 @@ export async function listingCreated(
 
     await Promise.all([ctx.store.insert(listing), ctx.store.insert(listingStatus), ctx.store.save(makeAssetId)])
 
-    QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
+    //QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
