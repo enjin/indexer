@@ -11,23 +11,24 @@ export interface SystemAccount {
     }
 }
 
-export async function fetchBalances(ids: string[]): Promise<SystemAccount[]> {
+export async function fetchAllBalances(): Promise<SystemAccount[]> {
     const accounts: SystemAccount[] = []
-    const api = Rpc.getInstance().client.getUnsafeApi()
+    const { api } = await Rpc.getInstance()
 
-    // We could use a multi query but that would be error-prone
-    for (const id of ids) {
-        const {
-            nonce,
-            data: { free, reserved, frozen },
-        } = await api.query.System.Account.getValue(id)
+    const balances = await api.query.system.account.entries()
+    for (const [key, value] of balances) {
+        const balance = api.createType('FrameSystemAccountInfo', value)
+        if (!balance) {
+            continue
+        }
+
         accounts.push({
-            address: id,
-            nonce: nonce,
+            address: key.args[0].toString(),
+            nonce: balance.nonce.toNumber(),
             balance: {
-                free: `0x${free.toString(16)}`,
-                reserved: `0x${reserved.toString(16)}`,
-                frozen: `0x${frozen.toString(16)}`,
+                free: balance.data.free.toHex(),
+                reserved: balance.data.reserved.toHex(),
+                frozen: balance.data.frozen.toHex(),
             },
         })
     }

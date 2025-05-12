@@ -16,7 +16,7 @@ import { syncState } from './synchronize'
 import { callHandler, eventHandler } from './processor.handler'
 import { DataService } from './util/data'
 import { calls, events } from './type'
-import * as process from 'node:process'
+import { createLogger } from '@subsquid/logger'
 
 async function bootstrap() {
     Sentry.init({
@@ -24,15 +24,12 @@ async function bootstrap() {
         tracesSampleRate: 1.0,
     })
 
-    // I'm using a singleton here because we might need this information in other parts
-    // If we do not need it, it would be better to just remove that
     const dataService = DataService.getInstance()
     await dataService.initialize()
+    await dataService.createMetadataSchema()
 
-    if (dataService.lastBlockNumber > 0 && (process.env.TRUNCATE_DATABASE ?? false)) {
-        await dataService.dropAllTables()
-        process.exit(1)
-    }
+    const log = createLogger('sqd:processor')
+    log.info(`Last block on config: ${dataService.lastBlockNumber}`)
 
     processorConfig.run(
         new TypeormDatabase({
@@ -51,8 +48,8 @@ async function bootstrap() {
                     const eventsCollection: Event[] = []
                     const accountTokenEvents: AccountTokenEvent[] = []
 
-                    if (block.header.height === 0 && dataService.lastBlockNumber === 0) {
-                        ctx.log.warn(`Starting chain-state sync`)
+                    if (block.header.height === 0) {
+                        ctx.log.info(`Starting chain-state sync`)
 
                         await genesisData(ctx, block.header)
                         await chainState(ctx, block.header)
@@ -65,14 +62,14 @@ async function bootstrap() {
                         await syncState(ctx as unknown as CommonContext)
                     }
 
-                    if (block.header.height === dataService.lastBlockNumber) {
-                        ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
-
-                        //     // await syncAllBalances(ctx, block.header)
-                        //     // metadataQueue.resume().catch(() => {})
-                        //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
-                        //     QueueUtils.dispatchComputeCollections()
-                    }
+                    // if (block.header.height === dataService.lastBlockNumber) {
+                    //     ctx.log.error('WE HAVE REACHED THIS NOW WE WILL START TO SAVE SHIT!')
+                    //
+                    //     // await syncAllBalances(ctx, block.header)
+                    //     // metadataQueue.resume().catch(() => {})
+                    //     ctx.log.warn('WE ARE CALLING DISPATCH COMPUTE COLLECTIONS')
+                    //     QueueUtils.dispatchComputeCollections()
+                    // }
 
                     ctx.log.info(
                         `Processing block ${block.header.height}, ${block.events.length} events, ${block.calls.length} calls to process`
@@ -214,17 +211,20 @@ async function bootstrap() {
                         }
                     }
 
-                    // if (block.header.height > config.lastBlockHeight) {
-                    //     p.balances.processors.addAccountsToSet(Array.from(signers))
-                    //     await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
-                    // }
+                    if (block.header.height > dataService.lastBlockNumber) {
+                        p.balances.processors.addAccountsToSet(Array.from(signers))
+                        await p.balances.processors.saveAccounts(ctx as unknown as CommonContext, block.header)
+                    }
 
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(extrinsics, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(eventsCollection, 1000).forEach((chunk) => ctx.store.insert(chunk))
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                    _.chunk(accountTokenEvents, 1000).forEach((chunk) => ctx.store.insert(chunk))
+                    for (const chunk of _.chunk(extrinsics, 1000)) {
+                        void ctx.store.insert(chunk)
+                    }
+                    for (const chunk of _.chunk(eventsCollection, 1000)) {
+                        void ctx.store.insert(chunk)
+                    }
+                    for (const chunk of _.chunk(accountTokenEvents, 1000)) {
+                        void ctx.store.insert(chunk)
+                    }
                 }
 
                 const lastBlock = ctx.blocks[ctx.blocks.length - 1].header

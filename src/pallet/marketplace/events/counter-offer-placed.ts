@@ -69,7 +69,8 @@ export function counterOfferPlacedEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.takeAssetId.id }),
+            collectionId: listing.takeAssetId.collection.id,
+            tokenId: listing.takeAssetId.id,
             from: account,
             event,
         }),

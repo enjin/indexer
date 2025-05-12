@@ -21,6 +21,7 @@ export async function collectionAccountCreated(
 
     if (!collectionAccount) {
         const account = await getOrCreateAccount(ctx, data.accountId)
+
         const newCollectionAccount = new CollectionAccount({
             id: `${data.collectionId}-${data.accountId}`,
             isFrozen: false,

@@ -6,6 +6,9 @@ import {Collection} from "./collection.model"
 import {CollectionAccount} from "./collectionAccount.model"
 import {TokenAccount} from "./tokenAccount.model"
 import {AccountTokenEvent} from "./accountTokenEvent.model"
+import {PoolMember} from "./poolMember.model"
+import {EarlyBirdShares} from "./earlyBirdShares.model"
+import {StakeExchangeTokenFilter} from "./stakeExchangeTokenFilter.model"
 import {Identity} from "./identity.model"
 import {IdentityRegistrar} from "./identityRegistrar.model"
 
@@ -42,6 +45,15 @@ export class Account {
 
     @OneToMany_(() => AccountTokenEvent, e => e.from)
     tokenEvents!: AccountTokenEvent[]
+
+    @OneToMany_(() => PoolMember, e => e.account)
+    joinedPools!: PoolMember[]
+
+    @OneToMany_(() => EarlyBirdShares, e => e.account)
+    earlyBirdShares!: EarlyBirdShares[]
+
+    @OneToOne_(() => StakeExchangeTokenFilter, e => e.account)
+    tokenFilter!: StakeExchangeTokenFilter | undefined | null
 
     @OneToOne_(() => Identity, e => e.account)
     identity!: Identity | undefined | null

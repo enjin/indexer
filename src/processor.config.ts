@@ -24,6 +24,14 @@ const commonEvents: string[] = [
 ]
 
 const ignoreEvents: string[] = [
+    events.staking.bonded.name,
+    events.staking.unbonded.name,
+    events.staking.payoutStarted.name,
+    events.staking.rewarded.name,
+    events.staking.stakersElected.name,
+    events.staking.withdrawn.name,
+    events.imOnline.allGood.name,
+    events.imOnline.heartbeatReceived.name,
     events.claims.ethereumBlocksProcessed.name,
     events.fuelTanks.callDispatched.name,
     events.fuelTanks.dispatchFailed.name,

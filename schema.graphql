@@ -1,3 +1,9 @@
+type Config @entity {
+  id: ID!
+
+  stateBlock: Int!
+}
+
 type ChainInfo @entity {
   id: ID!
   specVersion: Int!
@@ -72,10 +78,11 @@ type Event @entity {
 
 type AccountTokenEvent @entity {
   id: ID!
-  from: Account!
-  to: Account
+  from: Account! @index
+  to: Account @index
   event: Event!
-  token: Token
+  collectionId: String! @index
+  tokenId: String! @index
 }
 
 type BalancesTransfer {
@@ -442,6 +449,9 @@ type Account @entity {
   collectionAccounts: [CollectionAccount] @derivedFrom(field: "account")
   tokenAccounts: [TokenAccount] @derivedFrom(field: "account")
   tokenEvents: [AccountTokenEvent] @derivedFrom(field: "from")
+  joinedPools: [PoolMember] @derivedFrom(field: "account")
+  earlyBirdShares: [EarlyBirdShares] @derivedFrom(field: "account")
+  tokenFilter: StakeExchangeTokenFilter @derivedFrom(field: "account")
   identity: Identity @derivedFrom(field: "account")
   registrar: IdentityRegistrar @derivedFrom(field: "account")
 
@@ -607,7 +617,7 @@ type Royalty {
 type TokenBehaviorHasRoyalty {
   type: TokenBehaviorType!
   royalty: Royalty @deprecated
-  beneficiaries: [Royalty]
+  beneficiaries: [RoyaltyBeneficiary]
 }
 
 type TokenBehaviorIsCurrency {
@@ -656,6 +666,7 @@ type Token @entity {
   offers: [Listing] @derivedFrom(field: "takeAssetId")
   traits: [TraitToken] @derivedFrom(field: "token")
   rarity: TokenRarity @derivedFrom(field: "token")
+  nominationPool: NominationPool @derivedFrom(field: "degenToken")
 
   bestListing: Listing
   recentListing: Listing
@@ -1283,15 +1294,6 @@ type PoolMemberRewards @entity {
   points: BigInt!
 }
 
-enum ScoreGrade {
-  A,
-  B,
-  C,
-  D,
-  E,
-  F,
-}
-
 type Validator @entity {
   id: ID!
   account: Account!
@@ -1299,11 +1301,11 @@ type Validator @entity {
   blocked: Boolean
 
   # Computed by job
-  nodeCount28d: [Int!]
-  commission28d: [Int!]
-  blockProduction28d: [Int!]
-  slashes84d: [Boolean!]
-  peerCommission28d: [Int!]
+  nodeCount28d: [Int!]!
+  commission28d: [Int!]!
+  blockProduction28d: [Int!]!
+  slashes84d: [Boolean!]!
+  peerCommission28d: [Int!]!
   grade: ScoreGrade
 
   # Relationships
@@ -1328,6 +1330,15 @@ type EarlyBirdBonus {
   shareCaptureBlock: Int
   lastPaymentId: Int
   totalPaid: BigInt
+}
+
+enum ScoreGrade {
+  A,
+  B,
+  C,
+  D,
+  E,
+  F,
 }
 
 type NominationPool @entity {
@@ -1359,10 +1370,16 @@ type NominationPool @entity {
   validators: [PoolValidator]! @derivedFrom(field: "pool")
   degenToken: Token! @unique
 
+  # Computed by job
+  score: ScoreGrade
+
   # Extras
   totalMembers: Int!
   createdAt: DateTime!
   createdBlock: Int!
+
+  # Extras
+  nodeCount: Int!
 }
 
 type EarlyBirdShares @entity {

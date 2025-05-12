@@ -19,11 +19,11 @@ export class MetadataProcessor implements ProcessorDef {
             return
         }
 
-        await job.log('Failed to compute collections')
+        await job.log('Failed to compute metadata')
     }
 
     async completed(job: Job) {
-        await job.log('Finished computing collections')
+        await job.log('Finished computing metadata')
     }
 }
 

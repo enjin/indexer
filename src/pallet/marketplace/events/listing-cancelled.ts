@@ -58,7 +58,8 @@ export function listingCancelledEventModel(
         event,
         new AccountTokenEvent({
             id: item.id,
-            token: new Token({ id: listing.makeAssetId.id }),
+            collectionId: listing.makeAssetId.collection.id,
+            tokenId: listing.makeAssetId.id,
             from: listing.seller,
             event,
         }),

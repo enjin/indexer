@@ -1,5 +1,5 @@
 import { throwFatalError } from '../../../util/errors'
-import { AccountTokenEvent, Event as EventModel, Token, TokenAccount } from '../../../model'
+import { AccountTokenEvent, Event as EventModel, PoolMember, Token, TokenAccount } from '../../../model'
 import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getOrCreateAccount } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
@@ -28,8 +28,9 @@ export async function minted(
         return undefined
     }
 
+    await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
+
     if (skipSave) {
-        await Promise.all([getOrCreateAccount(ctx, data.recipient), getOrCreateAccount(ctx, data.issuer)])
         return mappings.multiTokens.events.mintedEventModel(item, data, token)
     }
 
@@ -59,6 +60,18 @@ export async function minted(
     tokenAccount.totalBalance += data.amount
     tokenAccount.updatedAt = new Date(block.timestamp ?? 0)
     promises.push(ctx.store.save(tokenAccount))
+
+    if (data.collectionId === 1n) {
+        // This means the user got sENJ in that case we should associate the tokenAccount to PoolMember again if it is not
+        const poolMember = await ctx.store.findOneBy<PoolMember>(PoolMember, {
+            id: `${data.tokenId}-${data.recipient}`,
+        })
+        if (poolMember) {
+            ctx.log.warn(`Adding tokenAccount ${tokenAccount.id} to poolMember ${poolMember.id}.`)
+            poolMember.tokenAccount = tokenAccount
+            await ctx.store.save(poolMember)
+        }
+    }
 
     await Promise.all(promises)
 

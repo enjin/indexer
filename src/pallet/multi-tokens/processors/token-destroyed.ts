@@ -48,8 +48,7 @@ export async function tokenDestroyed(
         listingTake,
         royaltyCurrencies,
         traitTokens,
-        tokenRairty,
-        accountTokenEvents,
+        tokenRarity,
         attributes,
     ] = await Promise.all([
         ctx.store.find(ListingSale, {
@@ -123,13 +122,6 @@ export async function tokenDestroyed(
                 },
             },
         }),
-        ctx.store.find(AccountTokenEvent, {
-            where: {
-                token: {
-                    id: token.id,
-                },
-            },
-        }),
         ctx.store.find(Attribute, {
             where: {
                 token: {
@@ -139,11 +131,6 @@ export async function tokenDestroyed(
         }),
     ])
 
-    const updatedEvent = accountTokenEvents.map((event) => {
-        event.token = null
-        return event
-    })
-
     await Promise.all([
         ctx.store.remove(listingSales),
         ctx.store.remove(listingStatus),
@@ -151,9 +138,8 @@ export async function tokenDestroyed(
         ctx.store.remove(listingTake),
         ctx.store.remove(royaltyCurrencies),
         ctx.store.remove(traitTokens),
-        ctx.store.remove(tokenRairty),
+        ctx.store.remove(tokenRarity),
         ctx.store.remove(attributes),
-        ctx.store.save(updatedEvent),
     ])
 
     await ctx.store.remove(token)
