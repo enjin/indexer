@@ -10,8 +10,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { getBestListing } from '../../../util/entities'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
-import { QueueUtils } from 'src/queue'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
+import { QueueUtils } from '../../../queue'
 
 export async function listingCancelled(
     ctx: CommonContext,

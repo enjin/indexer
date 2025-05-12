@@ -3,8 +3,7 @@ import { Block, CommonContext, EventItem } from '../../../contexts'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
 import { getBestListing, getOrCreateAccount } from '../../../util/entities'
-import { QueueUtils } from 'src/queue'
-// import { syncCollectionStats } from '../../jobs/collection-stats'
+import { QueueUtils } from '../../../queue'
 
 export async function bidPlaced(
     ctx: CommonContext,

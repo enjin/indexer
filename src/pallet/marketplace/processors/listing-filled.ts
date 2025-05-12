@@ -14,7 +14,7 @@ import { getBestListing } from '../../../util/entities'
 // import { syncCollectionStats } from '../../jobs/collection-stats'
 import { Sns } from '../../../util/sns'
 import * as mappings from '../../index'
-import { QueueUtils } from 'src/queue'
+import { QueueUtils } from '../../../queue'
 
 export async function listingFilled(
     ctx: CommonContext,
