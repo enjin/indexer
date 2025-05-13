@@ -130,6 +130,9 @@ export async function listingCreated(
         createdAt: new Date(block.timestamp ?? 0),
     })
 
+    await ctx.store.save(listing)
+    await ctx.store.save(listingStatus)
+
     if (event.listing.data.__kind !== 'Offer') {
         if (
             (makeAssetId.bestListing && makeAssetId.bestListing.highestPrice >= listing.price) ||
@@ -140,8 +143,6 @@ export async function listingCreated(
         makeAssetId.recentListing = listing
     }
 
-    await ctx.store.save(listing)
-    await ctx.store.save(listingStatus)
     await ctx.store.save(makeAssetId)
 
     QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
