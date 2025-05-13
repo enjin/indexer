@@ -6,8 +6,6 @@ const floorQuery = `SELECT MIN("listing"."highest_price") AS floor_price FROM "l
 export async function computeStats(collectionId: string) {
     const em = await connectionManager()
 
-    return
-
     const promises = [
         em
             .createQueryBuilder()
