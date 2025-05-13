@@ -217,13 +217,13 @@ async function bootstrap() {
                     }
 
                     for (const chunk of _.chunk(extrinsics, 1000)) {
-                        await ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(eventsCollection, 1000)) {
-                        await ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                     for (const chunk of _.chunk(accountTokenEvents, 1000)) {
-                        await ctx.store.insert(chunk)
+                        void ctx.store.insert(chunk)
                     }
                 }
 
