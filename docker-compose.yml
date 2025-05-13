@@ -14,8 +14,20 @@ services:
     shm_size: 1gb
     command: [
       "postgres",
-      "-c", "max_connections=200"
+      "-c", "max_connections=200",
+      "-c", "shared_preload_libraries=pg_stat_statements"
     ]
+
+  indexer_analysis:
+    container_name: indexer_analysis
+    image: quay.io/pganalyze/collector:stable
+    restart: unless-stopped
+    environment:
+      PGA_API_KEY: ${PGA_API_KEY}
+      DB_HOST: ${PGA_DB_HOST}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASS}
 
   indexer_redis:
     container_name: indexer_redis
