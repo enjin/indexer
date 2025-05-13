@@ -33,7 +33,7 @@ async function bootstrap() {
 
     processorConfig.run(
         new TypeormDatabase({
-            isolationLevel: 'SERIALIZABLE',
+            isolationLevel: 'READ COMMITTED',
             supportHotBlocks: true,
         }),
         async (ctx) => {
