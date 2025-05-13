@@ -57,7 +57,7 @@ export async function listingRemovedUnderMinimum(
         await ctx.store.save(listing.makeAssetId)
     }
 
-    //QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({

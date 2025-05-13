@@ -60,7 +60,7 @@ export async function bidPlaced(
         }
     }
 
-    //QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
+    QueueUtils.dispatchComputeStats(listing.makeAssetId.collection.id)
 
     if (item.extrinsic) {
         await Sns.getInstance().send({
