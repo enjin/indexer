@@ -140,8 +140,8 @@ export async function listingCreated(
         makeAssetId.recentListing = listing
     }
 
-    await ctx.store.insert(listing)
-    await ctx.store.insert(listingStatus)
+    await ctx.store.save(listing)
+    await ctx.store.save(listingStatus)
     await ctx.store.save(makeAssetId)
 
     QueueUtils.dispatchComputeStats(event.listing.makeAssetId.collectionId.toString())
