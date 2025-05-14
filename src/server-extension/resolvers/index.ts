@@ -13,6 +13,7 @@ import { SyncCollectionsResolver } from '../sync-collections'
 import { TokenListingsResolver } from '../token-listings'
 import { RefreshTokenInfusionResolver } from '../refresh-token-infusion'
 import { SyncBalancesResolver } from '../sync-balances'
+import { AccountsTokensResolver } from '../accounts-tokens'
 
 export {
     TokenSalesHistoryResolver,
@@ -30,4 +31,5 @@ export {
     TokenListingsResolver,
     RefreshTokenInfusionResolver,
     SyncBalancesResolver,
+    AccountsTokensResolver,
 }
