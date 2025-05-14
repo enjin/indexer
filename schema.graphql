@@ -720,7 +720,7 @@ type TokenLock {
   amount: BigInt!
 }
 
-type TokenAccount @entity {
+type TokenAccount @entity @index(fields: ["account", "token"]) {
   id: ID!
 
   # Storage defaults
