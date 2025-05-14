@@ -61,6 +61,8 @@ class MyTokenArgs {
 
     @Field(() => String, { nullable: true })
     query?: string
+    @Field(() => BigInteger, { nullable: true })
+    collectionId?: typeof BigInteger
 }
 
 @ObjectType()
@@ -163,7 +165,9 @@ export class MyTokensResolver {
     constructor(private tx: () => Promise<EntityManager>) {}
 
     @Query(() => MyTokensResponse)
-    async myTokens(@Args() { accountId, limit, offset, order, orderBy, query }: MyTokenArgs): Promise<MyTokensResponse> {
+    async myTokens(
+        @Args() { accountId, collectionId, limit, offset, order, orderBy, query }: MyTokenArgs
+    ): Promise<MyTokensResponse> {
         const manager = await this.tx()
 
         const builder = manager
@@ -182,8 +186,13 @@ export class MyTokensResolver {
             .skip(offset)
             .limit(limit)
 
+        // Apply collection filter if provided
+        if (collectionId) {
+            builder.andWhere('collection.collectionId = :collectionId', { collectionId })
+        }
+
         if (query) {
-            builder.where("collection.metadata->>'name' ILIKE :query OR token.metadata->>'name' ILIKE :query", {
+            builder.andWhere("collection.metadata->>'name' ILIKE :query OR token.metadata->>'name' ILIKE :query", {
                 query: `%${query}%`,
             })
         }

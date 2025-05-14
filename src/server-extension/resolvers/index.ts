@@ -5,6 +5,7 @@ import { TokenSalesHistoryResolver } from './token_sales_history'
 import { VerifyMessageResolver } from './verify_message'
 import { TopCollectionResolver } from './top_collections'
 import { MyTokensResolver } from './my_tokens'
+import { AccountsTokensResolver } from './accounts_tokens'
 import { ClaimsAccountNonceResolver } from './claims_account_nonce'
 import { RefreshCollectionsResolver } from './refresh_collections'
 import { FuelTanksAccountsResolver } from './fueltanks-accounts'
@@ -24,6 +25,7 @@ export {
     RefreshCollectionsResolver,
     TopCollectionResolver,
     MyTokensResolver,
+    AccountsTokensResolver,
     ClaimsAccountNonceResolver,
     SyncCollectionsResolver,
     TokenListingsResolver,
