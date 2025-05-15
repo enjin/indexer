@@ -187,7 +187,7 @@ export class AccountsTokensResolver {
                 'token_account.token = token.id AND token_account.account IN (:...accountIds)',
                 { accountIds }
             )
-            .groupBy('token.id')
+            .groupBy('token.id, collection.id, listing.id')
             .orderBy(orderBy, order, 'NULLS LAST')
             .skip(offset)
             .limit(limit)
@@ -216,14 +216,14 @@ export class AccountsTokensResolver {
         const tokenAccounts = await manager
             .getRepository(TokenAccount)
             .createQueryBuilder('token_account')
-            .where('token_account.token IN (:...tokenIds)', { tokenIds })
+            .innerJoinAndSelect('token_account.token', 'token', 'token.id IN (:...tokenIds)', { tokenIds })
             .innerJoinAndSelect('token_account.account', 'account', 'account.id IN (:...accountIds)', { accountIds })
             .getMany()
 
         // Group token accounts by token ID
         const tokenAccountsByToken = tokenAccounts.reduce(
             (acc, ta) => {
-                const tokenId = ta.token as unknown as string
+                const tokenId = ta.token.id as unknown as string
                 if (!acc[tokenId]) {
                     acc[tokenId] = []
                 }
